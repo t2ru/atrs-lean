@@ -53,7 +53,7 @@ Chosen option: "任意精度整数と明示的な丸め", because 全言語に�
 
 ### Confirmation
 
-* `Spec` 配下で `Float` が使われていないことを CI で検査する（[lean.md](../rules/lean.md)）。
+* `Spec` 配下で `Float` が使われていないことを CI で検査する（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)）。
 * 適合テストベクタの数値はすべて JSON の整数である。
 
 ## Pros and Cons of the Options
@@ -76,4 +76,4 @@ Chosen option: "任意精度整数と明示的な丸め", because 全言語に�
 ## More Information
 
 * [spec/fare-calculation.md](../spec/fare-calculation.md)
-* [rules/portability.md](../rules/portability.md)
+* [port-lang/portability.md](../../.agents/skills/port-lang/references/portability.md)

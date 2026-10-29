@@ -38,4 +38,4 @@ generated:
 ## 参照
 
 - [refinement.md](../spec/refinement.md)
-- [rules/rust.md](../rules/rust.md)
+- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)

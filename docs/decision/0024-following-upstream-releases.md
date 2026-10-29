@@ -45,7 +45,7 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 * 上流は `upstream/atrs` に **git submodule** として取り込み、commit を固定する。追従中の版は `trace/upstream.json` に 1 か所で宣言する（[ADR 0023](0023-cross-language-traceability.md)）。
 * 依存フレームワーク・処理系の挙動に依存する `SourceModel`・`LangSemantics.Java/Sql` の定義は、`dep:`・`lang:` ロケータを **必ず** `@[source]` に含める。依存の版が変わると、影響する定義が自動で出る。
 * **差分オラクル**: Java オラクルハーネス（[backlog 0013](../backlog/0013-java-oracle-harness.md)）を拡張し、`conformance/source-model/` の全ベクタ入力を旧版と新版の両方で実行して出力を比べる（[backlog 0026](../backlog/0026-differential-oracle.md)）。
-* 手順は [rules/upstream-upgrade.md](../rules/upstream-upgrade.md) に定める。要点は次のとおり。
+* 手順は [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) に定める。要点は次のとおり。
   1. 版上げの ADR を作る。
   2. submodule を上げる。
   3. インベントリ差分を取る（不変・本文変更・追加・削除・移動/改名）。
@@ -88,5 +88,5 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 
 ## More Information
 
-* [rules/upstream-upgrade.md](../rules/upstream-upgrade.md)
+* [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)
 * [backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md), [backlog 0026](../backlog/0026-differential-oracle.md)

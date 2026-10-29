@@ -38,4 +38,4 @@ generated:
 ## 参照
 
 - [ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)
-- [rules/lean.md](../rules/lean.md)
+- [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)

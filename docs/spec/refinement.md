@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-29T22:39:02+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -22,7 +22,9 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ⇔（追跡＋�
 ```
 
 - **REF**: `Spec` → `TargetModel` の関係。Lean の `Refinement` で **証明** する。
-- **SRC**: `TargetModel` ⇔ Rust ソースの対応。追跡注釈（[traceability.md](traceability.md)）、適合テスト、Verus、Kani で **確認** する。Rust の実行コードが `model/`（`TargetModel` の Verus 写し）と一致することは Verus で証明するが、`model/` と Lean `TargetModel` の対応は規約・ハッシュ・テストによる担保であり、証明ではない。
+- **SRC**: `TargetModel` ⇔ Rust ソースの対応。追跡注釈・適合テスト・Verus・Kani で **確認** する（方法はスキル port-lang の [verification.md](../../.agents/skills/port-lang/references/verification.md) と [rust/verification.md](../../.agents/skills/port-lang/references/rust/verification.md)）。
+
+本書は ATRS の課題一覧と状況を定める。
 
 ## REF: Spec → TargetModel（Lean で証明）
 
@@ -60,6 +62,6 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ⇔（追跡＋�
 
 ## 未証明の前提
 
-Verus の `assume`・`admit`・`external_body` を使った場合は、その箇所と理由をここに列挙する（[rules/rust.md](../rules/rust.md#検証)）。
+Verus の `assume`・`admit`・`external_body` を使った場合は、その箇所と理由をここに列挙する（[rust/verification.md](../../.agents/skills/port-lang/references/rust/verification.md)）。
 
 （現在なし）

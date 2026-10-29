@@ -76,4 +76,4 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 
 ## More Information
 
-* [spec/conformance.md](../spec/conformance.md), [rules/testing.md](../rules/testing.md)
+* [spec/conformance.md](../spec/conformance.md), [port-lang/verification.md](../../.agents/skills/port-lang/references/verification.md)

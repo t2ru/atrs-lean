@@ -1,14 +1,14 @@
 ---
 type: Specification
 title: "追跡（トレーサビリティ）"
-description: "移植元ソース⇔SourceModel と TargetModel⇔移植先ソースの 2 本の追跡について、ロケータ文法・注釈・検査・生成表と、運賃計算の追跡例。"
+description: "ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル port-lang に従う。"
 tags: [spec, traceability]
 status: draft
 spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-29T22:39:02+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -26,70 +26,17 @@ generated:
 - 内側（`SourceModel` ↔ `Spec` ↔ `TargetModel`）は追跡ではなく **証明**（`Abstraction`, `Refinement`）でつながる。
 - 移植元ソースと移植先ソースを直接つないではならない。影響分析は証明グラフをたどって行う。
 
-## ロケータ
+## 方式
 
-ソースの位置は、版に依存しない記号的なロケータで指す。行番号は道具が版ごとに解決し、permalink を生成する。
+ロケータの文法、版の宣言とインベントリ、注釈と確認済みハッシュ、検査（TR-S1〜TR-R）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR 0023](../decision/0023-cross-language-traceability.md)）。
+ATRS が使うロケータの種別は次のとおり（文法は各言語パックの `locators.md`）。
 
-```
-locator   = kind ":" body
-kind      = "java" | "sql" | "ddl" | "prop" | "msg" | "http" | "rust" | "dep" | "lang"
-```
-
-| kind | 側 | body の形式 | 例 |
-| --- | --- | --- | --- |
-| `java` | 移植元 | `<FQCN>#<メソッド名>(<引数の単純型名,…>)`。コンストラクタは `<init>`、フィールドは `<FQCN>.<名前>` | `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)` |
-| `sql` | 移植元 | `<Mapper の namespace>#<文の id>` | `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria` |
-| `ddl` | 移植元 | `<ファイル名>#<オブジェクト名>` | `ddl:00100_create_all_tables.sql#SQ_MEMBER_1` |
-| `prop` | 移植元 | `<ファイル名>#<キー>` | `prop:atrs.properties#atrs.limitDay` |
-| `msg` | 移植元 | `<ファイル名>#<キー>` | `msg:atrs-messages_ja.properties#e.ar.b2.2009` |
-| `http` | 移植元 | `<METHOD> <パス>[?<判別パラメータ>]` | `http:POST /ticket/reserve?confirm` |
-| `rust` | 移植先 | `<crate>::<パス>` | `rust:atrs::fare::basic_fare`, `rust:atrs::model::fare::basic_fare` |
-| `dep` | 両側 | `<座標>#<シンボル>`。座標は Maven の `groupId:artifactId` または crate 名 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText`, `dep:serde_json#from_str` |
-| `lang` | 両側 | `<言語>#<節>` | `lang:java#JLS-5.1.3`, `lang:postgresql#ORDER-BY`, `lang:rust#integer-overflow` |
-
-- 引数型は単純型名で書く（パッケージを省く）。同名の型が衝突する場合だけ完全名にする。
-- `dep`・`lang` が移植元側か移植先側かは、それを参照するモデルの側で決まる。移植元側のモデルが移植先の `dep`（crate）を参照してはならない。逆も同じ。
-
-## 版の宣言とインベントリ
-
-| ファイル | 内容 |
-| --- | --- |
-| `trace/upstream.json` | 追従中の上流: repo, variant（`JavaConfig-Thymeleaf`）, release, commit, 依存の版（`pom.xml` から）, Java の版, PostgreSQL の版 |
-| `trace/target.json` | 移植先: Rust ツールチェーン, Verus, Kani, 依存クレートの版 |
-| `trace/source-inventory.json` | 上流（submodule `upstream/atrs`）を走査した、ロケータ・ファイル・行範囲・正規化した本文ハッシュ |
-| `trace/target-inventory.json` | `rust/` を走査した、同じ形式の一覧 |
-| `trace/manifest.json` | 全ノードと型付きのリンク（生成） |
-| `trace/renames.json` | 版上げ時の、本文ハッシュで判別できない改名の対応（手書き） |
-| `trace/out-of-scope.json` | 追跡の対象外とするロケータと理由（手書き。[ADR 0002](../decision/0002-porting-scope.md) に基づく） |
-
-`dep`・`lang` の項目は、本文ハッシュの代わりに版文字列（例 `spring-beans@6.2.1`）を持つ。
-
-## 注釈
-
-リンクの正は Lean のモデル側の属性である（Rust の写しのタグだけは Rust 側）。
-
-| 置き場所 | 注釈 | リンク |
+| 側 | 種別 | 言語パック |
 | --- | --- | --- |
-| `SourceModel`, `LangSemantics.Java/Sql` | `@[source "<ロケータ>@<ハッシュ>", …]` | ① |
-| `TargetModel`, `LangSemantics.Rust` | `@[target "<ロケータ>@<ハッシュ>", …]` | ② |
-| Rust `model/` | `/// trace: models <TargetModel の完全名> @<Merkle ハッシュ>` | ②（逆向きの確認） |
-| `Abstraction`, `Refinement` | `@[obligation "ABS-NNN" / "REF-NNN"]`。モデル間の対応は定理の型から自動導出 | 内側（証明） |
-| `Spec` | `@[spec_doc "<docs/spec のパス#アンカー>"]`、`@[no_source "<理由>"]` | 文書 |
-| ベクタ | `modelDef`, `upstream`（[conformance.md](conformance.md)） | テスト |
-
-## 検査
-
-| ID | 失敗条件 |
-| --- | --- |
-| TR-S1 | スコープ内の `source-inventory` の項目が `@[source]` で覆われず、`out-of-scope.json` にも無い |
-| TR-S2 | `@[source]` のハッシュが `source-inventory` と一致しない |
-| TR-T1 | `TargetModel` の公開定義に `@[target]` が無い。または `target-inventory` の公開項目が `@[target]` で覆われず、`out-of-scope.json` にも無い |
-| TR-T2 | `@[target]` のハッシュが `target-inventory` と、`/// trace: models` のハッシュが Lean の Merkle ハッシュと一致しない |
-| TR-P | `SourceModel` の公開定義に `Abstraction` 定理が、`TargetModel` の公開定義に `Refinement` 定理が無い（理由付きの例外を除く） |
-| TR-X | 移植元側の層に移植先ロケータが、移植先側の層・`rust/` に移植元ロケータがある |
-| TR-R | 存在しない Lean 名・ロケータ・課題 ID への参照がある |
-
-段階導入: Lean・Rust のコードがそろうまで TR-S1・TR-T1・TR-P は警告とする（[ADR 0023](../decision/0023-cross-language-traceability.md)）。
+| 移植元 | `java:` `prop:` `msg:` `http:` `xml:` | [java/locators.md](../../.agents/skills/port-lang/references/java/locators.md) |
+| 移植元 | `sql:` `ddl:` `seed:` | [sql/locators.md](../../.agents/skills/port-lang/references/sql/locators.md) |
+| 移植先 | `rust:`（クレート `atrs`） | [rust/locators.md](../../.agents/skills/port-lang/references/rust/locators.md) |
+| 両側 | `dep:` `lang:` | ATRS で必須の `dep:` は [atrs-porting.md](../rules/atrs-porting.md#source-に必ず含める依存atrs) |
 
 ## 例: 運賃計算（基本運賃）
 

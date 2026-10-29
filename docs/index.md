@@ -5,16 +5,10 @@ okf_version: "0.2"
 # Rules
 
 * [作業規約（rules）](rules/README.md) - 作業規約の索引と、規約・文書間の優先順位。
+* [ATRS での port-lang スキルの適用](rules/atrs-porting.md) - 言語間移植の方法（スキル port-lang）を ATRS に適用するときの固有事項。言語ペア、リポジトリ配置、機能名、型、依存フレームワーク、追従中の上流、ATRS で採った値。
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [Lean 規約](rules/lean.md) - Lean プロジェクトの名前空間構成・依存の向き・追跡注釈・全域性・型選択・命名・証明方針。
-* [言語中立性（portability）規約](rules/portability.md) - 他言語へ同一ロジックを移植するための数値・文字列・日付・順序・副作用の制約。
-* [移植規約](rules/porting.md) - 原典 → 草案 → Lean の SourceModel/Spec/Abstraction → TargetModel/Refinement → Rust ソースの順で移植し、両端を追跡注釈でつなぐ原則。
-* [Rust 規約](rules/rust.md) - 移植先ソース（Rust）の構成、Lean TargetModel を Verus に写す規則、実行コードの書き方、追跡タグ、Verus・Kani・適合テストによる検証の規約。
-* [仕様執筆規約](rules/spec-writing.md) - docs/spec の書き方。規範・メタ情報・草案の区分、[Spec]/[Source] 併記、定義の節構成、記法、禁止事項。
-* [テスト規約](rules/testing.md) - 適合テストベクタ・性質テスト・証明・Java オラクルによる検証規約。
-* [移植元の版上げ手順](rules/upstream-upgrade.md) - 上流 ATRS の版を上げるときの手順。インベントリ差分・差分オラクル・影響一覧・層ごとの判断・ベクタ再生成・タグ付け。移植先側の版上げも同じ手順に従う。
 * [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push はしない。コミットの単位とメッセージの規則。
 
 # Decisions
@@ -43,6 +37,7 @@ okf_version: "0.2"
 * [モデルと証明をすべて Lean に置き、移植元ソースと移植先ソースは両端で追跡する](decision/0022-models-in-lean-and-sources-traced-at-both-ends.md) - LangSemantics・SourceModel・Spec・Abstraction・TargetModel・Refinement を Lean に置き、Java 原典と Rust ソースはそれぞれのモデルとだけ追跡でつなぐ。ADR 0018 と 0020 を置き換える。
 * [移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する](decision/0023-cross-language-traceability.md) - 両端のトレースをロケータとモデル側の注釈で表し、確認済みハッシュで陳腐化を検出し、manifest 生成と TR 検査で網羅性と直接接続の禁止を機械的に保つ。
 * [移植元の版上げに追従する。SourceModel は最新版のみ保持し、差分オラクルで振る舞いの変化を検出する](decision/0024-following-upstream-releases.md) - 上流を submodule で固定し、版上げ時はインベントリ差分と新旧 2 版の差分オラクルで影響を洗い出し、証明グラフに沿って各層を更新する。旧版は git タグで参照する。
+* [言語間移植の方法をアプリ非依存のスキル port-lang に切り出し、docs/ には ATRS 固有の情報を残す](decision/0025-extract-porting-method-as-agent-skill.md) - Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/port-lang に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。
 
 # Specification
 
@@ -50,7 +45,7 @@ okf_version: "0.2"
 * [抽象化証明課題（Abstraction）](spec/abstraction.md) - 移植元モデル SourceModel から抽象モデル Spec への抽象化関数、既知差異 D-NNN、証明課題 ABS-NNN の一覧。
 * [認証（A0/A1/A2）](spec/authentication.md) - ログインの事前検査・資格情報の照合・ログイン状態の更新・ログアウト・セッションと権限。
 * [設定パラメータ](spec/configuration.md) - 業務規則に影響する設定値とその既定値。純粋関数には Config として明示的に渡す。
-* [適合テストベクタ](spec/conformance.md) - conformance/ に置く言語中立の JSON テストベクタのディレクトリ構成・スキーマ・操作名・期待値の書き方。
+* [適合テストベクタ（ATRS）](spec/conformance.md) - ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル port-lang に従う。
 * [ドメインモデル](spec/domain-model.md) - 型・列挙・値域・不変条件と、仕様全体で使う基本演算（除算・丸め・暦日・書式）の定義。
 * [エラーとメッセージ](spec/errors-and-messages.md) - エラーの分類、エラーコード一覧、日本語メッセージ文言、項目の表示名、引数置換規則。
 * [運賃計算](spec/fare-calculation.md) - 基本運賃・運賃（大人 1 名）・合計金額（大人・小児、往復）の計算と 100 円単位の切上げ。[Spec] は厳密整数、[Source] は Java の double/int32 意味論。
@@ -64,7 +59,7 @@ okf_version: "0.2"
 * [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - Lean で証明する Spec → TargetModel の課題 REF-NNN と、TargetModel ⇔ Rust ソースの対応を確認する課題 SRC-NNN（Verus・Kani・適合テスト）。
 * [予約履歴レポート（D1）](spec/reservation-history-report.md) - レポート作成要求の受付、非同期生成、CSV のバイト仕様、ファイル名、一覧と取得。
 * [予約（B0/B2）](spec/reservation.md) - 選択フライトの検証、予約内容の検証、予約確認、空席の確保と予約登録、会員情報による入力補完。
-* [追跡（トレーサビリティ）](spec/traceability.md) - 移植元ソース⇔SourceModel と TargetModel⇔移植先ソースの 2 本の追跡について、ロケータ文法・注釈・検査・生成表と、運賃計算の追跡例。
+* [追跡（トレーサビリティ）](spec/traceability.md) - ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル port-lang に従う。
 
 # Backlog
 

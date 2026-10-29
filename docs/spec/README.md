@@ -19,7 +19,7 @@ sources:
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
 
 ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である。本ディレクトリは、**`Spec` で表現できない仕様**（規範）と、仕様・検証を運用するためのメタ情報、そして Lean に形式化する前の業務規則の **草案** を置く（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
-移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。書き方は [rules/spec-writing.md](../rules/spec-writing.md) による。
+移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。区分（normative / meta / draft / informative）と書き方は、スキル port-lang の [spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md) による。
 
 | 優先 | 正規の定義 |
 | --- | --- |

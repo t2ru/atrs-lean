@@ -12,29 +12,28 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 - 正規仕様は Lean の `Spec`。`Spec` で表現できない仕様だけを `docs/spec` で定義する（[ADR 0021](docs/decision/0021-lean-spec-as-normative-source.md)）。
 - モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` ⇔ Rust は追跡注釈・適合テスト・Verus・Kani で確認する（[ADR 0022](docs/decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。
 - トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR 0023](docs/decision/0023-cross-language-traceability.md)）。
-- 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 0024](docs/decision/0024-following-upstream-releases.md)、[upstream-upgrade.md](docs/rules/upstream-upgrade.md)）。
+- 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 0024](docs/decision/0024-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/upgrade.md)）。
+- 移植の方法はアプリに依存しないスキル **port-lang** に、ATRS 固有の情報は `docs/` に置く（[ADR 0025](docs/decision/0025-extract-porting-method-as-agent-skill.md)）。
 
 - 上流ソース: <https://github.com/terasolunaorg/atrs> の `JavaConfig-Thymeleaf/`
   - branch `release/5.11.0.RELEASE` / commit `f4bfbf0615eb91805546c9c780d4761be92ce17e`
 
 ## 作業前に必ず読むもの
 
-**すべての作業（文書・コード・証明・テスト）の前に [`docs/rules/README.md`](docs/rules/README.md) を読み、
-そこから参照される規約に従うこと。** 規約と本ファイルが矛盾する場合は `docs/rules/` が優先する。
+**すべての作業（文書・コード・証明・テスト）の前に、次の 2 つを読むこと。**
+
+1. **言語間移植の方法**: スキル [`.agents/skills/port-lang/SKILL.md`](.agents/skills/port-lang/SKILL.md)（アプリに依存しない方法。Agent Skills 形式。[ADR 0025](docs/decision/0025-extract-porting-method-as-agent-skill.md)）。言語ごとの情報は `references/<lang>/` にあり、ATRS では `java`・`sql`（移植元）、`rust`（移植先）、`lean`（形式化）を使う。
+2. **ATRS の運用規約**: [`docs/rules/README.md`](docs/rules/README.md) と、そこから参照される規約。特に [atrs-porting.md](docs/rules/atrs-porting.md)（スキルを ATRS に適用するときの固有事項）。
+
+優先順位は、ATRS の ADR → `docs/rules/` → スキル → 本ファイルの順とする（[docs/rules/README.md](docs/rules/README.md#優先順位)）。
 
 | 規約 | 内容 |
 | --- | --- |
-| [docs/rules/documentation.md](docs/rules/documentation.md) | 文書全般（言語・用語・リンク・出典記法） |
+| [docs/rules/atrs-porting.md](docs/rules/atrs-porting.md) | ATRS への適用: 言語ペア、配置、機能名、型、必須の依存、追従中の上流 |
+| [docs/rules/documentation.md](docs/rules/documentation.md) | 文書全般（言語・用語・リンク・出典記法・OKF） |
 | [docs/rules/decision-records.md](docs/rules/decision-records.md) | 意思決定記録（MADR, `NNNN-<slug>.md`） |
-| [docs/rules/spec-writing.md](docs/rules/spec-writing.md) | 仕様の書き方（[Spec]/[Source] 併記） |
-| [docs/rules/porting.md](docs/rules/porting.md) | 移植の進め方（原典 → spec → 形式化 → 証明 → 移植先） |
-| [docs/rules/portability.md](docs/rules/portability.md) | 言語中立性の制約 |
-| [docs/rules/lean.md](docs/rules/lean.md) | Lean コーディング・証明規約 |
-| [docs/rules/rust.md](docs/rules/rust.md) | Rust・Verus・Kani 規約 |
-| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit、push しない） |
-| [docs/rules/upstream-upgrade.md](docs/rules/upstream-upgrade.md) | 移植元の版上げ手順 |
-| [docs/rules/testing.md](docs/rules/testing.md) | 適合テストベクタ・性質テスト・証明 |
 | [docs/rules/backlog.md](docs/rules/backlog.md) | バックログ運用と完了の定義 |
+| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit、push しない） |
 
 ## ディレクトリ地図
 
@@ -45,7 +44,8 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/decision/](docs/decision/) | 意思決定記録（ADR, MADR 形式）。設計判断の唯一の記録場所 |
 | [docs/spec/](docs/spec/) | Lean `Spec` で表現できない仕様（規範）、文書メタ情報、形式化前の草案 |
 | [docs/backlog/](docs/backlog/) | 作業項目。着手順と依存関係 |
-| [docs/rules/](docs/rules/) | 作業規約 |
+| [docs/rules/](docs/rules/) | ATRS の運用規約 |
+| [.agents/skills/port-lang/](.agents/skills/port-lang/SKILL.md) | 言語間移植の方法（アプリ非依存のスキル） |
 | `lean/`（予定） | Lean プロジェクト。`LangSemantics` / `SourceModel` / `Spec`（正規仕様）/ `Abstraction` / `TargetModel` / `Refinement`（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs`（予定） | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |

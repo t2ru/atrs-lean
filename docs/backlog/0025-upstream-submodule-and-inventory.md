@@ -36,4 +36,4 @@ generated:
 ## 参照
 
 - [ADR 0024](../decision/0024-following-upstream-releases.md)
-- [rules/upstream-upgrade.md](../rules/upstream-upgrade.md)
+- [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)

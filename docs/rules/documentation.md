@@ -33,14 +33,14 @@ generated:
 
 ## 出典（移植元ロケータ）の記法
 
-原典を参照するときは、**移植元ロケータ**（[traceability.md](../spec/traceability.md#ロケータ)）で書く。ロケータは版に依存しない記号的な位置で、道具が検査・解決できる。
+原典を参照するときは、**移植元ロケータ**（スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md#ロケータ) と、ATRS が使う種別の一覧 [traceability.md](../spec/traceability.md#方式)）で書く。ロケータは版に依存しない記号的な位置で、道具が検査・解決できる。
 
 ```
 出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`
 ```
 
 - 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える（[backlog 0024](../backlog/0024-trace-tooling.md)）。
-- 追従中の上流の版は `trace/upstream.json` に宣言する。版を更新する場合は [upstream-upgrade.md](upstream-upgrade.md) の手順に従う。
+- 追従中の上流の版は `trace/upstream.json` に宣言する。版を更新する場合はスキルの [upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) の手順に従う。
 - 原典のコードを長く転載しない。式・条件は仕様の記法で書き直す。
 
 ## リンク
@@ -83,7 +83,7 @@ generated:
 | ディレクトリ | `type` | 種別固有のキー |
 | --- | --- | --- |
 | `decision/` | `Architecture Decision Record` | `decision_status`, `superseded_by`, `date`, `decision-makers`, `consulted`, `informed`（[decision-records.md](decision-records.md)） |
-| `spec/` | `Specification` | `models`（その文書が扱うモデル: `spec`, `source`）、`spec_role`（`normative` / `meta` / `draft` / `informative`。[spec-writing.md](spec-writing.md#区分)） |
+| `spec/` | `Specification` | `models`（その文書が扱うモデル: `spec`, `source`）、`spec_role`（`normative` / `meta` / `draft` / `informative`。[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md#区分)） |
 | `rules/` | `Guideline` | — |
 | `backlog/` | `Backlog Item` | `id`, `state`, `depends_on`（[backlog.md](backlog.md)） |
 | 各ディレクトリの `README.md` | `Overview` | — |

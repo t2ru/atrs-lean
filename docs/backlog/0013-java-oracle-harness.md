@@ -34,4 +34,4 @@ generated:
 
 ## 参照
 
-- [rules/testing.md](../rules/testing.md#java-オラクル)
+- [port-lang/java/harness.md](../../.agents/skills/port-lang/references/java/harness.md)

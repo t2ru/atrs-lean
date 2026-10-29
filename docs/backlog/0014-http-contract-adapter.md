@@ -40,4 +40,4 @@ generated:
 
 - [http-contract.md](../spec/http-contract.md)
 - [ADR 0012](../decision/0012-http-contract-specification.md)
-- [rules/rust.md](../rules/rust.md)
+- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)

@@ -69,4 +69,4 @@ Chosen option: "core + Batteries のみ", because 必要な証明は `omega`・`
 
 ## More Information
 
-* [rules/lean.md](../rules/lean.md)
+* [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)

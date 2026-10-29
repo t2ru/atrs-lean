@@ -22,7 +22,7 @@ Lean 側（全モデルと証明）の作業の土台を用意する。
 ## 範囲
 
 - `lean/lean-toolchain`（着手時点の最新安定版）, `lakefile.lean`（依存は Batteries のみ）
-- トップレベル名前空間 `LangSemantics`, `SourceModel`, `Spec`, `Abstraction`, `TargetModel`, `Refinement`, `Trace` と、実行ファイル用の `Tests`, `Tools` の空モジュール（[rules/lean.md](../rules/lean.md)）
+- トップレベル名前空間 `LangSemantics`, `SourceModel`, `Spec`, `Abstraction`, `TargetModel`, `Refinement`, `Trace` と、実行ファイル用の `Tests`, `Tools` の空モジュール（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)）
 - `Trace`: 属性 `@[source]`, `@[target]`, `@[obligation]`, `@[spec_doc]`, `@[no_source]` の定義と、`lake exe trace-dump`（定義・属性・Merkle ハッシュの JSON 出力）
 - CI: `lake build`, `lake test`, `sorry`・新規 `axiom` の検出, `Float` 使用禁止範囲, 名前空間の依存方向（特に移植元側と移植先側の相互非依存）
 - Lean の版を [ADR 0014](../decision/0014-lean-toolchain-and-dependencies.md) の More Information に追記
@@ -43,4 +43,4 @@ Lean 側（全モデルと証明）の作業の土台を用意する。
 
 - [ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)
 - [ADR 0023](../decision/0023-cross-language-traceability.md)
-- [rules/lean.md](../rules/lean.md)
+- [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)
