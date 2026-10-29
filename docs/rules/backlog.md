@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-30T08:20:00+09:00
 ---
 
 # バックログ規約
@@ -82,4 +82,4 @@ generated:
   - 決定論的な手段の届かない部分が [assurance.md](../spec/assurance.md) に載っている。
   - 項目の範囲が一部だけの場合は、残りを扱う項目が存在する。
 - 新しい `TODO(spec)` を残した場合、それを扱う backlog 項目が存在する。
-- 変更を `git commit` した（push はしない。[version-control.md](version-control.md)）。
+- 変更を `git commit` した（push は自分で作ったブランチに限る。[version-control.md](version-control.md)）。
