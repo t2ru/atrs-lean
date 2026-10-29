@@ -1,0 +1,123 @@
+---
+type: Specification
+title: "空席照会（B1）"
+description: "搭乗日・区間・搭乗クラス・フライト種別から、予約可能な運賃種別ごとの空席数と運賃を出発時刻順に返す。"
+tags: [spec, flight-search, b1]
+status: draft
+spec_role: draft
+models: [spec, source]
+generated:
+  by: claude-code/claude-opus-5-5
+  at: 2026-10-29T22:07:40+09:00
+---
+
+# 空席照会（B1）
+
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+
+## 照会可能期間
+
+**[Spec=Source]**
+
+- `searchLimitDate(today) = addDays(today, limitDay)`
+- `validateDepartureDate(depDate, today)`: `depDate < today ∨ depDate > searchLimitDate(today)` なら `Business("e.ar.b1.2001")`。両端を含む。
+
+出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `getSearchLimitDate`, `validateDepatureDate`
+
+## 運賃種別の予約可能判定
+
+**[Spec=Source]**
+
+`isAvailableFareType(fareType, depDate, today)`:
+
+```
+start = addDays(depDate, −fareType.rsrvAvailableStartDayNum)
+end   = addDays(depDate, −fareType.rsrvAvailableEndDayNum)
+result = start ≤ today ≤ end
+```
+
+これは `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum` と同値である（課題 [ABS-010](abstraction.md#証明課題)）。
+
+出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `isAvailableFareType`
+
+## searchFlight
+
+### シグネチャ
+
+```
+searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, flightType },
+             flights: [Flight]; master, config, today) : Except AtrsError [FlightVacantInfo]
+```
+
+`flights` はフライトの全件（[ports.md](ports.md) の `FlightRepository.findAll` 相当。実装は絞り込みを永続化層に押し下げてよい）。
+
+### 事前条件
+
+- [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[input-validation.md](input-validation.md)）を通過していれば満たされる。
+
+### 定義（評価順）
+
+1. `validateDepartureDate(depDate, today)`。失敗時 `e.ar.b1.2001`。
+2. `route = routeOf(depAirportCd, arrAirportCd)`。無ければ `Business("e.ar.b1.2002")`。
+3. `beforeDayNum = daysBetween(today, depDate)`。
+4. `fareTypeCds = fareTypesFor(flightType)`（[domain-model.md](domain-model.md#列挙)）。
+5. 候補 `cs` = 次をすべて満たすフライト `f`:
+   - `f.departureDate = depDate`
+   - `flightMasterOf(f.flightName).routeNo = route.routeNo`
+   - `f.boardingClassCd = boardingClassCd`
+   - `f.fareTypeCd ∈ fareTypeCds`
+   - `ft = fareTypeOf(f.fareTypeCd)` について `ft.rsrvAvailableEndDayNum ≤ beforeDayNum ≤ ft.rsrvAvailableStartDayNum`
+   - **空席数 0 のフライトも含む**（除外しない）
+6. `cs` を整列キー `(fareTypeOf(f.fareTypeCd).displayOrder, flightMasterOf(f.flightName).departureTime)` の昇順に並べる。
+   - **[Spec]**: 同順位は `flightName` の昇順（MD-5 の下では同順位は生じない）。
+   - **[Source]**: 同順位の順序は未規定（SQL の `ORDER BY` に含まれない）。
+7. `cs` が空なら `NotFound("e.ar.b1.2003")`。
+8. `b = basicFare(route.basicFare, boardingClassCd, depDate)`（全候補で共通）。
+9. グループ化: `cs` を先頭から走査し、**便マスタの出発時刻**（`departureTime`）をキーとして、キーの初出順にグループ `FlightVacantInfo` を作る。
+   - グループの見出し項目は、そのキーで最初に現れたフライトから作る（下表）。
+   - 各フライト `f` について `fareTypes` に `f.fareTypeCd ↦ { fareTypeName, fare: fmtYen(fare(b, discountRate)), vacantNum: f.vacantNum }` を **挿入** する。同じキーが既にあれば値を置き換え、順序は最初の挿入位置のまま（[Source] の `LinkedHashMap.put`）。MD-5 の下ではグループ内の便は 1 つであり、置き換えは生じない。
+10. グループの列を返す。
+
+### 出力 FlightVacantInfo
+
+| フィールド | 値 |
+| --- | --- |
+| `flightName` | `flightName` |
+| `depAirportName` | 区間の出発空港の `name` |
+| `arrAirportName` | 区間の到着空港の `name` |
+| `depTime` | `fmtTime(departureTime)`（`HH:mm`） |
+| `arrTime` | `fmtTime(arrivalTime)` |
+| `depDate` | `fmtDate(departureDate)`（`yyyy/MM/dd`） |
+| `boardingClassCd` | `boardingClassCd` |
+| `fareTypes` | 順序付き写像 `FareTypeCd ↦ { fareTypeName: String, fare: String, vacantNum: Nat }` |
+
+出力の順序の性質: 第 1 グループの並びは「最も表示順の小さい運賃種別を持つ便の出発時刻順」であり、単純な出発時刻順ではない。
+例えば片道照会で搭乗日が 10 日後なら、`OW`（表示順 1）は全便にあるので全グループが出発時刻順になる。一方、ある便に `OW` の行が無ければ、その便のグループは後ろに回る。
+
+### エラー
+
+| 条件 | エラー |
+| --- | --- |
+| 搭乗日が照会可能期間外 | `Business("e.ar.b1.2001")` |
+| 区間が存在しない | `Business("e.ar.b1.2002")` |
+| 候補が 0 件 | `NotFound("e.ar.b1.2003")` |
+
+### 例
+
+`today = 2026-04-01`、区間 HND→ITM（路線基本運賃 20600）、便 NTT001（09:00–10:00）・NTT031（09:45–10:45）、
+`depDate = 2026-04-11`（ピーク時期外）、`N`、`OW` のとき `beforeDayNum = 10`。
+候補となる運賃種別は `OW`(0–90), `RD1`(1–60), `RD7`(7–60), `LD`(1–60), `GD`(1–60), `SRD` は `S` 専用のため無し、`ED`(30–60) は対象外。
+結果は 2 グループ（09:00, 09:45）、各グループの `fareTypes` は `OW: "20,600"`, `RD1: "18,600"`, `RD7: "16,500"`, `LD: "14,500"`, `GD: "14,500"` の順。
+
+（`fare(20600, 10) = ceilTo(18540, 100) = 18600`、`fare(20600, 20) = ceilTo(16480, 100) = 16500`、`fare(20600, 30) = ceilTo(14420, 100) = 14500`）
+
+出典: atrs-domain/.../service/b1/TicketSearchServiceImpl.java `searchFlight`, `createFlightVacantInfoList`, atrs-domain/src/main/resources/.../repository/flight/FlightRepository.xml `findByVacantSeatSearchCriteria`
+
+## 照会画面の初期値
+
+**[Spec=Source]**
+
+- 照会条件の初期値: `flightType = defaultFlightType`, `depAirportCd = defaultDepAirportCd`, `arrAirportCd = defaultArrAirportCd`, `outwardDate = today`, `homewardDate = today`, `boardingClassCd = defaultBoardingClassCd`。
+- 照会可能期間の表示: `beginningPeriod = today`, `endingPeriod = searchLimitDate(today)`, `reserveIntervalTime = config.reserveIntervalTime`。
+
+出典: atrs-web/.../app/b1/TicketSearchHelper.java `createDefaultTicketSearchForm`, `createFlightSearchOutputDto`

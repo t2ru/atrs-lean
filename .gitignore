@@ -1,0 +1,4 @@
+# Lean
+lean/.lake/
+# Rust
+rust/target/
