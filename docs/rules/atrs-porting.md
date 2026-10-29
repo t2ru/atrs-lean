@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T06:46:37+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -40,7 +40,7 @@ generated:
 | パス | 内容 |
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
-| `upstream/atrs` | 移植元ソース（submodule。[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)） |
+| `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
 | `lean/` | Lean プロジェクト（全モデルと証明） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
@@ -71,7 +71,7 @@ generated:
 | PostgreSQL JDBC | 42.7.9 | `pom.xml` |
 | Tomcat（cargo で起動） | 11.0.15 | `terasoluna-gfw-parent` |
 
-道具の導入後は `trace/upstream.json` を正とする（[ADR 0024](../decision/0024-following-upstream-releases.md)）。
+版の正は [`trace/upstream.json`](../../trace/upstream.json) であり、上表はその写しである（[ADR 0024](../decision/0024-following-upstream-releases.md)）。submodule の commit と宣言の一致は `python3 -I tools/ci/check_upstream.py` で検査する。上流はデータベースサーバの版を固定していない。SQL の差分実行で使う版は [backlog 0016](../backlog/0016-lang-semantics-sql.md) で決める。
 
 ## 機能名（層をまたいで共通）
 
@@ -116,8 +116,6 @@ generated:
 | REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md#rest-apiapiv1) |
 | `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [ports.md#idgenerator](../spec/ports.md#idgenerator) |
 | `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [ports.md#トランザクション](../spec/ports.md#トランザクション) |
-
-> **TODO(spec):** 「追従中の上流」の依存の版を `trace/upstream.json` に記録する（道具の導入後はそちらを正とする。[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)）。
 
 ## ATRS で採った値
 

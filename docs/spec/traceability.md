@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T06:46:37+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -144,6 +144,6 @@ pub fn basic_fare(...) -> (r: u64)
 
 ## 対象外
 
-`w/app/common/logging/AccessLogFilter.java`、`atrs-env/**`、`atrs-selenium/**`、`atrs-web/src/main/webapp/**/*.html` の HTML 構造・静的資源（[ADR 0002](../decision/0002-porting-scope.md)）。道具の導入時に `trace/out-of-scope.json` へ移す。
+`w/app/common/logging/AccessLogFilter.java`、`atrs-env/**`、`atrs-selenium/**`、`atrs-web/src/main/webapp/**/*.html` の HTML 構造・静的資源（[ADR 0002](../decision/0002-porting-scope.md)）。一覧の正は [`trace/out-of-scope.json`](../../trace/out-of-scope.json) であり、各項目に ADR 0002 の該当節を書いている。
 
 ただし、テンプレートのうち [Source] の観測可能な振る舞いに影響する式は、対象外にしない。たとえば支払期限の曜日の書式（`#temporals.format`。既知差異 D-019）がこれに当たる。これらは `tmpl:` ロケータで追跡する（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。

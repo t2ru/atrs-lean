@@ -1,0 +1,27 @@
+{
+  "repo": "https://github.com/terasolunaorg/atrs",
+  "submodule": "upstream/atrs",
+  "variant": "JavaConfig-Thymeleaf",
+  "release": "release/5.11.0.RELEASE",
+  "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e",
+  "languages": {
+    "java": { "version": "17", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#properties/java-version" },
+    "postgresql": {
+      "version": null,
+      "from": "README.md#Install PostgreSQL",
+      "note": "上流はサーバの版を固定していない（PostgreSQL の任意の版を求めるだけ）。SQL の差分実行で使う版は backlog 0016 で決め、ここに記録する"
+    }
+  },
+  "dependencies": [
+    { "coordinate": "org.terasoluna.gfw:terasoluna-gfw-parent", "version": "5.11.0.RELEASE", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#parent" },
+    { "coordinate": "org.terasoluna.bom:terasoluna-dependencies", "version": "3.0.0.RELEASE", "from": "terasoluna-gfw-parent 5.11.0.RELEASE" },
+    { "coordinate": "org.springframework.boot:spring-boot-dependencies", "version": "4.0.2", "from": "terasoluna-dependencies 3.0.0.RELEASE", "note": "依存管理のみ。Spring Boot 本体は使わない" },
+    { "coordinate": "org.springframework:spring-framework-bom", "version": "7.0.3", "from": "spring-boot-dependencies 4.0.2" },
+    { "coordinate": "org.hibernate.validator:hibernate-validator", "version": "9.1.0.Final", "from": "terasoluna-dependencies 3.0.0.RELEASE" },
+    { "coordinate": "tools.jackson.core:jackson-databind", "version": "3.0.4", "from": "spring-boot-dependencies 4.0.2" },
+    { "coordinate": "com.fasterxml.jackson.core:jackson-databind", "version": "2.20.2", "from": "terasoluna-gfw-common-dependencies 5.11.0.RELEASE" },
+    { "coordinate": "org.mybatis:mybatis", "version": "3.5.19", "from": "terasoluna-dependencies 3.0.0.RELEASE" },
+    { "coordinate": "org.postgresql:postgresql", "version": "42.7.9", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#properties/postgresql.version" },
+    { "coordinate": "org.apache.tomcat:tomcat", "version": "11.0.15", "from": "terasoluna-gfw-parent 5.11.0.RELEASE", "note": "cargo で起動するコンテナ" }
+  ]
+}

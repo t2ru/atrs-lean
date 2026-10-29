@@ -1,0 +1,4 @@
+[submodule "upstream/atrs"]
+	path = upstream/atrs
+	url = https://github.com/terasolunaorg/atrs
+	branch = release/5.11.0.RELEASE
