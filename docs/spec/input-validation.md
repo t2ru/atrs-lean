@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 入力検証
@@ -22,12 +22,25 @@ generated:
 
 **[Spec=Source]**
 
-- **画面（フォーム投稿）**: すべての文字列項目は、前後の U+0000–U+0020 を除去し、結果が空文字なら「未入力」とする（原典 `StringTrimmerEditor(true)` / `String.trim()`）。
-- **REST API（`/api/v1/*`）**: 前処理を行わない。JSON の `null` または項目の欠落を「未入力」とし、空文字は空文字のまま検証する。
-- 数値・日付・列挙の項目は、文字列から型への変換に失敗したら `FieldError(field, "typeMismatch")` とし、その項目の他の検証は行わない。日付の書式は `yyyy/MM/dd`（画面）。
+- **画面（フォーム投稿）と画面用の JSON API（`/api/flights`, `/api/member/available` などの `/api/v1` 以外）**: すべての文字列項目（クエリパラメータを含む）は、前後の U+0000–U+0020 を除去し、結果が空文字なら「未入力」とする（原典 `StringTrimmerEditor(true)` / `String.trim()`）。
+- **REST API（`/api/v1/*`）**: JSON 本文には前処理を行わない。JSON の `null` または項目の欠落を「未入力」とし、空文字は空文字のまま検証する。
+- 数値・日付・列挙の項目は、文字列から型への変換に失敗したら `FieldError(field, "typeMismatch")` とし、その項目の他の検証は行わない。
 - 未入力の項目は、`Required` 以外の単項目検証をすべて合格とする。
 
 出典: atrs-web/.../app/common/binding/GlobalBindingInitializer.java
+
+### 日付の解析
+
+**[Spec]** 画面の日付項目とクエリパラメータの日付は、書式 `yyyy/MM/dd` で次をすべて満たすときだけ受け付ける。それ以外は `typeMismatch`。
+
+- 年は数字ちょうど 4 桁（符号無し）、月・日は数字ちょうど 2 桁（ゼロ埋め必須）。区切りは `/`。前後に余分な文字が無い。
+- 暦日として存在する（[domain-model.md](domain-model.md#date)。`2026/02/30` は不可）。年は 1〜9999。
+
+REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固定・暦日として存在すること）。
+
+**[Source]** Spring の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は `ResolverStyle.STRICT` で解析する。桁数と暦日の検査は [Spec] と同じだが、`+10000/01/01`（符号付きの 5 桁以上の年）と `0000/01/01`・`-0001/01/01`（0 以下の年）も受け付ける（既知差異 [D-021](abstraction.md#既知差異)）。JSON 本文は Jackson 3 が ISO 形式で解析する。
+
+出典: spring-context 7.0.3 `DateTimeFormatterFactory`（`DateTimeFormatterUtils.createStrictDateTimeFormatter`）
 
 ## 文字クラス
 
@@ -49,14 +62,51 @@ generated:
 | `Size(min, max)` | `min ≤ len ≤ max` | `Size` |
 | `FixedLength(n)` | `len = n` | `FixedLength` |
 | `Email` | 電子メールアドレスの形式 | `Email` |
-| `Min(n)` / `Max(n)` | 数値として `≥ n` / `≤ n`。文字列項目の場合は十進整数として解釈し、解釈できなければ不合格 | `Min` / `Max` |
+| `Min(n)` / `Max(n)` | 数値として `≥ n` / `≤ n`。文字列項目の場合は十進整数（`[0-9]+`）として解釈し、解釈できなければ不合格。[Source] は文字列を `BigDecimal` として解釈するので `"1.5"`・`"+1"`・`"1e1"` も数として比較される（既知差異 [D-018](abstraction.md#既知差異)） | `Min` / `Max` |
 | `Digits(i, f)` | 整数部 `i` 桁以下・小数部 `f` 桁以下 | `Digits` |
 | `Required` | 入力がある | `NotNull`（文字列で空文字も不可の場合 `NotEmpty`） |
 | `InCodeList(id)` | 値がコードリスト `id`（[master-data.md](master-data.md#空港コードリスト画面用)）に存在 | `ExistInCodeList` |
 
 `len` は [Spec] では `scalarLen`、[Source] では `utf16Len`（既知差異 [D-006](abstraction.md#既知差異)）。
 
-> **TODO(spec):** `Email` の判定規則（原典は Hibernate Validator の `@Email` 実装）を言語中立に書き下す（[backlog 0008](../backlog/0008-member-usecases-and-input-validation.md)）。
+### Email
+
+**[Spec]**（[ADR 0026](../decision/0026-email-validation-rule.md)）原典の Hibernate Validator 9.1.0.Final `AbstractEmailValidator`・`DomainNameUtil` の規則から、IDN 変換（`IDN.toASCII`）を除いたもの。文字列 `s` について:
+
+1. `s` が空文字なら合格（REST で空文字が送られた場合も合格）。
+2. `s` に `@` が無ければ不合格。**最後の** `@` で、前をローカル部 `l`、後をドメイン部 `d` に分ける。
+3. ローカル部: `len(l) ≤ 64` で、`l` が下記の `LOCAL` に一致する。
+4. ドメイン部: `d` が `.` で終わらず、`d` を `.` で区切った各部分の長さが 63 以下、`len(d) ≤ 255` で、`d` が下記の `DOMAIN` に一致する。
+
+照合は ASCII の英字の大小を区別しない（`a-z` は `A-Z` も含む）。`len` はスカラ値の数。
+
+```
+LATOM   = [a-z0-9!#$%&'*+/=?^_`{|}~-] | U+0080–U+FFFF
+QATOM   = [a-z0-9!#$%&'*.(),<>\[\]:; @+/=?^_`{|}~-] | U+0080–U+FFFF | "\\" | "\""
+LWORD   = LATOM+ | '"' QATOM+ '"'
+LOCAL   = LWORD ("." LWORD)*
+
+DCHAR   = [a-z0-9!#$%&'*+/=?^_`{|}~] | U+0080–U+FFFF
+LABEL   = DCHAR+ ("-"+ DCHAR+)*
+DOMAIN  = LABEL ("." LABEL)*
+        | "[" IPV4 "]"
+        | "[IPv6:" IPV6 "]"
+IPV4    = [0-9]{1,3} "." [0-9]{1,3} "." [0-9]{1,3} "." [0-9]{1,3}   （各部の値の範囲は検査しない）
+IPV6    = 下記の正規表現（原典 DomainNameUtil.IP_V6_DOMAIN と同一）
+```
+
+```
+(?:(?:[0-9a-f]{1,4}:){7,7}[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,7}:|(?:[0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,5}(?::[0-9a-f]{1,4}){1,2}|(?:[0-9a-f]{1,4}:){1,4}(?::[0-9a-f]{1,4}){1,3}|(?:[0-9a-f]{1,4}:){1,3}(?::[0-9a-f]{1,4}){1,4}|(?:[0-9a-f]{1,4}:){1,2}(?::[0-9a-f]{1,4}){1,5}|[0-9a-f]{1,4}:(?:(?::[0-9a-f]{1,4}){1,6})|:(?:(?::[0-9a-f]{1,4}){1,7}|:)|fe80:(?::[0-9a-f]{0,4}){0,4}%[0-9a-z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-f]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))
+```
+
+（原典の `a-fA-F`・`a-zA-Z` は、大小を区別しない照合なので `a-f`・`a-z` と書いた。）
+
+`QATOM` の `"\\"`・`"\""` は、それぞれ 2 文字の列 `\\`・`\"` である。U+10000 以上の文字はどの集合にも属さない。
+各部分の長さ 63 以下という条件は、原典では `IDN.toASCII` の検査として課される（ASCII のドメインでも課される）。
+
+**[Source]** ドメイン部に `IDN.toASCII` を適用し、失敗すれば不合格、変換後の長さ（UTF-16 単位）が 255 を超えれば不合格とする。正規表現の照合は変換前の文字列に対して行う。ドメイン部が ASCII だけからなる場合は [Spec] と一致する（既知差異 [D-011](abstraction.md#既知差異)）。
+
+出典: hibernate-validator 9.1.0.Final `AbstractEmailValidator.isValid`, `DomainNameUtil.isValidEmailDomainAddress`
 
 ## 検証の順序とエラーの並び
 
@@ -64,9 +114,28 @@ generated:
 
 1. 単項目検証を全項目について行う。1 項目に複数の違反があればすべて報告する。
 2. 相関検証を下記の順で行う。相関検証は、参照する項目に単項目エラーが無い場合にだけ行う。
-3. 結果は「フィールドエラー（項目の宣言順）→ グローバルエラー（発生順）」の順に並べる。
 
-> **TODO(spec):** 原典で 1 項目に複数の違反が出た場合の並び順（Bean Validation は順序を保証しない）を [Source] でどう扱うか決める。[Spec] では制約表の列挙順とする。
+**[Spec]** 結果は次の順に並べる（[ADR 0027](../decision/0027-validation-error-ordering.md)）。
+
+1. 単項目検証のフィールドエラー: 項目の宣言順（各表の行の順。配列の要素は添字の昇順で、要素の中は表の順）。同じ項目のエラーは制約表（[文字クラス](#文字クラス)）の列挙順。
+2. 相関検証で生じるフィールドエラー（例 `homewardDate` の `NotNull`、`selectFlights` の `Invalid`、`passengers[i].*` の `NotNull`）: 発生順。
+3. グローバルエラー: 発生順。
+
+画面の表示、`/api/flights` の `messages`、REST の ApiError の `details` はこの順に従う。
+
+**[Source]** 原典の Hibernate Validator は単項目の違反を `HashSet` に集め、Spring はその反復順で `BindingResult` に積む。そのため単項目エラーの並びは、項目をまたいでも決まらない（相関検証のエラーはその後に発生順で積まれる）。[Source] の結果はエラーの多重集合として扱い、[Spec] とは順序を無視して比較する（[abstraction.md](abstraction.md#抽象化関数-α)）。
+
+## 項目名の対応
+
+本書の項目名は抽象名である。HTTP の項目名（`FieldError` の `field`、ApiError の `target`）は原典の名前を使う。
+
+| 抽象名 | 画面（フォーム） | REST（`/api/v1/ticket`） |
+| --- | --- | --- |
+| `selectFlights[i].<項目>` | `selectFlightFormList[i].<項目>` | `selectFlightResourceList[i].<項目>` |
+| `passengers[i].<項目>` | `passengerFormList[i].<項目>` | `passengerResourceList[i].<項目>` |
+| グローバルエラーのオブジェクト名 | — | `ticketReserveResource`, `flightSearchQuery` など（リソースのクラス名の先頭を小文字にしたもの） |
+
+出典: `w/app/b0/ReservationFlightForm.java`, `w/app/b2/TicketReserveForm.java`, `w/api/ticket/TicketReserveResource.java`, `w/api/common/error/ApiErrorCreator.java`
 
 ## 空席照会（B1）
 
@@ -150,6 +219,14 @@ generated:
 4. フライト選択の相関検証
 
 **[Source]** の REST 予約 API（`POST /api/v1/ticket`）では、相関検証 1〜4 が **適用されない**（原典の不具合: `@InitBinder("ticketReserveForm")` が引数名 `ticketReserveResource` と一致しない）。単項目検証のみ行い、`passengerResourceList` の各要素は `familyName`, `givenName`, `age`, `gender` が Required。**[Spec]** では相関検証を適用する（既知差異 [D-007](abstraction.md#既知差異)）。
+
+**[Spec]** REST には「空の搭乗者欄」が無いので、`passengerResourceList` の各要素をそのまま搭乗者とし、相関 2・3 を次で置き換える。
+
+- 要素数が 0 → `GlobalError("e.ar.b2.5002")` を加えて **終了**（相関 4 を行わない）。
+- 要素数が 7 以上 → `FieldError(passengerResourceList, "Invalid")`（改竄扱い）を加えて **終了**。
+- 相関 1 と 4 は画面と同じ。
+
+[Source] は要素数を検査しない（D-007 に含める）。
 
 出典: atrs-web/.../app/b2/TicketReserveForm.java, PassengerForm.java, TicketReserveValidator.java, atrs-web/.../api/ticket/TicketReserveResource.java, PassengerResource.java, TicketRestController.java
 

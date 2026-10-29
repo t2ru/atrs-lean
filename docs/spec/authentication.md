@@ -8,12 +8,12 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 認証（A0/A1/A2）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただしセッションの保持方式・ログイン処理の伝送（フォーム投稿、Cookie）は [http-contract.md](http-contract.md#共通) の規範節に従う。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただしセッションの保持方式・ログイン処理の伝送（フォーム投稿、Cookie、ログイン時のセッション ID の更新）は [http-contract.md](http-contract.md#セッション) の規範節に従う。
 
 原典は Spring Security のフォームログインを使う。ここではその **効果** を定義する（[ADR 0002](../decision/0002-porting-scope.md)）。
 
@@ -28,7 +28,7 @@ generated:
 1. **事前検査**（会員の検索より前に行う）:
    - `membershipNumber` が無い、または長さが 10 でなければ失敗（ログ `i.ar.a1.L2001`）。
    - `password` が無い、または長さが 8〜20 の範囲外なら失敗（ログ `i.ar.a1.L2002`）。
-   - 長さは [Spec] では `scalarLen`、[Source] では `utf16Len`（[ADR 0010](../decision/0010-text-length-and-character-classes.md)）。前後の空白除去は行わない。
+   - 長さは [Spec] では `scalarLen`、[Source] では `utf16Len`（[ADR 0010](../decision/0010-text-length-and-character-classes.md)、既知差異 [D-006](abstraction.md#既知差異)）。前後の空白除去は行わない。
 2. 会員番号の前後の空白（U+0000–U+0020）を除去した値で会員（ログイン情報を含む）を検索する。無ければ失敗（ログ `i.ar.a1.L2001`）。事前検査は除去 **前** の値に対して行う（原典どおり。例: `" 000000001"` は長さ 10 で事前検査を通り、`"000000001"` で検索されて失敗する）。
 3. `PasswordHasher.matches(password, member.login.password)` が偽なら失敗（ログ `i.ar.a1.L2003`）。
 4. ログイン状態を更新する（1 トランザクション）: `loginDateTime := today`, `loginFlg := true`（ログ `i.ar.a1.L0001`）。
@@ -38,11 +38,13 @@ generated:
 
 [Source] の追加の振る舞い: 手順 4 の更新件数が 1 でなければ `System("e.ar.a0.L9002")`。
 
+> **TODO(spec):** [Source] で手順 4 が実際に行われるかを Java オラクルで確認する。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない可能性がある（`w/config/web/SpringSecurityConfig.java`）。出ないなら、画面ログインでは `loginDateTime`・`loginFlg` が更新されず、既知差異として登録する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。
+
 出典: atrs-web/.../app/common/security/AtrsUsernamePasswordAuthenticationFilter.java, atrs-domain/.../service/a1/AtrsUserDetailsService.java, AuthLoginServiceImpl.java, atrs-domain/.../common/security/AtrsAuthenticationSuccessListener.java
 
 ## ログアウト（logout）
 
-**[Spec=Source]** ログイン中なら `loginFlg := false` に更新し（ログ `i.ar.a2.L0001`）、セッションを破棄する。`loginDateTime` は変えない。未ログインならセッションの破棄のみ。
+**[Spec=Source]** ログイン中なら `loginFlg := false` に更新し（ログ `i.ar.a2.L0001`）、セッションを破棄する（伝送は [http-contract.md](http-contract.md#セッション)）。`loginDateTime` は変えない。未ログインならセッションの破棄のみ。
 
 出典: atrs-domain/.../service/a2/AuthLogoutServiceImpl.java, atrs-web/.../app/common/security/AtrsLogoutSuccessHandler.java
 

@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:39:02+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -46,6 +46,21 @@ generated:
 | release | `release/5.11.0.RELEASE` |
 | commit | `f4bfbf0615eb91805546c9c780d4761be92ce17e` |
 
+上流が依存する主な版（2026-10-29 に上流の `pom.xml` と、親 `terasoluna-gfw-parent`・BOM `terasoluna-dependencies` から調べた値）:
+
+| 依存 | 版 | 出所 |
+| --- | --- | --- |
+| Java | 17 | `pom.xml` の `java-version` |
+| TERASOLUNA Server Framework（`terasoluna-gfw-parent`） | 5.11.0.RELEASE | `pom.xml` の親 |
+| BOM `org.terasoluna.bom:terasoluna-dependencies` | 3.0.0.RELEASE | `terasoluna-gfw-parent` |
+| Spring Boot BOM（依存管理のみ。Spring Boot 本体は使わない） | 4.0.2 | `terasoluna-dependencies` |
+| Spring Framework | 7.0.3 | Spring Boot BOM 4.0.2 |
+| Hibernate Validator | 9.1.0.Final | `terasoluna-dependencies` |
+| Jackson | 3.0.4（`tools.jackson`）と 2.20.2（`com.fasterxml.jackson`）の両方 | Spring Boot BOM 4.0.2、`terasoluna-gfw-common-dependencies` |
+| MyBatis | 3.5.19 | `terasoluna-dependencies` |
+| PostgreSQL JDBC | 42.7.9 | `pom.xml` |
+| Tomcat（cargo で起動） | 11.0.15 | `terasoluna-gfw-parent` |
+
 道具の導入後は `trace/upstream.json` を正とする（[ADR 0024](../decision/0024-following-upstream-releases.md)）。
 
 ## 機能名（層をまたいで共通）
@@ -84,15 +99,15 @@ generated:
 | 効果 | ロケータ | ATRS で影響する仕様 |
 | --- | --- | --- |
 | 画面入力の前後空白の除去と空文字の null 化 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` | [input-validation.md#前処理](../spec/input-validation.md#前処理) |
-| Bean Validation の制約（UTF-16 長、null 合格） | `dep:org.hibernate.validator:hibernate-validator#…` | [input-validation.md](../spec/input-validation.md) |
+| Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [input-validation.md](../spec/input-validation.md) |
 | `@InitBinder` の名前一致（REST 予約 API の相関検証の抜け、既知差異 D-007） | `dep:org.springframework:spring-web#InitBinder` | [http-contract.md](../spec/http-contract.md) |
 | ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [authentication.md](../spec/authentication.md) |
 | パスワードエンコーダ `{pbkdf2}` | `dep:org.springframework.security:spring-security-crypto#DelegatingPasswordEncoder` | [ADR 0015](../decision/0015-password-hashing-port.md) |
-| REST の日付の JSON 表現 | `dep:com.fasterxml.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md)（TODO） |
+| REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md#rest-apiapiv1) |
 | `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [ports.md#idgenerator](../spec/ports.md#idgenerator) |
 | `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [ports.md#トランザクション](../spec/ports.md#トランザクション) |
 
-> **TODO(spec):** 上流 `pom.xml` から Java・Spring・PostgreSQL の版を抽出して `trace/upstream.json` に記録する（[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)）。
+> **TODO(spec):** 「追従中の上流」の依存の版を `trace/upstream.json` に記録する（道具の導入後はそちらを正とする。[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)）。
 
 ## ATRS で採った値
 

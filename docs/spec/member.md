@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 会員（C0/C1/C2）
@@ -87,15 +87,17 @@ generated:
 
 ### 定義
 
-1. `checkMemberPassword(input.currentPassword, membershipNumber)`。
-2. 1 つのトランザクションとして:
-   1. `m = toMember(input)`、`m.membershipNumber = membershipNumber`。
-   2. 会員の基本情報（氏名・生年月日・性別・電話・郵便番号・住所・メール・カード情報）を更新する。
-   3. `input.password` が空でなければ、`lastPassword := password（更新前のハッシュ）`, `password := PasswordHasher.hash(input.password)` に更新する。
-3. ログイン中のセッションが保持する会員情報を、更新後の会員情報で置き換える（[authentication.md](authentication.md#セッション)）。
-4. 成功メッセージ `i.ar.c2.2001` を表示する。
+**[Spec]**（[ADR 0030](../decision/0030-member-update-in-single-transaction.md)）
 
-手順 1 と 2 は原典では別トランザクションである（照合後・更新前に他のセッションがパスワードを変えた場合の扱いは原典でも保証されない）。
+1. 1 つのトランザクションとして:
+   1. `checkMemberPassword(input.currentPassword, membershipNumber)`。失敗したら何も更新せずに終える。
+   2. `m = toMember(input)`、`m.membershipNumber = membershipNumber`。
+   3. 会員の基本情報（氏名・生年月日・性別・電話・郵便番号・住所・メール・カード情報）を更新する。
+   4. `input.password` が空でなければ、`lastPassword := password（更新前のハッシュ）`, `password := PasswordHasher.hash(input.password)` に更新する。
+2. ログイン中のセッションが保持する会員情報を、更新後の会員情報で置き換える（[authentication.md](authentication.md#セッション)）。
+3. 成功メッセージ `i.ar.c2.2001` を表示する。
+
+**[Source]** 手順 1.1（照合）と 1.2〜1.4（更新）は別のトランザクションである。照合の後・更新の前に他のセッションが同じ会員のパスワードを変えても、更新は通る（既知差異 [D-013](abstraction.md#既知差異)）。
 
 出典: atrs-web/.../app/c2/MemberUpdateController.java `update`, atrs-domain/.../service/c2/MemberUpdateServiceImpl.java `updateMember`, MemberRepository.xml `updateMemberLogin`
 

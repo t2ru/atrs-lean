@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # ドメインモデル
@@ -60,8 +60,11 @@ generated:
 | `fmtTime` | `HH:mm`。原典 `DateTimeUtil.toFormatTimeString` は長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする | `09:45` |
 | `fmtTimestamp` | `yyyyMMddHHmmss` | `20261029213809` |
 | `fmtYen` | 3 桁区切り（`###,###`）。`0` は `"0"`。負数は扱わない | `28,800` |
+| `fmtPaymentDate` | `MM月dd日(E)`。`E` は曜日の 1 文字（`日月火水木金土`）。括弧は半角 | `11月10日(火)` |
 
 `fmtYen(n)`: n の十進表記を右から 3 桁ごとに `,` で区切る。
+
+`fmtPaymentDate` の曜日は、[Spec] では常に日本語とする。[Source]（`#temporals.format(paymentDate,'MM月dd日(E)')`）は要求の `Accept-Language` に従い、英語なら `Wed` などになる（既知差異 [D-019](abstraction.md#既知差異)）。
 
 ## 列挙
 
@@ -85,8 +88,8 @@ generated:
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
-| `AirportCd` | 英大文字 3 文字（マスタに存在するもの） | `HND` |
-| `FlightName` | 1〜6 文字（マスタに存在するもの） | `NTT001` |
+| `AirportCd` | 英大文字 3 文字（マスタに存在するもの）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` とは限らない。区間の検索で見つからなければ業務エラーになる（[master-data.md](master-data.md#空港コードリスト画面用)） | `HND` |
+| `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（[Spec] の前提。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無い） | `NTT001` |
 | `MembershipNumber` | 数字 10 文字 | `0000000001` |
 | `ReserveNo` | 数字 10 文字 | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの） | `VIS` |
@@ -159,7 +162,7 @@ generated:
 | `mail` | String | |
 | `creditNo` | String | 数字 16 文字 |
 | `creditTypeCd` | CreditTypeCd | |
-| `creditTerm` | String | `MM/YY`（`creditMonth/creditYear`） |
+| `creditTerm` | String | `creditMonth ++ "/" ++ creditYear`（ゼロ埋めしない）。画面の選択肢から選べば `MM/YY` になるが、サーバでは保証されない（[input-validation.md](input-validation.md#会員入力c1c2)）。[Source] の列は `VARCHAR(5)` で、6 文字以上はシステムエラー（既知差異 [D-018](abstraction.md#既知差異)） |
 | `login` | MemberLogin | |
 
 ### MemberLogin
@@ -186,4 +189,8 @@ generated:
 | `Flight.vacantNum` | `0 .. 2,147,483,647` |
 | 年齢 | `0 .. 999` |
 
-このとき基本運賃は `100,000,000` 以下、合計金額は `1,200,000,100` 以下であり、符号付き 32 ビット整数に収まる（課題 [ABS-005](abstraction.md#証明課題)）。
+このとき基本運賃は `100,000,000` 以下、合計金額は `1,200,000,000` 以下であり、[Spec] の **結果** は符号付き 32 ビット整数に収まる。
+ただし小児運賃の **途中計算** `b × (childFareRate − r)`（[fare-calculation.md](fare-calculation.md#合計金額)）は最大 `10,000,000,000` になり、32 ビットに収まらない。
+
+- [Source] は、この途中計算が `2,147,483,647` を超えると int32 で折り返す（既知差異 [D-012](abstraction.md#既知差異)、課題 [ABS-005](abstraction.md#証明課題)）。値域は狭めず、差異として扱う。
+- 移植先（`TargetModel`）は、途中計算に 64 ビット以上の整数を使わなければならない。

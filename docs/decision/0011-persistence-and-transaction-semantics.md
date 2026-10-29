@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-29T23:52:11+09:00
 sources:
   - id: flight-repo
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/flight/FlightRepository.xml
@@ -81,5 +81,6 @@ Chosen option: "リポジトリ契約 + ユースケース単位の原子性", b
 ## More Information
 
 * [spec/ports.md](../spec/ports.md), [ADR 0007](0007-functional-core-with-ports.md)
+* 後続: [ADR 0030](0030-member-update-in-single-transaction.md)（会員情報変更の照合と更新を 1 トランザクションにし、原子性の対象にレポート生成を含める。一覧は [spec/ports.md](../spec/ports.md#トランザクション) を正とする）
 
 [^flight-repo]: atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/flight/FlightRepository.xml `findByVacantSeatSearchCriteria`, `findOneForUpdate`

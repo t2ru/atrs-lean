@@ -8,12 +8,12 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 予約履歴レポート（D1）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただしキューの再配信・ファイルの原子的な公開・文字コードなど実行環境の要件は [ports.md](ports.md) の規範節に従う。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [ports.md](ports.md) の規範節に従う。
 
 非同期処理の構成は [ADR 0016](../decision/0016-asynchronous-report-generation.md)、ポートは [ports.md](ports.md#reportqueue) を参照。
 すべての操作は権限 `MEMBER` を要し、対象はログイン中の会員自身のレポートに限る。
@@ -30,7 +30,11 @@ generated:
 
 1. `msg` が文字列でなければ無視する（ログ `w.ar.d1.L0002`）。
 2. 文字列 `n` が無い、または長さが 10 でなければ無視する（ログ `w.ar.d1.L0003`）。
-3. `createReport(n)` を行う。失敗した場合の再配信の扱いはキューの実装に委ねる（原典はトランザクション付きセッションで、例外時はロールバックされる）。
+3. `createReport(n)` を行う。失敗した場合は、要求を再配信する（[ports.md](ports.md#reportqueue) の配信保証。[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md)）。原典はトランザクション付きの JMS セッションで受信し、例外時はロールバックしてブローカーが再配信する。
+
+長さ 10 の判定は、[Spec] ではスカラ値、[Source] では UTF-16 単位で数える（既知差異 [D-006](abstraction.md#既知差異)）。
+
+重複配信により、同じ会員について別の秒のレポートが 2 本できることがある。これは仕様上許される。
 
 出典: atrs-web/.../listener/d1/ReservationHistoryReportListener.java
 
@@ -62,7 +66,7 @@ generated:
 "Reserve No","Reservation Date","Total Fare","Reservation Flight Date","Reservation Flight No","Reservation Flight Name"
 ```
 
-- データ行（`rows` の各要素 1 行）: 次の 6 項目をそれぞれ `"` で囲み `,` で連結する。値の中の `"` はエスケープしない（値に `"` が含まれないことは型により保証される）。
+- データ行（`rows` の各要素 1 行）: 次の 6 項目をそれぞれ `"` で囲み `,` で連結する。値の中の `"` はエスケープしない（値に `"` が含まれないことは型により保証される。`FlightName` の前提は [domain-model.md](domain-model.md#コード値)）。
 
 | 列 | 値 |
 | --- | --- |
@@ -96,8 +100,8 @@ generated:
 **[Spec=Source]** `getReport(n, reportName)`:
 
 - `reportName` が無い・空白のみ、または会員 `n` の領域に `reportName` と完全一致する名前のファイルが無ければ「無し」（ログ `w.ar.d1.L0001`、ダウンロード失敗画面）。
-- あればその内容（`Content-Type: text/csv`, 添付ファイル名 `reportName`）。
+- あればその内容（`Content-Type: text/csv`, `Content-Disposition: attachment;filename=<reportName>`。ファイル名はクォートしない）。
 
-`reportName` は領域内の名前と完全一致で照合するため、パス区切りを含む名前で他会員の領域を参照することはできない。
+存在確認は、会員 `n` の領域を列挙して得た各ファイル名と `reportName` の完全一致で行い、一致したときだけ領域内のそのファイルを読む。そのため `../` やパス区切りを含む名前は一致せず、他会員の領域は参照できない（[Spec=Source]。会員番号はログイン中の会員から取る）。
 
 出典: atrs-domain/.../service/d1/ReservationHistoryReportServiceImpl.java `getReportFilePath`, `checkReportExistence`

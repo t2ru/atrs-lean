@@ -8,12 +8,12 @@ spec_role: [draft, normative]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # ポート
 
-> **区分: 草案と規範の混在。** 各ポートの操作と契約（「World」〜「ReportQueue」）は **形式化前の草案（draft）** であり、Lean `Spec.Port` に形式化する。「トランザクション」節と、採番・ファイル公開・キュー配信など実行環境に課す要件は、`Spec` の関数として表現できないため **規範（normative）** としてここで定義する（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 草案と規範の混在。** 各ポートの操作と契約の表（「World」〜「ReportQueue」の表）は **形式化前の草案（draft）** であり、Lean `Spec.Port` に形式化する。次の 5 か所は、`Spec` の関数として表現できない実行環境への要件なので **規範（normative）** としてここで定義する（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）: 「Clock」節の規範段落（タイムゾーン）、「IdGenerator」節の箇条書き（採番の一意性・巻き戻らないこと）、「ReportStore」の `publish` の原子性、「ReportQueue」節の規範段落（配信保証）、「トランザクション」節の全体。
 
 方針は [ADR 0007](../decision/0007-functional-core-with-ports.md)、永続化とトランザクションは [ADR 0011](../decision/0011-persistence-and-transaction-semantics.md)。
 [Spec] ではポートの操作を「抽象状態 `World` に対する関数」として意味づける。[Source] では原典の SQL 文を `LangSemantics.Sql` 上の式として写す（[ADR 0019](../decision/0019-sql-semantics-for-source-repositories.md)）。
@@ -38,7 +38,9 @@ generated:
 | `today()` | Date |
 | `now()` | DateTime（秒まで） |
 
-同じユースケース内で `today()` を複数回呼んでも同じ日付を返す（[Spec] の前提。[Source] では日付をまたぐ実行で異なりうる）。
+同じユースケース内で `today()` を複数回呼んでも同じ日付を返す（[Spec] の前提。[Source] では日付をまたぐ実行で異なりうる。既知差異 [D-014](abstraction.md#既知差異)）。
+
+**規範（実行環境の要件）**: 本番の `Clock` アダプタは、現在時刻を **Asia/Tokyo**（UTC+9、夏時間なし）の暦日・時刻として返す。実行環境の既定のタイムゾーンに依存してはならない（[ADR 0028](../decision/0028-clock-timezone-and-fixture-base-date.md)）。テストでは任意の固定値を注入してよい。
 
 ## FlightRepository
 
@@ -79,7 +81,8 @@ generated:
 
 - [Spec]: 各操作は呼ぶたびに **未使用** の値を返す（`n`, `n+1`, … と単調増加する実装を参照とする）。採番空間を使い切らないことを前提とする。
 - [Source]: 最大値の次は 1 に戻る。戻った値が使用済みなら、挿入時の主キー違反でシステムエラー。
-- 採番は失敗したトランザクションでも巻き戻らない（[Spec=Source]。シーケンスの性質）。
+- 採番は失敗したトランザクションでも巻き戻らない（[Spec=Source]。シーケンスの性質）。そのため、各ユースケースの「失敗時は状態が変化しない」は `World.sequences` を除いた成分についての性質である。
+- 適合テストでは、fixture にシード投入後の各シーケンスの次の値（原典では会員 `8`、予約・予約フライト・搭乗者 `1`。`00230_insert_member.sql` は `nextval('sq_member_1')` を 7 回呼ぶ）を持たせ、参照実装（`n`, `n+1`, …）で採番した番号を厳密に比較する（[conformance.md](conformance.md#共有入力fixtures)）。
 
 ## PasswordHasher
 
@@ -104,9 +107,18 @@ generated:
 | 操作 | 契約 |
 | --- | --- |
 | `send(membershipNumber)` | 要求を末尾に追加する。呼び出し側のトランザクションとは独立 |
-| 受信 | 先頭から 1 件ずつ取り出し `onReportRequested`（[reservation-history-report.md](reservation-history-report.md)）に渡す。同時に処理するのは 1 件 |
+| 受信 | 1 件ずつ取り出し `onReportRequested`（[reservation-history-report.md](reservation-history-report.md)）に渡す。同時に処理するのは 1 件 |
+
+**規範（配信保証。[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md)）**
+
+- 少なくとも 1 回配信する。`onReportRequested` が失敗した要求は再配信する。
+- 再配信の回数には上限を設ける。上限は実装で定め、超えた要求は破棄してログに残す。参考値は 10 回（原典が組み込みで使う ActiveMQ Artemis の既定 `maxDeliveryAttempts = 10`。デッドレターの宛先は設定されておらず、超えた要求は破棄される）。
+- 同じ要求が重複して配信されてもよい。配信の順序は保証しない。
 
 ## トランザクション
 
-**[Spec]** 状態を変更するユースケース（予約確定・会員登録・会員情報変更・ログイン/ログアウト状態更新・レポート生成）は、それぞれ原子的かつ直列化可能に実行されなければならない。
+**[Spec]** 状態を変更するユースケース（予約確定・会員登録・会員情報変更・ログイン/ログアウト状態更新・レポート生成）は、それぞれ原子的かつ直列化可能に実行されなければならない。この一覧を正とする（[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md) の一覧にレポート生成を加えたもの。[ADR 0030](../decision/0030-member-update-in-single-transaction.md)）。
+会員情報変更は、現在パスワードの照合（[member.md](member.md#現在パスワードの照合checkmemberpassword)）も同じトランザクションに含む（[Source] とは異なる。既知差異 [D-013](abstraction.md#既知差異)）。
 `TargetModel` は、この性質を満たす限り任意の実装（RDB のトランザクション、単一スレッド、楽観ロック等）を選んでよい（確認課題 SRC-005。[refinement.md](refinement.md)）。
+
+実装が、デッドロック・ロック待ちのタイムアウト・直列化失敗・楽観ロックの衝突を再試行などで吸収できない場合に限り、ユースケースは `Conflict` を返してよい。その場合も、`World.sequences` を除く状態を一切変えてはならない（[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)、[errors-and-messages.md](errors-and-messages.md#分類atrserror)）。

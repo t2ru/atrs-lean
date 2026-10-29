@@ -2,6 +2,10 @@
 
 ## 2026-10-29
 
+* **Creation**: 未決だった仕様を確定する ADR 7 件を作成した。[0026](decision/0026-email-validation-rule.md)（Email 規則）、[0027](decision/0027-validation-error-ordering.md)（検証エラーの並び）、[0028](decision/0028-clock-timezone-and-fixture-base-date.md)（Clock の Asia/Tokyo と fixture の投入日 2026-11-01）、[0029](decision/0029-concurrency-failure-as-conflict-error.md)（`Conflict` 分類）、[0030](decision/0030-member-update-in-single-transaction.md)（会員情報変更の 1 トランザクション化）、[0031](decision/0031-report-queue-at-least-once-delivery.md)（レポートキューの配信保証）、[0032](decision/0032-spec-corrects-unsafe-source-behavior.md)（原典の安全でない振る舞いを Spec で正す）。ADR 0008・0009・0011・0016 の More Information に後続へのリンクを足した。
+* **Update**: 上流 `f4bfbf06` と依存ライブラリ（Spring Framework 7.0.3、Spring Security 7.0.x、Hibernate Validator 9.1.0.Final、ActiveMQ Artemis）のソースを読んで、仕様の未決事項と文書間の矛盾を解消した。[spec/input-validation.md](spec/input-validation.md)（Email、エラーの並び、日付の解析、項目名の対応、REST の搭乗者数）、[spec/http-contract.md](spec/http-contract.md)（セッションの規範節、ログインの遷移先、日付の JSON、ApiError のコード、Basic 認証の失敗）、[spec/errors-and-messages.md](spec/errors-and-messages.md)、[spec/ports.md](spec/ports.md)（規範節の範囲、Clock、採番、キュー、トランザクション）、[spec/abstraction.md](spec/abstraction.md)（既知差異 D-011〜D-021、課題 ABS-032〜034）など。
+* **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に上流の依存の版を記録した。backlog [0008](backlog/0008-member-usecases-and-input-validation.md)・[0013](backlog/0013-java-oracle-harness.md) の範囲を改めた。
+
 * **Update**: リポジトリのルートを Lake ワークスペースにした（`lakefile.lean` が `.agents/skills/port-lang/assets` を `require`）。ルートで起動した Lean LSP から `LangSemantics` の import が解決されないのを直した。手順は [atrs-porting.md](rules/atrs-porting.md) とスキルの [lean/rules.md](../.agents/skills/port-lang/references/lean/rules.md)。
 
 * **Creation**: スキル port-lang に `assets/LangSemantics/<Lang>/`（Java・Sql・Sql.Postgresql・Rust の Lean モデル。core のみ、`#guard` 検査付き）を追加した。backlog [0002](backlog/0002-lang-semantics-java.md)・[0016](backlog/0016-lang-semantics-sql.md)・[0021](backlog/0021-lang-semantics-rust.md) はこれを起点とする。

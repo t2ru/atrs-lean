@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # エラーを値として返し、原典のメッセージキーを安定したエラーコードとする
@@ -82,3 +82,4 @@ Chosen option: "直和型のエラー値 + 原典のメッセージキー", beca
 ## More Information
 
 * [spec/errors-and-messages.md](../spec/errors-and-messages.md)
+* 後続: [ADR 0029](0029-concurrency-failure-as-conflict-error.md)（排他制御の失敗を分類 `Conflict` として追加）

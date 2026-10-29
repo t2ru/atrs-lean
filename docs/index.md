@@ -38,6 +38,13 @@ okf_version: "0.2"
 * [移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する](decision/0023-cross-language-traceability.md) - 両端のトレースをロケータとモデル側の注釈で表し、確認済みハッシュで陳腐化を検出し、manifest 生成と TR 検査で網羅性と直接接続の禁止を機械的に保つ。
 * [移植元の版上げに追従する。SourceModel は最新版のみ保持し、差分オラクルで振る舞いの変化を検出する](decision/0024-following-upstream-releases.md) - 上流を submodule で固定し、版上げ時はインベントリ差分と新旧 2 版の差分オラクルで影響を洗い出し、証明グラフに沿って各層を更新する。旧版は git タグで参照する。
 * [言語間移植の方法をアプリ非依存のスキル port-lang に切り出し、docs/ には ATRS 固有の情報を残す](decision/0025-extract-porting-method-as-agent-skill.md) - Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/port-lang に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。
+* [メールアドレスの検証規則は Hibernate Validator の規則を IDN 変換抜きで書き下す](decision/0026-email-validation-rule.md) - 制約 Email を Hibernate Validator 9.1 の AbstractEmailValidator・DomainNameUtil の規則として言語中立に定義し、IDN.toASCII だけを除外して既知差異 D-011 とする。
+* [入力検証エラーの並びは Spec でだけ定め、Source では順序不定の多重集合とする](decision/0027-validation-error-ordering.md) - Bean Validation が順序を保証しないことを SourceModel に写し、Spec では単項目・相関・グローバルの順に並べる。抽象化では順序を無視して比較する。
+* [本番の Clock は Asia/Tokyo で今日を決め、fixture の投入日は 2026-11-01 に固定する](decision/0028-clock-timezone-and-fixture-base-date.md) - Clock ポートの本番アダプタが使うタイムゾーンと、投入日に依存するシードデータ（ピーク時期・フライト）を fixture にするときの基準日を定める。
+* [排他制御の失敗をエラー分類 Conflict として表す](decision/0029-concurrency-failure-as-conflict-error.md) - デッドロック・ロック待ちのタイムアウト・直列化失敗のように実行環境が吸収できない同時実行の失敗を AtrsError.Conflict とし、状態を変えず、画面は 500、REST は 409 とする。
+* [会員情報変更は現在パスワードの照合と更新を 1 つのトランザクションで行う](decision/0030-member-update-in-single-transaction.md) - 原典では別トランザクションである照合と更新を、Spec では 1 つの直列化可能なトランザクションにまとめ、差を既知差異 D-013 とする。
+* [予約履歴レポートの要求キューは少なくとも 1 回配信し、再配信に上限を設ける](decision/0031-report-queue-at-least-once-delivery.md) - レポート生成に失敗した要求を再配信し、上限を超えたら破棄してログに残す。重複配信で別の秒のレポートが 2 本できることを許す。
+* [原典の安全でない振る舞いと前提違反は Spec では正し、既知差異として記録する](decision/0032-spec-corrects-unsafe-source-behavior.md) - セッション固定化、オープンリダイレクト、ロケール依存の曜日、前提違反による 500、緩すぎる数値・日付の解析について、Spec は安全で決定的な振る舞いを定め、原典との差を D-016〜D-021 とする。
 
 # Specification
 

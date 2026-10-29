@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 日付はタイムゾーン無しの暦日とし、今日の日付を入力として注入する
@@ -74,3 +74,4 @@ Chosen option: "タイムゾーン無しの暦日 + Clock ポート", because �
 ## More Information
 
 * [spec/domain-model.md](../spec/domain-model.md), [spec/ports.md](../spec/ports.md)
+* 後続: [ADR 0028](0028-clock-timezone-and-fixture-base-date.md)（本番の `Clock` のタイムゾーンと fixture の投入日）

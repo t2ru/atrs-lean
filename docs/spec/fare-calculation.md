@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 運賃計算
@@ -146,7 +146,7 @@ totalFare       = bdCeilHundredUp( foldl j32add 0 [flightTotal(f) | f ← flight
 
 （原典: `boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum` を左から評価）
 
-差異: [D-002](abstraction.md#既知差異)（`fare` 経由）、[D-003](abstraction.md#既知差異)（`discountRate > childFareRate` のとき）。
+差異: [D-002](abstraction.md#既知差異)（`fare` 経由）、[D-003](abstraction.md#既知差異)（`discountRate > childFareRate` のとき）、[D-012](abstraction.md#既知差異)（`b × (childFareRate − r)` が int32 を超えるとき、[Source] の `j32mul` が折り返す）。
 
 ### 例
 

@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 設定パラメータ
@@ -24,7 +24,7 @@ generated:
 
 | フィールド | 原典キー | 型 | 既定値 | 意味 |
 | --- | --- | --- | --- | --- |
-| `limitDay` | `atrs.limitDay` | Nat | `90` | 照会可能限界日数。今日から何日後の搭乗日まで照会・予約できるか |
+| `limitDay` | `atrs.limitDay` | Nat | `90` | 照会可能限界日数。今日から何日後の搭乗日まで空席照会できるか。予約（`validateFlightList`・`reserve`）では検査しない（予約で見るのは運賃種別の予約可能期間だけ。[reservation.md](reservation.md#validateflightlist)）。出典: d/service/b0/TicketSharedServiceImpl.java `getSearchLimitDate` |
 | `reserveIntervalTime` | `atrs.reserveIntervalTime` | Nat（分） | `120` | 往路の到着時刻から、復路として予約可能になる出発時刻までの最小間隔 |
 | `representativeMinAge` | `atrs.representativeMinAge` | Nat | `18` | 予約代表者の最小年齢 |
 | `adultPassengerMinAge` | `atrs.adultPassengerMinAge` | Nat | `12` | 大人運賃が適用される最小年齢（未満は小児） |

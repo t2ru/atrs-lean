@@ -8,7 +8,7 @@ spec_role: [draft, normative]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # HTTP 契約
@@ -24,6 +24,22 @@ generated:
 
 - サーバ側のセッションに保持するのは「ログイン中の会員」と「二重送信防止トークン」だけである。画面間のデータは hidden 項目・リダイレクトのクエリ・一度だけ表示するフラッシュ値で受け渡す。
 - リダイレクト後に表示するフラッシュ値は次の 1 リクエストでのみ有効。
+
+### セッション
+
+**規範**（[authentication.md](authentication.md#セッション) が参照する伝送方式）
+
+| 項目 | [Spec] | [Source] |
+| --- | --- | --- |
+| 識別 | Cookie によるセッション ID。Cookie 名は定めない（原典は `JSESSIONID`） | 同左 |
+| Cookie 属性 | `HttpOnly` を付ける。`Secure`・`SameSite` は配備環境で決める | `HttpOnly` のみ（`Secure` は無効、`SameSite` は付かない） |
+| タイムアウト | 最後のリクエストから 30 分で失効 | Tomcat の既定 30 分（`web.xml` に指定無し） |
+| ログイン時のセッション ID | **新しい ID に変える**（セッション固定化対策） | 変えない（既知差異 [D-016](abstraction.md#既知差異)） |
+| 同時ログイン | 制限しない | 同左 |
+| ログアウト | セッションを破棄し、Cookie を削除する | 同左 |
+| REST（`/api/v1/**`） | セッションを作らない | 同左 |
+
+出典: `w/config/web/SpringSecurityConfig.java`（`sessionManagement`、`AtrsUsernamePasswordAuthenticationFilter` に `SessionAuthenticationStrategy` を設定していない）, `atrs-web/src/main/webapp/WEB-INF/web.xml`
 
 ### 二重送信防止（トランザクショントークン）
 
@@ -49,7 +65,7 @@ generated:
 | `InvalidRequest`・不正な入力（改竄） | 400 | `common/error/badRequest-error` | `e.ar.fw.0003` |
 | 権限不足 | 403 | `common/error/accessForbidden-error` | `e.ar.fw.0004` |
 | 該当 URL 無し | 404 | `common/error/notFound-error` | `e.ar.fw.0005` |
-| 画面で捕捉されない `Business`・`System`・`PreconditionViolation` | 500 | `common/error/system-error` | `e.ar.fw.9999` |
+| 画面で捕捉されない `Business`・`System`・`PreconditionViolation`、`Conflict`（[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 500 | `common/error/system-error` | `e.ar.fw.9999` |
 
 ### 認証と権限
 
@@ -59,9 +75,9 @@ generated:
 | ログアウト | `POST /auth/dologout` → セッション破棄 → `302 /` |
 | 権限 `MEMBER` が必要 | `/member/update`, `/HistoryReport/**` |
 | 未ログインで上記へアクセス | ログイン画面 `A1/loginForm` を表示（リダイレクトではなく同じ URL で表示） |
-| ログイン成功（通常） | 保存されたリクエスト、パラメータ `redirectTo`、または `/` へ 302 |
+| ログイン成功（通常） | 302。遷移先は (1) パラメータ `redirectTo` に値があればそれ、(2) 無ければ保存されたリクエスト、(3) どちらも無ければ `/`。**[Spec]** `redirectTo` は `/` で始まり `//` で始まらない（アプリ内の）パスだけを受け付け、それ以外は無いものとして扱う。[Source] は絶対 URL もそのまま使う（オープンリダイレクト。既知差異 [D-017](abstraction.md#既知差異)） |
 | ログイン成功（Ajax: `X-Requested-With: XMLHttpRequest`） | 200（本文無し） |
-| ログイン失敗（通常） | ログイン画面を `e.ar.a1.2001` 付きで表示 |
+| ログイン失敗（通常） | `/auth/login?error` へ forward し、ログイン画面を `e.ar.a1.2001` 付きで表示（200。URL は `/auth/dologin` のまま） |
 | ログイン失敗（Ajax） | 401 |
 
 ## A0/A1: トップ・ログイン
@@ -71,7 +87,7 @@ generated:
 | `GET /` | — | 302 `/ticket/search?topForm` |
 | `GET\|POST /auth/login` | — | 画面 `A1/loginForm`（直前のログイン失敗メッセージがあれば表示） |
 | `GET /api/auth/status` | ログイン中か | ログイン中 200（本文無し）、未ログイン 404 |
-| `GET /api/member/available?membershipNumber=n` | `n` が空白なら 200。それ以外は `isMember(n)` | 存在 200、無し 404 |
+| `GET /api/member/available?membershipNumber=n` | 前後の空白（U+0000–U+0020）を除去する。結果が空またはパラメータが無ければ 400（必須パラメータ欠落）。それ以外は `isMember(n)` | 存在 200、無し 404 |
 
 ## B1: 空席照会
 
@@ -82,7 +98,7 @@ generated:
 | `GET ?topForm` | — | 照会条件の初期値・照会可能期間（[flight-search.md](flight-search.md#照会画面の初期値)） | 画面 `A0/top` |
 | `GET ?form` | — | 同上 | 画面 `B1/flightSearch`（初回照会不要） |
 | `GET ?flightForm` | TicketSearchInput | 入力検証 | 画面 `B1/flightSearch`。エラー時はエラー表示（初回照会不要）。成功時は画面が `GET /api/flights` で結果を取得する |
-| `GET ?redo` | TicketSearchInput, ReservationFlightInput（検証しない） | — | 画面 `B1/flightSearch`（前回の条件と選択を復元） |
+| `GET ?redo` | TicketSearchInput, ReservationFlightInput（検証しない） | — | 画面 `B1/flightSearch`（前回の条件と選択を復元）。便名が存在しなくても、選択が空でもそのまま表示する。型変換に失敗した項目があれば 400 |
 | `POST`（判別無し。画面の送信先は `?select`） | ReservationFlightInput | 1. 入力検証。`selectFlights*`・`flightType` のフィールドエラーは 400。その他のエラーは `?redo` 相当の画面にエラー表示。2. `validateFlightList`。`InvalidRequest` は 400、`Business` は `?redo` 相当の画面にメッセージ表示 | 302 `/ticket/reserve?form` ＋ クエリ（`flightType`, `selectFlightFormList[i].flightName`, `.fareTypeCd`, `.depDate`(yyyy/MM/dd), `.boardingClassCd`） |
 
 ### GET /api/flights（JSON）
@@ -92,7 +108,7 @@ generated:
 | クエリ | `flightType`, `depAirportCd`, `arrAirportCd`, `depDate`（yyyy/MM/dd）, `boardingClassCd` |
 | 検証 | FlightSearchInput（[input-validation.md](input-validation.md#空席照会b1)） |
 | 200 | `[FlightVacantInfo]`（[flight-search.md](flight-search.md#出力-flightvacantinfo)）。`fareTypes` は JSON オブジェクトでキー順を保つ |
-| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（フィールドエラー → グローバルエラーの順に解決済みの文言） |
+| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（解決済みの文言。並びは [input-validation.md](input-validation.md#検証の順序とエラーの並び) の [Spec] の順。[Source] では順序不定） |
 | 404 | `NotFound`（`e.ar.b1.2003`）。本文同上 |
 
 ## B2: 予約
@@ -101,12 +117,12 @@ generated:
 
 | リクエスト | トークン | 入力 | 処理 | 結果 |
 | --- | --- | --- | --- | --- |
-| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[reservation.md](reservation.md#会員情報による入力補完)）、フライト表示 | 画面 `B2/reserveForm` |
+| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[reservation.md](reservation.md#会員情報による入力補完)）、フライト表示。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?redo` | — | TicketReserveInput | — | 画面 `B2/reserveForm` |
 | `POST ?confirm` | BEGIN | TicketReserveInput | 1. 入力検証: `selectFlights*`・`flightType` のフィールドエラーは 400、その他は `B2/reserveForm` にエラー表示。2. `validateFlightList`: 失敗はすべて 400（`Business` も改竄扱い）。3. `reserveConfirm`: `Business` は `B2/reserveForm` にメッセージ表示 | 画面 `B2/reserveConfirm`（合計金額、フライト表示、入力値を hidden で保持） |
 | `POST`（判別無し） | IN | TicketReserveInput | 1. 入力検証: エラーはすべて 400。2. `validateFlightList`: 失敗は 400。3. `reserve`（[reservation.md](reservation.md#予約確定reserve)） | 成功: フラッシュ `{reserveNo, paymentDate, totalFare}` で 302 `?complete`。`Business`: フラッシュ（メッセージ・フライト表示）で 302 `?fail` |
-| `GET ?complete` | — | — | — | 画面 `B2/reserveComplete`（予約番号、`fmtYen(totalFare)` 円、支払期限 `MM月dd日(曜)`） |
-| `GET ?fail` | — | — | — | 画面 `B2/reserveFail`（メッセージを HTML として表示、フライト表示） |
+| `GET ?complete` | — | — | — | 画面 `B2/reserveComplete`（予約番号、`fmtYen(totalFare)` 円、支払期限 `fmtPaymentDate(paymentDate)`。[domain-model.md](domain-model.md#書式)） |
+| `GET ?fail` | — | — | — | 画面 `B2/reserveFail`（メッセージを HTML として表示、選択した **全** フライト（往路・復路）の表示） |
 | `POST ?backToSearch` | — | ReservationFlightInput | 照会条件を復元（下記） | 302 `/ticket/search?redo` ＋ 照会条件と選択フライトのクエリ |
 
 「照会へ戻る」の照会条件: 選択が空または往路の便マスタが無ければ 400。`flightType = (選択数 = 2 ? RT : OW)`（入力の `flightType` ではなく選択数から決める）、出発/到着空港は往路の区間、`outwardDate` は往路の搭乗日、`homewardDate` は復路の搭乗日（片道なら空文字）、搭乗クラスは往路のもの。
@@ -148,11 +164,13 @@ generated:
 
 ## REST API（`/api/v1`）
 
-- 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。
+- 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。ただし `Authorization` ヘッダの資格情報が誤っていれば 401（`WWW-Authenticate: Basic realm="Realm"`。本文は定めない。`X-Requested-With: XMLHttpRequest` 付きならヘッダも本文も無い 401）。
 - 前処理（空白除去）無し（[input-validation.md](input-validation.md#前処理)）。
-- 日付の JSON 表現: `"yyyy-MM-dd"`。
+- 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[flight-search.md](flight-search.md#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。
 
-> **TODO(spec):** [Source] の日付 JSON 表現（Spring MVC 既定の Jackson 設定で ISO 文字列となるはず）を Java オラクルで確認する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。
+根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して JSON 変換に使う。原典は Jackson 3 と Jackson 2 の両方を依存に持ち、`ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印（配列・数値）として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
+
+> **TODO(spec):** 上の根拠はソースの読解による。Java オラクルで、`POST /api/v1/ticket` の要求・応答の日付が `"yyyy-MM-dd"` であることを確認する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。
 
 ### GET /api/v1/flight
 
@@ -177,13 +195,16 @@ generated:
 }
 ```
 
-処理: 入力検証（[Source] は単項目のみ、[Spec] は相関検証も。[D-007](abstraction.md#既知差異)）→ `validateFlightList`（失敗は 500）→ `reserve`。
+処理: 入力検証（[Source] は単項目のみ、[Spec] は相関検証も。[D-007](abstraction.md#既知差異)）→ `validateFlightList` → `reserve`。
+
+- `validateFlightList` の失敗は、`InvalidRequest` も `Business`（`e.ar.b2.2001`）もすべて改竄とみなし、`InvalidRequest` として 500 を返す（原典 `w/api/ticket/TicketHelper.validateFlightList` が `BadRequestException` に包む）。
+- **[Spec]** 入力検証の結果にコード `Invalid` のフィールドエラー（選択フライト数・搭乗者数の改竄）があれば、他のエラーにかかわらず `InvalidRequest` として 500 を返す。[Source] では相関検証が無く、同じ入力は後段の `Assert` で 500（`e.ar.fw.9999`）になる。
 
 応答 201: 要求と同じオブジェクトに `reserveNo`, `paymentDate`, `totalFare` を加えたもの。
 
 ### GET /api/v1/ticket/check?reserveNo=x
 
-応答 200: JSON 真偽値（`existsReserveNo(x)`）。
+応答 200: JSON 真偽値（`existsReserveNo(x)`）。`x` は書式を検査しない（空文字・不正な値は `false`）。パラメータ `reserveNo` が無ければ 400（入力検証エラーの ApiError）。
 
 ### ApiError
 
@@ -195,13 +216,17 @@ generated:
 
 | 原因 | ステータス | 本文 |
 | --- | --- | --- |
-| 入力検証エラー | 400 | `code = "e.ar.fw.9999"`、`details` に各エラー（フィールドエラーは `target = 項目名`、グローバルエラーは `target = オブジェクト名`、`code` は制約名） |
+| 入力検証エラー | 400 | `code = "e.ar.fw.9999"`、`details` に各エラー（フィールドエラーは `target = 項目名`、グローバルエラーは `target = オブジェクト名`、`code` は制約名）。`details` の並びは [input-validation.md](input-validation.md#検証の順序とエラーの並び) の [Spec] の順 |
 | JSON 解析不能 | 400 | 原因に応じた `ApiError` |
 | `NotFound` | 404 | 下記「業務メッセージの変換」 |
-| `Business` | 409 | 同上 |
-| 排他制御の失敗 | 409 | `code = "e.ar.fw.9999"` |
-| `InvalidRequest`・`System`・その他 | 500 | `code = "e.ar.fw.9999"` |
+| `Business` | 409 | 同上（`validateFlightList` の `Business` を除く。上記） |
+| `Conflict`（排他制御の失敗。[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 409 | `code = "e.ar.fw.9999"` |
+| `InvalidRequest` | 500 | `code = "e.ar.a0.L9001"`、`message = "不正リクエスト(パラメータ改竄) " ++ 詳細`。詳細は実装定義（[Source] は原因の例外のメッセージ）で、適合テストでは比較しない |
+| `System(code, args)` | 500 | `code` は `System` のコード（例 `e.ar.a0.L9002`） |
+| `PreconditionViolation`・その他 | 500 | `code = "e.ar.fw.9999"` |
 
-業務メッセージの変換: メッセージが 1 件ならそのコードと文言を最上位に置く。複数なら最上位を `e.ar.fw.8001` とし、各メッセージを `details` に置く。
+業務メッセージの変換: メッセージが 1 件ならそのコードと文言を最上位に置く。複数なら最上位を `e.ar.fw.8001` とし、各メッセージを `details` に置く（`Business`・`NotFound` は常に 1 件のメッセージを持つので、複数の場合は原典でも到達しない）。
+
+出典（ApiError）: `w/api/common/error/ApiGlobalExceptionHandler.java`, `ApiErrorCreator.java`
 
 出典: atrs-web/.../app/**/\*Controller.java, atrs-web/.../api/**/\*.java, atrs-web/.../config/web/SpringSecurityConfig.java, SpringMvcConfig.java, atrs-web/src/main/webapp/WEB-INF/web.xml

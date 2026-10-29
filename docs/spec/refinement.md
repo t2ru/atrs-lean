@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:39:02+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -33,7 +33,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ⇔（追跡＋�
 | ID | 内容 |
 | --- | --- |
 | REF-001 | 純粋関数（運賃計算・空席照会・入力検証・CSV 生成・書式）について、値域内の全入力で `β(TargetModel.f(x)) = Spec.f(β(x))` |
-| REF-002 | 予約確定の前後で全フライトの `vacantNum ≥ 0`。失敗時は状態が変化しない（`TargetModel` の状態遷移が `Spec` の状態遷移を具体化する） |
+| REF-002 | 予約確定の前後で全フライトの `vacantNum ≥ 0`。失敗時（`Conflict` を含む）は `sequences` を除いて状態が変化しない（`TargetModel` の状態遷移が `Spec` の状態遷移を具体化する） |
 | REF-003 | 値域内で `TargetModel` の算術がオーバーフローせず、パニック（`Panic` 値）に到達しない |
 | REF-004 | 基本運賃・運賃・合計金額の一致（REF-001 の運賃部分。最初に着手する） |
 | REF-005 | 文字列長・文字クラスを Unicode スカラ値で判定する（`RString` の `chars` 上で `Spec` と一致） |

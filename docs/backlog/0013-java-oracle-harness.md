@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0012"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # Java オラクルハーネス
@@ -21,7 +21,8 @@ generated:
 
 - 原典のドメイン層（Spring 不要な部分）を呼ぶ小さな Java プログラム
 - ベクタの `input` から呼び出し、`expected` を出力（`source: java-oracle`）
-- REST の日付 JSON 表現の確認（[http-contract.md](../spec/http-contract.md) の TODO）
+- REST の日付 JSON 表現の確認（[http-contract.md](../spec/http-contract.md#rest-apiapiv1) の TODO。ソースの読解では `"yyyy-MM-dd"` の見込み）
+- 画面ログインで `loginDateTime`・`loginFlg` が更新されるかの確認（[authentication.md](../spec/authentication.md#ログインlogin) の TODO）
 
 ## 対象外
 
@@ -30,7 +31,7 @@ generated:
 ## 完了条件
 
 - [ ] 運賃計算の [Source] ベクタが Java オラクルと一致する
-- [ ] http-contract.md の TODO(spec) を解消した
+- [ ] http-contract.md と authentication.md の TODO(spec) を解消した
 
 ## 参照
 

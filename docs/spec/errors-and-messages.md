@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 sources:
   - id: messages
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-web/src/main/resources/i18n/atrs-messages_ja.properties
@@ -28,9 +28,10 @@ sources:
 | `Business(code, args)` | 業務規則違反 | メッセージを表示して入力画面へ戻る | 409 |
 | `NotFound(code)` | 照会結果 0 件 | メッセージ表示 | 404 |
 | `Validation(errors)` | 入力検証エラー | 項目・画面上部に表示 | 400 |
-| `InvalidRequest(reason)` | 改竄検知 | 400 エラー画面（`e.ar.fw.0003`） | 500（原典どおり） |
+| `InvalidRequest(reason)` | 改竄検知 | 400 エラー画面（`e.ar.fw.0003`） | 500、`code = "e.ar.a0.L9001"`（原典どおり。[http-contract.md](http-contract.md#apierror)） |
 | `PreconditionViolation(reason)` | 前提違反（[Source] のみ） | 500 システムエラー画面 | 500 |
 | `System(code, args)` | 整合性違反・I/O 失敗 | 500 システムエラー画面 | 500 |
+| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では発生しない（[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
 
 `InvalidRequest` のログ用コードは `e.ar.a0.L9001`（「不正リクエスト(パラメータ改竄) {0}」）。
 
@@ -39,6 +40,8 @@ sources:
 - `FieldError(field, code, args)`: 項目に紐づくエラー。`field` は項目パス（例 `passengers[2].age`、`selectFlights[0].depDate`）。
 - `GlobalError(code, args)`: 画面全体のエラー。
 - 単項目検証のコードは制約名（`NotNull`, `NotEmpty`, `Size`, `FixedLength`, `FullWidth`, `FullWidthKatakana`, `HalfWidth`, `HalfWidthNumber`, `Email`, `Min`, `Max`, `Digits`, `ExistInCodeList`, `typeMismatch`）。
+- 相関検証のコード `Invalid`（選択フライト数・搭乗者数の改竄。[input-validation.md](input-validation.md)）には文言が無い。画面でも REST でも改竄として扱われ、文言を表示する経路が無いため。
+- `field` の項目パスは、本書と [input-validation.md](input-validation.md) では抽象名（`selectFlights[i]`, `passengers[i]`）で書く。HTTP の項目名との対応は [input-validation.md](input-validation.md#項目名の対応) に示す。
 
 ## メッセージの置換
 
@@ -49,7 +52,9 @@ sources:
 | コード | 文言 | 引数 |
 | --- | --- | --- |
 | `NotNull`, `NotEmpty` | {0}を入力してください。 | 表示名 |
-| `NotNull`（選択項目: `gender`, `repGender`, `boardingClassCd`, `creditTypeCd`, `flightType`, `outwardFlight`, `homewardFlight`） | {0}を選択してください。 | 表示名 |
+| `NotNull`（選択項目: `gender`, `repGender`, `boardingClassCd`, `flightType`, `outwardFlight`, `homewardFlight`） | {0}を選択してください。 | 表示名 |
+
+`NotEmpty` には項目別の文言が無く、選択項目（`depAirportCd`, `arrAirportCd`, `creditTypeCd`, `creditMonth`, `creditYear`）でも「{0}を入力してください。」になる（例「出発空港を入力してください。」）。`ExistInCodeList` は未入力を合格とするので、`NotEmpty` と重ねて報告されることは無い。
 | `Size` | {0} は {2} 文字以上 {1} 文字以下でなければなりません。 | 表示名, max, min |
 | `FixedLength` | {0} は {1} 文字でなければなりません。 | 表示名, n |
 | `Min` | {0}は{1}以上の値を入力してください。 | 表示名, n |
@@ -84,8 +89,8 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 | `e.ar.b2.2005` | Business | 入力された[{0}]番目の会員番号が確認できませんでした。入力情報をご確認ください。 |
 | `e.ar.b2.2006` | Business | 入力された[{0}]番目のお客様情報と会員番号に該当するお客様情報が一致しません。入力情報をご確認ください。 |
 | `e.ar.b2.2007` | Business | 運賃種別に「レディース割」をご利用の場合、搭乗者は全て女性である必要があります。 |
-| `e.ar.b2.2008` | Business | 以下のフライトが予約可能時期を満たしておりません。フライトを変更してください。 |
-| `e.ar.b2.2009` | Business | `<h2>ご迷惑をおかけして申し訳ありません。</h2><p>以下のフライトの座席が確保できませんでした。<br>お手数ですが、再度フライトの選択を行ってください。</p>`（HTML を含む。エスケープせずに表示する） |
+| `e.ar.b2.2008` | Business | 以下のフライトが予約可能時期を満たしておりません。フライトを変更してください。（引数無し。「以下のフライト」は失敗画面に並ぶ選択した全フライトを指す） |
+| `e.ar.b2.2009` | Business | `<h2>ご迷惑をおかけして申し訳ありません。</h2><p>以下のフライトの座席が確保できませんでした。<br>お手数ですが、再度フライトの選択を行ってください。</p>`（HTML を含む。エスケープせずに表示する。引数無し。「以下のフライト」は 2008 と同じ） |
 | `e.ar.b2.2010` | Business | 選択された運賃種別の最少人数を満たしておりません。運賃種別「{0}」は{1}名からご利用になれます。 |
 | `e.ar.b2.5001` | Validation | 往路または復路のフライトが選択されていません。 |
 | `e.ar.b2.5002` | Validation | お客様情報を入力してください。 |

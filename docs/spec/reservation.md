@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 予約（B0/B2）
@@ -83,7 +83,7 @@ generated:
 3. **代表者の会員照合**（`repMembershipNumber` がある場合のみ）:
    - 会員が存在しなければ `Business("e.ar.b2.2002")`。
    - `repFamilyName = member.kanaFamilyName ∧ repGivenName = member.kanaGivenName ∧ repGender = member.gender` でなければ `Business("e.ar.b2.2003")`。
-4. **搭乗者の会員照合**: 予約フライトを順に、その搭乗者を 1 から数えた位置 `pos` で、`membershipNumber` がある搭乗者について、
+4. **搭乗者の会員照合**: 予約フライトを順に、その搭乗者を 1 から数えた位置 `pos`（空の搭乗者欄を詰めた後の位置。入力欄の添字 + 1 とは一致しないことがある）で、`membershipNumber` がある搭乗者について、
    - 会員が存在しなければ `Business("e.ar.b2.2005", [pos])`。
    - `familyName = member.kanaFamilyName ∧ givenName = member.kanaGivenName ∧ gender = member.gender` でなければ `Business("e.ar.b2.2006", [pos])`。
 
@@ -104,7 +104,7 @@ generated:
 
 ## 予約確定（reserve）
 
-**[Spec=Source]** 1 つのトランザクションとして実行する（[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md)）。いずれかの段階で失敗した場合、状態は一切変化しない。
+**[Spec=Source]** 1 つのトランザクションとして実行する（[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[ports.md](ports.md#idgenerator)）。
 
 1. 予約内容を組み立てる。
 2. `validateReservation`。
@@ -127,7 +127,7 @@ generated:
 ### 不変条件
 
 - 予約確定の前後で、すべてのフライトの `vacantNum ≥ 0`（課題 [ABS-020](abstraction.md#証明課題), [REF-002](refinement.md)）。
-- 成功時、各予約フライトのフライトの `vacantNum` は搭乗者数だけ減る。失敗時は不変。
+- 成功時、各予約フライトのフライトの `vacantNum` は搭乗者数だけ減る。失敗時は `sequences` 以外の状態が不変。
 
 出典: atrs-web/.../app/b2/TicketReserveHelper.java `reserve`, atrs-domain/.../service/b2/TicketReserveServiceImpl.java `registerReservation`, `validateAndUpdateVacancy`
 

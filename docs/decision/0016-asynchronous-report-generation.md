@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-29T23:52:11+09:00
 ---
 
 # 予約履歴レポートの非同期生成をキューとストアのポートで表し、CSV をバイト単位で規定する
@@ -72,3 +72,4 @@ Chosen option: "キューとストアのポート + CSV のバイト仕様", bec
 ## More Information
 
 * [spec/reservation-history-report.md](../spec/reservation-history-report.md), [spec/ports.md](../spec/ports.md)
+* 後続: [ADR 0031](0031-report-queue-at-least-once-delivery.md)（要求キューの配信保証と再配信の上限）
