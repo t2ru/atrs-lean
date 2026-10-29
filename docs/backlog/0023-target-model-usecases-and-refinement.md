@@ -5,10 +5,10 @@ description: "残りの機能の TargetModel を書き、Refinement で Spec と
 tags: [backlog, lean, target-model, refinement]
 id: "0023"
 state: todo
-depends_on: ["0022", "0006", "0007", "0008", "0009", "0010"]
+depends_on: ["0022", "0006", "0007", "0008", "0009", "0010", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # TargetModel と Refinement: 空席照会・予約・会員・認証・レポート
@@ -20,7 +20,7 @@ generated:
 ## 範囲
 
 - `TargetModel.*`（各機能）
-- REF-001, REF-002, REF-003, REF-005, REF-006
+- REF-001, REF-002（`Conflict` と I/O 失敗の模倣を含む）, REF-003, REF-005, REF-006（REF-008 は [backlog 0011](0011-in-memory-adapters-and-seed-data.md)）
 - `conformance/target-model/` の生成
 
 ## 対象外
@@ -29,7 +29,7 @@ generated:
 
 ## 完了条件
 
-- [ ] REF-001〜REF-006 の定理が `sorry` 無しで存在する
+- [ ] REF-001〜REF-006 の定理が `sorry` 無しで存在する（R 課題は `Machine.Refines` の形）
 - [ ] TR-P（`TargetModel` 側）が通る
 
 ## 参照

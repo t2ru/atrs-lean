@@ -45,11 +45,17 @@ okf_version: "0.2"
 * [会員情報変更は現在パスワードの照合と更新を 1 つのトランザクションで行う](decision/0030-member-update-in-single-transaction.md) - 原典では別トランザクションである照合と更新を、Spec では 1 つの直列化可能なトランザクションにまとめ、差を既知差異 D-013 とする。
 * [予約履歴レポートの要求キューは少なくとも 1 回配信し、再配信に上限を設ける](decision/0031-report-queue-at-least-once-delivery.md) - レポート生成に失敗した要求を再配信し、上限を超えたら破棄してログに残す。重複配信で別の秒のレポートが 2 本できることを許す。
 * [原典の安全でない振る舞いと前提違反は Spec では正し、既知差異として記録する](decision/0032-spec-corrects-unsafe-source-behavior.md) - セッション固定化、オープンリダイレクト、ロケール依存の曜日、前提違反による 500、緩すぎる数値・日付の解析について、Spec は安全で決定的な振る舞いを定め、原典との差を D-016〜D-021 とする。
+* [基本原則: 両端の決定論的な一致、B メソッドのリファインメント、差異の全明示](decision/0033-foundational-principles.md) - ソース⇔モデルの一致を決定論的な検証または変換で確認し、抽象モデルと移植元/先モデルの間に B メソッドのリファインメントを証明し、不一致を証明と文書の両方ですべて明示することを、全 ADR・規約・スキルの上位の原則とする。
+* [抽象モデルと移植元/先モデルの関係を B メソッドのリファインメントとし、差異を名前付きの前提・観測成分として明示する](decision/0034-b-method-refinement-and-explicit-deviations.md) - SourceModel と TargetModel がそれぞれ Spec を B メソッドの意味でリファインすることを、貼り合わせ不変条件と証明義務（初期化・適用可能性・正しさ）で証明する。差異は前提型・観測型・モデル外に分類し、D-NNN / T-NNN として文書と Lean の @[deviation] の両方に置く。ADR 0004 を置き換える。
+* [モデルと証明を Lean に置き、移植先の Verus の写しは TargetModel から決定論的に生成する](decision/0035-generate-verus-mirror-from-target-model.md) - ADR 0022 の層構成・依存の向き・Rust の構成を引き継ぎ、Rust の model/ を Lean TargetModel から道具で生成して手書きを禁じ、Verus で Rust の実行コードとの一致を証明する。リファインメントの枠組み Machine を名前空間の例外に加える。ADR 0022 を置き換える。
+* [両端の追跡をロケータとモデル側注釈で表し、確認済みハッシュを決定論的な検査の合格記録とする](decision/0036-traceability-hash-as-deterministic-check-record.md) - ADR 0023 の追跡方式を引き継ぎ、確認済みハッシュの意味を人の確認から決定論的な検査の合格記録に改め、TR 検査の例外と恒久的な警告をなくし、差異の対応を検査する TR-D とテンプレートのロケータ tmpl: を加える。ADR 0023 を置き換える。
+* [排他制御の失敗 Conflict を、Spec の状態変更操作の非決定的な結果とする](decision/0037-conflict-as-spec-nondeterminism.md) - AtrsError.Conflict とポートの I/O の失敗を、Spec の状態変更操作が採番以外の状態を変えずに選びうる非決定的な結果として定め、活性の限界を明示する。実行可能な Spec の標準の選択はこれらを選ばない。画面は 500、REST は 409。ADR 0029 を置き換える。
 
 # Specification
 
 * [ATRS 仕様文書](spec/README.md) - docs/spec の役割（Spec 外の規範・メタ情報・草案）、正規性、対象版、文書の区分一覧。
-* [抽象化証明課題（Abstraction）](spec/abstraction.md) - 移植元モデル SourceModel から抽象モデル Spec への抽象化関数、既知差異 D-NNN、証明課題 ABS-NNN の一覧。
+* [抽象化証明課題（Abstraction）](spec/abstraction.md) - 移植元モデル SourceModel が抽象モデル Spec を B メソッドの意味でリファインすることの証明課題 ABS-NNN、貼り合わせ関係と抽象化関数、既知差異 D-NNN の一覧。
+* [保証の限界](spec/assurance.md) - ソース⇔モデルの一致を確かめる決定論的な手段と、手段の届かない部分（保証の限界）・信頼の基盤を境界ごとにすべて列挙する。
 * [認証（A0/A1/A2）](spec/authentication.md) - ログインの事前検査・資格情報の照合・ログイン状態の更新・ログアウト・セッションと権限。
 * [設定パラメータ](spec/configuration.md) - 業務規則に影響する設定値とその既定値。純粋関数には Config として明示的に渡す。
 * [適合テストベクタ（ATRS）](spec/conformance.md) - ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル port-lang に従う。
@@ -63,7 +69,7 @@ okf_version: "0.2"
 * [マスタデータ](spec/master-data.md) - 空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別の構造、不変条件、参照関数、シードデータ。
 * [会員（C0/C1/C2）](spec/member.md) - 会員登録・会員情報変更・現在パスワード照合・入力値と会員エンティティの相互変換。
 * [ポート](spec/ports.md) - 副作用（時刻・永続化・採番・パスワード・レポート保存・キュー）の契約。Spec はこれらの契約だけに依存し、実装は TargetModel が提供する。
-* [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - Lean で証明する Spec → TargetModel の課題 REF-NNN と、TargetModel ⇔ Rust ソースの対応を確認する課題 SRC-NNN（Verus・Kani・適合テスト）。
+* [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - TargetModel が Spec を B メソッドの意味でリファインすることの証明課題 REF-NNN、移植先の既知差異 T-NNN、TargetModel ⇔ Rust ソースを決定論的に確認する課題 SRC-NNN（写しの生成・Verus・Kani・適合テスト）。
 * [予約履歴レポート（D1）](spec/reservation-history-report.md) - レポート作成要求の受付、非同期生成、CSV のバイト仕様、ファイル名、一覧と取得。
 * [予約（B0/B2）](spec/reservation.md) - 選択フライトの検証、予約内容の検証、予約確認、空席の確保と予約登録、会員情報による入力補完。
 * [追跡（トレーサビリティ）](spec/traceability.md) - ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル port-lang に従う。
@@ -97,6 +103,9 @@ okf_version: "0.2"
 * [追跡の道具（tools/trace）](backlog/0024-trace-tooling.md) - インベントリ生成・Lean ダンプの取り込み・manifest と表の生成・TR 検査・差分・影響分析を行う Rust 製の道具を作る。
 * [上流の submodule 化と版の宣言](backlog/0025-upstream-submodule-and-inventory.md) - 上流 ATRS を git submodule として commit 固定で取り込み、trace/upstream.json と移植元インベントリを作る。
 * [差分オラクル（新旧 2 版の振る舞い比較）](backlog/0026-differential-oracle.md) - Java オラクルハーネスを拡張し、source-model ベクタの全入力を新旧 2 版の上流で実行して出力の差分を取る。
+* [Machine: 抽象機械と B メソッドのリファインメントの枠組み](backlog/0027-machine-refinement-framework.md) - アプリに依存しない Lean ライブラリ Machine（抽象機械、Refines、証明義務 INIT・適用可能性・正しさ、差異の仮定・成分）をスキルの assets/Machine/ に実装する。
+* [Lean TargetModel から Verus の写しを生成する道具](backlog/0028-verus-mirror-generator.md) - lake exe gen-verus で、Lean TargetModel の公開定義から rust/src/model/ の Verus spec 関数と追跡タグを決定論的に生成し、CI で再生成の差分が無いことを確認する。
+* [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](backlog/0029-rust-external-adapters.md) - DB・ファイル・時計のアダプタを Rust で実装し、その振る舞いを TargetModel.Adapter（DB は LangSemantics.Sql の式）に写して REF-009 を証明し、SQL の差分実行（SRC-010）と結合テスト（SRC-005）で一致を確かめる。
 
 # Log
 

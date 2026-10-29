@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Lean 4 を lean-toolchain で固定し、依存は Batteries のみとする（Mathlib 不使用）
@@ -36,7 +36,7 @@ Mathlib は証明を楽にする一方、ビルドが重く、他言語に写し
 Chosen option: "core + Batteries のみ", because 必要な証明は `omega`・`decide`・`simp`・`bv_decide` で賄え、Batteries の追加データ構造・補題があれば十分なため。
 
 * Lean のバージョンは `lean/lean-toolchain` で固定する。版は着手時点の最新安定版とし、[backlog 0001](../backlog/0001-lean-project-scaffold.md) で決めて本 ADR の More Information に追記する。
-* ビルドは Lake。テストは `lake test`（テストドライバ `Tests`）。トップレベル名前空間は [ADR 0018](0018-language-neutral-top-level-namespaces.md) に従う。
+* ビルドは Lake。テストは `lake test`（テストドライバ `Tests`）。トップレベル名前空間は [ADR 0035](0035-generate-verus-mirror-from-target-model.md) に従う。
 * JSON の読み書きは core の `Lean.Data.Json` を使う。
 * 依存を追加するときは新しい ADR を作る。
 
@@ -70,3 +70,5 @@ Chosen option: "core + Batteries のみ", because 必要な証明は `omega`・`
 ## More Information
 
 * [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)
+
+* （補足 2026-10-30）[ADR 0033](0033-foundational-principles.md) により、`bv_decide` と `native_decide` は、証明（`Spec`・`Abstraction`・`Refinement` と、それらが依存する補題）で使ってはならない。どちらも公理 `Lean.ofReduceBool` に依存し、コンパイラを信頼の基盤に加えるからである。`Tests` での確認には使ってよい。ビットベクタの性質は、`decide`・`omega`・`simp` で示す。

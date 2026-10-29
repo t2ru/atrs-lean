@@ -3,13 +3,14 @@ type: Architecture Decision Record
 title: "移植元モデルと抽象モデルの二層で仕様を定義し、関係を証明する"
 description: "移植元モデル [Source] と抽象モデル [Spec] を別々に定義し、両者の関係を証明課題とする。"
 tags: [adr, model, abstraction]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0034"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -96,3 +97,5 @@ Chosen option: "二層モデル", because 原典互換と言語中立性を両�
 
 * 浮動小数差異の調査スクリプトの結果: シード範囲（路線運賃 100〜100000 の 100 円単位 × 加算料金 {0, 5000} × 比率 {100, 125, 140} × 割引率 {0, 5, 10, 20, 30}）で最終運賃の差異 0 件。基本運賃を任意の整数 0〜1000000 とし割引率をシードの 5 種に限ると、100 円切上げ後の差異は 188 件（最小例: 1430 円・30%）。
 * [spec/abstraction.md](../spec/abstraction.md), [spec/fare-calculation.md](../spec/fare-calculation.md)
+
+* （補足 2026-10-30）本 ADR は [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md) で置き換えられた（[ADR 0033](0033-foundational-principles.md) の基本原則に合わせるため）。

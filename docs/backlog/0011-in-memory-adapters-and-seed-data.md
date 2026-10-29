@@ -5,10 +5,10 @@ description: "Rust にポートのインメモリ実装を作り、シードデ�
 tags: [backlog, rust, adapter, fixture]
 id: "0011"
 state: todo
-depends_on: ["0020"]
+depends_on: ["0020", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Rust: インメモリアダプタとシードデータ
@@ -21,21 +21,23 @@ Rust の移植先ソースを動かせる状態にし、ポート契約（SRC-00
 
 ## 範囲
 
-- `rust/src/adapter/in_memory`（全ポート。状態は `Mutex` で保持）と、対応する `TargetModel` のポート実装（`@[target]` 付き）
+- `rust/src/adapter/in_memory`（全ポート。状態は `Mutex` で保持。`verus!` の中で書き、生成した写しとの一致を Verus で証明する）と、対応する `TargetModel` のポート実装（`@[target]` 付き。REF-008）
 - `conformance/fixtures/master-data.json`（空港・区間・便マスタの全件転記）, `config.json`
 - 参照ハッシュ `"{test}" ++ raw`。`{pbkdf2}` 互換アダプタは任意（採用時に依存クレートの ADR）
-- Kani: 採番の一意性・書式、`publish` の原子性（SRC-004）。SRC-005 のうちインメモリ分
+- 採番の一意性・書式、`publish` の原子性は、REF-008（Lean）と Verus（SRC-003）で示す。`Mutex` の層のパニックの無さは Kani で示す（SRC-004）。SRC-005 のうちインメモリ分
 
 ## 対象外
 
-- DB アダプタ（必要になった時点で別項目）
+- DB・ファイル・時計のアダプタ（[backlog 0029](0029-rust-external-adapters.md)）
 - HTTP
 
 ## 完了条件
 
 - [ ] シードの全件が fixture にあり、件数が原典と一致する（空港 51・区間 20・便マスタ 126）
-- [ ] SRC-004 のインメモリ分を Kani で確認した
-- [ ] TR-T1・TR-T2 が通る
+- [ ] インメモリのアダプタを Verus で証明した（SRC-003）。`verus!` の外の部分を Kani で確認した（SRC-004）
+- [ ] REF-008・REF-010（マスタ・設定の読み込み）を証明した
+- [ ] TR-T1・TR-T2 が通る（SRC-007・SRC-008）
+- [ ] Kani のハーネスの境界を [assurance.md](../spec/assurance.md) の付録に記入した
 
 ## 参照
 

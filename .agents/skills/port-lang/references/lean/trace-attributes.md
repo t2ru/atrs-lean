@@ -9,9 +9,10 @@
 
 | 属性 | 付ける対象 | 引数 |
 | --- | --- | --- |
-| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと確認済みの本文ハッシュ（`dep:`・`lang:` は版） |
-| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと確認済みの本文ハッシュ |
+| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版） |
+| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理 | `ABS-NNN` / `REF-NNN` |
+| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN` |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
 
@@ -22,7 +23,8 @@
 def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 ```
 
-- 属性の付け忘れは検査 TR-S1 / TR-T1 で、ロケータの誤りは TR-R で検出される。
+- 属性の付け忘れは検査 TR-S1 / TR-T1 で、ロケータの誤りは TR-R で、差異の付け忘れ・余分は TR-D で検出される。
+- `@[source]` / `@[target]` のハッシュは、決定論的な検査が合格したときに道具（`rehash`）が書き込む。手で書き換えてはならない（[traceability.md](../traceability.md#検査済みハッシュ)）。
 - 移植元側の層に `@[target]` を、移植先側の層に `@[source]` を付けてはならない（TR-X）。
 
 ## trace-dump
@@ -40,5 +42,5 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 ```
 
 - `references`: 定義の型と本体に現れる定数。`Abstraction`・`Refinement` の定理については、これからモデル間の対応を自動導出する（どの `SourceModel` / `TargetModel` 定義がどの `Spec` 定義と結ばれているか）。
-- `merkle`: 定義の型と本体の `Expr` のハッシュに、`references` のうち **同じ層** の定数の `merkle` を名前順に合成したもの。依存する定義が変わっても値が変わる。循環参照（相互再帰）は、強連結成分ごとにまとめて計算する。
-- ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると全定義の `merkle` が変わることがあるため、版上げは移植先の写しの一括再確認を伴う作業として扱う。
+- `merkle`: 定義の型と本体の `Expr` のハッシュに、`references` のうち **同じ層と、その層が依存する `LangSemantics`・`Machine`** の定数の `merkle` を名前順に合成したもの。`LangSemantics` の変更でも、写しのハッシュがずれるようにするためである。依存する定義が変わっても値が変わる。循環参照（相互再帰）は、強連結成分ごとにまとめて計算する。
+- ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると、全定義の `merkle` が変わることがある。そのため版上げでは、移植先の写しを一括で再生成し、移植先の検証器を再実行する。

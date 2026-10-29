@@ -3,13 +3,14 @@ type: Architecture Decision Record
 title: "モデルと証明をすべて Lean に置き、移植元ソースと移植先ソースは両端で追跡する"
 description: "LangSemantics・SourceModel・Spec・Abstraction・TargetModel・Refinement を Lean に置き、Java 原典と Rust ソースはそれぞれのモデルとだけ追跡でつなぐ。ADR 0018 と 0020 を置き換える。"
 tags: [adr, architecture, naming, target-model, rust]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0035"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # モデルと証明をすべて Lean に置き、移植元ソースと移植先ソースは両端で追跡する
@@ -118,3 +119,5 @@ Chosen option: "すべてのモデルと証明を Lean に置き、ソースは�
 * 本 ADR は [ADR 0018](0018-language-neutral-top-level-namespaces.md) と [ADR 0020](0020-rust-as-target-language.md) を置き換える。両 ADR の名前（`SourceModel` 等）と、Rust・Verus・Kani の採用は引き継ぐ。
 * Verus・Kani・Rust ツールチェーンの版は [backlog 0018](../backlog/0018-rust-project-scaffold.md) で決め、本 ADR の More Information に追記する。Verus と Kani の併用可否の確認も同項目で行う。
 * [ADR 0023](0023-cross-language-traceability.md), [ADR 0024](0024-following-upstream-releases.md)
+
+* （補足 2026-10-30）本 ADR は [ADR 0035](0035-generate-verus-mirror-from-target-model.md) で置き換えられた（[ADR 0033](0033-foundational-principles.md) の基本原則に合わせるため）。

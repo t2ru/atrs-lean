@@ -8,7 +8,7 @@ spec_role: [draft, normative]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # HTTP 契約
@@ -32,9 +32,9 @@ generated:
 | 項目 | [Spec] | [Source] |
 | --- | --- | --- |
 | 識別 | Cookie によるセッション ID。Cookie 名は定めない（原典は `JSESSIONID`） | 同左 |
-| Cookie 属性 | `HttpOnly` を付ける。`Secure`・`SameSite` は配備環境で決める | `HttpOnly` のみ（`Secure` は無効、`SameSite` は付かない） |
+| Cookie 属性 | `HttpOnly` を付ける。`Secure`・`SameSite` は配備環境で決める | `HttpOnly` のみ（`Secure` は無効、`SameSite` は付かない。モデル外の既知差異 [D-024](abstraction.md#既知差異)） |
 | タイムアウト | 最後のリクエストから 30 分で失効 | Tomcat の既定 30 分（`web.xml` に指定無し） |
-| ログイン時のセッション ID | **新しい ID に変える**（セッション固定化対策） | 変えない（既知差異 [D-016](abstraction.md#既知差異)） |
+| ログイン時のセッション ID | **新しい ID に変える**（セッション固定化対策） | 変えない（モデル外の既知差異 [D-016](abstraction.md#既知差異)） |
 | 同時ログイン | 制限しない | 同左 |
 | ログアウト | セッションを破棄し、Cookie を削除する | 同左 |
 | REST（`/api/v1/**`） | セッションを作らない | 同左 |
@@ -65,7 +65,7 @@ generated:
 | `InvalidRequest`・不正な入力（改竄） | 400 | `common/error/badRequest-error` | `e.ar.fw.0003` |
 | 権限不足 | 403 | `common/error/accessForbidden-error` | `e.ar.fw.0004` |
 | 該当 URL 無し | 404 | `common/error/notFound-error` | `e.ar.fw.0005` |
-| 画面で捕捉されない `Business`・`System`・`PreconditionViolation`、`Conflict`（[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 500 | `common/error/system-error` | `e.ar.fw.9999` |
+| 画面で捕捉されない `Business`・`System`・`PreconditionViolation`、`Conflict`（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 500 | `common/error/system-error` | `e.ar.fw.9999` |
 
 ### 認証と権限
 
@@ -164,6 +164,8 @@ generated:
 
 ## REST API（`/api/v1`）
 
+要求の JSON の文字列に不対サロゲートのエスケープ（例 `"\ud800"`）があれば、**[Spec]** は `InvalidRequest` とする（文字列はスカラ値の列であるため）。[Source] は受け付けて処理を続ける（既知差異 [D-026](abstraction.md#既知差異)）。
+
 - 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。ただし `Authorization` ヘッダの資格情報が誤っていれば 401（`WWW-Authenticate: Basic realm="Realm"`。本文は定めない。`X-Requested-With: XMLHttpRequest` 付きならヘッダも本文も無い 401）。
 - 前処理（空白除去）無し（[input-validation.md](input-validation.md#前処理)）。
 - 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[flight-search.md](flight-search.md#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。
@@ -220,8 +222,8 @@ generated:
 | JSON 解析不能 | 400 | 原因に応じた `ApiError` |
 | `NotFound` | 404 | 下記「業務メッセージの変換」 |
 | `Business` | 409 | 同上（`validateFlightList` の `Business` を除く。上記） |
-| `Conflict`（排他制御の失敗。[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 409 | `code = "e.ar.fw.9999"` |
-| `InvalidRequest` | 500 | `code = "e.ar.a0.L9001"`、`message = "不正リクエスト(パラメータ改竄) " ++ 詳細`。詳細は実装定義（[Source] は原因の例外のメッセージ）で、適合テストでは比較しない |
+| `Conflict`（排他制御の失敗。[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 409 | `code = "e.ar.fw.9999"` |
+| `InvalidRequest` | 500 | `code = "e.ar.a0.L9001"`、`message = "不正リクエスト(パラメータ改竄) " ++ 詳細`。詳細は [Spec] の非決定的な選択（任意の文字列）であり、適合テストでは比較しない。[Source] は原因の例外のメッセージを使う。[Spec] がどの文字列も許すので、差異ではない |
 | `System(code, args)` | 500 | `code` は `System` のコード（例 `e.ar.a0.L9002`） |
 | `PreconditionViolation`・その他 | 500 | `code = "e.ar.fw.9999"` |
 

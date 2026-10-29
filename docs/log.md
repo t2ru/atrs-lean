@@ -1,5 +1,57 @@
 # Directory Update Log
 
+## 2026-10-30
+
+* **Creation**: [ADR 0033](decision/0033-foundational-principles.md) で、基本原則 3 項を、全 ADR・規約・スキルに優先する原則として定めた。3 項は次のとおり。
+  * 両端の一致を決定論的な検証または変換で確認する。
+  * 抽象モデルと移植元/先モデルの間に B メソッドのリファインメントを証明する。
+  * 差異を証明と文書の両方ですべて明示する。
+* **Creation**: 原則と矛盾する既存の決定を置き換える ADR を作った。
+  * [0034](decision/0034-b-method-refinement-and-explicit-deviations.md): B メソッドのリファインメントと、名前付きの差異（前提型・観測型・モデル外、D/T 登録簿、R/W/C/L 課題）
+  * [0035](decision/0035-generate-verus-mirror-from-target-model.md): Verus の写しを TargetModel から生成し、`Machine` を名前空間の例外に加える
+  * [0036](decision/0036-traceability-hash-as-deterministic-check-record.md): 検査済みハッシュ、TR-D、`tmpl:`、TR 検査の例外の廃止
+  * [0037](decision/0037-conflict-as-spec-nondeterminism.md): `Conflict` を Spec の非決定的な結果とする
+* **Deprecation**: ADR [0004](decision/0004-two-layer-model-java-faithful-and-abstract.md)・[0022](decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)・[0023](decision/0023-cross-language-traceability.md)・[0029](decision/0029-concurrency-failure-as-conflict-error.md) を superseded にした。
+* **Update**: ADR 0005・0011（FOR UPDATE の記述の訂正）・0019（`Postgresql` の表記、SQL の差分実行）・0024・0027・0032 に補足を加えた。置換済み ADR へのリンクを、後継の ADR へ張り替えた。
+* **Creation**: [spec/assurance.md](spec/assurance.md)（保証の限界）を作った。
+* **Update**: [spec/abstraction.md](spec/abstraction.md) を改めた。
+  * リファインメントの形と、既知差異の種類・R/W 課題を加えた。
+  * D-022〜D-025 を登録した。
+  * D-003/004/005/010/015 を、前提の外の参考表に移した。
+  * ABS-040 を ABS-041〜046 に分割し、W 課題 ABS-1NN を加えた。
+* **Update**: [spec/refinement.md](spec/refinement.md) を改めた（T-NNN 登録簿、REF-007/008、SRC を決定論的な手段に改めた。設計レビューは廃した）。
+* **Update**: 次の仕様文書を、原則に合わせて改めた。
+  * [ports.md](spec/ports.md): `Conflict`、パスワードの契約、分離レベル、キューの上限
+  * [domain-model.md](spec/domain-model.md): 値域を PRE とする
+  * [master-data.md](spec/master-data.md)、[fare-calculation.md](spec/fare-calculation.md)、[http-contract.md](spec/http-contract.md)、[authentication.md](spec/authentication.md)、[member.md](spec/member.md)、[errors-and-messages.md](spec/errors-and-messages.md)、[traceability.md](spec/traceability.md)、[spec/README.md](spec/README.md)
+* **Update**: スキル port-lang（0.2）を改めた。
+  * SKILL.md: 3 原則を最上位に置いた。
+  * architecture.md: B メソッドのリファインメント。
+  * verification.md: 決定論的な手段、保証の限界、`native_decide` の禁止。
+  * traceability.md: 検査済みハッシュ、TR-D。
+  * process.md、spec-documents.md、upgrade.md、adding-a-language.md、言語パックの `verification.md`・`layout.md`・`locators.md`（`tmpl:`）・`semantics.md`、lean/rules.md、lean/trace-attributes.md も改めた。
+* **Update**: [AGENTS.md](../AGENTS.md)、[rules/README.md](rules/README.md)（優先順位の軸を明確にした）、[rules/backlog.md](rules/backlog.md)（完了の定義）、[rules/atrs-porting.md](rules/atrs-porting.md) を改めた。
+* **Creation**: backlog [0027](backlog/0027-machine-refinement-framework.md)（`Machine`）と [0028](backlog/0028-verus-mirror-generator.md)（写しの生成器）を作った。0002・0005〜0011・0013・0014・0016・0019〜0024 の範囲・完了条件を、R/W 課題と決定論的な手段に合わせて改めた。
+* **Update**: 敵対的レビューの 2 回目の指摘を解消した。
+  * [spec/abstraction.md](spec/abstraction.md): 複合的な R 課題に、差異の仮定を引き継いだ。D-009・D-014 を前提の外に、D-013 をモデル外に改めた。D-001・D-020 の前提を定めた。ABS-007・ABS-023〜025・ABS-047 と SPEC-001〜004 を加え、ABS-109/113/114 を廃止した。
+  * [spec/refinement.md](spec/refinement.md): REF-009・SRC-010 を加え、Verus の禁止構文を広げた。
+  * [spec/assurance.md](spec/assurance.md): `#[verifier::external]` の一覧、規範節ごとの行、活性の限界、追跡の道具、付録を加えた。
+  * ADR 0033〜0037: モデル外の差異の位置づけ、前提の 2 つの形、`bv_decide` の禁止、`model_prelude.rs`、TR-T1 の生成物の扱い、`xml:`・`seed:`、改名の検査、実行環境の失敗と活性の限界を加えた。
+  * ADR 0014・0030・0032 に補足（訂正）を加えた。0032 では、差分オラクルで入力を除外しないことにした。
+  * スキル: 原典の事後条件を仮定にする抜け道、方言の差を無名の前提にする記述をなくした。
+* **Creation**: backlog [0029](backlog/0029-rust-external-adapters.md)（DB・ファイル・時計のアダプタ）を作った。backlog の依存（0013 への依存、0010 → 0008）と担当（REF-008、SRC-005/007/008）を整え、0024 と 0025 の循環を解いた。
+* **Update**: 敵対的レビューの 3 回目の指摘を解消した。
+  * リファインメントの義務に「入力の全域性」を加えた。
+  * ポートの契約を主定理の仮定から外し、ポート実装の R 課題（ABS-021・023〜026、REF-008〜010）で証明することにした。
+  * マスタ・設定を不変の入力とし、MD-1〜MD-8 を PRE に移した。
+  * D-009・D-014 を前提型（具体側）に戻し、W 課題 ABS-109・ABS-114 を戻した。
+  * D-026（JSON の不対サロゲート）・ABS-126 を加えた。
+  * TR-S2・TR-T2 で、モデル側の変更でも再検査を求めることにした。
+  * `pre_*` と `gen-verus --check-contracts` で、Verus の `requires`・`ensures` を検査することにした。
+  * `model_prelude.rs` をスキルの assets に移した。`LangSemantics.Sql` は両側から使えることにした。
+  * I/O 失敗の対象とコードを限定し、ports.md の規範節を絞った。
+  * backlog の依存（0005・0024・0007 への依存）と担当を整えた。
+
 ## 2026-10-29
 
 * **Creation**: 未決だった仕様を確定する ADR 7 件を作成した。[0026](decision/0026-email-validation-rule.md)（Email 規則）、[0027](decision/0027-validation-error-ordering.md)（検証エラーの並び）、[0028](decision/0028-clock-timezone-and-fixture-base-date.md)（Clock の Asia/Tokyo と fixture の投入日 2026-11-01）、[0029](decision/0029-concurrency-failure-as-conflict-error.md)（`Conflict` 分類）、[0030](decision/0030-member-update-in-single-transaction.md)（会員情報変更の 1 トランザクション化）、[0031](decision/0031-report-queue-at-least-once-delivery.md)（レポートキューの配信保証）、[0032](decision/0032-spec-corrects-unsafe-source-behavior.md)（原典の安全でない振る舞いを Spec で正す）。ADR 0008・0009・0011・0016 の More Information に後続へのリンクを足した。

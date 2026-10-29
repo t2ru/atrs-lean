@@ -29,7 +29,7 @@ Lean の実装は `assets/LangSemantics/Rust/`（モジュール `LangSemantics.
 | 固定長整数（値域内） | `Nat` / `Int` |
 | `RString` | スカラ値の列（`chars()`） |
 | `RResult` | `Except` |
-| `RPanic` | β 未定義（`Refinement` で到達しないことを証明する） |
+| `RPanic` | β は定義しない。PRE の下で到達しないことを、リファインメントの適用可能性の証明義務で示す（[architecture.md](../architecture.md#リファインメントb-メソッド)） |
 
 ## 証明しておく基本性質
 

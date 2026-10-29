@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0012"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Java オラクルハーネス
@@ -20,6 +20,7 @@ generated:
 ## 範囲
 
 - 原典のドメイン層（Spring 不要な部分）を呼ぶ小さな Java プログラム
+- HTTP レベルのオラクル: Spring を起動した原典（MockMvc など）に要求を送り、応答を照合する。対象はフレームワークの暗黙の処理（入力の変換・Bean Validation・Spring Security・Jackson）と、テンプレートの書式（D-019）
 - ベクタの `input` から呼び出し、`expected` を出力（`source: java-oracle`）
 - REST の日付 JSON 表現の確認（[http-contract.md](../spec/http-contract.md#rest-apiapiv1) の TODO。ソースの読解では `"yyyy-MM-dd"` の見込み）
 - 画面ログインで `loginDateTime`・`loginFlg` が更新されるかの確認（[authentication.md](../spec/authentication.md#ログインlogin) の TODO）
@@ -32,6 +33,8 @@ generated:
 
 - [ ] 運賃計算の [Source] ベクタが Java オラクルと一致する
 - [ ] http-contract.md と authentication.md の TODO(spec) を解消した
+- [ ] HTTP レベルのハーネスで、Spring を起動した原典に要求を送り、応答をベクタの形式で採取できる（`SourceModel.Http`・`SourceModel.Validation` との照合は、[backlog 0008](0008-member-usecases-and-input-validation.md)・[0014](0014-http-contract-adapter.md) で行う）
+- [ ] ハーネスの対象外とした操作と、ベクタの範囲を [assurance.md](../spec/assurance.md) に記載した
 
 ## 参照
 

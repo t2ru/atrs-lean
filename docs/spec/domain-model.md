@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # ドメインモデル
@@ -177,7 +177,7 @@ generated:
 ## 値域
 
 [Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR 0006](../decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。
-マスタデータと入力は次を満たすことを前提とする。
+マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |
 | --- | --- |

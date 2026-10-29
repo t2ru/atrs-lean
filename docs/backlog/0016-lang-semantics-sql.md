@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0001"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:53:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論
@@ -32,6 +32,8 @@ generated:
 ## 完了条件
 
 - [ ] `ORDER BY` のキーが単射なら許される順列が 1 つであることを証明した
+- [ ] SQL の差分実行の仕組み: 同じデータとパラメータについて、PostgreSQL（`trace/upstream.json` の版）の実行結果と `LangSemantics.Sql` の評価結果を照合する。順序が未規定なら、許される集合に含まれることを照合する
+- [ ] `LangSemantics.Sql.Postgresql` の演算（`TO_CHAR`・型変換・既定の整列）を PostgreSQL と突き合わせ、範囲を [assurance.md](../spec/assurance.md) に記載した
 - [ ] ATRS 固有モジュールを import していない
 
 ## 参照

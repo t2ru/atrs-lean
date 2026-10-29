@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:40:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 原典の安全でない振る舞いと前提違反は Spec では正し、既知差異として記録する
@@ -75,4 +75,10 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
 ## More Information
 
 * [spec/http-contract.md](../spec/http-contract.md), [spec/input-validation.md](../spec/input-validation.md), [spec/domain-model.md](../spec/domain-model.md), [spec/abstraction.md](../spec/abstraction.md)
-* [ADR 0004](0004-two-layer-model-java-faithful-and-abstract.md)（移植元モデルと抽象モデルを分ける方針）
+* [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)（移植元モデルと抽象モデルを分ける方針）
+* （補足 2026-10-30）[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md) により、D-016〜D-021 は次の 2 つで確認する。上の Confirmation のベクタは、その補助である。
+  * リファインメントの主定理（R 課題）の名前付きの仮定または観測成分
+  * 差異の証拠（W 課題）
+  
+  課題は [spec/abstraction.md](../spec/abstraction.md#証明課題) を参照。
+* （補足 2026-10-30・訂正）Consequences と Confirmation にある「差分オラクルで既知差異の前提を満たさない入力を外す」は誤りである。差分オラクルは新旧 2 版の原典どうしを比べるので、`Spec` との差異は関係しない。差分オラクルでは入力を除外しない。前提を満たさない入力を除くのは、[Source] と [Spec] を比べる場合（`spec/` のベクタと `source-model/` のベクタの対応づけ）だけである。

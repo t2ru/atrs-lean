@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -75,13 +75,13 @@ sources:
 | MD-1 | 各キーは一意。各マスタの `displayOrder` も一意（原典の DB 制約 `DISPLAY_ORDER INT NOT NULL UNIQUE` と同じ） | `HashMap` への後勝ち上書き。`displayOrder` の重複は DB が拒む |
 | MD-2 | `(depAirportCd, arrAirportCd)` は区間間で一意。`depAirportCd ≠ arrAirportCd` | 後勝ち上書き |
 | MD-3 | 参照整合性（区間の空港・便マスタの区間・フライトの便名/搭乗クラス/運賃種別が存在する） | `null` による前提違反 |
-
-MD-1〜MD-3 が破れた場合の [Source] の振る舞いは既知差異 [D-015](abstraction.md#既知差異)、MD-4・MD-5 は D-004・D-005 として扱う。
-| MD-4 | ピーク時期の期間は互いに重ならない（`peakStartDate ≤ peakEndDate`） | 取得順（未規定）で最初に一致したもの（既知差異 [D-004](abstraction.md#既知差異)） |
-| MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（[D-005](abstraction.md#既知差異)） |
+| MD-4 | ピーク時期の期間は互いに重ならない（`peakStartDate ≤ peakEndDate`） | 取得順（未規定）で最初に一致したもの（参考 [D-004](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
+| MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime` | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
 | MD-8 | [domain-model.md](domain-model.md#値域) の値域 | int32 の折り返し |
+
+マスタは不変の入力であり（[ports.md](ports.md#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005）は差異ではなく、参考として [abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 
 ## 参照関数
 

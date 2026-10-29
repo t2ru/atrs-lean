@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0001"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:53:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # LangSemantics.Rust: Rust の意味論
@@ -35,9 +35,10 @@ generated:
 
 - [ ] `u64` の加算のオーバーフロー時の振る舞い（検査付き・折り返し）を定理で示した
 - [ ] `RString` の `len` と `chars().count()` の違いを例で確認した
+- [ ] 整数演算・文字列演算を、rustc でビルドした実行結果と固定した入力の表で突き合わせ、範囲を [assurance.md](../spec/assurance.md) に記載した
 - [ ] ATRS 固有モジュールを import していない
 
 ## 参照
 
-- [ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)
+- [ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)
 - [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)

@@ -3,13 +3,14 @@ type: Architecture Decision Record
 title: "移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する"
 description: "両端のトレースをロケータとモデル側の注釈で表し、確認済みハッシュで陳腐化を検出し、manifest 生成と TR 検査で網羅性と直接接続の禁止を機械的に保つ。"
 tags: [adr, traceability]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0036"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する
@@ -145,3 +146,5 @@ Chosen option: "記号的ロケータ ＋ モデル側の注釈 ＋ 生成 manif
 
 * [ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md), [ADR 0024](0024-following-upstream-releases.md)
 * [backlog 0024](../backlog/0024-trace-tooling.md)
+
+* （補足 2026-10-30）本 ADR は [ADR 0036](0036-traceability-hash-as-deterministic-check-record.md) で置き換えられた（[ADR 0033](0033-foundational-principles.md) の基本原則に合わせるため）。

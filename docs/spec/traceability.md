@@ -8,14 +8,14 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:39:02+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 追跡（トレーサビリティ）
 
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
 
-方針は [ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)（構成）、[ADR 0023](../decision/0023-cross-language-traceability.md)（追跡の方式）、[ADR 0024](../decision/0024-following-upstream-releases.md)（版上げ）。
+方針は [ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)（構成）、[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)（追跡の方式）、[ADR 0024](../decision/0024-following-upstream-releases.md)（版上げ）。
 
 ```
 移植元ソース  ⇔①⇔  SourceModel ─Abstraction→ Spec ←Refinement─ TargetModel  ⇔②⇔  移植先ソース
@@ -23,17 +23,18 @@ generated:
 ```
 
 - 追跡は ①（移植元ソース ⇔ `SourceModel`）と ②（`TargetModel` ⇔ 移植先ソース）の **2 本だけ** である。
-- 内側（`SourceModel` ↔ `Spec` ↔ `TargetModel`）は追跡ではなく **証明**（`Abstraction`, `Refinement`）でつながる。
+- 内側（`SourceModel` ↔ `Spec` ↔ `TargetModel`）は、追跡ではなく **証明** でつながる。証明は、B メソッドのリファインメントである `Abstraction`・`Refinement` である（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。
+- 追跡は対応を示すだけである。一致は、決定論的な検査で確かめる（[assurance.md](assurance.md)）。注釈のハッシュは、その検査が合格した版の記録である。
 - 移植元ソースと移植先ソースを直接つないではならない。影響分析は証明グラフをたどって行う。
 
 ## 方式
 
-ロケータの文法、版の宣言とインベントリ、注釈と確認済みハッシュ、検査（TR-S1〜TR-R）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR 0023](../decision/0023-cross-language-traceability.md)）。
+ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。
 ATRS が使うロケータの種別は次のとおり（文法は各言語パックの `locators.md`）。
 
 | 側 | 種別 | 言語パック |
 | --- | --- | --- |
-| 移植元 | `java:` `prop:` `msg:` `http:` `xml:` | [java/locators.md](../../.agents/skills/port-lang/references/java/locators.md) |
+| 移植元 | `java:` `prop:` `msg:` `http:` `xml:` `tmpl:` | [java/locators.md](../../.agents/skills/port-lang/references/java/locators.md) |
 | 移植元 | `sql:` `ddl:` `seed:` | [sql/locators.md](../../.agents/skills/port-lang/references/sql/locators.md) |
 | 移植先 | `rust:`（クレート `atrs`） | [rust/locators.md](../../.agents/skills/port-lang/references/rust/locators.md) |
 | 両側 | `dep:` `lang:` | ATRS で必須の `dep:` は [atrs-porting.md](../rules/atrs-porting.md#source-に必ず含める依存atrs) |
@@ -50,9 +51,14 @@ ATRS が使うロケータの種別は次のとおり（文法は各言語パッ
 def calculateBasicFare ... -- [Source]
 
 -- lean/Abstraction/Fare.lean
+@[deviation "D-001"]
+def dev_D001 : Spec.Fare.BasicFareInput → Prop := ...   -- 前提型の差異（ABS-101 で確定）
+
 @[obligation "ABS-001"]
-theorem basicFare_source_eq_spec ... :
-  α (SourceModel.Fare.calculateBasicFare ...) = Spec.Fare.basicFare ...
+theorem basicFare_refines :
+  Machine.Refines (Spec.Fare.basicFareMachine.restrict dev_D001)
+                  SourceModel.Fare.basicFareMachine
+                  basicFareGlue
 
 -- lean/Spec/Fare.lean
 @[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
@@ -60,8 +66,10 @@ def basicFare ... -- [Spec]
 
 -- lean/Refinement/Fare.lean
 @[obligation "REF-004"]
-theorem basicFare_target_refines_spec ... :
-  β (TargetModel.Fare.basicFare ...) = Spec.Fare.basicFare ...
+theorem basicFare_target_refines_spec :
+  Machine.Refines Spec.Fare.basicFareMachine
+                  TargetModel.Fare.basicFareMachine
+                  basicFareGlue
 
 -- lean/TargetModel/Fare.lean
 @[target "rust:atrs::fare::basic_fare@<h3>", "lang:rust#integer-overflow@<rust の版>"]
@@ -69,7 +77,7 @@ def basicFare ... -- [Target]
 ```
 
 ```rust
-// rust/src/model/fare.rs
+// rust/src/model/fare.rs   （lake exe gen-verus の生成物。手で編集しない）
 /// trace: models TargetModel.Fare.basicFare @<m1>
 pub open spec fn basic_fare(...) -> int { ... }
 
@@ -84,10 +92,11 @@ pub fn basic_fare(...) -> (r: u64)
 | 検査 | この例での判定 |
 | --- | --- |
 | TR-S1 | `calculateBasicFare`・`getMultiplicationRatio` は `@[source]` で覆われる。同じクラスの他のメソッドは、別の `SourceModel` 定義が覆う必要がある |
-| TR-S2 | `<h1>`・`<h2>` が `source-inventory` の現在値と一致すれば合格。上流の版上げで本文が変わると失敗し、見直しを求める |
+| TR-S2 | `<h1>`・`<h2>` が `source-inventory` の現在値と一致すれば合格。上流の版上げで本文が変わると失敗する。`tools/trace rehash` が、`source-model/fare` のベクタのオラクル照合を実行し、合格した場合に限ってハッシュを更新する |
 | TR-T1 | `TargetModel.Fare.basicFare` は `@[target]` を持つ。Rust の `atrs::fare::basic_fare` は覆われる。`atrs::model::fare::basic_fare`（写し）は TR-T2 で扱う |
 | TR-T2 | `<h3>` が `target-inventory` と、`<m1>` が `TargetModel.Fare.basicFare` の Merkle ハッシュと一致すれば合格。Rust の本文を変えると `<h3>` がずれ、Lean を変えると `<m1>` がずれる |
-| TR-P | `SourceModel.Fare.calculateBasicFare` は ABS-001 の型に、`TargetModel.Fare.basicFare` は REF-004 の型に現れるので合格 |
+| TR-P | `SourceModel.Fare.calculateBasicFare` は、R 課題 ABS-001 の具体機械 `SourceModel.Fare.basicFareMachine` の操作（定義が参照する定数の閉包）に含まれる。`TargetModel.Fare.basicFare` も同様に REF-004 の具体機械に含まれるので合格 |
+| TR-D | D-001 の `Abstraction.Fare.dev_D001` が `@[deviation "D-001"]` を持ち、ABS-001 の型に現れ、W 課題 ABS-101 があれば合格 |
 | TR-X | Lean の移植元側に `rust:` が無く、Rust と `TargetModel` に `java:` が無いので合格 |
 | TR-R | 参照先がすべて存在すれば合格 |
 
@@ -136,3 +145,5 @@ pub fn basic_fare(...) -> (r: u64)
 ## 対象外
 
 `w/app/common/logging/AccessLogFilter.java`、`atrs-env/**`、`atrs-selenium/**`、`atrs-web/src/main/webapp/**/*.html` の HTML 構造・静的資源（[ADR 0002](../decision/0002-porting-scope.md)）。道具の導入時に `trace/out-of-scope.json` へ移す。
+
+ただし、テンプレートのうち [Source] の観測可能な振る舞いに影響する式は、対象外にしない。たとえば支払期限の曜日の書式（`#temporals.format`。既知差異 D-019）がこれに当たる。これらは `tmpl:` ロケータで追跡する（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。

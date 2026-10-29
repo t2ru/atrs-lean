@@ -83,7 +83,7 @@ generated:
 | ディレクトリ | `type` | 種別固有のキー |
 | --- | --- | --- |
 | `decision/` | `Architecture Decision Record` | `decision_status`, `superseded_by`, `date`, `decision-makers`, `consulted`, `informed`（[decision-records.md](decision-records.md)） |
-| `spec/` | `Specification` | `models`（その文書が扱うモデル: `spec`, `source`）、`spec_role`（`normative` / `meta` / `draft` / `informative`。[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md#区分)） |
+| `spec/` | `Specification` | `models`（その文書が扱うモデル: `spec`, `source`, `target`）、`spec_role`（`normative` / `meta` / `draft` / `informative`。[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md#区分)） |
 | `rules/` | `Guideline` | — |
 | `backlog/` | `Backlog Item` | `id`, `state`, `depends_on`（[backlog.md](backlog.md)） |
 | 各ディレクトリの `README.md` | `Overview` | — |

@@ -5,7 +5,8 @@
 ```
 
 - 追跡は ①（移植元ソース ⇔ `SourceModel`）と ②（`TargetModel` ⇔ 移植先ソース）の **2 本だけ** である。
-- 内側は追跡ではなく **証明** でつながる。
+- 内側は追跡ではなく **証明**（B メソッドのリファインメント。[architecture.md](architecture.md#リファインメントb-メソッド)）でつながる。
+- 追跡は「どこがどこに対応するか」を示す。「一致すること」は、決定論的な検査で示す（[verification.md](verification.md)）。両者は検査済みハッシュで結びつく。
 - 移植元ソースと移植先ソースを直接つないではならない。影響分析は証明グラフをたどって行う。
 - ① と ② は同じ仕組みを使う。違いは、使う言語パック（移植元の言語か、移植先の言語か）と、注釈の名前（`@[source]` / `@[target]`）だけである。
 
@@ -37,7 +38,7 @@ locator = kind ":" body
 | `trace/target-inventory.json` | 移植先ソースを走査した、同じ形式の一覧 |
 | `trace/manifest.json` | 全ノードと型付きのリンク（生成） |
 | `trace/renames.json` | 版上げ時の、ハッシュで判別できない改名の対応（手書き） |
-| `trace/out-of-scope.json` | 追跡の対象外とするロケータと理由（手書き） |
+| `trace/out-of-scope.json` | 追跡の対象外とするロケータと、根拠の意思決定記録（移植の範囲外としたもの。手書き） |
 
 - インベントリの取り方（パーサ・正規化の規則）は言語パックの `locators.md` が定める。
 - `dep`・`lang` の項目は、本文ハッシュの代わりに版文字列を持つ。
@@ -46,19 +47,28 @@ locator = kind ":" body
 
 | 置き場所 | 注釈 | リンク |
 | --- | --- | --- |
-| `SourceModel`, 移植元の `LangSemantics` | `@[source "<ロケータ>@<確認済みハッシュ>", …]` | ① |
-| `TargetModel`, 移植先の `LangSemantics` | `@[target "<ロケータ>@<確認済みハッシュ>", …]` | ② |
-| 移植先ソース内のモデルの写し（例: Verus の spec 関数） | `trace: models <TargetModel の完全名> @<Lean Merkle ハッシュ>`（書き方は言語パックの `layout.md`） | ②（逆向きの確認） |
+| `SourceModel`, 移植元の `LangSemantics` | `@[source "<ロケータ>@<検査済みハッシュ>", …]` | ① |
+| `TargetModel`, 移植先の `LangSemantics` | `@[target "<ロケータ>@<検査済みハッシュ>", …]` | ② |
+| 移植先ソース内のモデルの写し（例: Verus の spec 関数。生成物） | `trace: models <TargetModel の完全名> @<Lean Merkle ハッシュ>`（生成器が書く。書き方は言語パックの `layout.md`） | ②（逆向きの確認） |
 | `Abstraction`, `Refinement` | `@[obligation "ABS-NNN" / "REF-NNN"]`。モデル間の対応は定理の型から自動導出する | 内側（証明） |
+| 差異の述語・成分 | `@[deviation "D-NNN" / "T-NNN"]` | 内側（差異） |
 | `Spec` | `@[spec_doc "<仕様文書#アンカー>"]`、`@[no_source "<理由>"]` | 文書 |
 | ベクタ | `modelDef`, `upstream`（[conformance.md](conformance.md)） | テスト |
 
 属性の定義と `trace-dump` は [lean/trace-attributes.md](lean/trace-attributes.md)。
 
-### 確認済みハッシュ
+### 検査済みハッシュ
 
-注釈には、相手側を確認した時点のハッシュを記録する。現在の値とずれたら「要再確認」とし、検査を失敗させる。
-再確認の結果、振る舞いが変わっていなければハッシュだけを更新する。変わっていればモデルを直す。
+注釈のハッシュは、**その版で、その定義を対象とする決定論的な検査が合格したこと** の記録である。対象となる検査は、ベクタの照合・オラクル・差分オラクル・検証器の証明・処理系の差分実行である。
+現在の値とずれたら「要再検査」とし、検査を失敗させる。
+
+- ハッシュの更新は道具（`rehash`）だけが行う。道具は、対象の定義にかかる決定論的な検査を実行し、すべて合格したときに限って書き換える。合格しなければ、モデルかソースを直す。
+- 人や LLM の判断だけでハッシュを書き換えてはならない。
+- 対象の定義を覆う検査が 1 つも無ければ、ハッシュは更新できない。先に検査を足す。
+- どの検査が合格したかを、ソースの本文ハッシュとモデルの定義の Merkle ハッシュの組に対して manifest に記録する。どちらが変わっても再検査が必要になる。
+- 写しのハッシュ（`trace: models`）は、生成器が書く。
+- `renames.json` の改名の対応も、`rehash` が新しいロケータについて決定論的な検査を実行し、合格したときに限って受け入れる。
+- 追跡の道具自身（パーサと本文の正規化）は、信頼の基盤である。正規化では、文字列リテラルの中身を保つ。
 
 | 境界 | ずれる契機 |
 | --- | --- |
@@ -68,23 +78,29 @@ locator = kind ":" body
 
 ### 直接接続の禁止
 
-- 移植元側の層（`SourceModel`, `Abstraction`, 移植元の `LangSemantics`, `Spec`）に、移植先の言語のロケータを書いてはならない。
-- 移植先側の層（`TargetModel`, `Refinement`, 移植先の `LangSemantics`）と移植先ソースに、移植元の言語のロケータを書いてはならない。
+- 移植元側の層（`SourceModel`, `Abstraction`, 移植元の `LangSemantics`）と、どちらの側にも属さない `Spec` に、移植先の言語のロケータ（移植先の言語パックが定めるすべての kind）を書いてはならない。
+- 移植先側の層（`TargetModel`, `Refinement`, 移植先の `LangSemantics`）と移植先ソースに、移植元の言語のロケータ（移植元の言語パックが定めるすべての kind）を書いてはならない。
 - 同じ言語が移植元と移植先の両方になる場合（例: Java から Java への移植）は、ロケータにリポジトリの区別を付ける（`java@source:` / `java@target:`）。
+
+### 対象外
+
+- `out-of-scope.json` に載せてよいのは、移植の範囲外とする意思決定がされたものだけである。各項目に、その意思決定記録を書く。
+- 移植の範囲外のソースでも、移植元モデルの振る舞いに影響するもの（既知差異の出所になるものなど）は、対象外にしてはならない。例: 画面テンプレートの書式処理。
 
 ## 検査
 
 | ID | 失敗条件 |
 | --- | --- |
 | TR-S1 | スコープ内の `source-inventory` の項目が `@[source]` で覆われず、`out-of-scope.json` にも無い |
-| TR-S2 | `@[source]` のハッシュが `source-inventory` と一致しない |
-| TR-T1 | `TargetModel` の公開定義に `@[target]` が無い。または `target-inventory` の公開項目が覆われず、対象外でもない |
-| TR-T2 | `@[target]` のハッシュが `target-inventory` と、写しのハッシュが Lean の Merkle ハッシュと一致しない |
-| TR-P | `SourceModel` の公開定義に `Abstraction` 定理が、`TargetModel` の公開定義に `Refinement` 定理が無い（理由付きの例外を除く） |
+| TR-S2 | `@[source]` のハッシュが `source-inventory` と一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている（モデル側だけを直した場合も再検査を求める） |
+| TR-T1 | `TargetModel` の公開定義に `@[target]` が無い。または `target-inventory` の公開項目が覆われず、対象外でもない。生成した写しは対象外とする（再生成と TR-T2 で確かめる） |
+| TR-T2 | `@[target]` のハッシュが `target-inventory` と、写しのハッシュが Lean の Merkle ハッシュと一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている |
+| TR-P | `SourceModel` の公開操作が、どの R 課題（`Abstraction`）の定理にも現れない。または、`TargetModel` の公開操作が、どの R 課題（`Refinement`）の定理にも現れない。例外は無い |
+| TR-D | 次のどれかに当たる。<br>- 登録簿の前提型・観測型の差異（`D-NNN` / `T-NNN`）と `@[deviation]` が 1 対 1 でない<br>- `@[deviation]` が、どの R 課題の定理の型にも現れない<br>- 差異に W 課題が無い<br>- R 課題の定理に、`@[deviation]`・PRE・INV 以外の仮定がある |
 | TR-X | 直接接続の禁止に違反している |
-| TR-R | 存在しない Lean 名・ロケータ・課題 ID への参照がある |
+| TR-R | 存在しない Lean 名・ロケータ・課題 ID・差異 ID への参照がある |
 
-段階導入: モデルとソースがそろうまで、TR-S1・TR-T1・TR-P は警告にしてよい。他は最初から失敗とする。
+段階導入: TR-S1・TR-T1・TR-P・TR-D を警告にしてよいのは、該当する機能の作業項目が完了していない間だけである。完了を宣言する時点で、その機能について全検査が失敗扱いで通っていなければならない。他の検査は最初から失敗とする。
 
 ## 道具
 
@@ -96,6 +112,7 @@ locator = kind ":" body
 | `ingest-lean` | `lake exe trace-dump` の出力の取り込み |
 | `manifest` | manifest と、仕様文書の生成区画（① と ② の 2 本の表）の生成 |
 | `check` | TR 検査 |
+| `rehash` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
 | `diff` | 新旧インベントリの分類（[upgrade.md](upgrade.md)） |
 | `impact` | 証明グラフに沿った影響一覧 |
 

@@ -22,7 +22,6 @@ generated:
 - `upstream/atrs` を submodule として追加（commit `f4bfbf0615eb91805546c9c780d4761be92ce17e`。Windows の `core.longpaths=true` を手順に書く）
 - `trace/upstream.json`（repo, variant, release, commit, `pom.xml` から抽出した依存の版, Java・PostgreSQL の版）
 - `trace/out-of-scope.json`（[traceability.md](../spec/traceability.md#対象外) の内容を移す）
-- 最初の `trace/source-inventory.json`（[backlog 0024](0024-trace-tooling.md) と同時に）
 
 ## 対象外
 
@@ -31,7 +30,6 @@ generated:
 ## 完了条件
 
 - [ ] submodule の commit が `trace/upstream.json` と一致する
-- [ ] インベントリの件数（Java メソッド・SQL 文・設定キー・メッセージキー）を記録した
 
 ## 参照
 

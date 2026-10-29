@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 sources:
   - id: flight-repo
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/flight/FlightRepository.xml
@@ -84,3 +84,4 @@ Chosen option: "リポジトリ契約 + ユースケース単位の原子性", b
 * 後続: [ADR 0030](0030-member-update-in-single-transaction.md)（会員情報変更の照合と更新を 1 トランザクションにし、原子性の対象にレポート生成を含める。一覧は [spec/ports.md](../spec/ports.md#トランザクション) を正とする）
 
 [^flight-repo]: atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/flight/FlightRepository.xml `findByVacantSeatSearchCriteria`, `findOneForUpdate`
+* （補足 2026-10-30・訂正）Decision Outcome の「原典の `FOR UPDATE` はこの保証の一実装である」は不正確である。原典は PostgreSQL の既定の分離レベル READ COMMITTED で動き、`FOR UPDATE` は予約での空席行の競合だけを防ぐ。会員情報変更などでは直列化可能でない（既知差異 D-013、モデル外の差異 D-025。[spec/abstraction.md](../spec/abstraction.md#既知差異)）。並行実行とモデルとの一致は [spec/assurance.md](../spec/assurance.md) に限界として扱う。`Conflict` の扱いは [ADR 0037](0037-conflict-as-spec-nondeterminism.md)。

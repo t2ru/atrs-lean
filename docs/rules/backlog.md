@@ -74,6 +74,12 @@ generated:
 
 - 完了条件のチェックボックスがすべて埋まっている。
 - 関係する spec・ADR・[traceability.md](../spec/traceability.md) が更新されている。
-- Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry` と新規 `axiom` が無い。
+- Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
+- 基本原則（[ADR 0033](../decision/0033-foundational-principles.md)）を満たす。項目が扱う機能について、次をすべて満たす。
+  - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。
+  - 両端の決定論的な手段がすべて通る（`source-model/` ベクタと Java オラクルの照合、SQL の差分実行、`target-model/` ベクタ、写しの再生成、Verus・Kani）。
+  - 追跡の検査 TR-*（TR-D を含む）が失敗扱いで通る。
+  - 決定論的な手段の届かない部分が [assurance.md](../spec/assurance.md) に載っている。
+  - 項目の範囲が一部だけの場合は、残りを扱う項目が存在する。
 - 新しい `TODO(spec)` を残した場合、それを扱う backlog 項目が存在する。
 - 変更を `git commit` した（push はしない。[version-control.md](version-control.md)）。

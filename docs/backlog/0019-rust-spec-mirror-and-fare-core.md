@@ -5,10 +5,10 @@ description: "Lean TargetModel.Fare を Verus の model に写し、Rust の運�
 tags: [backlog, rust, verus, fare]
 id: "0019"
 state: todo
-depends_on: ["0018", "0022"]
+depends_on: ["0018", "0022", "0028", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Rust: 運賃計算の移植先ソースと TargetModel の写し
@@ -21,10 +21,10 @@ generated:
 
 ## 範囲
 
-- `rust/src/model/fare.rs`（`TargetModel.Fare` の Verus 写し。`/// trace: models … @hash`）
+- `rust/src/model/fare.rs`（`TargetModel.Fare` から `lake exe gen-verus` で生成した Verus の写し。手で編集しない）
 - `rust/src/fare.rs`（`u64` 等、`requires` で値域、`ensures` で `model` と一致）
 - `rust/tests/`: ベクタ実行器（JSON 読み込みと操作名の割当）
-- SRC-001・SRC-002（運賃分）
+- SRC-001・SRC-002・SRC-003・SRC-009（運賃分）
 
 ## 対象外
 
@@ -32,9 +32,10 @@ generated:
 
 ## 完了条件
 
-- [ ] Verus の検証が `assume`・`admit` 無しで通る
+- [ ] 写しの再生成で差分が無い（SRC-002）
+- [ ] Verus の検証が `assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` 無しで通り、`gen-verus --check-contracts` が通る
 - [ ] `conformance/target-model/fare/`・`shared/fare/` の全ベクタが通る
-- [ ] TR-T1・TR-T2・TR-X が通る
+- [ ] TR-T1・TR-T2・TR-X が通る（SRC-007・SRC-008）
 - [ ] [refinement.md](../spec/refinement.md) の状況欄を更新した
 
 ## 参照

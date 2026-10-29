@@ -9,14 +9,14 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 抽象モデルの数値は任意精度整数と明示的な丸めで定義する
 
 ## Context and Problem Statement
 
-抽象モデル [Spec]（[ADR 0004](0004-two-layer-model-java-faithful-and-abstract.md)）は他言語移植の第一の対象である。
+抽象モデル [Spec]（[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)）は他言語移植の第一の対象である。
 金額・人数・日数・百分率をどの数値型で表し、除算と丸めをどう定義するかを決める。
 
 ## Decision Drivers

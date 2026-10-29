@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 言語中立な適合テストベクタを JSON で管理し、全実装の完了条件とする
@@ -38,7 +38,7 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 * 置き場所: リポジトリ直下の `conformance/`。
   * `conformance/spec/<feature>/*.json` — [Spec] の期待値
   * `conformance/source-model/<feature>/*.json` — [Source] の期待値
-  * `conformance/target-model/<feature>/*.json` — 移植先モデル `TargetModel` の期待値（Lean `TargetModel` を実行して生成。[ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)）
+  * `conformance/target-model/<feature>/*.json` — 移植先モデル `TargetModel` の期待値（Lean `TargetModel` を実行して生成。[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）
   * `conformance/shared/<feature>/*.json` — 複数のモデルで同じ期待値
   * `conformance/fixtures/*.json` — マスタデータ・設定値などの共有入力
 * `spec/` と `shared/` の期待値は、正規仕様である Lean `Spec` を実行して生成する（[ADR 0021](0021-lean-spec-as-normative-source.md)）。`source-model/` の期待値は Lean `SourceModel` の実行と Java オラクルで得る。

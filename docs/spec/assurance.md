@@ -1,0 +1,109 @@
+---
+type: Specification
+title: "保証の限界"
+description: "ソース⇔モデルの一致を確かめる決定論的な手段と、手段の届かない部分（保証の限界）・信頼の基盤を境界ごとにすべて列挙する。"
+tags: [spec, assurance, verification, traceability]
+status: draft
+spec_role: meta
+models: [spec, source]
+generated:
+  by: claude-code/claude-opus-5-5
+  at: 2026-10-30T10:00:00+09:00
+---
+
+# 保証の限界
+
+> **区分: メタ情報（meta）。** 基本原則（[ADR 0033](../decision/0033-foundational-principles.md)）の原則 1 は、2 つのことを求める。1 つは、両端の一致を決定論的な検証または変換で確かめることである。もう 1 つは、手段の届かない部分を文書に明示することである。本書はその一覧である。
+
+- **本書に無い限界があってはならない。** 次のときは、同じ変更で本書に追記する。
+  - 新しい手段を採用したとき
+  - 手段の対象外を作ったとき（ハーネスの対象外、Kani の境界、ベクタに無い入力の範囲、`#[verifier::external]` など）
+- 人や LLM のレビューは、ここでは手段として数えない（補助にとどまる）。
+- 手段の一般的な説明は、スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/verification.md) と各言語パックの `verification.md` による。
+- 「（付録に記入）」とある行は、詳細な範囲を付録の表に記入する。記入する backlog 項目を付録に示す。
+
+## 移植元ソース ⇔ SourceModel
+
+| 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
+| --- | --- | --- | --- |
+| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力 | JVM（`trace/upstream.json` の版） |
+| フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog 0013](../backlog/0013-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
+| リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog 0016](../backlog/0016-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
+| 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | Thymeleaf |
+| 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0026](../backlog/0026-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
+| 改名の対応（`trace/renames.json`） | `tools/trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | `tools/trace` |
+| 「今日」に依存する処理 | オラクルを JST・固定した時計で実行する | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
+| 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)） | — |
+| セッション・Cookie・トランザクショントークン・CSRF（規範節） | HTTP レベルのオラクルで、ステータスと遷移先を照合する | セッション ID の扱い（[D-016](abstraction.md#既知差異)）、Cookie 属性（[D-024](abstraction.md#既知差異)）。トークンの値そのもの | Spring Security |
+| REST の Basic 認証・日付の JSON 表現・エラー画面への遷移（規範節） | HTTP レベルのオラクル | ベクタの入力の外 | Spring Security、Jackson |
+| 採番（シーケンス）の一意性・巻き戻らないこと | SQL の差分実行（`nextval` の結果） | 最大値に達した後（前提型の差異 [D-009](abstraction.md#既知差異) の前提の外） | PostgreSQL のシーケンス |
+| ReportStore の `publish` の原子性・ReportQueue の配信保証のうち、プロセスの異常終了に対するもの（規範節） | なし（原典は ActiveMQ Artemis を内蔵し、ファイルの移動に OS を使う） | 異常終了をまたぐ配信回数と、ファイルの原子的な移動 | ActiveMQ Artemis、OS のファイル操作 |
+| パスワードの照合（PBKDF2）・パスワードハッシュの互換（規範節） | なし。`SourceModel` は `PasswordEncoder` を raw について単射な符号化として写し（ABS-024）、オラクルでは `{test}` 形式に差し替える（[conformance.md](conformance.md)） | 原典の `{pbkdf2}`（`DelegatingPasswordEncoder`）の経路は実行されない。PBKDF2 の衝突（モデルは衝突しないものとして写す） | PBKDF2 の衝突困難性 |
+| `LangSemantics.Java` | double は、Lean のネイティブ `Float`（ホストの IEEE 754 binary64）とビット単位で突き合わせる。`BigDecimal`・`String`・`LocalDate` は、写した演算ごとに JVM の実行結果と突き合わせる（[backlog 0002](../backlog/0002-lang-semantics-java.md)） | 突き合わせた入力の範囲の外 | ホストの IEEE 754 binary64 が JVM の `double`（Java 17 以降は常に strictfp）と同じであること、JVM |
+| `LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` | PostgreSQL の実行結果との突き合わせ（[backlog 0016](../backlog/0016-lang-semantics-sql.md)） | 突き合わせた値の範囲の外 | PostgreSQL |
+
+## TargetModel ⇔ 移植先ソース
+
+| 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
+| --- | --- | --- | --- |
+| `rust/src/model/`（Verus の写し）と、各実行関数の `requires pre_x`・`ensures r == model::x` の形 | `TargetModel` から生成する（SRC-002）。形を `gen-verus --check-contracts` で検査する（SRC-003） | — | 生成器（[backlog 0028](../backlog/0028-verus-mirror-generator.md)）と、スキルの assets から写す対応表 `rust/src/model_prelude.rs`（例による照合だけ） |
+| 純粋な計算・ユースケースの中核・インメモリのアダプタの状態遷移 | Verus で、全入力について `model/` との一致と溢れが無いことを証明する（SRC-003）。`target-model/` のベクタを照合する（SRC-001） | なし（`verus!` の中） | Verus、vstd、rustc |
+| `#[verifier::external]` の境界 | 一覧（下表）に載せたものに限る。CI で一覧と一致することを確かめる | 各境界の行を参照 | — |
+| インメモリのアダプタの `Mutex` の層（external） | Kani（SRC-004） | Kani の境界の外（付録に記入） | Rust 標準の `Mutex` |
+| `verus!` の外のコード（JSON の変換・HTTP の接続） | Kani（SRC-004）と、HTTP レベルのベクタ（SRC-006） | Kani の境界の外（付録に記入）。ベクタの入力の外 | Kani、rustc、採用したクレート（`trace/target.json`） |
+| DB のアダプタ（external） | SQL の差分実行で `TargetModel.Adapter` の SQL の式と照合し（SRC-010）、固定フィクスチャで結合テストする（SRC-005） | 照合したデータ・テストの入力の外（付録に記入） | PostgreSQL |
+| ファイル・時計のアダプタ（external） | 固定フィクスチャの結合テスト（SRC-005）。時計は Asia/Tokyo の変換を固定した時刻で照合する | テストの入力の外。`publish` の原子性は OS の rename に依存する | OS のファイル操作、タイムゾーンのデータ |
+| 並行実行（直列化可能性） | インメモリでは、`Mutex` の下で操作を 1 つずつ実行する。DB では SERIALIZABLE と再試行を指定し、照会は `READ ONLY DEFERRABLE` で実行する。固定の実行順で結合テストする（SRC-005） | テストしていない実行順 | PostgreSQL の SERIALIZABLE の実装、Rust 標準の `Mutex` |
+| 活性（`Conflict`・I/O 失敗を返さないこと） | ベクタと結合テストで、失敗が出ないことを確かめる | 常に失敗を返す実装もリファインメントになる（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md#活性の限界)）。テストしていない状況での失敗の頻度 | — |
+| HTTP の規範節（セッション・Cookie・CSRF・トランザクショントークン・Basic 認証・エラー画面） | HTTP レベルのベクタ（SRC-006） | ベクタの入力の外 | 採用した Web フレームワーク |
+| 禁止 API（`std::time`・浮動小数点型など） | clippy の `disallowed-methods` / `disallowed-types`（SRC-009） | 一覧に載っていない API | clippy |
+| `LangSemantics.Rust` | rustc でビルドした実行結果との突き合わせ（[backlog 0021](../backlog/0021-lang-semantics-rust.md)） | 突き合わせた入力の範囲の外 | rustc |
+| パスワードの照合 | インメモリの参照実装は契約を厳密に満たす（Verus） | 本番のハッシュ関数の衝突 | 採用したハッシュ関数の衝突困難性 |
+| Verus の `assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` | 使わない（CI で数える） | （現在なし。使う場合は [refinement.md](refinement.md#未証明の前提) とここに列挙する） | — |
+
+### `#[verifier::external]` の一覧
+
+| 場所 | 理由 | 確かめる手段 |
+| --- | --- | --- |
+| `rust/src/adapter/in_memory` の `Mutex` の層 | std の `Mutex` を Verus で扱わない | Kani（SRC-004） |
+| `rust/src/adapter/db` | DB との通信 | SQL の差分実行（SRC-010）、結合テスト（SRC-005） |
+| `rust/src/adapter/file`・`rust/src/adapter/clock` | OS・時計との通信 | 結合テスト（SRC-005） |
+| `rust/src/adapter/http` | Web フレームワークとの接続 | Kani（SRC-004）、HTTP レベルのベクタ（SRC-006） |
+
+## モデル間（Lean の証明）
+
+| 対象 | 手段 | 信頼の基盤 |
+| --- | --- | --- |
+| `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 0027](../backlog/0027-machine-refinement-framework.md)） |
+| ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
+| 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
+
+## 追跡の道具
+
+| 対象 | 手段 | 信頼の基盤 |
+| --- | --- | --- |
+| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust・XML・properties のパーサ）。正規化は空白とコメントを除き、文字列リテラルの中身は保つ | パーサと正規化の規則（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)） |
+| Lean の Merkle ハッシュ | `lake exe trace-dump`。同じ層と、依存する `LangSemantics`・`Machine` の定数を合成する | Lean の `Expr` のハッシュ |
+| TR 検査と検査済みハッシュの更新 | `tools/trace check`・`tools/trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | `tools/trace` |
+
+## 仕様の外（規範節）の対応
+
+[Spec] の外の規範節（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）は、リファインメントの証明の対象にならない。各規範節を確かめる行は次のとおり。
+
+| 規範節 | 移植元側の行 | 移植先側の行 |
+| --- | --- | --- |
+| [トランザクション](ports.md#トランザクション) | 並行実行 | 並行実行 |
+| [ReportStore の `publish` の原子性](ports.md#reportstore)・[ReportQueue の配信保証](ports.md#reportqueue)（プロセスの異常終了に対するもの） | ReportStore・ReportQueue | ファイル・時計のアダプタ |
+| [Clock のタイムゾーン](ports.md#clock) | 「今日」に依存する処理 | ファイル・時計のアダプタ |
+| [セッション](http-contract.md#セッション)・CSRF・トランザクショントークン | セッション・Cookie・トランザクショントークン・CSRF | HTTP の規範節 |
+| REST の Basic 認証・日付の JSON 表現・エラー画面（[http-contract.md](http-contract.md)） | REST の Basic 認証・日付の JSON 表現・エラー画面への遷移 | HTTP の規範節 |
+| パスワードハッシュの互換（[ADR 0015](../decision/0015-password-hashing-port.md)） | パスワードの照合 | パスワードの照合 |
+
+## 付録: 範囲の詳細（記入待ち）
+
+| 対象 | 記入する内容 | 記入する backlog |
+| --- | --- | --- |
+| SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ | [0006](../backlog/0006-flight-search-usecase.md)、[0007](../backlog/0007-reservation-usecase.md)、[0008](../backlog/0008-member-usecases-and-input-validation.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0029](../backlog/0029-rust-external-adapters.md) |
+| Kani のハーネス（ハーネスごと） | `kani::any()` の範囲、ループの展開数、保証しないこと | [0011](../backlog/0011-in-memory-adapters-and-seed-data.md)、[0014](../backlog/0014-http-contract-adapter.md) |
+| オラクルのハーネスの対象外 | 固定できない操作、差し替えた構成 | [0013](../backlog/0013-java-oracle-harness.md) |
+| 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [0002](../backlog/0002-lang-semantics-java.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0021](../backlog/0021-lang-semantics-rust.md) |

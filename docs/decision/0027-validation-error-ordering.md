@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:40:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 sources:
   - id: hv-context
     resource: https://github.com/hibernate/hibernate-validator/blob/9.1.0.Final/engine/src/main/java/org/hibernate/validator/internal/engine/validationcontext/AbstractValidationContext.java
@@ -74,3 +74,4 @@ Chosen option: "[Source] は順序不定とし、[Spec] だけで並びを定め
 * [ADR 0008](0008-errors-as-values-with-stable-codes.md)
 
 [^hv-context]: hibernate-validator 9.1.0.Final `AbstractValidationContext`（`failingConstraintViolations = new HashSet<>()`）
+* （補足 2026-10-30）[Source] の順序不定と [Spec] の定順との違いは、観測型の既知差異 D-022 として登録する（[spec/abstraction.md](../spec/abstraction.md#既知差異)、[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)）。B メソッドでは、具体側が抽象側より大きな非決定性を持つとリファインメントにならない。そこで出力の対応 αₒ のうちエラーの列を多重集合として比べる成分を、名前付きの差異成分とする。

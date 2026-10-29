@@ -5,10 +5,10 @@ description: "http-contract.md の画面遷移と REST API を Rust で実装し
 tags: [backlog, rust, http]
 id: "0014"
 state: todo
-depends_on: ["0011"]
+depends_on: ["0011", "0013", "0005", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Rust: HTTP 契約アダプタ
@@ -22,7 +22,8 @@ generated:
 ## 範囲
 
 - HTTP フレームワークの選定（ADR を作る。依存の版は `trace/target.json`）
-- `Spec.Http`（契約の抽象表現）と `TargetModel.Http`、`Refinement` の証明
+- `Spec.Http`（契約の抽象表現）と `TargetModel.Http`、R 課題 REF-007（`Refinement` の証明）
+- `SourceModel.Http` と R 課題 ABS-045、W 課題 ABS-117・ABS-119・ABS-120（D-017・D-019・D-020）。ABS-031・ABS-107（D-007）・ABS-126（D-026）、L 課題 ABS-047
 - `rust/src/adapter/http`（リクエスト → 業務機能 → 応答）
 - トランザクショントークン・CSRF（[http-contract.md](../spec/http-contract.md#共通) の規範節）
 - HTTP レベルの適合ベクタ（`conformance/*/http/`）と結合テスト
@@ -34,7 +35,11 @@ generated:
 ## 完了条件
 
 - [ ] [http-contract.md](../spec/http-contract.md) の全リクエストにベクタがある
-- [ ] SRC-006 を満たす
+- [ ] SRC-006・SRC-007・SRC-008 を満たす
+- [ ] HTTP の `source-model/` ベクタが、HTTP レベルの Java オラクルと一致する
+- [ ] Kani のハーネスの境界を [assurance.md](../spec/assurance.md) の付録に記入した
+- [ ] REF-007・ABS-031・ABS-045・ABS-047 と、関係する W 課題を証明し、TR-D が通る
+- [ ] HTTP の規範節で、ベクタで確かめきれない部分を [assurance.md](../spec/assurance.md) に記載した
 
 ## 参照
 

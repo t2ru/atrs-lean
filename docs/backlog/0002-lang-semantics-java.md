@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0001"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:53:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # LangSemantics.Java: Java 基本型の意味論
@@ -35,11 +35,13 @@ generated:
 ## 完了条件
 
 - [ ] `jdLit("0.01")` のビット表現が `0x3F847AE147AE147B` であることを証明した
-- [ ] `jdmul`, `jdsub`, `jd2i` がネイティブ `Float` と一致することを、原典の値域を覆う入力でテストした
+- [ ] `jdmul`, `jdsub`, `jd2i` がネイティブ `Float` とビット単位で一致することを、原典の値域を覆う入力で突き合わせた
+- [ ] `BigDecimal`・`String`・`LocalDate` の写した演算を、JVM の実行結果と固定した入力の表で突き合わせた
+- [ ] 突き合わせた入力の範囲を [assurance.md](../spec/assurance.md) に記載した
 - [ ] `jd2i(jdmul(jd(1430), jdsub(jd(1), jdmul(jd(30), jdLit("0.01")))))` が 1000 になることを確認した
 - [ ] ATRS 固有モジュールを import していない
 
 ## 参照
 
 - [ADR 0005](../decision/0005-java-primitive-semantics.md)
-- [ADR 0018](../decision/0018-language-neutral-top-level-namespaces.md)
+- [ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)

@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -23,7 +23,17 @@ generated:
 | 移植先 | Rust | `references/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 0014](../decision/0014-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.1`。言語意味論の Lean モデルは、スキルの `assets/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+使うスキルの版: `metadata.version` = `0.2`。言語意味論の Lean モデルは、スキルの `assets/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+
+スキルの一般的な名前と、ATRS での置き場所は次のとおり。
+
+| スキルでの名前 | ATRS での置き場所 |
+| --- | --- |
+| 保証の限界の文書 | [spec/assurance.md](../spec/assurance.md) |
+| 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md) |
+| 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md) |
+| リファインメントの枠組み `Machine` | スキルの `assets/Machine/` を Lake 依存として取り込む（[backlog 0027](../backlog/0027-machine-refinement-framework.md)。[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)、[ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)） |
+| 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog 0028](../backlog/0028-verus-mirror-generator.md)） |
 
 ## リポジトリ配置
 
@@ -124,6 +134,9 @@ Spring の版上げで `StringTrimmerEditor.setAsText` が `trim()` から `stri
 
 1. インベントリ差分: `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` が「版の変化」になる。ATRS 本体のコードは不変。
 2. 差分オラクル: 全角空白（U+3000）で始まる氏名を入力するベクタで、旧版は「全角カタカナでない」エラー、新版は合格になり、差分が出る。
-3. 影響一覧: 入力検証の前処理（`SourceModel.Validation.trimInput`）→ ABS-030 → `Spec.Validation` が出る。
-4. 判断: 業務の意図は変わらないので `Spec` は維持する。`SourceModel` の前処理を直し、既知差異 `D-NNN`（Unicode 空白の扱い）を追加し、ABS-030 の前提に「入力の前後に、U+0020 以下以外の Unicode 空白を含まない」を加える。
+3. 影響一覧: 入力検証の前処理（`SourceModel.Validation.trimInput`）→ ABS-046（入力検証のリファインメント）→ `Spec.Validation` が出る。
+4. 判断: 業務の意図は変わらないので `Spec` は維持する。次の 3 つを行う。
+   - `SourceModel` の前処理を直す。
+   - 前提型の既知差異 `D-NNN`（Unicode 空白の扱い）を追加し、その述語 `dev_DNNN`「入力の前後に、U+0020 以下以外の Unicode 空白を含まない」を ABS-046 の仮定に加える。
+   - W 課題 `ABS-1NN`（全角空白で始まる氏名で結果が異なる例）を証明する。
 5. `Spec` を変えていないので、`Refinement`・`TargetModel`・Rust は影響を受けない。

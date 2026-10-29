@@ -50,5 +50,5 @@ generated:
 [Spec] は次を前提とする（[Source] では検査しない）。
 
 - `childFareRate ≤ 100`
-- すべての運賃種別について `discountRate ≤ childFareRate`（[fare-calculation.md](fare-calculation.md#合計金額) の小児運賃が負にならないため。既知差異 [D-003](abstraction.md#既知差異)）
+- すべての運賃種別について `discountRate ≤ childFareRate`（[fare-calculation.md](fare-calculation.md#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）
 - `adultPassengerMinAge ≤ representativeMinAge`

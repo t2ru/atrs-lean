@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 移植元の版上げに追従する。SourceModel は最新版のみ保持し、差分オラクルで振る舞いの変化を検出する
@@ -42,7 +42,7 @@ generated:
 
 Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラクル ＋ git タグ", because 構造を単純に保ちつつ、コードと振る舞いの両面から変化を機械的に洗い出せるため。
 
-* 上流は `upstream/atrs` に **git submodule** として取り込み、commit を固定する。追従中の版は `trace/upstream.json` に 1 か所で宣言する（[ADR 0023](0023-cross-language-traceability.md)）。
+* 上流は `upstream/atrs` に **git submodule** として取り込み、commit を固定する。追従中の版は `trace/upstream.json` に 1 か所で宣言する（[ADR 0036](0036-traceability-hash-as-deterministic-check-record.md)）。
 * 依存フレームワーク・処理系の挙動に依存する `SourceModel`・`LangSemantics.Java/Sql` の定義は、`dep:`・`lang:` ロケータを **必ず** `@[source]` に含める。依存の版が変わると、影響する定義が自動で出る。
 * **差分オラクル**: Java オラクルハーネス（[backlog 0013](../backlog/0013-java-oracle-harness.md)）を拡張し、`conformance/source-model/` の全ベクタ入力を旧版と新版の両方で実行して出力を比べる（[backlog 0026](../backlog/0026-differential-oracle.md)）。
 * 手順は [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) に定める。要点は次のとおり。
@@ -67,7 +67,7 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 ### Confirmation
 
 * 版上げのコミットに、版上げ ADR・更新された `trace/upstream.json`・影響一覧・差分オラクルの結果が含まれていることをレビューで確認する。
-* 版上げ後に TR 検査（[ADR 0023](0023-cross-language-traceability.md)）がすべて通る。
+* 版上げ後に TR 検査（[ADR 0036](0036-traceability-hash-as-deterministic-check-record.md)）がすべて通る。
 
 ## Pros and Cons of the Options
 
@@ -90,3 +90,4 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 
 * [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)
 * [backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md), [backlog 0026](../backlog/0026-differential-oracle.md)
+* （補足 2026-10-30）差分オラクルが比べるのはベクタの入力だけであり、その外での振る舞いの変化は検出できない。これは保証の限界として [spec/assurance.md](../spec/assurance.md) に記載する。`@[source]` のハッシュの更新は、[ADR 0036](0036-traceability-hash-as-deterministic-check-record.md) の `tools/trace rehash` が、決定論的な検査が合格したときに限って行う。

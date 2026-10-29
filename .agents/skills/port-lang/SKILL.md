@@ -3,7 +3,7 @@ name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application. Keywords: 言語間移植, language porting, migration, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/<lang>/ に記載。
 metadata:
-  version: "0.1"
+  version: "0.2"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -12,6 +12,7 @@ metadata:
 
 アプリケーションを、移植元言語から移植先言語へ **同じ振る舞いのまま** 移す。中間に Lean 4 による形式化を置く。
 移植元と移植先は直接は結ばない。Lean のモデルと証明を介してだけつなぐ。
+両端（ソース ⇔ モデル）は決定論的な検証または変換でつなぐ。内側（モデル ⇔ `Spec`）は B メソッドのリファインメントの証明でつなぐ。両者の違いは、すべて名前を付けて証明と文書に出す。
 
 ```
 移植元ソース ⇔trace⇔ SourceModel ─Abstraction→ Spec ←Refinement─ TargetModel ⇔trace⇔ 移植先ソース
@@ -23,9 +24,9 @@ metadata:
 | `LangSemantics.<lang>` | アプリに依存しない言語・処理系の意味論（例 `Java`, `Sql`, `Rust`） |
 | `SourceModel` | 移植元ソースの観測可能な振る舞いを、移植元言語の意味論ごと写す |
 | `Spec` | **正規仕様**。言語中立・厳密な整数演算・実行可能 |
-| `Abstraction` | `SourceModel` → `Spec` の定理（課題 `ABS-NNN`） |
+| `Abstraction` | `SourceModel` が `Spec` を B メソッドの意味でリファインする定理（課題 `ABS-NNN`） |
 | `TargetModel` | 移植先ソースの振る舞いを、移植先言語の意味論で写す |
-| `Refinement` | `Spec` → `TargetModel` の定理（課題 `REF-NNN`） |
+| `Refinement` | `TargetModel` が `Spec` を B メソッドの意味でリファインする定理（課題 `REF-NNN`） |
 
 詳細: [references/architecture.md](references/architecture.md)
 
@@ -37,11 +38,24 @@ metadata:
 
 ## 原則
 
+次の 3 つを基本原則とし、以下の規則のすべてに優先させる。
+
+- **A. 両端は決定論的に一致させる。** 移植元ソースと `SourceModel`、移植先ソースと `TargetModel` の一致は、**決定論的な検証または変換** で確認する。決定論的とは、機械が実行し、同じ入力に同じ判定を返すことをいう（[verification.md](references/verification.md#決定論的な手段)）。
+  - 人や LLM の判断は、一致の根拠にしない。
+  - 使える手段は言語ごとに異なる。言語パックの `verification.md` に手段と **保証の限界** を書く。プロジェクトは、残る限界をすべて一つの文書に列挙する。
+  - トレーサビリティを保つ（[traceability.md](references/traceability.md)）。
+- **B. 内側は B メソッドのリファインメントで結ぶ。** `SourceModel` と `TargetModel` は、それぞれ抽象機械 `Spec` をリファインする。リファインメントは、貼り合わせ不変条件と 3 つの証明義務（初期化・適用可能性・正しさ）で示す（[architecture.md](references/architecture.md#リファインメントb-メソッド)）。
+- **C. 差異はすべて明示する。** `Spec` とモデルが一致しない点は、既知差異（移植元側 `D-NNN`、移植先側 `T-NNN`）として、次の両方に置く。
+  - 文書の登録簿
+  - リファインメント定理の名前付きの仮定、または貼り合わせ関係の名前付きの成分（`@[deviation]`）
+
+  どちらか一方だけにある差異があってはならない。
+
 1. **正規仕様は Lean の `Spec`**。`Spec` で表現できない仕様（並行性、伝送・セキュリティ方式、実行環境、非機能）だけを Markdown の仕様文書に規範として書く（[spec-documents.md](references/spec-documents.md)）。
-2. **移植元を写すモデルと、意図を表すモデルを分ける**。`SourceModel` は不具合も含めて再現し、`Spec` は意図を表す。両者の差は既知差異 `D-NNN` として記録し、どの前提で一致するかを `Abstraction` で証明する。
+2. **移植元を写すモデルと、意図を表すモデルを分ける**。`SourceModel` は不具合も含めて再現し、`Spec` は意図を表す。両者の差は既知差異 `D-NNN` として記録し、`Abstraction` のリファインメント定理に名前付きの仮定（前提型）または成分（観測型）として出す。さらに、差異の証拠の定理を証明する。
 3. **`Spec` は言語中立に書く**。任意精度整数、明示的な丸め、浮動小数禁止、Unicode スカラ値、タイムゾーンの無い暦日、順序の明示、副作用はポート経由（[portability.md](references/portability.md)）。
-4. **トレースは両端の 2 本だけ**（移植元ソース ⇔ `SourceModel`、`TargetModel` ⇔ 移植先ソース）。リンクはモデル側の注釈に、確認済みハッシュ付きで書く。移植元と移植先を直接つないではならない（[traceability.md](references/traceability.md)）。
-5. **言語中立な適合テストベクタ** を各モデルから生成し、各ソースに通す（[conformance.md](references/conformance.md)）。
+4. **トレースは両端の 2 本だけ**（移植元ソース ⇔ `SourceModel`、`TargetModel` ⇔ 移植先ソース）。リンクはモデル側の注釈に書き、**検査済みハッシュ**（決定論的な検査が合格した版）を付ける。移植元と移植先を直接つないではならない（[traceability.md](references/traceability.md)）。
+5. **言語中立な適合テストベクタ** を各モデルから生成し、各ソースに通す（[conformance.md](references/conformance.md)）。移植先言語の検証器が使える場合は、`TargetModel` から検証器向けの写しを **生成** し、検証器でソースとの一致を証明する。写しを手で書いてはならない。
 6. 移植元側の層（`SourceModel`, `Abstraction`, 移植元の `LangSemantics`）と、移植先側の層（`TargetModel`, `Refinement`, 移植先の `LangSemantics`）は、互いに依存してはならない。
 
 ## 手順（要約）
@@ -51,12 +65,12 @@ metadata:
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。
 2. **草案を書く**。仕様文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/spec-documents.md)）。
 3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/lean/rules.md)）。
-4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する（一致・差異の特徴付け・安全性）。
-5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN` を証明する。
+4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R）と差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。
+5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN`（R・W）を証明する。
 6. **ベクタを生成する**。`Spec`・`SourceModel`・`TargetModel` を実行して期待値を作る。`SourceModel` 側は移植元オラクルでも確かめる（[conformance.md](references/conformance.md)）。
-7. **移植先ソースを書く**。`TargetModel` と同じ構造で書き（移植先の言語パックの `layout.md`）、`verification.md`・`harness.md` の手段で一致を確認する（例: Verus・Kani・照合テスト）。
-8. **両端を追跡する**。`@[source]` / `@[target]` を付け、ハッシュを道具の出力で埋める（[lean/trace-attributes.md](references/lean/trace-attributes.md)）。
-9. **検証する**。全ベクタ、全証明、追跡の検査 TR-*、言語ごとの検証器をすべて通す（[verification.md](references/verification.md)）。
+7. **移植先ソースを書く**。`TargetModel` と同じ構造で書く（移植先の言語パックの `layout.md`）。一致は `verification.md`・`harness.md` の決定論的な手段で確認する。例: 生成した写しに対する Verus の証明、Kani、照合テスト。
+8. **両端を追跡する**。`@[source]` / `@[target]` を付ける。ハッシュは、決定論的な検査が合格したときに道具が書き込む（[traceability.md](references/traceability.md#検査済みハッシュ)、[lean/trace-attributes.md](references/lean/trace-attributes.md)）。
+9. **検証し、限界を記録する**。全ベクタ、全証明、追跡の検査 TR-*（TR-D を含む）、言語ごとの検証器をすべて通す。手段の届かない部分を、保証の限界の文書に列挙する（[verification.md](references/verification.md)）。
 
 移植元・移植先の版上げは [upgrade.md](references/upgrade.md) の手順に従う（インベントリ差分＋差分オラクル→影響を証明グラフに沿って伝播→層ごとに判断）。
 
@@ -92,6 +106,8 @@ metadata:
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新） | `assets/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/LangSemantics/Rust/` |
+| `Machine`（抽象機械、B メソッドのリファインメントと証明義務）。**未整備** | `assets/Machine/`（予定） |
+| Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
 
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets"` とする（[lean/rules.md](references/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
 - 検査: `assets/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。
@@ -103,16 +119,20 @@ metadata:
 
 | 種類 | 内容 | 参照 |
 | --- | --- | --- |
-| 証明 | `ABS-NNN`, `REF-NNN` の定理が `sorry` 無し、新規 `axiom` 無し | [verification.md](references/verification.md) |
+| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形 | [verification.md](references/verification.md) |
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/conformance.md) |
-| 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（証明の存在）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/traceability.md) |
+| 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の文書と `@[deviation]` の対応）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/architecture.md) |
-| 言語ごと | 例: Verus・Kani・Java オラクル | 各言語パックの `verification.md`・`harness.md` |
+| 言語ごと | 例: 写しの再生成で差分が無いこと・Verus・Kani・Java オラクル・SQL の差分実行 | 各言語パックの `verification.md`・`harness.md` |
+| 保証の限界 | 決定論的な手段の届かない部分が、プロジェクトの限界の文書にすべて載っている | [verification.md](references/verification.md#保証の限界) |
 
 ## よくある落とし穴
 
 - `Spec` に移植元の偶発的な振る舞い（double の丸め、UTF-16 長、未規定の並び順）を持ち込む。これらは `SourceModel` で再現し、差異として記録する。
 - フレームワークの暗黙の処理（入力の前後の空白除去、検証エラーの並び、日付の JSON 形式）を見落とす。言語パックの `frameworks.md` の一覧で確認する。
 - `TargetModel` で移植先ソースの最適化を抽象化してしまう。抽象化は `Refinement` の仕事であり、`TargetModel` はソースの構造をそのまま写す。
-- 移植先言語の写し（例: Verus の spec 関数）を、証明済みとみなす。写しと Lean の対応は、規約・ハッシュ・ベクタで担保しているだけで、証明ではない。
+- 移植先言語の写し（例: Verus の spec 関数）を手で書く・手で直す。写しは `TargetModel` から生成し、再生成で差分が無いことを CI で確かめる。
+- 人の確認だけで追跡のハッシュを更新する。ハッシュは、決定論的な検査が合格した記録である。
+- 差異を文書や意思決定記録だけに書き、リファインメント定理の仮定・成分に出さない（またはその逆）。
+- 具体側に抽象側より大きな非決定性を持たせる（例: 順序不定の結果を、定順の `Spec` と直接比べる）。観測型の差異として明示する。
 - 移植元と移植先を直接結ぶ対応表を作る。版上げのたびに腐り、証明グラフと二重管理になる。

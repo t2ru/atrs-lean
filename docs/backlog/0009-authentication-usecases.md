@@ -5,10 +5,10 @@ description: "ログインの事前検査・照合・状態更新、ログアウ
 tags: [backlog, spec, source-model, authentication]
 id: "0009"
 state: todo
-depends_on: ["0008"]
+depends_on: ["0008", "0013", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 認証（A1/A2）
@@ -21,6 +21,8 @@ generated:
 
 - `Spec.UseCase.Auth`, `SourceModel.UseCase.Auth`
 - 事前検査の境界（会員番号の長さ 9/10/11、パスワードの長さ 7/8/20/21）のベクタ
+- R 課題 ABS-043（認証のユースケース）。D-006 の W 課題 ABS-106 は [backlog 0008](0008-member-usecases-and-input-validation.md) で示す
+- 未確定の差異「ログイン時の状態更新」の確定（[abstraction.md](../spec/abstraction.md#未確定の差異)）
 
 ## 対象外
 
@@ -29,6 +31,9 @@ generated:
 ## 完了条件
 
 - [ ] [authentication.md](../spec/authentication.md) の全手順がベクタで確認できる
+- [ ] ABS-043 と、認証の SPEC-001〜SPEC-004 を証明した
+- [ ] 認証の `source-model/` ベクタが Java オラクルと一致する
+- [ ] ログイン時の状態更新を Java オラクルで確かめた。差異があれば D-NNN と W 課題を登録・証明し、無ければ未確定の差異の表から消した
 
 ## 参照
 

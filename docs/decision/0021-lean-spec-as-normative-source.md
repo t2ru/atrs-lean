@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Lean の Spec を正規仕様とし、Spec で表現できない仕様だけを docs/spec で定義する
@@ -42,7 +42,7 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 1. Lean `Spec`（型・関数・定理）: 業務規則の正規の定義
 2. `docs/spec` の **規範節**: `Spec` で表現できない仕様の正規の定義
 3. 適合テストベクタ `conformance/`: `spec/` の期待値は Lean `Spec` を実行して生成する
-4. 移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）: 上記に従う（[ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)）
+4. 移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）: 上記に従う（[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）
 5. Java 原典: 移植元モデル `SourceModel` を検証するためのオラクル
 
 ### docs/spec に置くもの
@@ -91,5 +91,5 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 ## More Information
 
 * 本 ADR は [ADR 0003](0003-spec-as-normative-source.md) を置き換える。
-* [ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)（移植先モデルと移植先ソースの構成）
+* [ADR 0035](0035-generate-verus-mirror-from-target-model.md)（移植先モデルと移植先ソースの構成）
 * [spec/README.md](../spec/README.md)

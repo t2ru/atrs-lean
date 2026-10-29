@@ -11,7 +11,7 @@
 | `locators.md` | ロケータの `kind`・`body` の文法、インベントリの取り方（パーサ、本文の正規化規則） | `@[source]` と `source-inventory` | `@[target]` と `target-inventory` |
 | `frameworks.md` | 代表的なフレームワーク・ランタイムの暗黙の効果と、その写し方。依存の版の抽出方法。版上げで起こりがちな挙動変化 | 効果を `SourceModel` に写し、`dep:` を付ける | 採用するフレームワークの効果を `TargetModel` に写し、`dep:` を付ける |
 | `harness.md` | 適合テストベクタをこの言語のコードに対して実行する方法 | オラクル（`source-model/` の期待値の採取、新旧 2 版の差分オラクル） | 照合（`target-model/`・`shared/` を通す） |
-| `verification.md` | この言語で使える検証器と、モデル ⇔ ソースの対応の確認方法 | 原典に検証器を当てる場合（任意） | 移植先ソースと、Lean モデルの写しの一致を確認する |
+| `verification.md` | モデル ⇔ ソースの一致を確かめる **決定論的な手段** と、各手段の **保証の限界**（[verification.md](verification.md#決定論的な手段)） | オラクル・処理系の差分実行など、原典とモデルの一致の確かめ方 | 写しの生成と検証器など、移植先ソースとモデルの一致の確かめ方 |
 | `layout.md` | ソースの構成と、Lean の名前空間との対応づけ | 原典の構成を、`SourceModel` の下位名前空間にどう写すか | 移植先ソースの構成。モデルの写しの置き場所と追跡タグの書き方 |
 
 整備されていない項目は、ファイル内に `> **未整備:** …` と書いて残す。黙って省略してはならない。
@@ -22,7 +22,9 @@
 2. `SKILL.md` の「言語パック」表に行を追加し、6 ファイルへ直接リンクする。
 3. ロケータの `kind` が既存の言語と衝突しないことを確認する（[traceability.md](traceability.md)）。
 4. `LangSemantics.<Lang>` を Lean で `assets/LangSemantics/<Lang>/` に実装し、`assets/LangSemantics.lean` から import する（[lean/rules.md](lean/rules.md)）。アプリ固有の型を入れない。
-5. `assets/LangSemanticsTest/<Lang>.lean` に `#guard` の検査を書き、`assets/` で `lake build` が通ることを確認する。実際の処理系の結果（またはネイティブ実装）と突き合わせられる部分は突き合わせる。
+5. `assets/LangSemanticsTest/<Lang>.lean` に `#guard` の検査を書き、`assets/` で `lake build` が通ることを確認する。
+6. `LangSemantics.<Lang>` の忠実性を、実際の処理系の結果と決定論的に突き合わせる（固定した入力の表、または全探索）。突き合わせられない演算と、突き合わせた入力の範囲は、`verification.md` に限界として書く。
+7. 移植先として使う場合は、`TargetModel` から検証器向けの写しを生成する方法（生成器と対応表）を `layout.md` に書く。検証器が無い言語では、確認手段と限界を `verification.md` に書く。
 
 ## 方言（サブパック）
 

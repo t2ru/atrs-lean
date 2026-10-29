@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 業務ロジックを純粋関数のコアとし、副作用をポート経由にする
@@ -40,7 +40,7 @@ Chosen option: "関数型コア + ポート", because 計算部分は純粋関�
 * **ポート**（[spec/ports.md](../spec/ports.md)）: `Clock`, `FlightRepository`, `MemberRepository`, `ReservationRepository`, `IdGenerator`（会員番号・予約番号・予約フライト番号・搭乗者番号）, `PasswordHasher`, `ReportStore`, `ReportQueue`。
 * **マスタ**（空港・路線・便マスタ・運賃種別・搭乗クラス・ピーク時期・カード種別）は不変の値 `MasterData` として純粋関数に渡す。
 * **ユースケース** はポートを使う手続きとして定義し、トランザクション境界（全部成功か全部取消か）を明記する。
-* Lean では、ポートを `Monad m` 上の関数レコード（`structure Ports (m : Type → Type)`）として `Spec` に置き、`Spec` のユースケースはインメモリの抽象状態 `StateT World (Except AtrsError)` 上で意味を与える。実際のアダプタ（インメモリ・HTTP・永続化）は移植先モデル `TargetModel` に置く（[ADR 0018](0018-language-neutral-top-level-namespaces.md)）。
+* Lean では、ポートを `Monad m` 上の関数レコード（`structure Ports (m : Type → Type)`）として `Spec` に置き、`Spec` のユースケースはインメモリの抽象状態 `StateT World (Except AtrsError)` 上で意味を与える。実際のアダプタ（インメモリ・HTTP・永続化）は移植先モデル `TargetModel` に置く（[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）。
 
 ### Consequences
 

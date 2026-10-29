@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 認証（A0/A1/A2）
@@ -36,9 +36,9 @@ generated:
 
 失敗はすべて同一の `Business("e.ar.a1.2001")`（「会員番号またはパスワードが確認できませんでした。…」）として利用者に示し、どの検査で失敗したかは区別しない。
 
-[Source] の追加の振る舞い: 手順 4 の更新件数が 1 でなければ `System("e.ar.a0.L9002")`。
+[Source] の追加の振る舞い: 手順 4 の更新件数が 1 でなければ `System("e.ar.a0.L9002")`。リポジトリの契約（[Spec] の前提）の下では到達しないため、差異ではない（[abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) の D-010、補題 ABS-022）。
 
-> **TODO(spec):** [Source] で手順 4 が実際に行われるかを Java オラクルで確認する。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない可能性がある（`w/config/web/SpringSecurityConfig.java`）。出ないなら、画面ログインでは `loginDateTime`・`loginFlg` が更新されず、既知差異として登録する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。
+> **TODO(spec):** [Source] で手順 4 が実際に行われるかを Java オラクルで確認する。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない可能性がある（`w/config/web/SpringSecurityConfig.java`）。出ないなら、画面ログインでは `loginDateTime`・`loginFlg` が更新されないので、既知差異として登録し、R 課題 ABS-043 の仮定（または成分）と W 課題を置く。出るなら、[abstraction.md](abstraction.md#未確定の差異) の未確定の差異から消す（[backlog 0013](../backlog/0013-java-oracle-harness.md)、[backlog 0009](../backlog/0009-authentication-usecases.md)）。
 
 出典: atrs-web/.../app/common/security/AtrsUsernamePasswordAuthenticationFilter.java, atrs-domain/.../service/a1/AtrsUserDetailsService.java, AuthLoginServiceImpl.java, atrs-domain/.../common/security/AtrsAuthenticationSuccessListener.java
 

@@ -5,10 +5,10 @@ description: "Lean に TargetModel.Fare（Rust の意味論で書く運賃計算
 tags: [backlog, lean, target-model, refinement, fare]
 id: "0022"
 state: todo
-depends_on: ["0004", "0012", "0021"]
+depends_on: ["0004", "0012", "0021", "0027", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # TargetModel と Refinement: 運賃計算
@@ -19,8 +19,8 @@ generated:
 
 ## 範囲
 
-- `TargetModel.Fare`（`LangSemantics.Rust.U64` で、`requires` 相当の値域を前提にする。`@[target]` は Rust 実装後に付ける）
-- `Refinement.Fare`: REF-004（運賃の一致）と REF-003（値域内でオーバーフローしない）
+- `TargetModel.Fare`（`LangSemantics.Rust.U64` で書く。値域は `Spec` の PRE として受け取る。`@[target]` は Rust 実装後に付ける。写しの生成器の部分集合で書く）
+- `Refinement.Fare`: R 課題 REF-004（`Machine.Refines` の形）と L 課題 REF-003（PRE の下でオーバーフローしない）
 - `conformance/target-model/fare/` を `TargetModel` から生成
 
 ## 対象外

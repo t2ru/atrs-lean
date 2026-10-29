@@ -30,6 +30,7 @@ generated:
 
 ## 完了条件
 
+- [ ] マスタデータと共通の部分について、SPEC-001〜SPEC-003（[abstraction.md](../spec/abstraction.md#spec-自身の証明課題spec-nnn)）を証明した
 - [ ] 日付演算の境界（閏年・月末・年越し）の性質を証明またはテストした
 - [ ] `conformance/shared/format/` のベクタを作り全件通した
 

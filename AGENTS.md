@@ -9,9 +9,18 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 ```
 最終目標は **他のあらゆる言語へ同一ロジックを移植できる、検証可能な仕様** を得ることにある。
 
+**基本原則**（[ADR 0033](docs/decision/0033-foundational-principles.md)。他のすべての ADR・規約・スキルに優先する）:
+
+1. 移植元プログラムと移植元モデル、移植先プログラムと移植先モデルは、決定論的な検証または変換によって一致が確認されていなければならない。また、トレーサビリティが保たれていなければならない。
+2. 抽象モデルと移植(元/先)モデルの間には、B メソッドでいうリファインメントの関係にあることが証明されていなければならない。
+3. 抽象モデルと移植(元/先)モデルで一致しない点がある場合は、それを証明の中とドキュメントにおいてすべて明示されていなければならない。
+
+手段の届かない部分（保証の限界）は [docs/spec/assurance.md](docs/spec/assurance.md) にすべて列挙する。
+
 - 正規仕様は Lean の `Spec`。`Spec` で表現できない仕様だけを `docs/spec` で定義する（[ADR 0021](docs/decision/0021-lean-spec-as-normative-source.md)）。
-- モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` ⇔ Rust は追跡注釈・適合テスト・Verus・Kani で確認する（[ADR 0022](docs/decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。
-- トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR 0023](docs/decision/0023-cross-language-traceability.md)）。
+- モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` から Verus の写しを生成し、Verus で Rust との一致を証明する。あわせて、追跡注釈・適合テスト・Kani で確認する（[ADR 0035](docs/decision/0035-generate-verus-mirror-from-target-model.md)）。
+- `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)）。
+- トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)）。
 - 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 0024](docs/decision/0024-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/upgrade.md)）。
 - 移植の方法はアプリに依存しないスキル **port-lang** に、ATRS 固有の情報は `docs/` に置く（[ADR 0025](docs/decision/0025-extract-porting-method-as-agent-skill.md)）。
 
@@ -50,24 +59,25 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `lean/`（予定） | Lean プロジェクト。`LangSemantics` / `SourceModel` / `Spec`（正規仕様）/ `Abstraction` / `TargetModel` / `Refinement`（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs`（予定） | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
-| `trace/`（予定） | 版の宣言・インベントリ・manifest（[ADR 0023](docs/decision/0023-cross-language-traceability.md)） |
+| `trace/`（予定） | 版の宣言・インベントリ・manifest（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
 | `tools/trace/`（予定） | 追跡の道具（[backlog 0024](docs/backlog/0024-trace-tooling.md)） |
 | `conformance/`（予定） | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)） |
 
-## 基本原則（要約。詳細は各規約・ADR）
+## 主要な規則（要約。詳細は各規約・ADR）
 
 1. 正規仕様は Lean `Spec` と、`docs/spec` の規範節（`Spec` で表現できない仕様）である。実装は仕様に従い、仕様にない振る舞いを実装してはならない（[ADR 0021](docs/decision/0021-lean-spec-as-normative-source.md)）。
-2. Lean のトップレベル名前空間は次に統一する（[ADR 0022](docs/decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。
+2. Lean のトップレベル名前空間は次に統一する（[ADR 0035](docs/decision/0035-generate-verus-mirror-from-target-model.md)）。
    - `LangSemantics.<lang>` 言語意味論モデル（アプリ非依存。`Java`, `Sql`, `Rust`）
    - `SourceModel` 移植元モデル（移植元ソース Java/SQL の振る舞いを意味論ごと写す）
    - `Spec` 抽象モデル（言語中立・厳密整数の正規仕様）
-   - `Abstraction` 移植元からの抽象化証明課題（`SourceModel` → `Spec`）
+   - `Abstraction` 抽象化証明課題（`SourceModel` が `Spec` をリファインする）
    - `TargetModel` 移植先モデル（移植先ソース Rust の振る舞いを `LangSemantics.Rust` で写す）
-   - `Refinement` 移植先への具体化証明課題（`Spec` → `TargetModel`。Lean で証明）
+   - `Refinement` 具体化証明課題（`TargetModel` が `Spec` をリファインする。Lean で証明）
+   - 例外: `Machine`（リファインメントの枠組み）、`Trace`、`Tests`、`Tools`
 
-   移植元と抽象を分けて関係を証明する方針は [ADR 0004](docs/decision/0004-two-layer-model-java-faithful-and-abstract.md)。
+   移植元と抽象を分け、関係を B メソッドのリファインメントとして証明する方針は [ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)。
 3. 抽象モデルでは浮動小数点数を使わない（[ADR 0006](docs/decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。
-4. Java との差異・仕様の変更は、必ず ADR か [docs/spec/abstraction.md](docs/spec/abstraction.md) に記録する。
+4. 移植元・移植先との差異は、必ず既知差異（[docs/spec/abstraction.md](docs/spec/abstraction.md) の `D-NNN`、[docs/spec/refinement.md](docs/spec/refinement.md) の `T-NNN`）として登録する。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
 5. 業務ロジックは純粋関数、副作用はポート経由（[ADR 0007](docs/decision/0007-functional-core-with-ports.md)）。
 6. `docs/` の文書を追加・変更したら、frontmatter（OKF v0.2）・[docs/index.md](docs/index.md)・[docs/log.md](docs/log.md) を更新する（[documentation.md](docs/rules/documentation.md#okf-v02)）。
 7. **一通りの作業が終わったら `git commit` する。`git push` はしない**（[version-control.md](docs/rules/version-control.md)）。

@@ -5,10 +5,10 @@ description: "各機能の Rust 実装と TargetModel の Verus 写しを作り�
 tags: [backlog, rust, verus]
 id: "0020"
 state: todo
-depends_on: ["0019", "0023"]
+depends_on: ["0019", "0023", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # Rust: 空席照会・予約・会員・認証・レポートの移植先ソース
@@ -21,9 +21,9 @@ generated:
 
 ## 範囲
 
-- `model/` の写し: 照会・予約・会員・認証・レポート・入力検証（Lean の各 `TargetModel` モジュールに対応）
+- `model/` の写し: 照会・予約・会員・認証・レポート・入力検証（Lean の各 `TargetModel` モジュールから生成する）
 - 業務機能の実装（状態は引数と戻り値で受け渡す）
-- SRC-001, SRC-002, SRC-003
+- SRC-001, SRC-002, SRC-003, SRC-009
 
 ## 対象外
 
@@ -33,7 +33,8 @@ generated:
 
 - [ ] 全機能の `conformance/target-model/`・`shared/` のベクタが通る
 - [ ] SRC-001〜SRC-003 の状況欄が埋まっている
-- [ ] TR-T1・TR-T2 が通る
+- [ ] TR-T1・TR-T2 が通る（SRC-007・SRC-008）
+- [ ] 写しの再生成で差分が無く、Verus の検証が `assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` 無しで通り、`gen-verus --check-contracts` が通る
 
 ## 参照
 

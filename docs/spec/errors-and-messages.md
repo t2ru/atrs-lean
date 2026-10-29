@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 sources:
   - id: messages
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-web/src/main/resources/i18n/atrs-messages_ja.properties
@@ -31,7 +31,7 @@ sources:
 | `InvalidRequest(reason)` | 改竄検知 | 400 エラー画面（`e.ar.fw.0003`） | 500、`code = "e.ar.a0.L9001"`（原典どおり。[http-contract.md](http-contract.md#apierror)） |
 | `PreconditionViolation(reason)` | 前提違反（[Source] のみ） | 500 システムエラー画面 | 500 |
 | `System(code, args)` | 整合性違反・I/O 失敗 | 500 システムエラー画面 | 500 |
-| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では発生しない（[ADR 0029](../decision/0029-concurrency-failure-as-conflict-error.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
+| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
 
 `InvalidRequest` のログ用コードは `e.ar.a0.L9001`（「不正リクエスト(パラメータ改竄) {0}」）。
 

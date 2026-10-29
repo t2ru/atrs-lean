@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 会員（C0/C1/C2）
@@ -64,7 +64,7 @@ generated:
 5. 会員とログイン情報を登録する。
 6. `m.membershipNumber` を返す（完了画面に表示する）。
 
-[Source] の追加の振る舞い: 登録件数が 1 でなければ `System("e.ar.a0.L9002")`。
+[Source] の追加の振る舞い: 登録件数が 1 でなければ `System("e.ar.a0.L9002")`。リポジトリの契約（[Spec] の前提）の下では到達しないため、差異ではない（[abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) の D-010、補題 ABS-022）。
 
 出典: atrs-domain/.../service/c1/MemberRegisterServiceImpl.java `register`
 
@@ -97,7 +97,7 @@ generated:
 2. ログイン中のセッションが保持する会員情報を、更新後の会員情報で置き換える（[authentication.md](authentication.md#セッション)）。
 3. 成功メッセージ `i.ar.c2.2001` を表示する。
 
-**[Source]** 手順 1.1（照合）と 1.2〜1.4（更新）は別のトランザクションである。照合の後・更新の前に他のセッションが同じ会員のパスワードを変えても、更新は通る（既知差異 [D-013](abstraction.md#既知差異)）。
+**[Source]** 手順 1.1（照合）と 1.2〜1.4（更新）は別のトランザクションである。照合の後・更新の前に他のセッションが同じ会員のパスワードを変えても、更新は通る（モデル外の既知差異 [D-013](abstraction.md#既知差異)。並行実行でだけ観測できる）。
 
 出典: atrs-web/.../app/c2/MemberUpdateController.java `update`, atrs-domain/.../service/c2/MemberUpdateServiceImpl.java `updateMember`, MemberRepository.xml `updateMemberLogin`
 

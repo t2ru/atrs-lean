@@ -3,13 +3,14 @@ type: Architecture Decision Record
 title: "排他制御の失敗をエラー分類 Conflict として表す"
 description: "デッドロック・ロック待ちのタイムアウト・直列化失敗のように実行環境が吸収できない同時実行の失敗を AtrsError.Conflict とし、状態を変えず、画面は 500、REST は 409 とする。"
 tags: [adr, errors, transaction]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0037"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:40:00+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 排他制御の失敗をエラー分類 Conflict として表す
@@ -65,3 +66,5 @@ Chosen option: "新しい分類 `Conflict` を追加する", because 原典の R
 
 * [ADR 0008](0008-errors-as-values-with-stable-codes.md) の補足である（既存の分類は変えない）
 * [ADR 0011](0011-persistence-and-transaction-semantics.md), [spec/errors-and-messages.md](../spec/errors-and-messages.md#分類atrserror), [spec/ports.md](../spec/ports.md#トランザクション)
+
+* （補足 2026-10-30）本 ADR は [ADR 0037](0037-conflict-as-spec-nondeterminism.md) で置き換えられた（[ADR 0033](0033-foundational-principles.md) の基本原則に合わせるため）。

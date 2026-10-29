@@ -9,14 +9,14 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # 移植元モデルの基本演算を、検証可能な整数エミュレーションとして定義する
 
 ## Context and Problem Statement
 
-[Source] モデル（[ADR 0004](0004-two-layer-model-java-faithful-and-abstract.md)）は Java の基本型の意味論を再現しなければならない。
+[Source] モデル（[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)）は Java の基本型の意味論を再現しなければならない。
 Lean 標準の `Float` は C の double に委譲される不透明な型で、算術の性質を証明できない。
 また [Source] を他言語へ移植する場合にも、その言語の浮動小数点実装に依存せずに再現できることが望ましい。
 どの Java の意味論を、どの表現で定義するかを決める。
@@ -53,7 +53,7 @@ Chosen option: "必要な演算だけのソフトモデル", because 証明可�
 | `utf16Len` | `String.length()` | UTF-16 符号単位数（補助文字は 2） |
 | `jLocalDate` | `java.time.LocalDate` | 先発グレゴリオ暦の暦日。`plusDays`, `minusDays`, `isBefore`, `isAfter` |
 
-* これらの演算はアプリケーションに依存しない言語意味論として `LangSemantics.Java` に置く（[ADR 0018](0018-language-neutral-top-level-namespaces.md)）。ATRS が使わない演算も、同じ方針で必要になった時点で追加してよい。
+* これらの演算はアプリケーションに依存しない言語意味論として `LangSemantics.Java` に置く（[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）。ATRS が使わない演算も、同じ方針で必要になった時点で追加してよい。
 * ソフトモデルの値は Lean 標準 `Float` の結果とテストで突き合わせる（テストドライバのみで `Float` を使用）。
 * 他言語で [Source] を移植する場合、上表の演算をその言語の整数演算で実装するか、ネイティブ型（Java, C の double 等）を使ってもよい。ただし `conformance/source-model/` のベクタで一致を確認しなければならない。
 
@@ -89,3 +89,4 @@ Chosen option: "必要な演算だけのソフトモデル", because 証明可�
 
 * Java Language Specification §15.17（乗除演算）, §5.1.3（縮小変換）
 * [backlog 0002](../backlog/0002-lang-semantics-java.md)
+* （補足 2026-10-30）[ADR 0033](0033-foundational-principles.md) により、上の「他言語で [Source] を移植する場合」も基本原則に従う。その移植は `Spec` をリファインする移植先モデル（`TargetModel`）として扱い、[Source] と同じ振る舞いをする点は移植先の既知差異 `T-NNN` として登録する。ネイティブの double を使う場合、ベクタでの一致は保証の限界として [spec/assurance.md](../spec/assurance.md) に記載する（[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)）。`LangSemantics.Java.JDouble` とネイティブ `Float` との突き合わせは、言語意味論の忠実性の決定論的な検査として扱う（限界: 突き合わせた入力の範囲）。

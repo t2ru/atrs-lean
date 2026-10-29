@@ -28,7 +28,7 @@ Lean の実装は `assets/LangSemantics/Java/`（モジュール `LangSemantics.
 | `JLocalDate` | `java.time.LocalDate` | 先発グレゴリオ暦の暦日。`plusDays`, `isBefore`, `isAfter`, `ChronoUnit.YEARS.between`（満年数） |
 | `JRef` | 参照の `null` | 参照型は `Option` で表す。`JRef.deref` は `null` で `NullPointerException` |
 
-- 例外は `JThrow <例外クラス> <引数>` の値として表す。`IllegalArgumentException`（`Assert` 相当）と `NullPointerException` は、抽象化の際に「前提違反」に写す。
+- 例外は `JThrow <例外クラス> <引数>` の値として表す。`IllegalArgumentException`（`Assert` 相当）と `NullPointerException` は、「前提違反」として扱う。前提違反には α を定義しない。PRE の下で到達しないことを、リファインメントの適用可能性の証明義務で示す。
 - 原典で使われている演算だけを実装すればよい。汎用の IEEE 754 は作らない（除算・平方根など、原典に無い演算は不要）。
 
 ## 確認
@@ -42,11 +42,11 @@ Lean の実装は `assets/LangSemantics/Java/`（モジュール `LangSemantics.
 | Java | `Spec` |
 | --- | --- |
 | `J32`, `J64` | `Int`（値域内なら `Nat`） |
-| `JDouble`（有限値） | 有理数（NaN・∞ は α 未定義） |
-| UTF-16 文字列 | スカラ値の列（不対サロゲートを含む場合は α 未定義） |
+| `JDouble`（有限値） | 有理数（NaN・∞ は α を定義しない。適用可能性の証明義務で到達しないことを示すか、前提型の差異で除外する） |
+| UTF-16 文字列 | スカラ値の列（不対サロゲートを含む場合は α を定義しない。扱いは NaN と同じ） |
 | `jLocalDate` | `Spec.Prim.Date` |
 | `null` 可能な参照 | `Option` |
-| 例外 | エラー値（前提違反を含む） |
+| 例外 | 業務エラーの例外はエラー値に写す。前提違反には α を定義しない（PRE の下で到達しないことを示す） |
 
 ## 移植先として使う場合
 

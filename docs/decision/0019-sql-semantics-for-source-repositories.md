@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:00:00+09:00
 ---
 
 # LangSemantics.Sql で原典 SQL（PostgreSQL）の意味論を定義し、SourceModel のリポジトリを記述する
@@ -25,7 +25,7 @@ generated:
 * パスワード更新 `SET last_password = password, password = #{new}`（右辺は更新前の値）
 * `VARCHAR` 列の比較・整列（`departure_time`, `reserve_no`）
 
-[ADR 0018](0018-language-neutral-top-level-namespaces.md) で、アプリケーションに依存しない言語意味論を `LangSemantics.<lang>` に置くと決めた。
+[ADR 0035](0035-generate-verus-mirror-from-target-model.md) で、アプリケーションに依存しない言語意味論を `LangSemantics.<lang>` に置くと決めた。
 プロジェクトオーナーから、`LangSemantics` には `Java` と `Sql` を定義するよう指示があった。SQL の意味論の範囲と表現を決める。
 
 ## Decision Drivers
@@ -44,7 +44,7 @@ generated:
 
 Chosen option: "`LangSemantics.Sql`", because SQL 固有の意味（バッグ意味論、NULL の三値論理、未規定の並び順、シーケンス）をアプリから独立に一度だけ定義でき、[Source] の各リポジトリ操作をその上の式として原典の SQL と 1 対 1 に対応づけられるため。
 
-範囲（`LangSemantics.Sql`、方言は PostgreSQL。必要に応じ `LangSemantics.Sql.Postgres` に方言固有部分を分ける）:
+範囲（`LangSemantics.Sql`、方言は PostgreSQL。必要に応じ `LangSemantics.Sql.Postgresql` に方言固有部分を分ける）:
 
 | 対象 | 意味 |
 | --- | --- |
@@ -94,5 +94,6 @@ Chosen option: "`LangSemantics.Sql`", because SQL 固有の意味（バッグ意
 
 ## More Information
 
-* [ADR 0005](0005-java-primitive-semantics.md)（`LangSemantics.Java`）, [ADR 0011](0011-persistence-and-transaction-semantics.md), [ADR 0018](0018-language-neutral-top-level-namespaces.md)
+* [ADR 0005](0005-java-primitive-semantics.md)（`LangSemantics.Java`）, [ADR 0011](0011-persistence-and-transaction-semantics.md), [ADR 0035](0035-generate-verus-mirror-from-target-model.md)
 * [backlog 0016](../backlog/0016-lang-semantics-sql.md)
+* （補足 2026-10-30）[ADR 0033](0033-foundational-principles.md) により、SQL と `LangSemantics.Sql` での写しの一致は、決定論的な手段で確認する。手段は、同じデータについて、PostgreSQL での実際の実行結果と `LangSemantics.Sql` の評価結果を照合することである（SQL の差分実行。[port-lang/sql/verification.md](../../.agents/skills/port-lang/references/sql/verification.md)）。写しは手で翻訳するので、照合したデータの外での一致は保証の限界となる（[spec/assurance.md](../spec/assurance.md)）。上の Confirmation の「対応づけられていることを確認する」は網羅の確認であり、一致の根拠ではない。
