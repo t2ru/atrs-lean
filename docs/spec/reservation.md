@@ -126,7 +126,7 @@ generated:
 
 ### 不変条件
 
-- 予約確定の前後で、すべてのフライトの `vacantNum ≥ 0`（課題 [ABS-020](abstraction.md#証明課題), [REF-002](refinement.md#証明課題)）。
+- 予約確定の前後で、すべてのフライトの `vacantNum ≥ 0`（課題 [ABS-020](abstraction.md#証明課題), [REF-002](refinement.md)）。
 - 成功時、各予約フライトのフライトの `vacantNum` は搭乗者数だけ減る。失敗時は不変。
 
 出典: atrs-web/.../app/b2/TicketReserveHelper.java `reserve`, atrs-domain/.../service/b2/TicketReserveServiceImpl.java `registerReservation`, `validateAndUpdateVacancy`

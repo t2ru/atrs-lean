@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # 適合テストベクタ
@@ -22,14 +22,20 @@ generated:
 ```
 conformance/
   fixtures/                共有入力（master-data.json, config.json, world-*.json）
-  spec/<feature>/          [Spec] の期待値
-  source-model/<feature>/  [Source] の期待値
-  shared/<feature>/        [Spec] と [Source] で同じ期待値
+  spec/<feature>/          [Spec] の期待値（Lean Spec を実行して生成）
+  source-model/<feature>/  [Source] の期待値（Lean SourceModel の実行、または Java オラクル）
+  target-model/<feature>/  [Target] の期待値（Lean TargetModel を実行して生成）
+  shared/<feature>/        複数のモデルで同じ期待値
 ```
 
 `<feature>` は `fare`, `flight-search`, `reservation`, `member`, `authentication`, `report`, `validation`, `format`, `http`。
-`spec/`・`shared/` の期待値は Lean `Spec` を実行して生成する。`source-model/` の期待値は Lean `SourceModel` の実行または Java オラクルで得る（[rules/testing.md](../rules/testing.md)）。
-Rust の `target_model` は `spec/` と `shared/` の全ベクタを通さなければならない（[refinement.md](refinement.md#証明課題) REF-001）。
+どのベクタを誰が通すか:
+
+| 対象 | 通すベクタ |
+| --- | --- |
+| Lean `Spec` | `spec/`, `shared/` |
+| Lean `SourceModel` と Java 原典 | `source-model/`, `shared/` |
+| Lean `TargetModel` と Rust ソース | `target-model/`, `shared/`（Rust については [refinement.md](refinement.md) の SRC-001） |
 
 ## ファイル形式
 
@@ -39,6 +45,7 @@ Rust の `target_model` は `spec/` と `shared/` の全ベクタを通さなけ
 {
   "operation": "fare.fare",
   "specRef": "docs/spec/fare-calculation.md#運賃",
+  "modelDef": "Spec.Fare.fare",
   "fixtures": { "master": "fixtures/master-data.json", "config": "fixtures/config.json" },
   "cases": [
     {
@@ -57,6 +64,8 @@ Rust の `target_model` は `spec/` と `shared/` の全ベクタを通さなけ
 | --- | --- | --- |
 | `operation` | 必須 | 操作名（下表） |
 | `specRef` | 必須 | 仕様の節への相対パス＋アンカー |
+| `modelDef` | 必須 | ベクタが試すモデル定義の完全名（`spec/` なら `Spec.*`、`source-model/` なら `SourceModel.*`、`target-model/` なら `TargetModel.*`）。追跡の検査 TR-R の対象 |
+| `upstream` | `source-model/` では必須 | 期待値を得た上流の版 `{"release": …, "commit": …}`（[ADR 0024](../decision/0024-following-upstream-releases.md)） |
 | `fixtures` | 任意 | 既定の共有入力。ケースの `input` で上書きできる |
 | `cases[].id` | 必須 | ファイル内で一意 |
 | `cases[].today` | 日付に依存する操作では必須 | `"yyyy-MM-dd"` |
@@ -64,7 +73,7 @@ Rust の `target_model` は `spec/` と `shared/` の全ベクタを通さなけ
 | `cases[].world` | 状態を使う操作では必須 | 実行前の状態（[ports.md](ports.md#world抽象状態)）またはその fixture への参照 |
 | `cases[].input` | 必須 | 操作の入力 |
 | `cases[].expected` | 必須 | `{"ok": 値}` または `{"error": {"kind": "Business", "code": "e.ar.b2.2009", "args": []}}`。状態を変える操作は `"worldAfter"` も持てる |
-| `cases[].source` | 必須 | `lean-spec`（`spec/`・`shared/`）/ `lean-source-model` / `java-oracle`（`source-model/`）。手計算の例は Lean 側のテストに置き、ベクタには入れない |
+| `cases[].source` | 必須 | `lean-spec`（`spec/`・`shared/`）/ `lean-source-model`・`java-oracle`（`source-model/`）/ `lean-target-model`（`target-model/`）。手計算の例は Lean 側のテストに置き、ベクタには入れない |
 | `cases[].differences` | 任意 | 関係する既知差異 ID（[abstraction.md](abstraction.md#既知差異)） |
 
 ## 値の表現

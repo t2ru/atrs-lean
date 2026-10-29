@@ -31,16 +31,16 @@ generated:
 
 規範的な語を含まない文は説明（informative）として扱う。
 
-## 出典（Java 原典）の記法
+## 出典（移植元ロケータ）の記法
 
-原典を参照するときは、上流リポジトリ `JavaConfig-Thymeleaf/atrs/` からの相対パスとシンボル名を書く。
+原典を参照するときは、**移植元ロケータ**（[traceability.md](../spec/traceability.md#ロケータ)）で書く。ロケータは版に依存しない記号的な位置で、道具が検査・解決できる。
 
 ```
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `calculateBasicFare`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`
 ```
 
-- `...` は `src/main/java/jp/co/ntt/atrs/domain` 等の定型部分の省略を表す。
-- 上流の版は [spec/README.md](../spec/README.md) に固定した commit とする。版を更新する場合は ADR を作る。
+- 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える（[backlog 0024](../backlog/0024-trace-tooling.md)）。
+- 追従中の上流の版は `trace/upstream.json` に宣言する。版を更新する場合は [upstream-upgrade.md](upstream-upgrade.md) の手順に従う。
 - 原典のコードを長く転載しない。式・条件は仕様の記法で書き直す。
 
 ## リンク

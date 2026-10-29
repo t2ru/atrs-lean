@@ -38,12 +38,13 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 * 置き場所: リポジトリ直下の `conformance/`。
   * `conformance/spec/<feature>/*.json` — [Spec] の期待値
   * `conformance/source-model/<feature>/*.json` — [Source] の期待値
-  * `conformance/shared/<feature>/*.json` — 両モデルで同じ期待値
+  * `conformance/target-model/<feature>/*.json` — 移植先モデル `TargetModel` の期待値（Lean `TargetModel` を実行して生成。[ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)）
+  * `conformance/shared/<feature>/*.json` — 複数のモデルで同じ期待値
   * `conformance/fixtures/*.json` — マスタデータ・設定値などの共有入力
 * `spec/` と `shared/` の期待値は、正規仕様である Lean `Spec` を実行して生成する（[ADR 0021](0021-lean-spec-as-normative-source.md)）。`source-model/` の期待値は Lean `SourceModel` の実行と Java オラクルで得る。
 * 1 ファイル = 1 ケース群。各ケースは `id`, `description`, `operation`, `today`, `input`, `expected`（`ok` または `error`）, `source`, `specRef` を持つ（詳細は [spec/conformance.md](../spec/conformance.md)）。
 * JSON の値は整数・文字列・真偽・null・配列・オブジェクトのみ（浮動小数を使わない）。日付は `"yyyy-MM-dd"` 文字列。
-* 移植の完了条件: その言語の移植先モデル `TargetModel` が `spec/` と `shared/` の全ベクタを通すこと（`Refinement` の課題 REF-001）。`SourceModel` は `source-model/` と `shared/` を通す。
+* 移植の完了条件: Rust の移植先ソースが `target-model/` と `shared/` の全ベクタを通すこと。Lean の `Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`、`TargetModel` は `target-model/`・`shared/` を通す。
 
 ### Consequences
 
@@ -53,7 +54,7 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 
 ### Confirmation
 
-* Lean の CI で `Spec`・`SourceModel` に対して、Rust の CI で `target_model` に対して全ベクタを実行する（[backlog 0012](../backlog/0012-conformance-vector-format-and-generator.md)）。
+* Lean の CI で `Spec`・`SourceModel`・`TargetModel` に対して、Rust の CI で移植先ソースに対して全ベクタを実行する（[backlog 0012](../backlog/0012-conformance-vector-format-and-generator.md)）。
 * 第二言語での試行（[backlog 0015](../backlog/0015-second-language-portability-pilot.md)）で、ベクタだけを頼りに移植できるかを確認する。
 
 ## Pros and Cons of the Options

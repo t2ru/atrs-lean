@@ -8,12 +8,13 @@ okf_version: "0.2"
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [Lean 規約](rules/lean.md) - Lean プロジェクトの名前空間構成・全域性・型選択・命名・証明方針。
+* [Lean 規約](rules/lean.md) - Lean プロジェクトの名前空間構成・依存の向き・追跡注釈・全域性・型選択・命名・証明方針。
 * [言語中立性（portability）規約](rules/portability.md) - 他言語へ同一ロジックを移植するための数値・文字列・日付・順序・副作用の制約。
-* [移植規約](rules/porting.md) - 原典 → 草案 → Lean の SourceModel/Spec → Abstraction → テストベクタ生成 → Rust の target_model と refinement の順で移植する原則。
-* [Rust 規約](rules/rust.md) - Rust プロジェクトの構成、Lean Spec を Verus に写す規則、target_model の書き方、Verus・Kani・適合テストによる検証の規約。
+* [移植規約](rules/porting.md) - 原典 → 草案 → Lean の SourceModel/Spec/Abstraction → TargetModel/Refinement → Rust ソースの順で移植し、両端を追跡注釈でつなぐ原則。
+* [Rust 規約](rules/rust.md) - 移植先ソース（Rust）の構成、Lean TargetModel を Verus に写す規則、実行コードの書き方、追跡タグ、Verus・Kani・適合テストによる検証の規約。
 * [仕様執筆規約](rules/spec-writing.md) - docs/spec の書き方。規範・メタ情報・草案の区分、[Spec]/[Source] 併記、定義の節構成、記法、禁止事項。
 * [テスト規約](rules/testing.md) - 適合テストベクタ・性質テスト・証明・Java オラクルによる検証規約。
+* [移植元の版上げ手順](rules/upstream-upgrade.md) - 上流 ATRS の版を上げるときの手順。インベントリ差分・差分オラクル・影響一覧・層ごとの判断・ベクタ再生成・タグ付け。移植先側の版上げも同じ手順に従う。
 * [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push はしない。コミットの単位とメッセージの規則。
 
 # Decisions
@@ -39,6 +40,9 @@ okf_version: "0.2"
 * [LangSemantics.Sql で原典 SQL（PostgreSQL）の意味論を定義し、SourceModel のリポジトリを記述する](decision/0019-sql-semantics-for-source-repositories.md) - 原典の MyBatis SQL に含まれる業務ロジックを、アプリ非依存の SQL 意味論モデル LangSemantics.Sql の上で忠実に写す。
 * [移植先言語を Rust とし、具体化証明課題を Verus と Kani で充足する](decision/0020-rust-as-target-language.md) - TargetModel と Refinement を Rust で実装し、Verus で Spec の写しとの一致を証明、Kani で有界検査、適合テストベクタで Lean Spec との対応を裏付ける。
 * [Lean の Spec を正規仕様とし、Spec で表現できない仕様だけを docs/spec で定義する](decision/0021-lean-spec-as-normative-source.md) - 正規仕様の所在を Lean の Spec 名前空間に移し、docs/spec は Spec の外にある要件と文書メタ情報に限定する。ADR 0003 を置き換える。
+* [モデルと証明をすべて Lean に置き、移植元ソースと移植先ソースは両端で追跡する](decision/0022-models-in-lean-and-sources-traced-at-both-ends.md) - LangSemantics・SourceModel・Spec・Abstraction・TargetModel・Refinement を Lean に置き、Java 原典と Rust ソースはそれぞれのモデルとだけ追跡でつなぐ。ADR 0018 と 0020 を置き換える。
+* [移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する](decision/0023-cross-language-traceability.md) - 両端のトレースをロケータとモデル側の注釈で表し、確認済みハッシュで陳腐化を検出し、manifest 生成と TR 検査で網羅性と直接接続の禁止を機械的に保つ。
+* [移植元の版上げに追従する。SourceModel は最新版のみ保持し、差分オラクルで振る舞いの変化を検出する](decision/0024-following-upstream-releases.md) - 上流を submodule で固定し、版上げ時はインベントリ差分と新旧 2 版の差分オラクルで影響を洗い出し、証明グラフに沿って各層を更新する。旧版は git タグで参照する。
 
 # Specification
 
@@ -57,34 +61,40 @@ okf_version: "0.2"
 * [マスタデータ](spec/master-data.md) - 空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別の構造、不変条件、参照関数、シードデータ。
 * [会員（C0/C1/C2）](spec/member.md) - 会員登録・会員情報変更・現在パスワード照合・入力値と会員エンティティの相互変換。
 * [ポート](spec/ports.md) - 副作用（時刻・永続化・採番・パスワード・レポート保存・キュー）の契約。Spec はこれらの契約だけに依存し、実装は TargetModel が提供する。
-* [具体化証明課題（Refinement）](spec/refinement.md) - 正規仕様 Lean Spec から Rust の移植先モデル target_model への具体化で満たすべき課題 REF-NNN と、Verus・Kani・適合テストによる充足方法。
+* [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - Lean で証明する Spec → TargetModel の課題 REF-NNN と、TargetModel ⇔ Rust ソースの対応を確認する課題 SRC-NNN（Verus・Kani・適合テスト）。
 * [予約履歴レポート（D1）](spec/reservation-history-report.md) - レポート作成要求の受付、非同期生成、CSV のバイト仕様、ファイル名、一覧と取得。
 * [予約（B0/B2）](spec/reservation.md) - 選択フライトの検証、予約内容の検証、予約確認、空席の確保と予約登録、会員情報による入力補完。
-* [追跡表](spec/traceability.md) - 原典の Java クラス・SQL 文と、仕様の節、Lean の名前空間（SourceModel / Spec）、Rust のモジュールの対応表。
+* [追跡（トレーサビリティ）](spec/traceability.md) - 移植元ソース⇔SourceModel と TargetModel⇔移植先ソースの 2 本の追跡について、ロケータ文法・注釈・検査・生成表と、運賃計算の追跡例。
 
 # Backlog
 
 * [バックログ](backlog/README.md) - 作業項目の索引。状態と依存関係。
-* [Lean プロジェクトの雛形と CI](backlog/0001-lean-project-scaffold.md) - lean/ に Lake プロジェクトを作り、名前空間の骨格・依存方向検査を含む CI を整える。
+* [Lean プロジェクトの雛形と CI](backlog/0001-lean-project-scaffold.md) - lean/ に Lake プロジェクトを作り、全名前空間の骨格・追跡属性の基盤・依存方向検査を含む CI を整える。
 * [LangSemantics.Java: Java 基本型の意味論](backlog/0002-lang-semantics-java.md) - int32・IEEE 754 binary64（必要部分）・BigDecimal 丸め・UTF-16 文字列・LocalDate を、アプリ非依存の検証可能なモデルとして実装する。
 * [Spec: ドメイン型・基本演算・マスタデータ](backlog/0003-abstract-domain-types-and-master-data.md) - Spec.Prim（floorDiv・暦日・書式・文字クラス）、エンティティ型、MasterData と不変条件、参照関数を実装する。
 * [運賃計算（Spec と SourceModel）](backlog/0004-fare-calculation-both-models.md) - 基本運賃・運賃・合計金額を Spec（厳密整数）と SourceModel（LangSemantics.Java）の両方で実装する。
 * [運賃計算の抽象化証明](backlog/0005-fare-abstraction-proofs.md) - ABS-001〜ABS-006 を Abstraction.Fare で証明し、成り立たない場合は反例と前提を abstraction.md に記録する。
 * [空席照会（B1）](backlog/0006-flight-search-usecase.md) - 照会可能期間・運賃種別の予約可能判定・searchFlight を両モデルで実装し、ABS-010/011 を証明する。
-* [予約（B0/B2）](backlog/0007-reservation-usecase.md) - validateFlightList・validateReservation・reserveConfirm・reserve を両モデルで実装し、空席の不変条件を証明する。
+* [予約（B0/B2）](backlog/0007-reservation-usecase.md) - validateFlightList・validateReservation・reserveConfirm・reserve を SourceModel と Spec で実装し、空席の不変条件を証明する。
 * [会員（C1/C2）と入力検証](backlog/0008-member-usecases-and-input-validation.md) - 会員登録・変更と、全画面の入力検証（前処理・文字クラス・単項目・相関）を両モデルで実装する。
 * [認証（A1/A2）](backlog/0009-authentication-usecases.md) - ログインの事前検査・照合・状態更新、ログアウトを両モデルで実装する。
 * [予約履歴レポート（D1）](backlog/0010-reservation-history-report.md) - 要求・受信・生成・一覧・取得と CSV のバイト仕様を両モデルで実装する。
-* [Rust: インメモリアダプタとシードデータ](backlog/0011-in-memory-adapters-and-seed-data.md) - Rust の target_model::adapter にポートのインメモリ実装を作り、シードデータの fixture を用意して Kani で契約を検査する。
+* [Rust: インメモリアダプタとシードデータ](backlog/0011-in-memory-adapters-and-seed-data.md) - Rust にポートのインメモリ実装を作り、シードデータの fixture を用意し、Kani と結合テストで契約を確認する。
 * [適合テストベクタの生成と検査（Lean 側）](backlog/0012-conformance-vector-format-and-generator.md) - Lean Spec を実行して conformance/ の期待値を生成するツールと、スキーマ検査、Spec・SourceModel に対する実行器を作る。
 * [Java オラクルハーネス](backlog/0013-java-oracle-harness.md) - 原典の Java クラスを直接呼び出し、[Source] ベクタの期待値を採取するハーネスを作る。
-* [Rust: HTTP 契約アダプタ](backlog/0014-http-contract-adapter.md) - http-contract.md の画面遷移と REST API を Rust の target_model::adapter で実装し、REF-006 を結合テストで検証する。
+* [Rust: HTTP 契約アダプタ](backlog/0014-http-contract-adapter.md) - http-contract.md の画面遷移と REST API を Rust で実装し、SRC-006 を結合テストで確認する。
 * [第二言語での移植試行](backlog/0015-second-language-portability-pilot.md) - （取りやめ）Rust を移植先に定めたため、Rust 移植そのものが試行を兼ねる。
 * [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](backlog/0016-lang-semantics-sql.md) - 値と NULL、三値論理、バッグ照会、非決定的 ORDER BY、シーケンス、TO_CHAR、UPDATE の評価規則を実装する。
 * [OKF バンドルとリンクの検査](backlog/0017-okf-bundle-lint.md) - docs/ が OKF v0.2 に適合し、相対リンクとアンカーが切れていないことを CI で検査する。
-* [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](backlog/0018-rust-project-scaffold.md) - rust/ に単一クレートの雛形を作り、Verus と Kani を同じコードに適用できるかを最初に確認し、CI を整える。
-* [Rust: Spec の Verus 写しと運賃計算コア](backlog/0019-rust-spec-mirror-and-fare-core.md) - Lean Spec.Prim・Spec.Fare を Verus の spec に写し、target_model::core::fare を ensures 付きで実装・証明し、適合テストを通す。
-* [Rust: 空席照会・予約・会員・認証・レポートのコア](backlog/0020-rust-usecases-core.md) - 各機能の純粋なコアと状態遷移を target_model::core に実装し、Verus で Spec の写しとの一致と空席の不変条件を証明する。
+* [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](backlog/0018-rust-project-scaffold.md) - rust/ に単一クレートの雛形を作り、Verus と Kani を同じコードに適用できるかを最初に確認し、追跡タグを含む CI を整える。
+* [Rust: 運賃計算の移植先ソースと TargetModel の写し](backlog/0019-rust-spec-mirror-and-fare-core.md) - Lean TargetModel.Fare を Verus の model に写し、Rust の運賃計算を ensures 付きで実装・証明し、target-model ベクタを通す。
+* [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](backlog/0020-rust-usecases-core.md) - 各機能の Rust 実装と TargetModel の Verus 写しを作り、Verus で一致を証明し、target-model ベクタを通す。
+* [LangSemantics.Rust: Rust の意味論](backlog/0021-lang-semantics-rust.md) - 固定長整数（検査付き・折り返し）、char、UTF-8 String、Vec、Result、パニックを、アプリ非依存の検証可能なモデルとして Lean に定義する。
+* [TargetModel と Refinement: 運賃計算](backlog/0022-target-model-fare-and-refinement.md) - Lean に TargetModel.Fare（Rust の意味論で書く運賃計算）を書き、Refinement で Spec.Fare との一致を証明し、target-model ベクタを生成する。
+* [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](backlog/0023-target-model-usecases-and-refinement.md) - 残りの機能の TargetModel を書き、Refinement で Spec との一致と空席の不変条件を証明し、target-model ベクタを生成する。
+* [追跡の道具（tools/trace）](backlog/0024-trace-tooling.md) - インベントリ生成・Lean ダンプの取り込み・manifest と表の生成・TR 検査・差分・影響分析を行う Rust 製の道具を作る。
+* [上流の submodule 化と版の宣言](backlog/0025-upstream-submodule-and-inventory.md) - 上流 ATRS を git submodule として commit 固定で取り込み、trace/upstream.json と移植元インベントリを作る。
+* [差分オラクル（新旧 2 版の振る舞い比較）](backlog/0026-differential-oracle.md) - Java オラクルハーネスを拡張し、source-model ベクタの全入力を新旧 2 版の上流で実行して出力の差分を取る。
 
 # Log
 

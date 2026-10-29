@@ -1,18 +1,24 @@
 ---
 type: Guideline
 title: "Rust 規約"
-description: "Rust プロジェクトの構成、Lean Spec を Verus に写す規則、target_model の書き方、Verus・Kani・適合テストによる検証の規約。"
+description: "移植先ソース（Rust）の構成、Lean TargetModel を Verus に写す規則、実行コードの書き方、追跡タグ、Verus・Kani・適合テストによる検証の規約。"
 tags: [rules, rust, verus, kani]
 status: draft
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # Rust 規約
 
-移植先は Rust であり、具体化証明課題 `Refinement` を Verus と Kani と適合テストベクタで充足する（[ADR 0020](../decision/0020-rust-as-target-language.md)）。
-名前空間の規則は [ADR 0018](../decision/0018-language-neutral-top-level-namespaces.md) に従う。
+`rust/` は **移植先ソース** である。モデルではない（[ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。
+移植先モデル `TargetModel` は Lean にあり、Rust ソースとは追跡（[ADR 0023](../decision/0023-cross-language-traceability.md)）と次の 3 つの確認手段でつながる。
+
+| 手段 | 何を確かめるか |
+| --- | --- |
+| 適合テストベクタ（`conformance/target-model/`, `shared/`） | Rust の実行結果が Lean `TargetModel` の実行結果と一致する |
+| Verus | Rust の実行コードが `model/`（Lean `TargetModel` の Verus 写し）と全入力で一致し、算術がオーバーフローしない |
+| Kani | 有界な入力で、パニック・オーバーフロー・未定義動作が無く、アダプタが契約を満たす |
 
 本規約は `status: draft` である。Verus と Kani の併用可否（[backlog 0018](../backlog/0018-rust-project-scaffold.md)）の結果で見直す。
 
@@ -23,60 +29,53 @@ rust/
   rust-toolchain.toml      Verus のリリースが要求する版に固定
   Cargo.toml               パッケージ atrs（単一クレート）
   src/
-    lib.rs                 spec / target_model / refinement だけを公開
-    spec/                  Lean Spec の Verus 写し（spec fn のみ）
-    target_model/
-      core/                純粋なコア。verus! の中に置き、ensures で spec を参照する
-      adapter/             ポートの実装（インメモリ、DB、ファイル、時計、HTTP）。#[verifier::external]
-    refinement/
-      lemmas/              ensures の証明に使う proof fn
-      kani/                Kani ハーネス（#[cfg(kani)]）
-      conformance/         適合テストベクタの実行器（cargo test）
+    lib.rs
+    fare.rs, flight_search.rs, reservation.rs, …   業務機能（実行コード。純粋な部分は verus! 内）
+    adapter/               ポートの実装（インメモリ、DB、ファイル、時計、HTTP）。#[verifier::external]
+    model/                 Lean TargetModel の Verus 写し（spec fn のみ）
+    proof/                 Verus の補題（proof fn）
+  kani/                    Kani ハーネス（#[cfg(kani)]）
+  tests/                   適合テストベクタの実行器、結合テスト
 ```
 
-- トップレベルモジュールは `spec`, `target_model`, `refinement` だけとする。パッケージ名 `atrs` はクレートの名前であり、名前空間の規則の対象外とする。
-- 下位モジュールは Lean と同じ機能名を snake_case で使う（Lean `Spec.Fare` ↔ `spec::fare` ↔ `target_model::core::fare` ↔ `refinement::lemmas::fare`）。
-- 依存の向き: `spec` は他に依存しない。`target_model::core` は `spec` に、`target_model::adapter` は `target_model::core` に依存してよい。`refinement` はすべてに依存してよい。`spec` と `target_model` は `refinement` に依存してはならない（`refinement::lemmas` の proof fn を `target_model::core` の証明から呼ぶことだけは許す）。
+- `rust/` は名前空間規則（Lean のトップレベル名前空間）の対象外であり、Rust の慣習に従う。
+- 業務機能のモジュール名は、Lean `TargetModel` の下位名前空間名の snake_case にそろえる（`TargetModel.Fare` ↔ `atrs::fare` ↔ `atrs::model::fare`）。
 
-## spec: Lean Spec の写し
+## model/: Lean TargetModel の写し
 
-- Lean `Spec` の公開定義 1 つにつき、Verus の `spec fn`（または `struct`・`enum`）を 1 つ書く。名前は Lean の名前の snake_case とし、doc コメントに Lean の完全名を書く（`/// Lean: Spec.Fare.basicFare`）。
-- 構造（場合分け・再帰・評価順）を Lean と同じに保つ。最適化や書き換えをしてはならない。
-- 数値は数学的整数 `int` / `nat` を使う。`floorDiv`・`ceilTo` などは Lean `Spec.Prim` と同じ名前の `spec fn` として定義する。
+- Lean `TargetModel` の公開定義 1 つにつき、Verus の `spec fn`（または `struct`・`enum`）を 1 つ書く。名前は Lean の名前の snake_case とする。
+- 各定義の doc コメントに追跡タグを書く: `/// trace: models TargetModel.Fare.basicFare @<Lean Merkle ハッシュ>`。ハッシュは `lake exe trace-dump` が出す値をそのまま書く。Lean 側を変えるとハッシュがずれ、検査 TR-T2 が失敗する。
+- 構造（場合分け・再帰・評価順）を Lean と同じに保つ。数値は数学的整数 `int` / `nat` で書き、Rust の固定長整数の意味（溢れ）は Lean `LangSemantics.Rust` と同じ定義で表す。
 - 文字列は `Seq<char>`（Unicode スカラ値の列）として扱う。
-- `spec` に実行コード（`fn`, `exec`）を置いてはならない。
-- Lean `Spec` を変更したら、同じ変更（同じコミット）で `spec` も直す。
+- `model/` に実行コードを置いてはならない。
 
-## target_model
+## 業務機能（実行コード）
 
-### core（Verus で検証する）
+- 純粋な部分（運賃・照会・検証・状態遷移）は `verus!` の中に書き、各公開関数の `ensures` で `model` の対応する関数との一致を述べる（例: `ensures r == model::fare::basic_fare(x, y)`）。
+- 数値型は値域（[domain-model.md](../spec/domain-model.md#値域)）を収められる固定長整数（原則 `u64` / `i64`）を使い、`requires` で値域を前提とする。
+- `unsafe`、浮動小数点型、`unwrap`・`expect`・範囲外になりうる添字、`std::time` などの暗黙の副作用を使ってはならない。「今日」・マスタ・設定は引数で受け取る。
+- Lean `TargetModel` と同じ関数の分け方・評価順・エラーの返し方を保つ。Rust 側だけで最適化した場合は、`TargetModel` も同じ変更で直す（Rust の本文が変わると `@[target]` のハッシュがずれて TR-T2 が失敗するので、見落とさない）。
+- 移植元ロケータ（`java:` `sql:` 等）を Rust のコード・コメントに書いてはならない（検査 TR-X）。移植元との関係は Lean の証明グラフを通してのみたどる。
 
-- 各公開関数の `ensures` に、対応する `spec` の関数との一致を書く（例: `ensures r as int == spec::fare::fare(basic as int, rate as int)`）。
-- 数値型は値域（[domain-model.md](../spec/domain-model.md#値域)）を収められる固定長整数（原則 `u64` / `i64`）を使い、`requires` で値域を前提とする。オーバーフローが無いことは Verus の算術検査で示す。
-- `unsafe`、浮動小数点型（`f32`, `f64`）、`unwrap`・`expect`・添字アクセスによるパニックの可能性、`std::time` などの暗黙の副作用を使ってはならない。
-- 「今日」・マスタ・設定は引数で受け取る（[ADR 0007](../decision/0007-functional-core-with-ports.md)）。
-- 状態遷移（予約確定など）は、インメモリの状態を引数と戻り値で受け渡す純粋関数として書き、`ensures` で `spec` の状態遷移と一致することを述べる。
-
-### adapter（Verus の対象外）
+## adapter/
 
 - ポート（[ports.md](../spec/ports.md)）の実装を置く。`#[verifier::external]` とし、Kani と結合テストで検査する。
-- `unsafe` を使ってはならない。パニックしうる箇所は Kani のハーネスで到達不能を示すか、`Result` で返す。
-- HTTP フレームワーク・DB ドライバの選択は、採用時に ADR を作る。
+- `unsafe` を使ってはならない。パニックしうる箇所は Kani で到達不能を示すか、`Result` で返す。
+- HTTP フレームワーク・DB ドライバ・パスワードハッシュのクレートは、採用時に ADR を作る。依存クレートの版は `trace/target.json` に記録する。
 
-## refinement
+## 検証
 
-| 手段 | 置き場所 | 対象とする課題（[refinement.md](../spec/refinement.md)） |
+| 手段 | 置き場所 | 何を確かめるか |
 | --- | --- | --- |
-| Verus の証明 | `target_model::core` の `ensures` と `refinement::lemmas` | REF-002, REF-004, REF-007 |
-| Kani のハーネス | `refinement::kani` | REF-004（`verus!` の外のコード）, REF-005, JSON の往復 |
-| 適合テストベクタ | `refinement::conformance` | REF-001（全操作） |
-| 結合テスト | `rust/tests/` | REF-003, REF-005（DB アダプタ）, REF-006 |
+| Verus | 業務機能の `ensures` と `proof/` | 実行コード ＝ `model/` |
+| Kani | `kani/` | `verus!` の外のコード、アダプタの契約、JSON の往復 |
+| 適合テスト | `tests/` | Rust の結果 ＝ Lean `TargetModel` の結果（`target-model/`, `shared/`） |
+| 結合テスト | `tests/` | トランザクション・HTTP の契約（[ports.md](../spec/ports.md#トランザクション), [http-contract.md](../spec/http-contract.md)） |
 
-- Verus の `assume`・`admit`・`#[verifier::external_body]` を `target_model::core` と `refinement::lemmas` で使ってはならない。やむを得ず使う場合は ADR を作り、課題 ID とともに一覧化する。
-- Kani のハーネスは、境界（`kani::any()` の範囲・ループ展開数）をコメントに書き、何を保証しないかを明記する。
-- 各課題の充足状況（どの関数・ハーネス・テストで満たしたか）を [refinement.md](../spec/refinement.md) の表に記録する。
+- Verus の `assume`・`admit`・`#[verifier::external_body]` を業務機能と `proof/` で使ってはならない。やむを得ず使う場合は ADR を作り、[refinement.md](../spec/refinement.md#未証明の前提) に列挙する。
+- Kani のハーネスは、境界（`kani::any()` の範囲・ループ展開数）と、何を保証しないかをコメントに書く。
 
 ## 品質
 
 - `cargo fmt`, `cargo clippy -- -D warnings` を通す。
-- CI は Verus の検証、`cargo kani`、`cargo test` のすべてを実行する。
+- CI は Verus の検証、`cargo kani`、`cargo test`、追跡の検査（`tools/trace check`）を実行する。

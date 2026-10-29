@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # バックログ
@@ -33,15 +33,25 @@ generated:
 | 0016 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](0016-lang-semantics-sql.md) | todo | 0001 |
 | 0017 | [OKF バンドルとリンクの検査](0017-okf-bundle-lint.md) | todo | 0001 |
 | 0018 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](0018-rust-project-scaffold.md) | todo | — |
-| 0019 | [Rust: Spec の Verus 写しと運賃計算コア](0019-rust-spec-mirror-and-fare-core.md) | todo | 0004, 0012, 0018 |
-| 0020 | [Rust: 空席照会・予約・会員・認証・レポートのコア](0020-rust-usecases-core.md) | todo | 0006, 0007, 0008, 0009, 0010, 0019 |
+| 0019 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](0019-rust-spec-mirror-and-fare-core.md) | todo | 0018, 0022 |
+| 0020 | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](0020-rust-usecases-core.md) | todo | 0019, 0023 |
+| 0021 | [LangSemantics.Rust: Rust の意味論](0021-lang-semantics-rust.md) | todo | 0001 |
+| 0022 | [TargetModel と Refinement: 運賃計算](0022-target-model-fare-and-refinement.md) | todo | 0004, 0012, 0021 |
+| 0023 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](0023-target-model-usecases-and-refinement.md) | todo | 0022, 0006, 0007, 0008, 0009, 0010 |
+| 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | todo | 0001, 0025 |
+| 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | todo | — |
+| 0026 | [差分オラクル（新旧 2 版の振る舞い比較）](0026-differential-oracle.md) | todo | 0013, 0025 |
 
 ## 推奨する着手順
 
-Lean（正規仕様と抽象化証明）と Rust（移植先と具体化証明）は並行して進められる。
-
-1. 基盤: Lean 0001 → 0017, 0002, 0016, 0003（並行可）／ Rust 0018（Verus と Kani の併用確認を最優先）
-2. 運賃: 0004 → 0012 → 0005、Rust 0019（0004・0012・0018 の後）
-3. 機能（Lean）: 0008 → 0009、0006 → 0007 → 0010
-4. 機能（Rust）: 0020 → 0011 → 0014
-5. 原典との照合: 0013（0012 の後いつでも）
+```
+移植元側（Lean）                 内側（Lean）            移植先側（Lean → Rust）
+0025 → 0024 ┐
+0001 ┬ 0002, 0016 ─────────┐
+     ├ 0003 ─ 0004 ─ 0005  ├─ 0012 ─ 0022 ─ 0019（Rust）
+     ├ 0021 ───────────────┘
+     └ 0017
+0018（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
+機能: 0008 → 0009、0006 → 0007 → 0010 → 0023 → 0020 → 0011 → 0014
+原典との照合: 0013 → 0026
+```

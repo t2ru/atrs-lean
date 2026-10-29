@@ -6,7 +6,7 @@ tags: [rules, spec]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # 仕様執筆規約
@@ -39,7 +39,7 @@ generated:
 | 抽象モデル `Spec` | **[Spec]** | 正規の業務仕様。厳密な整数演算。すべての移植先が従う |
 | 移植元モデル `SourceModel` | **[Source]** | 原典の観測可能な振る舞いを原典言語（Java）の意味論ごと再現する |
 | 抽象化証明課題 `Abstraction` | `ABS-NNN` | [Source] → [Spec] の関係。[abstraction.md](../spec/abstraction.md) |
-| 移植先モデル `TargetModel` | **[Target]** | 各言語の実装。仕様本文には書かない |
+| 移植先モデル `TargetModel` | **[Target]** | Rust ソースの振る舞いを Lean で写したモデル。草案には書かない |
 | 具体化証明課題 `Refinement` | `REF-NNN` | [Spec] → [Target] の関係。[refinement.md](../spec/refinement.md) |
 
 草案（各機能の文書）には [Spec] と [Source] を書く。[Target] 固有の事項（Rust のクレート構成など）は書かない。
@@ -58,7 +58,7 @@ generated:
 4. **エラー**: 返しうるエラーコードと条件の表（[errors-and-messages.md](../spec/errors-and-messages.md)）。
 5. **事後条件・不変条件**: 状態変更がある場合は前後の状態の関係。
 6. **例**: 最低 1 つの具体例（入力と期待出力）。境界値を含めることが望ましい。例は適合テストベクタの種になる。
-7. **出典**: Java 原典のファイルとシンボル（[documentation.md](documentation.md#出典java-原典の記法)）。
+7. **出典**: 移植元ロケータ（[documentation.md](documentation.md#出典移植元ロケータの記法)）。
 
 ## 記法
 

@@ -1,0 +1,38 @@
+---
+type: Backlog Item
+title: "差分オラクル（新旧 2 版の振る舞い比較）"
+description: "Java オラクルハーネスを拡張し、source-model ベクタの全入力を新旧 2 版の上流で実行して出力の差分を取る。"
+tags: [backlog, java, oracle, upstream, testing]
+id: "0026"
+state: todo
+depends_on: ["0013", "0025"]
+generated:
+  by: claude-code/claude-opus-5-5
+  at: 2026-10-29T22:24:48+09:00
+---
+
+# 差分オラクル（新旧 2 版の振る舞い比較）
+
+## 目的
+
+版上げ時に、コード差分に現れない振る舞いの変化（依存フレームワークの挙動など）を検出する。
+
+## 範囲
+
+- 2 つの上流 commit を指定してそれぞれのハーネスを構築・実行する仕組み
+- ケースごとの出力差分の一覧（`trace/upgrade-impact.md` への入力）
+- [upstream-upgrade.md](../rules/upstream-upgrade.md) の手順 4 の具体化
+
+## 対象外
+
+- 新しい上流版への実際の追従（版上げのたびに別項目）
+
+## 完了条件
+
+- [ ] 同じ commit を新旧に指定すると差分 0 になる
+- [ ] 故意に設定値（`atrs.childFareRate`）を変えた版で、関係するケースだけに差分が出る
+
+## 参照
+
+- [ADR 0024](../decision/0024-following-upstream-releases.md)
+- [backlog 0013](0013-java-oracle-harness.md)

@@ -42,7 +42,7 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 1. Lean `Spec`（型・関数・定理）: 業務規則の正規の定義
 2. `docs/spec` の **規範節**: `Spec` で表現できない仕様の正規の定義
 3. 適合テストベクタ `conformance/`: `spec/` の期待値は Lean `Spec` を実行して生成する
-4. 移植先モデル（Rust `target_model`）: 上記に従う
+4. 移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）: 上記に従う（[ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)）
 5. Java 原典: 移植元モデル `SourceModel` を検証するためのオラクル
 
 ### docs/spec に置くもの
@@ -91,5 +91,5 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 ## More Information
 
 * 本 ADR は [ADR 0003](0003-spec-as-normative-source.md) を置き換える。
-* [ADR 0020](0020-rust-as-target-language.md)（適合テストベクタによる Lean `Spec` と Rust の対応づけ）
+* [ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md)（移植先モデルと移植先ソースの構成）
 * [spec/README.md](../spec/README.md)

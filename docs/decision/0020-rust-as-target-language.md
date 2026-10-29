@@ -3,8 +3,9 @@ type: Architecture Decision Record
 title: "移植先言語を Rust とし、具体化証明課題を Verus と Kani で充足する"
 description: "TargetModel と Refinement を Rust で実装し、Verus で Spec の写しとの一致を証明、Kani で有界検査、適合テストベクタで Lean Spec との対応を裏付ける。"
 tags: [adr, rust, target-model, refinement, verus, kani]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0022"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
@@ -102,6 +103,8 @@ Chosen option: "Rust + Verus + Kani + 適合テストベクタ", because Rust �
 * Bad, because `Refinement` が証明ではなく検証に留まる
 
 ## More Information
+
+* **本 ADR は [ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md) に置き換えられた**。Rust を移植先とすることと Verus・Kani の採用は引き継ぎ、`TargetModel` を Lean のモデル、Rust を移植先ソースとする構成に改めた。Verus・Kani は `TargetModel` ⇔ Rust ソースの対応の確認手段になった。
 
 * [ADR 0018](0018-language-neutral-top-level-namespaces.md) の配置の記述を本 ADR で更新する（名前空間の規則そのものは変えない）。
 * [spec/refinement.md](../spec/refinement.md), [rules/rust.md](../rules/rust.md)

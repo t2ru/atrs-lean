@@ -6,7 +6,7 @@ tags: [rules, git]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # バージョン管理規約
@@ -31,6 +31,8 @@ generated:
 - `docs/` を変更した場合: frontmatter・[docs/index.md](../index.md)・[docs/log.md](../log.md) を更新し、OKF とリンクの検査（[backlog 0017](../backlog/0017-okf-bundle-lint.md)）を通す。
 - Lean を変更した場合: `lake build`, `lake test`。
 - Rust を変更した場合: Verus の検証、`cargo kani`、`cargo test`（[rust.md](rust.md#品質)）。
+- Lean・Rust・上流を変更した場合: 追跡の検査 `tools/trace check`（[ADR 0023](../decision/0023-cross-language-traceability.md)）。インベントリ・manifest を再生成して一緒にコミットする。
+- 上流の版上げでは、旧版の最後のコミットに `upstream-<旧 release>` タグを付ける（[upstream-upgrade.md](upstream-upgrade.md)）。
 - 機密情報（鍵・パスワード・個人情報）を含めない。
 
 ## メッセージ

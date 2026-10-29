@@ -1,53 +1,65 @@
 ---
 type: Specification
-title: "具体化証明課題（Refinement）"
-description: "正規仕様 Lean Spec から Rust の移植先モデル target_model への具体化で満たすべき課題 REF-NNN と、Verus・Kani・適合テストによる充足方法。"
+title: "具体化証明課題（Refinement）と移植先ソースの確認"
+description: "Lean で証明する Spec → TargetModel の課題 REF-NNN と、TargetModel ⇔ Rust ソースの対応を確認する課題 SRC-NNN（Verus・Kani・適合テスト）。"
 tags: [spec, refinement, proof, rust]
 status: draft
 spec_role: meta
 models: [spec]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
-# 具体化証明課題（Refinement）
+# 具体化証明課題（Refinement）と移植先ソースの確認
 
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
 
-[Spec]（Lean `Spec`）と [Target]（Rust `target_model`）の関係を定める（[ADR 0018](../decision/0018-language-neutral-top-level-namespaces.md), [ADR 0020](../decision/0020-rust-as-target-language.md)）。
-課題は Rust プロジェクトの `refinement` で充足する。規約は [rules/rust.md](../rules/rust.md)。
-
-## 信頼の連鎖
+構成は [ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)。
 
 ```
-Lean Spec ──(適合テストベクタ: Lean Spec を実行して生成)──▶ Rust target_model
-                                                              │
-                                             (Verus の ensures と証明)
-                                                              ▼
-                                                     Rust spec（Lean Spec の Verus 写し）
+Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ⇔（追跡＋確認: SRC-NNN）⇔ Rust ソース
 ```
 
-- Verus は `target_model` が **Verus の写し `spec`** と全入力で一致することを証明する。
-- 写し `spec` と Lean `Spec` の一致は、(1) 同名・同構造で写す規約とレビュー、(2) 適合テストベクタ（写しと一致する実装が Lean の生成値と食い違えば、写しの誤りが分かる）で担保する。証明ではない点に注意する。
+- **REF**: `Spec` → `TargetModel` の関係。Lean の `Refinement` で **証明** する。
+- **SRC**: `TargetModel` ⇔ Rust ソースの対応。追跡注釈（[traceability.md](traceability.md)）、適合テスト、Verus、Kani で **確認** する。Rust の実行コードが `model/`（`TargetModel` の Verus 写し）と一致することは Verus で証明するが、`model/` と Lean `TargetModel` の対応は規約・ハッシュ・テストによる担保であり、証明ではない。
 
-## 証明課題
+## REF: Spec → TargetModel（Lean で証明）
 
-| ID | 内容 | 手段 | 状況 |
-| --- | --- | --- | --- |
-| REF-001 | `conformance/spec/` と `conformance/shared/` の全ベクタを通す | 適合テスト（`refinement::conformance`） | 未着手 |
-| REF-002 | 予約確定の前後で全フライトの `vacantNum ≥ 0`。失敗時は状態が変化しない | Verus（インメモリ状態の遷移関数の `ensures`） | 未着手 |
-| REF-003 | 状態を変更するユースケースが原子的かつ直列化可能（[ports.md](ports.md#トランザクション) の規範節） | インメモリ: 排他（Mutex）下の逐次実行として Verus の結果に帰着。DB: トランザクション分離レベルと行ロックの設計レビュー＋結合テスト | 未着手 |
-| REF-004 | 純粋関数（運賃計算・空席照会・検証・CSV 生成・書式）が値域内の全入力で [Spec] と同じ結果を返し、オーバーフロー・パニックが無い | Verus（`core`）、Kani（`verus!` の外の変換・JSON） | 未着手 |
-| REF-005 | ポートのアダプタが [ports.md](ports.md) の契約を満たす（採番の一意性・書式、`publish` の原子性、`findForUpdate` の排他） | Kani（インメモリ・有界）、結合テスト（DB・ファイル） | 未着手 |
-| REF-006 | HTTP 契約（[http-contract.md](http-contract.md)）のステータス・遷移先・JSON 形状を満たす | 結合テスト（HTTP レベルの適合ベクタ） | 未着手 |
-| REF-007 | 文字列長・文字クラスを Unicode スカラ値で判定する | Verus（`Seq<char>` 上の `ensures`） | 未着手 |
-| REF-008 | 「今日」「現在日時」を Clock ポートからのみ取得し、同一ユースケース内で一定である | 設計レビュー（`core` が時刻を引数で受け取ることで構造的に保証） | 未着手 |
+抽象化関数 β は `TargetModel` の値を `Spec` の値に写す（`LangSemantics.Rust` の `U64` → `Nat`、`RString` → スカラ値の列、`Result` → `Except`、`Panic` → β 未定義）。
 
-「状況」は課題を充足した関数・ハーネス・テストへのリンクで更新する。
+| ID | 内容 |
+| --- | --- |
+| REF-001 | 純粋関数（運賃計算・空席照会・入力検証・CSV 生成・書式）について、値域内の全入力で `β(TargetModel.f(x)) = Spec.f(β(x))` |
+| REF-002 | 予約確定の前後で全フライトの `vacantNum ≥ 0`。失敗時は状態が変化しない（`TargetModel` の状態遷移が `Spec` の状態遷移を具体化する） |
+| REF-003 | 値域内で `TargetModel` の算術がオーバーフローせず、パニック（`Panic` 値）に到達しない |
+| REF-004 | 基本運賃・運賃・合計金額の一致（REF-001 の運賃部分。最初に着手する） |
+| REF-005 | 文字列長・文字クラスを Unicode スカラ値で判定する（`RString` の `chars` 上で `Spec` と一致） |
+| REF-006 | 「今日」「現在日時」を Clock ポートからのみ受け取る（`TargetModel` の関数が時刻を引数に取る構造であること） |
+
+## SRC: TargetModel ⇔ Rust ソース（確認）
+
+| ID | 内容 | 手段 |
+| --- | --- | --- |
+| SRC-001 | Rust が `conformance/target-model/` と `conformance/shared/` の全ベクタを通す | 適合テスト（`rust/tests/`） |
+| SRC-002 | Rust の実行コードが `model/` の写しと全入力で一致し、算術がオーバーフローしない | Verus（`ensures`, `rust/src/proof/`） |
+| SRC-003 | `verus!` の外のコード（変換・JSON）とアダプタに、有界な入力でパニック・未定義動作が無い | Kani（`rust/kani/`） |
+| SRC-004 | アダプタが [ports.md](ports.md) の契約を満たす（採番の一意性・書式、`publish` の原子性、`findForUpdate` の排他） | Kani（インメモリ）、結合テスト（DB・ファイル） |
+| SRC-005 | 状態変更の原子性・直列化可能性（[ports.md](ports.md#トランザクション) の規範節） | インメモリ: Mutex 下の逐次実行。DB: 分離レベルと行ロックの設計レビュー＋結合テスト |
+| SRC-006 | HTTP 契約（[http-contract.md](http-contract.md)）のステータス・遷移先・JSON 形状 | 結合テスト（HTTP レベルのベクタ） |
+| SRC-007 | 追跡の検査 TR-T1・TR-T2・TR-X が通る | `tools/trace check` |
+
+## 状況
+
+| ID | 状況 |
+| --- | --- |
+| REF-001〜006 | 未着手 |
+| SRC-001〜007 | 未着手 |
+
+「状況」は、課題を充足した定理・関数・ハーネス・テストへのリンクで更新する。
 
 ## 未証明の前提
 
-Verus の `assume`・`admit`・`external_body` を使った場合は、その箇所と理由をここに列挙する（[rules/rust.md](../rules/rust.md#refinement)）。
+Verus の `assume`・`admit`・`external_body` を使った場合は、その箇所と理由をここに列挙する（[rules/rust.md](../rules/rust.md#検証)）。
 
 （現在なし）

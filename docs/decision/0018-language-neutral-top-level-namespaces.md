@@ -3,8 +3,9 @@ type: Architecture Decision Record
 title: "トップレベル名前空間を LangSemantics.<lang> / SourceModel / Spec / Abstraction / TargetModel / Refinement に統一する"
 description: "言語意味論・移植元・抽象・移植先の各モデルと 2 種類の証明課題に、実装言語を固定しない共通のトップレベル名前空間を与える。"
 tags: [adr, architecture, naming]
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "0022"
 date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
@@ -109,6 +110,8 @@ conformance/          言語中立の適合テストベクタ
 * Bad, because 層の役割がトップレベルで見えない
 
 ## More Information
+
+* **本 ADR は [ADR 0022](0022-models-in-lean-and-sources-traced-at-both-ends.md) に置き換えられた**。名前（`LangSemantics.<lang>`, `SourceModel`, `Spec`, `Abstraction`, `TargetModel`, `Refinement`）は引き継ぎ、すべてのモデルと証明を Lean に置く構成に改めた。
 
 * 配置（どの言語プロジェクトがどの名前空間を持つか）は [ADR 0020](0020-rust-as-target-language.md) で更新した。
 * [ADR 0004](0004-two-layer-model-java-faithful-and-abstract.md) の層の名前を本 ADR で確定する（二層＋証明という決定内容は変えない）。

@@ -1,12 +1,12 @@
 ---
 type: Guideline
 title: "移植規約"
-description: "原典 → 草案 → Lean の SourceModel/Spec → Abstraction → テストベクタ生成 → Rust の target_model と refinement の順で移植する原則。"
+description: "原典 → 草案 → Lean の SourceModel/Spec/Abstraction → TargetModel/Refinement → Rust ソースの順で移植し、両端を追跡注釈でつなぐ原則。"
 tags: [rules, porting]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # 移植規約
@@ -21,10 +21,10 @@ generated:
 4. **草案の置き換え**: 形式化した節の定義を `docs/spec` から取り除き、Lean の定義へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
 5. **抽象化証明**: [abstraction.md](../spec/abstraction.md) の課題（`ABS-NNN`）を `Abstraction` で証明する。
 6. **テストベクタ生成**: Lean `Spec` を実行して `conformance/spec/`・`shared/` の期待値を生成し、差分をレビューする（[testing.md](testing.md)）。
-7. **Verus の写し**: Rust の `spec` に、対応する Lean `Spec` の定義を写す（[rust.md](rust.md)）。
-8. **移植先実装**: Rust の `target_model` を実装し、`ensures` で `spec` との一致を述べる。
-9. **具体化証明**: [refinement.md](../spec/refinement.md) の課題（`REF-NNN`）を Verus・Kani・適合テストで充足する。
-10. **検証**: Lean の `Spec`・`SourceModel` と Rust の `target_model` が、対応するテストベクタを全件通すこと。可能なら Java オラクル（[backlog 0013](../backlog/0013-java-oracle-harness.md)）でも [Source] ベクタを確認する。
+7. **移植先モデル**: Lean に `TargetModel`（Rust の意味論 `LangSemantics.Rust` で、これから書く Rust ソースの振る舞いを表す）を書き、`Refinement` で `Spec` → `TargetModel` を証明する（`REF-NNN`）。`target-model/` のベクタを `TargetModel` から生成する。
+8. **移植先ソース**: Rust を書く。`model/` に `TargetModel` の Verus 写しを置き、実行コードの `ensures` で写しとの一致を述べる（[rust.md](rust.md)）。
+9. **両端の追跡**: `SourceModel` に `@[source]`、`TargetModel` に `@[target]`、Rust の写しに `/// trace: models` を付け、ハッシュを道具の出力で埋める（[ADR 0023](../decision/0023-cross-language-traceability.md)）。
+10. **検証**: Lean の `Spec`・`SourceModel`・`TargetModel` と Rust が、対応するテストベクタを全件通すこと。Verus・Kani・追跡の検査（TR）を通すこと。可能なら Java オラクル（[backlog 0013](../backlog/0013-java-oracle-harness.md)）でも [Source] ベクタを確認する。
 
 ## 原則
 
@@ -42,4 +42,5 @@ generated:
 ## 追跡可能性
 
 - 原典のクラス・メソッドを仕様化したら [traceability.md](../spec/traceability.md) を更新する。
-- Lean の `SourceModel` / `Spec`、Rust の `target_model` のモジュールを作ったら同表の該当列を埋める。
+- 追跡の正は Lean の注釈（`@[source]`, `@[target]`）である。[traceability.md](../spec/traceability.md) の表は manifest から生成するので、手で書き足してはならない（生成区画の外の説明・対象外一覧を除く）。
+- 移植元ソースと移植先ソースを直接対応づけてはならない（[ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。

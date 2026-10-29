@@ -1,30 +1,30 @@
 ---
 type: Backlog Item
 title: "Rust: HTTP 契約アダプタ"
-description: "http-contract.md の画面遷移と REST API を Rust の target_model::adapter で実装し、REF-006 を結合テストで検証する。"
-tags: [backlog, rust, target-model, http]
+description: "http-contract.md の画面遷移と REST API を Rust で実装し、SRC-006 を結合テストで確認する。"
+tags: [backlog, rust, http]
 id: "0014"
 state: todo
 depends_on: ["0011"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # Rust: HTTP 契約アダプタ
 
-> 2026-10-29 に Lean の TargetModel 向けから Rust 向けに範囲を変更した（[ADR 0020](../decision/0020-rust-as-target-language.md)）。
+> 2026-10-29 に ADR 0022（モデルは Lean、Rust は移植先ソース）と ADR 0023（両端の追跡）に合わせて範囲を改めた。
 
 ## 目的
 
-外形的な互換性（URL・ステータス・JSON）を確認できる移植先を作る。
+外形的な互換性（URL・ステータス・JSON）を確認できる移植先ソースを作る。
 
 ## 範囲
 
-- HTTP フレームワークの選定（ADR を作る）
-- `Spec.Http`（Lean。契約の抽象表現）の形式化と、その Verus 写し
-- `target_model::adapter::http`（リクエスト → `core` → 応答）
-- トランザクショントークン・CSRF の実装（[http-contract.md](../spec/http-contract.md#共通) の規範節）
+- HTTP フレームワークの選定（ADR を作る。依存の版は `trace/target.json`）
+- `Spec.Http`（契約の抽象表現）と `TargetModel.Http`、`Refinement` の証明
+- `rust/src/adapter/http`（リクエスト → 業務機能 → 応答）
+- トランザクショントークン・CSRF（[http-contract.md](../spec/http-contract.md#共通) の規範節）
 - HTTP レベルの適合ベクタ（`conformance/*/http/`）と結合テスト
 
 ## 対象外
@@ -34,7 +34,7 @@ generated:
 ## 完了条件
 
 - [ ] [http-contract.md](../spec/http-contract.md) の全リクエストにベクタがある
-- [ ] REF-006 を満たす
+- [ ] SRC-006 を満たす
 
 ## 参照
 

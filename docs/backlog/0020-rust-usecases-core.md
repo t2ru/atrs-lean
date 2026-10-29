@@ -1,28 +1,29 @@
 ---
 type: Backlog Item
-title: "Rust: 空席照会・予約・会員・認証・レポートのコア"
-description: "各機能の純粋なコアと状態遷移を target_model::core に実装し、Verus で Spec の写しとの一致と空席の不変条件を証明する。"
-tags: [backlog, rust, verus, target-model, refinement]
+title: "Rust: 空席照会・予約・会員・認証・レポートの移植先ソース"
+description: "各機能の Rust 実装と TargetModel の Verus 写しを作り、Verus で一致を証明し、target-model ベクタを通す。"
+tags: [backlog, rust, verus]
 id: "0020"
 state: todo
-depends_on: ["0006", "0007", "0008", "0009", "0010", "0019"]
+depends_on: ["0019", "0023"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
-# Rust: 空席照会・予約・会員・認証・レポートのコア
+# Rust: 空席照会・予約・会員・認証・レポートの移植先ソース
+
+> 2026-10-29 に ADR 0022（モデルは Lean、Rust は移植先ソース）と ADR 0023（両端の追跡）に合わせて範囲を改めた。
 
 ## 目的
 
-業務ロジック全体を Rust に移し、REF-002・REF-004・REF-007 を充足する。
+業務ロジック全体を Rust に移し、SRC-001〜SRC-003 を全機能で満たす。
 
 ## 範囲
 
-- `spec` の写し: 照会・予約・会員・認証・レポート・入力検証（Lean の各 `Spec` モジュールに対応）
-- `target_model::core`: 各機能（状態は引数と戻り値で受け渡す）
-- REF-002（予約確定前後の `vacantNum ≥ 0`、失敗時の状態不変）、REF-004、REF-007 を Verus で
-- 各機能の適合テスト（REF-001）
+- `model/` の写し: 照会・予約・会員・認証・レポート・入力検証（Lean の各 `TargetModel` モジュールに対応）
+- 業務機能の実装（状態は引数と戻り値で受け渡す）
+- SRC-001, SRC-002, SRC-003
 
 ## 対象外
 
@@ -30,8 +31,9 @@ generated:
 
 ## 完了条件
 
-- [ ] 全機能の `conformance/spec/`・`shared/` のベクタが通る
-- [ ] REF-002, REF-004, REF-007 の状況欄が証明へのリンクで埋まっている
+- [ ] 全機能の `conformance/target-model/`・`shared/` のベクタが通る
+- [ ] SRC-001〜SRC-003 の状況欄が埋まっている
+- [ ] TR-T1・TR-T2 が通る
 
 ## 参照
 

@@ -7,7 +7,7 @@ status: draft
 spec_role: meta
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -19,7 +19,7 @@ sources:
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
 
 ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である。本ディレクトリは、**`Spec` で表現できない仕様**（規範）と、仕様・検証を運用するためのメタ情報、そして Lean に形式化する前の業務規則の **草案** を置く（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
-移植先（Rust の `target_model`、[ADR 0020](../decision/0020-rust-as-target-language.md)）は Lean `Spec` と本ディレクトリの規範節に従う。書き方は [rules/spec-writing.md](../rules/spec-writing.md) による。
+移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0022](../decision/0022-models-in-lean-and-sources-traced-at-both-ends.md)）。書き方は [rules/spec-writing.md](../rules/spec-writing.md) による。
 
 | 優先 | 正規の定義 |
 | --- | --- |
@@ -28,6 +28,8 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 | — | `draft` は Lean に形式化するまでの暫定。`informative` は非規範の要約 |
 
 ## 対象版
+
+追従中の版の正は `trace/upstream.json`（[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)）である。下表は現在の値の写しで、道具の導入後は生成する。
 
 | 項目 | 値 |
 | --- | --- |
@@ -43,7 +45,7 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 | 記号 | 名前空間 | 意味 |
 | --- | --- | --- |
 | **[Spec]** | `Spec` | 抽象モデル。正規の業務仕様（Lean） |
-| **[Target]** | `TargetModel` | 移植先モデル（Rust の `target_model`） |
+| **[Target]** | `TargetModel` | 移植先モデル（Rust ソースの振る舞いを Lean で写したもの） |
 | **[Source]** | `SourceModel` | 移植元モデル。原典 Java の観測可能な振る舞い |
 | **[Spec=Source]** | — | 両モデルで定義が同一 |
 

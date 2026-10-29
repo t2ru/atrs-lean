@@ -6,7 +6,7 @@ tags: [rules, testing]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-29T22:24:48+09:00
 ---
 
 # テスト規約
@@ -15,9 +15,9 @@ generated:
 
 | 層 | 目的 | 手段 |
 | --- | --- | --- |
-| 適合テストベクタ | 移植先（Rust）が正規仕様（Lean `Spec`）どおりに振る舞うことを言語中立に確認 | `conformance/` の JSON（[ADR 0013](../decision/0013-conformance-test-vectors.md)） |
+| 適合テストベクタ | 各モデルとソースの振る舞いの一致を言語中立に確認（Java ⇔ `SourceModel`、`TargetModel` ⇔ Rust、`Spec` 自身） | `conformance/` の JSON（[ADR 0013](../decision/0013-conformance-test-vectors.md)） |
 | 有界検査・性質テスト | ベクタでは覆えない広い入力域での性質確認 | Rust の Kani（[rules/rust.md](rust.md)）、Lean の実行テスト（乱数は固定シード） |
-| 証明 | [Spec] の不変条件と [Source]→[Spec]（`Abstraction`）、[Spec]→[Target]（`Refinement`）の関係を全入力について保証 | Lean の定理（[abstraction.md](../spec/abstraction.md)）、Rust の Verus（[refinement.md](../spec/refinement.md)） |
+| 証明 | [Spec] の不変条件と [Source]→[Spec]（`Abstraction`）、[Spec]→[Target]（`Refinement`）の関係を全入力について保証。Rust の実行コード ＝ `TargetModel` の Verus 写し | Lean の定理（[abstraction.md](../spec/abstraction.md), [refinement.md](../spec/refinement.md)）、Rust の Verus |
 
 ## 適合テストベクタ
 
@@ -44,4 +44,6 @@ generated:
 - Lean: `lake build` と `lake test`（[backlog 0001](../backlog/0001-lean-project-scaffold.md)）。
 - Rust: Verus の検証、`cargo kani`、`cargo test`（[backlog 0018](../backlog/0018-rust-project-scaffold.md)）。
 - ベクタを追加・変更した変更は、Lean の `Spec`・`SourceModel` が対応する全ベクタを通る状態で取り込む。
-- Rust の `target_model` は `conformance/spec/` と `conformance/shared/` の全ベクタを通さなければならない（`Refinement` の必須条件 REF-001）。
+- `conformance/target-model/` の期待値は Lean `TargetModel` を実行して生成する（`source: "lean-target-model"`）。
+- Rust は `conformance/target-model/` と `conformance/shared/` の全ベクタを通さなければならない。
+- 移植元の版上げ時は、`source-model/` の全入力を新旧 2 版の Java で実行する差分オラクルを使う（[upstream-upgrade.md](upstream-upgrade.md)）。

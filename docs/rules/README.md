@@ -26,6 +26,7 @@ generated:
 | [lean.md](lean.md) | Lean コード・証明 | 全域関数、型の選択、モジュール構成、証明方針 |
 | [rust.md](rust.md) | Rust・Verus・Kani | クレート構成、Spec の写し方、検証、禁止事項 |
 | [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push はしない |
+| [upstream-upgrade.md](upstream-upgrade.md) | 上流の版上げ | インベントリ差分、差分オラクル、影響一覧、層ごとの判断、タグ |
 | [testing.md](testing.md) | テスト | 適合テストベクタ、性質テスト、Java オラクル |
 | [backlog.md](backlog.md) | `docs/backlog/` | 項目形式、状態、完了の定義（DoD） |
 
