@@ -8,7 +8,7 @@ Lean の言語サーバ（LSP）はリポジトリのルートで起動される
 リポジトリ内の Lean パッケージを `require` で取り込む。これにより、どのパッケージのファイルを開いても
 `import` が解決される。
 
-- `langSemantics`: port-lang スキルの言語意味論モデル（`.agents/skills/port-lang/assets`）
+- `langSemantics`: port-lang スキルの言語意味論モデルと `Machine`（`.agents/skills/port-lang/assets`）
 - `atrs`: ATRS の Lean プロジェクト（`lean/`）
 -/
 package atrsWorkspace where

@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T07:45:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -35,7 +35,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 - 入力の対応 `αᵢ`
 - 出力の対応 `αₒ`
 
-そのうえで、`Machine.Refines` の 3 つの証明義務（INIT・適用可能性・正しさ）を示す（[abstraction.md](abstraction.md#リファインメントの形) と同じ形）。
+そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）を示す（[abstraction.md](abstraction.md#リファインメントの形) と同じ形）。
 
 抽象化関数 β の標準の抽象化:
 

@@ -1,4 +1,5 @@
 import Trace.Dump
+import Machine
 import Spec
 import SourceModel
 import Abstraction
@@ -12,7 +13,7 @@ import Refinement
 
 全定義の層・追跡属性・Merkle ハッシュ・参照を JSON で標準出力へ書く（port-lang の `lean/trace-attributes.md`）。
 
-- 既定では、モデルの全モジュール（`Spec`, `SourceModel`, `Abstraction`, `TargetModel`, `Refinement`）を読む。
+- 既定では、モデルの全モジュール（`Machine`, `Spec`, `SourceModel`, `Abstraction`, `TargetModel`, `Refinement`）を読む。
   `--module` を与えると、そのモジュールだけを読む。
 - `--root` は、層として扱うトップレベル名前空間を足す（テストのフィクスチャ用）。
 -/
@@ -20,7 +21,7 @@ import Refinement
 open Lean
 
 /-- 既定で読むモジュール。 -/
-def defaultModules : Array Name := #[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement]
+def defaultModules : Array Name := #[`Machine, `Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement]
 
 /-- 引数を解釈する。 -/
 def parseArgs : List String → Array Name → List String → Except String (Array Name × List String)
