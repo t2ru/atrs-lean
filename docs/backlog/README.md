@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T07:30:00+09:00
+  at: 2026-10-30T07:45:00+09:00
 ---
 
 # バックログ
@@ -41,7 +41,7 @@ generated:
 | 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | todo | 0001, 0025 |
 | 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | done | — |
 | 0026 | [差分オラクル（新旧 2 版の振る舞い比較）](0026-differential-oracle.md) | todo | 0013, 0025 |
-| 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | todo | 0001 |
+| 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
 

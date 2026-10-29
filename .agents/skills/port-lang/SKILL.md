@@ -96,7 +96,7 @@ metadata:
 | Rust | 移植先として整備済み。移植元は一部未整備 | [semantics](references/rust/semantics.md) · [locators](references/rust/locators.md) · [frameworks](references/rust/frameworks.md) · [harness](references/rust/harness.md) · [verification](references/rust/verification.md) · [layout](references/rust/layout.md) |
 
 形式化言語の Lean 4 は全プロジェクト共通である: [lean/rules.md](references/lean/rules.md), [lean/trace-attributes.md](references/lean/trace-attributes.md)。
-### Lean の言語意味論モデル（assets）
+### Lean の言語意味論モデルと Machine（assets）
 
 `assets/` は、言語パックの `semantics.md` を Lean で実装した **そのまま使えるモデル** で、core だけに依存する Lake パッケージである。
 
@@ -106,11 +106,11 @@ metadata:
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新） | `assets/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/LangSemantics/Rust/` |
-| `Machine`（抽象機械、B メソッドのリファインメントと証明義務）。**未整備** | `assets/Machine/`（予定） |
+| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性） | `assets/Machine/` |
 | Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
 
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets"` とする（[lean/rules.md](references/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
-- 検査: `assets/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。
+- 検査: `assets/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`MachineTest/` では、リファインメントの例と反例（具体側の非決定性が抽象側より大きい場合）を証明し、公理を `#guard_msgs` で固定している。
 
 処理系ごとに意味が異なる言語（例: SQL）は、`references/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。
 新しい言語・方言を追加するときは [adding-a-language.md](references/adding-a-language.md) に従う。

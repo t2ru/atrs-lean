@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -14,6 +14,9 @@ python3 -I tools/ci/check_lean.py --self-test
 
 step "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
 python3 -I tools/ci/check_lean.py
+
+step "assets: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
+(cd .agents/skills/port-lang/assets && lake build)
 
 step "lean: lake build"
 (cd lean && lake build)
@@ -36,5 +39,6 @@ step "workspace: ルートで lake setup-file（Lean LSP 用）"
 lake setup-file lean/Spec.lean > /dev/null
 lake setup-file lean/Tests/Main.lean > /dev/null
 lake setup-file .agents/skills/port-lang/assets/LangSemantics.lean > /dev/null
+lake setup-file .agents/skills/port-lang/assets/Machine.lean > /dev/null
 
 step "OK"

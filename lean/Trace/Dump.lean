@@ -29,7 +29,7 @@ structure Config where
   /-- `fromL` の定義の `merkle` に、`toL` の参照先の `merkle` を合成するか。 -/
   merkleScope : Layer → Layer → Bool
 
-/-- 層とするトップレベル名前空間。`Machine` は backlog 0027 で加わる。 -/
+/-- 層とするトップレベル名前空間。 -/
 def modelRoots : List String :=
   ["LangSemantics", "Machine", "Spec", "SourceModel", "Abstraction", "TargetModel", "Refinement"]
 

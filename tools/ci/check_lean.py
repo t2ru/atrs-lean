@@ -73,7 +73,7 @@ def layer_of(module: str):
     root = parts[0]
     if root == "LangSemantics":
         return "LangSemantics" if len(parts) == 1 else f"LangSemantics.{parts[1]}"
-    if root == "LangSemanticsTest":
+    if root in ("LangSemanticsTest", "MachineTest"):
         return "Tests"
     if root in ALL_LAYERS:
         return root

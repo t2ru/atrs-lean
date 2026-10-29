@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T07:45:00+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -102,7 +102,7 @@ Chosen option: "B メソッドの抽象機械とリファインメントで定�
 
 | 種類 | 意味 | 証明での現れ方 |
 | --- | --- | --- |
-| 前提型 | ある前提の下では一致し、前提が破れると具体側が異なる | リファインメント定理の **名前付きの仮定** として現れ、仮定の述語に `@[deviation "D-NNN"]` を付ける。前提は次の 2 つの形のどちらかである。<br>- 抽象側の入力・状態の述語: 抽象側の PRE を強める（`Machine.restrict`）<br>- 具体側だけにある入力・環境の述語（例: 具体側にだけある要求ヘッダ）: 具体機械の入力・環境を制限する（`Machine.restrictConcrete`） |
+| 前提型 | ある前提の下では一致し、前提が破れると具体側が異なる | リファインメント定理の **名前付きの仮定** として現れ、仮定の述語に `@[deviation "D-NNN"]` を付ける。前提は次の 2 つの形のどちらかである。<br>- 抽象側の入力・状態の述語: 抽象側の PRE を強める（`Machine.Machine.restrict`・`restrictState`）<br>- 具体側だけにある入力・環境の述語（例: 具体側にだけある要求ヘッダ）: 具体機械の入力・環境を制限する（`Machine.Concrete.restrict`。環境は入力の成分として表す） |
 | 観測型 | 出力・状態の一部が常に（または前提と無関係に）異なる | 貼り合わせ関係 J または出力の対応 αₒ の **名前付きの成分** として現れる。成分に `@[deviation "D-NNN"]` を付ける。J と αₒ は、文書の α の表にある標準の抽象化と、名前付きの差異成分だけから組み立てる |
 | モデル外 | `Spec` の外の規範節（[ADR 0021](0021-lean-spec-as-normative-source.md)）とソースが異なり、Lean のどのモデルにも現れない（並行実行・セッション・Cookie など） | 証明には現れない。抽象モデルと移植元/先モデルの不一致ではない（[ADR 0033](0033-foundational-principles.md)）。登録簿に種類「モデル外」として書き、[spec/assurance.md](../spec/assurance.md) に限界として載せる |
 

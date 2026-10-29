@@ -1,4 +1,5 @@
 import Trace.Dump
+import Machine
 import Spec
 import SourceModel
 import Abstraction
@@ -21,7 +22,7 @@ open Lean
 def allowedAxioms : List Name := [``propext, ``Quot.sound, ``Classical.choice]
 
 unsafe def main : IO UInt32 := do
-  let env ← Trace.Dump.loadEnv #[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement]
+  let env ← Trace.Dump.loadEnv #[`Machine, `Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement]
   let entries := Trace.Dump.dump env (Trace.Dump.defaultConfig)
   let mut bad := 0
   for e in entries do
