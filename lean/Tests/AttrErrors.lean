@@ -1,0 +1,29 @@
+import Trace
+
+/-!
+# Tests.AttrErrors
+
+追跡属性の引数の誤りが、エラーとして報告されることを確かめる。
+-/
+
+namespace Tests.AttrErrors
+
+/-- error: @[source]: empty string argument -/
+#guard_msgs in
+@[source ""] def emptyArg : Nat := 0
+
+/-- error: @[spec_doc]: empty string argument -/
+#guard_msgs in
+@[spec_doc "docs/spec/x.md#a", ""] def emptySecondArg : Nat := 0
+
+end Tests.AttrErrors
+
+namespace Tests.AttrKeywords
+
+/-- 属性名（`source`, `target` など）が予約語にならず、識別子として使えることを確かめる。 -/
+def useNames (source target obligation deviation spec_doc no_source : Nat) : Nat :=
+  source + target + obligation + deviation + spec_doc + no_source
+
+#guard useNames 1 2 3 4 5 6 = 21
+
+end Tests.AttrKeywords

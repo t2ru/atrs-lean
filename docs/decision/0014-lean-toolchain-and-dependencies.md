@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T07:30:00+09:00
 ---
 
 # Lean 4 を lean-toolchain で固定し、依存は Batteries のみとする（Mathlib 不使用）
@@ -70,5 +70,6 @@ Chosen option: "core + Batteries のみ", because 必要な証明は `omega`・`
 ## More Information
 
 * [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)
+* （補足 2026-10-30）[backlog 0001](../backlog/0001-lean-project-scaffold.md) で採った版: Lean `leanprover/lean4:v4.35.0`（着手時点の最新安定版）、Batteries `v4.35.0`（commit `66e469188fe07963e5cf666c7d4433f45b8131c5`）。`lean/`・ルートのワークスペース・スキルの `assets` の `lean-toolchain` を同じ版にそろえる。
 
 * （補足 2026-10-30）[ADR 0033](0033-foundational-principles.md) により、`bv_decide` と `native_decide` は、証明（`Spec`・`Abstraction`・`Refinement` と、それらが依存する補題）で使ってはならない。どちらも公理 `Lean.ofReduceBool` に依存し、コンパイラを信頼の基盤に加えるからである。`Tests` での確認には使ってよい。ビットベクタの性質は、`decide`・`omega`・`simp` で示す。

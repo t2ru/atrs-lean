@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T06:46:37+09:00
+  at: 2026-10-30T07:30:00+09:00
 ---
 
 # バックログ
@@ -15,7 +15,7 @@ generated:
 
 | ID | 項目 | state | 依存 |
 | --- | --- | --- | --- |
-| 0001 | [Lean プロジェクトの雛形と CI](0001-lean-project-scaffold.md) | todo | — |
+| 0001 | [Lean プロジェクトの雛形と CI](0001-lean-project-scaffold.md) | done | — |
 | 0002 | [LangSemantics.Java: Java 基本型の意味論](0002-lang-semantics-java.md) | todo | 0001 |
 | 0003 | [Spec: ドメイン型・基本演算・マスタデータ](0003-abstract-domain-types-and-master-data.md) | todo | 0001 |
 | 0004 | [運賃計算（Spec と SourceModel）](0004-fare-calculation-both-models.md) | todo | 0002, 0003, 0016, 0027, 0024 |

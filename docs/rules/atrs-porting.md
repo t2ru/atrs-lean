@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T06:46:37+09:00
+  at: 2026-10-30T07:30:00+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -41,11 +41,12 @@ generated:
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
-| `lean/` | Lean プロジェクト（全モデルと証明） |
+| `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
 | `trace/` | 版の宣言・インベントリ・manifest |
 | `tools/trace/` | 追跡の道具 |
+| `tools/ci/` | CI の検査（`lean.sh` が Lean 側の一括検査。`.github/workflows/lean.yml` から呼ぶ） |
 
 ## 追従中の上流
 

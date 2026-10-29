@@ -6,7 +6,7 @@ tags: [rules, git]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T07:30:00+09:00
 ---
 
 # バージョン管理規約
@@ -29,7 +29,7 @@ generated:
 ## コミット前の確認
 
 - `docs/` を変更した場合: frontmatter・[docs/index.md](../index.md)・[docs/log.md](../log.md) を更新し、OKF とリンクの検査（[backlog 0017](../backlog/0017-okf-bundle-lint.md)）を通す。
-- Lean を変更した場合: `lake build`, `lake test`。
+- Lean を変更した場合: `tools/ci/lean.sh`（`lake build`, `lake test`, `axiom-check`, `trace-dump`, 静的検査 `check_lean.py`, ルートの `lake setup-file` を一括で実行する）。
 - Rust を変更した場合: Verus の検証、`cargo kani`、`cargo test`（[port-lang/rust/verification.md](../../.agents/skills/port-lang/references/rust/verification.md#品質)）。
 - Lean・Rust・上流を変更した場合: 追跡の検査 `tools/trace check`（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。インベントリ・manifest を再生成して一緒にコミットする。
 - 上流の版上げでは、旧版の最後のコミットに `upstream-<旧 release>` タグを付ける（[port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)）。
