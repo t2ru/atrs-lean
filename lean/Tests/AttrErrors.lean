@@ -12,6 +12,10 @@ namespace Tests.AttrErrors
 #guard_msgs in
 @[source ""] def emptyArg : Nat := 0
 
+/-- error: @[nondet]: empty string argument -/
+#guard_msgs in
+@[nondet ""] def emptyNondet : Nat := 0
+
 /-- error: @[spec_doc]: empty string argument -/
 #guard_msgs in
 @[spec_doc "docs/spec/x.md#a", ""] def emptySecondArg : Nat := 0
@@ -21,9 +25,9 @@ end Tests.AttrErrors
 namespace Tests.AttrKeywords
 
 /-- 属性名（`source`, `target` など）が予約語にならず、識別子として使えることを確かめる。 -/
-def useNames (source target obligation deviation spec_doc no_source : Nat) : Nat :=
-  source + target + obligation + deviation + spec_doc + no_source
+def useNames (source target obligation deviation nondet std_abs spec_doc no_source : Nat) : Nat :=
+  source + target + obligation + deviation + nondet + std_abs + spec_doc + no_source
 
-#guard useNames 1 2 3 4 5 6 = 21
+#guard useNames 1 2 3 4 5 6 7 8 = 36
 
 end Tests.AttrKeywords

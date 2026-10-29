@@ -1,0 +1,48 @@
+{
+ "obligations": [
+  {
+   "name": "Abstraction.X.refines",
+   "ids": [
+    "ABS-901"
+   ],
+   "abstract_base": "Spec.X.machine",
+   "abstract_kind": "ofChoice",
+   "concrete_base": "SourceModel.X.machine",
+   "deviations": [
+    "Abstraction.X.dev_D901"
+   ],
+   "observations": [],
+   "std_abs": [],
+   "nondet": [
+    "Spec.Conflict"
+   ],
+   "init_surj": true,
+   "pinned": true,
+   "errors": []
+  }
+ ],
+ "nondet": [
+  {
+   "name": "Spec.Conflict",
+   "ids": [
+    "N-901"
+   ]
+  }
+ ],
+ "deviation": [
+  {
+   "name": "Abstraction.X.dev_D901",
+   "ids": [
+    "D-901"
+   ]
+  }
+ ],
+ "std_abs": [],
+ "total_under": [
+  "Spec.X.machine"
+ ],
+ "state_safe": [
+  "Abstraction.X.dev_D901"
+ ],
+ "errors": []
+}

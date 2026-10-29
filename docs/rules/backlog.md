@@ -76,7 +76,8 @@ generated:
 - 関係する spec・ADR・[traceability.md](../spec/traceability.md) が更新されている。
 - Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
 - 基本原則（[ADR 0033](../decision/0033-foundational-principles.md)）を満たす。項目が扱う機能について、次をすべて満たす。
-  - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。
+  - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。R 課題は付帯の義務（`InitSurj`・`Pinned`・出力のみの差異の `StateSafe`）を、W 課題は両向きの例を含む（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+  - `lake exe obligation-check` と `tools/ci/check_obligations.py` が、その機能について警告なしで通る（TR-G・TR-N）。
   - 両端の決定論的な手段がすべて通る（`source-model/` ベクタと Java オラクルの照合、SQL の差分実行、`target-model/` ベクタ、写しの再生成、Verus・Kani）。
   - 追跡の検査 TR-*（TR-D を含む）が失敗扱いで通る。
   - 決定論的な手段の届かない部分が [assurance.md](../spec/assurance.md) に載っている。

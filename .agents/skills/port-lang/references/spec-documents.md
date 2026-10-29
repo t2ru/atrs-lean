@@ -47,7 +47,8 @@
 | `ABS-NNN` | 抽象化の証明課題（R・W・C・L）。W は `ABS-1NN` が `D-0NN` に対応する | 抽象化の課題一覧。Lean `Abstraction` の `@[obligation]` |
 | `REF-NNN` | 具体化の証明課題（R・W・C・L）。W は `REF-1NN` が `T-0NN` に対応する | 具体化の課題一覧（meta）。Lean `Refinement` の `@[obligation]` |
 | `SRC-NNN` | `TargetModel` ⇔ 移植先ソースの決定論的な確認課題 | 同上 |
-| `SPEC-NNN` | `Spec` 自身の証明課題（標準の選択が関係に含まれること、INIT ⇒ INV、INV の保存） | 抽象化の課題一覧 |
+| `SPEC-NNN` | `Spec` 自身の証明課題（標準の選択が関係に含まれること、INIT ⇒ INV、INV の保存、選択の像としての形、入口の全域性、初期状態の 1 点） | 抽象化の課題一覧 |
+| `N-NNN` | `Spec` の非決定性（環境の選択・自由な選択） | 抽象化の課題一覧（meta）。Lean の `@[nondet]` |
 | `MD-N` | マスタデータの不変条件 | マスタデータの草案 |
 | `TR-*` | 追跡の検査 | [traceability.md](traceability.md) |
 

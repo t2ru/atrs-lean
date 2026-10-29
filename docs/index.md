@@ -50,6 +50,7 @@ okf_version: "0.2"
 * [モデルと証明を Lean に置き、移植先の Verus の写しは TargetModel から決定論的に生成する](decision/0035-generate-verus-mirror-from-target-model.md) - ADR 0022 の層構成・依存の向き・Rust の構成を引き継ぎ、Rust の model/ を Lean TargetModel から道具で生成して手書きを禁じ、Verus で Rust の実行コードとの一致を証明する。リファインメントの枠組み Machine を名前空間の例外に加える。ADR 0022 を置き換える。
 * [両端の追跡をロケータとモデル側注釈で表し、確認済みハッシュを決定論的な検査の合格記録とする](decision/0036-traceability-hash-as-deterministic-check-record.md) - ADR 0023 の追跡方式を引き継ぎ、確認済みハッシュの意味を人の確認から決定論的な検査の合格記録に改め、TR 検査の例外と恒久的な警告をなくし、差異の対応を検査する TR-D とテンプレートのロケータ tmpl: を加える。ADR 0023 を置き換える。
 * [排他制御の失敗 Conflict を、Spec の状態変更操作の非決定的な結果とする](decision/0037-conflict-as-spec-nondeterminism.md) - AtrsError.Conflict とポートの I/O の失敗を、Spec の状態変更操作が採番以外の状態を変えずに選びうる非決定的な結果として定め、活性の限界を明示する。実行可能な Spec の標準の選択はこれらを選ばない。画面は 500、REST は 409。ADR 0029 を置き換える。
+* [リファインメントが空虚・自明に成り立つことを防ぐ義務と検査を課す](decision/0038-refinement-non-vacuity-obligations.md) - Machine.Refines は具体⊆抽象しか保証せず、緩い Spec・強すぎる PRE・粗い貼り合わせ・名前付きの成分の乱用・環境の非決定性による不具合の吸収でも成り立つ。これを、選択の像としての Spec（ofChoice）、環境の固定（Pinned）、標準の貼り合わせ（Glue.ofStd）、入口の全域性（TotalUnder）、初期化の全射性、状態の安全性、成分の両向きの例、核の明示と、検査 TR-G・TR-N・TR-V で塞ぐ。ADR 0034・0037 を補う。
 
 # Specification
 
@@ -106,6 +107,7 @@ okf_version: "0.2"
 * [Machine: 抽象機械と B メソッドのリファインメントの枠組み](backlog/0027-machine-refinement-framework.md) - アプリに依存しない Lean ライブラリ Machine（抽象機械、Refines、証明義務 INIT・適用可能性・正しさ、差異の仮定・成分）をスキルの assets/Machine/ に実装する。
 * [Lean TargetModel から Verus の写しを生成する道具](backlog/0028-verus-mirror-generator.md) - lake exe gen-verus で、Lean TargetModel の公開定義から rust/src/model/ の Verus spec 関数と追跡タグを決定論的に生成し、CI で再生成の差分が無いことを確認する。
 * [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](backlog/0029-rust-external-adapters.md) - DB・ファイル・時計のアダプタを Rust で実装し、その振る舞いを TargetModel.Adapter（DB は LangSemantics.Sql の式）に写して REF-009 を証明し、SQL の差分実行（SRC-010）と結合テスト（SRC-005）で一致を確かめる。
+* [リファインメントの空虚化を防ぐ義務と検査](backlog/0030-refinement-non-vacuity.md) - Machine.Adequacy（ofChoice・Pinned・Glue.ofStd・TotalUnder・InitSurj・StateSafe・Nontrivial・KernelIs・complete・run）、その反例、追跡属性 @[nondet]・@[std_abs]、検査 obligation-check と check_obligations.py、文書の登録簿を整える。
 
 # Log
 

@@ -56,6 +56,10 @@ conformance/
 | `cases[].expected` | 必須 | `{"ok": 値}` または `{"error": {"kind": "...", "code": "...", "args": []}}`。状態を変える操作は `"worldAfter"` も持てる |
 | `cases[].source` | 必須 | `lean-spec` / `lean-source-model` / `<移植元>-oracle` / `lean-target-model` |
 | `cases[].differences` | 任意 | 関係する既知差異 ID |
+| `cases[].outsidePre` | 前提の外に落ちるケースでは必須 | 前提を破る前提型の差異の ID の配列。具体側の定義域・具体側の不変条件・制限した PRE のどれかを満たさないケースに付ける。付けたケースと外に落ちるケースが一致することを、TR-V で検査する |
+| `cases[].environment` | 環境の選択を試すケースでは必須 | 具体側の入力の環境（衝突・I/O の失敗・配備の設定）。省いたケースは障害の無い環境（`Spec` の標準の選択）とする |
+
+- TR-V の判定のため、`Spec` の PRE・前提型の差異の述語・具体側の不変条件・環境の前提は決定可能（Lean の `Decidable`）でなければならない。
 
 ## 値の表現
 

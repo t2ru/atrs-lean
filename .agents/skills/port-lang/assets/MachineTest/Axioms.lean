@@ -1,5 +1,6 @@
 import MachineTest.Nondet
 import MachineTest.Counter
+import MachineTest.Adequacy
 
 /-!
 # MachineTest.Axioms
@@ -75,3 +76,23 @@ import MachineTest.Counter
 /-- info: 'MachineTest.Counter.counter8_refines_trans' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms MachineTest.Counter.counter8_refines_trans
+
+/-- info: 'Machine.Refines.run' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Refines.run
+
+/-- info: 'Machine.Refines.complete' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Refines.complete
+
+/-- info: 'Machine.Refines.congr' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Refines.congr
+
+/-- info: 'Machine.Refines.Pinned.correct' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Refines.Pinned.correct
+
+/-- info: 'Machine.Glue.ofStd_input_total' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms Machine.Glue.ofStd_input_total

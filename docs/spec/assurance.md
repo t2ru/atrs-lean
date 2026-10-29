@@ -77,6 +77,26 @@ generated:
 | `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 0027](../backlog/0027-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+
+### モデル間の保証の限界
+
+リファインメント（`Machine.Refines` と [ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
+
+- 名前付きの差異・非決定性を除けば、具体側の結果は [Spec] の結果と一致する（`Refines.complete`）。
+- 入口の機械では、差異の前提を保つ軌跡が [Spec] の軌跡で模倣される（`Refines.run`）。
+
+証明の届かない部分は次のとおりである。
+
+| 対象 | 確かめる手段 | 保証しないこと |
+| --- | --- | --- |
+| 仕様の妥当性 | 仕様文書の例と、`spec/` のベクタ（標準の選択 `run` の実行結果）を人が読む | [Spec] の標準の選択が、業務の意図どおりであること。B メソッドでも、仕様の妥当性は証明の外である |
+| 名前付きの成分の広さ（前提型の差異の述語、観測型の差異の成分、[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn)） | 形の制限（TR-G）、両向きの例（W 課題・`Nontrivial`）、ベクタの前提のラベル（TR-V） | 成分が必要以上に広く、本来の差異を覆い隠していないこと。広さの判断は、登録簿の各行と ADR による |
+| 標準の抽象化の核 | 葉ごとの `KernelIs`（ABS-048・REF-012）と、α・β の表の「同一視するもの」 | 表に書いた同一視（例: double の ±0、HTML の構造）が、業務上観測されないこと |
+| 活性（環境の非決定性 N-001〜N-003） | `Pinned`（障害の無い環境では選ばない）、ベクタ、結合テスト | 実際の配備で、環境が障害・衝突を示す頻度。環境が常に障害を示せば、具体側は常に失敗しうる（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md#活性の限界)） |
+| 「中断」の前提型の差異（[前提型の差異の影響](abstraction.md#前提型の差異の影響)） | 差異の W 課題 | 前提を破る 1 歩の後の軌跡（状態が [Spec] から離れうる） |
+| 入口でない R 課題の PRE | 入口の R 課題の証明で使われること | 入口から到達しない使われ方での振る舞い |
+| R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
 
 ## 追跡の道具
 

@@ -2,6 +2,21 @@
 
 ## 2026-10-30
 
+* **Creation**: [ADR 0038](decision/0038-refinement-non-vacuity-obligations.md) で、リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を定めた。
+  * 義務: 選択の像としての `Spec`（`Machine.ofChoice`）、環境の固定（`Refines.Pinned`）、標準の貼り合わせ（`Glue.ofStd`。部分写像）、入口の全域性（`TotalUnder`）、`InitSurj`、`StateSafe`、両向きの W 課題（`Nontrivial`）、核の明示（`KernelIs`）
+  * 検査: TR-G・TR-N を実装し、TR-V を定め、TR-P を改めた
+  * 設計段階で、独立したエージェントによる敵対的レビューを行った（実装後のレビューは backlog 0030 で実施中）
+* **Creation**: [backlog 0030](backlog/0030-refinement-non-vacuity.md) を作った。スキル port-lang の `assets/Machine/Adequacy.lean` と反例 `assets/MachineTest/Adequacy.lean`、`lean/Trace/Obligation.lean`（`lake exe obligation-check`）、`tools/ci/check_obligations.py` を作り、`tools/ci/lean.sh` に組み込んだ。
+* **Update**: [spec/abstraction.md](spec/abstraction.md) を改めた。
+  * 空虚化を防ぐ義務の節を加えた。
+  * α の表に、核の列と HTTP の応答の行を加えた。
+  * 前提型の差異の影響（出力のみ／中断）、入口の R 課題、SPEC-005〜007、ABS-048、Spec の非決定性 N-001〜N-006 を加えた。
+* **Update**: [spec/refinement.md](spec/refinement.md) に、同じ項目と REF-011・REF-012 を加えた。
+* **Update**: [spec/assurance.md](spec/assurance.md) にモデル間の保証の限界を加えた。[spec/domain-model.md](spec/domain-model.md) には、入口の PRE が値域を含まないことを加えた。
+* **Update**: ADR [0034](decision/0034-b-method-refinement-and-explicit-deviations.md)・[0037](decision/0037-conflict-as-spec-nondeterminism.md) の More Information に、ADR 0038 による補いを記した。
+* **Update**: backlog [0003](backlog/0003-abstract-domain-types-and-master-data.md)・[0012](backlog/0012-conformance-vector-format-and-generator.md)・[0024](backlog/0024-trace-tooling.md) と [rules/backlog.md](rules/backlog.md) の完了の定義を改めた。
+* **Update**: スキル port-lang を 0.3 に改めた（architecture・traceability・conformance・verification・spec-documents・lean/trace-attributes・SKILL.md）。
+
 * **Update**: [backlog 0027](backlog/0027-machine-refinement-framework.md) を完了した。スキル port-lang の `assets/Machine/` に、抽象機械・具体機械・貼り合わせ・`Machine.Refines`（INIT・入力の全域性・適用可能性・正しさ）・差異による制限・推移性を実装し、`assets/MachineTest/` で例と反例を証明した。CI（`tools/ci/lean.sh`）で `assets/` をビルドし、`axiom-check`・`trace-dump` の対象に `Machine` を加えた。あわせて [ADR 0034](decision/0034-b-method-refinement-and-explicit-deviations.md)（制限の関数の名前）と [spec/refinement.md](spec/refinement.md)（証明義務を 4 つに揃えた）を直した。
 * **Update**: [backlog 0001](backlog/0001-lean-project-scaffold.md) を完了した。`lean/`（Lake パッケージ `atrs`、Lean v4.35.0、Batteries v4.35.0）に全名前空間の骨格・追跡属性（`Trace.Attr`）・`trace-dump`・`axiom-check`・テストを置き、CI（`tools/ci/lean.sh`、`.github/workflows/lean.yml`）を整えた。あわせて [ADR 0014](decision/0014-lean-toolchain-and-dependencies.md)（採った版）、[rules/atrs-porting.md](rules/atrs-porting.md)（配置）、[rules/version-control.md](rules/version-control.md)（コミット前の確認）を改めた。
 * **Update**: [backlog 0025](backlog/0025-upstream-submodule-and-inventory.md) を完了した。上流 ATRS を `upstream/atrs` に submodule として commit 固定で取り込み、`trace/upstream.json`（版の宣言）と `trace/out-of-scope.json`（追跡の対象外）を作った。あわせて [rules/atrs-porting.md](rules/atrs-porting.md)（版の正、Windows の `core.longpaths`、TODO(spec) の解消）と [spec/traceability.md](spec/traceability.md#対象外) を改めた。

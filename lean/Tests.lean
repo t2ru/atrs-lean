@@ -1,5 +1,6 @@
 import Tests.TraceFixture
 import Tests.AttrErrors
+import Tests.ObligationFixture
 
 /-!
 # Tests

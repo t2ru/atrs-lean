@@ -19,7 +19,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 - 正規仕様は Lean の `Spec`。`Spec` で表現できない仕様だけを `docs/spec` で定義する（[ADR 0021](docs/decision/0021-lean-spec-as-normative-source.md)）。
 - モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` から Verus の写しを生成し、Verus で Rust との一致を証明する。あわせて、追跡注釈・適合テスト・Kani で確認する（[ADR 0035](docs/decision/0035-generate-verus-mirror-from-target-model.md)）。
-- `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)）。
+- `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)）。リファインメントが空虚・自明に成り立たないよう、付帯の義務（選択の像としての `Spec`、環境の固定、標準の貼り合わせ、入口の全域性など）を課す（[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）。
 - トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)）。
 - 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 0024](docs/decision/0024-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/upgrade.md)）。
 - 移植の方法はアプリに依存しないスキル **port-lang** に、ATRS 固有の情報は `docs/` に置く（[ADR 0025](docs/decision/0025-extract-porting-method-as-agent-skill.md)）。
@@ -60,7 +60,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
-| `tools/ci/` | CI の検査。`lean.sh`（Lean 側の一括検査。ローカルでも実行する）、`check_lean.py`（`sorry`・`axiom`・`Float`・依存の向きなど）、`check_upstream.py`（上流の commit と宣言の一致） |
+| `tools/ci/` | CI の検査。`lean.sh`（Lean 側の一括検査。ローカルでも実行する）、`check_lean.py`（`sorry`・`axiom`・`Float`・依存の向きなど）、`check_upstream.py`（上流の commit と宣言の一致）、`check_obligations.py`（`obligation-check` の結果と登録簿の突き合わせ。TR-G・TR-N） |
 | `tools/trace/`（予定） | 追跡の道具（[backlog 0024](docs/backlog/0024-trace-tooling.md)） |
 | `conformance/`（予定） | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)） |
 
@@ -85,7 +85,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 現在の状態
 
-Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）は完了。業務ロジックのモデルと Rust のコードはまだ無い。
+Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、リファインメントの空虚化を防ぐ義務と検査（[backlog 0030](docs/backlog/0030-refinement-non-vacuity.md)。`Machine.Adequacy`、`obligation-check`、[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）は完了。業務ロジックのモデルと Rust のコードはまだ無い。
 次に着手できるのは、Lean 側の [backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)（`Spec` のドメイン型）・[0002](docs/backlog/0002-lang-semantics-java.md)・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

@@ -44,6 +44,7 @@ generated:
 | 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
+| 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | doing | 0001, 0027 |
 
 ## 推奨する着手順
 
@@ -51,7 +52,7 @@ generated:
 移植元側（Lean）                 内側（Lean）            移植先側（Lean → Rust）
 0025 → 0024 ┐
 0001 ┬ 0002, 0016 ─────────┐
-     ├ 0027（Machine）──────┤
+     ├ 0027（Machine）─ 0030 ┤
      ├ 0003 ─ 0004 ─ 0005  ├─ 0012 ─ 0022 ─ 0019（Rust）
      ├ 0021 ─ 0028（生成器）┘
      └ 0017

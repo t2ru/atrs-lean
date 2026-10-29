@@ -1,0 +1,58 @@
+---
+type: Backlog Item
+title: "リファインメントの空虚化を防ぐ義務と検査"
+description: "Machine.Adequacy（ofChoice・Pinned・Glue.ofStd・TotalUnder・InitSurj・StateSafe・Nontrivial・KernelIs・complete・run）、その反例、追跡属性 @[nondet]・@[std_abs]、検査 obligation-check と check_obligations.py、文書の登録簿を整える。"
+tags: [backlog, lean, refinement, proof, traceability]
+id: "0030"
+state: doing
+depends_on: ["0001", "0027"]
+generated:
+  by: claude-code/claude-opus-5-5
+  at: 2026-10-30T09:30:00+09:00
+---
+
+# リファインメントの空虚化を防ぐ義務と検査
+
+## 目的
+
+`Machine.Refines` は安全性しか保証しない。そのため、緩い [Spec]・強すぎる PRE・粗い貼り合わせ・名前付きの成分の乱用・環境の非決定性による不具合の吸収でも成り立ってしまう。
+業務モデルを書き始める前に、これを塞ぐ義務と検査を整える（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+
+## 範囲
+
+- スキル port-lang の `assets/Machine/Adequacy.lean`
+  - `Machine.ofChoice`、`Refines.Pinned`、`Glue.ofStd`、`Machine.TotalUnder`、`Refines.InitSurj`、`Refines.StateSafe`・`StateSafeConcrete`、`Nontrivial`・`Nontrivial₂`、`KernelIs`
+  - 定理 `Refines.complete`（1 歩の可換式）・`Refines.run`（複数歩の模倣）・`Refines.congr`
+- `assets/MachineTest/Adequacy.lean`: 抜け道ごとの反例と正例。公理を `MachineTest/Axioms.lean` で固定する
+- `lean/Trace/Attr.lean`: `@[nondet]`・`@[std_abs]`。`@[obligation]` の対象に SPEC-NNN を加える
+- `lean/Trace/Obligation.lean`・`lean/Tools/ObligationCheck.lean`（`lake exe obligation-check`。TR-G の G1〜G8）
+- `tools/ci/check_obligations.py`（TR-N と、TR-G の文書側）
+- テスト: `lean/Tests/ObligationFixture.lean`、`tools/ci/fixtures/obligations/`
+- `tools/ci/lean.sh` への組み込み
+- 文書
+  - ADR 0038
+  - [abstraction.md](../spec/abstraction.md) の空虚化を防ぐ義務・核の列・前提型の差異の影響・入口の R 課題・SPEC-005〜007・N-NNN
+  - [refinement.md](../spec/refinement.md) の同じ項目・REF-011・REF-012
+  - [assurance.md](../spec/assurance.md) のモデル間の保証の限界
+  - スキルの architecture・traceability・conformance・trace-attributes・spec-documents・verification・SKILL.md
+
+## 対象外
+
+- TR-V の実装（ベクタの実行器。[backlog 0012](0012-conformance-vector-format-and-generator.md)）
+- `tools/trace check` への統合と TR-P の改訂の実装（[backlog 0024](0024-trace-tooling.md)）
+- 各機能の付帯の義務の証明（各機能の backlog 項目）
+
+## 完了条件
+
+- [x] `MachineTest/Adequacy.lean` で、抜け道ごとに「`Refines` は成り立つが、新しい義務は成り立たない」ことを証明した（6 件）
+- [x] すべての義務を満たす正例と、`Refines.run` の使用例を証明した
+- [x] `obligation-check` が `Tests/ObligationFixture.lean` の正例を通し、違反例を G1〜G8 の規則ごとに検出することを `lake test` で確かめた
+- [x] `check_obligations.py --self-test` が通る
+- [x] `tools/ci/lean.sh` が全段通る
+- [ ] 実装後の敵対的レビューを行い、指摘を直すか、直さない理由を ADR 0038 に記した
+
+## 参照
+
+- [ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)
+- [ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)
+- [backlog 0027](0027-machine-refinement-framework.md)

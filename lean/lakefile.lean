@@ -47,6 +47,11 @@ require langSemantics from "../.agents/skills/port-lang/assets"
   root := `Tools.AxiomCheck
   supportInterpreter := true
 
+/-- R 課題の形と付帯の義務（TR-G。ADR 0038）を判定する。 -/
+@[default_target] lean_exe «obligation-check» where
+  root := `Tools.ObligationCheck
+  supportInterpreter := true
+
 /-- `lake test` のドライバ。 -/
 @[default_target] lean_exe tests where
   root := `Tests.Main

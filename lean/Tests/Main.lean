@@ -1,4 +1,5 @@
 import Trace.Dump
+import Trace.Obligation
 import Tests
 
 /-!
@@ -7,6 +8,7 @@ import Tests
 `lake test` のドライバ（実行ファイル `tests`）。
 
 - `Tests.TraceFixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュを確かめる。
+- `Tests.ObligationFixture` を `obligation-check` と同じ処理にかけ、正例を通し、違反例を規則ごとに検出することを確かめる。
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
   カーネルの定義は直接には再帰しないため、相互再帰の閉路は実際の定義からは作れない。
 -/
@@ -119,10 +121,41 @@ def fixtureTests (env : Environment) : IO Unit := do
   check "dump: sorted by name"
     ((es.map (·.name.toString)).toList == ((es.map (·.name.toString)).qsort (· < ·)).toList)
 
+/-- 誤りの規則（`G1` など）の集合。 -/
+def ruleCodes (errs : Array String) : List String :=
+  (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
+
+/-- フィクスチャを obligation-check の処理にかける。 -/
+def obligationTests (env : Environment) : IO Unit := do
+  IO.println "obligation-check (Tests.ObligationFixture)"
+  let r := Trace.Obligation.check env fun n => (`Tests.ObFix).isPrefixOf n
+  let codesOf (s : String) : Option (List String) :=
+    (r.rs.find? (·.name == (`Tests.ObFix).append s.toName)).map (ruleCodes ·.errors)
+  for (s, expected) in [("good_refines", ([] : List String)), ("v1_forall", ["G1"]),
+      ("v2_plainRestrict", ["G2"]), ("v3_choiceNoNondet", ["G3", "G6"]), ("v4_domSet", ["G4", "G6"]),
+      ("v5_helperGlue", ["G5", "G6"]), ("v5_plainObs", ["G5", "G6"]), ("v5_plainAi", ["G5", "G6"]),
+      ("v6_noCompanions", ["G6"])] do
+    check s!"{s}: {expected}" (codesOf s == some expected)
+  check "R obligations: all found" (r.rs.size == 9)
+  check "good_refines: kind, deviation, std_abs, nondet, companions"
+    (match r.rs.find? (·.name == `Tests.ObFix.good_refines) with
+     | some ri => ri.absKind == "ofChoice" && ri.devs == #[`Tests.ObFix.devLang] &&
+         ri.stdAbs == #[`Tests.ObFix.betaS, `Tests.ObFix.aiS, `Tests.ObFix.aoS] &&
+         ri.nondets == #[`Tests.ObFix.Conflict] && ri.hasInitSurj && ri.hasPinned
+     | none => false)
+  check "global errors: G7 for aoIf and G8 for devNoW only"
+    (r.errors.size == 2 && r.errors.any (fun e => e.startsWith "G7: Tests.ObFix.aoIf") &&
+      r.errors.any (fun e => e.startsWith "G8: Tests.ObFix.devNoW"))
+  check "nondet listed" (r.nondets.map (·.1) == #[`Tests.ObFix.Conflict])
+  check "total_under listed" (r.totalUnder.contains `Tests.ObFix.spec)
+  check "state_safe listed" (r.stateSafe.contains `Tests.ObFix.devLang)
+
 unsafe def main : IO UInt32 := do
   merkleTests
   let env ← loadEnv #[`Tests.TraceFixture]
   fixtureTests env
+  let env ← loadEnv #[`Tests.ObligationFixture]
+  obligationTests env
   let n ← failures.get
   if n == 0 then
     IO.println "all tests passed"
