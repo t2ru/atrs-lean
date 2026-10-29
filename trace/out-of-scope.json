@@ -1,0 +1,25 @@
+{
+  "note": "追跡の対象外とする移植元のパス（JavaConfig-Thymeleaf/atrs からの相対 glob）。載せてよいのは ADR 0002 で移植の範囲外としたものだけ。[Source] の振る舞いに影響するテンプレート式（例: D-019 の #temporals.format）は対象外にせず tmpl: ロケータで追跡する（ADR 0036）",
+  "items": [
+    {
+      "path": "atrs-web/src/main/java/jp/co/ntt/atrs/app/common/logging/AccessLogFilter.java",
+      "reason": "アクセスログ・MDC",
+      "decision": "docs/decision/0002-porting-scope.md#decision-outcome（ログ出力の文言・形式、アクセスログ、MDC）"
+    },
+    {
+      "path": "atrs-env/**",
+      "reason": "環境設定（Tomcat, ActiveMQ, PostgreSQL）",
+      "decision": "docs/decision/0002-porting-scope.md#decision-outcome（Selenium テスト、環境設定）"
+    },
+    {
+      "path": "atrs-selenium/**",
+      "reason": "Selenium テスト",
+      "decision": "docs/decision/0002-porting-scope.md#decision-outcome（Selenium テスト、環境設定）"
+    },
+    {
+      "path": "atrs-web/src/main/webapp/**",
+      "reason": "Thymeleaf テンプレートの HTML 構造・CSS・JavaScript と静的資源。観測可能な振る舞いに影響する式は除く（tmpl: で追跡）",
+      "decision": "docs/decision/0002-porting-scope.md#decision-outcome（Thymeleaf テンプレートの HTML 構造・CSS・JavaScript）"
+    }
+  ]
+}

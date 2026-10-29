@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T06:46:37+09:00
 ---
 
 # バックログ
@@ -39,7 +39,7 @@ generated:
 | 0022 | [TargetModel と Refinement: 運賃計算](0022-target-model-fare-and-refinement.md) | todo | 0004, 0012, 0021, 0027, 0024 |
 | 0023 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](0023-target-model-usecases-and-refinement.md) | todo | 0022, 0006, 0007, 0008, 0009, 0010, 0024 |
 | 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | todo | 0001, 0025 |
-| 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | todo | — |
+| 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | done | — |
 | 0026 | [差分オラクル（新旧 2 版の振る舞い比較）](0026-differential-oracle.md) | todo | 0013, 0025 |
 | 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | todo | 0001 |
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |

@@ -58,8 +58,8 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets` を `require` する |
 | `lean/`（予定） | Lean プロジェクト。`LangSemantics` / `SourceModel` / `Spec`（正規仕様）/ `Abstraction` / `TargetModel` / `Refinement`（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
-| `upstream/atrs`（予定） | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
-| `trace/`（予定） | 版の宣言・インベントリ・manifest（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
+| `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
+| `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
 | `tools/trace/`（予定） | 追跡の道具（[backlog 0024](docs/backlog/0024-trace-tooling.md)） |
 | `conformance/`（予定） | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)） |
 
@@ -84,5 +84,5 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 現在の状態
 
-設計フェーズ。Lean・Rust のコードはまだ無い。次に着手するのは [backlog 0001](docs/backlog/0001-lean-project-scaffold.md)（Lean）、[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)（Rust。Verus と Kani の併用確認を含む）、[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)（上流の submodule 化）。
+設計フェーズ。Lean・Rust のコードはまだ無い。次に着手するのは [backlog 0001](docs/backlog/0001-lean-project-scaffold.md)（Lean）、[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)（Rust。Verus と Kani の併用確認を含む）。上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）は完了。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

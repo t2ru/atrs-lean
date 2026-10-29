@@ -2,6 +2,7 @@
 
 ## 2026-10-30
 
+* **Update**: [backlog 0025](backlog/0025-upstream-submodule-and-inventory.md) を完了した。上流 ATRS を `upstream/atrs` に submodule として commit 固定で取り込み、`trace/upstream.json`（版の宣言）と `trace/out-of-scope.json`（追跡の対象外）を作った。あわせて [rules/atrs-porting.md](rules/atrs-porting.md)（版の正、Windows の `core.longpaths`、TODO(spec) の解消）と [spec/traceability.md](spec/traceability.md#対象外) を改めた。
 * **Creation**: [ADR 0033](decision/0033-foundational-principles.md) で、基本原則 3 項を、全 ADR・規約・スキルに優先する原則として定めた。3 項は次のとおり。
   * 両端の一致を決定論的な検証または変換で確認する。
   * 抽象モデルと移植元/先モデルの間に B メソッドのリファインメントを証明する。

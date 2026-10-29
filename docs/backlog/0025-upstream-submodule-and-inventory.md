@@ -4,11 +4,11 @@ title: "上流の submodule 化と版の宣言"
 description: "上流 ATRS を git submodule として commit 固定で取り込み、trace/upstream.json と移植元インベントリを作る。"
 tags: [backlog, upstream, traceability]
 id: "0025"
-state: todo
+state: done
 depends_on: []
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-30T06:46:37+09:00
 ---
 
 # 上流の submodule 化と版の宣言
@@ -29,7 +29,12 @@ generated:
 
 ## 完了条件
 
-- [ ] submodule の commit が `trace/upstream.json` と一致する
+- [x] submodule の commit が `trace/upstream.json` と一致する（`python3 -I tools/ci/check_upstream.py`。index の gitlink と作業ツリーの HEAD の両方を比べる）
+
+## 結果
+
+- 上流はデータベースサーバ（PostgreSQL）の版を固定していないため、`trace/upstream.json` の `languages.postgresql.version` は `null` とし、[backlog 0016](0016-lang-semantics-sql.md) で決める旨を書いた。
+- 親 BOM 由来の版は、各項目の `from` に出所の BOM を書いた（値は [atrs-porting.md](../rules/atrs-porting.md#追従中の上流) の調査による）。
 
 ## 参照
 
