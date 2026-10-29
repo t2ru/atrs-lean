@@ -28,6 +28,24 @@ lean/
   Tools/                  -- 実行ファイル（ベクタ生成、trace-dump）
 ```
 
+### ルートのワークスペース（LSP 用）
+
+Lean の言語サーバ（`lake serve`）はリポジトリのルート（エディタで開いたフォルダ）で起動されることが多い。ルートに Lake プロジェクトが無いと、`import LangSemantics.…` などが解決されない（`unknown module prefix`）。
+そのため、**リポジトリのルートを Lake ワークスペースにし、リポジトリ内の Lean パッケージをすべて `require` で取り込む**。
+
+```lean
+-- <リポジトリのルート>/lakefile.lean
+import Lake
+open Lake DSL
+package <project>Workspace
+require langSemantics from "./<スキルの置き場所>/port-lang/assets"
+require <project> from "./lean"
+```
+
+- ルートの `lean-toolchain` は、取り込むすべてのパッケージの `lean-toolchain` と同じ版にする。
+- ルートの `.lake/` と `lake-manifest.json` のうち、`.lake/` は VCS から除外し、`lake-manifest.json` はコミットする。
+- 確認: ルートで `lake setup-file <各パッケージのファイル>` が成功すること（LSP はこれを呼ぶ）。
+
 - ファイルパスと名前空間を一致させる（`Spec.Fare` は `Spec/Fare.lean`）。
 - トップレベル名前空間は上記だけとする。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する。
 

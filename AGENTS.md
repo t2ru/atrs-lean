@@ -46,6 +46,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/backlog/](docs/backlog/) | 作業項目。着手順と依存関係 |
 | [docs/rules/](docs/rules/) | ATRS の運用規約 |
 | [.agents/skills/port-lang/](.agents/skills/port-lang/SKILL.md) | 言語間移植の方法（アプリ非依存のスキル） |
+| `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets` を `require` する |
 | `lean/`（予定） | Lean プロジェクト。`LangSemantics` / `SourceModel` / `Spec`（正規仕様）/ `Abstraction` / `TargetModel` / `Refinement`（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs`（予定） | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |

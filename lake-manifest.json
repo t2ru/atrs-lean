@@ -1,0 +1,14 @@
+{"version": "1.3.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"type": "path",
+   "scope": "",
+   "name": "langSemantics",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "./.agents/skills/port-lang/assets",
+   "copy": false,
+   "configFile": "lakefile.lean"}],
+ "name": "atrsWorkspace",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}

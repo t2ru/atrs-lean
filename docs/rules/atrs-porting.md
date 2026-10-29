@@ -29,6 +29,7 @@ generated:
 
 | パス | 内容 |
 | --- | --- |
+| `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
 | `upstream/atrs` | 移植元ソース（submodule。[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)） |
 | `lean/` | Lean プロジェクト（全モデルと証明） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |

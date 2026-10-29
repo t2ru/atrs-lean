@@ -93,7 +93,7 @@ metadata:
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/LangSemantics/Rust/` |
 
-- 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
+- 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets"` とする（[lean/rules.md](references/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
 - 検査: `assets/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。
 
 処理系ごとに意味が異なる言語（例: SQL）は、`references/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。

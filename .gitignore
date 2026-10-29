@@ -2,3 +2,6 @@
 lean/.lake/
 # Rust
 rust/target/
+
+# Lake (root workspace)
+.lake/
