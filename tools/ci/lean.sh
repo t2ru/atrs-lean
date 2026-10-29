@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -14,6 +14,19 @@ python3 -I tools/ci/check_lean.py --self-test
 
 step "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
 python3 -I tools/ci/check_lean.py
+
+step "assets: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
+if command -v java > /dev/null; then
+  jvm="$(mktemp)"
+  (cd .agents/skills/port-lang/assets && java LangSemanticsTest/jvm/JavaTable.java > "$jvm" 2> /dev/null)
+  diff -u .agents/skills/port-lang/assets/LangSemanticsTest/JavaJvm.lean "$jvm"
+  rm -f "$jvm"
+  echo "JavaJvm.lean: up to date ($(java -version 2>&1 | grep -m1 version))"
+elif [ -n "${CI:-}" ]; then
+  echo "java not found (required in CI)" >&2; exit 1
+else
+  echo "java not found: skipped"
+fi
 
 step "assets: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
 (cd .agents/skills/port-lang/assets && lake build)
