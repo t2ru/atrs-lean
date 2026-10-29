@@ -1,0 +1,73 @@
+{
+  "operation": "format.fmtPaymentDate",
+  "modelDef": "Spec.Prim.fmtPaymentDate",
+  "specRef": "docs/spec/domain-model.md#書式",
+  "cases": [
+    {
+      "id": "fmtPaymentDate-2026-11-10",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2026-11-10"
+      },
+      "expected": {
+        "ok": "11月10日(火)"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtPaymentDate-2026-11-01",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2026-11-01"
+      },
+      "expected": {
+        "ok": "11月01日(日)"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtPaymentDate-2027-01-01",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2027-01-01"
+      },
+      "expected": {
+        "ok": "01月01日(金)"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtPaymentDate-2024-02-29",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2024-02-29"
+      },
+      "expected": {
+        "ok": "02月29日(木)"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtPaymentDate-2026-11-14",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2026-11-14"
+      },
+      "expected": {
+        "ok": "11月14日(土)"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtPaymentDate-2026-11-15",
+      "description": "曜日は日本語",
+      "input": {
+        "date": "2026-11-15"
+      },
+      "expected": {
+        "ok": "11月15日(日)"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

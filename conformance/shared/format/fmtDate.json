@@ -1,0 +1,95 @@
+{
+  "operation": "format.fmtDate",
+  "modelDef": "Spec.Prim.fmtDate",
+  "specRef": "docs/spec/domain-model.md#書式",
+  "cases": [
+    {
+      "id": "fmtDate-0",
+      "description": "例",
+      "input": {
+        "date": "2026-10-29"
+      },
+      "expected": {
+        "ok": "2026/10/29"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-1",
+      "description": "最小",
+      "input": {
+        "date": "0001-01-01"
+      },
+      "expected": {
+        "ok": "0001/01/01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-2",
+      "description": "最大",
+      "input": {
+        "date": "9999-12-31"
+      },
+      "expected": {
+        "ok": "9999/12/31"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-3",
+      "description": "閏日",
+      "input": {
+        "date": "2024-02-29"
+      },
+      "expected": {
+        "ok": "2024/02/29"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-4",
+      "description": "epoch",
+      "input": {
+        "date": "1970-01-01"
+      },
+      "expected": {
+        "ok": "1970/01/01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-5",
+      "description": "年末",
+      "input": {
+        "date": "2026-12-31"
+      },
+      "expected": {
+        "ok": "2026/12/31"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-6",
+      "description": "年始",
+      "input": {
+        "date": "2027-01-01"
+      },
+      "expected": {
+        "ok": "2027/01/01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtDate-7",
+      "description": "30 日の月末",
+      "input": {
+        "date": "2026-04-30"
+      },
+      "expected": {
+        "ok": "2026/04/30"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

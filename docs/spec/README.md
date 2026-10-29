@@ -7,7 +7,7 @@ status: draft
 spec_role: meta
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T08:12:23+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -56,9 +56,9 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 | 文書 | 内容 | 原典の機能 ID | 区分 |
 | --- | --- | --- | --- |
 | [glossary.md](glossary.md) | 用語集（日英対応） | — | meta |
-| [configuration.md](configuration.md) | 設定パラメータ | — | draft |
-| [domain-model.md](domain-model.md) | 型・列挙・値域・不変条件・基本演算 | — | draft |
-| [master-data.md](master-data.md) | マスタデータの構造と不変条件、シードデータ | — | draft |
+| [configuration.md](configuration.md) | 設定パラメータ | — | informative＋draft |
+| [domain-model.md](domain-model.md) | 型・列挙・値域・不変条件・基本演算 | — | informative＋draft |
+| [master-data.md](master-data.md) | マスタデータの構造と不変条件、シードデータ | — | informative＋draft |
 | [fare-calculation.md](fare-calculation.md) | 基本運賃・運賃・合計運賃 | B0 | draft |
 | [flight-search.md](flight-search.md) | 空席照会 | B1 | draft |
 | [reservation.md](reservation.md) | フライト検証・予約検証・予約登録 | B0, B2 | draft |

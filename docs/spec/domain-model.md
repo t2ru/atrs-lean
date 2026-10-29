@@ -4,71 +4,73 @@ title: "ドメインモデル"
 description: "型・列挙・値域・不変条件と、仕様全体で使う基本演算（除算・丸め・暦日・書式）の定義。"
 tags: [spec, domain-model, types]
 status: draft
-spec_role: draft
+spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T08:12:23+09:00
 ---
 
 # ドメインモデル
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 要約（informative）と草案（draft）の混在。** [Spec] の定義は Lean `Spec` に形式化した（[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。各節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。**[Source]** と書いた記述は、`SourceModel` に形式化するまでの草案（draft）である。
 
 ## 基本演算（Spec.Prim）
 
-**[Spec]** 以下は [Spec] の全定義で使う基本演算である。引数は数学的整数。
+**[Spec]** Lean: [`Spec.Prim.Int`](../../lean/Spec/Prim/Int.lean)。引数は数学的整数で、溢れは無い。
 
-| 演算 | 事前条件 | 定義 |
+| 演算 | 事前条件 | 要約 |
 | --- | --- | --- |
-| `floorDiv(a, b)` | `b > 0` | `a / b` 以下の最大の整数 |
-| `ceilDiv(a, b)` | `b > 0` | `a / b` 以上の最小の整数 |
-| `ceilTo(a, m)` | `a ≥ 0`, `m > 0` | `ceilDiv(a, m) * m` |
-| `pct(a, r)` | `a ≥ 0`, `r ≥ 0` | `floorDiv(a * r, 100)`（a の r% を切捨て） |
+| `floorDiv(a, b)` | `b > 0` | 床除算（`floorDiv_eq_iff` で特徴付け） |
+| `ceilDiv(a, b)` | `b > 0` | 天井除算 |
+| `ceilTo(a, m)` | `a ≥ 0`, `m > 0` | `a` 以上の `m` の倍数のうち最小のもの（`ceilTo_le_of_dvd`） |
+| `pct(a, r)` | `a ≥ 0`, `r ≥ 0` | `a` の `r`% の切捨て |
 
-**[Source]** の基本演算（`j32add`, `jdiv32`, `jdmul`, `jd2i`, `bdCeilHundredUp`, `utf16Len` など）は [ADR 0005](../decision/0005-java-primitive-semantics.md) に定義する。
+**[Source]**（draft）の基本演算（`j32add`, `jdiv32`, `jdmul`, `jd2i`, `bdCeilHundredUp`, `utf16Len` など）は [ADR 0005](../decision/0005-java-primitive-semantics.md) に定義する。
 [Source] の Java 参照型（`Integer` 等）が `null` のまま演算された場合は、その操作の結果を `PreconditionViolation("NullPointerException")` とする。
 
 ## 暦日と時刻
 
-**[Spec=Source]**（[ADR 0009](../decision/0009-date-and-time-model.md)）
+**[Spec=Source]**（[ADR 0009](../decision/0009-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`](../../lean/Spec/Prim/Date.lean)、[`Spec.Prim.Time`](../../lean/Spec/Prim/Time.lean)。
 
 ### Date
 
-- 先発グレゴリオ暦の `(year, month, day)`。`1 ≤ year ≤ 9999`、`1 ≤ month ≤ 12`、`1 ≤ day ≤ daysInMonth(year, month)`。
-- 閏年: `year % 4 = 0 ∧ (year % 100 ≠ 0 ∨ year % 400 = 0)`。
-- `epochDay(d)`: 1970-01-01 を 0 とする通算日数。`addDays(d, n)` は `epochDay` 上の加算、`daysBetween(a, b) = epochDay(b) − epochDay(a)`。
-- 比較 `a < b` は `epochDay(a) < epochDay(b)`。「`a` 以前」は `a ≤ b`。
-- `fullYearsBetween(b, d)`（満年齢）= `d.year − b.year − (if (d.month, d.day) < (b.month, b.day) then 1 else 0)`（`(month, day)` の辞書順比較）。閏日生まれは平年の 2 月 28 日には加齢せず 3 月 1 日に加齢する。`d < b` のときの値は使わない。
+- `Date`: 先発グレゴリオ暦の年月日（年 1〜9999）。妥当性を型で保証する。
+- 通算日数 `ordinal`（0001-01-01 を 0）と `epochDay`（1970-01-01 を 0）で比較・加減算する。順序は年月日の辞書順と一致する（`lt_iff_lex`）。
+- `addDays(d, n)` は `epochDay` 上の加算で、範囲外なら無し。`daysBetween(a, b)` は `b − a` の日数。
+- `fullYearsBetween(b, d)` は満年齢。誕生日の到来を `(month, day)` の辞書順で判定するので、閏日生まれは平年の 2 月 28 日には加齢せず 3 月 1 日に加齢する。`d < b` のときの値は使わない。
+- 閏年・月末・年越しの境界は、Lean の例と、0001-01-01〜9999-12-31 の全日の検査（`lake test`）で確かめている。
 
 ### HourMinute
 
-- `(hour, minute)`、`0 ≤ hour ≤ 23`、`0 ≤ minute ≤ 59`。分換算 `toMinutes = hour * 60 + minute`。
-- 原典の便マスタは時刻を 4 桁文字列 `HHmm`（例 `"0945"`）で持つ。`parseHHmm` は 4 文字の数字列のみ受け付ける。
+- `HourMinute`: 時（0〜23）と分（0〜59）。分換算 `toMinutes`。
+- 原典の便マスタは時刻を 4 桁文字列 `HHmm`（例 `"0945"`）で持つ。`parseHHmm` は、4 文字の数字列で時分の範囲内のものだけを受け付ける。
 
 ### DateTime
 
-- `Date` と `(hour, minute, second)`。`toEpochMinutes(dt) = epochDay(dt.date) * 1440 + hour * 60 + minute`。
-- 「日付 d と時刻 t の日時」を `at(d, t)` と書く。`at(d, t) + n 分` は分換算で加算し、日付の繰り上がりを含む。
+- `DateTime`: `Date` と時・分・秒。`toEpochMinutes` は 1970-01-01 0:00 からの分数。
+- 「日付 d と時刻 t の日時」`at(d, t)` は Lean の `DateTime.atTime`。
 
 ### 書式
 
+**[Spec]** Lean: [`Spec.Prim.Format`](../../lean/Spec/Prim/Format.lean)。いずれもゼロ埋めの固定桁である。
+
 | 名前 | 形式 | 例 |
 | --- | --- | --- |
-| `fmtDate` | `yyyy/MM/dd`（ゼロ埋め固定 10 文字） | `2026/10/29` |
+| `fmtDate` | `yyyy/MM/dd` | `2026/10/29` |
 | `fmtIsoDate` | `yyyy-MM-dd`（JSON・テストベクタ） | `2026-10-29` |
-| `fmtTime` | `HH:mm`。原典 `DateTimeUtil.toFormatTimeString` は長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする | `09:45` |
+| `fmtTime` | `HH:mm` | `09:45` |
 | `fmtTimestamp` | `yyyyMMddHHmmss` | `20261029213809` |
-| `fmtYen` | 3 桁区切り（`###,###`）。`0` は `"0"`。負数は扱わない | `28,800` |
-| `fmtPaymentDate` | `MM月dd日(E)`。`E` は曜日の 1 文字（`日月火水木金土`）。括弧は半角 | `11月10日(火)` |
+| `fmtYen` | 3 桁区切り（`###,###`） | `28,800` |
+| `fmtPaymentDate` | `MM月dd日(E)`。曜日は日本語の 1 文字、括弧は半角 | `11月10日(火)` |
 
-`fmtYen(n)`: n の十進表記を右から 3 桁ごとに `,` で区切る。
+適合テストベクタは `conformance/shared/format/`（[conformance.md](conformance.md#操作名)）。
 
-`fmtPaymentDate` の曜日は、[Spec] では常に日本語とする。[Source]（`#temporals.format(paymentDate,'MM月dd日(E)')`）は要求の `Accept-Language` に従い、英語なら `Wed` などになる（既知差異 [D-019](abstraction.md#既知差異)）。
+**[Source]**（draft）原典 `DateTimeUtil.toFormatTimeString` は、長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする。`fmtPaymentDate` に当たる `#temporals.format(paymentDate,'MM月dd日(E)')` は要求の `Accept-Language` に従い、英語なら `Wed` などになる（既知差異 [D-019](abstraction.md#既知差異)）。
 
 ## 列挙
 
-**[Spec=Source]** 列挙値の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う。
+**[Spec=Source]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。列挙値の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（Lean の `toCode`・`ofCode?`）。
 
 | 型 | 値 | 意味 |
 | --- | --- | --- |
@@ -86,6 +88,8 @@ generated:
 
 ## コード値
 
+**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。`String` を包む structure で、形式は述語 `WellFormed` で表す。マスタに存在することは、マスタの参照関数と不変条件で表す（[master-data.md](master-data.md)）。
+
 | 型 | 形式 | 例 |
 | --- | --- | --- |
 | `AirportCd` | 英大文字 3 文字（マスタに存在するもの）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` とは限らない。区間の検索で見つからなければ業務エラーになる（[master-data.md](master-data.md#空港コードリスト画面用)） | `HND` |
@@ -97,7 +101,7 @@ generated:
 
 ## エンティティ
 
-型は [Spec] の形で示す。`?` は省略可能（`Option`）。[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
+**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。型は [Spec] の形で示す。`?` は省略可能（`Option`）。[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
 
 ### Flight
 
@@ -176,7 +180,7 @@ generated:
 
 ## 値域
 
-[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR 0006](../decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。
+[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR 0006](../decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](../../lean/Spec/Model.lean)）にある。マスタの値域は `MasterData.MD8`（[master-data.md](master-data.md#不変条件spec)）である。
 マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |

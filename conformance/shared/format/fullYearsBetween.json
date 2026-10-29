@@ -1,0 +1,91 @@
+{
+  "operation": "format.fullYearsBetween",
+  "modelDef": "Spec.Prim.Date.fullYearsBetween",
+  "specRef": "docs/spec/domain-model.md#date",
+  "cases": [
+    {
+      "id": "fullYearsBetween-0",
+      "description": "閏日生まれは平年の 2/28 に加齢しない",
+      "input": {
+        "birthday": "2000-02-29",
+        "date": "2001-02-28"
+      },
+      "expected": {
+        "ok": 0
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-1",
+      "description": "閏日生まれは 3/1 に加齢する",
+      "input": {
+        "birthday": "2000-02-29",
+        "date": "2001-03-01"
+      },
+      "expected": {
+        "ok": 1
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-2",
+      "description": "閏年の 2/29 に加齢する",
+      "input": {
+        "birthday": "2000-02-29",
+        "date": "2004-02-29"
+      },
+      "expected": {
+        "ok": 4
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-3",
+      "description": "誕生日当日",
+      "input": {
+        "birthday": "1990-10-29",
+        "date": "2026-10-29"
+      },
+      "expected": {
+        "ok": 36
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-4",
+      "description": "誕生日の前日",
+      "input": {
+        "birthday": "1990-10-30",
+        "date": "2026-10-29"
+      },
+      "expected": {
+        "ok": 35
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-5",
+      "description": "同じ日",
+      "input": {
+        "birthday": "2026-10-29",
+        "date": "2026-10-29"
+      },
+      "expected": {
+        "ok": 0
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fullYearsBetween-6",
+      "description": "下限の生年月日",
+      "input": {
+        "birthday": "1900-01-01",
+        "date": "2026-12-31"
+      },
+      "expected": {
+        "ok": 126
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

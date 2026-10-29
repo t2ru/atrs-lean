@@ -62,7 +62,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
 | `tools/ci/` | CI の検査。`lean.sh`（Lean 側の一括検査。ローカルでも実行する）、`check_lean.py`（`sorry`・`axiom`・`Float`・依存の向きなど）、`check_upstream.py`（上流の commit と宣言の一致） |
 | `tools/trace/`（予定） | 追跡の道具（[backlog 0024](docs/backlog/0024-trace-tooling.md)） |
-| `conformance/`（予定） | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)） |
+| `conformance/` | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)）。`lake test` が `Spec` に対して実行する |
 
 ## 主要な規則（要約。詳細は各規約・ADR）
 
@@ -85,7 +85,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 現在の状態
 
-Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）は完了。業務ロジックのモデルと Rust のコードはまだ無い。
-次に着手できるのは、Lean 側の [backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)（`Spec` のドメイン型）・[0002](docs/backlog/0002-lang-semantics-java.md)・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
+Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
+次に着手できるのは、Lean 側の [backlog 0002](docs/backlog/0002-lang-semantics-java.md)・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。
