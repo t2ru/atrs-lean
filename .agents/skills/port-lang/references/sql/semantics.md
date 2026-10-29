@@ -4,6 +4,8 @@ SQL の意味論を Lean に定義する。DBMS に依存しない **共通部�
 アプリ固有のテーブル定義は含めない（テーブル定義はモデル側の `Repository.Schema` で扱う）。
 移植元のリポジトリ（`SourceModel.Repository.*`）を写すときも、移植先が SQL を使う場合（`TargetModel.Repository.*`）も、同じ定義を使う。
 
+Lean の実装は `assets/LangSemantics/Sql/`（モジュール `LangSemantics.Sql`）。検査は `assets/LangSemanticsTest/Sql.lean`。
+
 ## 共通部分（LangSemantics.Sql）
 
 | 対象 | 意味 |
@@ -15,6 +17,12 @@ SQL の意味論を Lean に定義する。DBMS に依存しない **共通部�
 | 更新 | `UPDATE … SET c1 = e1, c2 = e2`: 右辺は更新前の行で評価する。`INSERT`・`UPDATE`・`DELETE` は件数を返す |
 | 制約 | 主キー・一意・外部キー・NOT NULL の違反はエラー値になる |
 | トランザクション | コミット／ロールバックの原子性。分離レベルの既定値と、行ロックの構文・意味は方言が与える |
+
+### Lean 実装の範囲
+
+実装済み: `SqlValue`（NULL・整数・文字列・真偽・日付）、`Truth`（三値論理）、比較・`between`・`inList`・`isNull`、`Bag`（選択・射影・直積・内部結合・`EXISTS`・`COUNT(*)`）、`isAllowedOrder`・`orderByStable`、`updateWhere`・`deleteWhere`・`insertUnique`、`nextval`。
+
+**未整備**: `NUMERIC`・`TIMESTAMP`、外部結合、`DISTINCT`、`COUNT(*)` 以外の集約、外部キー・NOT NULL の検査関数。
 
 ## 方言（LangSemantics.Sql.<Dbms>）
 

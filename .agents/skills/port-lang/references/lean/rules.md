@@ -14,7 +14,7 @@ Lean 4 は、すべてのモデルと証明を置く形式化言語である（[
 lean/
   lean-toolchain
   lakefile.lean
-  LangSemantics/<Lang>/   -- 言語意味論（アプリ非依存。言語パックの semantics.md）
+  LangSemantics/<Lang>/   -- 言語意味論（アプリ非依存。スキルの assets/LangSemantics/ を写すか Lake 依存にする）
   SourceModel/            -- 移植元モデル [Source]
   Spec/                   -- 抽象モデル [Spec]（正規仕様）
     Prim/                 --   基本演算（floorDiv, ceilTo, 暦日, 文字クラス）

@@ -21,8 +21,8 @@
 1. `references/<lang>/` に上記 6 ファイルを作る。まず「移植元として」か「移植先として」の、今回必要な側から埋める。
 2. `SKILL.md` の「言語パック」表に行を追加し、6 ファイルへ直接リンクする。
 3. ロケータの `kind` が既存の言語と衝突しないことを確認する（[traceability.md](traceability.md)）。
-4. `LangSemantics.<Lang>` を Lean に実装する（[lean/rules.md](lean/rules.md)）。アプリ固有の型を入れない。
-5. 小さな例（四則演算と文字列長程度）で、`semantics.md` の定義と実際の処理系の結果が一致することを、ベクタで確認する。
+4. `LangSemantics.<Lang>` を Lean で `assets/LangSemantics/<Lang>/` に実装し、`assets/LangSemantics.lean` から import する（[lean/rules.md](lean/rules.md)）。アプリ固有の型を入れない。
+5. `assets/LangSemanticsTest/<Lang>.lean` に `#guard` の検査を書き、`assets/` で `lake build` が通ることを確認する。実際の処理系の結果（またはネイティブ実装）と突き合わせられる部分は突き合わせる。
 
 ## 方言（サブパック）
 
@@ -39,7 +39,7 @@
 1. `references/<lang>/dialects/<name>/` に上記 3 ファイルを作る。`<name>` は処理系名の英小文字（例 `postgresql`, `mysql`, `oracle`, `sqlserver`）。
 2. 言語パックの `semantics.md`・`frameworks.md`・`harness.md` にある「方言の一覧」の表に行を追加する。
 3. `SKILL.md` の言語パック表の方言の行に追加し、3 ファイルへ直接リンクする。
-4. Lean に `LangSemantics.<Lang>.<Dialect>` を実装する。共通部分（`LangSemantics.<Lang>`）には依存してよいが、他の方言には依存しない。
+4. Lean に `LangSemantics.<Lang>.<Dialect>` を `assets/LangSemantics/<Lang>/<Dialect>.lean` として実装し、検査を `assets/LangSemanticsTest/` に足す。共通部分（`LangSemantics.<Lang>`）には依存してよいが、他の方言には依存しない。
 5. ロケータは言語パックのもの（例 `sql:`）を使い、処理系の仕様の節は `lang:<name>#<節>` で指す。
 
 ## 判断の目安

@@ -8,10 +8,12 @@ state: todo
 depends_on: ["0001"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:24:48+09:00
+  at: 2026-10-29T22:53:00+09:00
 ---
 
 # LangSemantics.Rust: Rust の意味論
+
+> 2026-10-29: スキル port-lang の assets に、LangSemantics.Rust の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Rust.lean](../../.agents/skills/port-lang/assets/LangSemantics/Rust.lean)）。本項目は、それを `lean/LangSemantics/` に取り込み、ATRS で不足する演算を **assets 側に** 追加する作業として行う。
 
 ## 目的
 

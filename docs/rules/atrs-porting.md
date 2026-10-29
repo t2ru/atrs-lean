@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 0014](../decision/0014-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.1`。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+使うスキルの版: `metadata.version` = `0.1`。言語意味論の Lean モデルは、スキルの `assets/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
 
 ## リポジトリ配置
 

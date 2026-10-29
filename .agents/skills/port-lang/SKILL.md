@@ -1,7 +1,7 @@
 ---
 name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application. Keywords: 言語間移植, language porting, migration, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, Verus, Kani, Java, SQL, Rust."
-compatibility: Lean 4 と Lake が必要。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/<lang>/ に記載。
+compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/<lang>/ に記載。
 metadata:
   version: "0.1"
   formalization: "lean4"
@@ -82,6 +82,20 @@ metadata:
 | Rust | 移植先として整備済み。移植元は一部未整備 | [semantics](references/rust/semantics.md) · [locators](references/rust/locators.md) · [frameworks](references/rust/frameworks.md) · [harness](references/rust/harness.md) · [verification](references/rust/verification.md) · [layout](references/rust/layout.md) |
 
 形式化言語の Lean 4 は全プロジェクト共通である: [lean/rules.md](references/lean/rules.md), [lean/trace-attributes.md](references/lean/trace-attributes.md)。
+### Lean の言語意味論モデル（assets）
+
+`assets/` は、言語パックの `semantics.md` を Lean で実装した **そのまま使えるモデル** で、core だけに依存する Lake パッケージである。
+
+| モジュール | ファイル |
+| --- | --- |
+| `LangSemantics.Java`（int/long、double のソフトモデル、BigDecimal、String、LocalDate、例外） | `assets/LangSemantics/Java/` |
+| `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新） | `assets/LangSemantics/Sql/` |
+| `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/LangSemantics/Sql/Postgresql.lean` |
+| `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/LangSemantics/Rust/` |
+
+- 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
+- 検査: `assets/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。
+
 処理系ごとに意味が異なる言語（例: SQL）は、`references/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。
 新しい言語・方言を追加するときは [adding-a-language.md](references/adding-a-language.md) に従う。
 
