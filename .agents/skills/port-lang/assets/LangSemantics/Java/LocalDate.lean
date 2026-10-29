@@ -56,8 +56,11 @@ def ofEpochDay (z : Int) : JLocalDate :=
   let m : Int := if mp < 10 then mp + 3 else mp - 9
   ⟨if m ≤ 2 then y + 1 else y, m.toNat, d.toNat⟩
 
-/-- `plusDays(n)`（負の n は `minusDays`）。 -/
+/-- `plusDays(n)`。 -/
 def plusDays (x : JLocalDate) (n : Int) : JLocalDate := ofEpochDay (x.toEpochDay + n)
+
+/-- `minusDays(n)`。 -/
+def minusDays (x : JLocalDate) (n : Int) : JLocalDate := ofEpochDay (x.toEpochDay - n)
 
 /-- `isBefore`。 -/
 def isBefore (a b : JLocalDate) : Bool := a.toEpochDay < b.toEpochDay

@@ -2,6 +2,7 @@ import Tests.TraceFixture
 import Tests.AttrErrors
 import Tests.Conformance
 import Tests.SpecChecks
+import Tests.JavaDouble
 
 /-!
 # Tests

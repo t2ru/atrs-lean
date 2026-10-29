@@ -221,4 +221,11 @@ def jd2i (d : JDouble) : J32 := JDouble.toJ32 d
 /-- `(long) d`。 -/
 def jd2l (d : JDouble) : J64 := JDouble.toJ64 d
 
+/-- リテラル `0.01` は、0.01 に最も近い binary64（`0x3F847AE147AE147B`）である。 -/
+theorem jdLit_0_01_bits : (jdLit "0.01").toBits = 0x3F847AE147AE147B#64 := by decide
+
+/-- 例: `(int) (1430 * (1 - 30 * 0.01))` は 1000 である（厳密計算では 1001）。 -/
+theorem jd2i_1430_30 : (jd2i (jdmul (jd 1430) (jdsub (jd 1) (jdmul (jd 30) (jdLit "0.01"))))).val = 1000 := by
+  decide
+
 end LangSemantics.Java

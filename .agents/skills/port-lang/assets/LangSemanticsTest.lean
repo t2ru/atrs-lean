@@ -1,3 +1,4 @@
 import LangSemanticsTest.Java
+import LangSemanticsTest.JavaJvm
 import LangSemanticsTest.Sql
 import LangSemanticsTest.Rust
