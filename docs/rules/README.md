@@ -6,7 +6,7 @@ tags: [rules, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T08:20:00+09:00
 ---
 
 # 作業規約（rules）
@@ -22,7 +22,7 @@ generated:
 | [documentation.md](documentation.md) | すべての文書 | 日本語本文＋英語識別子、RFC 2119 用語、出典記法、リンク |
 | [decision-records.md](decision-records.md) | `docs/decision/` | MADR 4.0、`NNNN-<slug>.md`、状態遷移、置換手順 |
 | [atrs-porting.md](atrs-porting.md) | ATRS の移植 | スキル port-lang の適用: 言語ペア、配置、機能名、型、必須の依存、上流の版、採った値 |
-| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push はしない |
+| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい |
 | [backlog.md](backlog.md) | `docs/backlog/` | 項目形式、状態、完了の定義（DoD） |
 
 ## 優先順位

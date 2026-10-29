@@ -9,7 +9,7 @@ okf_version: "0.2"
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push はしない。コミットの単位とメッセージの規則。
+* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。コミットの単位とメッセージの規則。
 
 # Decisions
 

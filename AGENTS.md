@@ -42,7 +42,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/rules/documentation.md](docs/rules/documentation.md) | 文書全般（言語・用語・リンク・出典記法・OKF） |
 | [docs/rules/decision-records.md](docs/rules/decision-records.md) | 意思決定記録（MADR, `NNNN-<slug>.md`） |
 | [docs/rules/backlog.md](docs/rules/backlog.md) | バックログ運用と完了の定義 |
-| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit、push しない） |
+| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit。push は自分で作ったブランチに限り、PR を作成してよい） |
 
 ## ディレクトリ地図
 
@@ -81,7 +81,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 4. 移植元・移植先との差異は、必ず既知差異（[docs/spec/abstraction.md](docs/spec/abstraction.md) の `D-NNN`、[docs/spec/refinement.md](docs/spec/refinement.md) の `T-NNN`）として登録する。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
 5. 業務ロジックは純粋関数、副作用はポート経由（[ADR 0007](docs/decision/0007-functional-core-with-ports.md)）。
 6. `docs/` の文書を追加・変更したら、frontmatter（OKF v0.2）・[docs/index.md](docs/index.md)・[docs/log.md](docs/log.md) を更新する（[documentation.md](docs/rules/documentation.md#okf-v02)）。
-7. **一通りの作業が終わったら `git commit` する。`git push` はしない**（[version-control.md](docs/rules/version-control.md)）。
+7. **一通りの作業が終わったら `git commit` する。`git push` は自分で作ったブランチに限り、そこから PR を作成してよい。既定ブランチと他人のブランチには push しない**（[version-control.md](docs/rules/version-control.md)）。
 
 ## 現在の状態
 
