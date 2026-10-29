@@ -9,9 +9,10 @@ Lean の言語サーバ（LSP）はリポジトリのルートで起動される
 `import` が解決される。
 
 - `langSemantics`: port-lang スキルの言語意味論モデル（`.agents/skills/port-lang/assets`）
-- ATRS の Lean プロジェクト（`lean/`）は backlog 0001 で追加し、ここに `require` する
+- `atrs`: ATRS の Lean プロジェクト（`lean/`）
 -/
 package atrsWorkspace where
   leanOptions := #[⟨`autoImplicit, false⟩]
 
 require langSemantics from "./.agents/skills/port-lang/assets"
+require atrs from "./lean"
