@@ -1,0 +1,151 @@
+{
+  "operation": "format.addDays",
+  "modelDef": "Spec.Prim.Date.addDays",
+  "specRef": "docs/spec/domain-model.md#date",
+  "cases": [
+    {
+      "id": "addDays-0",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2024-02-28",
+        "days": 1
+      },
+      "expected": {
+        "ok": "2024-02-29"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-1",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2026-02-28",
+        "days": 1
+      },
+      "expected": {
+        "ok": "2026-03-01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-2",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "1900-02-28",
+        "days": 1
+      },
+      "expected": {
+        "ok": "1900-03-01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-3",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2000-02-28",
+        "days": 1
+      },
+      "expected": {
+        "ok": "2000-02-29"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-4",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2026-12-31",
+        "days": 1
+      },
+      "expected": {
+        "ok": "2027-01-01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-5",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2027-01-01",
+        "days": -1
+      },
+      "expected": {
+        "ok": "2026-12-31"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-6",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2026-11-01",
+        "days": 120
+      },
+      "expected": {
+        "ok": "2027-03-01"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-7",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2026-10-29",
+        "days": 90
+      },
+      "expected": {
+        "ok": "2027-01-27"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-8",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "2026-03-31",
+        "days": -31
+      },
+      "expected": {
+        "ok": "2026-02-28"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-9",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "9999-12-31",
+        "days": 1
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-10",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "0001-01-01",
+        "days": -1
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "addDays-11",
+      "description": "閏年・月末・年越し・範囲外",
+      "input": {
+        "date": "0001-01-01",
+        "days": 3652058
+      },
+      "expected": {
+        "ok": "9999-12-31"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

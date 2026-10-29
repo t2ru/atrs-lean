@@ -1,0 +1,117 @@
+{
+  "operation": "format.fmtYen",
+  "modelDef": "Spec.Prim.fmtYen",
+  "specRef": "docs/spec/domain-model.md#書式",
+  "cases": [
+    {
+      "id": "fmtYen-0",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 0
+      },
+      "expected": {
+        "ok": "0"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-1",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 1
+      },
+      "expected": {
+        "ok": "1"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-999",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 999
+      },
+      "expected": {
+        "ok": "999"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-1000",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 1000
+      },
+      "expected": {
+        "ok": "1,000"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-9999",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 9999
+      },
+      "expected": {
+        "ok": "9,999"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-28800",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 28800
+      },
+      "expected": {
+        "ok": "28,800"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-100000",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 100000
+      },
+      "expected": {
+        "ok": "100,000"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-999999",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 999999
+      },
+      "expected": {
+        "ok": "999,999"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-1000000",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 1000000
+      },
+      "expected": {
+        "ok": "1,000,000"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtYen-1200000000",
+      "description": "3 桁区切り",
+      "input": {
+        "amount": 1200000000
+      },
+      "expected": {
+        "ok": "1,200,000,000"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

@@ -8,6 +8,8 @@ import Tests
 
 - `Tests.TraceFixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュを確かめる。
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
+- 適合テストベクタ（`../conformance/shared/format/`）を `Spec` で実行する（`Tests.Conformance`）。
+- 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
   カーネルの定義は直接には再帰しないため、相互再帰の閉路は実際の定義からは作れない。
 -/
 
@@ -119,8 +121,27 @@ def fixtureTests (env : Environment) : IO Unit := do
   check "dump: sorted by name"
     ((es.map (·.name.toString)).toList == ((es.map (·.name.toString)).qsort (· < ·)).toList)
 
+/-- 適合テストベクタを `Spec` で実行する。 -/
+unsafe def conformanceTests : IO Unit := do
+  IO.println "conformance (Spec: shared/format)"
+  let env ← loadEnv #[`Spec]
+  let results ← Tests.Conformance.runDir Tests.Conformance.formatOps env.contains "../conformance/shared/format"
+  check "conformance: files found" (!results.isEmpty)
+  for r in results do
+    for f in r.failures do IO.eprintln s!"    {r.path.fileName.getD ""}: {f}"
+    check s!"conformance: {r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
+
+/-- 暦日の全日の検査。 -/
+def dateTests : IO Unit := do
+  IO.println "date (0001-01-01 .. 9999-12-31)"
+  let (bad, n) := Tests.SpecChecks.dateExhaustive
+  unless bad.isEmpty do IO.eprintln s!"    failed ordinals: {bad}"
+  check s!"date: ofOrdinal? round trip and successor ({n} days)" bad.isEmpty
+
 unsafe def main : IO UInt32 := do
   merkleTests
+  dateTests
+  conformanceTests
   let env ← loadEnv #[`Tests.TraceFixture]
   fixtureTests env
   let n ← failures.get

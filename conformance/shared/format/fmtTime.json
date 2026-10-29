@@ -1,0 +1,51 @@
+{
+  "operation": "format.fmtTime",
+  "modelDef": "Spec.Prim.fmtTime",
+  "specRef": "docs/spec/domain-model.md#書式",
+  "cases": [
+    {
+      "id": "fmtTime-0000",
+      "description": "時刻",
+      "input": {
+        "time": "00:00"
+      },
+      "expected": {
+        "ok": "00:00"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtTime-0945",
+      "description": "時刻",
+      "input": {
+        "time": "09:45"
+      },
+      "expected": {
+        "ok": "09:45"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtTime-1205",
+      "description": "時刻",
+      "input": {
+        "time": "12:05"
+      },
+      "expected": {
+        "ok": "12:05"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtTime-2359",
+      "description": "時刻",
+      "input": {
+        "time": "23:59"
+      },
+      "expected": {
+        "ok": "23:59"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

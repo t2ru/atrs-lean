@@ -4,11 +4,11 @@ title: "マスタデータ"
 description: "空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別の構造、不変条件、参照関数、シードデータ。"
 tags: [spec, master-data]
 status: draft
-spec_role: draft
+spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T08:12:23+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -17,7 +17,7 @@ sources:
 
 # マスタデータ
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
+> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.MasterData`](../../lean/Spec/MasterData.lean)、[`Spec.CodeList`](../../lean/Spec/CodeList.lean)。[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
 
 マスタは起動時に読み込まれ、実行中は変化しない不変の値 `MasterData` として純粋関数に渡す（[ADR 0007](../decision/0007-functional-core-with-ports.md)）。
 原典では `*Provider` クラスがキャッシュしている（出典: atrs-domain/.../common/masterdata/*Provider.java）。
@@ -68,6 +68,8 @@ sources:
 
 ## 不変条件（[Spec]）
 
+Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定可能）。MD-3 のうちフライトの参照整合性は、フライトを持つ `World` の不変条件で課す。
+
 [Spec] の全定義は `MasterData` が次を満たすことを前提とする。[Source] はこれらを検査せず、満たさない場合の振る舞いは原典どおり（多くは「最初に見つかったもの」または上書き）である。
 
 | ID | 不変条件 | [Source] で破れた場合 |
@@ -85,7 +87,7 @@ sources:
 
 ## 参照関数
 
-**[Spec=Source]**（MD-1〜MD-4 の下で）
+**[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。SPEC 課題（SPEC-001〜003）は、参照関数をまとめた抽象機械 `queryMachine` について証明した。
 
 - `routeOf(dep, arr) : Route?` — `(dep, arr)` に一致する区間。無ければ無し。
 - `flightMasterOf(name) : FlightMaster?`、`fareTypeOf(cd) : FareType?`、`boardingClassOf(cd) : BoardingClass?`
@@ -96,7 +98,7 @@ sources:
 
 ## 空港コードリスト（画面用）
 
-**[Spec=Source]** 画面の空港選択肢（`CL_AIRPORT`）は、空港を `displayOrder` 昇順に並べ、`displayOrder ≥ 100` の最初の空港の直前に区切り行 `("NOP", "-----------")` を 1 つ挿入したものである。
+**[Spec=Source]** Lean: [`Spec.CodeList`](../../lean/Spec/CodeList.lean)。画面の空港選択肢（`CL_AIRPORT`）は、空港を `displayOrder` 昇順に並べ、`displayOrder ≥ 100` の最初の空港の直前に区切り行 `("NOP", "-----------")` を 1 つ挿入したものである。
 入力検証の「コードリストに存在する」（[input-validation.md](input-validation.md)）は **区切り行の `NOP` も存在するものとして扱う**。そのため `NOP` を指定した空席照会は入力検証を通過し、区間が見つからずに業務エラー `e.ar.b1.2002` となる。
 
 出典: atrs-domain/.../common/codelist/AirportCodeList.java `retrieveMap`, atrs-domain/.../config/app/AtrsCodeListConfig.java `CL_AIRPORT`
