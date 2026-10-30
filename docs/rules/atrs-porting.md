@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T22:21:47+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -45,7 +45,7 @@ generated:
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
 | `trace/` | 版の宣言・インベントリ・manifest |
-| `tools/trace/` | 追跡の道具（Rust。[backlog 0024](../backlog/0024-trace-tooling.md)、[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)）。機能と backlog の対応表は `trace/features.json` |
+| `tools/trace/` | 追跡の道具（Rust。[backlog 0024](../backlog/0024-trace-tooling.md)、[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)・[ADR 0041](../decision/0041-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
 | `tools/ci/` | CI の検査（`lean.sh` が Lean 側の一括検査。`.github/workflows/lean.yml` から呼ぶ） |
 
 ## 追従中の上流

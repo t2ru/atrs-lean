@@ -1,17 +1,23 @@
-//! `tools/trace`: ATRS の両端の追跡の道具（backlog 0024、ADR 0036・0040）。
+//! `tools/trace`: ATRS の両端の追跡の道具（backlog 0024、ADR 0036・0040・0041）。
 //!
 //! ```text
 //! trace inventory source [--check]
 //! trace inventory target [--check]
 //! trace manifest --dump <trace-dump.json> --obligations <obligation-check.json> [--check]
 //! trace check --dump <trace-dump.json> --obligations <obligation-check.json>
+//! trace rehash --dump <trace-dump.json> [--dry-run]
+//! trace diff --old <file|git:REV> [--side source|target] [--json]
+//! trace impact --dump <trace-dump.json> --obligations <obligation-check.json> [--diff <file|git:REV>] [--json] [<起点>…]
 //! ```
 //!
 //! リポジトリのルートは、作業ディレクトリから上にたどって `trace/upstream.json` があるところとする
 //! （`--repo <dir>` で指定もできる）。
 
 mod check;
+mod checks;
+mod diff;
 mod docs;
+mod impact;
 mod inventory;
 mod item;
 mod java;
@@ -20,6 +26,7 @@ mod manifest;
 mod mapper;
 mod normalize;
 mod props;
+mod rehash;
 mod rust;
 mod sqlfile;
 mod tmpl;
@@ -96,7 +103,18 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
             Ok(ExitCode::SUCCESS)
         }
         Some("check") => check_cmd(&repo, args),
-        _ => Err("usage: trace inventory|manifest|check …".into()),
+        Some("rehash") => rehash_cmd(&repo, args),
+        Some("diff") => {
+            let d = diff_of(&repo, args, &arg_path(args, "--old")?.to_string_lossy())?;
+            if args.iter().any(|a| a == "--json") {
+                println!("{}", serde_json::to_string_pretty(&d).unwrap());
+            } else {
+                print!("{}", diff::render(&d));
+            }
+            Ok(ExitCode::SUCCESS)
+        }
+        Some("impact") => impact_cmd(&repo, args),
+        _ => Err("usage: trace inventory|manifest|check|rehash|diff|impact …".into()),
     }
 }
 
@@ -127,6 +145,20 @@ fn files_with_ext(dir: &Path, ext: &str, out: &mut Vec<PathBuf>) {
     }
 }
 
+/// `docs/spec/*.md` の「出典:」のロケータ。
+fn citations(repo: &Path) -> Vec<(String, String)> {
+    let mut mds = vec![];
+    files_with_ext(&repo.join("docs/spec"), "md", &mut mds);
+    let mut out = vec![];
+    for p in mds {
+        let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
+        for (line, loc) in docs::citations(&std::fs::read_to_string(&p).unwrap_or_default()) {
+            out.push((format!("{rel}:{line}"), loc));
+        }
+    }
+    out
+}
+
 /// `check_obligations.py` を実行し、その誤り・警告を TR-G・TR-N として取り込む。
 fn obligation_script(repo: &Path, obligations: &Path) -> Result<Vec<check::Finding>, String> {
     let out = std::process::Command::new("python3")
@@ -153,6 +185,155 @@ fn obligation_script(repo: &Path, obligations: &Path) -> Result<Vec<check::Findi
         return Err(format!("check_obligations.py failed: {text}"));
     }
     Ok(list)
+}
+
+/// 引数の値（`--key <value>`）を除いた、位置引数（サブコマンドの後）。
+fn positional(args: &[String]) -> Vec<String> {
+    const WITH_VALUE: &[&str] = &["--dump", "--obligations", "--diff", "--old", "--side", "--repo"];
+    let mut out = vec![];
+    let mut skip = true; // サブコマンド名
+    for a in args {
+        if skip {
+            skip = false;
+            continue;
+        }
+        if WITH_VALUE.contains(&a.as_str()) {
+            skip = true;
+        } else if !a.starts_with("--") {
+            out.push(a.clone());
+        }
+    }
+    out
+}
+
+/// `--side` の値（既定は source）と、そのインベントリ・宣言のパス。
+fn side_files(args: &[String]) -> Result<(&'static str, &'static str), String> {
+    match args.iter().position(|a| a == "--side").and_then(|i| args.get(i + 1)).map(String::as_str) {
+        None | Some("source") => Ok(("trace/source-inventory.json", "trace/upstream.json")),
+        Some("target") => Ok(("trace/target-inventory.json", "trace/target.json")),
+        Some(x) => Err(format!("--side source|target (got {x})")),
+    }
+}
+
+/// `git show <rev>:<path>`（無ければ None）。
+fn git_show(repo: &Path, rev: &str, path: &str) -> Result<Option<String>, String> {
+    let out = std::process::Command::new("git")
+        .args(["show", &format!("{rev}:{path}")])
+        .current_dir(repo)
+        .output()
+        .map_err(|e| format!("git: {e}"))?;
+    Ok(out.status.success().then(|| String::from_utf8_lossy(&out.stdout).to_string()))
+}
+
+/// 新旧のインベントリの差分。`old` はファイルか `git:<rev>`（宣言の新旧も比べる）。
+fn diff_of(repo: &Path, args: &[String], old: &str) -> Result<diff::Diff, String> {
+    let (inv_path, decl_path) = side_files(args)?;
+    let new = inventory::load(&repo.join(inv_path))?;
+    let renames = rehash::load_renames(repo)?;
+    let parse = |s: &str, what: &str| -> Result<inventory::Inventory, String> {
+        serde_json::from_str(s).map_err(|e| format!("{what}: {e}"))
+    };
+    if let Some(rev) = old.strip_prefix("git:") {
+        let o = git_show(repo, rev, inv_path)?.map(|s| parse(&s, &format!("{rev}:{inv_path}"))).transpose()?.unwrap_or_default();
+        let od: serde_json::Value = git_show(repo, rev, decl_path)?.and_then(|s| serde_json::from_str(&s).ok()).unwrap_or_default();
+        let nd = read_json(&repo.join(decl_path));
+        Ok(diff::diff(&o, &new, &renames, Some((&od, &nd))))
+    } else {
+        let o = parse(&std::fs::read_to_string(old).map_err(|e| format!("{old}: {e}"))?, old)?;
+        Ok(diff::diff(&o, &new, &renames, None))
+    }
+}
+
+fn impact_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
+    let dump: lean::Dump = lean::load(&arg_path(args, "--dump")?)?;
+    let obligations: lean::Obligations = lean::load(&arg_path(args, "--obligations")?)?;
+    let mut seeds = positional(args);
+    if let Ok(old) = arg_path(args, "--diff") {
+        seeds.extend(diff_of(repo, args, &old.to_string_lossy())?.changed_locators());
+    }
+    if seeds.is_empty() {
+        return Err("impact: give locators or Lean names, or --diff <file|git:REV>".into());
+    }
+    let i = impact::impact(&dump, &obligations, &seeds);
+    if args.iter().any(|a| a == "--json") {
+        println!("{}", serde_json::to_string_pretty(&i).unwrap());
+    } else {
+        print!("{}", impact::render(&i));
+    }
+    Ok(ExitCode::SUCCESS)
+}
+
+fn rehash_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
+    let dry = args.iter().any(|a| a == "--dry-run");
+    let dump: lean::Dump = lean::load(&arg_path(args, "--dump")?)?;
+    let source = inventory::load(&repo.join("trace/source-inventory.json"))?;
+    let target = inventory::load(&repo.join("trace/target-inventory.json"))?;
+    let upstream = read_json(&repo.join("trace/upstream.json"));
+    let target_decl = read_json(&repo.join("trace/target.json"));
+    let mpath = repo.join("trace/manifest.json");
+    let mut m = manifest::load(&mpath)?;
+    let passed = manifest::passed(&m);
+    let renames = rehash::load_renames(repo)?;
+    let reg = checks::load(repo)?;
+    let cover = checks::coverage(&reg, repo, &dump)?;
+    let cx = rehash::Context {
+        dump: &dump,
+        source: &source,
+        target: &target,
+        upstream: &upstream,
+        target_decl: &target_decl,
+        passed: &passed,
+        renames: &renames,
+    };
+    if dry {
+        let p = rehash::plan(&cx);
+        for c in &p.candidates {
+            let ids: Vec<String> = cover.get(&c.definition).map(|s| s.iter().cloned().collect()).unwrap_or_default();
+            println!("{}: {} -> {} ({}); checks: {}", c.definition, c.old, c.new_value(), c.reason,
+                if ids.is_empty() { "(none: not updatable)".into() } else { ids.join(", ") });
+        }
+        for u in &p.unresolved {
+            println!("unresolved: {u}");
+        }
+        println!("trace rehash --dry-run: {} candidate(s), {} unresolved", p.candidates.len(), p.unresolved.len());
+        return Ok(ExitCode::SUCCESS);
+    }
+    let out = rehash::execute(repo, &cx, &reg, &cover, &mut m, &checks::run)?;
+    // 書き換えた注釈を反映した manifest と生成区画
+    let mut dump2 = dump.clone();
+    for (name, new) in &out.updated {
+        let loc = lean::split_hash(new).0;
+        let Some(d) = dump2.definitions.iter_mut().find(|d| d.name == *name) else { continue };
+        for (_, vs) in d.attributes.iter_mut().filter(|(a, _)| *a == "source" || *a == "target") {
+            for v in vs.iter_mut() {
+                let old_loc = lean::split_hash(v).0;
+                if old_loc == loc || renames.iter().any(|(o, n)| o == old_loc && n == loc) {
+                    *v = new.clone();
+                }
+            }
+        }
+    }
+    let m2 = manifest::build(&dump2, &target, &m);
+    std::fs::write(&mpath, manifest::to_json(&m2)).map_err(|e| e.to_string())?;
+    let dpath = repo.join("docs/spec/traceability.md");
+    let doc = std::fs::read_to_string(&dpath).map_err(|e| e.to_string())?;
+    std::fs::write(&dpath, manifest::render_doc(&doc, &m2, &source, &target)?).map_err(|e| e.to_string())?;
+    for (id, ok) in &out.results {
+        println!("check {id}: {}", if *ok { "passed" } else { "FAILED" });
+    }
+    for (d, v) in &out.updated {
+        println!("updated: {d}: {v}");
+    }
+    for s in &out.skipped {
+        println!("not updated: {s}");
+    }
+    println!(
+        "trace rehash: {} updated, {} not updated{}",
+        out.updated.len(),
+        out.skipped.len(),
+        if out.updated.is_empty() { "" } else { " (rebuild Lean and rerun trace-dump before trace check)" }
+    );
+    Ok(if out.skipped.is_empty() { ExitCode::SUCCESS } else { ExitCode::from(1) })
 }
 
 fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
@@ -201,6 +382,8 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
         passed: manifest::passed(&manifest::load(&repo.join("trace/manifest.json"))?),
         rust_files,
         model_defs,
+        renames: rehash::load_renames(repo)?,
+        citations: citations(repo),
     };
     let mut findings = check::run(&input);
     if !args.iter().any(|a| a == "--no-obligation-script") {

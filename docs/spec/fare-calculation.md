@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 運賃計算
@@ -56,7 +56,7 @@ basicFare = jd2i( jdmul( jd(j32add(routeBasicFare, extra)),
 | 20600 | S（5000） | 125 | 32000 | 32000 |
 | 37900 | S（5000） | 140 | 60060 | 60060 |
 
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `calculateBasicFare`, `getMultiplicationRatio`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`（private の `getMultiplicationRatio` を含む）
 
 ## 運賃
 
@@ -103,7 +103,7 @@ fare = bdCeilHundredUp( jd2i( jdmul( jd(basicFare),
 | 1430 | 30 | 1100 | **1000** |
 | 0 | 30 | 0 | 0 |
 
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `calculateFare`, atrs-domain/.../common/util/FareUtil.java `ceilFare`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)`, `java:jp.co.ntt.atrs.domain.common.util.FareUtil#ceilFare(int)`
 
 ## 合計金額
 
@@ -159,10 +159,10 @@ totalFare       = bdCeilHundredUp( foldl j32add 0 [flightTotal(f) | f ← flight
 | 往復・大人 1 | 往路 基本運賃 20600 RT(5%), 復路 基本運賃 20600 RT(5%) | 40 歳 | 19600 + 19600 = **39200** |
 | 往復・大人 1 小児 1 | 同上 | 40, 11 歳 | (19600 + floorDiv(20600×55,100)) × 2 = (19600 + 11330) × 2 = 61860 → **61900** |
 
-出典: atrs-domain/.../service/b2/TicketReserveServiceImpl.java `calculateTotalFare`
+出典: `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)`
 
 ## 画面表示用の運賃
 
 空席照会結果・予約確認画面では `fmtYen(fare)`（[domain-model.md](domain-model.md#書式)）で表示する。予約画面のフライト一覧の運賃（`SelectFlightDto.fare`）は `fare(basicFare(...), discountRate)` の整数値である。
 
-出典: atrs-domain/.../service/b1/TicketSearchServiceImpl.java `createFlightVacantInfoList`, atrs-web/.../app/b2/TicketReserveHelper.java `createSelectFlightDtoList`
+出典: `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)`（private の `createFlightVacantInfoList` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`

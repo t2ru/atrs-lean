@@ -10,7 +10,7 @@
 //! | TR-PE | 公開操作が、入口の R 課題の参照の閉包に無い |
 //! | TR-D | 文書の前提型・観測型の D/T と `@[deviation]` が 1 対 1 でない、R 課題に現れない、W 課題が無い、R 課題に無名の仮定（G1・G2） |
 //! | TR-X | 移植元と移植先の直接の接続（層と種類の取り違え、`rust/` の中の移植元のロケータ） |
-//! | TR-R | 存在しないロケータ・名前・ID への参照、対応表の抜け |
+//! | TR-R | 存在しないロケータ・名前・ID への参照、対応表の抜け、`renames.json` と文書の「出典:」の参照切れ |
 //! | TR-G・TR-N | `obligation-check` と `check_obligations.py` の結果 |
 //!
 //! TR-S1・TR-T1・TR-P・TR-PE・TR-D は、該当する機能（`trace/features.json`）の backlog がすべて
@@ -36,7 +36,7 @@ pub struct Finding {
     pub msg: String,
 }
 
-/// 合格した検査の記録（manifest の `checks`。第 2 段の `rehash` が書く）。
+/// 合格した検査の記録（manifest の `checks`。`rehash` が書く）。
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Passed {
     pub definition: String,
@@ -63,6 +63,10 @@ pub struct Input<'a> {
     pub rust_files: Vec<(String, String)>,
     /// 適合テストベクタの `modelDef`（ファイル, 名前）
     pub model_defs: Vec<(String, String)>,
+    /// `trace/renames.json` の（old, new）
+    pub renames: Vec<(String, String)>,
+    /// 文書の「出典:」のロケータ（`<ファイル>:<行>`, ロケータ）
+    pub citations: Vec<(String, String)>,
 }
 
 struct Out<'f> {
@@ -84,12 +88,12 @@ impl<'f> Out<'f> {
     }
 }
 
-fn is_version_kind(k: &str) -> bool {
+pub fn is_version_kind(k: &str) -> bool {
     k == "dep" || k == "lang"
 }
 
 /// `lang:<言語>#…` / `dep:<座標>#…` の宣言された版の文字列（`<名前>-<版>`。ADR 0040）。
-fn declared_version(decl: &Value, loc: &str) -> Option<String> {
+pub fn declared_version(decl: &Value, loc: &str) -> Option<String> {
     let (kind, rest) = loc.split_once(':')?;
     let key = rest.split('#').next().unwrap_or(rest);
     match kind {
@@ -317,6 +321,30 @@ pub fn run(inp: &Input) -> Vec<Finding> {
             out.err("TR-R", format!("{file}: modelDef {name} is not a Lean definition"));
         }
     }
+    // renames.json: old は現在のインベントリに無く、new はある
+    for (old, new) in &inp.renames {
+        let side = |l: &str| if TARGET_KINDS.contains(&kind_of(l)) { &tgt_items } else { &src_items };
+        if side(old).contains_key(old.as_str()) {
+            out.err("TR-R", format!("trace/renames.json: {old} -> {new}: the old locator is still in the inventory"));
+        }
+        if !side(new).contains_key(new.as_str()) {
+            out.err("TR-R", format!("trace/renames.json: {old} -> {new}: the new locator is not in the inventory"));
+        }
+    }
+    // 文書の「出典:」: ロケータは現在のインベントリ（dep:・lang: は宣言）にある
+    for (at, loc) in &inp.citations {
+        let k = kind_of(loc);
+        let ok = if is_version_kind(k) {
+            declared_version(&inp.upstream, loc).is_some() || declared_version(&inp.target_decl, loc).is_some()
+        } else if TARGET_KINDS.contains(&k) {
+            tgt_items.contains_key(loc.as_str())
+        } else {
+            src_items.contains_key(loc.as_str())
+        };
+        if !ok {
+            out.err("TR-R", format!("{at}: 出典 {loc}: not in the inventory"));
+        }
+    }
     out.list.sort();
     out.list.dedup();
     out.list
@@ -359,6 +387,7 @@ mod tests {
             attributes: attrs.iter().map(|(k, v)| (k.to_string(), v.iter().map(|s| s.to_string()).collect())).collect(),
             merkle: "m0".into(),
             references: refs.iter().map(|s| s.to_string()).collect(),
+            ..Default::default()
         }
     }
 
@@ -398,6 +427,8 @@ mod tests {
             passed: BTreeSet::new(),
             rust_files: vec![("rust/src/a.rs".into(), "// ok http://example.com\n// java:a.Fare#f()\n".into())],
             model_defs: vec![],
+            renames: vec![("java:a.Fare#old()".into(), "java:a.Fare#gone()".into())],
+            citations: vec![("docs/spec/x.md:3".into(), "java:a.Fare#nope()".into()), ("docs/spec/x.md:4".into(), "lang:java#JLS-1".into())],
         };
         run(&input)
     }
@@ -470,6 +501,16 @@ mod tests {
         // 入口の R 課題の閉包に入れば TR-PE は出ない
         let fs = run_with(defs, obl, inv(&[("java:a.Fare#f()", "aa")]), &feats(true), vec![], &["ABS-001"]);
         assert!(!fs.iter().any(|f| f.rule == "TR-PE"), "{fs:?}");
+    }
+
+    #[test]
+    fn tr_r_renames_and_citations() {
+        let fs = run_with(vec![], Obligations::default(), inv(&[("java:a.Fare#old()", "1")]), &feats(false), vec![], &[]);
+        let msgs: Vec<&str> = fs.iter().filter(|f| f.error && f.rule == "TR-R").map(|f| f.msg.as_str()).collect();
+        assert!(msgs.iter().any(|m| m.contains("old locator is still")), "{msgs:?}");
+        assert!(msgs.iter().any(|m| m.contains("new locator is not")), "{msgs:?}");
+        assert!(msgs.iter().any(|m| m.contains("x.md:3") && m.contains("nope")), "{msgs:?}");
+        assert!(!msgs.iter().any(|m| m.contains("x.md:4")), "{msgs:?}");
     }
 
     #[test]

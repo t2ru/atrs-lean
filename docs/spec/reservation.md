@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 予約（B0/B2）
@@ -24,7 +24,7 @@ generated:
 
 **[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。
 
-出典: atrs-web/.../app/b0/TicketHelper.java `toFlightList`
+出典: `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)`
 
 ## validateFlightList
 
@@ -50,7 +50,7 @@ generated:
 
 搭乗日が照会可能期間内か・運賃種別が予約可能期間内かは **ここでは検査しない**（後者は予約登録時に検査する）。
 
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `validateFlightList`, `existsFlight`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateFlightList(List)`, `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#existsFlight(Flight)`
 
 ### 例
 
@@ -65,7 +65,7 @@ generated:
 - `repTel = tel1 ++ "-" ++ tel2 ++ "-" ++ tel3`。
 - `repMembershipNumber` は入力が空なら無し。各搭乗者の `membershipNumber` も同様。
 
-出典: atrs-web/.../app/b2/TicketReserveHelper.java `createReservation`, `TicketReserveForm.resetPassengersIndex`, `PassengerForm.isEmpty`
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)`・`java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)`（private の `createReservation` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()`, `java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()`
 
 ## validateReservation
 
@@ -89,7 +89,7 @@ generated:
 
 文字列比較はスカラ値の完全一致（[port-lang/portability.md](../../.agents/skills/port-lang/references/portability.md#文字列)）。
 
-出典: atrs-domain/.../service/b2/TicketReserveServiceImpl.java `validateReservation` ほか
+出典: `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)` ほか
 
 ## 予約確認（reserveConfirm）
 
@@ -100,7 +100,7 @@ generated:
 3. `validateReservation`。
 4. `totalFare = totalFare(flights, reserveFlights[0].passengers)`（[fare-calculation.md](fare-calculation.md#合計金額)）を返す。
 
-出典: atrs-web/.../app/b2/TicketReserveHelper.java `reserveConfirm`
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)`
 
 ## 予約確定（reserve）
 
@@ -129,7 +129,7 @@ generated:
 - 予約確定の前後で、すべてのフライトの `vacantNum ≥ 0`（課題 [ABS-020](abstraction.md#証明課題), [REF-002](refinement.md)）。
 - 成功時、各予約フライトのフライトの `vacantNum` は搭乗者数だけ減る。失敗時は `sequences` 以外の状態が不変。
 
-出典: atrs-web/.../app/b2/TicketReserveHelper.java `reserve`, atrs-domain/.../service/b2/TicketReserveServiceImpl.java `registerReservation`, `validateAndUpdateVacancy`
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)`, `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#registerReservation(Reservation)`（private の `validateAndUpdateVacancy` を含む）
 
 ### 例
 
@@ -147,10 +147,10 @@ generated:
 
 未ログイン時は 6 欄すべて空の入力を初期値とする。
 
-出典: atrs-web/.../app/b2/TicketReserveHelper.java `createTicketReserveForm`
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createTicketReserveForm(AtrsUserDetails)`
 
 ## 予約画面のフライト表示
 
 **[Spec=Source]** 選択フライトの各 `i` について、`lineType = (i = 0 ? OUTWARD : HOMEWARD)`、便名・出発時刻・到着時刻・出発/到着空港コード・搭乗クラス・運賃種別・`fare = fare(basicFare(route.basicFare, boardingClassCd, depDate), discountRate)` を表示する。
 
-出典: atrs-web/.../app/b2/TicketReserveHelper.java `createSelectFlightDtoList`
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`
