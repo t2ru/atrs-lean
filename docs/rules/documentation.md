@@ -6,7 +6,7 @@ tags: [rules, documentation, okf]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 文書規約
@@ -39,7 +39,8 @@ generated:
 出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`
 ```
 
-- 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える（[backlog 0024](../backlog/0024-trace-tooling.md)）。
+- 「出典:」の行のロケータは、移植元のインベントリになければならない（`tools/trace check` の TR-R。[ADR 0041](../decision/0041-rehash-diff-impact-details.md)）。private のメソッドはインベントリの単位ではないので、呼び出し元の公開メソッドで書き、「（private の `getMultiplicationRatio` を含む）」のように補う。
+- 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える。運賃計算・空席照会・予約は書き換え済み（[backlog 0024](../backlog/0024-trace-tooling.md)）。残りは、各機能の backlog で `SourceModel` を書くときに書き換える。
 - 追従中の上流の版は `trace/upstream.json` に宣言する。版を更新する場合はスキルの [upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) の手順に従う。
 - 原典のコードを長く転載しない。式・条件は仕様の記法で書き直す。
 

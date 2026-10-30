@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T22:21:07+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 両端の追跡をロケータとモデル側注釈で表し、確認済みハッシュを決定論的な検査の合格記録とする
@@ -118,7 +118,7 @@ Chosen option: "ADR 0023 の方式を引き継ぎ、ハッシュを決定論的�
   * `ingest-lean`
   * `manifest`
   * `check`（TR 検査）
-  * `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する）
+  * `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する。検査の登録 `trace/checks.json` と注釈の書き換え方は [ADR 0041](0041-rehash-diff-impact-details.md)）
   * `diff`
   * `impact`
 

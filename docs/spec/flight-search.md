@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 空席照会（B1）
@@ -22,7 +22,7 @@ generated:
 - `searchLimitDate(today) = addDays(today, limitDay)`
 - `validateDepartureDate(depDate, today)`: `depDate < today ∨ depDate > searchLimitDate(today)` なら `Business("e.ar.b1.2001")`。両端を含む。
 
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `getSearchLimitDate`, `validateDepatureDate`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getSearchLimitDate()`, `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)`
 
 ## 運賃種別の予約可能判定
 
@@ -38,7 +38,7 @@ result = start ≤ today ≤ end
 
 これは `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum` と同値である（課題 [ABS-010](abstraction.md#証明課題)）。
 
-出典: atrs-domain/.../service/b0/TicketSharedServiceImpl.java `isAvailableFareType`
+出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)`
 
 ## searchFlight
 
@@ -111,7 +111,7 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
 
 （`fare(20600, 10) = ceilTo(18540, 100) = 18600`、`fare(20600, 20) = ceilTo(16480, 100) = 16500`、`fare(20600, 30) = ceilTo(14420, 100) = 14500`）
 
-出典: atrs-domain/.../service/b1/TicketSearchServiceImpl.java `searchFlight`, `createFlightVacantInfoList`, atrs-domain/src/main/resources/.../repository/flight/FlightRepository.xml `findByVacantSeatSearchCriteria`
+出典: `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)`（private の `createFlightVacantInfoList` を含む）, `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria`
 
 ## 照会画面の初期値
 
@@ -120,4 +120,4 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
 - 照会条件の初期値: `flightType = defaultFlightType`, `depAirportCd = defaultDepAirportCd`, `arrAirportCd = defaultArrAirportCd`, `outwardDate = today`, `homewardDate = today`, `boardingClassCd = defaultBoardingClassCd`。
 - 照会可能期間の表示: `beginningPeriod = today`, `endingPeriod = searchLimitDate(today)`, `reserveIntervalTime = config.reserveIntervalTime`。
 
-出典: atrs-web/.../app/b1/TicketSearchHelper.java `createDefaultTicketSearchForm`, `createFlightSearchOutputDto`
+出典: `java:jp.co.ntt.atrs.app.b1.TicketSearchHelper#createDefaultTicketSearchForm()`, `java:jp.co.ntt.atrs.app.b1.TicketSearchHelper#createFlightSearchOutputDto()`

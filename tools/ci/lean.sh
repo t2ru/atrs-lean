@@ -18,33 +18,14 @@ python3 -I tools/ci/check_lean.py
 step "static: 証明義務と文書の突き合わせの自己テスト（違反例を検出できること）"
 python3 -I tools/ci/check_obligations.py --self-test
 
+# 終了コード 2 は「処理系が無いので飛ばした」（ローカルだけ。CI では 1 になる）。
+skippable() { local rc=0; "$@" || rc=$?; [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ] || exit "$rc"; }
+
 step "assets/lean: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
-if command -v java > /dev/null; then
-  jvm="$(mktemp)"
-  (cd .agents/skills/port-lang/assets/lean && java LangSemanticsTest/jvm/JavaTable.java > "$jvm" 2> /dev/null)
-  diff -u .agents/skills/port-lang/assets/lean/LangSemanticsTest/JavaJvm.lean "$jvm"
-  rm -f "$jvm"
-  echo "JavaJvm.lean: up to date ($(java -version 2>&1 | grep -m1 version))"
-elif [ -n "${CI:-}" ]; then
-  echo "java not found (required in CI)" >&2; exit 1
-else
-  echo "java not found: skipped"
-fi
+skippable tools/ci/jvm_table.sh
 
 step "assets/lean: PostgreSQL との突き合わせ表（LangSemanticsTest/PostgresqlDb.lean）が生成器の出力と一致する"
-pgver="$(python3 -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
-if [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/postgresql/*/bin/initdb > /dev/null 2>&1; then
-  pgt="$(mktemp)"
-  tools/ci/with_postgres.sh python3 -I .agents/skills/port-lang/assets/lean/LangSemanticsTest/pg/pg_table.py \
-    --expect-version "$pgver" > "$pgt"
-  diff -u .agents/skills/port-lang/assets/lean/LangSemanticsTest/PostgresqlDb.lean "$pgt"
-  rm -f "$pgt"
-  echo "PostgresqlDb.lean: up to date (PostgreSQL $pgver)"
-elif [ -n "${CI:-}" ]; then
-  echo "PostgreSQL not available (required in CI)" >&2; exit 1
-else
-  echo "PostgreSQL not found: skipped"
-fi
+skippable tools/ci/pg_table.sh
 
 step "assets/lean: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
 (cd .agents/skills/port-lang/assets/lean && lake build)

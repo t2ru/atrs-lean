@@ -12,6 +12,8 @@ import Trace.Attr
 - **merkle**: 型と本体の `Expr` の構造ハッシュ（補助定数の分を含む）に、`references` のうち
   同じ層と、`LangSemantics`・`Machine` の層の定数の `merkle` を名前順に合成したもの。
   相互再帰は強連結成分（SCC）ごとにまとめて計算する。値は 64 bit の 16 進 16 桁。
+  属性（追跡属性を含む）は含めない。注釈のハッシュを `rehash` が書き換えても値は変わらない。
+- **module**: 定義のあるモジュール。`tools/trace rehash` が注釈を書き換えるファイルを引くのに使う。
 - ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると全定義の値が変わりうる。
 -/
 
@@ -206,6 +208,12 @@ def hex64 (x : UInt64) : String :=
   let s := String.ofList (Nat.toDigits 16 x.toNat)
   String.ofList (List.replicate (16 - s.length) '0') ++ s
 
+/-- 定数を定義したモジュールの名前（読み込んだモジュールでなければ空）。 -/
+def moduleOf (env : Environment) (n : Name) : String :=
+  match env.getModuleIdxFor? n with
+  | some i => (env.header.moduleNames[i.toNat]?.map (·.toString)).getD ""
+  | none => ""
+
 /-- 1 定義の出力。 -/
 structure Entry where
   name : Name
@@ -213,6 +221,8 @@ structure Entry where
   attributes : List (String × Array String)
   merkle : String
   references : Array Name
+  /-- 定義のあるモジュール（`rehash` が注釈を書き換えるファイルを引くため）。 -/
+  module : String
 
 /-- JSON に変換する。 -/
 def Entry.toJson (e : Entry) : Json :=
@@ -221,7 +231,8 @@ def Entry.toJson (e : Entry) : Json :=
     ("layer", Lean.toJson e.layer),
     ("attributes", Json.mkObj (e.attributes.map fun (k, vs) => (k, Lean.toJson vs))),
     ("merkle", Lean.toJson e.merkle),
-    ("references", Lean.toJson (e.references.map (·.toString)))]
+    ("references", Lean.toJson (e.references.map (·.toString))),
+    ("module", Lean.toJson e.module)]
 
 /-- 環境の全定義を走査して出力を作る（名前順）。 -/
 def dump (env : Environment) (cfg : Config) : Array Entry := Id.run do
@@ -245,7 +256,8 @@ def dump (env : Environment) (cfg : Config) : Array Entry := Id.run do
     name := node.name, layer := node.layer
     attributes := attrsOf env node.name
     merkle := hex64 ((merkle.find? node.name).getD 0)
-    references := (refsOf.find? node.name).getD #[] }
+    references := (refsOf.find? node.name).getD #[]
+    module := moduleOf env node.name }
 
 /-- 出力全体の JSON。 -/
 def dumpJson (env : Environment) (cfg : Config) : Json :=

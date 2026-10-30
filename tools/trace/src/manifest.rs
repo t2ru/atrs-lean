@@ -4,7 +4,8 @@
 //!   インベントリの項目はインベントリのファイルにあるので、ここには写さない。
 //! - リンク: 定義 → ロケータ（`source`・`target`）、定義 → ID（`obligation`・`deviation`・`nondet`）、
 //!   定義 → 文書（`spec_doc`）、移植先の写し → 定義（`model`）。型付き。
-//! - 合格した検査（`checks`）: `rehash`（第 2 段）が書く。ここでは既存の記録をそのまま保つ。
+//! - 合格した検査（`checks`）: `rehash` が書く。ここでは既存の記録を保ち、現在の注釈に無い
+//!   （定義, ロケータ）の記録だけを捨てる（ADR 0041）。
 //! - Merkle はノードに写さない（Lean の変更のたびに manifest が変わるのを避ける。合格の記録にだけ残す）。
 
 use crate::check::Passed;
@@ -72,9 +73,24 @@ pub fn build(dump: &Dump, target: &Inventory, old: &Manifest) -> Manifest {
     for t in &target.model_tags {
         links.insert(Link { kind: "model".into(), from: format!("{}:{}", t.file, t.line), to: t.name.clone(), hash: t.merkle.clone() });
     }
-    let mut checks = old.checks.clone();
+    let current = annotated(dump);
+    let mut checks: Vec<CheckRecord> =
+        old.checks.iter().filter(|c| current.contains(&(c.definition.clone(), c.locator.clone()))).cloned().collect();
     checks.sort();
     Manifest { nodes: nodes.into_iter().collect(), links: links.into_iter().collect(), checks }
+}
+
+/// 現在の `@[source]`・`@[target]` の（定義, ロケータ）。
+pub fn annotated(dump: &Dump) -> BTreeSet<(String, String)> {
+    let mut out = BTreeSet::new();
+    for d in &dump.definitions {
+        for attr in ["source", "target"] {
+            for v in d.attr(attr) {
+                out.insert((d.name.clone(), split_hash(v).0.to_string()));
+            }
+        }
+    }
+    out
 }
 
 pub fn passed(m: &Manifest) -> BTreeSet<Passed> {

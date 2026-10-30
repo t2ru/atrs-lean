@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T22:21:47+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # バックログ
@@ -38,7 +38,7 @@ generated:
 | 0021 | [LangSemantics.Rust: Rust の意味論](0021-lang-semantics-rust.md) | todo | 0001 |
 | 0022 | [TargetModel と Refinement: 運賃計算](0022-target-model-fare-and-refinement.md) | todo | 0004, 0012, 0021, 0027, 0024 |
 | 0023 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](0023-target-model-usecases-and-refinement.md) | todo | 0022, 0006, 0007, 0008, 0009, 0010, 0024 |
-| 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | doing | 0001, 0025 |
+| 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | done | 0001, 0025 |
 | 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | done | — |
 | 0026 | [差分オラクル（新旧 2 版の振る舞い比較）](0026-differential-oracle.md) | todo | 0013, 0025 |
 | 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |

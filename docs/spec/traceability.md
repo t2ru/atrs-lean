@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T22:21:47+09:00
+  at: 2026-10-31T06:36:39+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -47,6 +47,16 @@ ATRS が使うロケータの種別は次のとおり（文法は各言語パッ
 | `trace/target-inventory.json` | 移植先のインベントリ（`rust/src/` の走査結果と `/// trace: models` の札） | `tools/trace inventory target` |
 | `trace/manifest.json` | ノード・型付きのリンク・合格した検査の記録 | `tools/trace manifest`（合格の記録は `tools/trace rehash`） |
 | `trace/features.json` | 機能と backlog・ロケータ・Lean の名前空間・R 課題の対応表。TR-S1・TR-T1・TR-P・TR-PE・TR-D の警告と誤りを決める | 手で書く |
+| `trace/checks.json` | `rehash` が実行する決定論的な検査と、それが覆う Lean の定義（名前の glob と、ベクタの `modelDef`） | 手で書く（検査を足す backlog が登録する） |
+| `trace/renames.json` | ハッシュで判別できない改名の対応 | 手で書く（版上げのとき） |
+
+道具の細部のうち `rehash`・`diff`・`impact`・`checks.json`・`renames.json`・「出典:」の検査は [ADR 0041](../decision/0041-rehash-diff-impact-details.md) による。
+
+| 使い方 | コマンド |
+| --- | --- |
+| 注釈のハッシュの更新（検査を実行し、合格した組だけ更新して manifest に記録する） | `tools/trace rehash --dump <trace-dump.json>`（`--dry-run` で対象と検査を表示するだけ） |
+| 新旧のインベントリの分類（版上げの手順 3） | `tools/trace diff --old git:<rev>`（`--side target` で移植先） |
+| 証明のグラフに沿った影響一覧（版上げの手順 5） | `tools/trace impact --dump <trace-dump.json> --obligations <obligation-check.json> <ロケータ・Lean 名…>`（`--diff git:<rev>` で差分を起点にする） |
 
 CI（`tools/ci/lean.sh`）は、インベントリ・manifest・下の生成区画が最新であることと、`tools/trace check` の誤りが 0 件であることを確かめる。
 
@@ -57,8 +67,7 @@ CI（`tools/ci/lean.sh`）は、インベントリ・manifest・下の生成区�
 ```lean
 -- lean/SourceModel/Fare.lean
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)@<h1>",
-         "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getMultiplicationRatio(LocalDate)@<h2>",
-         "lang:java#JLS-15.17.1@java-21"]
+         "lang:java#JLS-15.17.1@java-17"]
 def calculateBasicFare ... -- [Source]
 
 -- lean/Abstraction/Fare.lean
@@ -102,8 +111,8 @@ pub fn basic_fare(...) -> (r: u64)
 
 | 検査 | この例での判定 |
 | --- | --- |
-| TR-S1 | `calculateBasicFare`・`getMultiplicationRatio` は `@[source]` で覆われる。同じクラスの他のメソッドは、別の `SourceModel` 定義が覆う必要がある |
-| TR-S2 | `<h1>`・`<h2>` が `source-inventory` の現在値と一致すれば合格。上流の版上げで本文が変わると失敗する。`tools/trace rehash` が、`source-model/fare` のベクタのオラクル照合を実行し、合格した場合に限ってハッシュを更新する |
+| TR-S1 | `calculateBasicFare` は `@[source]` で覆われる。private の `getMultiplicationRatio` はインベントリの単位ではなく、その本文は `<h1>` に含まれる（[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)）。同じクラスの他のメソッドは、別の `SourceModel` 定義が覆う必要がある |
+| TR-S2 | `<h1>` が `source-inventory` の現在値と一致し、`<h1>` と定義の Merkle の組に合格の記録があれば合格。上流の版上げで本文が変わると失敗する。`tools/trace rehash` が、`trace/checks.json` で `SourceModel.Fare.calculateBasicFare` を覆う検査（`source-model/fare` のベクタの照合）を実行し、合格した場合に限ってハッシュを更新して記録する |
 | TR-T1 | `TargetModel.Fare.basicFare` は `@[target]` を持つ。Rust の `atrs::fare::basic_fare` は覆われる。`atrs::model::fare::basic_fare`（写し）は TR-T2 で扱う |
 | TR-T2 | `<h3>` が `target-inventory` と、`<m1>` が `TargetModel.Fare.basicFare` の Merkle ハッシュと一致すれば合格。Rust の本文を変えると `<h3>` がずれ、Lean を変えると `<m1>` がずれる |
 | TR-P | `SourceModel.Fare.calculateBasicFare` は、R 課題 ABS-001 の具体機械 `SourceModel.Fare.basicFareMachine` の操作（定義が参照する定数の閉包）に含まれる。`TargetModel.Fare.basicFare` も同様に REF-004 の具体機械に含まれるので合格 |
@@ -137,32 +146,10 @@ TargetModel ⇔ 移植先ソース: インベントリ 0 件（対象範囲 0 �
 | （対応なし） | | | |
 <!-- END GENERATED: target-trace -->
 
-## 初期の予定対応（参考・非規範）
-
-道具ができるまでの見取り図である。生成表ができたら削除する。
-原典パスは `JavaConfig-Thymeleaf/atrs/` からの相対で、`d/` = `atrs-domain/src/main/java/jp/co/ntt/atrs/domain/`、`w/` = `atrs-web/src/main/java/jp/co/ntt/atrs/`、`x/` = `atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/` の省略である。
-
-| 原典 | 仕様の草案 | SourceModel（予定） |
-| --- | --- | --- |
-| `d/common/util/FareUtil.java`, `d/service/b0/TicketSharedServiceImpl.java`（運賃） | [fare-calculation.md](fare-calculation.md) | `SourceModel.Fare` |
-| `d/common/util/FareTypeUtil.java`, `d/model/*.java` | [domain-model.md](domain-model.md) | `SourceModel.Model` |
-| `d/common/util/DateTimeUtil.java` | [domain-model.md#書式](domain-model.md#書式) | `SourceModel.Format` |
-| `d/common/validate/*.java`, `w/app/**/*Validator.java`, `w/app/**/*Form.java`, `w/app/common/binding/GlobalBindingInitializer.java` | [input-validation.md](input-validation.md) | `SourceModel.Validation` |
-| `d/common/masterdata/*Provider.java`, `d/common/codelist/AirportCodeList.java` | [master-data.md](master-data.md) | `SourceModel.MasterData`, `SourceModel.CodeList` |
-| `d/common/exception/*`, `d/service/*/*ErrorCode.java`, `atrs-web/src/main/resources/i18n/*.properties` | [errors-and-messages.md](errors-and-messages.md) | `SourceModel.Error`, `SourceModel.Message` |
-| `d/service/b0/TicketSharedServiceImpl.java`（フライト検証）, `d/service/b1/*` | [flight-search.md](flight-search.md), [reservation.md#validateflightlist](reservation.md#validateflightlist) | `SourceModel.FlightSearch`, `SourceModel.Ticket` |
-| `d/service/b2/TicketReserveServiceImpl.java`, `w/app/b2/TicketReserveHelper.java` | [reservation.md](reservation.md) | `SourceModel.UseCase.Reserve` |
-| `d/service/a0/*`, `d/service/c1/*`, `d/service/c2/*`, `w/app/c0/*` | [member.md](member.md) | `SourceModel.UseCase.Member` |
-| `d/service/a1/*`, `d/service/a2/*`, `d/common/security/*`, `w/app/common/security/*` | [authentication.md](authentication.md) | `SourceModel.UseCase.Auth` |
-| `d/service/d1/*`, `d/repository/reservation/ReservationHistoryDto.java`, `w/listener/d1/*` | [reservation-history-report.md](reservation-history-report.md) | `SourceModel.UseCase.Report` |
-| `x/**/*.xml`（Mapper の全 SQL 文）, `atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql` | [ports.md](ports.md) | `SourceModel.Repository.*`（`LangSemantics.Sql` の式） |
-| `w/app/**/*Controller.java`, `w/api/**/*.java`, `w/config/web/*.java`, `atrs-web/src/main/webapp/WEB-INF/web.xml` | [http-contract.md](http-contract.md) | `SourceModel.Http` |
-| `atrs-domain/src/main/resources/META-INF/spring/atrs.properties` | [configuration.md](configuration.md) | `SourceModel.Config` |
-
-`TargetModel` 側の予定対応は、Lean `TargetModel` の着手時（[backlog 0022](../backlog/0022-target-model-fare-and-refinement.md)）に、下位名前空間を `SourceModel` と同じ機能名でそろえて決める。
+機能ごとの移植元の範囲（ロケータの glob）・Lean の名前空間・R 課題・backlog は [`trace/features.json`](../../trace/features.json) にある。道具ができる前の見取り図だった「初期の予定対応」の表は、これと生成表に置き換えて削除した。
 
 ## 対象外
 
-`w/app/common/logging/AccessLogFilter.java`、`atrs-env/**`、`atrs-selenium/**`、`atrs-web/src/main/webapp/**/*.html` の HTML 構造・静的資源（[ADR 0002](../decision/0002-porting-scope.md)）。一覧の正は [`trace/out-of-scope.json`](../../trace/out-of-scope.json) であり、各項目に ADR 0002 の該当節を書いている。
+`atrs-web/src/main/java/jp/co/ntt/atrs/app/common/logging/AccessLogFilter.java`、`atrs-env/**`、`atrs-selenium/**`、`atrs-web/src/main/webapp/**/*.html` の HTML 構造・静的資源（[ADR 0002](../decision/0002-porting-scope.md)）。一覧の正は [`trace/out-of-scope.json`](../../trace/out-of-scope.json) であり、各項目に ADR 0002 の該当節を書いている。
 
 ただし、テンプレートのうち [Source] の観測可能な振る舞いに影響する式は、対象外にしない。たとえば支払期限の曜日の書式（`#temporals.format`。既知差異 D-019）がこれに当たる。これらは `tmpl:` ロケータで追跡する（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。

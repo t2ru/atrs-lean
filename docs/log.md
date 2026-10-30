@@ -1,5 +1,32 @@
 # Directory Update Log
 
+## 2026-10-31
+
+* **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
+  * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。
+  * `rehash` は、検査の登録 `trace/checks.json` を使う。
+  * `check` の TR-R に、`trace/renames.json` と「出典:」のロケータの参照切れを加えた。
+  * `trace-dump` が定義の `module` を出力するようにした。
+  * JVM・PostgreSQL との突き合わせを `tools/ci/jvm_table.sh`・`pg_table.sh` に切り出した。
+* **Creation**: [ADR 0041](decision/0041-rehash-diff-impact-details.md) で、次の細部を決めた。ADR 0040 を補う。
+  * 検査の登録
+  * `rehash` の対象と手順
+  * 注釈の書き換え方
+  * 改名の扱い
+  * `diff` の分類と `impact` の伝播
+  * 「出典:」の検査
+* **Update**: [spec/fare-calculation.md](spec/fare-calculation.md)・[spec/flight-search.md](spec/flight-search.md)・[spec/reservation.md](spec/reservation.md) の「出典:」をロケータ表記に書き換えた。
+* **Update**: [spec/traceability.md](spec/traceability.md) を改めた。
+  * 初期の予定対応の表を削除し、`trace/features.json` を参照するようにした。
+  * 運賃の例から、private の `getMultiplicationRatio` を外した。
+  * `checks.json`・`renames.json` と、`rehash`・`diff`・`impact` の使い方を加えた。
+* **Update**: 次の文書に、ADR 0041 による追加を反映した。
+  * [rules/documentation.md](rules/documentation.md)（出典の記法）
+  * [rules/atrs-porting.md](rules/atrs-porting.md)
+  * [ADR 0036](decision/0036-traceability-hash-as-deterministic-check-record.md) の道具の節
+  * スキル port-lang の traceability・upgrade・lean/trace-attributes
+  * [AGENTS.md](../AGENTS.md)
+
 ## 2026-10-30
 
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) の第 1 段を終えた（`doing`）。追跡の道具 `tools/trace`（Rust）で、インベントリ・`check`・`manifest` を作った。最初の `trace/source-inventory.json`（1963 件）を生成し、[spec/traceability.md](spec/traceability.md) の生成区画を埋め、CI に加えた。機能と backlog の対応表 `trace/features.json` を置いた。

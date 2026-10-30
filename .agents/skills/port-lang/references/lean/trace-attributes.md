@@ -42,10 +42,13 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
   "layer": "TargetModel",
   "attributes": { "target": ["rust:app::fare::basic_fare@41d0…"] },
   "merkle": "77ab…",
-  "references": ["LangSemantics.Rust.U64.add", "TargetModel.Fare.ratio"]
+  "references": ["LangSemantics.Rust.U64.add", "TargetModel.Fare.ratio"],
+  "module": "TargetModel.Fare"
 }
 ```
 
 - `references`: 定義の型と本体に現れる定数。`Abstraction`・`Refinement` の定理については、これからモデル間の対応を自動導出する（どの `SourceModel` / `TargetModel` 定義がどの `Spec` 定義と結ばれているか）。
 - `merkle`: 定義の型と本体の `Expr` のハッシュに、`references` のうち **同じ層と、その層が依存する `LangSemantics`・`Machine`** の定数の `merkle` を名前順に合成したもの。`LangSemantics` の変更でも、写しのハッシュがずれるようにするためである。依存する定義が変わっても値が変わる。循環参照（相互再帰）は、強連結成分ごとにまとめて計算する。
+- `merkle` は属性を含まない。注釈のハッシュを `rehash` が書き換えても変わらない。
+- `module`: 定義のあるモジュール。`rehash` が注釈を書き換えるファイルを引くのに使う。
 - ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると、全定義の `merkle` が変わることがある。そのため版上げでは、移植先の写しを一括で再生成し、移植先の検証器を再実行する。

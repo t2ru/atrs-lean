@@ -14,6 +14,9 @@ pub struct Def {
     pub merkle: String,
     #[serde(default)]
     pub references: Vec<String>,
+    /// 定義のあるモジュール（`rehash` が注釈を書き換えるファイルを引く）
+    #[serde(default)]
+    pub module: String,
 }
 
 impl Def {
