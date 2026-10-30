@@ -1,0 +1,1029 @@
+{
+  "nodes": [
+    {
+      "name": "Spec.Airport",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.AirportCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.BoardingClass",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.BoardingClassCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeEntry",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.airport",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.boardingClass",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.contains",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.creditMonth",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.creditType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.creditYear",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.fareType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.flightType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CodeList.gender",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.Valid",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.default",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.initialPassengersNumber",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.maxPassengersNumber",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.telAreaAndLocalMaxLength",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Config.telAreaAndLocalMinLength",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CreditType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.CreditTypeCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FareType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FareTypeCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Flight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightKey",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightMaster",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightName",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Gender",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.LineType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD1",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD2",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD3",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD4",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD5",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD6",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD7",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.MD8",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.Valid",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.boardingClassOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.fareTypeOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.flightMasterOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.multiplicationRatioOn",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.peakTimeOn",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.queryMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.queryMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.queryMachine_sound",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.routeOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Member",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MemberLogin",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MembershipNumber",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Passenger",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.PasswordHash",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.PeakTime",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Plane",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.addDays",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.dayOfWeek",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.daysBetween",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.epochDay",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.fullYearsBetween",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.ofEpochDay?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.ofOrdinal?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.ofYmd?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Date.ordinal",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.DateTime",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.DateTime.atTime",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.DateTime.toEpochMinutes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.HourMinute",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.HourMinute.ofHm?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.HourMinute.parseHHmm",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.HourMinute.toMinutes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.IsValidYmd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.ceilDiv",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.ceilTo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.daysInMonth",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.floorDiv",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtDate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtIsoDate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtPaymentDate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtTime",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtTimestamp",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fmtYen",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fullWidth",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.fullWidthKatakana",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.halfWidth",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.halfWidthNumber",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isDigit",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isHalf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isHalfKana",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isKatakana",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isLeap",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.pct",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.scalarLen",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxAge",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxBasicFareWithCharge",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxDiscountRate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxMultiplicationRatio",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxPassengers",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxReserveFlights",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.maxVacantNum",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.minPassengers",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Range.minReserveFlights",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Reservation",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.ReserveFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.ReserveNo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Route",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.fareTypesFor",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.oneWayFareTypes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.roundTripFareTypes",
+      "layer": "Spec"
+    }
+  ],
+  "links": [
+    {
+      "type": "obligation",
+      "from": "Spec.MasterData.queryMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.MasterData.queryMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.MasterData.queryMachine_sound",
+      "to": "SPEC-003"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Airport",
+      "to": "docs/spec/master-data.md#airport"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.AirportCd",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.BoardingClass",
+      "to": "docs/spec/master-data.md#boardingclass"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.BoardingClassCd",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeEntry",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.airport",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.boardingClass",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.contains",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.creditMonth",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.creditType",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.creditYear",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.fareType",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.flightType",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CodeList.gender",
+      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config",
+      "to": "docs/spec/configuration.md#config"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.Valid",
+      "to": "docs/spec/configuration.md#不変条件"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.default",
+      "to": "docs/spec/configuration.md#config"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.initialPassengersNumber",
+      "to": "docs/spec/configuration.md#画面入力に関する定数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.maxPassengersNumber",
+      "to": "docs/spec/configuration.md#画面入力に関する定数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.telAreaAndLocalMaxLength",
+      "to": "docs/spec/configuration.md#画面入力に関する定数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Config.telAreaAndLocalMinLength",
+      "to": "docs/spec/configuration.md#画面入力に関する定数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CreditType",
+      "to": "docs/spec/master-data.md#plane--credittype"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.CreditTypeCd",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FareType",
+      "to": "docs/spec/master-data.md#faretype"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FareTypeCd",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Flight",
+      "to": "docs/spec/domain-model.md#flight"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightKey",
+      "to": "docs/spec/domain-model.md#flight"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightMaster",
+      "to": "docs/spec/master-data.md#flightmaster"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightName",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightType",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Gender",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.LineType",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData",
+      "to": "docs/spec/master-data.md#masterdata"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD1",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD2",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD3",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD4",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD5",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD6",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD7",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.MD8",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.Valid",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.boardingClassOf",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.fareTypeOf",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.flightMasterOf",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.multiplicationRatioOn",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.peakTimeOn",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.queryMachine",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.routeOf",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Member",
+      "to": "docs/spec/domain-model.md#member"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MemberLogin",
+      "to": "docs/spec/domain-model.md#memberlogin"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MembershipNumber",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Passenger",
+      "to": "docs/spec/domain-model.md#passenger"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.PasswordHash",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.PeakTime",
+      "to": "docs/spec/master-data.md#peaktime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Plane",
+      "to": "docs/spec/master-data.md#plane--credittype"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.addDays",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.dayOfWeek",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.daysBetween",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.epochDay",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.fullYearsBetween",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.ofEpochDay?",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.ofOrdinal?",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.ofYmd?",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Date.ordinal",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.DateTime",
+      "to": "docs/spec/domain-model.md#datetime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.DateTime.atTime",
+      "to": "docs/spec/domain-model.md#datetime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.DateTime.toEpochMinutes",
+      "to": "docs/spec/domain-model.md#datetime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.HourMinute",
+      "to": "docs/spec/domain-model.md#hourminute"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.HourMinute.ofHm?",
+      "to": "docs/spec/domain-model.md#hourminute"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.HourMinute.parseHHmm",
+      "to": "docs/spec/domain-model.md#hourminute"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.HourMinute.toMinutes",
+      "to": "docs/spec/domain-model.md#hourminute"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.IsValidYmd",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.ceilDiv",
+      "to": "docs/spec/domain-model.md#基本演算specprim"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.ceilTo",
+      "to": "docs/spec/domain-model.md#基本演算specprim"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.daysInMonth",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.floorDiv",
+      "to": "docs/spec/domain-model.md#基本演算specprim"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtDate",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtIsoDate",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtPaymentDate",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtTime",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtTimestamp",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fmtYen",
+      "to": "docs/spec/domain-model.md#書式"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fullWidth",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.fullWidthKatakana",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.halfWidth",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.halfWidthNumber",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isDigit",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isHalf",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isHalfKana",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isKatakana",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isLeap",
+      "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.pct",
+      "to": "docs/spec/domain-model.md#基本演算specprim"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.scalarLen",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxAge",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxBasicFareWithCharge",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxDiscountRate",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxMultiplicationRatio",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxPassengers",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxReserveFlights",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.maxVacantNum",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.minPassengers",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Range.minReserveFlights",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Reservation",
+      "to": "docs/spec/domain-model.md#reservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.ReserveFlight",
+      "to": "docs/spec/domain-model.md#reserveflight"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.ReserveNo",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Route",
+      "to": "docs/spec/master-data.md#route"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.fareTypesFor",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.oneWayFareTypes",
+      "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.roundTripFareTypes",
+      "to": "docs/spec/domain-model.md#列挙"
+    }
+  ],
+  "checks": []
+}

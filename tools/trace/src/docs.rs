@@ -1,0 +1,246 @@
+//! 文書の読み込み: 既知差異（D/T）と入口の R 課題の表、backlog の状態、`trace/features.json`。
+
+use globset::{Glob, GlobMatcher};
+use serde::Deserialize;
+use std::collections::BTreeMap;
+use std::path::Path;
+
+/// 既知差異の行。
+#[derive(Clone, Debug)]
+pub struct Deviation {
+    pub id: String,
+    /// 種類（「前提型」「観測型」「モデル外」…）
+    pub kind: String,
+    pub r_tasks: Vec<String>,
+    pub w_tasks: Vec<String>,
+}
+
+fn ids_in(s: &str) -> Vec<String> {
+    let mut out = vec![];
+    let cs: Vec<char> = s.chars().collect();
+    let mut i = 0;
+    while i < cs.len() {
+        if cs[i].is_ascii_uppercase() {
+            let start = i;
+            while i < cs.len() && cs[i].is_ascii_uppercase() {
+                i += 1;
+            }
+            if i + 4 <= cs.len() && cs[i] == '-' && cs[i + 1..i + 4].iter().all(|c| c.is_ascii_digit()) {
+                out.push(cs[start..i + 4].iter().collect());
+                i += 4;
+                continue;
+            }
+        }
+        i += 1;
+    }
+    out
+}
+
+/// 見出し `heading` の節（次の同じ深さ以上の見出しまで）の表の行（セルの列）。
+fn section_rows(md: &str, heading: &str) -> Vec<Vec<String>> {
+    let mut out = vec![];
+    let mut inside = false;
+    let mut level = 0;
+    for l in md.lines() {
+        if l.starts_with('#') {
+            let lv = l.chars().take_while(|c| *c == '#').count();
+            let title = l[lv..].trim();
+            if inside && lv <= level {
+                break;
+            }
+            if title.starts_with(heading) {
+                inside = true;
+                level = lv;
+            }
+            continue;
+        }
+        if inside && l.starts_with('|') && !l.contains("---") {
+            let cells: Vec<String> = l.trim().trim_matches('|').split('|').map(|c| c.trim().to_string()).collect();
+            out.push(cells);
+        }
+    }
+    out
+}
+
+/// 既知差異の表（`## 既知差異` の直下の表。小節の表は含めない）。
+pub fn deviations(md: &str, heading: &str) -> Vec<Deviation> {
+    let mut out = vec![];
+    let mut inside = false;
+    for l in md.lines() {
+        if l.starts_with('#') {
+            let lv = l.chars().take_while(|c| *c == '#').count();
+            if inside {
+                break;
+            }
+            inside = lv == 2 && l[lv..].trim().starts_with(heading);
+            continue;
+        }
+        if !inside || !l.starts_with('|') || l.contains("---") {
+            continue;
+        }
+        let cells: Vec<&str> = l.trim().trim_matches('|').split('|').map(str::trim).collect();
+        if cells.len() < 7 || !cells[0].contains('-') || cells[0] == "ID" {
+            continue;
+        }
+        out.push(Deviation {
+            id: cells[0].to_string(),
+            kind: cells[1].to_string(),
+            r_tasks: ids_in(cells[cells.len() - 2]),
+            w_tasks: ids_in(cells[cells.len() - 1]),
+        });
+    }
+    out
+}
+
+/// 入口の R 課題の ID。
+pub fn entry_tasks(md: &str) -> Vec<String> {
+    section_rows(md, "入口の R 課題")
+        .into_iter()
+        .filter_map(|r| r.first().cloned())
+        .filter(|c| ids_in(c).len() == 1 && ids_in(c)[0] == *c)
+        .collect()
+}
+
+/// 証明課題の表の R 課題の ID（`| ID | R | …` の行）。
+pub fn r_tasks(md: &str) -> Vec<String> {
+    let mut out = vec![];
+    for l in md.lines() {
+        let cells: Vec<&str> = l.trim().trim_matches('|').split('|').map(str::trim).collect();
+        if l.starts_with('|') && cells.len() >= 2 && cells[1] == "R" && ids_in(cells[0]).len() == 1 {
+            out.push(cells[0].to_string());
+        }
+    }
+    out
+}
+
+/// `docs/backlog/NNNN-*.md` の `state`。
+pub fn backlog_states(repo: &Path) -> BTreeMap<String, String> {
+    let mut out = BTreeMap::new();
+    if let Ok(rd) = std::fs::read_dir(repo.join("docs/backlog")) {
+        for e in rd.flatten() {
+            let name = e.file_name().to_string_lossy().to_string();
+            if name.len() < 5 || !name[..4].chars().all(|c| c.is_ascii_digit()) {
+                continue;
+            }
+            let s = std::fs::read_to_string(e.path()).unwrap_or_default();
+            if let Some(l) = s.lines().find(|l| l.starts_with("state:")) {
+                out.insert(name[..4].to_string(), l["state:".len()..].trim().to_string());
+            }
+        }
+    }
+    out
+}
+
+/// `trace/features.json` の 1 機能。
+#[derive(Deserialize, Clone, Debug)]
+pub struct Feature {
+    pub name: String,
+    pub backlog: Vec<String>,
+    #[serde(default)]
+    pub lean: Vec<String>,
+    #[serde(default)]
+    pub tasks: Vec<String>,
+    #[serde(default)]
+    pub locators: Vec<String>,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub struct FeaturesFile {
+    pub features: Vec<Feature>,
+}
+
+const LAYERS: &[&str] = &["SourceModel", "Abstraction", "TargetModel", "Refinement"];
+
+/// 機能の対応表（ADR 0040）。
+pub struct Features {
+    pub list: Vec<Feature>,
+    globs: Vec<Vec<GlobMatcher>>,
+    states: BTreeMap<String, String>,
+}
+
+impl Features {
+    pub fn load(repo: &Path) -> Result<Features, String> {
+        let mut f: FeaturesFile = crate::lean::load(&repo.join("trace/features.json"))?;
+        // 層を書かない名前空間（例 `Fare`）は、SourceModel・Abstraction・TargetModel・Refinement の 4 層に広げる
+        for ft in &mut f.features {
+            ft.lean = ft
+                .lean
+                .iter()
+                .flat_map(|n| {
+                    if LAYERS.iter().any(|l| n == l || n.starts_with(&format!("{l}."))) {
+                        vec![n.clone()]
+                    } else {
+                        LAYERS.iter().map(|l| format!("{l}.{n}")).collect()
+                    }
+                })
+                .collect();
+        }
+        let mut globs = vec![];
+        for ft in &f.features {
+            let mut v = vec![];
+            for g in &ft.locators {
+                v.push(Glob::new(g).map_err(|e| format!("features.json: {g}: {e}"))?.compile_matcher());
+            }
+            globs.push(v);
+        }
+        Ok(Features { list: f.features, globs, states: backlog_states(repo) })
+    }
+
+    #[cfg(test)]
+    pub fn from(list: Vec<Feature>, states: BTreeMap<String, String>) -> Features {
+        let globs = list
+            .iter()
+            .map(|f| f.locators.iter().map(|g| Glob::new(g).unwrap().compile_matcher()).collect())
+            .collect();
+        Features { list, globs, states }
+    }
+
+    /// ロケータの機能（最初に当たったもの）。
+    pub fn of_locator(&self, loc: &str) -> Option<&Feature> {
+        self.globs.iter().position(|gs| gs.iter().any(|g| g.is_match(loc))).map(|i| &self.list[i])
+    }
+
+    /// Lean の定義の機能（名前空間の接頭辞が最も長く一致するもの）。
+    pub fn of_lean(&self, name: &str) -> Option<&Feature> {
+        self.list
+            .iter()
+            .flat_map(|f| f.lean.iter().map(move |p| (p, f)))
+            .filter(|(p, _)| name == p.as_str() || name.starts_with(&format!("{p}.")))
+            .max_by_key(|(p, _)| p.len())
+            .map(|(_, f)| f)
+    }
+
+    pub fn of_task(&self, id: &str) -> Option<&Feature> {
+        self.list.iter().find(|f| f.tasks.iter().any(|t| t == id))
+    }
+
+    /// 機能の backlog がすべて `done` か（そうなら指摘は誤り、でなければ警告）。
+    pub fn done(&self, f: &Feature) -> bool {
+        f.backlog.iter().all(|b| self.states.get(b).map(|s| s == "done").unwrap_or(false))
+    }
+
+    pub fn backlog_exists(&self, b: &str) -> bool {
+        self.states.contains_key(b)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn reads_tables() {
+        let md = "## 既知差異\n\n| ID | 種類 | 箇所 | 差異 | 前提 | R 課題 | W 課題 |\n| --- | --- |\n\
+                  | D-001 | 前提型 | a | b | `dev_D001` | ABS-001, ABS-004 | ABS-101 |\n\
+                  | D-013 | モデル外 | a | b | — | — | — |\n\n### 小節\n\n| D-001 | 中断 | x | 0005 |\n\
+                  ## 証明課題\n\n| ID | 種類 | 内容 | 差異 |\n| ABS-001 | R | x | D-001 |\n| ABS-101 | W | y | D-001 |\n\
+                  ### 入口の R 課題\n\n| ID | 入口 | backlog |\n| --- | --- | --- |\n| ABS-031 | REST | 0014 |\n";
+        let ds = deviations(md, "既知差異");
+        assert_eq!(ds.len(), 2);
+        assert_eq!(ds[0].r_tasks, vec!["ABS-001", "ABS-004"]);
+        assert_eq!(ds[0].w_tasks, vec!["ABS-101"]);
+        assert_eq!(ds[1].kind, "モデル外");
+        assert_eq!(entry_tasks(md), vec!["ABS-031"]);
+        assert_eq!(r_tasks(md), vec!["ABS-001"]);
+    }
+}

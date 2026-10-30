@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `sql` | `<Mapper の namespace またはファイル名>#<文の id または名前>` | `sql:com.example.repository.OrderRepository#findOpen`, `sql:queries/order.sql#find_open` |
 | `ddl` | `<ファイル名>#<オブジェクト名>`（テーブル・シーケンス・索引・制約） | `ddl:001_create_tables.sql#SQ_ORDER_1` |
-| `seed` | `<ファイル名>#<テーブル名>`（初期データ） | `seed:010_insert_master.sql#PRODUCT` |
+| `seed` | `<ファイル名>#<テーブル名>`（初期データ。テーブル単位で、関数や `DO` ブロックの中の `INSERT` も含める） | `seed:010_insert_master.sql#PRODUCT` |
 
 ## インベントリ
 

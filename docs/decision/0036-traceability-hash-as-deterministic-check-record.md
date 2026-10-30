@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-30T22:21:07+09:00
 ---
 
 # 両端の追跡をロケータとモデル側注釈で表し、確認済みハッシュを決定論的な検査の合格記録とする
@@ -51,7 +51,7 @@ Chosen option: "ADR 0023 の方式を引き継ぎ、ハッシュを決定論的�
 
 | 側 | 種別 |
 | --- | --- |
-| 移植元 | `java:<FQCN>#<method>(<引数型>)`, `sql:<namespace>#<id>`, `ddl:<file>#<object>`, `seed:<file>#<row>`, `prop:<file>#<key>`, `msg:<file>#<key>`, `http:<METHOD> <path>?<param>`, `xml:<file>#<要素パス>`, `tmpl:<テンプレートのパス>#<要素の id または th: 式の位置>`（文法は言語パックの `locators.md`） |
+| 移植元 | `java:<FQCN>#<method>(<引数型>)`, `sql:<namespace>#<id>`, `ddl:<file>#<object>`, `seed:<file>#<table>`（[ADR 0040](0040-trace-tooling-unresolved-details.md) で行からテーブルに改めた）, `prop:<file>#<key>`, `msg:<file>#<key>`, `http:<METHOD> <path>?<param>`, `xml:<file>#<要素パス>`, `tmpl:<テンプレートのパス>#<要素の id または th: 式の位置>`（文法は言語パックの `locators.md`） |
 | 移植先 | `rust:<crate>::<path>` |
 | 両側 | `dep:<座標>#<シンボル>`（フレームワーク・クレート）、`lang:<言語>#<節>`（処理系） |
 

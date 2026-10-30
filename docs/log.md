@@ -2,6 +2,8 @@
 
 ## 2026-10-30
 
+* **Update**: [backlog 0024](backlog/0024-trace-tooling.md) の第 1 段を終えた（`doing`）。追跡の道具 `tools/trace`（Rust）で、インベントリ・`check`・`manifest` を作った。最初の `trace/source-inventory.json`（1963 件）を生成し、[spec/traceability.md](spec/traceability.md) の生成区画を埋め、CI に加えた。機能と backlog の対応表 `trace/features.json` を置いた。
+* **Creation**: [ADR 0040](decision/0040-trace-tooling-unresolved-details.md) で、追跡の道具の未確定事項を決めた。決めたのは、本文ハッシュ・正規化・ロケータの細部・版の文字列・機能と backlog の対応である。あわせて ADR 0036 の `seed:` の単位をテーブルに改めた。
 * **Update**: [backlog 0016](backlog/0016-lang-semantics-sql.md) を完了した。`LangSemantics.Sql` に `ORDER BY` の許される順列の一意性の証明を加えた。PostgreSQL 16.15 で生成した突き合わせ表（373 件）を CI に加えた（この表で `VARCHAR(n)` の空白の切詰めの不一致を見つけて直した）。版を `trace/upstream.json` と [rules/atrs-porting.md](rules/atrs-porting.md) に、範囲を [spec/assurance.md](spec/assurance.md) に記載した。
 * **Creation**: [ADR 0039](decision/0039-refinement-non-vacuity-obligations.md) で、リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を定めた（作成時は 0038 だったが、main に [ADR 0038](decision/0038-lean-package-under-skill-assets-lean.md) が先に入ったため 0039 に採番し直した）。
   * 義務: 選択の像としての `Spec`（`Machine.ofChoice`・`FreeFrame`）、`Sound` と 1 点の初期状態（`InitIs`）、環境の固定（`Refines.Pinned`・`NoFaultReachable`）、標準の貼り合わせ（`Glue.ofStd`。部分写像）、入口の全域性（`TotalUnder`・`EnvWitness`）、`InitSurj`、`StateSafe`、両向きの W 課題（`Nontrivial`）、核の明示（`KernelIs`）

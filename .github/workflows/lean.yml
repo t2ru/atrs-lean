@@ -52,5 +52,16 @@ jobs:
           restore-keys: |
             lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-
 
+      - name: Cache Cargo (tools/trace)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            tools/trace/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('tools/trace/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ runner.os }}-
+
       - name: Lean checks
         run: tools/ci/lean.sh

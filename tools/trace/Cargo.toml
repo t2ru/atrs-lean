@@ -1,0 +1,23 @@
+[package]
+name = "trace"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "ATRS の両端の追跡（インベントリ・Lean の取り込み・TR 検査・manifest）。backlog 0024、ADR 0036・0040"
+
+[[bin]]
+name = "trace"
+path = "src/main.rs"
+
+[dependencies]
+tree-sitter = "0.25"
+tree-sitter-java = "0.23"
+tree-sitter-rust = "0.24"
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
+roxmltree = "0.20"
+globset = "0.4"
+
+[profile.release]
+opt-level = 2
