@@ -55,8 +55,8 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/backlog/](docs/backlog/) | 作業項目。着手順と依存関係 |
 | [docs/rules/](docs/rules/) | ATRS の運用規約 |
 | [.agents/skills/port-lang/](.agents/skills/port-lang/SKILL.md) | 言語間移植の方法（アプリ非依存のスキル） |
-| `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets` を `require` する |
-| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Trace`（追跡属性・trace-dump）/ `Spec`（正規仕様）/ `SourceModel` / `Abstraction` / `TargetModel` / `Refinement` / `Tests` / `Tools`。`LangSemantics` はスキルの `assets` を Lake 依存として取り込む（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
+| `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets/lean` を `require` する |
+| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Trace`（追跡属性・trace-dump）/ `Spec`（正規仕様）/ `SourceModel` / `Abstraction` / `TargetModel` / `Refinement` / `Tests` / `Tools`。`LangSemantics` はスキルの `assets/lean` を Lake 依存として取り込む（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
@@ -85,7 +85,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 現在の状態
 
-Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）、`LangSemantics.Java` の検査（[backlog 0002](docs/backlog/0002-lang-semantics-java.md)。double のネイティブとの突き合わせ、JVM の表）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
+Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/lean/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）、`LangSemantics.Java` の検査（[backlog 0002](docs/backlog/0002-lang-semantics-java.md)。double のネイティブとの突き合わせ、JVM の表）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
 次に着手できるのは、Lean 側の [backlog 0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

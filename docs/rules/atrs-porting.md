@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 0014](../decision/0014-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.2`。言語意味論の Lean モデルは、スキルの `assets/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+使うスキルの版: `metadata.version` = `0.2`。言語意味論の Lean モデルは、スキルの `assets/lean/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -32,16 +32,16 @@ generated:
 | 保証の限界の文書 | [spec/assurance.md](../spec/assurance.md) |
 | 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md) |
 | 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md) |
-| リファインメントの枠組み `Machine` | スキルの `assets/Machine/` を Lake 依存として取り込む（[backlog 0027](../backlog/0027-machine-refinement-framework.md)。[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)、[ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)） |
+| リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 0027](../backlog/0027-machine-refinement-framework.md)。[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)、[ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)） |
 | 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog 0028](../backlog/0028-verus-mirror-generator.md)） |
 
 ## リポジトリ配置
 
 | パス | 内容 |
 | --- | --- |
-| `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
+| `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets/lean`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
-| `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
+| `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
 | `trace/` | 版の宣言・インベントリ・manifest |

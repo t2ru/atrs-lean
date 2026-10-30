@@ -14,7 +14,7 @@ package atrs where
   testDriver := "tests"
 
 require batteries from git "https://github.com/leanprover-community/batteries" @ "v4.35.0"
-require langSemantics from "../.agents/skills/port-lang/assets"
+require langSemantics from "../.agents/skills/port-lang/assets/lean"
 
 /-- 追跡属性と trace-dump の基盤。どのモデルにも依存しない。 -/
 @[default_target] lean_lib Trace
