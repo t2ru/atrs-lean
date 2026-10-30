@@ -13,7 +13,7 @@ generated:
 
 # LangSemantics.Java: Java 基本型の意味論
 
-> 2026-10-29: スキル port-lang の assets に、LangSemantics.Java の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Java.lean](../../.agents/skills/port-lang/assets/LangSemantics/Java.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
+> 2026-10-29: スキル port-lang の assets に、LangSemantics.Java の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Java.lean](../../.agents/skills/port-lang/assets/lean/LangSemantics/Java.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
 
 ## 目的
 

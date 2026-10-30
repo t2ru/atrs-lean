@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 0038）。
+"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 0039）。
 
 `lake exe obligation-check` の JSON（Lean 側の判定と事実）と、`docs/spec/abstraction.md`・`refinement.md` の
 登録簿、`docs/backlog/` の状態を突き合わせる。
@@ -20,7 +20,7 @@
 | OB-S2  | 「出力のみ」の差異に `@[deviation]` がまだ無い（段階導入） |
 
 段階導入（OB-N2・OB-E2・OB-S2）: 登録簿の各行の backlog の列にある項目が `done` でなければ警告、`done` なら失敗とする
-（スキル port-lang の traceability.md、ADR 0038）。
+（スキル port-lang の traceability.md、ADR 0039）。
 
 使い方:
   python3 -I tools/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる

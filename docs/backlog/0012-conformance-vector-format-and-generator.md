@@ -25,7 +25,7 @@ generated:
 - `Tools`: 入力ケースから Lean `Spec` を実行して `expected` を埋める生成器（`source: lean-spec`）
 - `Tests`: `Spec` に対して `spec/`・`shared/`、`SourceModel` に対して `source-model/`・`shared/` を照合する実行器
 - 生成したベクタの差分を CI でレビュー対象として示す仕組み
-- TR-V（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）: 各ケースについて、具体側の定義域・具体側の不変条件・制限した PRE を判定し、外に落ちることと `outsidePre` のラベルが一致することを検査する。判定のため、PRE・差異の述語・具体側の不変条件・環境の前提を `Decidable` にする
+- TR-V（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）: 各ケースについて、具体側の定義域・具体側の不変条件・制限した PRE を判定し、外に落ちることと `outsidePre` のラベルが一致することを検査する。判定のため、PRE・差異の述語・具体側の不変条件・環境の前提を `Decidable` にする
 - `environment`（具体側の入力の環境）を持つケースの実行
 
 ## 対象外

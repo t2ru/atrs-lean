@@ -18,11 +18,11 @@ python3 -I tools/ci/check_lean.py
 step "static: 証明義務と文書の突き合わせの自己テスト（違反例を検出できること）"
 python3 -I tools/ci/check_obligations.py --self-test
 
-step "assets: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
+step "assets/lean: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
 if command -v java > /dev/null; then
   jvm="$(mktemp)"
-  (cd .agents/skills/port-lang/assets && java LangSemanticsTest/jvm/JavaTable.java > "$jvm" 2> /dev/null)
-  diff -u .agents/skills/port-lang/assets/LangSemanticsTest/JavaJvm.lean "$jvm"
+  (cd .agents/skills/port-lang/assets/lean && java LangSemanticsTest/jvm/JavaTable.java > "$jvm" 2> /dev/null)
+  diff -u .agents/skills/port-lang/assets/lean/LangSemanticsTest/JavaJvm.lean "$jvm"
   rm -f "$jvm"
   echo "JavaJvm.lean: up to date ($(java -version 2>&1 | grep -m1 version))"
 elif [ -n "${CI:-}" ]; then
@@ -31,8 +31,8 @@ else
   echo "java not found: skipped"
 fi
 
-step "assets: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
-(cd .agents/skills/port-lang/assets && lake build)
+step "assets/lean: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
+(cd .agents/skills/port-lang/assets/lean && lake build)
 
 step "lean: lake build"
 (cd lean && lake build)
@@ -60,7 +60,7 @@ print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_v
 step "workspace: ルートで lake setup-file（Lean LSP 用）"
 lake setup-file lean/Spec.lean > /dev/null
 lake setup-file lean/Tests/Main.lean > /dev/null
-lake setup-file .agents/skills/port-lang/assets/LangSemantics.lean > /dev/null
-lake setup-file .agents/skills/port-lang/assets/Machine.lean > /dev/null
+lake setup-file .agents/skills/port-lang/assets/lean/LangSemantics.lean > /dev/null
+lake setup-file .agents/skills/port-lang/assets/lean/Machine.lean > /dev/null
 
 step "OK"

@@ -35,7 +35,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 - 入力の対応 `αᵢ`
 - 出力の対応 `αₒ`
 
-そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。
 `TargetModel` の各操作も、マスタ・設定と環境（衝突・I/O の失敗・配備の設定）を入力の成分として受ける。
 
 抽象化関数 β の標準の抽象化:

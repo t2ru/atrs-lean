@@ -32,7 +32,7 @@ generated:
 | 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | Thymeleaf |
 | 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0026](../backlog/0026-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
 | 改名の対応（`trace/renames.json`） | `tools/trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | `tools/trace` |
-| 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
+| 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
 | マスタ・設定を入力として写すこと | オラクルと SQL の差分実行は fixture のマスタで実行する | 原典は DB からマスタを読む。実行中にマスタが変わらないこと（不変の入力とみなせること）は前提とする |
 | 「今日」に依存する処理 | オラクルを JST・固定した時計で実行する | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
 | 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)） | — |
@@ -79,11 +79,11 @@ generated:
 | `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 0027](../backlog/0027-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
-| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
 
 ### モデル間の保証の限界
 
-リファインメント（`Machine.Refines` と [ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
+リファインメント（`Machine.Refines` と [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
 
 - 名前付きの差異・非決定性を除けば、具体側の結果は [Spec] の結果と一致する（`Refines.complete`）。
 - 入口の機械では、差異の前提を保つ軌跡が [Spec] の軌跡で模倣される（`Refines.run`）。

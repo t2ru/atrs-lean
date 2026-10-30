@@ -2,21 +2,22 @@
 
 ## 2026-10-30
 
-* **Creation**: [ADR 0038](decision/0038-refinement-non-vacuity-obligations.md) で、リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を定めた。
+* **Creation**: [ADR 0039](decision/0039-refinement-non-vacuity-obligations.md) で、リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を定めた（作成時は 0038 だったが、main に [ADR 0038](decision/0038-lean-package-under-skill-assets-lean.md) が先に入ったため 0039 に採番し直した）。
   * 義務: 選択の像としての `Spec`（`Machine.ofChoice`・`FreeFrame`）、`Sound` と 1 点の初期状態（`InitIs`）、環境の固定（`Refines.Pinned`・`NoFaultReachable`）、標準の貼り合わせ（`Glue.ofStd`。部分写像）、入口の全域性（`TotalUnder`・`EnvWitness`）、`InitSurj`、`StateSafe`、両向きの W 課題（`Nontrivial`）、核の明示（`KernelIs`）
   * 検査: TR-G・TR-N を実装し、TR-V・TR-PE を定めた（ADR 0034・0036・0037 の決定は変えない）
-  * 設計段階と実装後に、独立したエージェントによる敵対的レビューを行い、指摘と対応を ADR 0038 に記した
-* **Creation**: [backlog 0030](backlog/0030-refinement-non-vacuity.md) を作り、完了した。スキル port-lang の `assets/Machine/Adequacy.lean` と反例 `assets/MachineTest/Adequacy.lean`（11 件）、`lean/Trace/Obligation.lean`（`lake exe obligation-check`）、`tools/ci/check_obligations.py` を作り、`tools/ci/lean.sh` に組み込んだ。追跡属性 `@[nondet]`・`@[std_abs]`・`@[kernel]`・`@[env_pre]` を加えた。
+  * 設計段階と実装後に、独立したエージェントによる敵対的レビューを行い、指摘と対応を ADR 0039 に記した
+* **Creation**: [backlog 0030](backlog/0030-refinement-non-vacuity.md) を作り、完了した。スキル port-lang の `assets/lean/Machine/Adequacy.lean` と反例 `assets/lean/MachineTest/Adequacy.lean`（11 件）、`lean/Trace/Obligation.lean`（`lake exe obligation-check`）、`tools/ci/check_obligations.py` を作り、`tools/ci/lean.sh` に組み込んだ。追跡属性 `@[nondet]`・`@[std_abs]`・`@[kernel]`・`@[env_pre]` を加えた。
 * **Update**: [spec/abstraction.md](spec/abstraction.md) を改めた。
   * 空虚化を防ぐ義務の節を加えた。
   * α の表に、核の列と、環境・HTTP の応答の行を加えた。
   * 前提型の差異の影響（出力のみ／中断）、入口の R 課題、SPEC-005〜008、ABS-048、Spec の非決定性 N-001〜N-005 を加えた（各登録簿に backlog の列）。
 * **Update**: [spec/refinement.md](spec/refinement.md) に、同じ項目と REF-011・REF-012 を加えた。
 * **Update**: [spec/assurance.md](spec/assurance.md) に、モデル間の保証の限界と、環境・マスタを入力とする写しの限界を加えた。[spec/domain-model.md](spec/domain-model.md) には、入口の値域を環境の前提とすることを加えた。
-* **Update**: ADR [0034](decision/0034-b-method-refinement-and-explicit-deviations.md)・[0036](decision/0036-traceability-hash-as-deterministic-check-record.md)・[0037](decision/0037-conflict-as-spec-nondeterminism.md) の More Information に、ADR 0038 による追加を記した。
+* **Update**: ADR [0034](decision/0034-b-method-refinement-and-explicit-deviations.md)・[0036](decision/0036-traceability-hash-as-deterministic-check-record.md)・[0037](decision/0037-conflict-as-spec-nondeterminism.md) の More Information に、ADR 0039 による追加を記した。
 * **Update**: backlog [0012](backlog/0012-conformance-vector-format-and-generator.md)・[0024](backlog/0024-trace-tooling.md) と [rules/backlog.md](rules/backlog.md) の完了の定義を改めた。main で完了した [backlog 0003](backlog/0003-abstract-domain-types-and-master-data.md) に足すはずだった作業（非決定性の選択の型・入口の環境の前提）は、[backlog 0031](backlog/0031-spec-nondet-and-entry-env.md) として新設した。
 * **Update**: スキル port-lang を 0.3 に改めた（architecture・traceability・conformance・verification・spec-documents・lean/trace-attributes・SKILL.md）。
 
+* **Update**: [ADR 0038](decision/0038-lean-package-under-skill-assets-lean.md) で、スキル port-lang の Lake パッケージ `langSemantics` を `assets/` 直下から `assets/lean/` に移した。ルートと `lean/` の `require`・manifest、CI（`tools/ci/lean.sh`・`check_lean.py`・`.github/workflows/lean.yml`）、スキルの文書、[rules/atrs-porting.md](rules/atrs-porting.md)、[AGENTS.md](../AGENTS.md)、関係する backlog と ADR のパスを改めた。
 * **Update**: [backlog 0002](backlog/0002-lang-semantics-java.md) を完了した。`LangSemantics.Java` に、`jdLit "0.01"` のビット表現と 1430 円・30% の例の定理、`minusDays` を足した。JVM で生成した突き合わせ表（581 件）と、運賃計算の double 式のネイティブ `Float` との突き合わせ（4,006,212 件）を CI に加え、範囲を [spec/assurance.md](spec/assurance.md) に記載した。
 * **Update**: [rules/version-control.md](rules/version-control.md) の push の禁止を改め、自分で作ったブランチへの push と、そこからの PR の作成を認めた（既定ブランチと他人のブランチへの push は引き続き禁止、マージはオーナーが行う）。あわせて [AGENTS.md](../AGENTS.md)・[rules/README.md](rules/README.md)・[rules/backlog.md](rules/backlog.md) の要約を改めた。
 * **Update**: [backlog 0003](backlog/0003-abstract-domain-types-and-master-data.md) を完了した。`lean/Spec/` に、基本演算・暦日・時刻・書式・文字クラス（`Spec.Prim`）、列挙・コード値・エンティティ・値域（`Spec.Model`）、設定（`Spec.Config`）、マスタデータと MD-1〜MD-8・参照関数（`Spec.MasterData`）、コードリスト（`Spec.CodeList`）を実装し、SPEC-001〜003 を証明した。`conformance/shared/format/` にベクタを作り、`lake test` で `Spec` に対して実行するようにした。あわせて [spec/domain-model.md](spec/domain-model.md)・[spec/master-data.md](spec/master-data.md)・[spec/configuration.md](spec/configuration.md) の形式化した節を要約（informative）に改め、[spec/conformance.md](spec/conformance.md) の操作名を足した。

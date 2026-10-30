@@ -4,7 +4,7 @@ import Trace.Dump
 # Trace.Obligation
 
 `lake exe obligation-check` の本体。リファインメントの主定理（R 課題）が、空虚化を防ぐ形と付帯の義務を
-備えているかを、環境を走査して判定する（TR-G。ADR 0038）。`Machine` の定数は名前で照合し、import しない。
+備えているかを、環境を走査して判定する（TR-G。ADR 0039）。`Machine` の定数は名前で照合し、import しない。
 
 R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理である。各 R 課題について次を判定する。
 付帯の定理は、`@[reducible]` を展開した式が一致するもので探す（先頭の定数だけでは照合しない）。

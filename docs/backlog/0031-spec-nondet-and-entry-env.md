@@ -15,8 +15,8 @@ generated:
 
 ## 目的
 
-[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md) の義務（SPEC-005・SPEC-006）を各機能の `Spec` が使えるように、非決定性の選択の型と、入口の環境の前提を先に定義する。
-[backlog 0003](0003-abstract-domain-types-and-master-data.md) は ADR 0038 より前に完了したので、その範囲に含めなかった部分である。
+[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md) の義務（SPEC-005・SPEC-006）を各機能の `Spec` が使えるように、非決定性の選択の型と、入口の環境の前提を先に定義する。
+[backlog 0003](0003-abstract-domain-types-and-master-data.md) は ADR 0039 より前に完了したので、その範囲に含めなかった部分である。
 
 ## 範囲
 
@@ -36,6 +36,6 @@ generated:
 
 ## 参照
 
-- [ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)
+- [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)
 - [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)
 - [master-data.md](../spec/master-data.md)

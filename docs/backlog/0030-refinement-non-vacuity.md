@@ -16,21 +16,21 @@ generated:
 ## 目的
 
 `Machine.Refines` は安全性しか保証しない。そのため、緩い [Spec]・強すぎる PRE・粗い貼り合わせ・名前付きの成分の乱用・環境の非決定性による不具合の吸収でも成り立ってしまう。
-業務モデルを書き始める前に、これを塞ぐ義務と検査を整える（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+業務モデルを書き始める前に、これを塞ぐ義務と検査を整える（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。
 
 ## 範囲
 
-- スキル port-lang の `assets/Machine/Adequacy.lean`
+- スキル port-lang の `assets/lean/Machine/Adequacy.lean`
   - `Machine.ofChoice`・`FreeFrame`・`InitIs`、`Refines.Pinned`・`NoFaultReachable`、`Glue.ofStd`、`Machine.TotalUnder`・`Refines.EnvWitness`、`Refines.InitSurj`、`Refines.StateSafe`・`StateSafeConcrete`、`Nontrivial`・`Nontrivial₂`、`KernelIs`
   - 定理 `Refines.complete`（1 歩の可換式）・`Refines.run`（複数歩の模倣）・`Refines.congr`
-- `assets/MachineTest/Adequacy.lean`: 抜け道ごとの反例と正例。公理を `MachineTest/Axioms.lean` で固定する
+- `assets/lean/MachineTest/Adequacy.lean`: 抜け道ごとの反例と正例。公理を `MachineTest/Axioms.lean` で固定する
 - `lean/Trace/Attr.lean`: `@[nondet]`・`@[std_abs]`・`@[kernel]`・`@[env_pre]`。`@[obligation]` の対象に SPEC-NNN を加える
 - `lean/Trace/Obligation.lean`・`lean/Tools/ObligationCheck.lean`（`lake exe obligation-check`。TR-G の G0〜G8）
 - `tools/ci/check_obligations.py`（TR-N と、TR-G の文書側）
 - テスト: `lean/Tests/ObligationFixture.lean`、`tools/ci/fixtures/obligations/`
 - `tools/ci/lean.sh` への組み込み
 - 文書
-  - ADR 0038
+  - ADR 0039
   - [abstraction.md](../spec/abstraction.md) の空虚化を防ぐ義務・核の列・前提型の差異の影響・入口の R 課題・SPEC-005〜007・N-NNN
   - [refinement.md](../spec/refinement.md) の同じ項目・REF-011・REF-012
   - [assurance.md](../spec/assurance.md) のモデル間の保証の限界
@@ -49,10 +49,10 @@ generated:
 - [x] `obligation-check` が `Tests/ObligationFixture.lean` の正例を通し、違反例（実装後のレビューで作られた迂回を含む）を G0〜G8 の規則ごとに検出することを `lake test` で確かめた
 - [x] `check_obligations.py --self-test` が、失敗と警告の両方について通る
 - [x] `tools/ci/lean.sh` が全段通る
-- [x] 実装後の敵対的レビューを行い、指摘を直すか、直さない理由を ADR 0038 に記した
+- [x] 実装後の敵対的レビューを行い、指摘を直すか、直さない理由を ADR 0039 に記した
 
 ## 参照
 
-- [ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)
+- [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)
 - [ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)
 - [backlog 0027](0027-machine-refinement-framework.md)

@@ -35,7 +35,7 @@ Lean では、名前空間 `Abstraction` に、課題 ID を `@[obligation]` に
 | 適用可能性 | `INV ∧ J ∧ PRE`（と差異の前提）の下で、[Source] の操作は次のどれにも到達しない。<br>- 前提違反（`PreconditionViolation`）<br>- NaN<br>- 不対サロゲート<br>- α の未定義<br>業務エラー（例外として投げられ、α で `AtrsError` に写るもの）は正常な結果である。int32 の折り返しは、正しさの義務で結果の不一致として現れる |
 | 正しさ | 同じ仮定の下で、[Source] の **許されるすべての結果**（SQL の未規定順序による非決定性を含む）が、[Spec] の結果で模倣される（状態は `J` を保ち、出力は `αₒ` で対応する） |
 
-主定理は閉じた命題とし、次の形で書く（TR-G で検査する。[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+主定理は閉じた命題とし、次の形で書く（TR-G で検査する。[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。
 
 ```lean
 Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
@@ -60,7 +60,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ### 空虚化を防ぐ義務
 
-`Machine.Refines` だけでは、[Spec] が緩い場合・PRE が強すぎる場合・貼り合わせが粗い場合にも空虚に成り立つ。そこで、R 課題ごとに次を課す（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)、スキル port-lang の [architecture.md](../../.agents/skills/port-lang/references/architecture.md#空虚化を防ぐ義務)）。
+`Machine.Refines` だけでは、[Spec] が緩い場合・PRE が強すぎる場合・貼り合わせが粗い場合にも空虚に成り立つ。そこで、R 課題ごとに次を課す（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)、スキル port-lang の [architecture.md](../../.agents/skills/port-lang/references/architecture.md#空虚化を防ぐ義務)）。
 
 | 義務 | 内容 |
 | --- | --- |
@@ -136,7 +136,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ### 前提型の差異の影響
 
-前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。分類は人の判断であり、迷う場合は「中断」とする（[assurance.md](assurance.md#モデル間の保証の限界)）。backlog の列は、その差異の W 課題を完了させる項目である（段階導入。[traceability.md](../../.agents/skills/port-lang/references/traceability.md#検査)）。
+前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。分類は人の判断であり、迷う場合は「中断」とする（[assurance.md](assurance.md#モデル間の保証の限界)）。backlog の列は、その差異の W 課題を完了させる項目である（段階導入。[traceability.md](../../.agents/skills/port-lang/references/traceability.md#検査)）。
 
 - **出力のみ**: 前提を破っても、変わるのは出力だけである。R 課題に `StateSafe` を課す。
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。
@@ -261,7 +261,7 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 | SPEC-002 | 初期化（fixture の投入後の `World`）が INV を満たす |
 | SPEC-003 | PRE の下の各操作（`Conflict` と実行環境の失敗の結果を含む）が INV を保つ |
 | SPEC-004 | `Conflict` と実行環境の失敗の結果では、採番以外の状態が変わらない（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） |
-| SPEC-005 | 各機能の基底の機械は、`Machine.ofChoice`（選択の像）か `Machine.pure`（決定的な純粋計算）で作る。選択の型の葉は、[Spec の非決定性](#spec-の非決定性n-nnn) に登録した `@[nondet]` の型だけとし、環境の選択には種類「環境」の行の型を、自由な選択には種類「自由」の行の型を使う。自由な選択には、その選択が変えうる部分を核で示した射影についての `FreeFrame` を示す（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)。形は TR-G で検査する） |
+| SPEC-005 | 各機能の基底の機械は、`Machine.ofChoice`（選択の像）か `Machine.pure`（決定的な純粋計算）で作る。選択の型の葉は、[Spec の非決定性](#spec-の非決定性n-nnn) に登録した `@[nondet]` の型だけとし、環境の選択には種類「環境」の行の型を、自由な選択には種類「自由」の行の型を使う。自由な選択には、その選択が変えうる部分を核で示した射影についての `FreeFrame` を示す（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)。形は TR-G で検査する） |
 | SPEC-006 | [入口の R 課題](#入口の-r-課題) の機械は、INV と環境の前提（`@[env_pre]`。MD-1〜MD-8 と入力の値域）の下で PRE が成り立つ（`Machine.TotalUnder`）。環境の前提には両向きの例（`Nontrivial`）を示す |
 | SPEC-007 | 各機能の初期状態は fixture の投入後の `World` の 1 点である（`Machine.InitIs`） |
 | SPEC-008 | 標準の環境の下では、`f` は環境の非決定性に固有の結果（N-001 の `Conflict`、N-002 の `System("e.ar.fw.9999")`）を返さない |
@@ -270,7 +270,7 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 
 ## Spec の非決定性（N-NNN）
 
-[Spec] が許す非決定性の一覧である（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。[Spec] の非決定性は、ここにあるものだけとする（SPEC-005）。
+[Spec] が許す非決定性の一覧である（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。[Spec] の非決定性は、ここにあるものだけとする（SPEC-005）。
 Lean では、`Machine.ofChoice` の選択の型の葉に `@[nondet "N-NNN"]` を付ける。登録簿と属性の 1 対 1 は TR-N で検査する。
 
 - **環境**: 実行環境が決める選択である。[Source]・[Target] では入力の環境の成分として表し、`Pinned` で固定する。標準の環境（障害の無い環境・参照の配備の設定）では、標準の値を選ぶ。

@@ -149,6 +149,6 @@ Chosen option: "ADR 0023 の方式を引き継ぎ、ハッシュを決定論的�
 ## More Information
 
 * 本 ADR は [ADR 0023](0023-cross-language-traceability.md) を置き換える。
-* [ADR 0038](0038-refinement-non-vacuity-obligations.md) で、検査 TR-G・TR-N・TR-V・TR-PE とその段階導入を加えた。本 ADR の検査（TR-S1〜TR-R）と、その段階導入は変えない。
+* [ADR 0039](0039-refinement-non-vacuity-obligations.md) で、検査 TR-G・TR-N・TR-V・TR-PE とその段階導入を加えた。本 ADR の検査（TR-S1〜TR-R）と、その段階導入は変えない。
 * [ADR 0033](0033-foundational-principles.md), [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md), [ADR 0035](0035-generate-verus-mirror-from-target-model.md), [ADR 0024](0024-following-upstream-releases.md)
 * [backlog 0024](../backlog/0024-trace-tooling.md)

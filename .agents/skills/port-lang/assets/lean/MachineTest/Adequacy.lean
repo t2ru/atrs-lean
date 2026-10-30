@@ -3,7 +3,7 @@ import Machine
 /-!
 # MachineTest.Adequacy
 
-`Machine.Adequacy` の義務の例と反例（ADR 0038）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
+`Machine.Adequacy` の義務の例と反例（ADR 0039）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
 成り立たないことを証明する。あわせて、すべての義務を満たす正例を示す。
 
 | 抜け道 | 反例 |

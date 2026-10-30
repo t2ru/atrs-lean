@@ -1,7 +1,7 @@
 # SQL 方言 PostgreSQL: LangSemantics.Sql.Postgresql
 
 [共通部分](../../semantics.md) に加えて、PostgreSQL 固有の意味を定義する。対象の版は、プロジェクトの版の宣言（`trace/upstream.json` または `trace/target.json`）に記録した版とする。
-Lean の実装は `assets/LangSemantics/Sql/Postgresql.lean`（モジュール `LangSemantics.Sql.Postgresql`）。現在は整数型・`VARCHAR`・`TO_CHAR`（`FM` と `0`/`9` の書式）・既定の整列・既定のシーケンスを実装している。
+Lean の実装は `assets/lean/LangSemantics/Sql/Postgresql.lean`（モジュール `LangSemantics.Sql.Postgresql`）。現在は整数型・`VARCHAR`・`TO_CHAR`（`FM` と `0`/`9` の書式）・既定の整列・既定のシーケンスを実装している。
 
 | 対象 | 意味 |
 | --- | --- |

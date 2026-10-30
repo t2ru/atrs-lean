@@ -19,7 +19,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 - 正規仕様は Lean の `Spec`。`Spec` で表現できない仕様だけを `docs/spec` で定義する（[ADR 0021](docs/decision/0021-lean-spec-as-normative-source.md)）。
 - モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` から Verus の写しを生成し、Verus で Rust との一致を証明する。あわせて、追跡注釈・適合テスト・Kani で確認する（[ADR 0035](docs/decision/0035-generate-verus-mirror-from-target-model.md)）。
-- `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)）。リファインメントが空虚・自明に成り立たないよう、付帯の義務（選択の像としての `Spec`、環境の固定、標準の貼り合わせ、入口の全域性など）を課す（[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）。
+- `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 0034](docs/decision/0034-b-method-refinement-and-explicit-deviations.md)）。リファインメントが空虚・自明に成り立たないよう、付帯の義務（選択の像としての `Spec`、環境の固定、標準の貼り合わせ、入口の全域性など）を課す（[ADR 0039](docs/decision/0039-refinement-non-vacuity-obligations.md)）。
 - トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)）。
 - 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 0024](docs/decision/0024-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/upgrade.md)）。
 - 移植の方法はアプリに依存しないスキル **port-lang** に、ATRS 固有の情報は `docs/` に置く（[ADR 0025](docs/decision/0025-extract-porting-method-as-agent-skill.md)）。
@@ -55,8 +55,8 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/backlog/](docs/backlog/) | 作業項目。着手順と依存関係 |
 | [docs/rules/](docs/rules/) | ATRS の運用規約 |
 | [.agents/skills/port-lang/](.agents/skills/port-lang/SKILL.md) | 言語間移植の方法（アプリ非依存のスキル） |
-| `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets` を `require` する |
-| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Trace`（追跡属性・trace-dump）/ `Spec`（正規仕様）/ `SourceModel` / `Abstraction` / `TargetModel` / `Refinement` / `Tests` / `Tools`。`LangSemantics` はスキルの `assets` を Lake 依存として取り込む（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
+| `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets/lean` を `require` する |
+| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Trace`（追跡属性・trace-dump）/ `Spec`（正規仕様）/ `SourceModel` / `Abstraction` / `TargetModel` / `Refinement` / `Tests` / `Tools`。`LangSemantics` はスキルの `assets/lean` を Lake 依存として取り込む（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog 0018](docs/backlog/0018-rust-project-scaffold.md)） |
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)） |
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
@@ -85,7 +85,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 現在の状態
 
-Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）、`LangSemantics.Java` の検査（[backlog 0002](docs/backlog/0002-lang-semantics-java.md)。double のネイティブとの突き合わせ、JVM の表）、リファインメントの空虚化を防ぐ義務と検査（[backlog 0030](docs/backlog/0030-refinement-non-vacuity.md)。`Machine.Adequacy`、`obligation-check`、[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
+Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/lean/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）、`LangSemantics.Java` の検査（[backlog 0002](docs/backlog/0002-lang-semantics-java.md)。double のネイティブとの突き合わせ、JVM の表）、リファインメントの空虚化を防ぐ義務と検査（[backlog 0030](docs/backlog/0030-refinement-non-vacuity.md)。`Machine.Adequacy`、`obligation-check`、[ADR 0039](docs/decision/0039-refinement-non-vacuity-obligations.md)）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
 次に着手できるのは、Lean 側の [backlog 0031](docs/backlog/0031-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

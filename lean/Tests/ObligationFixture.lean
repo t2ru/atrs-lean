@@ -7,7 +7,7 @@ import MachineTest.Adequacy
 
 `obligation-check`（`Trace.Obligation`）のフィクスチャ。`Tests.ObFix.<層>` の下に、規則をすべて満たす R 課題と、
 規則ごとの違反例を置く（テストは接頭辞 `Tests.ObFix` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
-作られた迂回（ADR 0038 の「実装後の敵対的レビュー」）を含める。証明は `MachineTest.Adequacy` の定理を定義の展開で使い回す。
+作られた迂回（ADR 0039 の「実装後の敵対的レビュー」）を含める。証明は `MachineTest.Adequacy` の定理を定義の展開で使い回す。
 
 期待する判定は `Tests/Main.lean` の `obligationTests` に書く。
 -/

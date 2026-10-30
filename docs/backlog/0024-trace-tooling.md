@@ -24,7 +24,7 @@ generated:
 - `inventory target`（tree-sitter-rust と doc タグの行走査）
 - `ingest-lean`（`lake exe trace-dump` の取り込み）, `manifest`（`trace/manifest.json` と traceability.md の生成区画）
 - `check`（TR-S1〜TR-R と TR-D。警告にしてよいのは、backlog で完了していない機能だけ）
-- `check` から、実装済みの TR-G・TR-N（`lake exe obligation-check` と `tools/ci/check_obligations.py`。[backlog 0030](0030-refinement-non-vacuity.md)）を呼ぶ。TR-PE（入口の R 課題の具体機械による網羅。[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）を加える
+- `check` から、実装済みの TR-G・TR-N（`lake exe obligation-check` と `tools/ci/check_obligations.py`。[backlog 0030](0030-refinement-non-vacuity.md)）を呼ぶ。TR-PE（入口の R 課題の具体機械による網羅。[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）を加える
 - `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する）, `diff`（新旧インベントリの分類）, `impact`（証明グラフに沿った影響一覧）
 - `tmpl:` ロケータ（Thymeleaf テンプレートの式）のインベントリ
 - 最初の `trace/source-inventory.json` の生成（[backlog 0025](0025-upstream-submodule-and-inventory.md) の submodule から）
