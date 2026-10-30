@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T21:44:53+09:00
+  at: 2026-10-30T22:21:07+09:00
 ---
 
 # 保証の限界
@@ -107,7 +107,7 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust・XML・properties のパーサ）。正規化は空白とコメントを除き、文字列リテラルの中身は保つ | パーサと正規化の規則（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)） |
+| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)） |
 | Lean の Merkle ハッシュ | `lake exe trace-dump`。同じ層と、依存する `LangSemantics`・`Machine` の定数を合成する | Lean の `Expr` のハッシュ |
 | TR 検査と検査済みハッシュの更新 | `tools/trace check`・`tools/trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | `tools/trace` |
 

@@ -52,6 +52,7 @@ okf_version: "0.2"
 * [排他制御の失敗 Conflict を、Spec の状態変更操作の非決定的な結果とする](decision/0037-conflict-as-spec-nondeterminism.md) - AtrsError.Conflict とポートの I/O の失敗を、Spec の状態変更操作が採番以外の状態を変えずに選びうる非決定的な結果として定め、活性の限界を明示する。実行可能な Spec の標準の選択はこれらを選ばない。画面は 500、REST は 409。ADR 0029 を置き換える。
 * [スキル port-lang の Lean パッケージを assets/lean/ に置く](decision/0038-lean-package-under-skill-assets-lean.md) - スキル port-lang の assets 直下にあった Lake パッケージ langSemantics（LangSemantics・Machine とその検査）を assets/lean/ に移し、assets の下を資産の種類ごとに分ける。Lean 以外の資産（assets/verus/ など）は assets/lean/ の外に置く。
 * [リファインメントが空虚・自明に成り立つことを防ぐ義務と検査を課す](decision/0039-refinement-non-vacuity-obligations.md) - Machine.Refines は具体⊆抽象しか保証せず、緩い Spec・空の INV・強すぎる PRE・粗い貼り合わせ・名前付きの成分の乱用・非決定性による不具合の吸収でも成り立つ。これを、選択の像としての Spec（ofChoice・FreeFrame）、Sound と 1 点の初期状態、環境の固定（Pinned・NoFaultReachable）、標準の貼り合わせ（Glue.ofStd）、入口の全域性（TotalUnder・EnvWitness）、初期化の全射性、状態の安全性、成分の両向きの例、核の明示と、検査 TR-G・TR-N・TR-V・TR-PE で塞ぐ。ADR 0034・0036・0037 に義務と検査を加える。
+* [追跡の道具の未確定事項（本文ハッシュ・正規化・ロケータの細部・機能と backlog の対応）を決める](decision/0040-trace-tooling-unresolved-details.md) - ADR 0036 と言語パックで未確定だった、本文ハッシュの方式、正規化での空白の扱い、private の呼び先の連結、ロケータとハッシュの区切り、seed:・tmpl:・xml:・http:・prop:/msg: の形、dep:/lang: の版の文字列、警告と誤りを決める機能と backlog の対応表（trace/features.json）、合格の記録が無い場合、TR-P の数え方を決める。
 
 # Specification
 

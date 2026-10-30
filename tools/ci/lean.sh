@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016・0024）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -71,6 +71,19 @@ step "lean: trace-dump"
 python3 -I -c 'import json, sys
 d = json.load(open(sys.argv[1]))
 print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_version"]))' "$out"
+
+step "trace: tools/trace の自己テスト（違反例を検出できること）"
+(cd tools/trace && cargo test --release --quiet)
+(cd tools/trace && cargo build --release --quiet)
+trace=tools/trace/target/release/trace
+
+step "trace: インベントリ・manifest・traceability.md の生成区画が最新である"
+"$trace" inventory source --check
+"$trace" inventory target --check
+"$trace" manifest --dump "$out" --obligations "$ob" --check
+
+step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/X/R、TR-G・TR-N）"
+"$trace" check --dump "$out" --obligations "$ob"
 
 step "workspace: ルートで lake setup-file（Lean LSP 用）"
 lake setup-file lean/Spec.lean > /dev/null

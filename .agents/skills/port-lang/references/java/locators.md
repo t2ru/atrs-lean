@@ -10,8 +10,8 @@
 | `prop` | `<ファイル名>#<キー>`（`.properties`） | `prop:application.properties#app.limitDay` |
 | `msg` | `<ファイル名>#<キー>`（メッセージリソース） | `msg:messages_ja.properties#e.app.0001` |
 | `http` | `<METHOD> <パス>[?<判別パラメータ>]`（Web フレームワークのハンドラ） | `http:POST /orders?confirm` |
-| `xml` | `<ファイル名>#<XPath 風の要素パス>`（Spring XML 設定など） | `xml:web.xml#error-page[code=404]` |
-| `tmpl` | `<テンプレートのパス>#<要素の id、または th: 属性を持つ要素の XPath 風パス>`（Thymeleaf・JSP などの画面テンプレート） | `tmpl:templates/order/confirm.html#span[@th:text='${#temporals.format(…)}']` |
+| `xml` | `<ファイル名>#<XPath 風の要素パス>`（Spring XML 設定など）。`web.xml` は `<web-app>` 直下の要素を `<要素>[<識別子の子要素>=<値>]` で表す | `xml:web.xml#error-page[error-code=404]` |
+| `tmpl` | `<テンプレートのパス>#<要素の id、または th: 属性を持つ要素の XPath 風パス>`（Thymeleaf・JSP などの画面テンプレート）。`id` が無ければ `<タグ>[@<最初の th: 属性>='<値>']` とし、重複すれば `[n]` を付ける | `tmpl:templates/order/confirm.html#span[@th:text='${#temporals.format(…)}']` |
 
 - 引数型は単純型名で書く。同名の型が衝突する場合だけ完全名にする。
 - 内部クラスは `Outer$Inner` と書く。

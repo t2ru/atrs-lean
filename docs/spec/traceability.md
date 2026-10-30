@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-30T22:21:47+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -38,6 +38,17 @@ ATRS が使うロケータの種別は次のとおり（文法は各言語パッ
 | 移植元 | `sql:` `ddl:` `seed:` | [sql/locators.md](../../.agents/skills/port-lang/references/sql/locators.md) |
 | 移植先 | `rust:`（クレート `atrs`） | [rust/locators.md](../../.agents/skills/port-lang/references/rust/locators.md) |
 | 両側 | `dep:` `lang:` | ATRS で必須の `dep:` は [atrs-porting.md](../rules/atrs-porting.md#source-に必ず含める依存atrs) |
+
+道具は `tools/trace`（[backlog 0024](../backlog/0024-trace-tooling.md)）である。細部（本文ハッシュ・正規化・ロケータの形・版の文字列・警告と誤りの区別）は [ADR 0040](../decision/0040-trace-tooling-unresolved-details.md) による。
+
+| ファイル | 内容 | 作り方 |
+| --- | --- | --- |
+| `trace/source-inventory.json` | 移植元のインベントリ（上流の submodule の走査結果） | `tools/trace inventory source` |
+| `trace/target-inventory.json` | 移植先のインベントリ（`rust/src/` の走査結果と `/// trace: models` の札） | `tools/trace inventory target` |
+| `trace/manifest.json` | ノード・型付きのリンク・合格した検査の記録 | `tools/trace manifest`（合格の記録は `tools/trace rehash`） |
+| `trace/features.json` | 機能と backlog・ロケータ・Lean の名前空間・R 課題の対応表。TR-S1・TR-T1・TR-P・TR-PE・TR-D の警告と誤りを決める | 手で書く |
+
+CI（`tools/ci/lean.sh`）は、インベントリ・manifest・下の生成区画が最新であることと、`tools/trace check` の誤りが 0 件であることを確かめる。
 
 ## 例: 運賃計算（基本運賃）
 
@@ -109,13 +120,21 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-（未生成。[backlog 0024](../backlog/0024-trace-tooling.md) で生成する）
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 0 件。`tools/trace manifest` が生成する（手で編集しない）。
+
+| ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
+| --- | --- | --- | --- |
+| （対応なし） | | | |
 <!-- END GENERATED: source-trace -->
 
 ### ② TargetModel ⇔ 移植先ソース
 
 <!-- BEGIN GENERATED: target-trace -->
-（未生成。[backlog 0024](../backlog/0024-trace-tooling.md) で生成する）
+TargetModel ⇔ 移植先ソース: インベントリ 0 件（対象範囲 0 件、対象外 0 件）、対応あり 0 件。`tools/trace manifest` が生成する（手で編集しない）。
+
+| ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
+| --- | --- | --- | --- |
+| （対応なし） | | | |
 <!-- END GENERATED: target-trace -->
 
 ## 初期の予定対応（参考・非規範）

@@ -4,11 +4,11 @@ title: "追跡の道具（tools/trace）"
 description: "インベントリ生成・Lean ダンプの取り込み・manifest と表の生成・TR 検査・差分・影響分析を行う Rust 製の道具を作る。"
 tags: [backlog, tooling, traceability]
 id: "0024"
-state: todo
+state: doing
 depends_on: ["0001", "0025"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-30T22:21:47+09:00
 ---
 
 # 追跡の道具（tools/trace）
@@ -37,14 +37,61 @@ generated:
 
 ## 完了条件
 
-- [ ] CI で `tools/trace check` が走る
-- [ ] [traceability.md](../spec/traceability.md) の生成区画が埋まる
-- [ ] 最初の `trace/source-inventory.json` を生成し、件数（Java メソッド・SQL 文・設定キー・メッセージキー）を記録した
-- [ ] 故意に入れた TR-X 違反（`TargetModel` に `java:` を書く）を検出できる
-- [ ] 故意に入れた TR-D 違反（文書の D-NNN に対応する `@[deviation]` が無い、R 課題に無名の仮定がある）を検出できる
-- [ ] `tools/trace check` が TR-G・TR-N（`obligation-check`・`check_obligations.py`）の結果を含める
-- [ ] 故意に入れた TR-PE 違反（入口でない R 課題にしか現れない公開操作）を検出できる
+- [x] CI で `tools/trace check` が走る
+- [x] [traceability.md](../spec/traceability.md) の生成区画が埋まる
+- [x] 最初の `trace/source-inventory.json` を生成し、件数（Java メソッド・SQL 文・設定キー・メッセージキー）を記録した
+- [x] 故意に入れた TR-X 違反（`TargetModel` に `java:` を書く）を検出できる
+- [x] 故意に入れた TR-D 違反（文書の D-NNN に対応する `@[deviation]` が無い、R 課題に無名の仮定がある）を検出できる
+- [x] `tools/trace check` が TR-G・TR-N（`obligation-check`・`check_obligations.py`）の結果を含める
+- [x] 故意に入れた TR-PE 違反（入口でない R 課題にしか現れない公開操作）を検出できる
 - [ ] 検査が合格していない定義のハッシュを `rehash` が更新しないことを確認した
+
+## 進め方
+
+2 段に分ける（2026-10-30 の決定）。この項目は第 2 段で `done` にする。
+
+- **第 1 段（済み）**
+  - インベントリ（`inventory source`・`inventory target`）
+  - Lean の出力の取り込み（`manifest`・`check` の `--dump`・`--obligations`）
+  - `check`（TR-S1・TR-S2・TR-T1・TR-T2・TR-P・TR-PE・TR-D・TR-X・TR-R と、TR-G・TR-N の取り込み）
+  - `manifest` と生成区画、CI、`trace/features.json`
+  - 未確定だった細部は [ADR 0040](../decision/0040-trace-tooling-unresolved-details.md) で決めた
+- **第 2 段（残り）**
+  - `rehash`。決定論的な検査を実行し、合格した組（本文ハッシュと Merkle）だけを manifest に記録して注釈のハッシュを更新する。完了条件の最後の項目
+  - `diff`・`impact`
+  - `renames.json` の検査
+  - 既存草案の「出典:」のロケータ表記への書き換え（運賃計算・空席照会・予約から）
+  - 初期の予定対応の表（[traceability.md](../spec/traceability.md#初期の予定対応参考非規範)）の削除
+
+## 第 1 段の結果
+
+- 最初の `trace/source-inventory.json`: 1963 件。うち対象外（`out-of-scope.json`）は 640 件で、対象範囲は 1323 件。
+
+  | 種類 | 件数 |
+  | --- | --- |
+  | Java のメソッド・コンストラクタ・定数（`java:`） | 1024 |
+  | HTTP のハンドラ（`http:`） | 48 |
+  | Mapper の SQL 文（`sql:`） | 21 |
+  | DDL（`ddl:`） | 48 |
+  | 初期データ（`seed:`） | 11 |
+  | 設定キー（`prop:`） | 23 |
+  | メッセージキー（`msg:`） | 174 |
+  | テンプレートの要素（`tmpl:`） | 585 |
+  | `web.xml` の要素（`xml:`） | 29 |
+
+  内訳の補足:
+  - 対象外 640 件は、`tmpl:` 585・`xml:` 29・`java:` 14・`prop:` 12 である。
+  - `tmpl:` と `xml:` は `atrs-web/src/main/webapp/**` にある。
+- `trace/target-inventory.json`: 0 件（`rust/` が無いため。[backlog 0018](0018-rust-project-scaffold.md) で埋まる）。
+- 現在の木での `tools/trace check`: 誤り 0 件。警告 1368 件は、すべて未完了の機能の段階導入による。
+  - TR-S1: 1323 件
+  - TR-D: 32 件（`@[deviation]` と W 課題がまだ無い）
+  - TR-G・TR-N: 13 件（`check_obligations.py` の段階導入の警告）
+- 違反例の検出は `cargo test` で確かめる（`tools/trace/src/check.rs` の試験）。対象は次のとおり。
+  - TR-X: `TargetModel` に `java:` を書いた定義と、`rust/` の中の移植元のロケータ
+  - TR-D: 文書の D-NNN に `@[deviation]` が無いこと、R 課題に無名の仮定（G1）があること、文書に無い `@[deviation]`
+  - TR-PE: 入口でない R 課題にしか現れない公開操作
+  - TR-S1・TR-S2・TR-R
 
 ## 参照
 
