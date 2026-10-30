@@ -7,6 +7,23 @@ on:
 jobs:
   lean:
     runs-on: ubuntu-latest
+    # SQL の差分実行に使う PostgreSQL（版は trace/upstream.json。設定は port-lang の postgresql/harness.md）
+    services:
+      postgres:
+        image: postgres:16.15
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_INITDB_ARGS: --locale=C --encoding=UTF8
+          TZ: UTC
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      PGHOST: localhost
+      PGPORT: "5432"
+      PGUSER: postgres
+      PGDATABASE: postgres
     steps:
       - uses: actions/checkout@v4
         with:

@@ -6,7 +6,7 @@ import LangSemantics.Sql
 PostgreSQL 方言。共通部分（`LangSemantics.Sql`）との差分だけを定義する。
 説明は port-lang スキルの `references/sql/dialects/postgresql/semantics.md`。
 
-lang: `lang:postgresql#datatype-numeric`, `lang:postgresql#functions-formatting`,
+lang: `lang:postgresql#datatype-numeric`, `lang:postgresql#datatype-character`, `lang:postgresql#functions-formatting`,
 `lang:postgresql#sql-createsequence`, `lang:postgresql#queries-order`, `lang:postgresql#collation`
 -/
 
@@ -21,9 +21,12 @@ def int4 (v : Int) : SqlResult Int :=
 def int8 (v : Int) : SqlResult Int :=
   if -(2 ^ 63) ≤ v && v ≤ 2 ^ 63 - 1 then .ok v else .error .numericOutOfRange
 
-/-- `VARCHAR(n)` への格納。文字数（スカラ値数）が n を超えるとエラー。 -/
+/-- `VARCHAR(n)` への格納。文字数（スカラ値数）が n を超えるとエラー。
+ただし、超えた部分がすべて空白（U+0020）なら、エラーにせず n 文字に切り詰める。 -/
 def varchar (column : String) (n : Nat) (v : String) : SqlResult String :=
-  if v.length ≤ n then .ok v else .error (.stringTooLong column)
+  if v.length ≤ n then .ok v
+  else if (v.toList.drop n).all (· == ' ') then .ok (String.ofList (v.toList.take n))
+  else .error (.stringTooLong column)
 
 /-- 照合順序 `C`。 -/
 def collationC : Collation := Collation.codepoint

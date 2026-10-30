@@ -7,3 +7,11 @@
 - タイムゾーン: `TimeZone=UTC`。
 - シーケンス: ベクタの `world` の値で `setval` してから実行する。
 - 各ケースは独立したトランザクションで実行し、終了時にロールバックする（状態を変える操作は、`worldAfter` の比較を済ませてからロールバックする）。
+
+## 方言の突き合わせ表
+
+`assets/lean/LangSemanticsTest/pg/pg_table.py` は、固定の入力を PostgreSQL で評価し、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` と照合する `#guard` を生成する（生成物 `LangSemanticsTest/PostgresqlDb.lean`）。
+
+- データを伴う照会は、同じデータを処理系と Lean の両方で評価する。順序が未規定なら、処理系の結果が `isAllowedOrder` を満たすことを照合する。
+- 移植元の文ごとの差分実行も、同じ形で作る。原典の SQL を処理系で実行した結果と、写した式（`SourceModel.Repository.*`）を同じデータで評価した結果を照合する `#guard`（またはテスト）を生成する。
+- `--expect-version` で版を確かめ、データベースが照合順序 `C`・`UTF8` でなければ止まる。出力に版は含めない。生成物をコミットし、CI で再生成して差分が無いことを確かめる。

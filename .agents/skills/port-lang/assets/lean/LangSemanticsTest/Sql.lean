@@ -61,3 +61,8 @@ def sq : SequenceDef := { name := "sq", maxValue := 3, cycle := true }
 #guard int4 2147483648 matches .error .numericOutOfRange
 #guard (varchar "c" 3 "𠮷𠮷𠮷").toOption == some "𠮷𠮷𠮷"
 #guard varchar "c" 2 "abc" matches .error (.stringTooLong _)
+
+-- ORDER BY の許される順列の一意性（キーが単射のとき）の公理
+/-- info: 'LangSemantics.Sql.isAllowedOrder_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+#guard_msgs in
+#print axioms LangSemantics.Sql.isAllowedOrder_unique
