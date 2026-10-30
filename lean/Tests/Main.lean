@@ -12,6 +12,7 @@ import Tests
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
 - 適合テストベクタ（`../conformance/shared/format/`）を `Spec` で実行する（`Tests.Conformance`）。
 - 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
+- 運賃計算の double 式の、ソフトモデルとネイティブ `Float` の突き合わせ（`Tests.JavaDouble`）。
   カーネルの定義は直接には再帰しないため、相互再帰の閉路は実際の定義からは作れない。
 -/
 
@@ -140,6 +141,13 @@ def dateTests : IO Unit := do
   unless bad.isEmpty do IO.eprintln s!"    failed ordinals: {bad}"
   check s!"date: ofOrdinal? round trip and successor ({n} days)" bad.isEmpty
 
+/-- double のソフトモデルとネイティブ `Float` の突き合わせ。 -/
+def javaDoubleTests : IO Unit := do
+  IO.println "java double (soft model vs native Float, fare expressions)"
+  let r := Tests.JavaDouble.run
+  for b in r.bad do IO.eprintln s!"    mismatch: {b}"
+  check s!"java double: bit-exact ({r.count} cases)" r.bad.isEmpty
+
 /-- 誤りの規則（`G1` など）の集合。 -/
 def ruleCodes (errs : Array String) : List String :=
   (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
@@ -191,6 +199,7 @@ def obligationTests (env : Environment) : IO Unit := do
 unsafe def main : IO UInt32 := do
   merkleTests
   dateTests
+  javaDoubleTests
   conformanceTests
   let env ← loadEnv #[`Tests.TraceFixture]
   fixtureTests env
