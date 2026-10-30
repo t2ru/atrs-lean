@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -64,16 +64,23 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 | 義務 | 内容 |
 | --- | --- |
-| 貼り合わせの形 | `Glue.ofStd` で作る。β・aᵢ・aₒ は下の表の標準の抽象化を部分写像（`Option` を返す関数）として書き、`@[std_abs]` を付ける。OJ・OO は観測型の差異の成分（`obs_DNNN`）で、無ければ省く |
+| 貼り合わせの形 | `Glue.ofStd` で作る。β・aᵢ・aₒ は下の表の標準の抽象化を部分写像（`Option` を返す関数）として書き、`@[std_abs]` を付けた定数そのものを渡す。aₒ には核の定理（`KernelIs`）を課す。OJ・OO は観測型の差異の成分（`obs_DNNN`）で、無ければ省く |
 | `InitSurj` | [Spec] の初期状態（fixture の 1 点。SPEC-007）に、`J` で結ばれる [Source] の初期状態がある |
-| `Pinned` | [Source] の正常終了は、環境の選択を [Source] の入力の環境に固定した [Spec] の結果で模倣される。障害の無い環境では、[Source] は `Conflict`・I/O 失敗の結果（N-001・N-002）を返してはならない |
+| `Sound`・`InitIs` | [Spec] の基底の機械が `Sound`（SPEC-002・003）で、初期状態が 1 点である（SPEC-007）。INV が空にならない |
+| `Pinned` | [Source] の正常終了は、環境の選択を [Source] の入力の環境 `ce` に固定した [Spec] の結果で模倣される。`ce` は `@[std_abs]` を付けた標準の抽象化（下の表の「環境」の行）とする |
+| `NoFaultReachable` | [Spec] の各入力は、障害の無い環境（`ce` が標準の環境を返す）の [Source] の入力でも実現される。障害の無い環境では、[Source] は `Conflict`・I/O 失敗の結果（N-001・N-002）を返せない |
 | `StateSafe` | 「出力のみ」の前提型の差異（[前提型の差異の影響](#前提型の差異の影響)）ごとに、前提を破る 1 歩の後も状態が `J` を保つ |
-| 入口の全域性 | [入口の R 課題](#入口の-r-課題) の [Spec] の機械は、INV とマスタ・設定の妥当性（MD-1〜MD-8）の下で PRE が成り立つ（SPEC-006） |
+| 入口の全域性 | [入口の R 課題](#入口の-r-課題) の [Spec] の機械は、INV と環境の前提（`@[env_pre]`）の下で PRE が成り立つ（`TotalUnder`。SPEC-006）。環境の前提は、マスタ・設定の妥当性（MD-1〜MD-8）と入力の値域（[domain-model.md](domain-model.md#値域)）を入力の成分だけで書いたものとする。R 課題には、環境の前提を満たす像を持つ [Source] の入力があること（`EnvWitness`）も課す |
 
 - [Source] の各操作は、マスタ・設定と環境（衝突が起きるか、どのポート操作が I/O で失敗するか、配備の設定）を入力の成分として受ける。原典がマスタを DB から読む場合も、マスタは不変なので状態に含めず入力とする。
   - aᵢ は環境を落とす。
   - 環境を [Spec] の環境の選択へ写す関数を `ce` とする。
-- 入口の機械の PRE には、入力の値域を含めない。値域の外の入力には、入口の [Spec] が入力検証の結果を定める。入口でない機械（例: 運賃計算・ユースケース）の PRE は値域を含んでよい（[domain-model.md](domain-model.md#値域)）。
+- 前提型の差異の述語の置き方は 3 つである。
+  - 抽象側の入力: `restrict`
+  - 抽象側の状態と入力: `restrictState`
+  - 具体側だけにある入力: `Concrete.restrict`
+- 具体側の状態の述語（例: D-009 のシーケンスの上限）は、`J` で対応する抽象側の状態の述語に書き直して `restrictState` で置く（`World.sequences` は [Source] のシーケンスと `J` で一致する）。
+- 具体側の不変条件 `Ic` は仮定ではない。初期化（`InitSurj`）で成り立ち、正しさの義務で `J` とともに保たれることを示すので、到達可能な状態についての証明済みの不変条件である。
 
 ## 抽象化関数 α
 
@@ -89,6 +96,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | 例外 | `AtrsError`（[errors-and-messages.md](errors-and-messages.md)） | 同じコード・引数を持つ例外のクラスの違い | `IllegalArgumentException`/`NullPointerException`（`PreconditionViolation`）は α を定義しない。PRE の下で到達しないことを示す |
 | SQL 照会結果（`LangSemantics.Sql` のバッグ・許される順列の集合） | 列（順列ごとに写す関係） | なし（各順列を単射に写す） | 正しさの義務は、許される順列のすべてについて示す |
 | 要求（HTTP の要求文字列・JSON） | `Spec.Http` の要求 | [Spec] の要求が持たない部分（ヘッダの順序・名前の大小など） | 全域。不対サロゲートのエスケープを含む JSON は、D-026 の前提で除外する |
+| 環境（衝突が起きるか・どのポート操作が I/O で失敗するか・配備の設定） | [Spec] の環境の選択（N-001〜N-003）。`ce` として書く | なし（単射） | 障害の無い環境は、標準の環境に写す |
 | 応答（HTTP の状態・遷移先・画面の値・JSON） | `Spec.Http` の応答 | [http-contract.md](http-contract.md) が定めない部分（HTML の構造など。[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | 画面の値は、[http-contract.md](http-contract.md) が定める項目だけを写す |
 
 ## 既知差異
@@ -128,27 +136,27 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ### 前提型の差異の影響
 
-前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。
+前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。分類は人の判断であり、迷う場合は「中断」とする（[assurance.md](assurance.md#モデル間の保証の限界)）。backlog の列は、その差異の W 課題を完了させる項目である（段階導入。[traceability.md](../../.agents/skills/port-lang/references/traceability.md#検査)）。
 
 - **出力のみ**: 前提を破っても、変わるのは出力だけである。R 課題に `StateSafe` を課す。
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。
 
-| ID | 影響 | 理由 |
-| --- | --- | --- |
-| D-001 | 中断 | 予約確定で、差のある運賃が合計金額として保存される |
-| D-002 | 中断 | 同上 |
-| D-006 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更・レポート要求の成否が変わる |
-| D-007 | 中断 | [Source] は [Spec] が拒む予約を登録する |
-| D-009 | 中断 | 使用済みの番号による挿入の失敗、または既存の行との衝突 |
-| D-011 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる |
-| D-012 | 中断 | 折り返した合計金額が保存される |
-| D-014 | 中断 | 日付をまたぐと、予約・レポートに記録される日付が変わりうる |
-| D-017 | 出力のみ | ログインの成否と状態更新は同じで、遷移先だけが異なる |
-| D-018 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる |
-| D-019 | 出力のみ | 曜日の表示だけが異なる |
-| D-020 | 出力のみ | 予約入力画面の表示（状態を変えない `GET`）の応答だけが異なる |
-| D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる |
-| D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる |
+| ID | 影響 | 理由 | backlog |
+| --- | --- | --- | --- |
+| D-001 | 中断 | 予約確定で、差のある運賃が合計金額として保存される | 0005 |
+| D-002 | 中断 | 同上 | 0005 |
+| D-006 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更・レポート要求の成否が変わる | 0008 |
+| D-007 | 中断 | [Source] は [Spec] が拒む予約を登録する | 0014 |
+| D-009 | 中断 | 使用済みの番号による挿入の失敗、または既存の行との衝突 | 0007 |
+| D-011 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 0008 |
+| D-012 | 中断 | 折り返した合計金額が保存される | 0005 |
+| D-014 | 中断 | 日付をまたぐと、予約・レポートに記録される日付が変わりうる | 0007 |
+| D-017 | 出力のみ | ログインの成否と状態更新は同じで、遷移先だけが異なる | 0014 |
+| D-018 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 0008 |
+| D-019 | 出力のみ | 曜日の表示だけが異なる | 0014 |
+| D-020 | 出力のみ | 予約入力画面の表示（状態を変えない `GET`）の応答だけが異なる | 0014 |
+| D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 0008 |
+| D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる | 0014 |
 
 ### [Spec] の前提の外での [Source] の振る舞い（差異ではない）
 
@@ -237,11 +245,11 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 
 外部からの入力を受ける入口の機械の R 課題である。[Source] の公開操作の網羅（TR-P）は、これらの R 課題の具体機械で数える。入口でない R 課題（ポート実装・内部の計算・ユースケース単体）は、入口の R 課題の証明に使う補題として扱う。入口の機械の [Spec] には、SPEC-006（入口の全域性）を課す。
 
-| ID | 入口 |
-| --- | --- |
-| ABS-031 | REST 予約 API（`Spec.Http` の REST） |
-| ABS-044 | 予約履歴レポートの要求の受信（キューからの配信） |
-| ABS-045 | HTTP の画面（`Spec.Http` の画面） |
+| ID | 入口 | backlog |
+| --- | --- | --- |
+| ABS-031 | REST 予約 API（`Spec.Http` の REST） | 0014 |
+| ABS-044 | 予約履歴レポートの要求の受信と生成（キューからの配信） | 0010 |
+| ABS-045 | HTTP の画面（`Spec.Http` の画面） | 0014 |
 
 ## Spec 自身の証明課題（SPEC-NNN）
 
@@ -253,9 +261,10 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 | SPEC-002 | 初期化（fixture の投入後の `World`）が INV を満たす |
 | SPEC-003 | PRE の下の各操作（`Conflict` と実行環境の失敗の結果を含む）が INV を保つ |
 | SPEC-004 | `Conflict` と実行環境の失敗の結果では、採番以外の状態が変わらない（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） |
-| SPEC-005 | 各機能の基底の機械は、`Machine.ofChoice`（選択の像）か `Machine.pure`（決定的な純粋計算）で作る。選択の型の葉は、[Spec の非決定性](#spec-の非決定性n-nnn) に登録した `@[nondet]` の型だけとする（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)） |
-| SPEC-006 | [入口の R 課題](#入口の-r-課題) の機械は、INV とマスタ・設定の妥当性（MD-1〜MD-8。入力のマスタ・設定の成分だけで書く）の下で PRE が成り立つ（`Machine.TotalUnder`） |
-| SPEC-007 | 各機能の初期状態は fixture の投入後の `World` の 1 点である |
+| SPEC-005 | 各機能の基底の機械は、`Machine.ofChoice`（選択の像）か `Machine.pure`（決定的な純粋計算）で作る。選択の型の葉は、[Spec の非決定性](#spec-の非決定性n-nnn) に登録した `@[nondet]` の型だけとし、環境の選択には種類「環境」の行の型を、自由な選択には種類「自由」の行の型を使う。自由な選択には、その選択が変えうる部分を核で示した射影についての `FreeFrame` を示す（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)。形は TR-G で検査する） |
+| SPEC-006 | [入口の R 課題](#入口の-r-課題) の機械は、INV と環境の前提（`@[env_pre]`。MD-1〜MD-8 と入力の値域）の下で PRE が成り立つ（`Machine.TotalUnder`）。環境の前提には両向きの例（`Nontrivial`）を示す |
+| SPEC-007 | 各機能の初期状態は fixture の投入後の `World` の 1 点である（`Machine.InitIs`） |
+| SPEC-008 | 標準の環境の下では、`f` は環境の非決定性に固有の結果（N-001 の `Conflict`、N-002 の `System("e.ar.fw.9999")`）を返さない |
 
 各機能の `Spec` を作る backlog 項目で、その機能の SPEC 課題を完了させる。
 
@@ -264,14 +273,16 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 [Spec] が許す非決定性の一覧である（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。[Spec] の非決定性は、ここにあるものだけとする（SPEC-005）。
 Lean では、`Machine.ofChoice` の選択の型の葉に `@[nondet "N-NNN"]` を付ける。登録簿と属性の 1 対 1 は TR-N で検査する。
 
-- **環境**: 実行環境が決める選択である。[Source]・[Target] では、入力の環境の成分として表し、`Pinned` で固定する。障害の無い環境では選ばれない。
-- **自由**: 実装が決めてよい選択である。[Source]・[Target] はどれを選んでもよい。標準の選択 `run` は参照の値を選び、ベクタは参照の値で生成する。
+- **環境**: 実行環境が決める選択である。[Source]・[Target] では入力の環境の成分として表し、`Pinned` で固定する。標準の環境（障害の無い環境・参照の配備の設定）では、標準の値を選ぶ。
+- **自由**: 実装が決めてよい選択である。[Source]・[Target] はどれを選んでもよい。標準の選択 `run` は参照の値を選び、ベクタは参照の値で生成する。自由な選択が変えうる部分は、`FreeFrame` の射影の核として示す（SPEC-005）。
+- backlog の列は、選択の型を Lean に定義する項目である（段階導入）。
 
-| ID | 種類 | 内容 | 標準の選択 | 出典 |
-| --- | --- | --- | --- | --- |
-| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) |
-| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) |
-| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序 | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md) |
-| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列） | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) |
-| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値） | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 0015](../decision/0015-password-hashing-port.md) |
-| N-006 | 自由 | `IdGenerator` の値（未使用の任意の値） | `n`, `n+1`, …（参照の実装） | [ports.md](ports.md#idgenerator) |
+| ID | 種類 | 内容 | 標準の選択 | 出典 | backlog |
+| --- | --- | --- | --- | --- | --- |
+| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0003 |
+| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0003 |
+| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序 | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md) | 0003 |
+| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列）。変えうるのは詳細の文字列だけ | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) | 0003 |
+| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値）。変えうるのは保存するハッシュ値だけ | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 0015](../decision/0015-password-hashing-port.md) | 0003 |
+
+採番（`IdGenerator`）は非決定性ではない。[Spec] の状態 `World.sequences` が次の値を決める（[ports.md](ports.md#idgenerator)）。

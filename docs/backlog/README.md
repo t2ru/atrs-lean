@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T07:45:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # バックログ
@@ -44,7 +44,7 @@ generated:
 | 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
-| 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | doing | 0001, 0027 |
+| 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | done | 0001, 0027 |
 
 ## 推奨する着手順
 

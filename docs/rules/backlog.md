@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # バックログ規約

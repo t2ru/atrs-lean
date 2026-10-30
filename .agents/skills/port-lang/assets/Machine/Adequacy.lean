@@ -13,7 +13,10 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `Machine.ofChoice` | 抽象機械の非決定性を、選択の型 `E × F` の像に限る（E は環境の選択、F は自由な選択） | 緩い `step` |
 | `Refines.Pinned` | 具体側の正常終了を、E を具体側の入力の環境 `ce ic` に固定した選択で模倣する | 具体側の不具合が環境の非決定性（衝突・I/O 失敗）に紛れる |
 | `Glue.ofStd` | 部分写像 β・ai・ao（標準の抽象化）と、名前付きの成分 OJ・OO だけからなる貼り合わせ | 粗い `J`・`αo`、α の部分性の消失 |
-| `Machine.TotalUnder` | 入口の機械の PRE は、INV と環境の前提（マスタ・設定の妥当性）だけで成り立つ | 強すぎる PRE |
+| `Refines.NoFaultReachable` | 抽象側の各入力は、障害の無い環境（`ce ic = e₀`）の具体側の入力でも実現される | `ce` の悪用（障害でない入力を障害の環境に写す） |
+| `Machine.FreeFrame` | 自由な選択 F が変えうるのは、名前付きの射影 `m` が忘れる部分だけである | 自由な選択による結果の吸収 |
+| `Machine.TotalUnder`・`Refines.EnvWitness` | 入口の機械の PRE は、INV と環境の前提（マスタ・設定の妥当性と入力の値域）だけで成り立つ。環境の前提を満たす具体側の入力がある | 強すぎる PRE、PRE・環境の前提の外への写し |
+| `Machine.InitIs` | 抽象側の初期状態は fixture の 1 点（`Sound` と合わせて、INV が空でないことを保証する） | 空の INV・初期状態 |
 | `Refines.InitSurj` | 抽象側の各初期状態に、対応する具体側の初期状態がある | 初期状態の偏り |
 | `Refines.StateSafe`・`StateSafeConcrete` | 出力のみの差異の前提が破れても、状態は `J` を保つ | 差異の前提の外の 1 歩による状態の破壊 |
 | `Nontrivial`・`Nontrivial₂` | 名前付きの述語・関係は、成り立つ値と成り立たない値を持つ | `True`・`False` の成分 |
@@ -58,6 +61,18 @@ def ofChoice (Inv Init : σ → Prop) (Pre : σ → ιa → Prop) (f : σ → ι
   step s i s' o := ∃ c, f s i c = (s', o)
   run s i := f s i (e₀, f₀)
   run_step _ _ _ := ⟨(e₀, f₀), rfl⟩
+
+/-- 自由な選択の枠: 自由な選択 `x` を変えても、射影 `m` で見た結果は変わらない。`m` の核（`KernelIs`）が、
+自由な選択が変えうる部分を表す。 -/
+def FreeFrame {P : Type} (f : σ → ιa → E × F → σ × οa) (m : σ × οa → P) : Prop :=
+  ∀ s i e x y, m (f s i (e, x)) = m (f s i (e, y))
+
+/-- 初期状態が `s₀` の 1 点である。 -/
+def InitIs (A : Machine σ ιa οa) (s₀ : σ) : Prop := ∀ s, A.Init s ↔ s = s₀
+
+/-- `Sound` で初期状態が 1 点なら、その点は INV を満たす（INV は空でない）。 -/
+theorem InitIs.inv {A : Machine σ ιa οa} {s₀ : σ} (h : A.InitIs s₀) (hS : A.Sound) : A.Inv s₀ :=
+  hS.init_inv s₀ ((h s₀).2 rfl)
 
 theorem ofChoice_step {Inv Init : σ → Prop} {Pre : σ → ιa → Prop} {f : σ → ιa → E × F → σ × οa}
     {e₀ : E} {f₀ : F} {s : σ} {i : ιa} {s' : σ} {o : οa} :
@@ -143,6 +158,15 @@ theorem congr {g' : Glue σ τ ιa ιc οa οc} (h : Refines A C g) (e : g.Equiv
 /-- 初期化の全射性: 抽象側の各初期状態に、`J` で結ばれる具体側の初期状態がある。 -/
 def InitSurj (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε) (g : Glue σ τ ιa ιc οa οc) : Prop :=
   ∀ s, A.Init s → ∃ t, C.Init t ∧ g.J s t
+
+/-- 障害の無い環境での実現: 具体側の入力 `ic` の抽象側の像 `ia` は、環境が標準 `e₀` の具体側の入力 `ic'` でも
+実現される。`ce` が障害でない入力を障害の環境へ写すこと（`Pinned` の悪用）を防ぐ。 -/
+def NoFaultReachable (C : Concrete τ ιc οc ε) (g : Glue σ τ ιa ιc οa οc) (ce : ιc → E) (e₀ : E) : Prop :=
+  ∀ ic ia, C.Dom ic → g.αi ic ia → ∃ ic', C.Dom ic' ∧ g.αi ic' ia ∧ ce ic' = e₀
+
+/-- 環境の前提の非空虚性: 環境の前提 `Env` を満たす像を持つ、具体側の入力がある。 -/
+def EnvWitness (C : Concrete τ ιc οc ε) (g : Glue σ τ ιa ιc οa οc) (Env : ιa → Prop) : Prop :=
+  ∃ ic ia, C.Dom ic ∧ g.αi ic ia ∧ Env ia
 
 /-- 環境の固定: 具体側の任意の正常終了は、環境の選択を具体側の入力の環境 `ce ic` に固定した `f` の結果の
 どれかで模倣される。`f` は抽象側の基底の機械（`Machine.ofChoice`）の `f` である。 -/

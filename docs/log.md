@@ -3,17 +3,17 @@
 ## 2026-10-30
 
 * **Creation**: [ADR 0038](decision/0038-refinement-non-vacuity-obligations.md) で、リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を定めた。
-  * 義務: 選択の像としての `Spec`（`Machine.ofChoice`）、環境の固定（`Refines.Pinned`）、標準の貼り合わせ（`Glue.ofStd`。部分写像）、入口の全域性（`TotalUnder`）、`InitSurj`、`StateSafe`、両向きの W 課題（`Nontrivial`）、核の明示（`KernelIs`）
-  * 検査: TR-G・TR-N を実装し、TR-V を定め、TR-P を改めた
-  * 設計段階で、独立したエージェントによる敵対的レビューを行った（実装後のレビューは backlog 0030 で実施中）
-* **Creation**: [backlog 0030](backlog/0030-refinement-non-vacuity.md) を作った。スキル port-lang の `assets/Machine/Adequacy.lean` と反例 `assets/MachineTest/Adequacy.lean`、`lean/Trace/Obligation.lean`（`lake exe obligation-check`）、`tools/ci/check_obligations.py` を作り、`tools/ci/lean.sh` に組み込んだ。
+  * 義務: 選択の像としての `Spec`（`Machine.ofChoice`・`FreeFrame`）、`Sound` と 1 点の初期状態（`InitIs`）、環境の固定（`Refines.Pinned`・`NoFaultReachable`）、標準の貼り合わせ（`Glue.ofStd`。部分写像）、入口の全域性（`TotalUnder`・`EnvWitness`）、`InitSurj`、`StateSafe`、両向きの W 課題（`Nontrivial`）、核の明示（`KernelIs`）
+  * 検査: TR-G・TR-N を実装し、TR-V・TR-PE を定めた（ADR 0034・0036・0037 の決定は変えない）
+  * 設計段階と実装後に、独立したエージェントによる敵対的レビューを行い、指摘と対応を ADR 0038 に記した
+* **Creation**: [backlog 0030](backlog/0030-refinement-non-vacuity.md) を作り、完了した。スキル port-lang の `assets/Machine/Adequacy.lean` と反例 `assets/MachineTest/Adequacy.lean`（11 件）、`lean/Trace/Obligation.lean`（`lake exe obligation-check`）、`tools/ci/check_obligations.py` を作り、`tools/ci/lean.sh` に組み込んだ。追跡属性 `@[nondet]`・`@[std_abs]`・`@[kernel]`・`@[env_pre]` を加えた。
 * **Update**: [spec/abstraction.md](spec/abstraction.md) を改めた。
   * 空虚化を防ぐ義務の節を加えた。
-  * α の表に、核の列と HTTP の応答の行を加えた。
-  * 前提型の差異の影響（出力のみ／中断）、入口の R 課題、SPEC-005〜007、ABS-048、Spec の非決定性 N-001〜N-006 を加えた。
+  * α の表に、核の列と、環境・HTTP の応答の行を加えた。
+  * 前提型の差異の影響（出力のみ／中断）、入口の R 課題、SPEC-005〜008、ABS-048、Spec の非決定性 N-001〜N-005 を加えた（各登録簿に backlog の列）。
 * **Update**: [spec/refinement.md](spec/refinement.md) に、同じ項目と REF-011・REF-012 を加えた。
-* **Update**: [spec/assurance.md](spec/assurance.md) にモデル間の保証の限界を加えた。[spec/domain-model.md](spec/domain-model.md) には、入口の PRE が値域を含まないことを加えた。
-* **Update**: ADR [0034](decision/0034-b-method-refinement-and-explicit-deviations.md)・[0037](decision/0037-conflict-as-spec-nondeterminism.md) の More Information に、ADR 0038 による補いを記した。
+* **Update**: [spec/assurance.md](spec/assurance.md) に、モデル間の保証の限界と、環境・マスタを入力とする写しの限界を加えた。[spec/domain-model.md](spec/domain-model.md) には、入口の値域を環境の前提とすることを加えた。
+* **Update**: ADR [0034](decision/0034-b-method-refinement-and-explicit-deviations.md)・[0036](decision/0036-traceability-hash-as-deterministic-check-record.md)・[0037](decision/0037-conflict-as-spec-nondeterminism.md) の More Information に、ADR 0038 による追加を記した。
 * **Update**: backlog [0003](backlog/0003-abstract-domain-types-and-master-data.md)・[0012](backlog/0012-conformance-vector-format-and-generator.md)・[0024](backlog/0024-trace-tooling.md) と [rules/backlog.md](rules/backlog.md) の完了の定義を改めた。
 * **Update**: スキル port-lang を 0.3 に改めた（architecture・traceability・conformance・verification・spec-documents・lean/trace-attributes・SKILL.md）。
 

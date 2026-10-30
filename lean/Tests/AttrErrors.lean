@@ -25,9 +25,10 @@ end Tests.AttrErrors
 namespace Tests.AttrKeywords
 
 /-- 属性名（`source`, `target` など）が予約語にならず、識別子として使えることを確かめる。 -/
-def useNames (source target obligation deviation nondet std_abs spec_doc no_source : Nat) : Nat :=
-  source + target + obligation + deviation + nondet + std_abs + spec_doc + no_source
+def useNames (source target obligation deviation nondet std_abs kernel env_pre spec_doc no_source : Nat) :
+    Nat :=
+  source + target + obligation + deviation + nondet + std_abs + kernel + env_pre + spec_doc + no_source
 
-#guard useNames 1 2 3 4 5 6 7 8 = 36
+#guard useNames 1 2 3 4 5 6 7 8 9 10 = 55
 
 end Tests.AttrKeywords

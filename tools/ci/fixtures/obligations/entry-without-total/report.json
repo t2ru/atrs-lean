@@ -1,5 +1,5 @@
 {
- "obligations": [
+ "refinements": [
   {
    "name": "Abstraction.X.refines",
    "ids": [
@@ -13,12 +13,30 @@
    ],
    "observations": [],
    "std_abs": [],
-   "nondet": [
+   "env_choices": [
     "Spec.Conflict"
    ],
+   "free_choices": [],
    "init_surj": true,
+   "sound": true,
+   "init_is": true,
    "pinned": true,
+   "no_fault": true,
+   "free_frame": false,
+   "total_under": [],
+   "state_safe": [
+    "Abstraction.X.dev_D901"
+   ],
    "errors": []
+  }
+ ],
+ "obligations": [
+  {
+   "name": "Abstraction.X.refines",
+   "ids": [
+    "ABS-901"
+   ],
+   "refines": true
   }
  ],
  "nondet": [
@@ -38,9 +56,13 @@
   }
  ],
  "std_abs": [],
- "total_under": [],
- "state_safe": [
-  "Abstraction.X.dev_D901"
+ "env_pre": [
+  {
+   "name": "Spec.envOk",
+   "ids": [
+    "MD-901"
+   ]
+  }
  ],
  "errors": []
 }

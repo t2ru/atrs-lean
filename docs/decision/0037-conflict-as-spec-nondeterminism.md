@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 排他制御の失敗 Conflict を、Spec の状態変更操作の非決定的な結果とする

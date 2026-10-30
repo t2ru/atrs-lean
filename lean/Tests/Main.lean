@@ -125,30 +125,49 @@ def fixtureTests (env : Environment) : IO Unit := do
 def ruleCodes (errs : Array String) : List String :=
   (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
 
+/-- フィクスチャの対象: 接頭辞 `Tests.ObFix` を除いた名前で、既定の層の決め方を使う。 -/
+def obFixScope : Trace.Obligation.Scope :=
+  { layerOf := fun n =>
+      match n.components with
+      | `Tests :: `ObFix :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
+      | _ => none }
+
 /-- フィクスチャを obligation-check の処理にかける。 -/
 def obligationTests (env : Environment) : IO Unit := do
   IO.println "obligation-check (Tests.ObligationFixture)"
-  let r := Trace.Obligation.check env fun n => (`Tests.ObFix).isPrefixOf n
+  let r := Trace.Obligation.check env obFixScope
+  let ab (s : String) : Name := (`Tests.ObFix.Abstraction).append s.toName
   let codesOf (s : String) : Option (List String) :=
-    (r.rs.find? (·.name == (`Tests.ObFix).append s.toName)).map (ruleCodes ·.errors)
-  for (s, expected) in [("good_refines", ([] : List String)), ("v1_forall", ["G1"]),
-      ("v2_plainRestrict", ["G2"]), ("v3_choiceNoNondet", ["G3", "G6"]), ("v4_domSet", ["G4", "G6"]),
-      ("v5_helperGlue", ["G5", "G6"]), ("v5_plainObs", ["G5", "G6"]), ("v5_plainAi", ["G5", "G6"]),
-      ("v6_noCompanions", ["G6"])] do
+    (r.rs.find? (·.name == ab s)).map (ruleCodes ·.errors)
+  for (s, expected) in [("good_refines", ([] : List String)), ("good_abbrev", []), ("v1_forall", ["G1"]),
+      ("v2_plainRestrict", ["G2"]), ("v2_paramDev", ["G2", "G6"]), ("v3_choiceNoNondet", ["G3", "G6"]),
+      ("v3_relSpec", ["G3", "G6"]), ("v3_free", ["G3", "G6"]), ("v4_domSet", ["G4", "G6"]),
+      ("v4_taut", ["G4", "G6"]), ("v4_usesSpec", ["G4", "G6"]), ("v5_helperGlue", ["G5", "G6"]),
+      ("v5_plainObs", ["G5", "G6"]), ("v5_plainAi", ["G5", "G6"]), ("v5_aoNoKernel", ["G6", "G7"]),
+      ("v6_noCompanions", ["G6"]), ("v6_invFalse", ["G6"]), ("v6_ceCheat", ["G6"])] do
     check s!"{s}: {expected}" (codesOf s == some expected)
-  check "R obligations: all found" (r.rs.size == 9)
-  check "good_refines: kind, deviation, std_abs, nondet, companions"
-    (match r.rs.find? (·.name == `Tests.ObFix.good_refines) with
-     | some ri => ri.absKind == "ofChoice" && ri.devs == #[`Tests.ObFix.devLang] &&
-         ri.stdAbs == #[`Tests.ObFix.betaS, `Tests.ObFix.aiS, `Tests.ObFix.aoS] &&
-         ri.nondets == #[`Tests.ObFix.Conflict] && ri.hasInitSurj && ri.hasPinned
+  check "R obligations: all found (v0_notRefines is not one)" (r.rs.size == 18)
+  check "good_refines: kind, deviation, std_abs, choices, companions, entry and state safety facts"
+    (match r.rs.find? (·.name == ab "good_refines") with
+     | some ri => ri.absKind == "ofChoice" && ri.devs == #[ab "devLang"] &&
+         ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
+         ri.envLeaves == #[`Tests.ObFix.Spec.Conflict] && ri.freeLeaves.isEmpty &&
+         ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
+         ri.totalUnder == #[(`Tests.ObFix.Spec.envOk, true)] && ri.stateSafe == #[ab "devLang"]
      | none => false)
-  check "global errors: G7 for aoIf and G8 for devNoW only"
-    (r.errors.size == 2 && r.errors.any (fun e => e.startsWith "G7: Tests.ObFix.aoIf") &&
-      r.errors.any (fun e => e.startsWith "G8: Tests.ObFix.devNoW"))
-  check "nondet listed" (r.nondets.map (·.1) == #[`Tests.ObFix.Conflict])
-  check "total_under listed" (r.totalUnder.contains `Tests.ObFix.spec)
-  check "state_safe listed" (r.stateSafe.contains `Tests.ObFix.devLang)
+  check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
+    | some ri => ri.freeLeaves == #[`Tests.ObFix.Spec.AnyResult] | none => false)
+  let expectedGlobal := ["G7: Tests.ObFix.Abstraction.aoIf", "G7: Tests.ObFix.Abstraction.ceCheat",
+    "G7: Tests.ObFix.Abstraction.via", "G8: Tests.ObFix.Abstraction.devK", "G8: Tests.ObFix.Abstraction.devNoW",
+    "G0: Tests.ObFix.Abstraction.v0_notRefines", "G3: Tests.ObFix.Spec.specRel",
+    "G0: Tests.ObFixHelpers.devFalse", "G8: Tests.ObFixHelpers.devFalse"]
+  check s!"global errors: exactly {expectedGlobal.length}"
+    (r.errors.size == expectedGlobal.length &&
+      expectedGlobal.all fun p => r.errors.any (·.startsWith p))
+  check "obligations: v0_notRefines listed as not R"
+    (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
+  check "nondet listed" (r.nondets.map (·.1) == #[`Tests.ObFix.Spec.AnyResult, `Tests.ObFix.Spec.Conflict])
+  check "env_pre listed" (r.envPres.map (·.1) == #[`Tests.ObFix.Spec.envOk])
 
 unsafe def main : IO UInt32 := do
   merkleTests

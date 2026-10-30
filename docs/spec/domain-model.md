@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # ドメインモデル
@@ -177,7 +177,7 @@ generated:
 ## 値域
 
 [Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR 0006](../decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。
-マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。ただし、入口の機械（画面・REST・レポート要求の受信）の PRE には入力の値域を含めない。値域の外の入力には、入口の [Spec] が入力検証の結果を定める（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)、[abstraction.md](abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
+マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)、[abstraction.md](abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |
 | --- | --- |

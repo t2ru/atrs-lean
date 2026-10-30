@@ -14,6 +14,11 @@ import Machine
 | 初期状態の偏り | `fullC_refines_specAny`・`fullC_not_initSurj` |
 | 強すぎる PRE と、PRE の外への入力の写し | `garbage_refines_strong_bad`・`specStrong_not_total` |
 | 差異の前提の外の 1 歩が状態を壊す | `langC_refines`・`langC_not_stateSafe` |
+| 抽象側の INV が `False` | `junk_refines_invFalse`・`specInvF_not_sound` |
+| `ce` が障害でない入力を障害の環境に写す | `buggy_pinned_ceCheat`・`ceCheat_not_noFaultReachable` |
+| 自由な選択が結果をすべて吸収する | `junk_refines_specFree`・`fFree_frame_forgets_all` |
+| 差異の前提の述語が `False` | `false_not_nontrivial` |
+| 環境の前提の外への入力の写し | `specStrong_total_lt10`・`glueBad_not_envWitness` |
 -/
 
 namespace MachineTest.Adequacy
@@ -94,6 +99,17 @@ theorem good_run {ics : List Req} {t' : Nat} {ocs : List Out} (hr : good.Run 5 i
     ∃ ias s' oas, Forall₂ glue.αi ics ias ∧ spec.Run 5 ias s' oas ∧ glue.J s' t' ∧ spec.Inv s' ∧
       Forall₂ glue.αo ocs oas :=
   good_refines.run spec_sound spec_total trivial (glue_J.2 rfl) hr fun _ _ => ⟨trivial, fun _ _ => trivial⟩
+
+theorem good_noFaultReachable : Refines.NoFaultReachable good glue ce false :=
+  fun r ia _ ha => ⟨{ r with env := false }, trivial, by rw [glue_αi] at ha ⊢; exact ha, rfl⟩
+
+theorem fRes_frame : Machine.FreeFrame fRes fun r : Nat × Out => r :=
+  fun _ _ _ x y => by cases x; cases y; rfl
+
+theorem spec_initIs : spec.InitIs 5 := fun _ => Iff.rfl
+
+theorem good_envWitness : Refines.EnvWitness good glue fun _ => True :=
+  ⟨⟨0, false, false⟩, 0, trivial, glue_αi.2 rfl, trivial⟩
 
 #guard spec.run 5 2 == (3, .ok)
 
@@ -307,5 +323,85 @@ theorem langC_not_stateSafe : ¬ Refines.StateSafeConcrete spec langC glue devLa
   rw [glue_J] at hJ; subst hJ
   obtain ⟨b, _⟩ := c
   cases b <;> simp [fRes] at hc
+
+/-! ## 反例 7: 抽象側の INV が `False` -/
+
+/-- INV が `False` の予約（誤り）。 -/
+def specInvF : Machine.Machine Nat Nat Out :=
+  Machine.ofChoice (fun _ => False) (· = 5) (fun _ _ => True) fRes false ()
+
+/-- 状態を壊し、常に満席を返す具体機械。 -/
+def junk : Concrete Nat Req Out Unit := Concrete.ofFun (· = 5) fun t _ => .ok (t + 1, .full)
+
+/-- 適用可能性・正しさは INV を仮定するので、空虚に成り立つ。 -/
+theorem junk_refines_invFalse : Refines specInvF junk glue where
+  init t ht := ⟨t, ht, glue_J.2 rfl⟩
+  input_total r _ := ⟨r.n, glue_αi.2 rfl⟩
+  applicable _ _ _ _ hi := absurd hi id
+  correct _ _ _ _ _ _ hi := absurd hi id
+
+/-- 初期状態が INV を満たさないので、`Sound` は成り立たない（`InitIs` と合わせて INV は空でない）。 -/
+theorem specInvF_not_sound : ¬ specInvF.Sound := fun h => h.init_inv 5 rfl
+
+/-! ## 反例 8: `ce` が障害でない入力を障害の環境に写す -/
+
+/-- `n = 3` の入力を、衝突の環境とみなす `ce`（誤り）。 -/
+def ceCheat (r : Req) : Bool := r.env || decide (r.n = 3)
+
+/-- 不具合を持つ `buggy` でも、`ceCheat` なら環境の固定が成り立ってしまう。 -/
+theorem buggy_pinned_ceCheat : Refines.Pinned spec buggy glue fRes ceCheat := by
+  intro s t r ia t' oc _ hJ ha _ _ hs
+  rw [glue_J] at hJ; rw [glue_αi] at ha; subst hJ; subst ha
+  simp only [buggy, Concrete.ofFun_step] at hs
+  refine ⟨(), ?_⟩
+  split at hs
+  · rename_i h3
+    simp only [Except.ok.injEq, Prod.mk.injEq] at hs
+    obtain ⟨rfl, rfl⟩ := hs
+    simp [ceCheat, h3, fRes, glue_J, glue_αo]
+  · rename_i h3
+    simp only [Except.ok.injEq] at hs
+    rw [show ceCheat r = r.env by simp [ceCheat, h3], ← hs]
+    exact ⟨glue_J.2 rfl, glue_αo.2 rfl⟩
+
+/-- `n = 3` の入力は、障害の無い環境では実現できない。 -/
+theorem ceCheat_not_noFaultReachable : ¬ Refines.NoFaultReachable buggy glue ceCheat false := fun h => by
+  obtain ⟨r', _, ha, hce⟩ := h ⟨3, false, false⟩ 3 trivial (glue_αi.2 rfl)
+  rw [glue_αi] at ha
+  simp [ceCheat, ← ha] at hce
+
+/-! ## 反例 9: 自由な選択が結果をすべて吸収する -/
+
+/-- 自由な選択が結果そのものである予約（誤り）。 -/
+def fFree (_ _ : Nat) (c : Bool × (Nat × Out)) : Nat × Out := c.2
+
+def specFree : Machine.Machine Nat Nat Out :=
+  Machine.ofChoice (fun _ => True) (· = 5) (fun _ _ => True) fFree false (5, .ok)
+
+theorem junk_refines_specFree : Refines specFree junk glue where
+  init t ht := ⟨t, ht, glue_J.2 rfl⟩
+  input_total r _ := ⟨r.n, glue_αi.2 rfl⟩
+  applicable _ _ _ _ _ _ _ _ _ := ⟨⟨_, rfl⟩, fun _ h => by cases h⟩
+  correct _ _ _ _ t' oc _ _ _ _ _ _ := ⟨t', oc, ⟨(false, (t', oc)), rfl⟩, glue_J.2 rfl, glue_αo.2 rfl⟩
+
+/-- 自由な選択の枠を満たす射影は、すべての結果を同一視する（核が全体になる）。 -/
+theorem fFree_frame_forgets_all {P : Type} (m : Nat × Out → P) (h : Machine.FreeFrame fFree m) :
+    ∀ a b, m a = m b := fun a b => h 0 0 false a b
+
+/-! ## 反例 10: 差異の前提の述語が `False` -/
+
+theorem false_not_nontrivial : ¬ Nontrivial fun (_ : Req) => False := fun ⟨⟨_, h⟩, _⟩ => h
+
+/-! ## 反例 11: 環境の前提の外への入力の写し -/
+
+/-- 環境の前提を PRE と同じ強さにすれば、入口の全域性は成り立ってしまう。 -/
+theorem specStrong_total_lt10 : specStrong.TotalUnder fun n => n < 10 := fun _ _ _ h => h
+
+/-- しかし、どの具体側の入力の像も環境の前提を満たさない。 -/
+theorem glueBad_not_envWitness : ¬ Refines.EnvWitness garbage glueBad fun n => n < 10 := fun h => by
+  obtain ⟨_, ia, _, ha, he⟩ := h
+  simp only [glueBad, Glue.ofStd, Option.some.injEq] at ha
+  subst ha
+  exact absurd he (by decide)
 
 end MachineTest.Adequacy

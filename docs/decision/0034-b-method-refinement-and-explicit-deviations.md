@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T07:45:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -171,6 +171,6 @@ Chosen option: "B メソッドの抽象機械とリファインメントで定�
 * 本 ADR は [ADR 0004](0004-two-layer-model-java-faithful-and-abstract.md) を置き換える。二層モデルの決定と、運賃の double による差異の調査結果は引き継ぐ。調査結果は次のとおり。
   * シードの範囲では、最終運賃の差異は 0 件である。
   * 基本運賃を 0〜1,000,000 の任意の整数とすると、差異は 188 件ある（最小例は 1430 円・30%）。
-* リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査は、[ADR 0038](0038-refinement-non-vacuity-obligations.md) で補った。`J`・`αᵢ`・`αₒ` の標準の部分は部分写像のグラフとし、主定理は閉じた命題として差異を `restrict` で機械の中に置く。
+* リファインメントが空虚・自明に成り立つことを防ぐ付帯の義務と検査を、[ADR 0038](0038-refinement-non-vacuity-obligations.md) で加えた（本 ADR の決定は変えない）。`J`・`αᵢ`・`αₒ` の標準の部分は部分写像のグラフとし、主定理は閉じた命題として差異を `restrict` で機械の中に置く。
 * [ADR 0033](0033-foundational-principles.md)（基本原則）, [ADR 0035](0035-generate-verus-mirror-from-target-model.md), [ADR 0036](0036-traceability-hash-as-deterministic-check-record.md), [ADR 0037](0037-conflict-as-spec-nondeterminism.md)
 * [spec/abstraction.md](../spec/abstraction.md), [spec/refinement.md](../spec/refinement.md), スキル port-lang の [architecture.md](../../.agents/skills/port-lang/references/architecture.md#リファインメントb-メソッド)

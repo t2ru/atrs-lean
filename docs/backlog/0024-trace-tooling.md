@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0001", "0025"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 追跡の道具（tools/trace）
@@ -23,7 +23,9 @@ generated:
 - `inventory source`（tree-sitter-java、Mapper XML・DDL・properties・pom の簡易パーサ、正規化した本文ハッシュ）
 - `inventory target`（tree-sitter-rust と doc タグの行走査）
 - `ingest-lean`（`lake exe trace-dump` の取り込み）, `manifest`（`trace/manifest.json` と traceability.md の生成区画）
-- `check`（TR-S1〜TR-R と TR-D。警告にしてよいのは、backlog で完了していない機能だけ）。TR-G・TR-N は `lake exe obligation-check` と `tools/ci/check_obligations.py` で実装済み（[backlog 0030](0030-refinement-non-vacuity.md)）なので、`check` から呼ぶ。TR-P は入口の R 課題の具体機械で網羅を数える（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）。 `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する）, `diff`（新旧インベントリの分類）, `impact`（証明グラフに沿った影響一覧）
+- `check`（TR-S1〜TR-R と TR-D。警告にしてよいのは、backlog で完了していない機能だけ）
+- `check` から、実装済みの TR-G・TR-N（`lake exe obligation-check` と `tools/ci/check_obligations.py`。[backlog 0030](0030-refinement-non-vacuity.md)）を呼ぶ。TR-PE（入口の R 課題の具体機械による網羅。[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）を加える
+- `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する）, `diff`（新旧インベントリの分類）, `impact`（証明グラフに沿った影響一覧）
 - `tmpl:` ロケータ（Thymeleaf テンプレートの式）のインベントリ
 - 最初の `trace/source-inventory.json` の生成（[backlog 0025](0025-upstream-submodule-and-inventory.md) の submodule から）
 - 本文の正規化で文字列リテラルの中身を保つこと。`renames.json` の対応を `rehash` で検査すること
@@ -41,7 +43,7 @@ generated:
 - [ ] 故意に入れた TR-X 違反（`TargetModel` に `java:` を書く）を検出できる
 - [ ] 故意に入れた TR-D 違反（文書の D-NNN に対応する `@[deviation]` が無い、R 課題に無名の仮定がある）を検出できる
 - [ ] `tools/trace check` が TR-G・TR-N（`obligation-check`・`check_obligations.py`）の結果を含める
-- [ ] 故意に入れた TR-P 違反（入口でない R 課題にしか現れない公開操作）を検出できる
+- [ ] 故意に入れた TR-PE 違反（入口でない R 課題にしか現れない公開操作）を検出できる
 - [ ] 検査が合格していない定義のハッシュを `rehash` が更新しないことを確認した
 
 ## 参照

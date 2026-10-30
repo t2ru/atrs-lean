@@ -95,15 +95,18 @@ locator = kind ":" body
 | TR-S2 | `@[source]` のハッシュが `source-inventory` と一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている（モデル側だけを直した場合も再検査を求める） |
 | TR-T1 | `TargetModel` の公開定義に `@[target]` が無い。または `target-inventory` の公開項目が覆われず、対象外でもない。生成した写しは対象外とする（再生成と TR-T2 で確かめる） |
 | TR-T2 | `@[target]` のハッシュが `target-inventory` と、写しのハッシュが Lean の Merkle ハッシュと一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている |
-| TR-P | `SourceModel` の公開操作が、どの **入口の** R 課題（`Abstraction`）の具体機械にも含まれない。または、`TargetModel` の公開操作が、どの入口の R 課題（`Refinement`）の具体機械にも含まれない。例外は無い。入口でない R 課題（ポート実装・内部の計算）は補題として扱い、網羅に数えない |
+| TR-P | `SourceModel` の公開操作が、どの R 課題（`Abstraction`）の定理にも現れない。または、`TargetModel` の公開操作が、どの R 課題（`Refinement`）の定理にも現れない。例外は無い |
+| TR-PE | `SourceModel`・`TargetModel` の公開操作が、どの **入口の** R 課題の具体機械（定義の参照の閉包）にも含まれない。入口でない R 課題（ポート実装・内部の計算）だけに現れる操作は、入口からの到達が示されていない |
 | TR-D | 次のどれかに当たる。<br>- 登録簿の前提型・観測型の差異（`D-NNN` / `T-NNN`）と `@[deviation]` が 1 対 1 でない<br>- `@[deviation]` が、どの R 課題の定理の型にも現れない<br>- 差異に W 課題が無い<br>- R 課題の定理に、`@[deviation]`・PRE・INV 以外の仮定がある |
-| TR-G | R 課題（型の結論が `Machine.Refines` の `@[obligation]` 定理）が、空虚化を防ぐ形と付帯の義務（[architecture.md](architecture.md#空虚化を防ぐ義務)）を備えていない。判定する規則は次の 8 つである。<br>- G1: 型が閉じている<br>- G2: 制限の述語が `@[deviation]`<br>- G3: 抽象側の基底が `ofChoice`/`pure` で、選択の型の葉が `@[nondet]`<br>- G4: 具体側の基底が `Dom` を設定しない<br>- G5: 貼り合わせが `Glue.ofStd` の形で、β・aᵢ・aₒ が `@[std_abs]`、OJ・OO が `never` か `@[deviation]`<br>- G6: `InitSurj`・`Pinned` がある<br>- G7: `@[std_abs]` が、核の定理のある葉か、許可した構成の合成である<br>- G8: `@[deviation]` に `Nontrivial` がある<br>あわせて、次も検査する。<br>- 入口の R 課題の抽象機械に `TotalUnder` がある<br>- 「出力のみ」の差異に `StateSafe` がある<br>- 前提型の差異の影響が登録されている |
+| TR-G | R 課題（型の結論が `Machine.Refines` の `@[obligation]` 定理）が、空虚化を防ぐ形と付帯の義務（[architecture.md](architecture.md#空虚化を防ぐ義務)）を備えていない。判定する規則は次の 8 つである。<br>- G0: 追跡属性を付けた定数がモデルの層にある。`Refines` を含む課題の結論が `Refines` である<br>- G1: 型が閉じている<br>- G2: 制限の述語が `@[deviation]` の定数そのもので、基底が名前付きの定数<br>- G3: 抽象側の基底（と `Spec` のすべての機械）が `ofChoice`/`pure` で、選択の型の葉が `@[nondet]`。自由な選択には `FreeFrame`<br>- G4: 具体側の基底が `Dom` を設定せず、`toConcrete` と `Spec` の関数を参照しない<br>- G5: 貼り合わせが `Glue.ofStd` の形で、β・aᵢ・aₒ が `@[std_abs]` の定数そのもの、OJ・OO が `never` か `@[deviation]` の定数そのもの<br>- G6: `InitSurj`・基底の `Sound`・`InitIs`、`ofChoice` なら `Pinned`（`ce` は `@[std_abs]`）と `NoFaultReachable` がある（式全体で照合する）<br>- G7: `@[std_abs]` が 1 引数の関数で、核の定理（K は等号か `@[kernel]`）のある葉か、許可した構成の合成である。aₒ と `FreeFrame` の射影は核の定理を持つ<br>- G8: `@[deviation]`・`@[env_pre]` に `Nontrivial` がある<br>あわせて、文書と次を照合する。<br>- 環境・自由の種類<br>- 種類 R の課題の形<br>- 入口の R 課題の `TotalUnder`（`@[env_pre]`）と `EnvWitness`<br>- 「出力のみ」の差異の `StateSafe`<br>- 前提型の差異の影響の登録<br>- `@[deviation]` の登録 |
 | TR-N | 登録簿の `Spec` の非決定性（`N-NNN`）と `@[nondet]` が 1 対 1 でない |
-| TR-V | 適合テストベクタのうち、次のどれかを満たさない（差異の前提の外に落ちる）ものに、差異 ID のラベルが無い。または、ラベルがあるのに外に落ちない。<br>- 具体側の定義域<br>- 具体側の不変条件<br>- 制限した PRE<br>ラベルの付け方は [conformance.md](conformance.md) による |
+| TR-V | 適合テストベクタのうち、次のどれかを満たさないものに、外に落ちる理由のラベルが無い。または、ラベルがあるのに外に落ちない。<br>- 具体側の定義域<br>- 具体側の不変条件<br>- 基底の PRE<br>- 制限した PRE（差異の前提）<br>ラベルは差異 ID か `PRE`・`INV` で、付け方は [conformance.md](conformance.md) による |
 | TR-X | 直接接続の禁止に違反している |
 | TR-R | 存在しない Lean 名・ロケータ・課題 ID・差異 ID への参照がある |
 
-段階導入: TR-S1・TR-T1・TR-P・TR-D、および TR-G・TR-N のうち「登録簿にあって Lean にまだ無い」ものを警告にしてよいのは、該当する機能の作業項目が完了していない間だけである。完了を宣言する時点で、その機能について全検査が失敗扱いで通っていなければならない。他の検査は最初から失敗とする。
+段階導入（TR-G・TR-N）: 登録簿（非決定性・入口の R 課題・前提型の差異の影響）の各行に、Lean 側を整える作業項目を書く。その項目が完了するまでは「登録簿にあって Lean にまだ無い」ことを警告にし、完了したら失敗にする。
+
+段階導入: TR-S1・TR-T1・TR-P・TR-D を警告にしてよいのは、該当する機能の作業項目が完了していない間だけである。完了を宣言する時点で、その機能について全検査が失敗扱いで通っていなければならない。他の検査は最初から失敗とする。
 
 ## 道具
 

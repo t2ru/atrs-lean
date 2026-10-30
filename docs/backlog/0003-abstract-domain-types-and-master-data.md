@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0001"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # Spec: ドメイン型・基本演算・マスタデータ
@@ -23,8 +23,8 @@ generated:
 - `Spec.Model`: 列挙・エンティティ・値域
 - `Spec.MasterData`: 型、不変条件 MD-1〜MD-8、参照関数
 - `Spec.Config`
-- `Spec.Nondet`: [Spec の非決定性](../spec/abstraction.md#spec-の非決定性n-nnn) N-001〜N-006 の選択の型（`@[nondet]`）と、環境の選択の標準値（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）
-- `Spec.MasterData` の妥当性（MD-1〜MD-8）を、入力のマスタ・設定の成分だけで書いた決定可能な述語（入口の全域性 SPEC-006 と TR-V に使う）
+- `Spec.Nondet`: [Spec の非決定性](../spec/abstraction.md#spec-の非決定性n-nnn) N-001〜N-005 の選択の型（`@[nondet]`）と、環境の選択の標準値（[ADR 0038](../decision/0038-refinement-non-vacuity-obligations.md)）
+- 入口の環境の前提: マスタ・設定の妥当性（MD-1〜MD-8）と入力の値域を、入力の成分だけで書いた決定可能な述語（`@[env_pre]`。入口の全域性 SPEC-006 と TR-V に使う）と、その両向きの例（`Nontrivial`）
 
 ## 対象外
 
@@ -33,7 +33,7 @@ generated:
 ## 完了条件
 
 - [ ] マスタデータと共通の部分について、SPEC-001〜SPEC-003（[abstraction.md](../spec/abstraction.md#spec-自身の証明課題spec-nnn)）を証明した
-- [ ] N-001〜N-006 の選択の型に `@[nondet]` を付け、`check_obligations.py` の OB-N2 の警告が消えた
+- [ ] N-001〜N-005 の選択の型に `@[nondet]` を付け、`check_obligations.py` の OB-N2 の警告が消えた
 - [ ] シードのマスタ・設定が MD-1〜MD-8 を満たすことを示した（`decide` で証明できない場合は、真偽値の関数とその正しさの定理で示す）
 - [ ] 日付演算の境界（閏年・月末・年越し）の性質を証明またはテストした
 - [ ] `conformance/shared/format/` のベクタを作り全件通した

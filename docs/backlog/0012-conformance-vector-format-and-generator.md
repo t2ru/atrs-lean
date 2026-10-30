@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0004"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 適合テストベクタの生成と検査（Lean 側）
