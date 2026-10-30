@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-30T21:44:53+09:00
 ---
 
 # 保証の限界
@@ -42,7 +42,7 @@ generated:
 | ReportStore の `publish` の原子性・ReportQueue の配信保証のうち、プロセスの異常終了に対するもの（規範節） | なし（原典は ActiveMQ Artemis を内蔵し、ファイルの移動に OS を使う） | 異常終了をまたぐ配信回数と、ファイルの原子的な移動 | ActiveMQ Artemis、OS のファイル操作 |
 | パスワードの照合（PBKDF2）・パスワードハッシュの互換（規範節） | なし。`SourceModel` は `PasswordEncoder` を raw について単射な符号化として写し（ABS-024）、オラクルでは `{test}` 形式に差し替える（[conformance.md](conformance.md)） | 原典の `{pbkdf2}`（`DelegatingPasswordEncoder`）の経路は実行されない。PBKDF2 の衝突（モデルは衝突しないものとして写す） | PBKDF2 の衝突困難性 |
 | `LangSemantics.Java` | double は、Lean のネイティブ `Float`（ホストの IEEE 754 binary64）とビット単位で突き合わせる（`lean/Tests/JavaDouble.lean`、`lake test`）。範囲は運賃計算の [Source] の式で、次の 4,006,212 件である。<br>- 因子 `q × 0.01`（q = 0..1000）・`1 − r × 0.01`（r = 0..100）の全件<br>- 全因子 × 金額 0..2,000 の全件<br>- 積算比率 100・125・140 と割引率 0・5・10・20・30 × 金額 0..100,000 の全件<br>- 全因子 × 値域の上限（基本運賃 10,000,000、運賃 100,000,000）までの疑似乱数 1,000,000 件<br>`BigDecimal`（`setScale(-2, mode)` の全丸めモード、`intValue` の切詰め）・`String`（`length`・`trim`・`strip`・`split`）・`LocalDate`（`plusDays`・`minusDays`・`isBefore`・`isAfter`・`DAYS`/`YEARS.between`・`toEpochDay`・`ofEpochDay`）・double（リテラル・`*`・`-`・`(int)`・特殊値）は、固定の入力表で JVM の実行結果と突き合わせる。表は `JavaTable.java` が JVM で生成した 581 件の `#guard` で、CI（Temurin 17）で再生成して差分が無いことを確かめる（[backlog 0002](../backlog/0002-lang-semantics-java.md)） | 突き合わせた入力の範囲の外 | ホストの IEEE 754 binary64 が JVM の `double`（Java 17 以降は常に strictfp）と同じであること、JVM |
-| `LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` | PostgreSQL の実行結果との突き合わせ（[backlog 0016](../backlog/0016-lang-semantics-sql.md)） | 突き合わせた値の範囲の外 | PostgreSQL |
+| `LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` | PostgreSQL 16.15（照合順序 C・UTF8・UTC）の実行結果と、固定の入力表で突き合わせる。表は `pg_table.py` が PostgreSQL で生成した 373 件の `#guard` で、CI で再生成して差分が無いことを確かめる（[backlog 0016](../backlog/0016-lang-semantics-sql.md)）。範囲は次のとおり。<br>- 三値論理（AND・OR・NOT の全組合せ）<br>- 比較（`=`・`<`・`<=`。整数・文字列（ASCII・かな・漢字・補助文字・空文字列）・真偽・NULL）・`BETWEEN`・`IN`・`IS NULL`<br>- `ORDER BY`（同順位・NULL の位置・昇順と降順・複数キー。順序が未規定の照会は、処理系の結果が許される順列に含まれること）と照合順序 C の文字列の並び<br>- `TO_CHAR`（`FM` と `0`・`9` の書式 7 種 × 11 値）<br>- `int2`・`int4`・`int8` の範囲の境界と、`int4` の加算の溢れ<br>- `VARCHAR(n)` への格納（超過分が空白のときの切詰めを含む）<br>- シーケンス（`CYCLE`・尽きたときのエラー・`START`・`INCREMENT`）<br>- `UPDATE` の右辺が更新前の行で評価されること、`WHERE` の UNKNOWN<br>型の異なる値の比較（暗黙の型変換）と、日付の演算は突き合わせていない | 突き合わせた値の範囲の外。版の異なる PostgreSQL | PostgreSQL |
 
 ## TargetModel ⇔ 移植先ソース
 

@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T07:30:00+09:00
+  at: 2026-10-30T21:44:53+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -72,7 +72,7 @@ generated:
 | PostgreSQL JDBC | 42.7.9 | `pom.xml` |
 | Tomcat（cargo で起動） | 11.0.15 | `terasoluna-gfw-parent` |
 
-版の正は [`trace/upstream.json`](../../trace/upstream.json) であり、上表はその写しである（[ADR 0024](../decision/0024-following-upstream-releases.md)）。submodule の commit と宣言の一致は `python3 -I tools/ci/check_upstream.py` で検査する。上流はデータベースサーバの版を固定していない。SQL の差分実行で使う版は [backlog 0016](../backlog/0016-lang-semantics-sql.md) で決める。
+版の正は [`trace/upstream.json`](../../trace/upstream.json) であり、上表はその写しである（[ADR 0024](../decision/0024-following-upstream-releases.md)）。submodule の commit と宣言の一致は `python3 -I tools/ci/check_upstream.py` で検査する。上流はデータベースサーバの版を固定していない。SQL の差分実行と方言の突き合わせには PostgreSQL 16.15 を使い、`trace/upstream.json` に記録した（[backlog 0016](../backlog/0016-lang-semantics-sql.md)）。CI はコンテナイメージ `postgres:16.15`（照合順序 C・UTF8・UTC）で、ローカルでは `tools/ci/with_postgres.sh` が一時クラスタを起動する。
 
 ## 機能名（層をまたいで共通）
 

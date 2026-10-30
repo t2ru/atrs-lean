@@ -7,9 +7,9 @@
   "languages": {
     "java": { "version": "17", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#properties/java-version" },
     "postgresql": {
-      "version": null,
+      "version": "16.15",
       "from": "README.md#Install PostgreSQL",
-      "note": "上流はサーバの版を固定していない（PostgreSQL の任意の版を求めるだけ）。SQL の差分実行で使う版は backlog 0016 で決め、ここに記録する"
+      "note": "上流はサーバの版を固定していない（PostgreSQL の任意の版を求めるだけ）。SQL の差分実行と方言の突き合わせには、この版を使う（CI はコンテナイメージ postgres:16.15、照合順序 C・UTF8・UTC。backlog 0016）"
     }
   },
   "dependencies": [

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -29,6 +29,21 @@ elif [ -n "${CI:-}" ]; then
   echo "java not found (required in CI)" >&2; exit 1
 else
   echo "java not found: skipped"
+fi
+
+step "assets/lean: PostgreSQL との突き合わせ表（LangSemanticsTest/PostgresqlDb.lean）が生成器の出力と一致する"
+pgver="$(python3 -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
+if [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/postgresql/*/bin/initdb > /dev/null 2>&1; then
+  pgt="$(mktemp)"
+  tools/ci/with_postgres.sh python3 -I .agents/skills/port-lang/assets/lean/LangSemanticsTest/pg/pg_table.py \
+    --expect-version "$pgver" > "$pgt"
+  diff -u .agents/skills/port-lang/assets/lean/LangSemanticsTest/PostgresqlDb.lean "$pgt"
+  rm -f "$pgt"
+  echo "PostgresqlDb.lean: up to date (PostgreSQL $pgver)"
+elif [ -n "${CI:-}" ]; then
+  echo "PostgreSQL not available (required in CI)" >&2; exit 1
+else
+  echo "PostgreSQL not found: skipped"
 fi
 
 step "assets/lean: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"

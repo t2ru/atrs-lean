@@ -18,7 +18,21 @@ namespace Bag
 
 /-- 2 つのバッグが等しい（要素ごとの個数が一致する）か。 -/
 def bagEq {α : Type} [BEq α] (a b : Bag α) : Bool :=
-  a.length == b.length && a.all (fun x => a.count x == b.count x)
+  a.all (fun x => a.count x == b.count x) && b.all (fun x => a.count x == b.count x)
+
+/-- `bagEq` は、順列であること（`List.Perm`）と同値である。 -/
+theorem bagEq_iff_perm {α : Type} [BEq α] [LawfulBEq α] (a b : Bag α) : bagEq a b = true ↔ a.Perm b := by
+  rw [List.perm_iff_count]
+  simp only [bagEq, Bool.and_eq_true, List.all_eq_true, beq_iff_eq]
+  constructor
+  · intro ⟨ha, hb⟩ x
+    by_cases hxa : x ∈ a
+    · exact ha x hxa
+    · by_cases hxb : x ∈ b
+      · exact hb x hxb
+      · rw [List.count_eq_zero_of_not_mem hxa, List.count_eq_zero_of_not_mem hxb]
+  · intro h
+    exact ⟨fun x _ => h x, fun x _ => h x⟩
 
 /-- `WHERE p`。 -/
 def select {α : Type} (p : α → Truth) (rows : Bag α) : Bag α := rows.filter (fun r => (p r).holds)
@@ -91,6 +105,95 @@ def orderByStable {α : Type} (cfg : SortConfig) (dirs : List SortDir) (key : α
       | y :: ys => if compareKeys cfg dirs (key x) (key y) == .lt then x :: y :: ys else y :: go ys
     go
   rows.foldl (fun acc x => insert x acc) []
+
+/-! ## 許される順列の一意性 -/
+
+/-- 隣り合う要素が `R` を満たし、`R` が推移的なら、どの 2 要素も `R` を満たす。 -/
+theorem pairwise_of_adjacent {α : Type} {R : α → α → Prop} (htrans : ∀ a b c, R a b → R b c → R a c) :
+    ∀ (l : List α), (∀ p ∈ l.zip l.tail, R p.1 p.2) → l.Pairwise R
+  | [] , _ => List.Pairwise.nil
+  | [_], _ => List.pairwise_singleton _ _
+  | a :: b :: l, h => by
+    have hab : R a b := h (a, b) (by simp)
+    have hrest : (b :: l).Pairwise R :=
+      pairwise_of_adjacent htrans (b :: l) fun p hp => h p (by simp [List.zip] at hp ⊢; exact Or.inr hp)
+    refine List.Pairwise.cons ?_ hrest
+    intro c hc
+    rcases List.mem_cons.mp hc with rfl | hc
+    · exact hab
+    · exact htrans a b c hab (List.rel_of_pairwise_cons hrest hc)
+
+/-- 互いに順列で、どちらも `R` で整列していて、`R` が要素の上で反対称なら、2 つの列は等しい。 -/
+theorem eq_of_perm_of_pairwise {α : Type} {R : α → α → Prop} :
+    ∀ {l₁ l₂ : List α}, (∀ a ∈ l₁, ∀ b ∈ l₁, R a b → R b a → a = b) →
+      l₁.Perm l₂ → l₁.Pairwise R → l₂.Pairwise R → l₁ = l₂
+  | [], _, _, hp, _, _ => (List.Perm.nil_eq hp)
+  | _ :: _, [], _, hp, _, _ => absurd hp.length_eq (by simp)
+  | a :: t₁, b :: t₂, hanti, hp, h₁, h₂ => by
+    by_cases e : a = b
+    · subst e
+      have ht := hp.cons_inv
+      rw [eq_of_perm_of_pairwise (fun x hx y hy => hanti x (List.mem_cons_of_mem _ hx) y
+        (List.mem_cons_of_mem _ hy)) ht (List.pairwise_cons.mp h₁).2 (List.pairwise_cons.mp h₂).2]
+    · have hb : b ∈ t₁ := by
+        rcases List.mem_cons.mp (hp.mem_iff.mpr (List.mem_cons_self ..)) with h | h
+        · exact absurd h.symm e
+        · exact h
+      have ha : a ∈ t₂ := by
+        rcases List.mem_cons.mp (hp.mem_iff.mp (List.mem_cons_self ..)) with h | h
+        · exact absurd h e
+        · exact h
+      exact absurd (hanti a (List.mem_cons_self ..) b (List.mem_cons_of_mem _ hb)
+        (List.rel_of_pairwise_cons h₁ hb) (List.rel_of_pairwise_cons h₂ ha)) e
+
+/-- `ORDER BY` の許される順列の一意性: 整列キーの比較が `rows` の上で反対称（`swap`）・推移的で、
+比較が等しい行は同じ行である（キーが単射）なら、許される順列はただ 1 つである。 -/
+theorem isAllowedOrder_unique {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {dirs : List SortDir}
+    {key : α → List SqlValue} {rows o₁ o₂ : List α}
+    (hswap : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg dirs (key y) (key x) = (compareKeys cfg dirs (key x) (key y)).swap)
+    (htrans : ∀ x ∈ rows, ∀ y ∈ rows, ∀ z ∈ rows, compareKeys cfg dirs (key x) (key y) ≠ .gt →
+      compareKeys cfg dirs (key y) (key z) ≠ .gt → compareKeys cfg dirs (key x) (key z) ≠ .gt)
+    (hinj : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg dirs (key x) (key y) = .eq → x = y)
+    (h₁ : isAllowedOrder cfg dirs key rows o₁ = true) (h₂ : isAllowedOrder cfg dirs key rows o₂ = true) :
+    o₁ = o₂ := by
+  simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm, List.all_eq_true, bne_iff_ne, ne_eq] at h₁ h₂
+  obtain ⟨hp₁, hs₁⟩ := h₁
+  obtain ⟨hp₂, hs₂⟩ := h₂
+  -- 要素を rows の要素に限った関係で考える
+  let R : α → α → Prop := fun x y => x ∈ rows ∧ y ∈ rows ∧ compareKeys cfg dirs (key x) (key y) ≠ .gt
+  have trans : ∀ a b c, R a b → R b c → R a c := fun a b c ⟨ha, hb, hab⟩ ⟨_, hc, hbc⟩ =>
+    ⟨ha, hc, htrans a ha b hb c hc hab hbc⟩
+  have sorted : ∀ (o : List α), rows.Perm o → (∀ p ∈ o.zip o.tail, ¬ compareKeys cfg dirs (key p.1) (key p.2) = .gt) →
+      o.Pairwise R := by
+    intro o hp hs
+    apply pairwise_of_adjacent trans
+    intro p hpm
+    have h1 : p.1 ∈ o := (List.of_mem_zip hpm).1
+    have h2 : p.2 ∈ o := List.mem_of_mem_tail (List.of_mem_zip hpm).2
+    exact ⟨hp.mem_iff.mpr h1, hp.mem_iff.mpr h2, hs p hpm⟩
+  apply eq_of_perm_of_pairwise (R := R) _ (hp₁.symm.trans hp₂) (sorted o₁ hp₁ hs₁) (sorted o₂ hp₂ hs₂)
+  intro x _ y _ ⟨hx, hy, hxy⟩ ⟨_, _, hyx⟩
+  apply hinj x hx y hy
+  rw [hswap x hx y hy] at hyx
+  revert hxy hyx
+  generalize compareKeys cfg dirs (key x) (key y) = c
+  cases c <;> decide
+
+/-- 非 NULL の整数 1 列を昇順で整列するときの比較は、整数の比較である。 -/
+theorem compareKeys_int_asc (cfg : SortConfig) (a b : Int) :
+    compareKeys cfg [.asc] [.int a] [.int b] = compare a b := by
+  simp only [compareKeys, compareKey, SqlValue.cmp, Option.getD_some]
+  cases compare a b <;> rfl
+
+/-- 例: 非 NULL の整数 1 列のキーが行の上で単射なら、`ORDER BY` の許される順列はただ 1 つである。 -/
+theorem isAllowedOrder_unique_int {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {f : α → Int}
+    {rows o₁ o₂ : List α} (hinj : ∀ x ∈ rows, ∀ y ∈ rows, f x = f y → x = y)
+    (h₁ : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o₁ = true)
+    (h₂ : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o₂ = true) : o₁ = o₂ := by
+  refine isAllowedOrder_unique ?_ ?_ ?_ h₁ h₂
+  · intro x _ y _; simp only [compareKeys_int_asc]; exact (Int.compare_swap _ _).symm
+  · intro x _ y _ z _; simp only [compareKeys_int_asc, Int.compare_ne_gt]; exact Int.le_trans
+  · intro x hx y hy h; simp only [compareKeys_int_asc, Int.compare_eq_eq] at h; exact hinj x hx y hy h
 
 /-- `UPDATE … SET … WHERE p`。右辺 `set` は更新前の行で評価する。更新件数を返す。 -/
 def updateWhere {α : Type} (p : α → Truth) (set : α → α) (rows : List α) : List α × Nat :=

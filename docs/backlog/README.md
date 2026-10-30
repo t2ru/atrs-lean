@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-30T21:44:53+09:00
 ---
 
 # バックログ
@@ -30,7 +30,7 @@ generated:
 | 0013 | [Java オラクルハーネス](0013-java-oracle-harness.md) | todo | 0012 |
 | 0014 | [Rust: HTTP 契約アダプタ](0014-http-contract-adapter.md) | todo | 0011, 0013, 0005, 0024 |
 | 0015 | [第二言語での移植試行](0015-second-language-portability-pilot.md) | dropped | 0012 |
-| 0016 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](0016-lang-semantics-sql.md) | todo | 0001 |
+| 0016 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](0016-lang-semantics-sql.md) | done | 0001 |
 | 0017 | [OKF バンドルとリンクの検査](0017-okf-bundle-lint.md) | todo | 0001 |
 | 0018 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](0018-rust-project-scaffold.md) | todo | — |
 | 0019 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](0019-rust-spec-mirror-and-fare-core.md) | todo | 0018, 0022, 0028, 0024 |

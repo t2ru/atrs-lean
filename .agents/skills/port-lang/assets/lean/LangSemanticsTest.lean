@@ -1,4 +1,5 @@
 import LangSemanticsTest.Java
 import LangSemanticsTest.JavaJvm
 import LangSemanticsTest.Sql
+import LangSemanticsTest.PostgresqlDb
 import LangSemanticsTest.Rust
