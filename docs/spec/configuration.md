@@ -4,16 +4,16 @@ title: "設定パラメータ"
 description: "業務規則に影響する設定値とその既定値。純粋関数には Config として明示的に渡す。"
 tags: [spec, configuration]
 status: draft
-spec_role: draft
+spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T08:12:23+09:00
 ---
 
 # 設定パラメータ
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Config`](../../lean/Spec/Config.lean)。[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
 
 **[Spec=Source]** 業務規則に影響する設定値は `Config` レコードにまとめ、純粋関数・ユースケースに明示的に渡す。
 既定値は原典の設定ファイルの値である。
@@ -21,6 +21,8 @@ generated:
 出典: atrs-domain/src/main/resources/META-INF/spring/atrs.properties, atrs-env/src/main/resources/META-INF/spring/atrs-infra.properties
 
 ## Config
+
+Lean: `Spec.Config`（既定値は `Spec.Config.default`）。
 
 | フィールド | 原典キー | 型 | 既定値 | 意味 |
 | --- | --- | --- | --- | --- |
@@ -37,6 +39,8 @@ generated:
 
 ## 画面・入力に関する定数
 
+Lean: `Spec.Config.initialPassengersNumber` ほか。
+
 | 名前 | 値 | 意味 | 出典 |
 | --- | --- | --- | --- |
 | `initialPassengersNumber` | `3` | 予約画面で最初に表示する搭乗者欄の数 | atrs-web/.../app/b2/TicketReserveForm.java |
@@ -47,7 +51,7 @@ generated:
 
 ## 不変条件
 
-[Spec] は次を前提とする（[Source] では検査しない）。
+[Spec] は次を前提とする（[Source] では検査しない）。Lean: `Spec.Config.Valid`。運賃種別の条件は `Spec.MasterData.MD7` で課す。
 
 - `childFareRate ≤ 100`
 - すべての運賃種別について `discountRate ≤ childFareRate`（[fare-calculation.md](fare-calculation.md#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）

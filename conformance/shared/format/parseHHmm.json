@@ -1,0 +1,106 @@
+{
+  "operation": "format.parseHHmm",
+  "modelDef": "Spec.Prim.HourMinute.parseHHmm",
+  "specRef": "docs/spec/domain-model.md#hourminute",
+  "cases": [
+    {
+      "id": "parseHHmm-0",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "0945"
+      },
+      "expected": {
+        "ok": "09:45"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-1",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "0000"
+      },
+      "expected": {
+        "ok": "00:00"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-2",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "2359"
+      },
+      "expected": {
+        "ok": "23:59"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-3",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "2400"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-4",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "0960"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-5",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "945"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-6",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "09:45"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-7",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": "０９４５"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "parseHHmm-8",
+      "description": "4 桁の数字列だけを受け付ける",
+      "input": {
+        "text": ""
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

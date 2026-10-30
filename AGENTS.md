@@ -42,7 +42,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/rules/documentation.md](docs/rules/documentation.md) | 文書全般（言語・用語・リンク・出典記法・OKF） |
 | [docs/rules/decision-records.md](docs/rules/decision-records.md) | 意思決定記録（MADR, `NNNN-<slug>.md`） |
 | [docs/rules/backlog.md](docs/rules/backlog.md) | バックログ運用と完了の定義 |
-| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit、push しない） |
+| [docs/rules/version-control.md](docs/rules/version-control.md) | git（作業の区切りで commit。push は自分で作ったブランチに限り、PR を作成してよい） |
 
 ## ディレクトリ地図
 
@@ -62,7 +62,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）。インベントリ・manifest は予定（[ADR 0036](docs/decision/0036-traceability-hash-as-deterministic-check-record.md)） |
 | `tools/ci/` | CI の検査。`lean.sh`（Lean 側の一括検査。ローカルでも実行する）、`check_lean.py`（`sorry`・`axiom`・`Float`・依存の向きなど）、`check_upstream.py`（上流の commit と宣言の一致）、`check_obligations.py`（`obligation-check` の結果と登録簿の突き合わせ。TR-G・TR-N） |
 | `tools/trace/`（予定） | 追跡の道具（[backlog 0024](docs/backlog/0024-trace-tooling.md)） |
-| `conformance/`（予定） | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)） |
+| `conformance/` | 言語中立な適合テストベクタ（[ADR 0013](docs/decision/0013-conformance-test-vectors.md)）。`lake test` が `Spec` に対して実行する |
 
 ## 主要な規則（要約。詳細は各規約・ADR）
 
@@ -81,11 +81,11 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 4. 移植元・移植先との差異は、必ず既知差異（[docs/spec/abstraction.md](docs/spec/abstraction.md) の `D-NNN`、[docs/spec/refinement.md](docs/spec/refinement.md) の `T-NNN`）として登録する。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
 5. 業務ロジックは純粋関数、副作用はポート経由（[ADR 0007](docs/decision/0007-functional-core-with-ports.md)）。
 6. `docs/` の文書を追加・変更したら、frontmatter（OKF v0.2）・[docs/index.md](docs/index.md)・[docs/log.md](docs/log.md) を更新する（[documentation.md](docs/rules/documentation.md#okf-v02)）。
-7. **一通りの作業が終わったら `git commit` する。`git push` はしない**（[version-control.md](docs/rules/version-control.md)）。
+7. **一通りの作業が終わったら `git commit` する。`git push` は自分で作ったブランチに限り、そこから PR を作成してよい。既定ブランチと他人のブランチには push しない**（[version-control.md](docs/rules/version-control.md)）。
 
 ## 現在の状態
 
-Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、リファインメントの空虚化を防ぐ義務と検査（[backlog 0030](docs/backlog/0030-refinement-non-vacuity.md)。`Machine.Adequacy`、`obligation-check`、[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）は完了。業務ロジックのモデルと Rust のコードはまだ無い。
-次に着手できるのは、Lean 側の [backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)（`Spec` のドメイン型）・[0002](docs/backlog/0002-lang-semantics-java.md)・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
+Lean の雛形（[backlog 0001](docs/backlog/0001-lean-project-scaffold.md)。名前空間の骨格、追跡属性、`trace-dump`、`axiom-check`、CI）、上流の submodule 化（[backlog 0025](docs/backlog/0025-upstream-submodule-and-inventory.md)）、リファインメントの枠組み `Machine`（[backlog 0027](docs/backlog/0027-machine-refinement-framework.md)。スキルの `assets/Machine/`）、`Spec` の土台（[backlog 0003](docs/backlog/0003-abstract-domain-types-and-master-data.md)。基本演算・暦日・書式・文字クラス・ドメイン型・設定・マスタデータ。`conformance/shared/format/` のベクタ）、リファインメントの空虚化を防ぐ義務と検査（[backlog 0030](docs/backlog/0030-refinement-non-vacuity.md)。`Machine.Adequacy`、`obligation-check`、[ADR 0038](docs/decision/0038-refinement-non-vacuity-obligations.md)）は完了。業務ロジックの機能のモデルと Rust のコードはまだ無い。
+次に着手できるのは、Lean 側の [backlog 0031](docs/backlog/0031-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[0002](docs/backlog/0002-lang-semantics-java.md)・[0016](docs/backlog/0016-lang-semantics-sql.md)・[0021](docs/backlog/0021-lang-semantics-rust.md)（言語意味論）・[0017](docs/backlog/0017-okf-bundle-lint.md)（OKF の検査）、追跡の道具 [0024](docs/backlog/0024-trace-tooling.md)、Rust の [0018](docs/backlog/0018-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

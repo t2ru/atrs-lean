@@ -1,0 +1,40 @@
+{
+  "operation": "format.fmtTimestamp",
+  "modelDef": "Spec.Prim.fmtTimestamp",
+  "specRef": "docs/spec/domain-model.md#書式",
+  "cases": [
+    {
+      "id": "fmtTimestamp-0",
+      "description": "例",
+      "input": {
+        "dateTime": "2026-10-29T21:38:09"
+      },
+      "expected": {
+        "ok": "20261029213809"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtTimestamp-1",
+      "description": "年始の 0 時",
+      "input": {
+        "dateTime": "2027-01-01T00:00:00"
+      },
+      "expected": {
+        "ok": "20270101000000"
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fmtTimestamp-2",
+      "description": "最大",
+      "input": {
+        "dateTime": "9999-12-31T23:59:59"
+      },
+      "expected": {
+        "ok": "99991231235959"
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

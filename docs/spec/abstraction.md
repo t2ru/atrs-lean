@@ -279,10 +279,10 @@ Lean では、`Machine.ofChoice` の選択の型の葉に `@[nondet "N-NNN"]` �
 
 | ID | 種類 | 内容 | 標準の選択 | 出典 | backlog |
 | --- | --- | --- | --- | --- | --- |
-| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0003 |
-| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0003 |
-| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序 | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md) | 0003 |
-| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列）。変えうるのは詳細の文字列だけ | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) | 0003 |
-| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値）。変えうるのは保存するハッシュ値だけ | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 0015](../decision/0015-password-hashing-port.md) | 0003 |
+| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0031 |
+| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0031 |
+| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序 | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md) | 0031 |
+| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列）。変えうるのは詳細の文字列だけ | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) | 0031 |
+| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値）。変えうるのは保存するハッシュ値だけ | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 0015](../decision/0015-password-hashing-port.md) | 0031 |
 
 採番（`IdGenerator`）は非決定性ではない。[Spec] の状態 `World.sequences` が次の値を決める（[ports.md](ports.md#idgenerator)）。

@@ -1,0 +1,79 @@
+{
+  "operation": "format.daysBetween",
+  "modelDef": "Spec.Prim.Date.daysBetween",
+  "specRef": "docs/spec/domain-model.md#date",
+  "cases": [
+    {
+      "id": "daysBetween-0",
+      "description": "b − a の日数",
+      "input": {
+        "from": "2026-11-01",
+        "to": "2027-03-01"
+      },
+      "expected": {
+        "ok": 120
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "daysBetween-1",
+      "description": "b − a の日数",
+      "input": {
+        "from": "2024-02-28",
+        "to": "2024-03-01"
+      },
+      "expected": {
+        "ok": 2
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "daysBetween-2",
+      "description": "b − a の日数",
+      "input": {
+        "from": "2023-02-28",
+        "to": "2023-03-01"
+      },
+      "expected": {
+        "ok": 1
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "daysBetween-3",
+      "description": "b − a の日数",
+      "input": {
+        "from": "2027-01-01",
+        "to": "2026-12-31"
+      },
+      "expected": {
+        "ok": -1
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "daysBetween-4",
+      "description": "b − a の日数",
+      "input": {
+        "from": "0001-01-01",
+        "to": "9999-12-31"
+      },
+      "expected": {
+        "ok": 3652058
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "daysBetween-5",
+      "description": "b − a の日数",
+      "input": {
+        "from": "1970-01-01",
+        "to": "1970-01-01"
+      },
+      "expected": {
+        "ok": 0
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

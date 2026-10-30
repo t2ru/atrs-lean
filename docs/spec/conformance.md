@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-30T08:12:23+09:00
 ---
 
 # 適合テストベクタ（ATRS）
@@ -32,7 +32,7 @@ generated:
 | `auth.login`, `auth.logout` | [authentication.md](authentication.md) |
 | `report.reportFileName`, `report.renderCsv`, `report.createReport`, `report.listReports` | [reservation-history-report.md](reservation-history-report.md) |
 | `validation.<入力名>` | [input-validation.md](input-validation.md) |
-| `format.fmtDate`, `format.fmtTime`, `format.fmtYen`, `format.fullYearsBetween` | [domain-model.md](domain-model.md) |
+| `format.fmtDate`, `format.fmtIsoDate`, `format.fmtTime`, `format.fmtTimestamp`, `format.fmtYen`, `format.fmtPaymentDate`, `format.fullYearsBetween`, `format.parseHHmm`, `format.addDays`, `format.daysBetween` | [domain-model.md](domain-model.md) |
 | `http.<リクエスト>` | [http-contract.md](http-contract.md) |
 
 ## 共有入力（fixtures）

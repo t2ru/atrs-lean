@@ -17,7 +17,7 @@ generated:
 | --- | --- | --- | --- |
 | 0001 | [Lean プロジェクトの雛形と CI](0001-lean-project-scaffold.md) | done | — |
 | 0002 | [LangSemantics.Java: Java 基本型の意味論](0002-lang-semantics-java.md) | todo | 0001 |
-| 0003 | [Spec: ドメイン型・基本演算・マスタデータ](0003-abstract-domain-types-and-master-data.md) | todo | 0001 |
+| 0003 | [Spec: ドメイン型・基本演算・マスタデータ](0003-abstract-domain-types-and-master-data.md) | done | 0001 |
 | 0004 | [運賃計算（Spec と SourceModel）](0004-fare-calculation-both-models.md) | todo | 0002, 0003, 0016, 0027, 0024 |
 | 0005 | [運賃計算の抽象化証明](0005-fare-abstraction-proofs.md) | todo | 0004, 0027, 0013, 0024 |
 | 0006 | [空席照会（B1）](0006-flight-search-usecase.md) | todo | 0004, 0016, 0027, 0013, 0005, 0024 |
@@ -45,6 +45,7 @@ generated:
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
 | 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | done | 0001, 0027 |
+| 0031 | [Spec の非決定性の選択の型と入口の環境の前提](0031-spec-nondet-and-entry-env.md) | todo | 0003, 0030 |
 
 ## 推奨する着手順
 
