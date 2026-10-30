@@ -3,7 +3,7 @@
 Rust の値の意味論を Lean に定義する。所有権・借用・並行性は扱わない（モデルは値の意味論で写す）。
 移植先として使う場合（`TargetModel`）も、移植元として使う場合（`SourceModel`）も、同じ定義を使う。
 
-Lean の実装は `assets/LangSemantics/Rust/`（モジュール `LangSemantics.Rust`）。検査は `assets/LangSemanticsTest/Rust.lean`。
+Lean の実装は `assets/lean/LangSemantics/Rust/`（モジュール `LangSemantics.Rust`）。検査は `assets/lean/LangSemanticsTest/Rust.lean`。
 
 ## 範囲
 

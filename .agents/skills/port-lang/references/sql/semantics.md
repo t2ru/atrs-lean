@@ -4,7 +4,7 @@ SQL の意味論を Lean に定義する。DBMS に依存しない **共通部�
 アプリ固有のテーブル定義は含めない（テーブル定義はモデル側の `Repository.Schema` で扱う）。
 移植元のリポジトリ（`SourceModel.Repository.*`）を写すときも、移植先が SQL を使う場合（`TargetModel.Repository.*`）も、同じ定義を使う。
 
-Lean の実装は `assets/LangSemantics/Sql/`（モジュール `LangSemantics.Sql`）。検査は `assets/LangSemanticsTest/Sql.lean`。
+Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemantics.Sql`）。検査は `assets/lean/LangSemanticsTest/Sql.lean`。
 
 ## 共通部分（LangSemantics.Sql）
 

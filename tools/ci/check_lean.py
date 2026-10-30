@@ -23,7 +23,7 @@ import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 # (パッケージのルート, 表示名)。モジュール名はルートからの相対パスで決まる
-DEFAULT_ROOTS = [REPO / "lean", REPO / ".agents/skills/port-lang/assets"]
+DEFAULT_ROOTS = [REPO / "lean", REPO / ".agents/skills/port-lang/assets/lean"]
 FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures" / "lean"
 
 # ATRS の言語ペア（docs/rules/atrs-porting.md）

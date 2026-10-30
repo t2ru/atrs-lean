@@ -94,7 +94,7 @@ Chosen option: "B メソッドの抽象機械とリファインメントで定�
 
 * 具体側に非決定性があってもよい（例: SQL の未規定順序）。ただし、正しさの PO は具体側の **すべての** 分岐について成り立たなければならない。抽象側の非決定性（例: `Conflict`。[ADR 0037](0037-conflict-as-spec-nondeterminism.md)）は、具体側で減らしてよい。
 * PRE の外（例: `Spec` の型で表せない入力、INV を破るマスタ）での具体側の振る舞いには、義務が無い。これは差異ではない。原典の `PreconditionViolation` の多くはこれに当たる。ただし [Spec] がその入力に振る舞いを定めている場合は PRE の内であり、違えば差異である（例: D-020）。
-* 汎用の定義（抽象機械、`Refines`、PO）は、アプリに依存しない Lean ライブラリ `Machine` に置く。トップレベル名前空間の例外として扱い（[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）、スキル port-lang の `assets/Machine/` に置く（[backlog 0027](../backlog/0027-machine-refinement-framework.md)）。
+* 汎用の定義（抽象機械、`Refines`、PO）は、アプリに依存しない Lean ライブラリ `Machine` に置く。トップレベル名前空間の例外として扱い（[ADR 0035](0035-generate-verus-mirror-from-target-model.md)）、スキル port-lang の `assets/lean/Machine/` に置く（[backlog 0027](../backlog/0027-machine-refinement-framework.md)）。
 
 ### 差異
 

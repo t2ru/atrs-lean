@@ -30,7 +30,7 @@ jobs:
             ~/.elan/toolchains
             .lake
             lean/.lake
-            .agents/skills/port-lang/assets/.lake
+            .agents/skills/port-lang/assets/lean/.lake
           key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-${{ github.sha }}
           restore-keys: |
             lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-
