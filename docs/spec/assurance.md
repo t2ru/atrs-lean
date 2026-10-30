@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T08:33:20+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 保証の限界
@@ -32,6 +32,8 @@ generated:
 | 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | Thymeleaf |
 | 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0026](../backlog/0026-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
 | 改名の対応（`trace/renames.json`） | `tools/trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | `tools/trace` |
+| 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
+| マスタ・設定を入力として写すこと | オラクルと SQL の差分実行は fixture のマスタで実行する | 原典は DB からマスタを読む。実行中にマスタが変わらないこと（不変の入力とみなせること）は前提とする |
 | 「今日」に依存する処理 | オラクルを JST・固定した時計で実行する | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
 | 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)） | — |
 | セッション・Cookie・トランザクショントークン・CSRF（規範節） | HTTP レベルのオラクルで、ステータスと遷移先を照合する | セッション ID の扱い（[D-016](abstraction.md#既知差異)）、Cookie 属性（[D-024](abstraction.md#既知差異)）。トークンの値そのもの | Spring Security |
@@ -77,6 +79,29 @@ generated:
 | `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 0027](../backlog/0027-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+
+### モデル間の保証の限界
+
+リファインメント（`Machine.Refines` と [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
+
+- 名前付きの差異・非決定性を除けば、具体側の結果は [Spec] の結果と一致する（`Refines.complete`）。
+- 入口の機械では、差異の前提を保つ軌跡が [Spec] の軌跡で模倣される（`Refines.run`）。
+
+証明の届かない部分は次のとおりである。
+
+| 対象 | 確かめる手段 | 保証しないこと |
+| --- | --- | --- |
+| 仕様の妥当性 | 仕様文書の例と、`spec/` のベクタ（標準の選択 `run` の実行結果）を人が読む | [Spec] の標準の選択が、業務の意図どおりであること。B メソッドでも、仕様の妥当性は証明の外である |
+| 名前付きの成分の広さ（前提型の差異の述語、観測型の差異の成分、[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の選択の型と `FreeFrame` の核、入口の環境の前提 `@[env_pre]`） | 形の制限（TR-G）、両向きの例（W 課題・`Nontrivial`）、`EnvWitness`、ベクタの前提のラベル（TR-V） | 成分が必要以上に広く、本来の差異を覆い隠していないこと。広さの判断は、登録簿の各行と ADR による。W 課題の「一致しない例」が実際に差を示していることは、定理の文面を人が読んで確かめる |
+| 標準の抽象化の核 | 葉ごとの `KernelIs`（ABS-048・REF-012）と、α・β の表の「同一視するもの」 | 表に書いた同一視（例: double の ±0、HTML の構造）が、業務上観測されないこと。`@[kernel]` の関係と表の記述が一致することは、人が確かめる。β・aᵢ の合成（射影で一部を落とすもの）には核を課さない（落とした部分は、aₒ の核と `J` の保存を通してだけ観測に現れる） |
+| 活性（環境の非決定性 N-001〜N-003） | `Pinned`（障害の無い環境では選ばない）、ベクタ、結合テスト | 実際の配備で、環境が障害・衝突を示す頻度。環境が常に障害を示せば、具体側は常に失敗しうる（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md#活性の限界)） |
+| 「中断」の前提型の差異（[前提型の差異の影響](abstraction.md#前提型の差異の影響)） | 差異の W 課題 | 前提を破る 1 歩の後の軌跡（状態が [Spec] から離れうる）。「出力のみ」と「中断」の分類は人の判断である（迷う場合は「中断」とする） |
+| 入口の値域の外の入力 | なし（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md) により、値域の外は差異ではない） | 入口の環境の前提（入力の値域）の外の入力での [Source]・[Target] の振る舞い |
+| SPEC-008（標準の環境で、環境に固有の結果を返さない） | 機能ごとの定理 | 定理の文面が SPEC-008 を表していること（検査器は形を確かめない） |
+| 入口でない R 課題の PRE | 入口の R 課題の証明で使われること | 入口から到達しない使われ方での振る舞い |
+| R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
+| 検査器 TR-G の構文の判定 | `obligation-check` の正例・違反例（`lean/Tests/ObligationFixture.lean`） | 違反例に無い迂回（例: `@[reducible]` 以外の展開、未知の定数名の付け替え）。検査器は Lean の式の形を見るだけで、意味を見ない |
 
 ## 追跡の道具
 

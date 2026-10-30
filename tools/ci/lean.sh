@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -14,6 +14,9 @@ python3 -I tools/ci/check_lean.py --self-test
 
 step "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
 python3 -I tools/ci/check_lean.py
+
+step "static: 証明義務と文書の突き合わせの自己テスト（違反例を検出できること）"
+python3 -I tools/ci/check_obligations.py --self-test
 
 step "assets/lean: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
 if command -v java > /dev/null; then
@@ -40,9 +43,15 @@ step "lean: lake test"
 step "lean: 公理の検査"
 (cd lean && lake exe axiom-check)
 
-step "lean: trace-dump"
 out="$(mktemp)"
-trap 'rm -f "$out"' EXIT
+ob="$(mktemp)"
+trap 'rm -f "$out" "$ob"' EXIT
+
+step "lean: obligation-check（R 課題の形と付帯の義務。TR-G）と文書の突き合わせ（TR-N）"
+(cd lean && lake exe obligation-check > "$ob")
+python3 -I tools/ci/check_obligations.py "$ob"
+
+step "lean: trace-dump"
 (cd lean && lake exe trace-dump > "$out")
 python3 -I -c 'import json, sys
 d = json.load(open(sys.argv[1]))

@@ -1,4 +1,5 @@
 import Trace.Dump
+import Trace.Obligation
 import Tests
 
 /-!
@@ -7,6 +8,7 @@ import Tests
 `lake test` のドライバ（実行ファイル `tests`）。
 
 - `Tests.TraceFixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュを確かめる。
+- `Tests.ObligationFixture` を `obligation-check` と同じ処理にかけ、正例を通し、違反例を規則ごとに検出することを確かめる。
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
 - 適合テストベクタ（`../conformance/shared/format/`）を `Spec` で実行する（`Tests.Conformance`）。
 - 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
@@ -146,6 +148,54 @@ def javaDoubleTests : IO Unit := do
   for b in r.bad do IO.eprintln s!"    mismatch: {b}"
   check s!"java double: bit-exact ({r.count} cases)" r.bad.isEmpty
 
+/-- 誤りの規則（`G1` など）の集合。 -/
+def ruleCodes (errs : Array String) : List String :=
+  (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
+
+/-- フィクスチャの対象: 接頭辞 `Tests.ObFix` を除いた名前で、既定の層の決め方を使う。 -/
+def obFixScope : Trace.Obligation.Scope :=
+  { layerOf := fun n =>
+      match n.components with
+      | `Tests :: `ObFix :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
+      | _ => none }
+
+/-- フィクスチャを obligation-check の処理にかける。 -/
+def obligationTests (env : Environment) : IO Unit := do
+  IO.println "obligation-check (Tests.ObligationFixture)"
+  let r := Trace.Obligation.check env obFixScope
+  let ab (s : String) : Name := (`Tests.ObFix.Abstraction).append s.toName
+  let codesOf (s : String) : Option (List String) :=
+    (r.rs.find? (·.name == ab s)).map (ruleCodes ·.errors)
+  for (s, expected) in [("good_refines", ([] : List String)), ("good_abbrev", []), ("v1_forall", ["G1"]),
+      ("v2_plainRestrict", ["G2"]), ("v2_paramDev", ["G2", "G6"]), ("v3_choiceNoNondet", ["G3", "G6"]),
+      ("v3_relSpec", ["G3", "G6"]), ("v3_free", ["G3", "G6"]), ("v4_domSet", ["G4", "G6"]),
+      ("v4_taut", ["G4", "G6"]), ("v4_usesSpec", ["G4", "G6"]), ("v5_helperGlue", ["G5", "G6"]),
+      ("v5_plainObs", ["G5", "G6"]), ("v5_plainAi", ["G5", "G6"]), ("v5_aoNoKernel", ["G6", "G7"]),
+      ("v6_noCompanions", ["G6"]), ("v6_invFalse", ["G6"]), ("v6_ceCheat", ["G6"])] do
+    check s!"{s}: {expected}" (codesOf s == some expected)
+  check "R obligations: all found (v0_notRefines is not one)" (r.rs.size == 18)
+  check "good_refines: kind, deviation, std_abs, choices, companions, entry and state safety facts"
+    (match r.rs.find? (·.name == ab "good_refines") with
+     | some ri => ri.absKind == "ofChoice" && ri.devs == #[ab "devLang"] &&
+         ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
+         ri.envLeaves == #[`Tests.ObFix.Spec.Conflict] && ri.freeLeaves.isEmpty &&
+         ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
+         ri.totalUnder == #[(`Tests.ObFix.Spec.envOk, true)] && ri.stateSafe == #[ab "devLang"]
+     | none => false)
+  check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
+    | some ri => ri.freeLeaves == #[`Tests.ObFix.Spec.AnyResult] | none => false)
+  let expectedGlobal := ["G7: Tests.ObFix.Abstraction.aoIf", "G7: Tests.ObFix.Abstraction.ceCheat",
+    "G7: Tests.ObFix.Abstraction.via", "G8: Tests.ObFix.Abstraction.devK", "G8: Tests.ObFix.Abstraction.devNoW",
+    "G0: Tests.ObFix.Abstraction.v0_notRefines", "G3: Tests.ObFix.Spec.specRel",
+    "G0: Tests.ObFixHelpers.devFalse", "G8: Tests.ObFixHelpers.devFalse"]
+  check s!"global errors: exactly {expectedGlobal.length}"
+    (r.errors.size == expectedGlobal.length &&
+      expectedGlobal.all fun p => r.errors.any (·.startsWith p))
+  check "obligations: v0_notRefines listed as not R"
+    (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
+  check "nondet listed" (r.nondets.map (·.1) == #[`Tests.ObFix.Spec.AnyResult, `Tests.ObFix.Spec.Conflict])
+  check "env_pre listed" (r.envPres.map (·.1) == #[`Tests.ObFix.Spec.envOk])
+
 unsafe def main : IO UInt32 := do
   merkleTests
   dateTests
@@ -153,6 +203,8 @@ unsafe def main : IO UInt32 := do
   conformanceTests
   let env ← loadEnv #[`Tests.TraceFixture]
   fixtureTests env
+  let env ← loadEnv #[`Tests.ObligationFixture]
+  obligationTests env
   let n ← failures.get
   if n == 0 then
     IO.println "all tests passed"

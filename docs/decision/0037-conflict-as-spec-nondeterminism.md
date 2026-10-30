@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 排他制御の失敗 Conflict を、Spec の状態変更操作の非決定的な結果とする
@@ -90,4 +90,7 @@ Chosen option: "`Conflict` を、`Spec` の状態変更操作の非決定的な�
 ## More Information
 
 * 本 ADR は [ADR 0029](0029-concurrency-failure-as-conflict-error.md) を置き換える。
+* [ADR 0039](0039-refinement-non-vacuity-obligations.md) で次のように補った。
+  * `Conflict` と I/O の失敗を、環境の非決定性 N-001・N-002 として登録した。
+  * 具体側では、環境を入力の成分として表す。障害の無い環境ではこれらを選べないこと（`Refines.Pinned`）を、R 課題に課す。これにより、移植元の不具合による失敗がこれらの結果に紛れなくなる。
 * [ADR 0008](0008-errors-as-values-with-stable-codes.md)（エラー分類）, [ADR 0011](0011-persistence-and-transaction-semantics.md), [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)

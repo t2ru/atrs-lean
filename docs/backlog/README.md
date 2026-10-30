@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T08:33:20+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # バックログ
@@ -44,6 +44,8 @@ generated:
 | 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |
 | 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
+| 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | done | 0001, 0027 |
+| 0031 | [Spec の非決定性の選択の型と入口の環境の前提](0031-spec-nondet-and-entry-env.md) | todo | 0003, 0030 |
 
 ## 推奨する着手順
 
@@ -51,7 +53,7 @@ generated:
 移植元側（Lean）                 内側（Lean）            移植先側（Lean → Rust）
 0025 → 0024 ┐
 0001 ┬ 0002, 0016 ─────────┐
-     ├ 0027（Machine）──────┤
+     ├ 0027（Machine）─ 0030 ┤
      ├ 0003 ─ 0004 ─ 0005  ├─ 0012 ─ 0022 ─ 0019（Rust）
      ├ 0021 ─ 0028（生成器）┘
      └ 0017

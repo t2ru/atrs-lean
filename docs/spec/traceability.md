@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T06:46:37+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -29,7 +29,7 @@ generated:
 
 ## 方式
 
-ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。
+ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D・TR-G・TR-N・TR-V・TR-PE を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)）。
 ATRS が使うロケータの種別は次のとおり（文法は各言語パックの `locators.md`）。
 
 | 側 | 種別 | 言語パック |

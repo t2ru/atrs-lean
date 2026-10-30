@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T07:45:00+09:00
+  at: 2026-10-30T10:30:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -35,19 +35,22 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 - 入力の対応 `αᵢ`
 - 出力の対応 `αₒ`
 
-そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）を示す（[abstraction.md](abstraction.md#リファインメントの形) と同じ形）。
+そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。
+`TargetModel` の各操作も、マスタ・設定と環境（衝突・I/O の失敗・配備の設定）を入力の成分として受ける。
 
 抽象化関数 β の標準の抽象化:
 
-| `TargetModel` の値（`LangSemantics.Rust`） | β |
-| --- | --- |
-| `U64` などの固定長整数 | `Nat` / `Int` |
-| `RString` | スカラ値の列 |
-| `Result` | `Except` |
-| `Panic` | β を定義しない。PRE の下で到達しないことを、適用可能性の義務で示す |
+| `TargetModel` の値（`LangSemantics.Rust`） | β | 同一視するもの（核） |
+| --- | --- | --- |
+| `U64` などの固定長整数 | `Nat` / `Int` | なし（単射） |
+| `RString` | スカラ値の列 | なし（単射） |
+| `Result` | `Except` | なし（単射） |
+| `Panic` | β を定義しない（`none`）。PRE の下で到達しないことを、適用可能性の義務で示す | — |
 
-- 主定理の仮定は、PRE（値域とマスタ・設定の制約を含む）・INV・`T-NNN` の述語だけとする。ポートの契約は、ポート実装の R 課題（REF-008・REF-009）で証明する。値域は [Spec] の PRE である（[domain-model.md](domain-model.md#値域)）。そのため「値域内」は差異ではない。
-- [Spec] の非決定的な結果 `Conflict`（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)）は、`TargetModel` で選んでも選ばなくてもよい。選んだ場合は、正しさの義務で模倣を示す。
+各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、核を L 課題 REF-012 の `KernelIs` で示す。
+
+- 主定理は閉じた命題とし、前提として持ってよいのは PRE（値域とマスタ・設定の制約を含む）・INV・`T-NNN` の述語だけとする。`T-NNN` の述語は `restrict` で機械の中に置く。ポートの契約は、ポート実装の R 課題（REF-008・REF-009）で証明する。値域は [Spec] の PRE である（[domain-model.md](domain-model.md#値域)）。そのため「値域内」は差異ではない。
+- [Spec] の非決定的な結果 `Conflict`（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)）は、`TargetModel` で選んでも選ばなくてもよい。ただし、選べるのは入力の環境が衝突を示すときだけである（`Pinned`・`NoFaultReachable`。[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の N-001）。I/O の失敗（N-002）も同じである。
 
 ## 既知差異（T-NNN）
 
@@ -58,12 +61,21 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 
 （現在なし。移植先は [Spec] をそのまま実装する方針である。差異が必要になったら、意思決定を記録したうえで、ここに登録する）
 
+W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
+
+### 前提型の差異の影響
+
+| ID | 影響 | 理由 | backlog |
+| --- | --- | --- | --- |
+
+（現在なし）
+
 ## REF: TargetModel が Spec をリファインする（Lean で証明）
 
 種類は次の 4 つである（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
-- R: 主定理
-- W: 証拠
+- R: 主定理と、その付帯の義務（[abstraction.md](abstraction.md#空虚化を防ぐ義務) と同じ）
+- W: 証拠（両向きの例）
 - C: 特徴付け
 - L: 補題
 
@@ -79,6 +91,17 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 | REF-008 | R | インメモリのポート実装（採番・リポジトリ・キュー・ストア・パスワード）: `TargetModel` の実装が、[ports.md](ports.md) のポートの契約をリファインする |
 | REF-009 | R | DB・ファイル・時計のアダプタ（`TargetModel.Adapter.*`。DB は `LangSemantics.Sql` の式）: ポートの契約をリファインする。I/O の失敗は、[Spec] の非決定的な結果 `System` で模倣する |
 | REF-010 | R | マスタ・設定の読み込み（fixture・設定ファイルから `MasterData`・設定を作る `TargetModel` の操作）が、[Spec] の `MasterData`・設定をリファインする |
+| REF-011 | R | レポート要求の受信（入口）: `TargetModel` のキューの受信が、[Spec] の要求の受信をリファインする（REF-002 のレポートの部分を、入口の機械として述べる） |
+| REF-012 | L | 抽象化関数 β の表の各行（`@[std_abs]` の葉）について、核が表の「同一視するもの」と一致する（`KernelIs`） |
+
+### 入口の R 課題
+
+`TargetModel` の公開操作の網羅（TR-P）は、次の R 課題の具体機械で数える。入口の機械の [Spec] には SPEC-006（入口の全域性）を課す（[abstraction.md](abstraction.md#入口の-r-課題)）。
+
+| ID | 入口 | backlog |
+| --- | --- | --- |
+| REF-007 | HTTP の画面・REST（`Spec.Http`） | 0014 |
+| REF-011 | レポート要求の受信と生成（キューからの配信） | 0023 |
 
 ## SRC: TargetModel ⇔ Rust ソース（決定論的な確認）
 
@@ -101,7 +124,7 @@ SRC-007・SRC-008 は、Rust を変更する各 backlog 項目の完了条件で
 
 | ID | 状況 |
 | --- | --- |
-| REF-001〜010 | 未着手 |
+| REF-001〜012 | 未着手 |
 | SRC-001〜010 | 未着手 |
 
 「状況」は、課題を充足した定理・関数・ハーネス・テストへのリンクで更新する。

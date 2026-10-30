@@ -10,8 +10,12 @@ import Lean
 | --- | --- | --- |
 | `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` | 移植元ロケータと検査済みハッシュ |
 | `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` | 移植先ロケータと検査済みハッシュ |
-| `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理 | `ABS-NNN` / `REF-NNN` |
+| `@[obligation "<ID>"]` | `Abstraction`・`Refinement`・`Spec` の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
 | `@[deviation "<ID>"]` | 既知差異の述語・成分 | `D-NNN` / `T-NNN` |
+| `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型 | `N-NNN` |
+| `@[std_abs "<path>#<anchor>"]` | 標準の抽象化の関数（`Abstraction`・`Refinement`） | α・β の表の節 |
+| `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係） | α・β の表の節 |
+| `@[env_pre "<ID>"]` | 入口の機械の環境の前提（マスタ・設定の妥当性と入力の値域） | `MD-N` など |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
 -/
@@ -28,6 +32,14 @@ syntax (name := target) "target" ppSpace str (atomic(", " str))* : attr
 syntax (name := obligation) "obligation" ppSpace str (atomic(", " str))* : attr
 /-- `@[deviation "<ID>", …]` -/
 syntax (name := deviation) "deviation" ppSpace str (atomic(", " str))* : attr
+/-- `@[nondet "<ID>", …]` -/
+syntax (name := nondet) "nondet" ppSpace str (atomic(", " str))* : attr
+/-- `@[std_abs "<path>#<anchor>", …]` -/
+syntax (name := std_abs) "std_abs" ppSpace str (atomic(", " str))* : attr
+/-- `@[kernel "<path>#<anchor>", …]` -/
+syntax (name := kernel) "kernel" ppSpace str (atomic(", " str))* : attr
+/-- `@[env_pre "<ID>", …]` -/
+syntax (name := env_pre) "env_pre" ppSpace str (atomic(", " str))* : attr
 /-- `@[spec_doc "<path>#<anchor>", …]` -/
 syntax (name := spec_doc) "spec_doc" ppSpace str (atomic(", " str))* : attr
 /-- `@[no_source "<理由>"]` -/
@@ -67,9 +79,17 @@ initialize sourceAttr : ParametricAttribute (Array String) ←
 initialize targetAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `target "移植先ロケータと検査済みハッシュ" `Trace.targetAttr
 initialize obligationAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN）" `Trace.obligationAttr
+  registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.obligationAttr
 initialize deviationAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `deviation "既知差異の ID（D-NNN / T-NNN）" `Trace.deviationAttr
+initialize nondetAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `nondet "Spec の非決定性の ID（N-NNN）" `Trace.nondetAttr
+initialize stdAbsAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `std_abs "標準の抽象化の表の節（<path>#<anchor>）" `Trace.stdAbsAttr
+initialize kernelAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `kernel "標準の抽象化の核の表の節（<path>#<anchor>）" `Trace.kernelAttr
+initialize envPreAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `env_pre "入口の環境の前提の ID（MD-N など）" `Trace.envPreAttr
 initialize specDocAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.specDocAttr
 initialize noSourceAttr : ParametricAttribute (Array String) ←
@@ -78,7 +98,9 @@ initialize noSourceAttr : ParametricAttribute (Array String) ←
 /-- 追跡属性の一覧（JSON のキー名と属性）。キー名は属性名と同じ。 -/
 def traceAttrs : List (String × ParametricAttribute (Array String)) :=
   [("source", sourceAttr), ("target", targetAttr), ("obligation", obligationAttr),
-   ("deviation", deviationAttr), ("spec_doc", specDocAttr), ("no_source", noSourceAttr)]
+   ("deviation", deviationAttr), ("nondet", nondetAttr), ("std_abs", stdAbsAttr),
+   ("kernel", kernelAttr), ("env_pre", envPreAttr),
+   ("spec_doc", specDocAttr), ("no_source", noSourceAttr)]
 
 /-- 定義に付いた追跡属性を、属性名と引数の組で返す（`traceAttrs` の順）。 -/
 def attrsOf (env : Environment) (decl : Name) : List (String × Array String) :=

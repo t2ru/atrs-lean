@@ -3,6 +3,7 @@ import Tests.AttrErrors
 import Tests.Conformance
 import Tests.SpecChecks
 import Tests.JavaDouble
+import Tests.ObligationFixture
 
 /-!
 # Tests
