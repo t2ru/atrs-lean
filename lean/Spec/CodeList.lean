@@ -24,7 +24,7 @@ namespace CodeList
 def airportNopInsertOrder : Nat := 100
 
 /-- 空港の区切り行。 -/
-def airportNop : CodeEntry := ⟨"NOP", "-----------"⟩
+def airportNop : CodeEntry := ⟨MasterData.airportNopCode, "-----------"⟩
 
 /-- 表示順に並べた空港に、`displayOrder ≥ 100` の最初の空港の直前に区切り行を 1 つ入れる。 -/
 def insertNop : List Airport → List CodeEntry

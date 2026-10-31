@@ -157,10 +157,13 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
   ∀ ft ∈ md.fareTypes, ft.rsrvAvailableEndDayNum ≤ ft.rsrvAvailableStartDayNum ∧
     ft.discountRate ≤ cfg.childFareRate ∧ 1 ≤ ft.passengerMinNum
 
+/-- 空港コードリストの区切り行のコード（`CL_AIRPORT` の `airportNopValue`）。空港のコードには使えない（MD-8）。 -/
+def airportNopCode : String := "NOP"
+
 /-- MD-8: 値域（`docs/spec/domain-model.md#値域` のうちマスタのもの）。 -/
 @[spec_doc "docs/spec/master-data.md#不変条件spec"]
 def MD8 (md : MasterData) : Prop :=
-  (∀ a ∈ md.airports, a.code.WellFormed) ∧
+  (∀ a ∈ md.airports, a.code.WellFormed ∧ a.code.val ≠ airportNopCode) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
   (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
   (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate)

@@ -90,7 +90,9 @@ Lean の雛形（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)。�
 - 第 1 段: `Spec.Fare`・`SourceModel.Fare`・両モデルのベクタ・最初の `@[source]`（[ADR 8f18](docs/decision/8f18-fare-source-model-and-shared-vectors.md)）
 - 第 2 段 a: マスタ・設定・コードリストの読み込みの `SourceModel`、PostgreSQL での差分実行、D-027（[ADR c108](docs/decision/c108-master-data-source-model-and-spec-fixes.md)）
 
-第 2 段 b（ABS-026 の証明）が残る。空虚化を防ぐ義務を既存の研究に照らして補い、名前付きの成分の必要性（G9）を加えた（[ADR 9ac6](docs/decision/9ac6-vacuity-literature-necessity-and-mutation.md)、[backlog ae04](docs/backlog/ae04-component-necessity-witness.md)）。成分の変異テストは [backlog 0d1a](docs/backlog/0d1a-mutation-testing-of-named-components.md) で扱う。Rust のコードはまだ無い。
-次に着手できるのは、Lean 側の [backlog 25f7](docs/backlog/25f7-fare-calculation-both-models.md) の第 2 段 b・[0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[a936](docs/backlog/a936-lang-semantics-rust.md)（言語意味論）・[ddbd](docs/backlog/ddbd-okf-bundle-lint.md)（OKF の検査）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
+- 第 2 段 b-1: ABS-026 の補題、MD-8 の `NOP`、D-027 の範囲、`LocalDate` の通算日数の修正（[ADR f353](docs/decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）
+
+第 2 段 b-2（ABS-026 の主定理と付帯の義務）が残る。空虚化を防ぐ義務を既存の研究に照らして補い、名前付きの成分の必要性（G9）を加えた（[ADR 9ac6](docs/decision/9ac6-vacuity-literature-necessity-and-mutation.md)、[backlog ae04](docs/backlog/ae04-component-necessity-witness.md)）。成分の変異テストは [backlog 0d1a](docs/backlog/0d1a-mutation-testing-of-named-components.md) で扱う。Rust のコードはまだ無い。
+次に着手できるのは、Lean 側の [backlog 25f7](docs/backlog/25f7-fare-calculation-both-models.md) の第 2 段 b-2・[0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[a936](docs/backlog/a936-lang-semantics-rust.md)（言語意味論）・[ddbd](docs/backlog/ddbd-okf-bundle-lint.md)（OKF の検査）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

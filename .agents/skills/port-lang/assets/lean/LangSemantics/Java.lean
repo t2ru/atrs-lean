@@ -5,6 +5,8 @@ import LangSemantics.Java.BigDecimal
 import LangSemantics.Java.String
 import LangSemantics.Java.LocalDate
 import LangSemantics.Java.HashMap
+import LangSemantics.Java.LocalDateLemmas
+import LangSemantics.Java.HashMapLemmas
 
 /-!
 # LangSemantics.Java

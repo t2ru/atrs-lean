@@ -2,6 +2,20 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) の第 2 段 b-1 を終えた（`doing`）。R 課題 ABS-026 の補題を、`Abstraction.Prim`・`Abstraction.MasterData` と、スキル port-lang の `LangSemantics` に置いた（暦、`HashMap`、一意な検索、整列、結合、キャッシュのキー、`load()`、コードリスト）。
+* **Creation**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) で、次の 4 点を決めた。作成時は旧番号 0046 だったが、main の [ADR f57e](decision/f57e-uuid-ids-for-decisions-and-backlog.md) に合わせて UUID の ID を振った。
+  * 空港コード `NOP` を MD-8 で禁じる
+  * D-027 の対象を具体側の入力全体に広げる（[ADR c108](decision/c108-master-data-source-model-and-spec-fixes.md) を補う）
+  * `LangSemantics.Java` の `LocalDate` の通算日数を床除算で書き直す（負の年で JVM と食い違っていた）
+  * 補題の置き場所と、`decide +kernel` の使い方
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（D-027 の範囲、[Spec] の前提の外の `NOP`）
+  * [spec/master-data.md](spec/master-data.md)（MD-8）
+  * [spec/domain-model.md](spec/domain-model.md)（値域）
+  * [spec/assurance.md](spec/assurance.md)（JVM の突き合わせ表の件数と `LocalDate` の範囲）
+  * [ADR c108](decision/c108-master-data-source-model-and-spec-fixes.md) の More Information（補足の追記）
+  * [AGENTS.md](../AGENTS.md)
+
 * **Creation**: [ADR f57e](decision/f57e-uuid-ids-for-decisions-and-backlog.md) で、ADR と backlog の ID を 4 桁の連番から UUID v4 に改め、ファイル名を `<ID の先頭 4 文字>-<slug>.md` とした。
   * 既存の ADR 45 件と backlog 33 件を採番し直し、全文書・コード・JSON の参照を新 ID に書き換えた（旧番号との対応は ADR f57e と `tools/docs/legacy-ids.json`）。過去の記録の参照も書き換えた。採番の経緯を述べた箇所の番号は「旧番号」と明記した。
   * 道具が読む箇所（`id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）は ID 全体、本文の参照は先頭 4 文字とした。

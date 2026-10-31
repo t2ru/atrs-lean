@@ -8,7 +8,7 @@ state: doing
 depends_on: ["a8be97e4-d846-4b86-bfcc-413d6d980578", "591d9aa4-065b-4975-8146-86aae05b780a", "c7e8d83d-8d90-44fe-a6f5-de54b2efe811", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T11:02:17+09:00
+  at: 2026-10-31T13:25:01+09:00
 ---
 
 # 運賃計算（Spec と SourceModel）
@@ -42,7 +42,9 @@ generated:
 - **第 1 段（済み）**: 運賃計算の `Spec`・`SourceModel` と、両モデルで実行するベクタ
 - **第 2 段**は、さらに a・b に分けた（2026-10-31 の決定）。細部は [ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md) で決めた。
   - **2a（済み）**: [Spec] の修正、マスタ・設定・コードリストの読み込みの `SourceModel`、PostgreSQL での差分実行、差異 D-027 の登録
-  - **2b（残り）**: ABS-026 の証明と付帯の義務（`InitSurj`・`Sound`・`InitIs`、`dev_D027` の `@[deviation]` と `Nontrivial`、`std_abs` の α と核）、W 課題 ABS-127。この項目は 2b で `done` にする
+  - **2b** は、さらに 2b-1・2b-2 に分けた（2026-10-31 の決定）。細部は [ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) で決めた。
+    - **2b-1（済み）**: ABS-026 の補題と [Spec] の修正（MD-8 の `NOP`、D-027 の範囲）
+    - **2b-2（残り）**: ABS-026 の主定理と付帯の義務（`InitSurj`・`Sound`・`InitIs`、`dev_D027` の `@[deviation]` と `Nontrivial`、`std_abs` の α と核、必要性 G9）、W 課題 ABS-127。この項目は 2b-2 で `done` にする
 
 ## 第 1 段の結果
 
@@ -105,7 +107,29 @@ generated:
   - `trace/upstream.json` に `terasoluna-gfw-common`・`spring-core` を宣言した。
 - 差異: D-027（前提型・具体側の入力。DB の値が [Spec] の型で表せる）と W 課題 ABS-127 を登録した。Lean の `@[deviation]` は 2b で書く。
 
+## 第 2 段 b-1 の結果
+
+- [Spec] の修正
+  - MD-8 に「空港のコードは `NOP` でない」を加えた（`Spec.MasterData.airportNopCode`）。`Tests.SpecChecks` に違反例を加えた。
+  - D-027 の対象を、具体側の入力全体（DB・設定・問い合わせの引数）に広げた（[abstraction.md](../spec/abstraction.md#既知差異)）。
+- `LangSemantics.Java` の誤りの修正: `LocalDate` の `toEpochDay`・`ofEpochDay` が、負の年で JVM と食い違っていた（0 方向の除算のつもりで床除算に写していた）。床除算で書き直し、JVM の突き合わせ表に負の年と範囲の端を加えた。
+- 補題（どれも `sorry`・公理・`native_decide` なし。`@[obligation]` は付けない）
+
+| モジュール | 補題 | 内容 |
+| --- | --- | --- |
+| スキル `LangSemantics.Java.LocalDateLemmas` | `toEpochDay_ofEpochDay` | すべての整数 `z` で `toEpochDay (ofEpochDay z) = z`。周期の中の範囲は `decide +kernel` で確かめる |
+| スキル `LangSemantics.Java.HashMapLemmas` | `ofList_entries`・`get_ofList` | キーが重複しない列の `ofList` は列そのもので、`get` は列の `find?` |
+| スキル `LangSemantics.Java.Int` | `J32.val_ofInt_of_inRange` | 値域内の整数は `int` にしても変わらない |
+| スキル `LangSemantics.Sql.Core` | `Truth.holds_and`・`SqlValue.eq_text_holds`・`eq_int_holds` | `AND` と等号の採否 |
+| `Abstraction.Prim.Date` | `toEpochDay_eq_epochDay` | [Spec] の暦日の通算日数と `LocalDate.toEpochDay` の一致 |
+| `Abstraction.Prim.List` | `find?_perm`・`filter_key_eq_singleton`・`filter_cross` | 一意な検索は並べ替えで変わらない。キーでの選択。結合の 1 段 |
+| `Abstraction.Prim.Order` | `allowed_map_eq_mergeSort` | キーが一意なら、`ORDER BY` の許される順列は [Spec] の `mergeSort` に一致する |
+| `Abstraction.MasterData.Join` | `routeFindAll_eq`・`flightMasterFindAll_eq` | 結合の結果は、左の表の行ごとに 1 行 |
+| `Abstraction.MasterData.Key` | `makeCacheKey_inj` | `-` を含まない空港コードでは、キャッシュのキーは単射 |
+| `Abstraction.MasterData.Load` | `boardingClassLoad_eq`・`fareTypeLoad_eq`・`routeLoad_eq`・`flightMasterLoad_eq` | `load()` は例外を投げず、キャッシュは（キー, 値）の列の `ofList` |
+| `Abstraction.MasterData.CodeList` | `airport_eq_insertNop`・`jdbcCodeList_eq` | 空港コードリストは [Spec] の `insertNop` に、DB のコードリストは行の列に一致する |
+
 ## 参照
 
 - [fare-calculation.md](../spec/fare-calculation.md)
-- [ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)、[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)
+- [ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)、[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)、[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)

@@ -81,7 +81,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime` | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
-| MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字） | int32 の折り返し。空港コードに `-` があると区間のキーが衝突しうる |
+| MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字で、区切り行のコード `NOP` でない） | int32 の折り返し。空港コードに `-` があると区間のキーが衝突しうる。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる |
 
 マスタは不変の入力であり（[ports.md](ports.md#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005）は差異ではなく、参考として [abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 

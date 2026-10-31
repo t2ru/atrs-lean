@@ -51,6 +51,13 @@ def jdiv64 (a b : J64) : JResult J64 :=
 /-- `int` の範囲に入る数学的整数か。 -/
 def J32.inRange (i : Int) : Bool := J32.minValue ≤ i && i ≤ J32.maxValue
 
+/-- 値域内の数学的整数を `int` にしても、値は変わらない。 -/
+theorem J32.val_ofInt_of_inRange (i : Int) (h : J32.minValue ≤ i ∧ i ≤ J32.maxValue) : (J32.ofInt i).val = i := by
+  simp only [J32.ofInt, J32.val, J32.minValue, J32.maxValue, BitVec.toInt_ofInt] at *
+  unfold Int.bmod
+  simp only [Nat.reducePow]
+  split <;> omega
+
 /-- 値域内では `int` の加算は数学的整数の加算と一致する。 -/
 theorem j32add_val_of_inRange (a b : J32)
     (h : J32.minValue ≤ a.val + b.val ∧ a.val + b.val ≤ J32.maxValue) :
