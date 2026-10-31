@@ -2,6 +2,7 @@ import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Join
 import Abstraction.MasterData.Key
 import SourceModel.Fare
+import Abstraction.Prim.Order
 
 /-!
 # Abstraction.MasterData.Query
@@ -462,5 +463,175 @@ theorem ratio_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
     simp only [Option.bind_some, hx, answerOf?, Option.map_eq_some_iff]
     refine ⟨x.multiplicationRatio, ?_, rfl⟩
     rw [← hr, ← natOfJ32_int]; rfl
+
+/-! ## コードリスト -/
+
+/-- コードリストの要素の写し（`answerOf?` の `codeList`）。 -/
+def toEntry (e : String × String) : CodeEntry := ⟨e.1, e.2⟩
+
+theorem mapM_some_getD {α β : Type} {f : α → Option β} {l : List α} {l' : List β} (h : l.mapM f = some l')
+    (d : β) : l.map (fun a => (f a).getD d) = l' := by
+  have := mapM_some_map h (g := fun a => (f a).getD d) (k := id) fun _ _ e => by simp [e]
+  simpa using this.symm
+
+/-- `ORDER BY display_order` の許される並びを行の葉で写すと、[Spec] の `mergeSort`（表示順が重複しないとき）。 -/
+theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f : ρ → LangSemantics.Sql.Postgresql.Int4}
+    {a : ρ → Option ω} {ws : List ω} (hm : rows.mapM a = some ws) (dOrd : ω → Nat)
+    (hd : ∀ r w, a r = some w → (dOrd w : Int) = (f r).val) (hnd : (ws.map dOrd).Nodup)
+    (h : isAllowedOrder sortCfg [.asc] (orderKey f) rows o = true) (dflt : ω) :
+    o.map (fun r => (a r).getD dflt) = ws.mergeSort fun x y => decide (dOrd x ≤ dOrd y) := by
+  have e := mapM_some_getD hm dflt
+  rw [← e]
+  refine allowed_map_eq_mergeSort (f := fun r => (f r).val) _ dOrd (fun r hr => ?_) (by rw [e]; exact hnd) h
+  obtain ⟨w, _, hw⟩ := mapM_some_mem hm hr
+  simp only [hw, Option.getD_some]
+  exact hd r w hw
+
+theorem allowed_perm {ρ : Type} [DecidableEq ρ] {rows o : List ρ} {key : ρ → List SqlValue}
+    (h : isAllowedOrder sortCfg [.asc] key rows o = true) : o.Perm rows := by
+  simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
+  exact h.1.symm
+
+theorem codeList_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
+    (h8 : md.MD8) {o : List AirportRow}
+    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o = true) :
+    (SourceModel.CodeList.airport o).map toEntry = CodeList.airport md := by
+  obtain ⟨ha, -⟩ := masterDataOf_eq_some.mp hm
+  have hp : o.Perm db.airport := allowed_perm ho
+  have hnd := airportCodes_nodup ha h1.1
+  rw [airport_eq_insertNop o ((hp.map _).nodup_iff.mpr hnd) fun r hr => ?_]
+  · rw [List.map_map]
+    have : toEntry ∘ CodeEntry.toPair = id := funext fun _ => rfl
+    rw [this, List.map_id, CodeList.airport]
+    congr 1
+    rw [← allowed_mergeSort ha (·.displayOrder) (fun r w h => ?_) h1.2.2.2.2.2.2.2.2.1 ho ⟨⟨""⟩, "", 0⟩]
+    · refine List.map_congr_left fun r hr => ?_
+      obtain ⟨w, _, hw⟩ := mapM_some_mem ha (hp.mem_iff.mp hr)
+      simp only [hw, Option.getD_some, airportOfRow_eq_some hw]
+    · simp only [airportOfRow, Option.map_eq_some_iff] at h
+      obtain ⟨d, hd, rfl⟩ := h
+      exact (natOfInt4_eq_some.mp hd).symm
+  · obtain ⟨w, hw, hwr⟩ := mapM_some_mem ha (hp.mem_iff.mp hr)
+    have := (h8.1 w hw).2
+    rw [airportOfRow_code hwr] at this
+    exact this
+
+theorem boardingClassOfRow_parts {r : BoardingClassRow} {w : BoardingClass} (h : boardingClassOfRow r = some w) :
+    r.boardingClassCd.val = w.boardingClassCd.toCode ∧ r.boardingClassName.map (·.val) = some w.boardingClassName ∧
+      (w.displayOrder : Int) = r.displayOrder.val := by
+  refine ⟨bcCdOf_eq_some (boardingClassOfRow_code h), ?_⟩
+  simp only [boardingClassOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨_, _, nm, hnm, _, _, d, hd, rfl⟩ := h
+  exact ⟨by simp [hnm], (natOfInt4_eq_some.mp hd).symm⟩
+
+theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
+    {o : List BoardingClassRow}
+    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
+    (SourceModel.CodeList.boardingClass o).map toEntry = CodeList.boardingClass md := by
+  obtain ⟨-, -, -, hb, -⟩ := masterDataOf_eq_some.mp hm
+  have hp : o.Perm db.boardingClass := allowed_perm ho
+  let g : BoardingClassRow → BoardingClass := fun r => (boardingClassOfRow r).getD ⟨.N, "", 0, 0⟩
+  have hg : ∀ r ∈ o, boardingClassOfRow r = some (g r) := by
+    intro r hr
+    obtain ⟨w, _, hw⟩ := mapM_some_mem hb (hp.mem_iff.mp hr)
+    simp only [g, hw, Option.getD_some]
+  have hsort : o.map g = md.boardingClasses.mergeSort fun x y => decide (x.displayOrder ≤ y.displayOrder) :=
+    allowed_mergeSort hb (·.displayOrder) (fun _ _ h => (boardingClassOfRow_parts h).2.2)
+      h1.2.2.2.2.2.2.2.2.2.1 ho _
+  have e1 : o.map (fun r => (some r.boardingClassCd.val, r.boardingClassName.map (·.val))) =
+      ((o.map g).map fun b => (b.boardingClassCd.toCode, b.boardingClassName)).map fun e => (some e.1, some e.2) := by
+    rw [List.map_map, List.map_map]
+    refine List.map_congr_left fun r hr => ?_
+    obtain ⟨c, n, -⟩ := boardingClassOfRow_parts (hg r hr)
+    simp only [Function.comp, c, n]
+  have hnd : (((o.map g).map fun b => (b.boardingClassCd.toCode, b.boardingClassName)).map Prod.fst).Nodup := by
+    rw [List.map_map, hsort]
+    have := (List.mergeSort_perm md.boardingClasses fun x y => decide (x.displayOrder ≤ y.displayOrder)).map
+      (·.boardingClassCd)
+    refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.1) fun a _ b _ e => ?_
+    have := congrArg BoardingClassCd.ofCode? e
+    simpa [Function.comp, BoardingClassCd.ofCode?_toCode] using this
+  unfold SourceModel.CodeList.boardingClass
+  rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.boardingClass]
+  rfl
+
+theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
+    {o : List FareTypeRow}
+    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
+    (SourceModel.CodeList.fareType o).map toEntry = CodeList.fareType md := by
+  obtain ⟨-, -, -, -, hf, -⟩ := masterDataOf_eq_some.mp hm
+  have hp : o.Perm db.fareType := allowed_perm ho
+  let g : FareTypeRow → FareType := fun r => (fareTypeOfRow r).getD ⟨.OW, "", 0, 0, 0, 0, 0⟩
+  have parts : ∀ r w, fareTypeOfRow r = some w → r.fareTypeCd.val = w.fareTypeCd.toCode ∧
+      r.fareTypeName.val = w.fareTypeName ∧ (w.displayOrder : Int) = r.displayOrder.val := by
+    intro r w h
+    refine ⟨ftCdOf_eq_some (fareTypeOfRow_code h), ?_⟩
+    simp only [fareTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨_, _, _, _, _, _, _, _, _, _, d, hd, rfl⟩ := h
+    exact ⟨rfl, (natOfInt4_eq_some.mp hd).symm⟩
+  have hg : ∀ r ∈ o, fareTypeOfRow r = some (g r) := by
+    intro r hr
+    obtain ⟨w, _, hw⟩ := mapM_some_mem hf (hp.mem_iff.mp hr)
+    simp only [g, hw, Option.getD_some]
+  have hsort : o.map g = md.fareTypes.mergeSort fun x y => decide (x.displayOrder ≤ y.displayOrder) :=
+    allowed_mergeSort hf (·.displayOrder) (fun r w h => (parts r w h).2.2) h1.2.2.2.2.2.2.2.2.2.2.1 ho _
+  have e1 : o.map (fun r => (some r.fareTypeCd.val, some r.fareTypeName.val)) =
+      ((o.map g).map fun b => (b.fareTypeCd.toCode, b.fareTypeName)).map fun e => (some e.1, some e.2) := by
+    rw [List.map_map, List.map_map]
+    refine List.map_congr_left fun r hr => ?_
+    obtain ⟨c, n, -⟩ := parts r _ (hg r hr)
+    simp only [Function.comp, c, n]
+  have hnd : (((o.map g).map fun b => (b.fareTypeCd.toCode, b.fareTypeName)).map Prod.fst).Nodup := by
+    rw [List.map_map, hsort]
+    have := (List.mergeSort_perm md.fareTypes fun x y => decide (x.displayOrder ≤ y.displayOrder)).map
+      (·.fareTypeCd)
+    refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.2.1) fun a _ b _ e => ?_
+    have := congrArg FareTypeCd.ofCode? e
+    simpa [Function.comp, FareTypeCd.ofCode?_toCode] using this
+  unfold SourceModel.CodeList.fareType
+  rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.fareType]
+  rfl
+
+theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
+    {o : List CreditTypeRow}
+    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
+    (SourceModel.CodeList.creditType o).map toEntry = CodeList.creditType md := by
+  obtain ⟨-, -, -, -, -, -, -, hc⟩ := masterDataOf_eq_some.mp hm
+  have hp : o.Perm db.creditType := allowed_perm ho
+  let g : CreditTypeRow → CreditType := fun r => (creditTypeOfRow r).getD ⟨⟨""⟩, "", 0⟩
+  have parts : ∀ r w, creditTypeOfRow r = some w → r.creditTypeCd.val = w.creditTypeCd.val ∧
+      r.creditFirm.val = w.creditFirm ∧ (w.displayOrder : Int) = r.displayOrder.val := by
+    intro r w h
+    simp only [creditTypeOfRow, Option.map_eq_some_iff] at h
+    obtain ⟨d, hd, rfl⟩ := h
+    exact ⟨rfl, rfl, (natOfInt4_eq_some.mp hd).symm⟩
+  have hg : ∀ r ∈ o, creditTypeOfRow r = some (g r) := by
+    intro r hr
+    obtain ⟨w, _, hw⟩ := mapM_some_mem hc (hp.mem_iff.mp hr)
+    simp only [g, hw, Option.getD_some]
+  have hsort : o.map g = md.creditTypes.mergeSort fun x y => decide (x.displayOrder ≤ y.displayOrder) :=
+    allowed_mergeSort hc (·.displayOrder) (fun r w h => (parts r w h).2.2) h1.2.2.2.2.2.2.2.2.2.2.2 ho _
+  have e1 : o.map (fun r => (some r.creditTypeCd.val, some r.creditFirm.val)) =
+      ((o.map g).map fun b => (b.creditTypeCd.val, b.creditFirm)).map fun e => (some e.1, some e.2) := by
+    rw [List.map_map, List.map_map]
+    refine List.map_congr_left fun r hr => ?_
+    obtain ⟨c, n, -⟩ := parts r _ (hg r hr)
+    simp only [Function.comp, c, n]
+  have hnd : (((o.map g).map fun b => (b.creditTypeCd.val, b.creditFirm)).map Prod.fst).Nodup := by
+    rw [List.map_map, hsort]
+    have := (List.mergeSort_perm md.creditTypes fun x y => decide (x.displayOrder ≤ y.displayOrder)).map
+      (·.creditTypeCd)
+    refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.2.2.2.2.1) fun a _ b _ e => ?_
+    exact congrArg CreditTypeCd.mk e
+  unfold SourceModel.CodeList.creditType
+  rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.creditType]
+  rfl
+
+theorem codeList_fixed :
+    SourceModel.CodeList.creditMonth.map toEntry = CodeList.creditMonth ∧
+    SourceModel.CodeList.creditYear.map toEntry = CodeList.creditYear ∧
+    SourceModel.CodeList.gender.map toEntry = CodeList.gender ∧
+    SourceModel.CodeList.flightType.map toEntry = CodeList.flightType := by
+  refine ⟨by decide, by decide, by decide, by decide⟩
 
 end Abstraction.MasterData
