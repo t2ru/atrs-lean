@@ -33,28 +33,37 @@ namespace JLocalDate
 def ofYMD? (y : Int) (m d : Nat) : Option JLocalDate :=
   if 1 ≤ m && m ≤ 12 && 1 ≤ d && d ≤ daysInMonth y m then some ⟨y, m, d⟩ else none
 
-/-- 通算日数（1970-01-01 = 0）。H. Hinnant の days_from_civil。 -/
+/-- 通算日数（1970-01-01 = 0）。H. Hinnant の days_from_civil を、床除算（Lean の `Int` の `/`）で書いたもの。
+年・日は 400 年（146097 日）の周期の中の位置に分ける。 -/
 def toEpochDay (x : JLocalDate) : Int :=
   let y : Int := if x.month ≤ 2 then x.year - 1 else x.year
-  let era : Int := (if y ≥ 0 then y else y - 399) / 400
+  let era : Int := y / 400
   let yoe : Int := y - era * 400
   let mp : Int := if x.month > 2 then (x.month : Int) - 3 else (x.month : Int) + 9
   let doy : Int := (153 * mp + 2) / 5 + (x.day : Int) - 1
   let doe : Int := yoe * 365 + yoe / 4 - yoe / 100 + doy
   era * 146097 + doe - 719468
 
-/-- 通算日数から暦日へ（civil_from_days）。 -/
-def ofEpochDay (z : Int) : JLocalDate :=
-  let z := z + 719468
-  let era : Int := (if z ≥ 0 then z else z - 146096) / 146097
-  let doe : Int := z - era * 146097
-  let yoe : Int := (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365
-  let y : Int := yoe + era * 400
-  let doy : Int := doe - (365 * yoe + yoe / 4 - yoe / 100)
-  let mp : Int := (5 * doy + 2) / 153
+/-- 400 年の周期の中の日 `doe`（0〜146096）から、周期の中の年（0〜399。3 月始まり）。 -/
+def yoeOfDoe (doe : Int) : Int := (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365
+
+/-- 周期の中の日 `doe` から、3 月 1 日を 0 とする年の中の日（0〜365）。 -/
+def doyOfDoe (doe : Int) : Int := doe - (365 * yoeOfDoe doe + yoeOfDoe doe / 4 - yoeOfDoe doe / 100)
+
+/-- 年の中の日から、3 月を 0 とする月（0〜11）。 -/
+def mpOfDoy (doy : Int) : Int := (5 * doy + 2) / 153
+
+/-- 周期 `era` と周期の中の日 `doe` から暦日へ。 -/
+def civilOfDoe (era doe : Int) : JLocalDate :=
+  let yoe := yoeOfDoe doe
+  let doy := doyOfDoe doe
+  let mp := mpOfDoy doy
   let d : Int := doy - (153 * mp + 2) / 5 + 1
   let m : Int := if mp < 10 then mp + 3 else mp - 9
-  ⟨if m ≤ 2 then y + 1 else y, m.toNat, d.toNat⟩
+  ⟨if m ≤ 2 then yoe + era * 400 + 1 else yoe + era * 400, m.toNat, d.toNat⟩
+
+/-- 通算日数から暦日へ（civil_from_days。床除算で書いたもの）。 -/
+def ofEpochDay (z : Int) : JLocalDate := civilOfDoe ((z + 719468) / 146097) ((z + 719468) % 146097)
 
 /-- `plusDays(n)`。 -/
 def plusDays (x : JLocalDate) (n : Int) : JLocalDate := ofEpochDay (x.toEpochDay + n)

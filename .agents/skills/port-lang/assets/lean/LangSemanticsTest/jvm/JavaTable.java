@@ -101,7 +101,11 @@ public class JavaTable {
         line("");
         LocalDate[] ds = {LocalDate.of(1970, 1, 1), LocalDate.of(2024, 2, 28), LocalDate.of(2024, 2, 29), LocalDate.of(2023, 2, 28),
             LocalDate.of(1900, 2, 28), LocalDate.of(2000, 2, 29), LocalDate.of(2026, 12, 31), LocalDate.of(2027, 1, 1),
-            LocalDate.of(2026, 11, 1), LocalDate.of(1, 1, 1), LocalDate.of(9999, 12, 31), LocalDate.of(1969, 12, 31)};
+            LocalDate.of(2026, 11, 1), LocalDate.of(1, 1, 1), LocalDate.of(9999, 12, 31), LocalDate.of(1969, 12, 31),
+            // 負の年と 400 年の境界（床除算の扱いを確かめる）
+            LocalDate.of(0, 3, 1), LocalDate.of(-1, 3, 1), LocalDate.of(-399, 3, 1), LocalDate.of(-400, 2, 28),
+            LocalDate.of(-400, 2, 29), LocalDate.of(-400, 3, 1), LocalDate.of(-401, 12, 31), LocalDate.of(-800, 3, 1),
+            LocalDate.of(-4713, 11, 24), LocalDate.of(10000, 1, 1), LocalDate.of(5874897, 12, 31)};
         long[] ns = {0, 1, -1, 30, 60, 90, 120, 365, 366, -366, 1461};
         line("-- toEpochDay / ofEpochDay");
         for (LocalDate d : ds) {

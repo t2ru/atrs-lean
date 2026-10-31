@@ -185,7 +185,7 @@ generated:
 
 | 量 | 範囲 |
 | --- | --- |
-| 空港コード（マスタの `Airport.code`） | 英大文字 3 文字（`AirportCd.WellFormed`） |
+| 空港コード（マスタの `Airport.code`） | 英大文字 3 文字（`AirportCd.WellFormed`）で、コードリストの区切り行のコード `NOP` でない |
 | `Route.basicFare + BoardingClass.extraCharge` | `0 .. 10,000,000` |
 | `PeakTime.multiplicationRatio` | `0 .. 1,000` |
 | `FareType.discountRate` | `0 .. 100`（かつ `≤ childFareRate`） |

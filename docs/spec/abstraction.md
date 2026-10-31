@@ -136,7 +136,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込む。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: DB のマスタの各行と設定の値が、[Spec] の型で表せる（α が定義される） | ABS-026 | ABS-127 |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（α が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR 0046](../decision/0046-abs-026-proof-structure-nop-and-d027-scope.md)） | ABS-026 | ABS-127 |
 
 ### 前提型の差異の影響
 
@@ -174,6 +174,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-005 | [空席照会の集約](flight-search.md#searchflight) | 同一区間に同じ出発時刻の便があると、1 グループに統合し、運賃種別ごとに後勝ちになる | PRE MD-5 |
 | D-010 | [更新件数](reservation.md#予約確定reserve)・[ログイン](authentication.md#ログインlogin)・[会員登録](member.md) | 登録・更新の件数 ≠ 1 で `System("e.ar.a0.L9002")` になる | `J` と INV（キーが存在する）。到達しないことは ABS-022 で示す |
 | D-015 | [マスタの不変条件](master-data.md#不変条件spec) | MD-1〜MD-3 が破れると、後勝ちの上書きか、`null` による前提違反になる | PRE MD-1〜MD-3 |
+| （ID なし） | [空港コードリスト](master-data.md#空港コードリスト画面用) | コードが区切り行と同じ `NOP` の空港があると、`LinkedHashMap` の同じキーへの `put` で、区切り行の表示がその空港の名前に置き換わり、空港の行は現れない | PRE（MD-8: 空港のコードは `NOP` でない。[ADR 0046](../decision/0046-abs-026-proof-structure-nop-and-d027-scope.md)） |
 | （ID なし） | [値域](domain-model.md#値域) | マスタ・入力が値域の外のとき、int32 で折り返す | PRE（入力の値域・MD-8） |
 
 [Spec] が型で除外している入力での [Source] の前提違反（`Assert`・`NullPointerException`）も、同じ扱いとする（例: [fare-calculation.md](fare-calculation.md)、[reservation.md](reservation.md)、[flight-search.md](flight-search.md)、[member.md](member.md) の [Source] の前提違反）。ただし、これは HTTP の要求から到達できない入力に限る。`Spec.Http` はすべての要求文字列に応答を定めるので、HTTP から到達できる前提違反は PRE の内である。その場合は、前提型の差異として登録する（例: D-020）か、L 課題 ABS-047 で到達しないことを示す。

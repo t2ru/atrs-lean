@@ -49,6 +49,12 @@ def holds : Truth → Bool
   | .true => Bool.true
   | _ => Bool.false
 
+/-- `AND` の採否は、両方の採否の論理積（`UNKNOWN` は偽として扱うので、三値論理でも成り立つ）。 -/
+@[simp] theorem holds_and (a b : Truth) : (a.and b).holds = (a.holds && b.holds) := by
+  cases a <;> cases b <;> rfl
+
+@[simp] theorem holds_ofBool (b : Bool) : (ofBool b).holds = b := by cases b <;> rfl
+
 end Truth
 
 /-- 文字列の照合順序（方言・設定のパラメータ）。 -/
@@ -76,6 +82,18 @@ def SqlValue.compareWith (coll : Collation) (accept : Ordering → Bool) (a b : 
 def SqlValue.eq (coll : Collation) (a b : SqlValue) : Truth := a.compareWith coll (· == .eq) b
 def SqlValue.lt (coll : Collation) (a b : SqlValue) : Truth := a.compareWith coll (· == .lt) b
 def SqlValue.le (coll : Collation) (a b : SqlValue) : Truth := a.compareWith coll (· != .gt) b
+
+/-- 符号位置の照合での文字列の等号の採否は、文字列の等しさ。 -/
+theorem SqlValue.eq_text_holds (a b : String) :
+    (SqlValue.eq Collation.codepoint (.text a) (.text b)).holds = (a == b) := by
+  simp only [SqlValue.eq, SqlValue.compareWith, SqlValue.cmp, Collation.codepoint, Truth.holds_ofBool]
+  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, Std.compare_eq_iff_eq]
+
+/-- 整数の等号の採否は、整数の等しさ。 -/
+theorem SqlValue.eq_int_holds (coll : Collation) (a b : Int) :
+    (SqlValue.eq coll (.int a) (.int b)).holds = (a == b) := by
+  simp only [SqlValue.eq, SqlValue.compareWith, SqlValue.cmp, Truth.holds_ofBool]
+  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, Int.compare_eq_eq]
 
 /-- `x BETWEEN lo AND hi` ≡ `x >= lo AND x <= hi`。 -/
 def between (coll : Collation) (x lo hi : SqlValue) : Truth :=

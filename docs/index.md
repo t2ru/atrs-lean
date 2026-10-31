@@ -58,6 +58,7 @@ okf_version: "0.2"
 * [空虚化を防ぐ義務を既存の研究に照らして補う（成分の必要性・変異テスト・意図から書く例）](decision/0043-vacuity-literature-necessity-and-mutation.md) - ADR 0039 の義務を、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies などの研究と対応づける。その上で、名前付きの成分を外すと R 課題の命題が偽になること（成分の必要性。G9）を義務に加える。成分の広さには仕様の変異テストを、仕様の妥当性には意図から書く例を採る。
 * [移植が成り立つ条件をスキルに明示し、進め方の既定（評価・判断点・ゲート・敵対的レビュー・記録）を補う](decision/0044-porting-conditions-and-workflow.md) - スキル port-lang に、移植が成り立つ条件（適用の前提 P1〜P6、成立の条件 S1〜S6、言えること・言えないこと）を明示し、AWS AIDM（AI Modernization Flow）のプロセス面を参考に、置き換えてよい既定の進め方を references/workflow.md に置く。
 * [マスタ・設定・コードリストの読み込みの SourceModel と、[Spec] の修正（所要時間・空港コードの値域・問い合わせ）を決める](decision/0045-master-data-source-model-and-spec-fixes.md) - マスタの読み込みの SourceModel の写し方（列の型は処理系の範囲で写す、Mapper の結果の順列を選ぶ具体機械、MyBatis の対応、コードリスト、設定）と、Spec.Route の所要時間の削除、MD-8 の空港コードの値域、問い合わせの機械の拡張、表せない値の差異 D-027、PostgreSQL での差分実行の形を決める。
+* [ABS-026 の証明の構成と、空港コード NOP の禁止・D-027 の範囲・LocalDate の通算日数の修正を決める](decision/0046-abs-026-proof-structure-nop-and-d027-scope.md) - R 課題 ABS-026 の証明に向けて、空港コード NOP を MD-8 で禁じること、D-027 の対象を具体側の入力全体に広げること、LangSemantics.Java の LocalDate の通算日数の変換を床除算で書き直すこと（負の年で JVM と食い違っていた）、補題の置き場所と、有限の範囲の検査にカーネルの評価（decide +kernel）を使うことを決める。
 
 # Specification
 

@@ -1,0 +1,91 @@
+import LangSemantics.Sql
+
+/-!
+# Abstraction.Prim.List
+
+列とバッグの補題。
+
+- `find?_perm`: 述語を満たす要素が高々 1 つなら、`find?` は並べ替えで変わらない。
+- `filter_key_eq_singleton`: キーが一意な列でキーを探すと、その要素ただ 1 つが残る。
+- `filter_cross`: 直積の選択で、右の各行がただ 1 つに決まるなら、左の行ごとの 1 行になる（結合の補題）。
+-/
+
+namespace Abstraction.Prim
+
+open LangSemantics.Sql
+
+/-- 述語を満たす要素が高々 1 つなら、`find?` の結果は並べ替えで変わらない。 -/
+theorem find?_perm {α : Type} {p : α → Bool} {l l' : List α} (hp : l.Perm l')
+    (hu : ∀ a ∈ l, ∀ b ∈ l, p a = true → p b = true → a = b) : l.find? p = l'.find? p := by
+  cases h : l.find? p with
+  | none =>
+    rw [List.find?_eq_none] at h
+    exact (List.find?_eq_none.mpr fun x hx => h x (hp.mem_iff.mpr hx)).symm
+  | some a =>
+    have ha : a ∈ l := List.mem_of_find?_eq_some h
+    have hpa : p a = true := List.find?_some h
+    cases h' : l'.find? p with
+    | none =>
+      rw [List.find?_eq_none] at h'
+      exact absurd hpa (h' a (hp.mem_iff.mp ha))
+    | some b =>
+      have hb : b ∈ l := hp.mem_iff.mpr (List.mem_of_find?_eq_some h')
+      rw [hu a ha b hb hpa (List.find?_some h')]
+
+/-- キーが一意な列で、キーが等しい要素は同じ要素。 -/
+theorem inj_of_nodup_map {α κ : Type} {f : α → κ} {l : List α} (hnd : (l.map f).Nodup) {a b : α}
+    (ha : a ∈ l) (hb : b ∈ l) (e : f a = f b) : a = b := by
+  induction l with
+  | nil => simp at ha
+  | cons x l ih =>
+    simp only [List.map_cons, List.nodup_cons, List.mem_map] at hnd
+    rcases List.mem_cons.mp ha with ha | ha <;> rcases List.mem_cons.mp hb with hb | hb
+    · rw [ha, hb]
+    · exact absurd ⟨b, hb, ha ▸ e.symm⟩ hnd.1
+    · exact absurd ⟨a, ha, hb ▸ e⟩ hnd.1
+    · exact ih hnd.2 ha hb
+
+/-- キーが一意な列で、要素 `x` のキーで選ぶと、`x` だけが残る。 -/
+theorem filter_key_eq_singleton {α κ : Type} [DecidableEq κ] {f : α → κ} {l : List α} {x : α}
+    (hnd : (l.map f).Nodup) (hx : x ∈ l) : l.filter (fun a => f a == f x) = [x] := by
+  induction l with
+  | nil => simp at hx
+  | cons a l ih =>
+    simp only [List.map_cons, List.nodup_cons, List.mem_map] at hnd
+    rcases List.mem_cons.mp hx with rfl | hx
+    · rw [List.filter_cons_of_pos (by simp), List.filter_eq_nil_iff.mpr]
+      intro b hb hfb
+      exact hnd.1 ⟨b, hb, by simpa using hfb⟩
+    · have hne : f a ≠ f x := fun e => hnd.1 ⟨x, hx, e.symm⟩
+      rw [List.filter_cons_of_neg (by simpa using hne), ih hnd.2 hx]
+
+theorem mem_cross {α β : Type} {xs : List α} {bs : List β} {x : α × β} :
+    x ∈ Bag.cross xs bs ↔ x.1 ∈ xs ∧ x.2 ∈ bs := by
+  obtain ⟨a, b⟩ := x
+  simp [Bag.cross]
+
+/-- 結合の補題: 左の行 `x` が `c x` を満たすとき、右の行のうち `q x` を満たすものがただ 1 つ `g x` なら、
+直積を `c x ∧ q x b` で選んだ結果は、`c` を満たす左の行ごとに `(x, g x)` を並べたもの。 -/
+theorem filter_cross {α β : Type} {xs : List α} {bs : List β} {c : α → Bool} {q : α → β → Bool} {g : α → β}
+    (h : ∀ x ∈ xs, c x = true → bs.filter (q x) = [g x]) :
+    (Bag.cross xs bs).filter (fun p => c p.1 && q p.1 p.2) = (xs.filter c).map fun x => (x, g x) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    have ih := ih fun y hy => h y (List.mem_cons_of_mem _ hy)
+    simp only [Bag.cross, List.flatMap_cons, List.filter_append] at ih ⊢
+    rw [ih]
+    by_cases hc : c x = true
+    · have hx := h x (List.mem_cons_self ..) hc
+      rw [List.filter_cons_of_pos hc, List.map_cons, List.singleton_append.symm.trans (by rfl)]
+      congr 1
+      rw [List.filter_map]
+      simp only [Function.comp_def, hc, Bool.true_and]
+      have : (fun b => q x b) = q x := rfl
+      rw [this, hx]; rfl
+    · have hc' : c x = false := by simpa using hc
+      rw [List.filter_cons_of_neg hc]
+      rw [List.filter_map]
+      simp [Function.comp_def, hc']
+
+end Abstraction.Prim

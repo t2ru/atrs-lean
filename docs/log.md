@@ -2,6 +2,20 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 2 段 b-1 を終えた（`doing`）。R 課題 ABS-026 の補題を、`Abstraction.Prim`・`Abstraction.MasterData` と、スキル port-lang の `LangSemantics` に置いた（暦、`HashMap`、一意な検索、整列、結合、キャッシュのキー、`load()`、コードリスト）。
+* **Creation**: [ADR 0046](decision/0046-abs-026-proof-structure-nop-and-d027-scope.md) で、次の 4 点を決めた。
+  * 空港コード `NOP` を MD-8 で禁じる
+  * D-027 の対象を具体側の入力全体に広げる（[ADR 0045](decision/0045-master-data-source-model-and-spec-fixes.md) を補う）
+  * `LangSemantics.Java` の `LocalDate` の通算日数を床除算で書き直す（負の年で JVM と食い違っていた）
+  * 補題の置き場所と、`decide +kernel` の使い方
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（D-027 の範囲、[Spec] の前提の外の `NOP`）
+  * [spec/master-data.md](spec/master-data.md)（MD-8）
+  * [spec/domain-model.md](spec/domain-model.md)（値域）
+  * [spec/assurance.md](spec/assurance.md)（JVM の突き合わせ表の件数と `LocalDate` の範囲）
+  * [ADR 0045](decision/0045-master-data-source-model-and-spec-fixes.md) の More Information（補足の追記）
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 2 段 a を終えた（`doing`）。
   * マスタ・設定・コードリストの読み込みの `SourceModel` を作った（Mapper の文、MyBatis の対応、Provider、コードリスト、設定、具体機械 `queryConcrete`）。
   * Mapper の SQL を PostgreSQL で差分実行して照合した（`conformance/sql/master-data.json`）。

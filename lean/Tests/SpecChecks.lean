@@ -80,6 +80,8 @@ def sample : MasterData where
 #guard !decide ({ sample with routes := [{ route1 with basicFare := 9995001 }] }.MD8)
 -- MD-8: 空港コードが英大文字 3 文字でない
 #guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"I-T"⟩ }] }.MD8)
+-- MD-8: 空港コードが区切り行のコード NOP
+#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"NOP"⟩ }] }.MD8)
 
 #guard sample.multiplicationRatioOn (ymd 2026 12 26) == 140
 #guard sample.multiplicationRatioOn (ymd 2026 12 25) == 125

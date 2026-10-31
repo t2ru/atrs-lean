@@ -87,3 +87,4 @@ Chosen option: "下表のとおり決める", because 不一致を Lean と文�
 
 * [ADR 0033](0033-foundational-principles.md)、[ADR 0034](0034-b-method-refinement-and-explicit-deviations.md)、[ADR 0039](0039-refinement-non-vacuity-obligations.md)、[ADR 0042](0042-fare-source-model-and-shared-vectors.md)
 * [abstraction.md](../spec/abstraction.md#既知差異)（D-027・ABS-026・ABS-127）、[master-data.md](../spec/master-data.md)
+* D-027 の対象を具体側の入力全体（問い合わせの引数を含む）に広げ、MD-8 に空港コード `NOP` の禁止を加えたことは、[ADR 0046](0046-abs-026-proof-structure-nop-and-d027-scope.md) で補った
