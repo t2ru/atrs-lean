@@ -102,6 +102,34 @@ theorem sum_map_le {α : Type} {V : α → Nat} {M : Nat} : ∀ (xs : List α), 
     simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.succ_mul]
     omega
 
+/-! ## 値域内の `int` の演算（自然数の値） -/
+
+theorem ofInt_nat {x : Nat} (h : x ≤ 2147483647) : (J32.ofInt (x : Int)).val = (x : Int) :=
+  J32.val_ofInt_of_inRange _ ⟨by simp only [J32.minValue]; omega, by simp only [J32.maxValue]; omega⟩
+
+theorem j32add_nat {a b : J32} {x y : Nat} (ha : a.val = (x : Int)) (hb : b.val = (y : Int))
+    (h : x + y ≤ 2147483647) : (j32add a b).val = ((x + y : Nat) : Int) := by
+  rw [j32add_val_of_inRange _ _ (by rw [ha, hb]; simp only [J32.minValue, J32.maxValue]; omega), ha, hb]
+  push_cast; rfl
+
+theorem j32sub_nat {a b : J32} {x y : Nat} (ha : a.val = (x : Int)) (hb : b.val = (y : Int))
+    (h : y ≤ x) (hx : x ≤ 2147483647) : (j32sub a b).val = ((x - y : Nat) : Int) := by
+  rw [j32sub_val_of_inRange _ _ (by rw [ha, hb]; simp only [J32.minValue, J32.maxValue]; omega), ha, hb]
+  omega
+
+theorem j32mul_nat {a b : J32} {x y : Nat} (ha : a.val = (x : Int)) (hb : b.val = (y : Int))
+    (h : x * y ≤ 2147483647) : (j32mul a b).val = ((x * y : Nat) : Int) := by
+  have e : (x : Int) * (y : Int) = ((x * y : Nat) : Int) := (Int.natCast_mul x y).symm
+  rw [j32mul_val_of_inRange _ _ (by rw [ha, hb, e]; simp only [J32.minValue, J32.maxValue]; omega), ha, hb, e]
+
+theorem jdiv32_nat {a : J32} {x : Nat} (ha : a.val = (x : Int)) :
+    ∃ c, jdiv32 a (J32.ofInt 100) = .ok c ∧ c.val = ((x / 100 : Nat) : Int) := by
+  have h100 : (J32.ofInt 100).val = 100 := ofInt_nat (x := 100) (by decide)
+  obtain ⟨c, hc, hcv⟩ := jdiv32_val_of_nonneg a (J32.ofInt 100) (by rw [ha]; omega) (by rw [h100]; decide)
+  refine ⟨c, hc, ?_⟩
+  rw [hcv, ha, h100]
+  omega
+
 end Abstraction.Fare
 
 namespace Abstraction.Fare

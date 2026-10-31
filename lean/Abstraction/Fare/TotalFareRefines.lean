@@ -182,7 +182,75 @@ example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = s
         bdCeilHundredUp_val (by rw [hS]; omega) (by rw [hS, Int.toNat_natCast]; omega), hS, Int.toNat_natCast]
       simp only [ceilTo]
       congr 4
-    · sorry
+    · refine forall₂_of_mapM (fun f => some (mkFlight p f)) ic.flights ks hks fun f hf k hk hfk b => ?_
+      obtain ⟨dj, hdj, hD, hn, hbcd, hftd⟩ := keyOfForm_eq hfk
+      obtain ⟨v, -, hv'⟩ := mapM_some_mem hparts hk
+      obtain ⟨rt, bc, ft, hrt, hbc, hft, hvdef⟩ := flightTotalOfKey_eq hv'
+      obtain ⟨fm, r, bJ, hgfm, hfmr, hrb, hbJ⟩ := hmf k.flightName (hpt k hk) rt hrt
+      have hgetfm : p.flightMaster.flightMasterMap.get k.flightName.val = some fm := by
+        simp only [getFlightMaster, assertHasText_ok (hpt k hk), ok_bind] at hgfm
+        exact Except.ok.inj hgfm
+      obtain ⟨bcJ, e, hgetbc, hbccd, hex, heval⟩ := boardingClass_of_answer
+        (r := p.boardingClass.boardingClassCodeMap.get k.boardingClassCd) (by rw [hbq, hbc]; rfl)
+      obtain ⟨fJ, dJ, hgetft, hdr, hdval⟩ := fareType_of_answer
+        (r := p.fareType.fareTypeCodeMap.get k.fareTypeCd) (by rw [hfq, hft]; rfl)
+      have hbcmem := boardingClassOf_mem hbc
+      have hftmem := fareTypeOf_mem hft
+      have hX : rt.basicFare + bc.extraCharge ≤ 10000000 :=
+        hv.md8.2.1 rt (routeOfFlightName_mem hrt) bc hbcmem.1
+      have hr100 : ft.discountRate ≤ 100 := hv.md8.2.2.2 ft hftmem
+      have hrcr : ft.discountRate ≤ cfg.childFareRate := (hv.md7 ft hftmem).2.1
+      have hcr : cfg.childFareRate ≤ 100 := hcv.childFareRate_le
+      have hkb : keyBasic md k = some (rt.basicFare + bc.extraCharge, md.multiplicationRatioOn k.departureDate) := by
+        simp only [keyBasic, hrt, hbc, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+      have hkf : keyFare md k = some ((rt.basicFare + bc.extraCharge) * md.multiplicationRatioOn k.departureDate / 100,
+          ft.discountRate) := by
+        simp only [keyFare, hkb, hft, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+      have hd1 := h1 k hk
+      have hd2 := h2 k hk
+      have hd12 := h12 k hk
+      simp only [hkb, hkf, Option.all_some, decide_eq_true_eq] at hd1 hd2 hd12
+      obtain ⟨vb, hcb, hvb⟩ := calculateBasicFare_eq hm hv ho.2.2.2.2.1 hptp hgetbc hex heval hbJ hD hX hd1
+      have hC := ratioOn_le hv.md8 k.departureDate
+      generalize md.multiplicationRatioOn k.departureDate = C at *
+      generalize hXd : rt.basicFare + bc.extraCharge = X at *
+      have hb8 : X * C / 100 ≤ 100000000 := by have := Nat.mul_le_mul hX hC; omega
+      generalize hbd : X * C / 100 = bb at *
+      simp only [mkFlight, pure_bind, hn, Option.bind_some, hgetfm, JRef.deref, ok_bind, hfmr, hrb, hbcd, hgetbc,
+        Providers.ticketReserveService, hftd, hgetft, hdr]
+      rw [hbccd, hbcmem.2, hdj, hcb, ok_bind,
+        calculateFare_ok (b := bb) (r := ft.discountRate) hvb hdval hr100, ok_bind]
+      have hsub := j32sub_nat (x := cfg.childFareRate) (y := ft.discountRate) hcfr hdval hrcr (by omega)
+      have hmul := j32mul_nat hvb hsub hd12
+      obtain ⟨cp, hcp, hcpv⟩ := jdiv32_nat hmul
+      rw [hcp, ok_bind]
+      -- 値
+      have hlen : ic.passengers.length = ages.length := mapM_length hages
+      rw [hlen]
+      generalize hcnt : (List.filter (fun a => decide (a < cfg.adultPassengerMinAge)) ages).length = cnt
+      have hcl : cnt ≤ ages.length := by rw [← hcnt]; exact List.length_filter_le _ _
+      have hBF : (bdCeilHundredUp (jd2i (jdmul (jd (bb : Int)) (fareFactor ft.discountRate)))).val =
+          (Spec.Fare.fare bb ft.discountRate : Int) :=
+        fare_src_eq' hr100 (by omega) (Nat.lt_of_le_of_lt (Nat.mul_le_mul hb8 (Nat.sub_le 100 _)) (by decide)) hd2
+      have hF : Spec.Fare.fare bb ft.discountRate ≤ 100000000 := by
+        simp only [Spec.Fare.fare, Spec.Prim.ceilTo, Spec.Prim.pct]
+        have : bb * (100 - ft.discountRate) ≤ bb * 100 := Nat.mul_le_mul_left _ (by omega)
+        omega
+      have hQ : bb * (cfg.childFareRate - ft.discountRate) / 100 ≤ 100000000 := by
+        have : bb * (cfg.childFareRate - ft.discountRate) ≤ bb * 100 := Nat.mul_le_mul_left _ (by omega)
+        omega
+      have hadult := j32sub_nat (ofInt_nat (x := ages.length) (by omega)) (ofInt_nat (x := cnt) (by omega)) hcl
+        (by omega)
+      have e1 : Spec.Fare.fare bb ft.discountRate * (ages.length - cnt) ≤ 100000000 * 6 :=
+        Nat.mul_le_mul hF (by omega)
+      have e2 : bb * (cfg.childFareRate - ft.discountRate) / 100 * cnt ≤ 100000000 * 6 :=
+        Nat.mul_le_mul hQ (by omega)
+      have hm1 := j32mul_nat hBF hadult (by omega)
+      have hm2 := j32mul_nat hcpv (ofInt_nat (x := cnt) (by omega)) (by omega)
+      have hsum := j32add_nat hm1 hm2 (by omega)
+      rw [← J32.ofInt_val (j32add (j32mul _ _) _), hsum, hv', Option.getD_some, hvdef]
+      simp only [Spec.Fare.childNumOfAges, hcnt, ← hXd, ← hbd, Spec.Prim.pct]
+      rfl
     · simp only [Nat.zero_add]; omega
   · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a _ ha b => ?_
     obtain ⟨pp, aJ, rfl, hage, haJ⟩ := ageOfPassenger_eq ha
