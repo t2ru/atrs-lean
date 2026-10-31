@@ -57,10 +57,10 @@ Chosen option: "機能を並置したトップレベルの `Refines`・`Adequate
 - `Abstraction.lean` のトップレベル:
   - `Abstraction.refines : Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue`
   - `Abstraction.adequate : Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env`
-- R 課題ごとの束 `queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate`（`Abstraction.Adequacy`）に、R 課題と同じ課題 ID の `@[obligation]` を付ける。
-  - 環境の前提 `envMQ`・`envBF`・`envF`・`envTF` は、`Spec.masterConfigOk` と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語とする。入口の機械ではないので `@[env_pre]` を付けない。
+- R 課題ごとの束 `queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate`（機能のモジュール `Abstraction.MasterData`・`Abstraction.Fare`。当初は `Abstraction.Adequacy`）に、R 課題と同じ課題 ID の `@[obligation]` を付ける。
+  - 環境の前提 `envMQ`・`envBF`・`envF`・`envTF` は、`Spec.EnvPre.masterConfigOk` と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語とする。入口の機械ではないので `@[env_pre]` を付けない。
   - `EnvWitness` の証人は、上流の設定 `SourceModel.Config.upstreamConfig` と小さな DB（`dbTF`・`db29` の変形）である。
-  - あわせて、1 歩の可換式 `queryCommutes` などを示す。
+  - あわせて、1 歩の可換式 `queryRefines_commutes`（旧 `queryCommutes`）などを示す。
 - `Refinement.lean` も同じ形とし、`TargetModel` ができた時点（[backlog eff6](../backlog/eff6-target-model-fare-and-refinement.md)）で主定理を置く。それまでは `sorry` や公理で置かない。
 
 ### 段階導入とゲート

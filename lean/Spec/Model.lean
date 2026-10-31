@@ -11,7 +11,8 @@ import Spec.Prim
 - エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
 -/
 
-namespace Spec
+namespace Spec.Model
+open Spec.Prim.Text
 
 open Spec.Prim
 
@@ -291,4 +292,4 @@ def maxAge : Nat := 999
 
 end Range
 
-end Spec
+end Spec.Model

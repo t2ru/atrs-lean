@@ -1,7 +1,9 @@
 import Trace.Dump
 import Trace.Obligation
 import Trace.Gap
+import Trace.Layout
 import Test.Trace
+import Test.Trace.LayoutFixture
 
 /-!
 # Test.Trace.Main
@@ -15,6 +17,8 @@ import Test.Trace
 -/
 
 open Lean Trace.Dump
+
+namespace Test.Trace.Main
 
 /-- フィクスチャの層: 接頭辞 `Test.Trace.Fixture` を除いた名前で、既定の決め方を使う。 -/
 def fixtureLayerOf (n : Name) : Option Layer :=
@@ -83,7 +87,7 @@ def merkleTests : IO Unit := do
   check "scope: Machine" (defaultMerkleScope "Spec" "Machine")
   check "scope: not Spec from TargetModel" (!defaultMerkleScope "TargetModel" "Spec")
   check "layer: LangSemantics has two components"
-    (defaultLayerOf [] `LangSemantics.Rust.U64.add == some "LangSemantics.Rust")
+    (defaultLayerOf [] `LangSemantics.Rust.Int.U64.add == some "LangSemantics.Rust")
   check "layer: core is out of scope" (defaultLayerOf [] `Nat.add == none)
 
 /-- フィクスチャを trace-dump の処理にかける。 -/
@@ -136,18 +140,18 @@ def fixtureTests (env : Environment) : IO Unit := do
 def ruleCodes (errs : Array String) : List String :=
   (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
 
-/-- フィクスチャの対象: 接頭辞 `Test.Trace.ObFix` を除いた名前で、既定の層の決め方を使う。 -/
+/-- フィクスチャの対象: 接頭辞 `Test.Trace.ObligationFixture` を除いた名前で、既定の層の決め方を使う。 -/
 def obFixScope : Trace.Obligation.Scope :=
   { layerOf := fun n =>
       match n.components with
-      | `Test :: `Trace :: `ObFix :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
+      | `Test :: `Trace :: `ObligationFixture :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
       | _ => none }
 
 /-- フィクスチャを obligation-check の処理にかける。 -/
 def obligationTests (env : Environment) : IO Unit := do
   IO.println "obligation-check (Test.Trace.ObligationFixture)"
   let r := Trace.Obligation.check env obFixScope
-  let ab (s : String) : Name := (`Test.Trace.ObFix.Abstraction).append s.toName
+  let ab (s : String) : Name := (`Test.Trace.ObligationFixture.Abstraction).append s.toName
   let codesOf (s : String) : Option (List String) :=
     (r.rs.find? (·.name == ab s)).map (ruleCodes ·.errors)
   for (s, expected) in [("good_refines", ([] : List String)), ("good_abbrev", []), ("v1_forall", ["G1"]),
@@ -170,37 +174,37 @@ def obligationTests (env : Environment) : IO Unit := do
   check "necessity: anyOf leaf replaced by never" (necessityOf "obs2_refines" == some #[ab "obsNaN"])
   check "pre_refines: env_pre fact on a base with ¬ TotalUnder always"
     (match r.rs.find? (·.name == ab "pre_refines") with
-     | some ri => ri.envNecessary && ri.totalUnder == #[(`Test.Trace.ObFix.Spec.envOk, false)]
+     | some ri => ri.envNecessary && ri.totalUnder == #[(`Test.Trace.ObligationFixture.Spec.envOk, false)]
      | none => false)
   check "good_refines: kind, deviation, std_abs, choices, companions, entry and state safety facts"
     (match r.rs.find? (·.name == ab "good_refines") with
      | some ri => ri.absKind == "ofChoice" && ri.devs == #[ab "devLang"] &&
          ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
-         ri.envLeaves == #[`Test.Trace.ObFix.Spec.Conflict] && ri.freeLeaves.isEmpty &&
+         ri.envLeaves == #[`Test.Trace.ObligationFixture.Spec.Conflict] && ri.freeLeaves.isEmpty &&
          ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
-         ri.totalUnder == #[(`Machine.always, true)] && ri.stateSafe == #[ab "devLang"]
+         ri.totalUnder == #[(`Machine.Adequacy.always, true)] && ri.stateSafe == #[ab "devLang"]
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
-    | some ri => ri.freeLeaves == #[`Test.Trace.ObFix.Spec.AnyResult] | none => false)
-  let expectedGlobal := ["G7: Test.Trace.ObFix.Abstraction.aoIf", "G7: Test.Trace.ObFix.Abstraction.aoPart2 ", "G7: Test.Trace.ObFix.Abstraction.aoPart4 ", "G7: Test.Trace.ObFix.Abstraction.ceCheat",
-    "G7: Test.Trace.ObFix.Abstraction.via", "G8: Test.Trace.ObFix.Abstraction.devK", "G8: Test.Trace.ObFix.Abstraction.devNoW",
-    "G0: Test.Trace.ObFix.Abstraction.v0_notRefines", "G3: Test.Trace.ObFix.Spec.specRel",
-    "G0: Test.Trace.ObFixHelpers.devFalse", "G8: Test.Trace.ObFixHelpers.devFalse",
-    "G9: D-905", "G9: D-911", "G9: D-912", "G9: Test.Trace.ObFix.Abstraction.devTwo",
-    "G9: Test.Trace.ObFix.Spec.envNoNeed", "G8: Test.Trace.ObFix.Abstraction.devUndetermined",
-    "GK: D-922 is declared by both", "GK: Test.Trace.ObFix.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
-    "GK: Test.Trace.ObFix.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
-    "GK: Test.Trace.ObFix.Abstraction.markedAbstraction has @[gap \"D-922\"] but is not in",
-    "GK: Test.Trace.ObFix.Spec.markedOutOfModel has @[gap \"D-920\"] but D-920 is out_of_model",
-    "GK: Test.Trace.ObFix.Spec.markedUnknown has @[gap \"D-999\"] but D-999 has no @[gap_entry]",
-    "GK: Test.Trace.ObFix.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined",
-    "GK: Test.Trace.ObFix.Abstraction.devLangB has @[deviation \"D-901\"] but the @[gap_entry] of D-901 does not list it",
-    "GK: D-905: Test.Trace.ObFix.Abstraction.need_arrow is not a necessity theorem",
-    "GK: D-907: Test.Trace.ObFix.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
+    | some ri => ri.freeLeaves == #[`Test.Trace.ObligationFixture.Spec.AnyResult] | none => false)
+  let expectedGlobal := ["G7: Test.Trace.ObligationFixture.Abstraction.aoIf", "G7: Test.Trace.ObligationFixture.Abstraction.aoPart2 ", "G7: Test.Trace.ObligationFixture.Abstraction.aoPart4 ", "G7: Test.Trace.ObligationFixture.Abstraction.ceCheat",
+    "G7: Test.Trace.ObligationFixture.Abstraction.via", "G8: Test.Trace.ObligationFixture.Abstraction.devK", "G8: Test.Trace.ObligationFixture.Abstraction.devNoW",
+    "G0: Test.Trace.ObligationFixture.Abstraction.v0_notRefines", "G3: Test.Trace.ObligationFixture.Spec.specRel",
+    "G0: Test.Trace.ObligationFixture.Helpers.devFalse", "G8: Test.Trace.ObligationFixture.Helpers.devFalse",
+    "G9: D-905", "G9: D-911", "G9: D-912", "G9: Test.Trace.ObligationFixture.Abstraction.devTwo",
+    "G9: Test.Trace.ObligationFixture.Spec.envNoNeed", "G8: Test.Trace.ObligationFixture.Abstraction.devUndetermined",
+    "GK: D-922 is declared by both", "GK: Test.Trace.ObligationFixture.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
+    "GK: Test.Trace.ObligationFixture.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
+    "GK: Test.Trace.ObligationFixture.Abstraction.markedAbstraction has @[gap \"D-922\"] but is not in",
+    "GK: Test.Trace.ObligationFixture.Spec.markedOutOfModel has @[gap \"D-920\"] but D-920 is out_of_model",
+    "GK: Test.Trace.ObligationFixture.Spec.markedUnknown has @[gap \"D-999\"] but D-999 has no @[gap_entry]",
+    "GK: Test.Trace.ObligationFixture.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined",
+    "GK: Test.Trace.ObligationFixture.Abstraction.devLangB has @[deviation \"D-901\"] but the @[gap_entry] of D-901 does not list it",
+    "GK: D-905: Test.Trace.ObligationFixture.Abstraction.need_arrow is not a necessity theorem",
+    "GK: D-907: Test.Trace.ObligationFixture.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
     "GK: D-911: the covered chain is cyclic", "GK: D-912: the covered chain is cyclic",
-    "GK: D-921: the claim Test.Trace.ObFix.Abstraction.claim921 must be an opaque Prop",
-    "GK: Test.Trace.ObFix.Abstraction.usesClaim refers to Test.Trace.ObFix.Abstraction.claim920",
-    "GA: Test.Trace.ObFix.Abstraction.ga_mismatch", "GA: Test.Trace.ObFix.Abstraction.ga_noR"]
+    "GK: D-921: the claim Test.Trace.ObligationFixture.Abstraction.claim921 must be an opaque Prop",
+    "GK: Test.Trace.ObligationFixture.Abstraction.usesClaim refers to Test.Trace.ObligationFixture.Abstraction.claim920",
+    "GA: Test.Trace.ObligationFixture.Abstraction.ga_mismatch", "GA: Test.Trace.ObligationFixture.Abstraction.ga_noR"]
   check s!"global errors: exactly {expectedGlobal.length}"
     (r.errors.size == expectedGlobal.length &&
       expectedGlobal.all fun p => r.errors.any (·.startsWith p))
@@ -216,9 +220,9 @@ def obligationTests (env : Environment) : IO Unit := do
       evOf "D-920" "state" == "unformalized" && evOf "D-922" "state" == "excluded_by" &&
       evOf "D-901" "label" == "偽を証明済み")
   check "gaps: witnesses, coverer and pre"
-    (evOf "D-901" "witnesses" == Json.arr #["Test.Trace.ObFix.Abstraction.need_devLang"] &&
-      evOf "D-910" "coverer" == "Test.Trace.ObFix.Abstraction.devLang" &&
-      evOf "D-922" "pre" == Json.arr #["Test.Trace.ObFix.Spec.markedSpec"])
+    (evOf "D-901" "witnesses" == Json.arr #["Test.Trace.ObligationFixture.Abstraction.need_devLang"] &&
+      evOf "D-910" "coverer" == "Test.Trace.ObligationFixture.Abstraction.devLang" &&
+      evOf "D-922" "pre" == Json.arr #["Test.Trace.ObligationFixture.Spec.markedSpec"])
   check "gaps: w_task from the @[obligation] of the refuting theorem, or the planned one"
     ((gapOf "D-901").getObjValD "w_task" == "ABS-951" && (gapOf "D-913").getObjValD "w_task" == "ABS-990" &&
       (gapOf "D-906").getObjValD "w_task" == Json.null)
@@ -229,13 +233,49 @@ def obligationTests (env : Environment) : IO Unit := do
       (r.adequate.size == 3 && [ab "obs_adequate", ab "ga_mismatch", ab "ga_noR"].all r.adequate.contains))
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
-  check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObFix.Spec.AnyResult, `Test.Trace.ObFix.Spec.Conflict])
+  check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.AnyResult, `Test.Trace.ObligationFixture.Spec.Conflict])
   check "gaps: entries readable and listed in the report (D-901..D-913, D-920..D-924 and the duplicate)"
     ((r.gaps.getArr?.toOption.map (·.size)) == some 19)
-  check "env_pre listed" (r.envPres.map (·.1) == #[`Test.Trace.ObFix.Spec.envNoNeed, `Test.Trace.ObFix.Spec.envOk])
+  check "env_pre listed" (r.envPres.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.envNoNeed, `Test.Trace.ObligationFixture.Spec.envOk])
+
+/-- `layout-check` の判定を、フィクスチャ `Test.Trace.LayoutFixture` と assets の実際の定数で確かめる。 -/
+def layoutTests (env : Environment) : IO Unit := do
+  IO.println "layout-check (Test.Trace.LayoutFixture)"
+  let r := Trace.Layout.check env [`Test.Trace.LayoutFixture]
+  let vs := r.violations.map (·.name)
+  check "NS-1: declarations under the module pass" (!vs.contains `Test.Trace.LayoutFixture.ok &&
+    !vs.contains `Test.Trace.LayoutFixture.Box && !vs.contains `Test.Trace.LayoutFixture.Box.get)
+  check "NS-1: a declaration in the parent namespace is a violation" (vs.contains `Test.Trace.layoutStray)
+  check "NS-1: a declaration at the root is a violation" (vs.contains `layoutRootStray)
+  check "E3: @[ns_exception] is listed as an exception, not a violation"
+    (!vs.contains `Test.Trace.layoutExempt && r.exceptions.any (·.name == `Test.Trace.layoutExempt))
+  check "violations: exactly 2" (vs.size == 2)
+  check "E2: main at the root passes" (Trace.Layout.placedOk env `Test.Trace.LayoutFixture `main)
+  check "NS-1: a name outside the module fails" (!Trace.Layout.placedOk env `Test.Trace.LayoutFixture `Test.Trace.x)
+
+/-- E1・E4 を assets の実際の定数で確かめる（型のモジュールの下位モジュールの補題、型名のモジュールのインスタンス）。 -/
+def layoutTypeTests (env : Environment) : IO Unit := do
+  IO.println "layout-check (E1, E4 on LangSemantics.Java)"
+  check "E1: a lemma in the type namespace from a submodule of the type's module passes"
+    (Trace.Layout.placedOk env `LangSemantics.Java.JDouble.Lemmas `LangSemantics.Java.JDouble.pow2_eq)
+  check "E1: the type namespace from an unrelated module fails"
+    (!Trace.Layout.placedOk env `LangSemantics.Java.String `LangSemantics.Java.JDouble.pow2_eq)
+  check "E4: a derived instance of a type-named module passes"
+    (Trace.Layout.placedOk env `LangSemantics.Java.JDouble `LangSemantics.Java.instReprJDouble &&
+      Trace.Layout.placedOk env `LangSemantics.Java.JDouble `LangSemantics.Java.instReprJDouble.repr)
+  check "E4: a non-instance in the parent namespace fails"
+    (!Trace.Layout.placedOk env `LangSemantics.Java.JDouble `LangSemantics.Java.JLocalDate)
+
+end Test.Trace.Main
+
+open Test.Trace.Main
 
 unsafe def main : IO UInt32 := do
   merkleTests
+  let env ← loadEnv #[`Test.Trace.LayoutFixture]
+  layoutTests env
+  let env ← loadEnv #[`LangSemantics.Java]
+  layoutTypeTests env
   let env ← loadEnv #[`Test.Trace.Fixture]
   fixtureTests env
   let env ← loadEnv #[`Test.Trace.ObligationFixture]

@@ -8,6 +8,7 @@ import Spec.Model
 -/
 
 namespace Spec
+open Spec.Model
 
 open Spec.Prim
 

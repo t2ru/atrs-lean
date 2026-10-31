@@ -60,10 +60,10 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 | `NOP` | MD-8 に「空港のコードは `NOP`（`Spec.MasterData.airportNopCode`）でない」を加える。破れた場合の [Source] の振る舞いは、「[Spec] の前提の外」に記録する |
 | D-027 の範囲 | 具体側の入力全体（DB のマスタの各行・設定・問い合わせの引数）とする。述語は「α が定義される」。ADR c108 の決定を補う |
 | `LocalDate` の通算日数 | `toEpochDay`・`ofEpochDay` を床除算で書き直す。<br>- 周期 `era = y / 400`（`z / 146097`）、周期の中の位置は剰余とする<br>- `ofEpochDay` は、補助の関数（`yoeOfDoe`・`doyOfDoe`・`mpOfDoy`・`civilOfDoe`）に分ける<br>- JVM の突き合わせ表に、負の年・400 年の境界・PostgreSQL の日付の範囲の端を加える |
-| 往復の補題 | `LangSemantics.Java.JLocalDate.toEpochDay_ofEpochDay`（すべての整数で `toEpochDay (ofEpochDay z) = z`）を、スキルの assets（`LocalDateLemmas`）で証明する |
+| 往復の補題 | `LangSemantics.Java.JLocalDate.toEpochDay_ofEpochDay`（すべての整数で `toEpochDay (ofEpochDay z) = z`）を、スキルの assets（`JLocalDate.Lemmas`）で証明する |
 | 有限の範囲の検査 | 400 年の周期の中の年・日の範囲（`civil_bounds`）は、146097 日をカーネルの評価（`decide +kernel`。1000 日ずつ）で確かめる。<br>- `native_decide` ではないので、カーネルが検査する（公理を足さない）<br>- ビルドに約 45 秒かかる |
 | 参照の答えの射影（2b-2a） | [Spec] の参照の答えのうち、搭乗クラス・運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）とする。[Source] の参照の結果には表示順が無い（Mapper が `display_order` を選ばない）。表示順はコードリストの問い合わせだけが観測する。差異は増えない（プロジェクトオーナーの決定） |
-| 空白の便名（2b-2a） | `Query.Valid` の便名に「空白でない」（`Spec.Prim.hasText`。文字クラス `Blank` は Java の `Character.isWhitespace` と同じ集合）を加える。`Query.Valid` は原典の `Assert.hasText` に当たるので、誤りの修正である。`FlightName.WellFormed` は変えない（プロジェクトオーナーの決定） |
+| 空白の便名（2b-2a） | `Query.Valid` の便名に「空白でない」（`Spec.Prim.Text.hasText`。文字クラス `Blank` は Java の `Character.isWhitespace` と同じ集合）を加える。`Query.Valid` は原典の `Assert.hasText` に当たるので、誤りの修正である。`FlightName.WellFormed` は変えない（プロジェクトオーナーの決定） |
 | 標準の抽象化 α の形（2b-2a） | 値・行・問い合わせ・答えの写しは `@[std_abs]` の葉とし、核の定理を示す（ABS-048）。<br>- 行の写しを合成にしないのは、`Varchar n` の述語（`String.length`）が項に現れ、G7 の許可した構成に収まらないためである<br>- マスタ全体・設定・入力（`masterDataOf`・`configOf`・`aiMQ`）は、葉を `Option.bind`・`List.mapM` などで組んだ合成とする<br>- 答えの写し `answerOf?` の核 `answerKer` は、[Spec] が観測する成分（`answerObs`）の一致である |
 | `LocalDate` の写し（2b-2b） | `dateOfJ` は、通算日数が同じ [Spec] の暦日に写す（`LocalDate` として正規な値だけに定義する）。年月日で写す定義では、[Spec] の `Date.ofEpochDay?` の完全性（範囲内の全日で値を返すこと。`lake test` の全日検査だけで、証明は無い）が要るためである |
 | 帰納型の補助の定数（2b-2b） | obligation-check の G4 は、[Spec] の帰納型について処理系が生成する補助の定数（`ctorIdx`、列挙型の `ofNat`）を、構造的な参照として許す。[Source] は [Spec] の列挙型を使う（ADR 8f18） |

@@ -1,8 +1,19 @@
-import Machine.Basic
+import Machine.Machine
 import Machine.Concrete
+import Machine.Glue
 import Machine.Refines
 import Machine.Adequacy
+import Machine.Machine.Adequacy
+import Machine.Concrete.Adequacy
+import Machine.Glue.Adequacy
+import Machine.Refines.Adequacy
+import Machine.Adequate
 import Machine.Sum
+import Machine.Machine.Sum
+import Machine.Concrete.Sum
+import Machine.Glue.Sum
+import Machine.Refines.Sum
+import Machine.Adequate.Sum
 import Machine.Kernel
 
 /-!
@@ -13,8 +24,8 @@ import Machine.Kernel
 
 | モジュール | 内容 |
 | --- | --- |
-| `Machine.Basic` | 抽象機械 `Machine.Machine`、`Spec` 自身の義務 `Sound`、前提型の差異 `restrict`・`restrictState`、純粋な計算 `Machine.pure` |
-| `Machine.Concrete` | 具体機械 `Machine.Concrete`（正常終了でない結果を `Except ε` で持つ）、`ofFun`・`pure`、具体側の入力の制限 `Concrete.restrict`、`Machine.toConcrete` |
+| `Machine.Machine` | 抽象機械 `Machine.Machine`、`Spec` 自身の義務 `Sound`、前提型の差異 `restrict`・`restrictState`、純粋な計算 `Machine.pure` |
+| `Machine.Concrete` | 具体機械 `Machine.Concrete`（正常終了でない結果を `Except ε` で持つ）、`ofFun`・`pure`、具体側の入力の制限 `Concrete.restrict`、`Concrete.ofMachine` |
 | `Machine.Refines` | 貼り合わせ `Glue`（`J`・`αi`・`αo`）、`Refines`（INIT・入力の全域性・適用可能性・正しさ）、制限・反射・推移の補題、`Refines.of_pure` |
 | `Machine.Sum` | 機械の並置 `Machine.sum`・`Concrete.sum`・`Glue.sum`・`sumPred`。並置はリファインメントと義務の束を保つ（`Refines.sum`・`Adequate.sum`）。トップレベルの主定理（`Spec.machine` と `SourceModel.machine` の `Refines`・`Adequate`）を各機能の R 課題から組み立てる |
 | `Machine.Kernel` | 標準の抽象化の汎用の核 `undefOrEq`（部分写像が「どちらも定義されないか、等しい」）と `kernelIs_undefOrEq`・`inj_of_kernel` |

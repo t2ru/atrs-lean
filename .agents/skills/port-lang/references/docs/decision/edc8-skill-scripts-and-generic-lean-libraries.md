@@ -97,15 +97,15 @@ ATRS の ADR f4e1 は、移植の方法をアプリに依存しないスキル�
 
 | 移す元（ATRS） | 移す先（スキル） |
 | --- | --- |
-| `Abstraction.Prim.undefOrEq`・`kernelIs_undefOrEq`、`Abstraction.MasterData.inj_of_kernel` | `Machine.Kernel`（`Machine.undefOrEq` ほか） |
+| `Abstraction.Prim.undefOrEq`・`kernelIs_undefOrEq`、`Abstraction.MasterData.inj_of_kernel` | `Machine.Kernel`（`Machine.Kernel.undefOrEq` ほか） |
 | `Abstraction.Prim` の列・`mapM` の補題、`append_sep_inj`・`string_any_toList`・`mapM_some_getD` | `LangSemantics.Core`（新設） |
 | 結合（`filter_cross`）と `ORDER BY` の許される順列の補題、`allowed_perm` | `LangSemantics.Sql.QueryLemmas` |
-| `ok_bind`・`mapM_ok`・`forIn_ok`、`get_ofList_perm`、`Abstraction.Fare.Double` と `Factors` の汎用部 | `LangSemantics.Java`（`ResultLemmas`・`HashMapLemmas`・`DoubleCompare`） |
+| `ok_bind`・`mapM_ok`・`forIn_ok`、`get_ofList_perm`、`Abstraction.Fare.Double` と `Factors` の汎用部 | `LangSemantics.Java`（`ResultLemmas`・`HashMap.Lemmas`・`JDouble.Compare`） |
 | main の ATRS の backlog bbcc 第 3 段で `Abstraction.Fare.Loop` などに足された汎用の補題（`Forall₂`・`forall₂_of_mapM`・`mapM_eq_map_getD`・`mapM_length`・`sum_map_le`、値域内の `int` の演算と `for` 文の和・計数 `forIn_sum_eq`・`forIn_count_eq`） | `LangSemantics.Core`、`LangSemantics.Java.IntLemmas`（取り込みのときに移した） |
 | `Tests.Conformance` の実行器の骨格、`Tests.MasterSql` の表の読み取り | `ConformanceKit`（新設のメタ層） |
 
 * `LangSemantics.Core` は core だけに依存する。どの言語パックからも、移植元側・移植先側のどの層からも import してよい。
-* obligation-check の G7 は、`Machine.undefOrEq` を葉に適用した核を、`@[kernel]` の定数と同じく受け付ける。
+* obligation-check の G7 は、`Machine.Kernel.undefOrEq` を葉に適用した核を、`@[kernel]` の定数と同じく受け付ける。
 * `Spec` の基本演算（`floorDiv`・暦日など）とフレームワークのモデル（Spring の `Assert`、terasoluna のコードリスト、MyBatis の型の対応）は、ATRS に残す。スキルの規則どおり、プロジェクトの `Spec`・`SourceModel` に置く。
 * SQL の列の等号 `eqText`・`eqInt` も `SourceModel` に残す。`@[source]` を持つ Mapper の文の定義が参照しているので、移すと、その定義の検査済みハッシュを決定論的な検査で取り直すことになる。移しても、それに見合う利点が無い。
 
@@ -147,7 +147,7 @@ ATRS の ADR f4e1 は、移植の方法をアプリに依存しないスキル�
 ### Confirmation
 
 * `tools/ci/lean.sh` が全段通る。
-* スキルの assets で `lake build` が通り、`ConformanceKitTest` と `TraceTest`（`Machine.undefOrEq` の正例・違反例を含む）を確かめる。
+* スキルの assets で `lake build` が通り、`ConformanceKitTest` と `TraceTest`（`Machine.Kernel.undefOrEq` の正例・違反例を含む）を確かめる。
 * `scripts/trace` の `cargo test` が通る。
 * `check_lean.py --self-test` が通る（`LangSemantics.Core` の依存の正例・違反例を含む）。
 * `check_obligations.py --self-test` が通る。
@@ -157,5 +157,5 @@ ATRS の ADR f4e1 は、移植の方法をアプリに依存しないスキル�
 
 * 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ATRS の ADR f4e1・[ADR 7fe4](7fe4-move-trace-attributes-to-skill.md) の続きである。
-* ATRS の ADR e9bc が「比較の定理（ATRS）」と書いた層は、汎用部をスキルの `LangSemantics.Java.DoubleCompare` に移した。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件が残る。
+* ATRS の ADR e9bc が「比較の定理（ATRS）」と書いた層は、汎用部をスキルの `LangSemantics.Java.JDouble.Compare` に移した。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件が残る。
 * 作業項目: ATRS の backlog 38fb

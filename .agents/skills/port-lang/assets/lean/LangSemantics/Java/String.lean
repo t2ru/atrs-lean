@@ -10,7 +10,7 @@ lang: `lang:java#JLS-3.1`, `dep:java.base#java.lang.String.length`,
 `dep:java.base#java.lang.Character.isWhitespace`
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.String
 
 /-- 1 文字の UTF-16 符号単位数（補助文字は 2）。 -/
 def utf16Units (c : Char) : Nat := if c.toNat ≥ 0x10000 then 2 else 1
@@ -54,4 +54,4 @@ def jSplitChar (s : String) (sep : Char) : List String :=
     let trimmed := (parts.reverse.dropWhile List.isEmpty).reverse
     trimmed.map String.ofList
 
-end LangSemantics.Java
+end LangSemantics.Java.String

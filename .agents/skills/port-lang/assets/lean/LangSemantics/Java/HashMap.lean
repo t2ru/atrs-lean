@@ -9,7 +9,7 @@
 lang: `lang:java#java.util.HashMap`, `lang:java#java.util.LinkedHashMap`
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.HashMap
 
 /-- `HashMap<K, V>`。項目は挿入順に並べるが、順序に意味は無い（キーは重複しない）。 -/
 structure JHashMap (κ υ : Type) where
@@ -49,4 +49,4 @@ end JHashMap
 （同じキーの `put` は位置を保って値を置き換える。`LinkedHashMap` の既定の挿入順の動作に一致する）。 -/
 abbrev JLinkedHashMap (κ υ : Type) := JHashMap κ υ
 
-end LangSemantics.Java
+end LangSemantics.Java.HashMap

@@ -12,6 +12,7 @@ import SourceModel.Repository.Mapping
 -/
 
 namespace SourceModel.MasterData
+open LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.String
 
 open LangSemantics.Java SourceModel.Model SourceModel.Repository.MasterData
 
@@ -22,7 +23,7 @@ def assertHasText (s : String) (message : String) : JResult Unit :=
 
 /-- `BoardingClassProvider` のキャッシュ（`Map<BoardingClassCd, BoardingClass>`）。 -/
 structure BoardingClassProvider where
-  boardingClassCodeMap : JHashMap Spec.BoardingClassCd BoardingClass := {}
+  boardingClassCodeMap : JHashMap Spec.Model.BoardingClassCd BoardingClass := {}
 
 /-- `PeakTimeProvider` のキャッシュ（`List<PeakTime>`。取得順）。 -/
 structure PeakTimeProvider where
@@ -30,7 +31,7 @@ structure PeakTimeProvider where
 
 /-- `FareTypeProvider` のキャッシュ（`Map<FareTypeCd, FareType>`）。 -/
 structure FareTypeProvider where
-  fareTypeCodeMap : JHashMap Spec.FareTypeCd FareType := {}
+  fareTypeCodeMap : JHashMap Spec.Model.FareTypeCd FareType := {}
 
 /-- `RouteProvider` のキャッシュ（`Map<String, Route>`。キーは `makeCacheKey`）。 -/
 structure RouteProvider where
@@ -47,7 +48,7 @@ structure FlightMasterProvider where
   "java:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll()@a75e2344e7b09314", gap "D-015"]
 def BoardingClassProvider.load (rows : List BoardingClassResult) : JResult BoardingClassProvider := do
   let list ← rows.mapM Repository.Mapping.boardingClass
-  let mut m : JHashMap Spec.BoardingClassCd BoardingClass := {}
+  let mut m : JHashMap Spec.Model.BoardingClassCd BoardingClass := {}
   for bc in list do
     m := m.put (← bc.boardingClassCd.deref "boardingClassCd") bc
   return { boardingClassCodeMap := m }
@@ -57,7 +58,7 @@ def BoardingClassProvider.load (rows : List BoardingClassResult) : JResult Board
   "java:jp.co.ntt.atrs.domain.repository.faretype.FareTypeRepository#findAll()@c01904394de5db65", gap "D-015"]
 def FareTypeProvider.load (rows : List FareTypeResult) : JResult FareTypeProvider := do
   let list ← rows.mapM Repository.Mapping.fareType
-  let mut m : JHashMap Spec.FareTypeCd FareType := {}
+  let mut m : JHashMap Spec.Model.FareTypeCd FareType := {}
   for ft in list do
     m := m.put (← ft.fareTypeCd.deref "fareTypeCd") ft
   return { fareTypeCodeMap := m }
@@ -96,7 +97,7 @@ def FlightMasterProvider.load (rows : List FlightMasterResult) : JResult FlightM
 
 /-- `getBoardingClass`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)@363af6d3dd2e282d"]
-def getBoardingClass (p : BoardingClassProvider) (cd : JRef Spec.BoardingClassCd) : JResult (JRef BoardingClass) := do
+def getBoardingClass (p : BoardingClassProvider) (cd : JRef Spec.Model.BoardingClassCd) : JResult (JRef BoardingClass) := do
   let cd ← match cd with
     | some c => pure c
     | none => throw (.illegalArgument "boardingClassCd must not null.")
@@ -118,7 +119,7 @@ def getPeakTime (p : PeakTimeProvider) (depLocalDate : JRef JLocalDate) : JResul
 
 /-- `getFareType`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#getFareType(FareTypeCd)@8cca1518f179d5a0"]
-def getFareType (p : FareTypeProvider) (cd : JRef Spec.FareTypeCd) : JResult (JRef FareType) := do
+def getFareType (p : FareTypeProvider) (cd : JRef Spec.Model.FareTypeCd) : JResult (JRef FareType) := do
   let cd ← match cd with
     | some c => pure c
     | none => throw (.illegalArgument "fareTypeCd must not null.")

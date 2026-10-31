@@ -109,13 +109,13 @@ R 課題で使う差異の ID ごとに、**その差異を外した R 課題の
 | 成分 | 外し方 | 定理の形 |
 | --- | --- | --- |
 | 前提型の差異 `d`（`.restrict d`・`.restrictState d`・`Concrete.restrict d`） | その層を 1 つ外す | `¬ Refines A' C' g`。抽象側の基底が `ofChoice` なら `¬ (Refines A' C' g ∧ Pinned A' C' g f ce)` でもよい |
-| 観測型の差異 `d`（`Glue.ofStd` の OJ・OO。`Machine.anyOf` の葉） | `d` を `Machine.never` に替える | 同上（`A`・`C` はそのままで、貼り合わせを替えた `g'`） |
-| 環境の前提 `Env`（`@[env_pre]`） | `Machine.always` に替える | `¬ A.TotalUnder always`（R 課題の基底 `A` について `TotalUnder A Env` を示したとき） |
+| 観測型の差異 `d`（`Glue.ofStd` の OJ・OO。`Machine.Adequacy.anyOf` の葉） | `d` を `Machine.Adequacy.never` に替える | 同上（`A`・`C` はそのままで、貼り合わせを替えた `g'`） |
+| 環境の前提 `Env`（`@[env_pre]`） | `Machine.Adequacy.always` に替える | `¬ A.TotalUnder always`（R 課題の基底 `A` について `TotalUnder A Env` を示したとき） |
 
 * **否定の形**: `¬ P` か `P → False` で書く。`¬ Refines` は `¬ (Refines ∧ Pinned)` より強いので、どちらの基底でも認める。
 * **`ofChoice` の基底では、`Pinned` を含めた否定でよい。** `Refines` だけでは、環境の選択（`Conflict`・I/O 失敗）が具体側の不具合を模倣する。そのため、差異を外しても `Refines` は成り立ちうる（ADR 70eb の抜け道「環境の非決定性が不具合を吸収する」。反例 13）。`f` は基底の `f`、`ce` は R 課題の `Pinned` の `ce` とする。
 * **差異の ID ごとに、少なくとも 1 つの R 課題について示せばよい。** 同じ差異を引き継ぐ複合の R 課題（例: ABS-045 の D-001）ごとに示すことは求めない。入力の型が違う R 課題では同じ差異を別の定数で書くので、定数ごとでなく ID ごとに数える。複合の R 課題での冗長な使用は、B の変異テストの「除去」の変異体として報告する。
-* **1 つの `@[deviation]` の定数には、ID を 1 つだけ付ける。** 複数の差異を 1 つの定数に束ねると、片方の証人だけで両方が通ってしまう。前提型は `restrict` の層を重ね、同じ出力に重なる観測型（例: D-008 と D-022）は `Machine.anyOf` で並べる。必要性は葉ごとに `never` に替えて判定する。
+* **1 つの `@[deviation]` の定数には、ID を 1 つだけ付ける。** 複数の差異を 1 つの定数に束ねると、片方の証人だけで両方が通ってしまう。前提型は `restrict` の層を重ね、同じ出力に重なる観測型（例: D-008 と D-022）は `Machine.Adequacy.anyOf` で並べる。必要性は葉ごとに `never` に替えて判定する。
 * **被覆**: 必要な差異 M の下で常に成り立つ差異 d は、外しても R 課題が成り立つ。たとえば D-012（int32 の溢れ）は、D-001・D-002 の前提の下では溢れが起きないので、D-001・D-002 を含むどの R 課題でも外せる。こうした差異は、実在しても必要性を示せない。そこで、次を満たせば、必要性の代わりとして認める。
   * M と d が同じ R 課題の制限に現れる。
   * `Covers M d`（`∀ x, M x → d x`）か `Covers₂ M d` を示す。

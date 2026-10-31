@@ -11,6 +11,7 @@ import Spec.Model
 -/
 
 namespace SourceModel.Config
+open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java
 
@@ -29,13 +30,13 @@ structure AtrsConfig where
   /-- `atrs.dateOfBirthMinDate`（`MemberValidator`・`MemberHelper`。`yyyy/MM/dd` の文字列のまま） -/
   dateOfBirthMinDate : String
   /-- `default.flightType`（`TicketSearchHelper`） -/
-  defaultFlightType : Spec.FlightType
+  defaultFlightType : Spec.Model.FlightType
   /-- `default.depAirportCd`（`TicketSearchHelper`） -/
   defaultDepAirportCd : String
   /-- `default.arrAirportCd`（`TicketSearchHelper`） -/
   defaultArrAirportCd : String
   /-- `default.boardingClassCd`（`TicketSearchHelper`） -/
-  defaultBoardingClassCd : Spec.BoardingClassCd
+  defaultBoardingClassCd : Spec.Model.BoardingClassCd
   deriving DecidableEq, Repr
 
 /-- 上流の `atrs.properties` の値（配備の既定。`conformance/fixtures/config.json` はこれと同じ値を持つ。

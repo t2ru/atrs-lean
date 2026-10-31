@@ -1,7 +1,7 @@
 {
   "operation": "master.config",
   "modelDef": [
-    "Spec.MasterData.queryMachine",
+    "Spec.MasterQuery.queryMachine",
     "SourceModel.MasterQuery.queryConcrete"
   ],
   "specRef": "docs/spec/configuration.md",

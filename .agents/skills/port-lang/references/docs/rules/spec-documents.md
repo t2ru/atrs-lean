@@ -95,7 +95,7 @@ generated:
 | `### 入口の R 課題` | 課題一覧。行は `| <課題 ID> | … | <作業項目の ID> |` | `trace check`（TR-PE）、`check_obligations.py` |
 | `## Spec の非決定性`、種類の値 `環境`・`自由` | 抽象化の課題一覧。行は `| N-NNN | <種類> | … | <作業項目の ID> |` | `check_obligations.py`（TR-N） |
 | `## 証明課題`（具体化では `## REF:`）、種類の値 `R` | 課題一覧。行は `| <課題 ID> | R | … |` | `trace check`、`check_obligations.py` |
-| 影響の値 `出力のみ`・`中断`、種類の名前（`前提型`・`観測型`・`モデル外`…） | 登録簿から生成する（`Trace.GapKind.label`・`Trace.Impact.label`） | `check_obligations.py` |
+| 影響の値 `出力のみ`・`中断`、種類の名前（`前提型`・`観測型`・`モデル外`…） | 登録簿から生成する（`Trace.Gap.GapKind.label`・`Trace.Gap.Impact.label`） | `check_obligations.py` |
 | 行頭の `出典:` と、バッククォートで囲んだロケータ | 仕様文書（`docs.spec`） | `trace check`（TR-R） |
 | 作業項目の frontmatter の `id:`・`state:`（`done` で完了） | 作業項目（`docs.backlog`） | 段階導入（`trace check`・`check_obligations.py`） |
 

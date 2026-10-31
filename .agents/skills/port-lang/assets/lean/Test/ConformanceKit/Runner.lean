@@ -8,7 +8,9 @@ import ConformanceKit
 
 open Lean ConformanceKit
 
-namespace Test.ConformanceKit
+open ConformanceKit.Runner ConformanceKit.SqlTable
+
+namespace Test.ConformanceKit.Runner
 
 /-- 2 倍する操作。 -/
 def ops : List (String × Op) := [("ex.double", fun i => do return toJson (2 * (← getNat i "n")))]
@@ -36,4 +38,4 @@ def tbl : Json := Json.mkObj [("tables", Json.mkObj [("T", Json.mkObj [
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; return (← icol t r "A").val) |>.toOption) == some (1 : Int)
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; icol t r "B") |>.toOption).isNone
 
-end Test.ConformanceKit
+end Test.ConformanceKit.Runner

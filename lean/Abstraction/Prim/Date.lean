@@ -11,7 +11,8 @@ import Spec.Prim.Date
 - 証明は、400 年の周期の和の閉じた式（`era_sum`）と、閏年の判定を 4・100・400 の倍数の数の差で書く式（`leap_count`）を使う。
 -/
 
-namespace Abstraction.Prim
+namespace Abstraction.Prim.Date
+open Spec.Prim.Date
 
 open LangSemantics.Java Spec.Prim
 
@@ -78,4 +79,4 @@ theorem toEpochDay_eq_epochDay (D : Date) :
                generalize ((y : Int) - 1) / 400 = b400 at hlc ⊢
                omega)
 
-end Abstraction.Prim
+end Abstraction.Prim.Date

@@ -14,6 +14,8 @@ import Trace
 
 namespace Spec.Prim
 
+namespace Date
+
 /-- 閏年。 -/
 @[spec_doc "docs/spec/domain-model.md#date"]
 def isLeap (y : Nat) : Bool := y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)
@@ -34,6 +36,9 @@ def IsValidYmd (y m d : Nat) : Prop :=
 
 instance (y m d : Nat) : Decidable (IsValidYmd y m d) := by unfold IsValidYmd; infer_instance
 
+end Date
+
+open Date in
 /-- 暦日。 -/
 @[spec_doc "docs/spec/domain-model.md#date"]
 structure Date where
@@ -45,6 +50,7 @@ structure Date where
 
 namespace Date
 
+
 /-- 年月日から暦日を作る。妥当でなければ無し。 -/
 @[spec_doc "docs/spec/domain-model.md#date"]
 def ofYmd? (y m d : Nat) : Option Date :=
@@ -53,7 +59,6 @@ def ofYmd? (y m d : Nat) : Option Date :=
 instance : Repr Date where
   reprPrec d _ := s!"{d.year}-{d.month}-{d.day}"
 
-end Date
 
 /-- `y` 年 1 月 1 日より前の日数（0001-01-01 から数える）。 -/
 def daysBeforeYear (y : Nat) : Nat :=
@@ -70,7 +75,6 @@ def daysBeforeMonth (y m : Nat) : Nat :=
     | 8 => 212 | 9 => 243 | 10 => 273 | 11 => 304 | 12 => 334 | _ => 365
   if m > 2 && isLeap y then base + 1 else base
 
-namespace Date
 
 /-- 0001-01-01 を 0 とする通算日数。 -/
 @[spec_doc "docs/spec/domain-model.md#date"]
@@ -181,7 +185,6 @@ theorem lt_iff_epochDay_lt (a b : Date) : a < b ↔ a.epochDay < b.epochDay := b
   show a.ordinal < b.ordinal ↔ _
   simp only [epochDay]; omega
 
-end Date
 
 /-! ## 通算日数と年月日の辞書順 -/
 
@@ -220,7 +223,6 @@ theorem daysBeforeMonth_mono (y : Nat) {a b : Nat} (ha : 1 ≤ a) (h : a < b) (h
 theorem daysBeforeMonth_thirteen (y : Nat) : daysBeforeMonth y 13 = daysInYear y := by
   cases hl : isLeap y <;> simp [daysBeforeMonth, daysInYear, hl]
 
-namespace Date
 
 /-- その年の中の日数（0 始まり）は、年の日数より小さい。 -/
 theorem dayOfYear_lt (d : Date) : daysBeforeMonth d.year d.month + (d.day - 1) < daysInYear d.year := by
@@ -285,11 +287,9 @@ theorem epochDay_inj {a b : Date} (h : a.epochDay = b.epochDay) : a = b :=
 theorem ofEpochDay?_epochDay_of_isSome {d : Date} {d' : Date} (h : ofEpochDay? d.epochDay = some d') : d' = d :=
   epochDay_inj (epochDay_ofEpochDay? h)
 
-end Date
 
 /-! ## 境界の例（閏年・月末・年越し） -/
 
-namespace Date
 
 /-- 例を書くための補助。 -/
 def ymd! (y m d : Nat) (h : IsValidYmd y m d := by decide) : Date := ⟨y, m, d, h⟩
@@ -311,6 +311,7 @@ example : fullYearsBetween (ymd! 2000 2 29) (ymd! 2001 2 28) = 0 := by decide
 example : fullYearsBetween (ymd! 2000 2 29) (ymd! 2001 3 1) = 1 := by decide
 example : fullYearsBetween (ymd! 2000 2 29) (ymd! 2004 2 29) = 4 := by decide
 example : (ymd! 1970 1 1).dayOfWeek = 4 ∧ (ymd! 2026 11 10).dayOfWeek = 2 := by decide
+
 
 end Date
 

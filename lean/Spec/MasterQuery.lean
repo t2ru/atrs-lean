@@ -10,7 +10,9 @@ import Spec.CodeList
 問い合わせの引数の値域。
 -/
 
-namespace Spec
+namespace Spec.MasterQuery
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.CodeList Spec.Model Spec.Prim.Text
 
 open Spec.Prim
 
@@ -20,11 +22,10 @@ inductive CodeListName where
   | airport | boardingClass | fareType | creditType | creditMonth | creditYear | gender | flightType
   deriving DecidableEq, Repr
 
-namespace CodeList
 
 /-- 名前で引いたコードリスト。 -/
 @[spec_doc "docs/spec/master-data.md#空港コードリスト画面用"]
-def ofName (md : MasterData) : CodeListName → List CodeEntry
+def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
   | .airport => airport md
   | .boardingClass => boardingClass md
   | .fareType => fareType md
@@ -34,9 +35,7 @@ def ofName (md : MasterData) : CodeListName → List CodeEntry
   | .gender => gender
   | .flightType => flightType
 
-end CodeList
 
-namespace MasterData
 
 /-- 参照の問い合わせ。 -/
 inductive Query where
@@ -52,7 +51,7 @@ inductive Query where
   | codeList (n : CodeListName)
 
 /-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。
-便名は、空白でない（`Spec.Prim.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
+便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
@@ -61,34 +60,6 @@ def Query.Valid : Query → Prop
 
 instance (q : Query) : Decidable q.Valid := by
   cases q <;> unfold Query.Valid <;> infer_instance
-
-/-- 搭乗クラスの参照の結果（表示順を除く。表示順はコードリストの問い合わせだけが観測する）。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
-structure BoardingClassInfo where
-  boardingClassCd : BoardingClassCd
-  boardingClassName : String
-  extraCharge : Nat
-  deriving DecidableEq, Repr
-
-/-- 運賃種別の参照の結果（表示順を除く）。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
-structure FareTypeInfo where
-  fareTypeCd : FareTypeCd
-  fareTypeName : String
-  discountRate : Nat
-  rsrvAvailableStartDayNum : Nat
-  rsrvAvailableEndDayNum : Nat
-  passengerMinNum : Nat
-  deriving DecidableEq, Repr
-
-/-- 表示順を除いた射影。 -/
-def _root_.Spec.BoardingClass.info (b : BoardingClass) : BoardingClassInfo :=
-  ⟨b.boardingClassCd, b.boardingClassName, b.extraCharge⟩
-
-/-- 表示順を除いた射影。 -/
-def _root_.Spec.FareType.info (f : FareType) : FareTypeInfo :=
-  ⟨f.fareTypeCd, f.fareTypeName, f.discountRate, f.rsrvAvailableStartDayNum, f.rsrvAvailableEndDayNum,
-    f.passengerMinNum⟩
 
 /-- 問い合わせの結果。 -/
 inductive Answer where
@@ -110,7 +81,7 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
   | .peakTimeOn d => .peakTime (md.peakTimeOn d)
   | .multiplicationRatioOn d => .ratio (md.multiplicationRatioOn d)
   | .config => .config cfg
-  | .codeList n => .codeList (CodeList.ofName md n)
+  | .codeList n => .codeList (codeListOfName md n)
 
 /-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件と、
 問い合わせの引数の値域。 -/
@@ -132,6 +103,5 @@ theorem queryMachine_sound : queryMachine.Sound := Machine.Machine.sound_pure _ 
 @[obligation "SPEC-007"]
 theorem queryMachine_initIs : queryMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
-end MasterData
 
-end Spec
+end Spec.MasterQuery

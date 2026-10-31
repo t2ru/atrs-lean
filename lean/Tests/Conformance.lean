@@ -11,7 +11,11 @@ import Spec
   共有入力（`fixtures`）を使う操作の表は、`Tests.ConformanceFare`・`Tests.ConformanceMaster` にある。
 -/
 
-open Lean Spec Spec.Prim ConformanceKit
+open Lean Spec.Prim ConformanceKit
+
+open ConformanceKit.Runner ConformanceKit.SqlTable
+
+open Spec.Prim.Format Spec.Prim.Time
 
 namespace Tests.Conformance
 

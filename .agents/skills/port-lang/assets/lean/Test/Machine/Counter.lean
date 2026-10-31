@@ -12,9 +12,9 @@ import Machine
 - `Refines.refl`・`Refines.trans` の使用例
 -/
 
-namespace Test.Machine.Counter
-
 open _root_.Machine
+
+namespace Test.Machine.Counter
 
 /-- 上限の無いカウンタ。出力は増やす前の値。 -/
 def counter : Machine Nat Unit Nat where

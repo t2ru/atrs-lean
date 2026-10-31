@@ -13,8 +13,9 @@ import SourceModel.Repository.Schema
 -/
 
 namespace SourceModel.Repository.MasterData
+open LangSemantics.Sql.Core LangSemantics.Sql.Query
 
-open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
 
 /-- 文字列の列の等号（`a = b`。照合順序 C）。 -/
 def eqText {m n : Nat} (a : Varchar m) (b : Varchar n) : Truth := SqlValue.eq collationC a.toSql b.toSql

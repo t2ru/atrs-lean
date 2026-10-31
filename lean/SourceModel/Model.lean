@@ -11,6 +11,7 @@ getter・setter は欄の参照として写す。
 -/
 
 namespace SourceModel.Model
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java
 
@@ -93,7 +94,7 @@ structure FlightMaster where
   "java:jp.co.ntt.atrs.domain.model.BoardingClass#toString()@b78e85e304022465",
   "java:jp.co.ntt.atrs.domain.model.BoardingClass.serialVersionUID@7a425c3cfaa07f43"]
 structure BoardingClass where
-  boardingClassCd : JRef Spec.BoardingClassCd := none
+  boardingClassCd : JRef Spec.Model.BoardingClassCd := none
   boardingClassName : JRef String := none
   extraCharge : JRef J32 := none
   deriving Repr, DecidableEq
@@ -114,7 +115,7 @@ structure BoardingClass where
   "java:jp.co.ntt.atrs.domain.model.FareType#toString()@b78e85e304022465",
   "java:jp.co.ntt.atrs.domain.model.FareType.serialVersionUID@7ac4c51a2e13b2a2"]
 structure FareType where
-  fareTypeCd : JRef Spec.FareTypeCd := none
+  fareTypeCd : JRef Spec.Model.FareTypeCd := none
   fareTypeName : JRef String := none
   discountRate : JRef J32 := none
   rsrvAvailableStartDayNum : JRef J32 := none
@@ -168,7 +169,7 @@ structure Passenger where
   familyName : JRef String := none
   givenName : JRef String := none
   age : JRef J32 := none
-  gender : JRef Spec.Gender := none
+  gender : JRef Spec.Model.Gender := none
   deriving Repr, DecidableEq
 
 end SourceModel.Model

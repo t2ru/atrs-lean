@@ -1,6 +1,6 @@
 {
   "operation": "format.fmtTimestamp",
-  "modelDef": "Spec.Prim.fmtTimestamp",
+  "modelDef": "Spec.Prim.Format.fmtTimestamp",
   "specRef": "docs/spec/domain-model.md#書式",
   "cases": [
     {

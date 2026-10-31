@@ -1,16 +1,20 @@
 import Abstraction.Fare.Loop
 
 /-!
-# Abstraction.Fare.TotalFareRefines
+# Abstraction.Fare.TotalFareRun
 
-R 課題 ABS-004（合計金額）: `SourceModel.FareQuery.totalFareConcrete`（起動時の読み込み・`toFlightList`・
-`calculateTotalFare`）は、既知差異 D-001・D-002・D-012・D-027 の前提の下で、[Spec] の `Spec.Fare.totalFareMachine` を
-リファインする。あわせて、L 課題 ABS-005（int32 の溢れが無いこと）と、D-012 の必要性（W 課題 ABS-112）を示す。
+R 課題 ABS-004（合計金額。`Abstraction.Fare.totalFareRefines`）と W 課題 ABS-112（`Abstraction.Fare.need_D012`）の補題。
+`SourceModel.FareQuery.totalFareConcrete`（起動時の読み込み・`toFlightList`・`calculateTotalFare`）の実行と、L 課題 ABS-005
+（int32 の溢れが無いこと。`runTotalFare_eq`）、D-012 の必要性の証人の実行（`runTotalFare_icTF012`）を示す。
 -/
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.TotalFareRun
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.Loop Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.QueryRun Spec.CodeList Spec.Model Spec.Prim.Int Spec.Prim.Text
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
+open LangSemantics.Java Spec Spec.Prim LangSemantics.Core SourceModel.MasterData
   SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
 
 /-- `toFlight` が作るフライト情報（読み込んだ Provider で引く）。 -/
@@ -27,10 +31,10 @@ theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = s
   exact ⟨dj, hdj, hd, hn, hbc, hft⟩
 
 theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
-    (ht : hasText k.flightName.val = true) : toFlight p.ticketHelper f = .ok (some (mkFlight p f)) := by
+    (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
   obtain ⟨dj, hdj, -, hn, hbc, hft⟩ := keyOfForm_eq h
   simp only [toFlight, hn, getFlightMaster, assertHasText_ok ht, getFareType, hft, getBoardingClass, hbc, ok_bind,
-    pure_bind, Providers.ticketHelper, mkFlight, Option.bind_some]
+    pure_bind, SourceModel.FareQuery.ticketHelper, mkFlight, Option.bind_some]
   rfl
 
 theorem assertNotEmpty_cons {α : Type} (x : α) (xs : List α) (m : String) :
@@ -82,11 +86,11 @@ theorem flightTotalOfKey_le {cfg : Config} {md : MasterData} (hcv : cfg.Valid) (
     omega
   generalize X * C / 100 = b at *
   have hf : Spec.Fare.fare b ft.discountRate ≤ 100000000 := by
-    simp only [Spec.Fare.fare, Spec.Prim.ceilTo, Spec.Prim.pct]
+    simp only [Spec.Fare.fare, Spec.Prim.Int.ceilTo, Spec.Prim.Int.pct]
     have : b * (100 - ft.discountRate) ≤ b * 100 := Nat.mul_le_mul_left _ (by omega)
     omega
   have hq : pct b (cfg.childFareRate - ft.discountRate) ≤ 100000000 := by
-    simp only [Spec.Prim.pct]
+    simp only [Spec.Prim.Int.pct]
     have : b * (cfg.childFareRate - ft.discountRate) ≤ b * 100 := Nat.mul_le_mul_left _ (by omega)
     omega
   have hc : Spec.Fare.childNumOfAges cfg ages ≤ ages.length := by
@@ -132,8 +136,8 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
   simp only [Range.minReserveFlights, Range.maxReserveFlights, Range.minPassengers, Range.maxPassengers,
     Range.maxAge] at hcv hv hf1 hf2 hp1 hp2 hpa hpt hsome
   obtain ⟨p, hl, hptp, hbq, hfq, hmf⟩ := load_correct' hm hv ho
-  have htf : toFlightList p.ticketHelper ic.flights = .ok (ic.flights.map fun f => some (mkFlight p f)) := by
-    apply LangSemantics.Java.mapM_ok
+  have htf : toFlightList (SourceModel.FareQuery.ticketHelper p) ic.flights = .ok (ic.flights.map fun f => some (mkFlight p f)) := by
+    apply LangSemantics.Java.ResultLemmas.mapM_ok
     intro f hf
     obtain ⟨k, hk, hfk⟩ := mapM_some_mem hks hf
     exact toFlight_ok p hfk (hpt k hk)
@@ -212,7 +216,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       have hb8 : X * C / 100 ≤ 100000000 := by have := Nat.mul_le_mul hX hC; omega
       generalize hbd : X * C / 100 = bb at *
       simp only [mkFlight, pure_bind, hn, Option.bind_some, hgetfm, JRef.deref, ok_bind, hfmr, hrb, hbcd, hgetbc,
-        Providers.ticketReserveService, hftd, hgetft, hdr]
+        SourceModel.FareQuery.ticketReserveService, hftd, hgetft, hdr]
       rw [hbccd, hbcmem.2, hdj, hcb, ok_bind,
         calculateFare_ok (b := bb) (r := ft.discountRate) hvb hdval hr100, ok_bind]
       have hsub := j32sub_nat (x := cfg.childFareRate) (y := ft.discountRate) hcfr hdval hrcr (by omega)
@@ -228,7 +232,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
           (Spec.Fare.fare bb ft.discountRate : Int) :=
         fare_src_eq' hr100 (by omega) (Nat.lt_of_le_of_lt (Nat.mul_le_mul hb8 (Nat.sub_le 100 _)) (by decide)) hd2
       have hF : Spec.Fare.fare bb ft.discountRate ≤ 100000000 := by
-        simp only [Spec.Fare.fare, Spec.Prim.ceilTo, Spec.Prim.pct]
+        simp only [Spec.Fare.fare, Spec.Prim.Int.ceilTo, Spec.Prim.Int.pct]
         have : bb * (100 - ft.discountRate) ≤ bb * 100 := Nat.mul_le_mul_left _ (by omega)
         omega
       have hQ : bb * (cfg.childFareRate - ft.discountRate) / 100 ≤ 100000000 := by
@@ -244,12 +248,12 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       have hm2 := j32mul_nat hcpv (ofInt_nat (x := cnt) (by omega)) (by omega)
       have hsum := j32add_nat hm1 hm2 (by omega)
       rw [← J32.ofInt_val (j32add (j32mul _ _) _), hsum, hv', Option.getD_some, hvdef]
-      simp only [Spec.Fare.childNumOfAges, hcnt, ← hXd, ← hbd, Spec.Prim.pct]
+      simp only [Spec.Fare.childNumOfAges, hcnt, ← hXd, ← hbd, Spec.Prim.Int.pct]
       rfl
     · simp only [Nat.zero_add]; omega
   · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a _ ha b => ?_
     obtain ⟨pp, aJ, rfl, hage, haJ⟩ := ageOfPassenger_eq ha
-    simp only [pure_bind, JRef.deref, hage, ok_bind, Providers.ticketReserveService, haJ, hamin]
+    simp only [pure_bind, JRef.deref, hage, ok_bind, SourceModel.FareQuery.ticketReserveService, haJ, hamin]
     by_cases hlt : a < cfg.adultPassengerMinAge
     · simp [hlt]; rfl
     · simp [hlt]; rfl
@@ -277,35 +281,6 @@ theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
   generalize (ia.flights.map fun k => (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages k).getD 0).sum = S at *
   omega
 
-/-- R 課題 ABS-004。 -/
-@[obligation "ABS-004"]
-theorem totalFareRefines :
-    Refines (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
-      (totalFareConcrete.restrict dev_D027TF) glueTF where
-  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-  input_total ic hd := by
-    obtain ⟨ia, h⟩ := Option.isSome_iff_exists.mp hd.2
-    exact ⟨ia, h⟩
-  applicable s t ic ia _ _ hα hpre _ := by
-    obtain ⟨⟨⟨hp, h1⟩, h2⟩, h12⟩ := hpre
-    refine ⟨⟨_, mergeOrder ic.db, mergeOrder_allowed ic.db, rfl⟩, fun e ⟨o, ho, he⟩ => ?_⟩
-    rw [runTotalFare_eq hα hp h1 h2 h12 ho] at he
-    cases he
-  correct s t ic ia t' oc _ _ hα hpre _ hs := by
-    obtain ⟨⟨⟨hp, h1⟩, h2⟩, h12⟩ := hpre
-    obtain ⟨o, ho, he⟩ := hs
-    rw [runTotalFare_eq hα hp h1 h2 h12 ho] at he
-    simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
-    obtain ⟨-, rfl⟩ := he
-    refine ⟨(), _, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl ?_⟩
-    exact natOfJ32_eq_some.mpr (ofInt_nat (Nat.le_trans (totalFareOfKeys_le hp) (by decide)))
-
-/-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
-theorem totalFareRefines_initSurj :
-    Refines.InitSurj (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
-      (totalFareConcrete.restrict dev_D027TF) glueTF :=
-  fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-
 /-- `icTF012` の [Source] の合計金額は 17,050,400 円（小児分の途中計算 `100,000,000 × 60` が int32 で折り返す）。 -/
 theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .ok (J32.ofInt 17050400) := by
   have ht : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
@@ -315,23 +290,4 @@ theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .o
     ok_bind]
   rfl
 
-/-- W 課題 ABS-112（D-012 の必要性。G9）: 前提を外すと、ABS-004 は成り立たない。基本運賃 1 億円・割引率 0・小児 1 名で、
-[Source] は 17,050,400 円、[Spec] は 60,000,000 円。 -/
-@[obligation "ABS-112", gap "D-012"]
-theorem need_D012 :
-    ¬ Refines ((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T)
-      (totalFareConcrete.restrict dev_D027TF) glueTF := fun h => by
-  obtain ⟨hd1, hd2, -⟩ := iaTF012_devs
-  have hout : (Spec.Fare.totalFareOfKeys iaTF012.cfg iaTF012.md iaTF012.flights iaTF012.ages).getD 0 = 60000000 := by
-    decide
-  obtain ⟨s', oa, hst, -, ho⟩ := h.correct () () icTF012 iaTF012 () (J32.ofInt 17050400) trivial
-    (Or.inl ⟨rfl, trivial⟩) aiTF_icTF012 ⟨⟨iaTF012_pre, hd1⟩, hd2⟩
-    ⟨trivial, by unfold dev_D027TF; rw [aiTF_icTF012]; rfl⟩
-    ⟨mergeOrder icTF012.db, mergeOrder_allowed _, by rw [runTotalFare_icTF012]; rfl⟩
-  have : oa = 60000000 := hst.trans hout
-  subst this
-  rcases ho with ho | ho
-  · exact absurd ho (by decide)
-  · exact ho
-
-end Abstraction.Fare
+end Abstraction.Fare.TotalFareRun

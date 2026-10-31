@@ -26,3 +26,4 @@ generated:
 | c08b | [スキルの assets の Lean の検査を名前空間 Test.<ライブラリ> にまとめる](c08b-test-namespace-for-skill-asset-tests.md) | accepted | 2026-10-31 |
 | 748c | [スキルの文書を spec/・rules/・guide/・lang/ に分け、移動の道具 docmv.py を置く](748c-skill-docs-category-directories.md) | accepted | 2026-10-31 |
 | ab9e | [義務の束 Machine.Adequate、機械の並置によるトップレベルの主定理、側ごとの段階導入](ab9e-adequate-bundle-sum-and-side-staging.md) | accepted | 2026-10-31 |
+| 1a30 | [Lean の宣言をモジュール名の下に置き、機能の証明課題を機能のモジュールに置く](1a30-lean-module-namespace-layout.md) | accepted | 2026-10-31 |

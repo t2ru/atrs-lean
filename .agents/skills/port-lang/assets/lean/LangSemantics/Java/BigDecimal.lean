@@ -9,7 +9,8 @@ import LangSemantics.Java.Int
 lang: `dep:java.base#java.math.BigDecimal.setScale`, `dep:java.base#java.math.RoundingMode`
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.BigDecimal
+open LangSemantics.Java.Int
 
 /-- `java.math.RoundingMode`。 -/
 inductive RoundingMode where
@@ -98,4 +99,4 @@ theorem bdCeilHundredUp_val {n : J32} (h0 : 0 ≤ n.val) (h1 : (n.val.toNat + 99
       (((if x % 10 ^ 2 = 0 then x / 10 ^ 2 else x / 10 ^ 2 + 1) * 10 ^ 2 : Nat) : Int) by push_cast; rfl, e]
   exact J32.val_ofInt_of_inRange _ ⟨by simp only [J32.minValue]; omega, by simp only [J32.maxValue]; omega⟩
 
-end LangSemantics.Java
+end LangSemantics.Java.BigDecimal

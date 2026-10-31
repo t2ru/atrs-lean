@@ -25,7 +25,7 @@ generated:
 - `LangSemantics.Java.JDouble`（有理数＋RNE 丸め。`jd`, `jdLit`, `jdmul`, `jdsub`, `jd2i`）
 - `LangSemantics.Java.BigDecimal`（`setScale(-2, UP)` と `intValue`）
 - `LangSemantics.Java.String`（UTF-16 長、`trim`、`split`）
-- `LangSemantics.Java.LocalDate`（`plusDays`, `isBefore`, `ChronoUnit.YEARS.between`）
+- `LangSemantics.Java.JLocalDate`（`plusDays`, `isBefore`, `ChronoUnit.YEARS.between`）
 
 ## 対象外
 
@@ -44,11 +44,11 @@ generated:
 ## 結果
 
 - assets（`.agents/skills/port-lang/assets/`）
-  - `LangSemantics/Java/Double.lean`: 定理を追加した。
+  - `LangSemantics/Java/JDouble.lean`: 定理を追加した。
     - `jdLit_0_01_bits`: `jdLit "0.01"` のビット表現が `0x3F847AE147AE147B`
     - `jd2i_1430_30`: 1430 円・30% の例が 1000
     - どちらも `decide` で示し、公理は `propext`・`Classical.choice`・`Quot.sound` の範囲に収まる
-  - `LangSemantics/Java/LocalDate.lean`: ADR 935b の `minusDays` を追加した。
+  - `LangSemantics/Java/JLocalDate.lean`: ADR 935b の `minusDays` を追加した。
   - `LangSemanticsTest/jvm/JavaTable.java`: JVM で固定の入力表を計算し、`#guard` を生成する。生成物 `LangSemanticsTest/JavaJvm.lean` には 581 件の `#guard` があり、すべて通る。
 - ATRS（`lean/Tests/JavaDouble.lean`）: 運賃計算の [Source] の double 式を、ネイティブ `Float` とビット単位で 4,006,212 件突き合わせ、すべて一致した。範囲は [assurance.md](../spec/assurance.md) に書いた。
 - CI

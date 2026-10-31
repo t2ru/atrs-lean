@@ -61,7 +61,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 455f](docs/backlog/455f-upstream-submodule-and-inventory.md)） |
 | `trace/` | スキルの道具が読む ATRS の設定（`project.json`）・版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）・機能と backlog の対応表（`features.json`）・インベントリ（`source-inventory.json`・`target-inventory.json`）・manifest（[ADR e2a4](docs/decision/e2a4-traceability-hash-as-deterministic-check-record.md)、[ADR 0eea](.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)） |
 | `.agents/skills/port-lang/scripts/` | スキルの道具（アプリ非依存。[ADR edc8](.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の CLI。`inventory`・`manifest`・`check`・`rehash`・`diff`・`impact`）、`ci/check_lean.py`（`sorry`・`axiom`・`Float`・依存の向きなど）、`ci/check_obligations.py`（`obligation-check` の結果と登録簿の突き合わせ。TR-G・TR-N）、`ci/check_upstream.py`（上流の commit と宣言の一致）、`docs/ids.py`（ADR・backlog の ID の道具）、`docs/okf_check.py`（OKF のバンドルとリンク・見出しアンカーの検査）。ATRS 固有の値は `trace/project.json` から読む |
-| `tools/` | ATRS 固有の道具。`ci/lean.sh`（Lean 側の一括検査。スキルの道具を呼ぶ。ローカルでも実行する）、`ci/master_sql.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表。[ADR f57e](docs/decision/f57e-uuid-ids-for-decisions-and-backlog.md)） |
+| `tools/` | ATRS 固有の道具。`ci/lean.sh`（Lean 側の一括検査。スキルの道具を呼ぶ。ローカルでも実行する）、`ci/master_sql.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表。[ADR f57e](docs/decision/f57e-uuid-ids-for-decisions-and-backlog.md)）、`docs/lean-renames.json`（Lean の名前の改名の対応表。[backlog 9ed8](docs/backlog/9ed8-atrs-module-namespace-layout.md)） |
 | `conformance/` | 言語中立な適合テストベクタ（[ADR dc3a](docs/decision/dc3a-conformance-test-vectors.md)）。`lake test` が `Spec`・`SourceModel` に対して実行する。共有入力 `fixtures/` は `tools/conformance/master_fixture.py` が上流のシードから生成する |
 
 ## 主要な規則（要約。詳細は各規約・ADR）
@@ -77,6 +77,8 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
    - 例外: `Machine`（リファインメントの枠組み）、`Trace`、`ConformanceKit`、`Tests`、`Tools`
 
    移植元と抽象を分け、関係を B メソッドのリファインメントとして証明する方針は [ADR 01d4](docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)。
+
+   宣言は、技術的な必要（型の名前空間へのドット記法の補題・`main` など 4 つの例外）がない限り、モジュール名の下に置く（`Spec/Fare.lean` は `Spec.Fare.*`）。`Abstraction`・`Refinement` では、R・W・C 課題と付帯の義務を機能のモジュール（`lean/Abstraction/Fare.lean`）に、補題・α・差異の述語を下位のモジュールに置く。`lake exe layout-check` と `trace check` の TR-L が検査する（[スキルの ADR 1a30](.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md)）。
 3. 抽象モデルでは浮動小数点数を使わない（[ADR e41d](docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。
 4. 移植元・移植先との差異は、必ず既知差異（`D-NNN`・`T-NNN`）として、Lean の登録簿（`lean/Abstraction/Gap.lean`・`lean/Refinement/Gap.lean` の `@[gap_entry]`）に登録する。[docs/spec/abstraction.md](docs/spec/abstraction.md)・[docs/spec/refinement.md](docs/spec/refinement.md) の表は `trace manifest` がそこから生成する（手で編集しない）。差異の生じる `Spec`・`SourceModel`・`TargetModel` の定義には `@[gap "D-NNN"]` を付ける（[ADR cc24](docs/decision/cc24-gap-registry-as-lean-attributes.md)）。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
 5. 業務ロジックは純粋関数、副作用はポート経由（[ADR f0e4](docs/decision/f0e4-functional-core-with-ports.md)）。
@@ -97,6 +99,7 @@ Lean の雛形（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)。�
 実装済みの範囲（マスタの読み込みと運賃計算）の R 課題を義務の束 `Machine.Adequate` に束ね、`Abstraction.lean` のトップレベルに `Abstraction.refines`・`Abstraction.adequate` を示した。追跡の検査の段階導入を側ごと（移植元・移植先）にし、運賃計算・マスタの移植元側を失敗扱いにした。以後の機能の取り込みは、トップレベルの主定理と移植元側の検査が通り続けることを条件とする（[backlog 76a6](docs/backlog/76a6-source-side-adequacy-gate.md)、[ADR a41d](docs/decision/a41d-top-level-refines-adequate-and-source-side-gate.md)、[スキルの ADR ab9e](.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)）。
 Rust のコードはまだ無い。
 [Spec] の非決定性の選択の型（`Spec.Nondet`）と入口の環境の前提（`Spec.EnvPre`。シードが満たすことの定理 `seed_env`）を置いた（[backlog 0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)、[ADR cd33](docs/decision/cd33-spec-nondet-types-and-env-pre.md)）。
+Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集めた（[backlog 9ed8](docs/backlog/9ed8-atrs-module-namespace-layout.md)、[スキルの ADR 1a30](.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md)。`lake exe layout-check`・TR-L）。
 文書の検査として、`docs/` とスキルのバンドルの OKF の形・索引・ADR と backlog の節・相対リンクと見出しアンカーを、スキルの `okf_check.py` で CI にかけるようにした（[backlog ddbd](docs/backlog/ddbd-okf-bundle-lint.md)、[ADR 920d](docs/decision/920d-docs-bundle-check-in-ci.md)）。
 次に着手できるのは、Lean 側の [a936](.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md)（言語意味論）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。

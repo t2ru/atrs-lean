@@ -46,7 +46,7 @@ generated:
   - `Config.lean`: 設定
   - `MasterData.lean`: マスタ、MD-1〜MD-8、参照関数
   - `CodeList.lean`: コードリスト
-- SPEC 課題: 参照関数をまとめた状態を持たない抽象機械 `Spec.MasterData.queryMachine` について、SPEC-001（`queryMachine_run_step`）と SPEC-002・SPEC-003（`queryMachine_sound`）を証明した。MD の下で参照関数の結果が並びに依存しないこと（`routeOf_eq_some_iff` など）も証明した。backlog 25f7 の ABS-026 で使う。
+- SPEC 課題: 参照関数をまとめた状態を持たない抽象機械 `Spec.MasterQuery.queryMachine` について、SPEC-001（`queryMachine_run_step`）と SPEC-002・SPEC-003（`queryMachine_sound`）を証明した。MD の下で参照関数の結果が並びに依存しないこと（`routeOf_eq_some_iff` など）も証明した。backlog 25f7 の ABS-026 で使う。
 - 日付の性質
   - 証明: 順序と年月日の辞書順の一致（`lt_iff_lex`）、通算日数の単射性、`addDays` と `daysBetween` の関係、閏年・月末・年越し・範囲外の例。
   - `ofOrdinal?` が範囲内の全日で値を返すことは証明せず、`lake test` で 0001-01-01〜9999-12-31 の全日（3,652,059 日）について、値を返すことと翌日の繰り上がりを検査した（`Tests.SpecChecks.dateExhaustive`）。この検査で、年の候補に 0 年が入る不具合を見つけて直した。

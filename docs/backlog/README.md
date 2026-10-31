@@ -51,6 +51,7 @@ generated:
 | 38fb | [アプリに依存しない道具・Lean のライブラリ・方法をスキルへ移す](38fb-move-generic-elements-to-skill.md) | done | [114a](114a-gap-attributes-and-trace-in-skill.md) |
 | 114a | [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](114a-gap-attributes-and-trace-in-skill.md) | done | [ffdc](ffdc-trace-tooling.md), [ae04](ae04-component-necessity-witness.md) |
 | 76a6 | [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](76a6-source-side-adequacy-gate.md) | done | [25f7](25f7-fare-calculation-both-models.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| 9ed8 | [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](9ed8-atrs-module-namespace-layout.md) | done | [ce23](../../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md) |
 
 ## 推奨する着手順
 

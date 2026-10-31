@@ -38,8 +38,8 @@ import SourceModel.FareQuery
 -/
 
 namespace SourceModel
+open LangSemantics.Java.Int LangSemantics.Java.Exception
 
-open LangSemantics.Java
 
 /-- トップレベルの具体機械の入力（`Spec.Input` と同じ並び）。 -/
 abbrev Input := MasterQuery.SrcInput ⊕ FareQuery.BasicFareInput ⊕ FareQuery.FareInput ⊕ FareQuery.TotalFareInput

@@ -16,8 +16,10 @@ import Tests.ConformanceMaster
   （共有入力の生成器 `master_fixture.py` と、PostgreSQL への投入の突き合わせ）。
 -/
 
-open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
+open Lean LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
   ConformanceKit Tests.Conformance
+
+open LangSemantics.Sql.Query ConformanceKit.SqlTable ConformanceKit.Runner
 
 namespace Tests.MasterSql
 
@@ -73,7 +75,7 @@ def decodeDb (doc : Json) : Except String MasterDb := do
 def sI (v : Int4) : Option String := some (toString v.val)
 def sV {n : Nat} (v : Varchar n) : Option String := some v.val
 def sD (d : PgDate) : Option String :=
-  (Spec.Prim.Date.ofEpochDay? d.val).map Spec.Prim.fmtIsoDate
+  (Spec.Prim.Date.ofEpochDay? d.val).map Spec.Prim.Format.fmtIsoDate
 
 def routeRow (r : RouteResult) : Row :=
   [sI r.routeNo, sI r.basicFare, sV r.depAirportCd, sV r.depAirportName, sV r.aarAirportCd, sV r.aarAirportName]

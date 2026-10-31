@@ -38,3 +38,9 @@ lean_lib Test where
 lean_exe «trace-test» where
   root := `Test.Trace.Main
   supportInterpreter := true
+
+/-- 全宣言がモジュール名の下にあることの検査（`Trace.Layout`）。`lake exe layout-check` で実行する。 -/
+@[default_target]
+lean_exe «layout-check» where
+  root := `Test.Trace.LayoutCheck
+  supportInterpreter := true

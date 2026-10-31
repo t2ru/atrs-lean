@@ -64,7 +64,7 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 
 | 項目 | 決定 |
 | --- | --- |
-| 閉じた形の補題（スキル） | `LangSemantics.Java.JDouble` に、`floorLog2`・`roundAtExp` の性質、`toJ32 ∘ ofRat` の閉じた形 `rneTrunc`、`(int)(X * F)` の閉じた形 `jd2i_mul_nat` を置く（`DoubleLemmas`）。`BigDecimal` に `bdCeilHundredUp_val`（非負の値の 100 円単位の切上げ）を置く。補題のために、`Double.lean` の補助の関数（`pow2`・`geTwoPow`・`floorLog2`・`roundAtExp`・`truncInt`）と `roundDiv` を `private` でなくする |
+| 閉じた形の補題（スキル） | `LangSemantics.Java.JDouble` に、`floorLog2`・`roundAtExp` の性質、`toJ32 ∘ ofRat` の閉じた形 `rneTrunc`、`(int)(X * F)` の閉じた形 `jd2i_mul_nat` を置く（`JDouble.Lemmas`）。`BigDecimal` に `bdCeilHundredUp_val`（非負の値の 100 円単位の切上げ）を置く。補題のために、`JDouble.lean` の補助の関数（`pow2`・`geTwoPow`・`floorLog2`・`roundAtExp`・`truncInt`）と `roundDiv` を `private` でなくする |
 | 比較の定理（ATRS） | `Abstraction.Fare.Double`（`rneTrunc` と `⌊X·c/100⌋` の比較）と `Abstraction.Fare.Factors`（因子の表、基本運賃・運賃の定理、証拠）に置く。値域（`X·c < 100·2^28`）は、[domain-model.md](../spec/domain-model.md#値域) の上限（`X ≤ 10,000,000`・`c ≤ 1,000`、`b ≤ 100,000,000`）を含む |
 | 因子の表 | 積算比率 1〜1000・割引率 0〜99 のすべての因子が `Close` であること、安全でない因子の一覧（積算比率 49 個・割引率 33 個）を、カーネルの評価（`decide +kernel`）で確かめる。ビルドに約 20 秒かかる |
 | 近さの許容 | `Close` の許容を `2^-48` とする。`2^-52` では運賃の因子の桁落ちを含まない。比較の定理は、許容 `2^-48` でも値域（`X·c < 100·2^28`）で成り立つ |
@@ -103,6 +103,6 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 
 ## More Information
 
-* 補足（2026-10-31）: 本 ADR で「比較の定理（ATRS）」とした層（`Abstraction.Fare.Double` と `Factors` の因子の判定・`jd2i_factor`）は、アプリに依存しないので、スキルの `LangSemantics.Java.DoubleCompare` に移した（[ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。決定は変わらない。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件・証拠が残る。
+* 補足（2026-10-31）: 本 ADR で「比較の定理（ATRS）」とした層（`Abstraction.Fare.Double` と `Factors` の因子の判定・`jd2i_factor`）は、アプリに依存しないので、スキルの `LangSemantics.Java.JDouble.Compare` に移した（[ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。決定は変わらない。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件・証拠が残る。
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)、[ADR e41d](e41d-exact-integer-arithmetic-in-abstract-model.md)
 * [abstraction.md](../spec/abstraction.md#既知差異)（D-001・D-002）、[fare-calculation.md](../spec/fare-calculation.md)

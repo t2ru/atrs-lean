@@ -1,6 +1,6 @@
 {
   "operation": "format.fmtYen",
-  "modelDef": "Spec.Prim.fmtYen",
+  "modelDef": "Spec.Prim.Format.fmtYen",
   "specRef": "docs/spec/domain-model.md#書式",
   "cases": [
     {

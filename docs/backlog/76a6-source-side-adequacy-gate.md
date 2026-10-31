@@ -33,7 +33,7 @@ generated:
 - ATRS
   - `Spec.machine`・`SourceModel.machine`（実装済みの範囲の機能の並置）
   - `Abstraction.refines`・`Abstraction.adequate`（`Abstraction.lean` のトップレベル）
-  - R 課題ごとの束 `queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate` と 1 歩の可換式（`Abstraction.Adequacy`）
+  - R 課題ごとの束 `queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate` と 1 歩の可換式（旧 `Abstraction.Adequacy`。いまは機能のモジュール `Abstraction.MasterData`・`Abstraction.Fare`）
   - `trace/features.json` の側ごとの作業項目と、ロケータの機能への振り直し
   - 運賃計算・マスタの読み込みの移植元の項目の `@[source]`（ドメインモデルのアクセサ・列挙定数、DDL の制約、シード、設定・MyBatis の Bean）
   - 規約（完了の定義）と文書

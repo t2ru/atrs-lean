@@ -10,14 +10,16 @@ import Spec.Fare
 - 運賃の因子 `fareFactor r = 1 − (double) r * 0.01`（`r` は割引率、0〜100）
 
 どの因子も、正確な値（`c/100`・`(100−r)/100`）の相対誤差 `2^-48` 以内にある（`Close`。カーネルの評価で確かめる）。
-因子の式の比較（`Close`・`Safe`・`FactorOk`・`jd2i_factor` など）は、スキルの `LangSemantics.Java.DoubleCompare` にある。
+因子の式の比較（`Close`・`Safe`・`FactorOk`・`jd2i_factor` など）は、スキルの `LangSemantics.Java.JDouble.Compare` にある。
 `X·c` が 100 で割り切れないとき、[Source] の `(int)(X * F)` は [Spec] の `⌊X·c/100⌋` に等しい。
 割り切れるとき、[Source] は等しいか 1 小さい。因子が安全（`Safe`）なら等しい。
 -/
 
 set_option exponentiation.threshold 2048
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.Factors
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java LangSemantics.Java.JDouble
 
@@ -102,7 +104,7 @@ theorem fare_src {b r : Nat} (hr : r ≤ 100) (hb : b < 2 ^ 53) (hbr : b * (100 
       (bdCeilHundredUp S).val = (((k + 99) / 100 * 100 : Nat) : Int) := fun S k e hk => by
     rw [bdCeilHundredUp_val (by rw [e]; omega) (by rw [e, Int.toNat_natCast]; omega), e, Int.toNat_natCast]
   have hspec : Spec.Fare.fare b r = (b * (100 - r) / 100 + 99) / 100 * 100 := by
-    simp only [Spec.Fare.fare, Spec.Prim.ceilTo, Spec.Prim.pct]
+    simp only [Spec.Fare.fare, Spec.Prim.Int.ceilTo, Spec.Prim.Int.pct]
     congr 2
   rw [hspec]
   rcases jd2i_factor' hb (fareFactor_ok' hr).1 (fareFactor_ok' hr).2 hbr with e | ⟨h1, h0, h2, e⟩
@@ -199,4 +201,4 @@ theorem fare_src_eq' {b r : Nat} (hr : r ≤ 100) (hb : b < 2 ^ 53) (hbr : b * (
         · exfalso; rw [show 100 - r = 0 by omega, Nat.mul_zero] at h1; simp at h1
       exact absurd (fareFactor_safe_of hr' h) h2
 
-end Abstraction.Fare
+end Abstraction.Fare.Factors

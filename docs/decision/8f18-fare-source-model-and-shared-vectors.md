@@ -52,7 +52,7 @@ Chosen option: "下表のとおり決める", because 方針（マスタは入�
 | --- | --- |
 | マスタの表し方 | [Source] のマスタは、Provider のキャッシュ（`BoardingClassProvider.boardingClassCodeMap`・`PeakTimeProvider.peakTimeList`）を、操作の入力の成分として受ける。キャッシュを SQL から作る `load` と、運賃計算が使わない Provider は、0004 の第 2 段で写す |
 | 列挙型 | 原典の enum（`BoardingClassCd`・`FareTypeCd`・`Gender`）は、構築子が 1 対 1 なので `Spec.Model` の型をそのまま使う（α は恒等）。値の型は `LangSemantics.Java` の型で写す（`Integer` → `JRef J32`、`LocalDate` → `JRef JLocalDate`、参照 → `JRef`） |
-| `HashMap` | `LangSemantics.Java.JHashMap` を足す。範囲は `put`（後勝ちの置き換え）・`get`（無ければ null）・`containsKey`・`size` に限る。キーの等しさは `DecidableEq` で、enum・String の `equals` に一致する。反復の順序は与えない |
+| `HashMap` | `LangSemantics.Java.HashMap.JHashMap` を足す。範囲は `put`（後勝ちの置き換え）・`get`（無ければ null）・`containsKey`・`size` に限る。キーの等しさは `DecidableEq` で、enum・String の `equals` に一致する。反復の順序は与えない |
 | 共有ベクタの `modelDef` | `shared/` のベクタでは、`modelDef` を、モデルごとの名前の配列にしてよい（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。実行器は、実行するモデルの層の名前を選ぶ。TR-R と `trace/checks.json` の `vectors` は、配列の各要素を扱う |
 | 共有入力 | `conformance/fixtures/master-data.json`・`config.json` を、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す。<br>- 投入日は 2026-11-01、ピーク時期は 2026・2027 年（ADR 9ee4）。<br>- 行の順はシードの順。[Source] のキャッシュは、この順に `put`・`add` して作る。<br>- CI は `--check` で最新であることを確かめる |
 | `source-model/` の期待値 | Java のオラクル（backlog f18c）ができるまでは、仕様の例の表の [Source] の値を使う（`source: "lean-source-model"`、`upstream` を必須とする）。double の式は、`Tests.JavaDouble`（ネイティブの double）と JVM の表で突き合わせ済みである。backlog f18c で `java-oracle` の値に置き換える |

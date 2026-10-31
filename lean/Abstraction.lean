@@ -12,24 +12,27 @@ import Abstraction.MasterData.Alpha
 import Abstraction.MasterData.Pre
 import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Query
-import Abstraction.MasterData.Refines
+import Abstraction.MasterData.QueryRun
+import Abstraction.MasterData
 import Abstraction.Fare.Factors
 import Abstraction.Fare.Alpha
-import Abstraction.Fare.FareRefines
-import Abstraction.Fare.BasicFareRefines
+import Abstraction.Fare.FareRun
+import Abstraction.Fare.BasicFareRun
 import Abstraction.Fare.Load
 import Abstraction.Fare.TotalAlpha
 import Abstraction.Fare.Loop
-import Abstraction.Fare.TotalFareRefines
-import Abstraction.Adequacy
+import Abstraction.Fare.TotalFareRun
+import Abstraction.Fare
 
 /-!
 # Abstraction
 
 抽象化証明課題（ABS-NNN）。`SourceModel` が `Spec` を B メソッドの意味でリファインすることを証明する。
 依存してよいもの: `SourceModel`, `Spec`, `LangSemantics.Core`, `LangSemantics.Java`, `LangSemantics.Sql`, `Machine`, `Trace`。
-汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.undefOrEq`・機械の並置 `Machine.Sum`）は、
+汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.Kernel.undefOrEq`・機械の並置 `Machine.Sum`）は、
 スキルの assets にある。
+機能の証明課題（R・W・C 課題と付帯の義務、義務の束）は機能のモジュール（`Abstraction.Fare`・`Abstraction.MasterData`）に、
+その補題は下位のモジュールに置く（port-lang の `lang/lean/rules.md#証明課題の配置`）。
 
 ## トップレベルの主定理（本ファイル）
 
@@ -40,7 +43,7 @@ import Abstraction.Adequacy
 
 - `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。
 - `dev`・`devC`・`glue`・`env` は、各機能の R 課題の前提型の差異・貼り合わせ・環境の前提を並置したもの。
-- 主定理は、R 課題ごとの義務の束（`Abstraction.Adequacy`）を `Machine.Adequate.sum` で並べて示す。
+- 主定理は、R 課題ごとの義務の束（機能のモジュールの `*Adequate`）を `Machine.Adequate.sum` で並べて示す。
   機能を取り込んだら、その R 課題の束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
 
 ## R 課題（下の名前空間）
@@ -65,22 +68,26 @@ import Abstraction.Adequacy
 | `Abstraction.MasterData.Pre` | ABS-026 の前提の取り出し（α の分解、空白、値とコードの対応） |
 | `Abstraction.MasterData.Lookup` | Provider のキャッシュの参照と、DB の行での検索の対応 |
 | `Abstraction.MasterData.Query` | ABS-026 の問い合わせごとの一致（参照・ピーク時期・積算比率・コードリスト） |
-| `Abstraction.MasterData.Refines` | R 課題 ABS-026 `queryRefines`、`InitSurj`、W 課題 ABS-127 `need_D027` |
+| `Abstraction.MasterData.QueryRun` | ABS-026・ABS-127 の補題: 貼り合わせ `glueMQ`、読み込みと実行の正しさ、Mapper の結果の並び |
+| `Abstraction.MasterData.Adequacy` | ABS-026 の義務の束の部品: 環境の前提 `envMQ` と証人 |
+| `Abstraction.MasterData` | 機能の証明課題: 義務の束 `queryAdequate` と 1 歩の可換式 `queryRefines_commutes`、R 課題 ABS-026 `queryRefines` と `InitSurj`、W 課題 ABS-127 `need_D027` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
 | `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠、安全でない因子の一覧 |
 | `Abstraction.Fare.Alpha` | 運賃計算の α（`aiBF`・`aiF`）と差異の述語 `dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` |
-| `Abstraction.Fare.FareRefines` | R 課題 ABS-002 `fareRefines`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-102 `need_D002` |
+| `Abstraction.Fare.FareRun` | ABS-002・ABS-003・ABS-102 の補題: `calculateFare` の値、[Spec] の運賃の値域 |
 | `Abstraction.Fare.Load` | 合計金額の読み込みの補題（便マスタの区間の運賃、搭乗クラス・運賃種別の取り出し、`load_correct'`） |
 | `Abstraction.Fare.TotalAlpha` | 合計金額の α（`aiTF`）と差異の述語 `dev_D001T`・`dev_D002T`・`dev_D012`・`dev_D027TF`、証人 |
 | `Abstraction.Fare.Loop` | `for` 文（`forIn`）の和・計数、値域内の `int` の演算、`calculateBasicFare`・`calculateFare` の補題 |
-| `Abstraction.Fare.TotalFareRefines` | R 課題 ABS-004 `totalFareRefines`、L 課題 ABS-005 `runTotalFare_eq`、W 課題 ABS-112 `need_D012` |
-| `Abstraction.Fare.BasicFareRefines` | R 課題 ABS-001 `basicFareRefines`、L 課題 ABS-007 `runBasicFare_spec`、W 課題 ABS-101 `need_D001` |
-| `Abstraction.Adequacy` | R 課題ごとの義務の束 `Machine.Adequate`（`queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate`。同じ課題 ID の `@[obligation]`）、環境の前提 `env*`、1 歩の可換式 `*Commutes` |
+| `Abstraction.Fare.TotalFareRun` | ABS-004・ABS-112 の補題、L 課題 ABS-005 `runTotalFare_eq` |
+| `Abstraction.Fare.BasicFareRun` | ABS-001・ABS-101 の補題、L 課題 ABS-007 `runBasicFare_spec` |
+| `Abstraction.Fare.Adequacy` | ABS-001・ABS-002・ABS-004 の義務の束の部品: 環境の前提 `envBF`・`envF`・`envTF` と証人 |
+| `Abstraction.Fare` | 機能の証明課題: 義務の束 `basicFareAdequate`・`fareAdequate`・`totalFareAdequate` と 1 歩の可換式 `*Refines_commutes`、R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`・ABS-004 `totalFareRefines` と `InitSurj`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002`・ABS-112 `need_D012` |
 -/
 
 namespace Abstraction
 
-open Machine Abstraction.MasterData Abstraction.Fare
+open Machine Abstraction.MasterData Abstraction.Fare Abstraction.MasterData.Adequacy Abstraction.Fare.Adequacy
+open Abstraction.MasterData.Alpha Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha Abstraction.MasterData.QueryRun Machine.Sum
 
 /-- 抽象側の前提型の差異（各 R 課題の `restrict` の述語を並置したもの）。 -/
 def dev : Spec.Input → Prop :=

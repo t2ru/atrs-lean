@@ -55,11 +55,11 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 
 | モジュール | 主な補題 |
 | --- | --- |
-| `LangSemantics.Java.DoubleLemmas` | `jd2i_mul_nat`: 正の整数 `X` と正の因子 `F = fm·2^(−fs)` について、`(int)((double) X * F)` を閉じた形 `min J32.maxValue (rneTrunc (X·fm) (2^fs))` に書き直す。`rneTrunc_spec` は、`rneTrunc N D`（`N/D` を binary64 に丸めて切り捨てた値）の不等式の形。`ofInt_nat`・`toJ32_ofRat` |
+| `LangSemantics.Java.JDouble.Lemmas` | `jd2i_mul_nat`: 正の整数 `X` と正の因子 `F = fm·2^(−fs)` について、`(int)((double) X * F)` を閉じた形 `min J32.maxValue (rneTrunc (X·fm) (2^fs))` に書き直す。`rneTrunc_spec` は、`rneTrunc N D`（`N/D` を binary64 に丸めて切り捨てた値）の不等式の形。`ofInt_nat`・`toJ32_ofRat` |
 | `LangSemantics.Java.BigDecimal` | `bdCeilHundredUp_val`: 非負の値の 100 単位の切上げ |
 | `LangSemantics.Java.Int` | `j32add_val_of_inRange`・`j32sub_val_of_inRange`・`j32mul_val_of_inRange`: 値域内の加減乗算は数学的整数と一致。`jdiv32_val_of_nonneg`: 非負の被除数・正の除数の除算 |
-| `LangSemantics.Java.LocalDateLemmas` | `toEpochDay_ofEpochDay` |
-| `LangSemantics.Java.HashMapLemmas` | `ofList_entries`・`get_ofList` |
+| `LangSemantics.Java.JLocalDate.Lemmas` | `toEpochDay_ofEpochDay` |
+| `LangSemantics.Java.HashMap.Lemmas` | `ofList_entries`・`get_ofList` |
 
 double の式と、[Spec] の厳密な整数の式との差は、次の手順で定理にする。
 
@@ -77,7 +77,7 @@ double の式と、[Spec] の厳密な整数の式との差は、次の手順で
 | `jLocalDate` | `Spec` の暦日 | なし（単射）。`Spec` の暦日の範囲の外には α を定義しない |
 | `null` 可能な参照 | `Option` | なし（単射） |
 | 例外 | 業務エラーの例外はエラー値に写す。前提違反には α を定義しない（PRE の下で到達しないことを示す） | 同じコード・引数を持つ例外のクラスの違い |
-| 部分写像（上の値の組み合わせで、一部の値に定義しないもの） | 対応する `Spec` の値 | 定義域の上で単射なら `Machine.undefOrEq`（[architecture.md](../../spec/architecture.md#空虚化を防ぐ義務)） |
+| 部分写像（上の値の組み合わせで、一部の値に定義しないもの） | 対応する `Spec` の値 | 定義域の上で単射なら `Machine.Kernel.undefOrEq`（[architecture.md](../../spec/architecture.md#空虚化を防ぐ義務)） |
 
 - 核は、標準の抽象化の葉の核の定理（`KernelIs`）で示す。核に当たる値の違いは、リファインメントでは観測されない。
 

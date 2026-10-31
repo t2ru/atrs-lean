@@ -24,7 +24,7 @@ generated:
 - 同一秒の再生成の扱い
 - R 課題 ABS-044（予約履歴レポート）、ABS-025（ReportStore・ReportQueue）
 - SPEC 課題: レポートの SPEC-001〜SPEC-004
-- 入口の環境の前提: レポート要求の受信の入力の値域の述語を書き、`Spec.masterConfigOk` と組み合わせて `@[env_pre]` を付ける。配信の選択は `Spec.Nondet.ReportDeliveryChoice`（N-003）を使う（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
+- 入口の環境の前提: レポート要求の受信の入力の値域の述語を書き、`Spec.EnvPre.masterConfigOk` と組み合わせて `@[env_pre]` を付ける。配信の選択は `Spec.Nondet.ReportDeliveryChoice`（N-003）を使う（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 
 ## 対象外
 

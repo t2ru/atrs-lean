@@ -2,6 +2,12 @@
 
 ## 2026-10-31
 
+* **Update**: [スキルの ADR 1a30](../.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md) の規則（宣言をモジュール名の下に置く NS-1、証明課題を機能のモジュールに置く TR-L）を ATRS の `lean/` に適用した（[backlog 9ed8](backlog/9ed8-atrs-module-namespace-layout.md)。スキルの側は [スキルの backlog ce23](../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md)）。スキルの版は 0.13。
+  * `lake exe layout-check`（`lean/Tools/LayoutCheck.lean`）を足し、`tools/ci/lean.sh` から実行する。
+  * 名前を改めた。例: `Spec.FlightType` → `Spec.Model.FlightType`、`Spec.Airport` → `Spec.MasterData.Airport`、`Spec.MasterData.queryMachine` → `Spec.MasterQuery.queryMachine`、`Spec.Prim.floorDiv` → `Spec.Prim.Int.floorDiv`。R・W・C 課題と義務の束を `lean/Abstraction/Fare.lean`・`lean/Abstraction/MasterData.lean` に集め（`Abstraction.Adequacy` を分けた。可換式は `*Refines_commutes`）、補題のモジュールを `*Run` にした（旧 `*Refines`）。
+  * スキルの道具 `rename.py` で、`docs/`（ADR はリンクの修正として）・`conformance/` のベクタ・`trace/` を書き換えた。この変更履歴の旧い名前は記録として残した。改名の対応表は `tools/docs/lean-renames.json` にある。`trace rehash` で合格の記録を取り直した。
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（機能の名前空間、スキルの版 0.13）、[AGENTS.md](../AGENTS.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
+
 * **Creation**: [ADR a41d](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) で、実装済みの範囲（マスタ・設定・コードリストの読み込みと運賃計算）のトップレベルの主定理と、移植元側の段階導入を決めた。[backlog 76a6](backlog/76a6-source-side-adequacy-gate.md) を作り、完了した（`done`）。スキル側の決定は [スキルの ADR ab9e](../.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)（スキルの版 0.12）。
   * `lean/Abstraction.lean` のトップレベルに `Abstraction.refines`・`Abstraction.adequate`、R 課題ごとの束と 1 歩の可換式を `Abstraction.Adequacy` に置いた。`Spec.machine`・`SourceModel.machine` を足した。`lean/Refinement.lean` に同じ形を書いた（`TargetModel` ができるまで主定理は置かない）。
   * `trace/features.json` を側ごとの作業項目にし、他の機能の移植元の項目を移した。運賃計算・マスタの残りの項目に `@[source]` を付け、`trace/checks.json` に `seed-lean` を、`trace/out-of-scope.json` に `commons-logging.properties` を足した。

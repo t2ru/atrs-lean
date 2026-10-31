@@ -9,7 +9,7 @@ import Trace
 - 文字クラスはコードポイントの閉区間で定める。
 -/
 
-namespace Spec.Prim
+namespace Spec.Prim.Text
 
 /-- スカラ値の個数（[Spec] の文字列長）。 -/
 @[spec_doc "docs/spec/input-validation.md#文字クラス"]
@@ -68,4 +68,4 @@ def halfWidthNumber (s : String) : Bool := !s.isEmpty && s.all isDigit
 #guard halfWidth "abc ~" && !halfWidth "" && !halfWidth "\t"
 #guard halfWidthNumber "0123" && !halfWidthNumber "" && !halfWidthNumber "１"
 
-end Spec.Prim
+end Spec.Prim.Text

@@ -36,7 +36,7 @@ pub struct Dump {
     pub gaps: Vec<Gap>,
 }
 
-/// 文書の節への参照（`Trace.DocRef`）。
+/// 文書の節への参照（`Trace.Gap.DocRef`）。
 #[derive(Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct Site {
     pub label: String,
@@ -56,7 +56,7 @@ pub struct Impact {
     pub reason: String,
 }
 
-/// ギャップの証明の状態（`Trace.Evidence`）。
+/// ギャップの証明の状態（`Trace.Gap.Evidence`）。
 #[derive(Deserialize, Clone, Debug, Default)]
 pub struct Evidence {
     /// `refuted` / `covered` / `pending` / `unformalized` / `excluded_by`

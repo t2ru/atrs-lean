@@ -8,9 +8,10 @@ import LangSemantics.Core.List
 単射である（`WellFormed` な空港コードは英大文字だけからなる）。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Key
+open LangSemantics.Core.List
 
-open SourceModel.MasterData LangSemantics.Core
+open SourceModel.MasterData
 
 
 /-- 出発の空港コードがどちらも `-` を含まなければ、キーが等しい区間は、出発・到着の空港コードが等しい。 -/
@@ -22,4 +23,4 @@ theorem makeCacheKey_inj {dep arr dep' arr' : String} (h : '-' ∉ dep.toList) (
   obtain ⟨h1, h2⟩ := append_sep_inj h h' this
   exact ⟨String.toList_inj.mp h1, String.toList_inj.mp h2⟩
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Key

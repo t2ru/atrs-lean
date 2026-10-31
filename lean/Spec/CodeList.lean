@@ -7,9 +7,10 @@ import Spec.MasterData
 各要素は（コード, 表示）の組で、並びは表示の順である。
 -/
 
-namespace Spec
+namespace Spec.CodeList
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.Prim.Format
 
-open Spec.Prim
 
 /-- コードリストの要素。 -/
 @[spec_doc "docs/spec/master-data.md#空港コードリスト画面用"]
@@ -18,7 +19,6 @@ structure CodeEntry where
   label : String
   deriving DecidableEq, Repr
 
-namespace CodeList
 
 /-- 空港の区切り行を入れる `displayOrder` の下限。 -/
 def airportNopInsertOrder : Nat := 100
@@ -87,6 +87,5 @@ example : insertNop ([⟨⟨"HND"⟩, "羽田", 1⟩] : List Airport) = [⟨"HND
 #guard creditMonth.head? == some ⟨"01", "01"⟩ && creditMonth.length == 12
 #guard creditYear.getLast? == some ⟨"99", "99"⟩ && creditYear.length == 100
 
-end CodeList
 
-end Spec
+end Spec.CodeList

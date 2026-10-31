@@ -67,7 +67,7 @@ Chosen option: "下表のとおり決める", because 理由は次の 2 つで�
 ### Confirmation
 
 * `obligation-check` と `check_obligations.py` で、OB-N1・N2・N3 と G8 に誤りが無い。
-* `Spec.seed_env`・`masterConfigOk_nontrivial` が、`sorry`・公理なしでビルドされる。
+* `Spec.EnvPre.seed_env`・`masterConfigOk_nontrivial` が、`sorry`・公理なしでビルドされる。
 * `Tests.SpecChecks` で、選択の型の標準の値と、環境の前提の両向きの例を確かめる。
 
 ## More Information

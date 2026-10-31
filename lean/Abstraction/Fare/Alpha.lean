@@ -1,5 +1,5 @@
 import Abstraction.Fare.Factors
-import Abstraction.MasterData.Refines
+import Abstraction.MasterData.QueryRun
 import SourceModel.FareQuery
 
 /-!
@@ -14,9 +14,12 @@ import SourceModel.FareQuery
   `Abstraction.Fare.Factors`。ADR e9bc）。
 -/
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.Alpha
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Spec.CodeList
+open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Adequacy
 
-open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
+open Machine LangSemantics.Core SourceModel.FareQuery
 
 /-! ## 入力（合成） -/
 
@@ -111,4 +114,4 @@ theorem dev_D001_nontrivial : Nontrivial dev_D001 := by
 theorem dev_D002_nontrivial : Nontrivial dev_D002 :=
   ⟨⟨⟨0, 0⟩, by unfold dev_D002; decide⟩, ⟨⟨1430, 30⟩, by unfold dev_D002; decide⟩⟩
 
-end Abstraction.Fare
+end Abstraction.Fare.Alpha

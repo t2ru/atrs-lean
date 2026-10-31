@@ -9,16 +9,21 @@ import Tests.ConformanceFare
 
 `master.*` の操作（マスタ・設定・コードリストの参照。R 課題 ABS-026 の両側）の割当。
 
-- `Spec`: 共有入力を `Spec.MasterData`・`Spec.Config` に読み、`Spec.MasterData.answer` で答える。
+- `Spec`: 共有入力を `Spec.MasterData`・`Spec.Config` に読み、`Spec.MasterQuery.answer` で答える。
 - `SourceModel`: 共有入力の行を DB の表（`MasterDb`。列の型の範囲を検査する）とみなし、
   `SourceModel.MasterQuery.run` を標準の並び（`standardOrder`）で実行する。
 
 結果は、両モデルに共通の JSON に写して比べる（区間の空港名など [Spec] が持たない値は写さない）。
 -/
 
-open Lean Spec Spec.Prim ConformanceKit Tests.Conformance Tests.ConformanceFare
+open Lean ConformanceKit Tests.Conformance Tests.ConformanceFare
+
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+
+open Spec.CodeList Spec.Config Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Time
 
 namespace Tests.ConformanceMaster
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
 
 /-! ## 共通の JSON -/
 
@@ -35,7 +40,7 @@ def entriesJson (l : List (String × String)) : Json := .arr (l.map fun (c, v) =
 
 /-! ## Spec -/
 
-def specAnswerJson : MasterData.Answer → Json
+def specAnswerJson : Spec.MasterQuery.Answer → Json
   | .route r => optJson (fun r => Json.mkObj [("routeNo", toJson r.routeNo), ("depAirportCd", .str r.depAirportCd.val),
       ("arrAirportCd", .str r.arrAirportCd.val), ("basicFare", toJson r.basicFare)]) r
   | .flightMaster f => optJson (fun f => Json.mkObj [("flightName", .str f.flightName.val), ("routeNo", toJson f.routeNo),
@@ -56,7 +61,7 @@ def specAnswerJson : MasterData.Answer → Json
       ("defaultArrAirportCd", .str c.defaultArrAirportCd.val), ("defaultBoardingClassCd", .str c.defaultBoardingClassCd.toCode)]
   | .codeList l => entriesJson (l.map fun e => (e.code, e.label))
 
-def specQuery (i : Json) (op : String) : Except String MasterData.Query := do
+def specQuery (i : Json) (op : String) : Except String Spec.MasterQuery.Query := do
   match op with
   | "master.routeOf" => return .routeOf ⟨← getStr i "dep"⟩ ⟨← getStr i "arr"⟩
   | "master.flightMasterOf" => return .flightMasterOf ⟨← getStr i "name"⟩
@@ -79,7 +84,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   return opNames.map fun op => (op, fun i => do
     let q ← specQuery i op
     if !(decide cfg.Valid && decide (md.Valid cfg) && decide q.Valid) then throw "outside PRE"
-    return specAnswerJson (MasterData.answer cfg md q))
+    return specAnswerJson (Spec.MasterQuery.answer cfg md q))
 
 /-! ## SourceModel -/
 

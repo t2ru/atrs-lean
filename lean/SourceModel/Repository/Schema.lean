@@ -105,14 +105,14 @@ structure CreditTypeRow where
 
 /-- マスタの表の内容（各表は行のバッグ）。 -/
 structure MasterDb where
-  airport : LangSemantics.Sql.Bag AirportRow := []
-  route : LangSemantics.Sql.Bag RouteRow := []
-  flightMaster : LangSemantics.Sql.Bag FlightMasterRow := []
-  boardingClass : LangSemantics.Sql.Bag BoardingClassRow := []
-  fareType : LangSemantics.Sql.Bag FareTypeRow := []
-  peakTime : LangSemantics.Sql.Bag PeakTimeRow := []
-  plane : LangSemantics.Sql.Bag PlaneRow := []
-  creditType : LangSemantics.Sql.Bag CreditTypeRow := []
+  airport : LangSemantics.Sql.Query.Bag AirportRow := []
+  route : LangSemantics.Sql.Query.Bag RouteRow := []
+  flightMaster : LangSemantics.Sql.Query.Bag FlightMasterRow := []
+  boardingClass : LangSemantics.Sql.Query.Bag BoardingClassRow := []
+  fareType : LangSemantics.Sql.Query.Bag FareTypeRow := []
+  peakTime : LangSemantics.Sql.Query.Bag PeakTimeRow := []
+  plane : LangSemantics.Sql.Query.Bag PlaneRow := []
+  creditType : LangSemantics.Sql.Query.Bag CreditTypeRow := []
   deriving DecidableEq, Repr
 
 end SourceModel.Repository.Schema

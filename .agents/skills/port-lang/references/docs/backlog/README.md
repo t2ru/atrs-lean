@@ -21,3 +21,4 @@ generated:
 | de90 | [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](de90-skill-docs-okf-bundle-and-records.md) | done | — |
 | a49c | [OKF バンドルとリンクの検査の道具](a49c-okf-bundle-check-tool.md) | done | [de90](de90-skill-docs-okf-bundle-and-records.md) |
 | 97a7 | [スキルの文書を spec/・rules/・guide/・lang/ に分ける](97a7-skill-docs-category-directories.md) | done | [a49c](a49c-okf-bundle-check-tool.md) |
+| ce23 | [Lean の宣言をモジュール名の下に置く規則と検査](ce23-lean-module-namespace-layout.md) | done | — |

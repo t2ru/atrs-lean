@@ -16,10 +16,17 @@ import Refinement
 （port-lang の `lang/lean/rules.md#全域性と安全性`）。`Tests` は対象にしない（`native_decide` を許すため）。
 -/
 
+namespace Tools.AxiomCheck
+
+
 open Lean
 
 /-- 許可する公理。 -/
 def allowedAxioms : List Name := [``propext, ``Quot.sound, ``Classical.choice]
+
+end Tools.AxiomCheck
+
+open Tools.AxiomCheck
 
 unsafe def main : IO UInt32 := do
   let env ← Trace.Dump.loadEnv #[`Machine, `Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement]

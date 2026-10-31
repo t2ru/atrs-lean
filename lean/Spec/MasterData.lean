@@ -13,8 +13,11 @@ import Spec.Config
 -/
 
 namespace Spec
+open Spec.Config Spec.Model Spec.Prim.Time
 
 open Spec.Prim
+
+namespace MasterData
 
 /-! ## マスタの型 -/
 
@@ -94,6 +97,37 @@ structure CreditType where
   displayOrder : Nat
   deriving DecidableEq, Repr
 
+/-- 搭乗クラスの参照の結果（表示順を除く。表示順はコードリストの問い合わせだけが観測する）。 -/
+@[spec_doc "docs/spec/master-data.md#参照関数"]
+structure BoardingClassInfo where
+  boardingClassCd : BoardingClassCd
+  boardingClassName : String
+  extraCharge : Nat
+  deriving DecidableEq, Repr
+
+/-- 運賃種別の参照の結果（表示順を除く）。 -/
+@[spec_doc "docs/spec/master-data.md#参照関数"]
+structure FareTypeInfo where
+  fareTypeCd : FareTypeCd
+  fareTypeName : String
+  discountRate : Nat
+  rsrvAvailableStartDayNum : Nat
+  rsrvAvailableEndDayNum : Nat
+  passengerMinNum : Nat
+  deriving DecidableEq, Repr
+
+/-- 表示順を除いた射影。 -/
+def BoardingClass.info (b : BoardingClass) : BoardingClassInfo :=
+  ⟨b.boardingClassCd, b.boardingClassName, b.extraCharge⟩
+
+/-- 表示順を除いた射影。 -/
+def FareType.info (f : FareType) : FareTypeInfo :=
+  ⟨f.fareTypeCd, f.fareTypeName, f.discountRate, f.rsrvAvailableStartDayNum, f.rsrvAvailableEndDayNum,
+    f.passengerMinNum⟩
+
+end MasterData
+
+open MasterData in
 /-- マスタデータ。 -/
 @[spec_doc "docs/spec/master-data.md#masterdata"]
 structure MasterData where

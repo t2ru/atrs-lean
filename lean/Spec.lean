@@ -41,14 +41,14 @@ namespace Spec
 abbrev State := Unit × Unit × Unit × Unit
 
 /-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額。 -/
-abbrev Input := (Config × MasterData × MasterData.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput
+abbrev Input := (Config × MasterData × MasterQuery.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput
 
 /-- トップレベルの抽象機械の出力。 -/
-abbrev Output := MasterData.Answer ⊕ Nat ⊕ Nat ⊕ Nat
+abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat
 
 /-- トップレベルの抽象機械: 実装済みの範囲の機能の機械を並置したもの。 -/
 def machine : Machine.Machine State Input Output :=
-  MasterData.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum Fare.totalFareMachine))
+  MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum Fare.totalFareMachine))
 
 /-- 初期状態（fixture の 1 点）。 -/
 def init : State := ((), (), (), ())

@@ -12,6 +12,8 @@ Spring の `Assert` は `IllegalArgumentException`、参照の `null` と `Integ
 -/
 
 namespace SourceModel.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData
 
@@ -34,7 +36,7 @@ def getMultiplicationRatio (svc : TicketSharedService) (departureDate : JRef JLo
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)@5b0822fe4c6991ac",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)@9872678663e9a896",
   gap "D-001", "D-030"]
-def calculateBasicFare (svc : TicketSharedService) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.BoardingClassCd)
+def calculateBasicFare (svc : TicketSharedService) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.Model.BoardingClassCd)
     (depDate : JRef JLocalDate) : JResult J32 := do
   jAssert (decide (basicFareOfRoute.val ≥ 0)) "basicFareOfRoute must be 0 or higher."
   jAssert boardingClassCd.isSome "boardingClassCd must not null."

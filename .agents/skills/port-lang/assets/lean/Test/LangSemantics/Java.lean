@@ -2,7 +2,11 @@ import LangSemantics.Java
 
 /-! LangSemantics.Java の検査（ビルド時に実行される）。 -/
 
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.BigDecimal LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
 open LangSemantics.Java
+
+namespace Test.LangSemantics.Java
 
 -- int: 折り返し・0 方向切捨て・MIN / -1・0 除算
 #guard (j32add (J32.ofInt 2147483647) (J32.ofInt 1)).val == -2147483648
@@ -79,3 +83,5 @@ def softMatchesNative (x r : Nat) : Bool :=
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).get "a") == some 3
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).size) == 2
 #guard ((JHashMap.ofList [("a", 1)] : JHashMap String Nat).get "z") == none
+
+end Test.LangSemantics.Java

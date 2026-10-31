@@ -10,15 +10,16 @@ import Spec.CodeList
 （並びを [Spec] の整列に合わせるのは、スキルの `LangSemantics.Sql.QueryLemmas`）。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.CodeList
+open LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.CodeList
+open LangSemantics.Java SourceModel.Repository.Schema SourceModel.CodeList
 
 /-- 空港の行の、[Spec] の空港（コード・名前・表示順）。 -/
-def airportOf (r : AirportRow) : Spec.Airport := ⟨⟨r.airportCd.val⟩, r.airportName.val, r.displayOrder.val.toNat⟩
+def airportOf (r : AirportRow) : Spec.MasterData.Airport := ⟨⟨r.airportCd.val⟩, r.airportName.val, r.displayOrder.val.toNat⟩
 
 /-- コードリストの要素を、原典の（コード, 表示）の組に。 -/
-def CodeEntry.toPair (e : Spec.CodeEntry) : String × String := (e.code, e.label)
+def CodeEntry.toPair (e : Spec.CodeList.CodeEntry) : String × String := (e.code, e.label)
 
 /-- `AirportCodeList.retrieveMap` の 1 行の処理（既定の設定）。 -/
 def airportStep (acc : JLinkedHashMap String String × Bool) (r : AirportRow) : JLinkedHashMap String String × Bool :=
@@ -118,4 +119,4 @@ theorem jdbcCodeList_eq (xs : List (String × String)) (hnd : (xs.map Prod.fst).
   rw [List.foldl_map]
   exact JHashMap.ofList_entries hnd
 
-end Abstraction.MasterData
+end Abstraction.MasterData.CodeList

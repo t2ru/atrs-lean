@@ -19,6 +19,7 @@ lang/dep: `dep:org.mybatis:mybatis#EnumTypeHandler`、`dep:org.mybatis:mybatis#D
 -/
 
 namespace SourceModel.Repository.Mapping
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Model SourceModel.Repository.MasterData
   SourceModel.Repository.Schema
@@ -36,7 +37,7 @@ def str {n : Nat} (s : Varchar n) : JRef String := some s.val
 @[source "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()@3855e45998af62f8",
   "java:jp.co.ntt.atrs.domain.model.BoardingClassCd.N@8ce86a6ae65d3692",
   "java:jp.co.ntt.atrs.domain.model.BoardingClassCd.S@8de0b3c47f112c59"]
-def boardingClassCd (s : String) : JResult Spec.BoardingClassCd :=
+def boardingClassCd (s : String) : JResult Spec.Model.BoardingClassCd :=
   match s with
   | "N" => pure .N
   | "S" => pure .S
@@ -54,7 +55,7 @@ def boardingClassCd (s : String) : JResult Spec.BoardingClassCd :=
   "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SOW@7b105823acf590f2",
   "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRD@b111f3efc4632267",
   "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRT@8a21220051bcc7d6"]
-def fareTypeCd (s : String) : JResult Spec.FareTypeCd :=
+def fareTypeCd (s : String) : JResult Spec.Model.FareTypeCd :=
   match s with
   | "OW" => pure .OW | "RT" => pure .RT | "RD1" => pure .RD1 | "RD7" => pure .RD7 | "ED" => pure .ED
   | "LD" => pure .LD | "GD" => pure .GD | "SOW" => pure .SOW | "SRT" => pure .SRT | "SRD" => pure .SRD

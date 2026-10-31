@@ -1,4 +1,5 @@
 import Machine.Concrete
+import Machine.Glue
 
 /-!
 # Machine.Refines
@@ -21,40 +22,6 @@ import Machine.Concrete
 -/
 
 namespace Machine
-
-/-- 貼り合わせ。抽象側の状態 σ・入力 ιa・出力 οa と、具体側の状態 τ・入力 ιc・出力 οc の関係。
-
-- `J s t`: 貼り合わせ不変条件（抽象化関数 α/β を含む関係）
-- `αi ic ia`: 入力の対応
-- `αo oc oa`: 出力の対応 -/
-structure Glue (σ τ ιa ιc οa οc : Type) where
-  J : σ → τ → Prop
-  αi : ιc → ιa → Prop
-  αo : οc → οa → Prop
-
-namespace Glue
-
-/-- 恒等の貼り合わせ。 -/
-def id (σ ι ο : Type) : Glue σ σ ι ι ο ο where
-  J s t := s = t
-  αi c a := c = a
-  αo c a := c = a
-
-/-- 状態を持たない機械どうしの貼り合わせ。 -/
-def pure {ιa ιc οa οc : Type} (αi : ιc → ιa → Prop) (αo : οc → οa → Prop) :
-    Glue Unit Unit ιa ιc οa οc where
-  J _ _ := True
-  αi := αi
-  αo := αo
-
-/-- 貼り合わせの合成。中間の状態には、中間の機械の不変条件 `invM` を課す。 -/
-def comp {σ μ τ ιa ιb ιc οa οb οc : Type} (g₁ : Glue σ μ ιa ιb οa οb) (g₂ : Glue μ τ ιb ιc οb οc)
-    (invM : μ → Prop) : Glue σ τ ιa ιc οa οc where
-  J s t := ∃ m, g₁.J s m ∧ g₂.J m t ∧ invM m
-  αi ic ia := ∃ ib, g₂.αi ic ib ∧ g₁.αi ib ia
-  αo oc oa := ∃ ob, g₂.αo oc ob ∧ g₁.αo ob oa
-
-end Glue
 
 /-- 具体機械 `C` が、貼り合わせ `g` の下で抽象機械 `A` をリファインする。 -/
 structure Refines {σ τ ιa ιc οa οc ε : Type} (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε)
@@ -95,7 +62,7 @@ theorem restrictConcrete {A : Machine σ ιa οa} {C : Concrete τ ιc οc ε} {
   correct s t ic ia t' oc hi hJ ha hp hd hs := h.correct s t ic ia t' oc hi hJ ha hp hd.1 hs
 
 /-- 抽象機械は、具体機械とみなした自分自身をリファインする。 -/
-theorem refl (A : Machine σ ιa οa) : Refines A A.toConcrete (Glue.id σ ιa οa) where
+theorem refl (A : Machine σ ιa οa) : Refines A (Concrete.ofMachine A) (Glue.id σ ιa οa) where
   init t ht := ⟨t, ht, rfl⟩
   input_total ic _ := ⟨ic, rfl⟩
   applicable s t ic ia _ hJ ha hp _ := by
@@ -113,7 +80,7 @@ theorem refl (A : Machine σ ιa οa) : Refines A A.toConcrete (Glue.id σ ιa �
 
 /-- 具体機械とみなした中間の機械が PRE の外で前提違反になることから、PRE を取り出す。 -/
 theorem pre_of_applicable {A : Machine σ ιa οa} {B : Machine μ ιb οb} {g : Glue σ μ ιa ιb οa οb}
-    (h : Refines A B.toConcrete g) {s : σ} {m : μ} {ib : ιb} {ia : ιa}
+    (h : Refines A (Concrete.ofMachine B) g) {s : σ} {m : μ} {ib : ιb} {ia : ιa}
     (hi : A.Inv s) (hJ : g.J s m) (ha : g.αi ib ia) (hp : A.Pre s ia) : B.Pre m ib :=
   Classical.byContradiction fun hn =>
     (h.applicable s m ib ia hi hJ ha hp trivial).2 () (Or.inr ⟨hn, rfl⟩)
@@ -121,7 +88,7 @@ theorem pre_of_applicable {A : Machine σ ιa οa} {B : Machine μ ιb οb} {g :
 /-- 推移性。中間の機械 `B` は `Spec` 自身の証明義務（`Sound`）を満たさなければならない。 -/
 theorem trans {A : Machine σ ιa οa} {B : Machine μ ιb οb} {C : Concrete τ ιc οc ε}
     {g₁ : Glue σ μ ιa ιb οa οb} {g₂ : Glue μ τ ιb ιc οb οc}
-    (hB : B.Sound) (h₁ : Refines A B.toConcrete g₁) (h₂ : Refines B C g₂) :
+    (hB : B.Sound) (h₁ : Refines A (Concrete.ofMachine B) g₁) (h₂ : Refines B C g₂) :
     Refines A C (g₁.comp g₂ B.Inv) where
   init t ht := by
     obtain ⟨m, hm, hJ₂⟩ := h₂.init t ht

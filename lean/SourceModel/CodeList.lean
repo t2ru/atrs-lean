@@ -15,8 +15,9 @@ import SourceModel.Repository.MasterData
 -/
 
 namespace SourceModel.CodeList
+open LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+open LangSemantics.Java SourceModel.Repository.Schema
 
 /-- コードリストの値（`asMap()` の反復の順）。 -/
 abbrev Entries := List (String × String)

@@ -8,9 +8,11 @@ Mapper の結合の文（`routeFindAll`・`flightMasterFindAll`）の形。空�
 区間の空港（便マスタの区間）が存在するなら、結合の結果は、左の表の行ごとに 1 行ずつ、同じ順に並ぶ。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Join
+open LangSemantics.Core.List
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
 
-open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
   SourceModel.Repository.MasterData LangSemantics.Core
 
 theorem eqText_holds {m n : Nat} (a : Varchar m) (b : Varchar n) : (eqText a b).holds = (a.val == b.val) :=
@@ -113,4 +115,4 @@ theorem flightMasterFindAll_eq {db : MasterDb} {ap : String → AirportRow} {rt 
   rw [e1, e2, e3, List.map_map, List.map_map, List.map_map]
   exact List.map_congr_left fun _ _ => rfl
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Join

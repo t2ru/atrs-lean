@@ -20,6 +20,8 @@ import LangSemantics.Java
 
 open LangSemantics.Java
 
+open LangSemantics.Java.DoubleOps
+
 namespace Tests.JavaDouble
 
 /-- 0.01 に最も近い binary64。 -/

@@ -1,6 +1,6 @@
 {
   "operation": "format.fmtTime",
-  "modelDef": "Spec.Prim.fmtTime",
+  "modelDef": "Spec.Prim.Format.fmtTime",
   "specRef": "docs/spec/domain-model.md#書式",
   "cases": [
     {

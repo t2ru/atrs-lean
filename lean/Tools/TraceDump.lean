@@ -18,6 +18,9 @@ import Refinement
 - `--root` は、層として扱うトップレベル名前空間を足す（テストのフィクスチャ用）。
 -/
 
+namespace Tools.TraceDump
+
+
 open Lean
 
 /-- 既定で読むモジュール。 -/
@@ -29,6 +32,10 @@ def parseArgs : List String → Array Name → List String → Except String (Ar
   | "--module" :: m :: rest, ms, rs => parseArgs rest (ms.push m.toName) rs
   | "--root" :: r :: rest, ms, rs => parseArgs rest ms (rs ++ [r])
   | a :: _, _, _ => .error s!"unknown argument: {a}"
+
+end Tools.TraceDump
+
+open Tools.TraceDump
 
 unsafe def main (args : List String) : IO UInt32 := do
   match parseArgs args #[] [] with
