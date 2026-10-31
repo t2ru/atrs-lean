@@ -83,6 +83,16 @@ def sample : MasterData where
 -- MD-8: 空港コードが区切り行のコード NOP
 #guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"NOP"⟩ }] }.MD8)
 
+-- 参照の問い合わせの値域: 空白だけの便名は Valid でない（原典の Assert.hasText）
+#guard !decide (MasterData.Query.flightMasterOf ⟨" "⟩).Valid
+#guard !decide (MasterData.Query.flightMasterOf ⟨"\t\u3000"⟩).Valid
+#guard decide (MasterData.Query.flightMasterOf ⟨"NTT1"⟩).Valid
+#guard decide (MasterData.Query.flightMasterOf ⟨"\u00A0"⟩).Valid  -- 改行を禁止する空白は Blank でない
+-- 文字クラス Blank の端
+#guard [0x09, 0x0D, 0x1C, 0x20, 0x1680, 0x2006, 0x2008, 0x200A, 0x2028, 0x2029, 0x205F, 0x3000].all
+  fun n => isBlank (Char.ofNat n)
+#guard [0x08, 0x0E, 0x1B, 0x21, 0xA0, 0x2007, 0x200B, 0x202F, 0x3001].all fun n => !isBlank (Char.ofNat n)
+
 #guard sample.multiplicationRatioOn (ymd 2026 12 26) == 140
 #guard sample.multiplicationRatioOn (ymd 2026 12 25) == 125
 #guard sample.multiplicationRatioOn (ymd 2027 1 1) == 100

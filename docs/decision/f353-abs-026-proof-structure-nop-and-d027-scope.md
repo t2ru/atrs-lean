@@ -10,7 +10,7 @@ date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T13:25:01+09:00
+  at: 2026-10-31T14:40:17+09:00
 ---
 
 # ABS-026 の証明の構成と、空港コード NOP の禁止・D-027 の範囲・LocalDate の通算日数の修正を決める
@@ -62,6 +62,10 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 | `LocalDate` の通算日数 | `toEpochDay`・`ofEpochDay` を床除算で書き直す。<br>- 周期 `era = y / 400`（`z / 146097`）、周期の中の位置は剰余とする<br>- `ofEpochDay` は、補助の関数（`yoeOfDoe`・`doyOfDoe`・`mpOfDoy`・`civilOfDoe`）に分ける<br>- JVM の突き合わせ表に、負の年・400 年の境界・PostgreSQL の日付の範囲の端を加える |
 | 往復の補題 | `LangSemantics.Java.JLocalDate.toEpochDay_ofEpochDay`（すべての整数で `toEpochDay (ofEpochDay z) = z`）を、スキルの assets（`LocalDateLemmas`）で証明する |
 | 有限の範囲の検査 | 400 年の周期の中の年・日の範囲（`civil_bounds`）は、146097 日をカーネルの評価（`decide +kernel`。1000 日ずつ）で確かめる。<br>- `native_decide` ではないので、カーネルが検査する（公理を足さない）<br>- ビルドに約 45 秒かかる |
+| 参照の答えの射影（2b-2a） | [Spec] の参照の答えのうち、搭乗クラス・運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）とする。[Source] の参照の結果には表示順が無い（Mapper が `display_order` を選ばない）。表示順はコードリストの問い合わせだけが観測する。差異は増えない（プロジェクトオーナーの決定） |
+| 空白の便名（2b-2a） | `Query.Valid` の便名に「空白でない」（`Spec.Prim.hasText`。文字クラス `Blank` は Java の `Character.isWhitespace` と同じ集合）を加える。`Query.Valid` は原典の `Assert.hasText` に当たるので、誤りの修正である。`FlightName.WellFormed` は変えない（プロジェクトオーナーの決定） |
+| 標準の抽象化 α の形（2b-2a） | 値・行・問い合わせ・答えの写しは `@[std_abs]` の葉とし、核の定理を示す（ABS-048）。<br>- 行の写しを合成にしないのは、`Varchar n` の述語（`String.length`）が項に現れ、G7 の許可した構成に収まらないためである<br>- マスタ全体・設定・入力（`masterDataOf`・`configOf`・`aiMQ`）は、葉を `Option.bind`・`List.mapM` などで組んだ合成とする<br>- 答えの写し `answerOf?` の核 `answerKer` は、[Spec] が観測する成分（`answerObs`）の一致である |
+| 部分写像の汎用の核（2b-2a） | 定義域の上で単射な部分写像の核を、汎用の `@[kernel]` の定数 `undefOrEq`（どちらも定義されないか、等しい）をその葉自身に適用して書けるよう、obligation-check の G7 を広げる。別の葉に適用したものは受けない（`ObligationFixture` の正例・反例）。葉ごとに同じ形の核の定数を書く冗長を避ける |
 | 補題の置き場所 | 次のとおり置く。依存の向き（check_lean）に従う。<br>- アプリに依存しない補題（`LocalDate`・`HashMap`）: スキルの assets<br>- [Spec] と `LangSemantics.Java` をつなぐ補題（暦の一致など）: `Abstraction`<br>- R 課題の定理ではないので、`@[obligation]` は付けない |
 
 ### Consequences
@@ -70,6 +74,8 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 * Good, because ABS-026 の入力の全域性と、区切り行の一致が示せるようになる
 * Bad, because `LangSemantics.Java` のビルドが約 45 秒長くなる
 * Bad, because MD-8 が強くなり、`NOP` の空港を持つ DB は [Spec] の前提の外になる
+* Bad, because [Spec] の参照の答えの型が、マスタの要素の型と別になる（`BoardingClassInfo`・`FareTypeInfo`）
+* Bad, because obligation-check の核の受け入れの規則が 1 つ増える
 
 ### Confirmation
 

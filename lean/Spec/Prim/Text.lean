@@ -34,6 +34,18 @@ def isKatakana : Char → Bool := inRange 0x30A0 0x30FF
 @[spec_doc "docs/spec/input-validation.md#文字クラス"]
 def isDigit : Char → Bool := inRange 0x30 0x39
 
+/-- `Blank`（空白）: U+0009–U+000D、U+001C–U+001F、U+0020、U+1680、U+2000–U+2006、U+2008–U+200A、
+U+2028–U+2029、U+205F、U+3000（空白区切り文字のうち、改行を禁止する空白 U+00A0・U+2007・U+202F を除いたものと、
+制御文字の空白） -/
+@[spec_doc "docs/spec/input-validation.md#文字クラス"]
+def isBlank (c : Char) : Bool :=
+  inRange 0x09 0x0D c || inRange 0x1C 0x20 c || inRange 0x1680 0x1680 c || inRange 0x2000 0x2006 c ||
+    inRange 0x2008 0x200A c || inRange 0x2028 0x2029 c || inRange 0x205F 0x205F c || inRange 0x3000 0x3000 c
+
+/-- 空白以外の文字を含む。 -/
+@[spec_doc "docs/spec/input-validation.md#文字クラス"]
+def hasText (s : String) : Bool := s.any fun c => !isBlank c
+
 /-- 制約 `FullWidth`: すべての文字が `Half` にも `HalfKana` にも属さない（空文字も合格）。 -/
 @[spec_doc "docs/spec/input-validation.md#文字クラス"]
 def fullWidth (s : String) : Bool := s.all fun c => !isHalf c && !isHalfKana c

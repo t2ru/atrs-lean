@@ -51,22 +51,51 @@ inductive Query where
   /-- コードリスト。 -/
   | codeList (n : CodeListName)
 
-/-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。 -/
+/-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。
+便名は、空白でない（`Spec.Prim.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
-  | .flightMasterOf name => name.WellFormed
+  | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true
   | _ => True
 
 instance (q : Query) : Decidable q.Valid := by
   cases q <;> unfold Query.Valid <;> infer_instance
 
+/-- 搭乗クラスの参照の結果（表示順を除く。表示順はコードリストの問い合わせだけが観測する）。 -/
+@[spec_doc "docs/spec/master-data.md#参照関数"]
+structure BoardingClassInfo where
+  boardingClassCd : BoardingClassCd
+  boardingClassName : String
+  extraCharge : Nat
+  deriving DecidableEq, Repr
+
+/-- 運賃種別の参照の結果（表示順を除く）。 -/
+@[spec_doc "docs/spec/master-data.md#参照関数"]
+structure FareTypeInfo where
+  fareTypeCd : FareTypeCd
+  fareTypeName : String
+  discountRate : Nat
+  rsrvAvailableStartDayNum : Nat
+  rsrvAvailableEndDayNum : Nat
+  passengerMinNum : Nat
+  deriving DecidableEq, Repr
+
+/-- 表示順を除いた射影。 -/
+def _root_.Spec.BoardingClass.info (b : BoardingClass) : BoardingClassInfo :=
+  ⟨b.boardingClassCd, b.boardingClassName, b.extraCharge⟩
+
+/-- 表示順を除いた射影。 -/
+def _root_.Spec.FareType.info (f : FareType) : FareTypeInfo :=
+  ⟨f.fareTypeCd, f.fareTypeName, f.discountRate, f.rsrvAvailableStartDayNum, f.rsrvAvailableEndDayNum,
+    f.passengerMinNum⟩
+
 /-- 問い合わせの結果。 -/
 inductive Answer where
   | route (r : Option Route)
   | flightMaster (f : Option FlightMaster)
-  | fareType (f : Option FareType)
-  | boardingClass (b : Option BoardingClass)
+  | fareType (f : Option FareTypeInfo)
+  | boardingClass (b : Option BoardingClassInfo)
   | peakTime (p : Option PeakTime)
   | ratio (n : Nat)
   | config (c : Config)
@@ -76,8 +105,8 @@ inductive Answer where
 def answer (cfg : Config) (md : MasterData) : Query → Answer
   | .routeOf dep arr => .route (md.routeOf dep arr)
   | .flightMasterOf name => .flightMaster (md.flightMasterOf name)
-  | .fareTypeOf cd => .fareType (md.fareTypeOf cd)
-  | .boardingClassOf cd => .boardingClass (md.boardingClassOf cd)
+  | .fareTypeOf cd => .fareType ((md.fareTypeOf cd).map (·.info))
+  | .boardingClassOf cd => .boardingClass ((md.boardingClassOf cd).map (·.info))
   | .peakTimeOn d => .peakTime (md.peakTimeOn d)
   | .multiplicationRatioOn d => .ratio (md.multiplicationRatioOn d)
   | .config => .config cfg

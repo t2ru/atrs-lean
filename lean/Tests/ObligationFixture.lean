@@ -309,6 +309,24 @@ theorem v6_ceCheat_pinned : Refines.Pinned spec buggy glue fRes ceCheat := Machi
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def aoIf (o : Out) : Option Out := if o = .full then some .ok else some o
 
+/-- 部分写像の汎用の核: どちらも定義されないか、等しい。 -/
+@[kernel "docs/spec/abstraction.md#抽象化関数-α"]
+def undefOrEqF {α β : Type} (f : α → Option β) (x y : α) : Prop := (f x = none ∧ f y = none) ∨ x = y
+
+/-- 部分単射の葉（分岐を含むが、核の定理で受ける。核は汎用の核をこの葉に適用したもの）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def aoPart (o : Out) : Option Out := if o = .full then none else some o
+
+theorem aoPart_kernel : KernelIs aoPart (undefOrEqF aoPart) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart, undefOrEqF]
+
+/-- 同じ形の葉だが、核の定理は汎用の核を別の葉に適用している（受けない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def aoPart2 (o : Out) : Option Out := if o = .full then none else some o
+
+theorem aoPart2_kernel : KernelIs aoPart2 (undefOrEqF aoPart) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart2, aoPart, undefOrEqF]
+
 /-- 関数を引数に取る標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def via (h : Out → Option Out) (o : Out) : Option Out := h o
 

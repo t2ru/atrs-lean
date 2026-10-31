@@ -5,6 +5,58 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Answer.boardingClass",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.boardingClass_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.fareType",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.fareType_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.flightMaster",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.flightMasterObs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.flightMaster_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.opt",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.peakTime",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.peakTime_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.route",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.routeObs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Answer.route_inj",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.CodeEntry.toPair",
       "layer": "Abstraction"
     },
@@ -13,7 +65,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.aiMQ",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.airportOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.airportOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.airportOfRow_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.airportOfRow_kernel",
       "layer": "Abstraction"
     },
     {
@@ -29,7 +97,51 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.answerKer",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answerObs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answerOf?",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answerOf?_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answerOf?_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answerOf?_obs",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.append_sep_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.bcCdOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.bcCdOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.bcCdOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.betaMQ",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.betaMQ_kernel",
       "layer": "Abstraction"
     },
     {
@@ -38,6 +150,78 @@
     },
     {
       "name": "Abstraction.MasterData.boardingClassOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.boardingClassOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.boardingClassOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.configOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.configOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.creditTypeOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.creditTypeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfJ",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfJ_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfJ_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfPg",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfPg_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfSlash",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfSlash_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dev_D027",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dev_D027_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.digitVal?_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.digitVal?_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.digitVal?_lt",
       "layer": "Abstraction"
     },
     {
@@ -57,6 +241,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.fareTypeOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.fareTypeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.filter_airport",
       "layer": "Abstraction"
     },
@@ -66,6 +258,14 @@
     },
     {
       "name": "Abstraction.MasterData.flightMasterLoad_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.flightMasterOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.flightMasterOfRow_kernel",
       "layer": "Abstraction"
     },
     {
@@ -89,6 +289,38 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.ftCdOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ftCdOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ftCdOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.hmOfStr",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.hmOfStr_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ic_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ic_unknownBoardingClass",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.inj_of_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.jdbcCodeList_eq",
       "layer": "Abstraction"
     },
@@ -97,11 +329,95 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.mapM_airportOfRow",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.mapM_ok",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.masterDataOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfInt4",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfInt4_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfInt4_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfInt4_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfJ32",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfJ32_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfJ32_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.natOfJ32_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ofHm?_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ofYmd?_eq_some",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.ok_bind",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.opt_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.peakTimeOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.peakTimeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.planeOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.planeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.queryBack",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.queryOf?",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.queryOf?_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.queryOf?_kernel",
       "layer": "Abstraction"
     },
     {
@@ -113,7 +429,19 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.routeOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.routeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.routeResultOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.routeRowKer",
       "layer": "Abstraction"
     },
     {
@@ -157,6 +485,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Prim.kernelIs_undefOrEq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Prim.leap_count",
       "layer": "Abstraction"
     },
@@ -166,6 +498,10 @@
     },
     {
       "name": "Abstraction.Prim.toEpochDay_eq_epochDay",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.undefOrEq",
       "layer": "Abstraction"
     },
     {
@@ -2745,6 +3081,14 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.MasterData.BoardingClassInfo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.MasterData.FareTypeInfo",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.MasterData.MD1",
       "layer": "Spec"
     },
@@ -2981,6 +3325,14 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Prim.hasText",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.isBlank",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Prim.isDigit",
       "layer": "Spec"
     },
@@ -3074,6 +3426,121 @@
     }
   ],
   "links": [
+    {
+      "type": "deviation",
+      "from": "Abstraction.MasterData.dev_D027",
+      "to": "D-027"
+    },
+    {
+      "type": "kernel",
+      "from": "Abstraction.MasterData.answerKer",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "kernel",
+      "from": "Abstraction.MasterData.routeRowKer",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "kernel",
+      "from": "Abstraction.Prim.undefOrEq",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.airportOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.answerOf?_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.bcCdOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.betaMQ_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.boardingClassOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.creditTypeOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.dateOfJ_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.dateOfPg_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.dateOfSlash_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.fareTypeOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.flightMasterOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.ftCdOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.hmOfStr_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.natOfInt4_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.natOfJ32_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.peakTimeOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.planeOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.queryOf?_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.routeOfRow_kernel",
+      "to": "ABS-048"
+    },
     {
       "type": "obligation",
       "from": "Spec.MasterData.queryMachine_initIs",
@@ -3643,6 +4110,16 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.MasterData.BoardingClassInfo",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.MasterData.FareTypeInfo",
+      "to": "docs/spec/master-data.md#参照関数"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.MasterData.MD1",
       "to": "docs/spec/master-data.md#不変条件spec"
     },
@@ -3923,6 +4400,16 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Prim.hasText",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.isBlank",
+      "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Prim.isDigit",
       "to": "docs/spec/input-validation.md#文字クラス"
     },
@@ -4035,6 +4522,116 @@
       "type": "spec_doc",
       "from": "Spec.roundTripFareTypes",
       "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.aiMQ",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.airportOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.answerOf?",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.bcCdOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.betaMQ",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.boardingClassOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.configOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.creditTypeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.dateOfJ",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.dateOfPg",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.dateOfSlash",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.fareTypeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.flightMasterOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.ftCdOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.hmOfStr",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.masterDataOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.natOfInt4",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.natOfJ32",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.peakTimeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.planeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.queryOf?",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.routeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
     }
   ],
   "checks": [

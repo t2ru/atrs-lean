@@ -8,7 +8,7 @@ state: doing
 depends_on: ["a8be97e4-d846-4b86-bfcc-413d6d980578", "591d9aa4-065b-4975-8146-86aae05b780a", "c7e8d83d-8d90-44fe-a6f5-de54b2efe811", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T13:25:01+09:00
+  at: 2026-10-31T14:40:17+09:00
 ---
 
 # 運賃計算（Spec と SourceModel）
@@ -44,7 +44,9 @@ generated:
   - **2a（済み）**: [Spec] の修正、マスタ・設定・コードリストの読み込みの `SourceModel`、PostgreSQL での差分実行、差異 D-027 の登録
   - **2b** は、さらに 2b-1・2b-2 に分けた（2026-10-31 の決定）。細部は [ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) で決めた。
     - **2b-1（済み）**: ABS-026 の補題と [Spec] の修正（MD-8 の `NOP`、D-027 の範囲）
-    - **2b-2（残り）**: ABS-026 の主定理と付帯の義務（`InitSurj`・`Sound`・`InitIs`、`dev_D027` の `@[deviation]` と `Nontrivial`、`std_abs` の α と核、必要性 G9）、W 課題 ABS-127。この項目は 2b-2 で `done` にする
+    - **2b-2** は、さらに 2b-2a・2b-2b に分けた（2026-10-31 の決定）。
+      - **2b-2a（済み）**: 標準の抽象化 α の葉と核（ABS-048）、`dev_D027` と `Nontrivial`、[Spec] の修正（参照の答えの射影、空白の便名）
+      - **2b-2b（残り）**: ABS-026 の主定理と付帯の義務（`InitSurj`、必要性 G9）、W 課題 ABS-127。この項目は 2b-2b で `done` にする
 
 ## 第 1 段の結果
 
@@ -128,6 +130,22 @@ generated:
 | `Abstraction.MasterData.Key` | `makeCacheKey_inj` | `-` を含まない空港コードでは、キャッシュのキーは単射 |
 | `Abstraction.MasterData.Load` | `boardingClassLoad_eq`・`fareTypeLoad_eq`・`routeLoad_eq`・`flightMasterLoad_eq` | `load()` は例外を投げず、キャッシュは（キー, 値）の列の `ofList` |
 | `Abstraction.MasterData.CodeList` | `airport_eq_insertNop`・`jdbcCodeList_eq` | 空港コードリストは [Spec] の `insertNop` に、DB のコードリストは行の列に一致する |
+
+## 第 2 段 b-2a の結果
+
+- [Spec] の修正（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）
+  - 参照の答えの搭乗クラス・運賃種別を、表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）にした。
+  - `Query.Valid` の便名に「空白でない」（`hasText`）を加えた。文字クラス `Blank` を `Spec.Prim.Text` に置いた。
+- 標準の抽象化 α（`Abstraction.MasterData.AlphaLeaf`・`Alpha`）
+  - 葉 19 個と核の定理（`@[obligation "ABS-048"]`）
+    - 値: `natOfInt4`・`natOfJ32`・`dateOfPg`・`dateOfJ`・`hmOfStr`・`dateOfSlash`・`bcCdOf`・`ftCdOf`
+    - 行: `airportOfRow` ほか 8 個
+    - 問い合わせ・答え: `queryOf?`・`answerOf?`
+    - 状態: `betaMQ`
+  - 合成: `masterDataOf`・`configOf`・`aiMQ`
+  - 核: 定義域の上で単射な葉は汎用の `undefOrEq`、区間の行は `routeRowKer`（`FLIGHT_TIME` を捨てる）、答えは `answerKer`
+- 差異の成分: `@[deviation "D-027"] dev_D027`（`aiMQ` が定義される）と `Nontrivial`（未知の搭乗クラス `X` の DB が反例）
+- obligation-check の G7 で、`@[kernel]` の定数をその葉自身に適用した核を受けるようにした（`ObligationFixture` に正例・反例）。
 
 ## 参照
 

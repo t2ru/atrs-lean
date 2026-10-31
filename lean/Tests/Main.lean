@@ -228,7 +228,7 @@ def obligationTests (env : Environment) : IO Unit := do
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
     | some ri => ri.freeLeaves == #[`Tests.ObFix.Spec.AnyResult] | none => false)
-  let expectedGlobal := ["G7: Tests.ObFix.Abstraction.aoIf", "G7: Tests.ObFix.Abstraction.ceCheat",
+  let expectedGlobal := ["G7: Tests.ObFix.Abstraction.aoIf", "G7: Tests.ObFix.Abstraction.aoPart2 ", "G7: Tests.ObFix.Abstraction.ceCheat",
     "G7: Tests.ObFix.Abstraction.via", "G8: Tests.ObFix.Abstraction.devK", "G8: Tests.ObFix.Abstraction.devNoW",
     "G0: Tests.ObFix.Abstraction.v0_notRefines", "G3: Tests.ObFix.Spec.specRel",
     "G0: Tests.ObFixHelpers.devFalse", "G8: Tests.ObFixHelpers.devFalse",
