@@ -122,6 +122,9 @@ def check(report: dict, docs: dict):
     refinements = report.get("refinements", [])
     for e in report.get("errors", []):
         found.append(("error", "OB-L", e))
+    # 証明の状態が未証明（pending）の差異の G9。段階導入の判定は trace check（TR-K）が行う
+    for w in report.get("warnings", []):
+        found.append(("warning", "OB-L", w))
     for ob in refinements:
         for e in ob.get("errors", []):
             found.append(("error", "OB-L", f"{ob['name']}: {e}"))

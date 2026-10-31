@@ -553,6 +553,30 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Gap.claim_D013",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D016",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D023",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D024",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D025",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D028",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.AirportAt",
       "layer": "Abstraction"
     },
@@ -4774,6 +4798,56 @@
     },
     {
       "type": "gap",
+      "from": "Abstraction.Fare.need_D001",
+      "to": "D-001"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Fare.need_D002",
+      "to": "D-002"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Fare.need_D012",
+      "to": "D-012"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D013",
+      "to": "D-013"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D016",
+      "to": "D-016"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D023",
+      "to": "D-023"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D024",
+      "to": "D-024"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D025",
+      "to": "D-025"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Gap.claim_D028",
+      "to": "D-028"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.MasterData.need_D027",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.CodeList.airportCodeList",
       "to": "D-029"
     },
@@ -4886,6 +4960,11 @@
       "type": "gap",
       "from": "Spec.MasterData.MD4",
       "to": "D-004"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD5",
+      "to": "D-005"
     },
     {
       "type": "gap",

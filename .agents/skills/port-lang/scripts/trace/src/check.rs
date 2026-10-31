@@ -9,13 +9,13 @@
 //! | TR-P | 公開操作（`@[source]`・`@[target]` を持つ `SourceModel`・`TargetModel` の定義）が、どの R 課題の参照の閉包にも無い |
 //! | TR-PE | 公開操作が、入口の R 課題の参照の閉包に無い |
 //! | TR-D | 登録簿（`@[gap_entry]`）の前提型・観測型の D/T と `@[deviation]` が 1 対 1 でない、R 課題に現れない、W 課題が無い、R 課題に無名の仮定（G1・G2） |
-//! | TR-K | ギャップの箇所の印（`@[gap]`）が種類と合わない（前提型・観測型・PRE の外に `Spec` と具体側の印が無い、モデル外に印・差異がある、未確定に差異がある）、`@[deviation]` を使う R 課題が登録の R 課題に無い |
+//! | TR-K | ギャップの箇所の印（`@[gap]`。裏付けの宣言を除く）が種類と合わない（前提型・観測型・PRE の外に `Spec` と具体側の印が無い、モデル外に印・差異がある、未確定に差異がある）、`@[deviation]` を使う R 課題が登録の R 課題に無い、証明の状態が未証明（`pending`） |
 //! | TR-X | 移植元と移植先の直接の接続（層と種類の取り違え、`rust/` の中の移植元のロケータ） |
 //! | TR-R | 存在しないロケータ・名前・ID への参照、対応表の抜け、`renames.json` と文書の「出典:」の参照切れ |
 //! | TR-G・TR-N | `obligation-check` と `check_obligations.py` の結果 |
 //!
 //! TR-S1・TR-T1・TR-P・TR-PE・TR-D は、該当する機能（`trace/features.json`）の backlog がすべて
-//! `done` なら誤り、そうでなければ警告とする（references/traceability.md#道具）。TR-K の印の不足は、登録の `backlog`（無ければ R 課題の機能）が
+//! `done` なら誤り、そうでなければ警告とする（references/traceability.md#道具）。TR-K の印の不足と未証明の状態は、登録の `backlog`（無ければ R 課題の機能）が
 //! すべて `done` なら誤り、そうでなければ警告とする（references/lean/trace-attributes.md#ギャップの登録簿）。それ以外は常に誤り。
 
 use crate::docs::{Feature, Features};
@@ -125,8 +125,14 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     let mut tgt_ops: Vec<String> = vec![];
 
     // ---- 定義ごとの追跡属性: TR-X・TR-R・TR-S2・TR-T2 ----
-    // ギャップの登録の宣言は機能をまたぐ登録簿なので、機能の対応表に載せない（段階導入は登録の backlog による）
-    let gap_decls: BTreeSet<&str> = inp.dump.gaps.iter().map(|g| g.name.as_str()).collect();
+    // ギャップの登録の宣言と、形式化していない主張（`opaque`）は機能をまたぐ登録簿なので、機能の対応表に載せない
+    // （段階導入は登録の backlog による）
+    let gap_decls: BTreeSet<&str> = inp.dump.gaps.iter()
+        .flat_map(|g| {
+            let claims = if g.evidence.state == "unformalized" { g.evidence.witnesses.as_slice() } else { &[] };
+            std::iter::once(g.name.as_str()).chain(claims.iter().map(|c| c.as_str()))
+        })
+        .collect();
     // 移植元側・移植先側の層（言語の組は trace/project.json による）
     let src_layers: Vec<String> = ["SourceModel", "Abstraction", "Spec"].iter().map(|s| s.to_string()).chain(source_langs()).collect();
     let tgt_layers: Vec<String> = ["TargetModel", "Refinement"].iter().map(|s| s.to_string()).chain(target_langs()).collect();
@@ -295,7 +301,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     let layer_of: HashMap<&str, &str> = inp.dump.definitions.iter().map(|d| (d.name.as_str(), d.layer.as_str())).collect();
     for g in &inp.dump.gaps {
         let concrete = if g.id.starts_with("T-") { "TargetModel" } else { "SourceModel" };
-        let in_layer = |l: &str| g.markers.iter().any(|m| layer_of.get(m.as_str()) == Some(&l));
+        let in_layer = |l: &str| g.site_markers().any(|m| layer_of.get(m.as_str()) == Some(&l));
         if g.is_typed() || g.kind == "outside_pre" {
             for l in ["Spec", concrete] {
                 if !in_layer(l) {
@@ -304,9 +310,14 @@ pub fn run(inp: &Input) -> Vec<Finding> {
                 }
             }
         }
-        if g.kind == "out_of_model" && !(g.markers.is_empty() && g.deviations.is_empty()) {
+        if g.kind == "out_of_model" && !(g.site_markers().next().is_none() && g.deviations.is_empty()) {
             out.err("TR-K", format!("{} (モデル外): has @[gap] / @[deviation] on {}", g.id,
-                g.markers.iter().chain(g.deviations.iter()).cloned().collect::<Vec<_>>().join(", ")));
+                g.site_markers().chain(g.deviations.iter()).cloned().collect::<Vec<_>>().join(", ")));
+        }
+        // 証明の状態が未証明なら、段階導入（backlog が完了したら誤り）
+        if g.evidence.state == "pending" {
+            out.staged_by("TR-K", &g.backlog, feature_of_gap(g),
+                format!("{} ({}): the evidence is pending ({})", g.id, g.kind_label, g.evidence.reason));
         }
         if !g.is_typed() && g.kind != "out_of_model" && !g.deviations.is_empty() {
             out.err("TR-K", format!("{} ({}): has @[deviation] on {}", g.id, g.kind_label, g.deviations.join(", ")));
@@ -559,7 +570,10 @@ mod tests {
         d1.markers = vec!["Spec.Fare.f".into()];
         d1.backlog = vec!["00000000-0000-4000-8000-000000000004".into()];
         let mut d13 = gap("D-013", "out_of_model", &[], None);
-        d13.markers = vec!["Spec.Fare.f".into()];
+        d13.markers = vec!["Spec.Fare.f".into(), "Abstraction.Gap.claim_D013".into()];
+        d13.evidence = crate::lean::Evidence { state: "unformalized".into(),
+            witnesses: vec!["Abstraction.Gap.claim_D013".into()], ..Default::default() };
+        d1.evidence = crate::lean::Evidence { state: "pending".into(), reason: "r".into(), ..Default::default() };
         let mut d5 = gap("D-005", "undetermined", &[], None);
         d5.deviations = vec!["Abstraction.Fare.dev_D005".into()];
         let mut d3 = gap("D-003", "outside_pre", &[], None);
@@ -576,7 +590,10 @@ mod tests {
         assert!(fs.iter().filter(k).any(|f| !f.error && f.msg.contains("D-001") && f.msg.contains("SourceModel")), "{fs:?}");
         assert!(!fs.iter().filter(k).any(|f| f.msg.contains("D-001") && f.msg.contains("a Spec")), "{fs:?}");
         // モデル外に印、未確定に差異
-        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-013 (モデル外)")), "{fs:?}");
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-013 (モデル外): has @[gap] / @[deviation] on Spec.Fare.f")
+            && !f.msg.contains("claim_D013")), "{fs:?}");
+        // 未証明の状態（backlog が未完了なので警告）
+        assert!(fs.iter().filter(k).any(|f| !f.error && f.msg.contains("D-001 (pre): the evidence is pending (r)")), "{fs:?}");
         assert!(fs.iter().filter(k).any(|f| f.error && f.msg.starts_with("D-005 (undetermined): has @[deviation]")), "{fs:?}");
         // 差異を使う R 課題が登録に無い
         assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("R task ABS-031")), "{fs:?}");
@@ -586,6 +603,7 @@ mod tests {
         // backlog が完了すれば、印の不足は誤り
         let fs = run_with(defs, obl, inv(&[]), &feats(true), gaps, &[]);
         assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-001") && f.msg.contains("SourceModel")), "{fs:?}");
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-001 (pre): the evidence is pending")), "{fs:?}");
     }
 
     #[test]
