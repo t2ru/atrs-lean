@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T19:40:00+09:00
 ---
 
 # バックログ規約
@@ -20,6 +20,7 @@ docs/backlog/<ID の先頭 4 文字>-<slug>.md
 - 命名規則は ADR と同じ（ID は UUID v4、ファイル名の先頭は ID の先頭 4 文字、英小文字スラッグ、改名・削除しない。[decision-records.md](decision-records.md#ファイル名)）。`python3 -I .agents/skills/port-lang/scripts/docs/ids.py new backlog <slug>` が ID とファイル名を出す。
 - `id`・`depends_on` と、`trace/features.json`・登録簿の backlog の列には ID 全体を、本文の参照には先頭 4 文字を書く（[documentation.md](documentation.md#リンク)）。
 - 索引 [docs/backlog/README.md](../backlog/README.md) の表（ID の列は先頭 4 文字）と [docs/index.md](../index.md) を常に最新に保つ。
+- アプリに依存しない作業（スキル port-lang の道具・Lean のライブラリ・方法の文書）は、スキルの [`references/docs/backlog/`](../../.agents/skills/port-lang/references/docs/backlog/README.md) に置く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。採番は `ids.py new backlog <slug> --dir .agents/skills/port-lang/references/docs/backlog`。ATRS の項目は `depends_on` でスキルの項目を指してよいが、スキルの項目は ATRS の項目を指さない。
 
 ## 項目の形式
 

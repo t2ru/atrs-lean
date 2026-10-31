@@ -3,7 +3,7 @@ name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/docs/<lang>/ に記載。
 metadata:
-  version: "0.6"
+  version: "0.7"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -208,3 +208,10 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 - 完了を、検査の実行結果ではなく自己申告（「実装した」「確認した」）で宣言する。
 - 大きな対象で、適用の前提を確かめずに全体へ一度に適用する。形式化の工数は、対象の大きさに応じて増える。
 - 機械で再び検出できる誤りの指摘を、文章の注意書きだけで済ませる。指摘は、できる限り反例・検査・限界の行・差異の登録に落とす。
+
+## スキルの文書と記録
+
+`references/docs/` は OKF v0.2 の Knowledge Bundle である。索引は [references/docs/index.md](references/docs/index.md)、変更履歴は [log.md](references/docs/log.md) にある。
+スキル自身の意思決定記録は [references/docs/decision/](references/docs/decision/README.md)、作業項目は [references/docs/backlog/](references/docs/backlog/README.md) にある。
+アプリに依存しない判断・作業はここに記録し、適用先に固有の判断は適用先に記録する。
+スキルを保守するときの規則（frontmatter・ID・持ち出せること・適用先との分担）は、[references/docs/maintenance.md](references/docs/maintenance.md) にある。

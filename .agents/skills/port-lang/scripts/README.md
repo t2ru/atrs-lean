@@ -13,7 +13,7 @@
 | `ci/check_upstream.py` | 上流の submodule の commit と `trace/upstream.json` の一致 | Python 3、`git` |
 | `ci/with_postgres.sh` | PostgreSQL に接続できる環境でコマンドを実行する（無ければ一時クラスタ。[sql/dialects/postgresql/harness.md](../references/docs/sql/dialects/postgresql/harness.md)） | PostgreSQL |
 | `ci/jvm_table.sh`・`ci/pg_table.sh` | `assets/lean/LangSemanticsTest` の JVM・PostgreSQL との突き合わせ表が、生成器の出力と一致することを確かめる。処理系が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2） | JDK / PostgreSQL |
-| `docs/ids.py` | 任意。意思決定記録・作業項目の ID（UUID v4）の採番（`new`）・参照の検査（`check`）・旧番号からの書き換え（`migrate`）。設定は `trace/project.json` の `ids` | Python 3、`git` |
+| `docs/ids.py` | 任意。意思決定記録・作業項目の ID（UUID v4）の採番（`new`）・参照の検査（`check`）・置き場所の間の移動とリンクの張り直し（`move`）・旧番号からの書き換え（`migrate`）。置き場所は種類ごとに複数でよく（プロジェクトの `docs/` とスキルの `references/docs/`）、持ち出すバンドル（スキル）が外を指していないことも検査する。設定は `trace/project.json` の `ids`。スキルの記録の書き方は [references/docs/maintenance.md](../references/docs/maintenance.md) | Python 3、`git` |
 
 ## 使い方（リポジトリのルートで）
 

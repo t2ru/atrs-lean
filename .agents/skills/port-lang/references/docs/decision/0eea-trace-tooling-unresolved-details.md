@@ -88,5 +88,6 @@ Chosen option: "下表のとおり決め、文書の食い違いはこの ADR �
 
 ## More Information
 
+* 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ATRS の ADR e2a4、ATRS の ADR 70eb、ATRS の backlog ffdc
 * スキル port-lang の [traceability.md](../traceability.md)、[java/locators.md](../java/locators.md)、[sql/locators.md](../sql/locators.md)

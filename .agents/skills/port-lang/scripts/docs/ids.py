@@ -12,8 +12,8 @@ slug で区別する）。道具が読む箇所（frontmatter の `id`・`depend
 ADR・backlog の置き場所（`ids.kinds`）は種類ごとに複数でもよい（例: プロジェクトの `docs/` と、スキルの
 `references/docs/`）。ID の空間は 1 つで、参照はどの置き場所の項目にも解決する。`ids.isolated` に挙げたバンドル
 （他のリポジトリへ持ち出す文書。例: スキル）は、外の項目を frontmatter で指さず、Markdown のリンクで `root` の外へ
-出ない。本文の `ADR xxxx`・`backlog xxxx` で外の項目を指してよいのは、バンドルの `decision/`・`backlog/` の中
-（来歴）だけである。
+出ない。本文の `ADR xxxx`・`backlog xxxx` で外の項目を指してよいのは、バンドルの `decision/`・`backlog/` の中と、
+それを要約する `index.md`・`log.md`（来歴）だけである。
 
 使い方:
   python3 -I <skill>/scripts/docs/ids.py new adr <slug> [--dir <dir>]   # 新しい ID とファイル名を表示する
@@ -248,8 +248,9 @@ def cmd_check():
 def check_line(rel, line, items, every):
     errs = []
     b = bundle_of(rel)
-    # 来歴として外の項目を本文で挙げてよいのは、バンドルの decision/・backlog/ の中だけ
-    history = b and any(rel.startswith(d + "/") for ds in KINDS.values() for d in ds if d.startswith(b["bundle"] + "/"))
+    # 来歴として外の項目を本文で挙げてよいのは、バンドルの decision/・backlog/ と、それを要約する index.md・log.md だけ
+    history = b and (any(rel.startswith(d + "/") for ds in KINDS.values() for d in ds if d.startswith(b["bundle"] + "/"))
+                     or rel in (f"{b['bundle']}/index.md", f"{b['bundle']}/log.md"))
     for u in UUID_ANY.findall(line) if rel.startswith(UUID_ROOTS) else []:
         if u not in every:
             errs.append(f"UUID {u} is not an ADR or backlog id")

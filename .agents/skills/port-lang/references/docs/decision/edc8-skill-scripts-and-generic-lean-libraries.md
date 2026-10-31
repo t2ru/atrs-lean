@@ -155,6 +155,7 @@ ATRS の ADR f4e1 は、移植の方法をアプリに依存しないスキル�
 
 ## More Information
 
+* 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ATRS の ADR f4e1・[ADR 7fe4](7fe4-move-trace-attributes-to-skill.md) の続きである。
 * ATRS の ADR e9bc が「比較の定理（ATRS）」と書いた層は、汎用部をスキルの `LangSemantics.Java.DoubleCompare` に移した。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件が残る。
 * 作業項目: ATRS の backlog 38fb

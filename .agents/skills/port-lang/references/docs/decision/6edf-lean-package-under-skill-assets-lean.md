@@ -48,6 +48,7 @@ Chosen option: "Lean のパッケージを `assets/lean/` に移す", because La
 
 ## More Information
 
+* 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ATRS の ADR f4e1（スキルへの切り出し）、ATRS の ADR 0bd3（Verus の写し）
 * スキル: [SKILL.md](../../../SKILL.md)、[lean/rules.md](../lean/rules.md#ルートのワークスペースlsp-用)
 * ATRS への適用: ATRS の `docs/rules/atrs-porting.md`

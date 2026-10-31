@@ -84,5 +84,6 @@ Chosen option: "検査の登録を `trace/checks.json` に置き、下表のと�
 
 ## More Information
 
+* 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ATRS の ADR e2a4、[ADR 0eea](0eea-trace-tooling-unresolved-details.md)、ATRS の backlog ffdc
 * スキル port-lang の [traceability.md](../traceability.md)、[upgrade.md](../upgrade.md)

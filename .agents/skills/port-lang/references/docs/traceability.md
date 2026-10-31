@@ -159,7 +159,7 @@ locator = kind ":" body
 | `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
 | `conformance` | 適合テストベクタのディレクトリ |
-| `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`） |
+| `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`isolated`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`）。`kinds` は種類（`adr`・`backlog`）ごとの置き場所で、文字列か配列。スキルの記録を一緒に検査するときは、スキルの `references/docs/decision`・`references/docs/backlog` を加える。`isolated` は持ち出すバンドルの列 `[{"bundle": <dir>, "root": <リンクが出てはならない範囲>}]` で、スキルでは `{"bundle": "<skill>/references/docs", "root": "<skill>"}`（[maintenance.md](maintenance.md#持ち出せること)） |
 
 ### 手書きのファイルの形
 

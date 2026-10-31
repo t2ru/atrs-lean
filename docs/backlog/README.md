@@ -6,12 +6,13 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T19:40:00+09:00
 ---
 
 # バックログ
 
 運用は [rules/backlog.md](../rules/backlog.md)。状態は各項目の frontmatter の `state` が正である。
+アプリに依存しないスキル port-lang の作業項目（例: backlog 1ae4・a936）は、[スキルの backlog](../../.agents/skills/port-lang/references/docs/backlog/README.md) にある。下の表の依存の列からはリンクで指す（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
 
 | ID | 項目 | state | 依存 |
 | --- | --- | --- | --- |
@@ -35,13 +36,11 @@ generated:
 | fb50 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](fb50-rust-project-scaffold.md) | todo | — |
 | ddb4 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](ddb4-rust-spec-mirror-and-fare-core.md) | todo | [fb50](fb50-rust-project-scaffold.md), [eff6](eff6-target-model-fare-and-refinement.md), [d77c](d77c-verus-mirror-generator.md), [ffdc](ffdc-trace-tooling.md) |
 | 9c1b | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](9c1b-rust-usecases-core.md) | todo | [ddb4](ddb4-rust-spec-mirror-and-fare-core.md), [26c5](26c5-target-model-usecases-and-refinement.md), [ffdc](ffdc-trace-tooling.md) |
-| a936 | [LangSemantics.Rust: Rust の意味論](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) | todo | [be49](be49-lean-project-scaffold.md) |
 | eff6 | [TargetModel と Refinement: 運賃計算](eff6-target-model-fare-and-refinement.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [a8ef](a8ef-conformance-vector-format-and-generator.md), [a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
 | 26c5 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](26c5-target-model-usecases-and-refinement.md) | todo | [eff6](eff6-target-model-fare-and-refinement.md), [0be7](0be7-flight-search-usecase.md), [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [44f8](44f8-authentication-usecases.md), [ac71](ac71-reservation-history-report.md), [ffdc](ffdc-trace-tooling.md) |
 | ffdc | [追跡の道具（tools/trace）](ffdc-trace-tooling.md) | done | [be49](be49-lean-project-scaffold.md), [455f](455f-upstream-submodule-and-inventory.md) |
 | 455f | [上流の submodule 化と版の宣言](455f-upstream-submodule-and-inventory.md) | done | — |
 | 773f | [差分オラクル（新旧 2 版の振る舞い比較）](773f-differential-oracle.md) | todo | [f18c](f18c-java-oracle-harness.md), [455f](455f-upstream-submodule-and-inventory.md) |
-| 1ae4 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) | done | [be49](be49-lean-project-scaffold.md) |
 | d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) |
 | 9c04 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](9c04-rust-external-adapters.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [c7e8](c7e8-lang-semantics-sql.md), [ffdc](ffdc-trace-tooling.md) |
 | f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) |
@@ -57,11 +56,13 @@ generated:
 移植元側（Lean）                 内側（Lean）            移植先側（Lean → Rust）
 455f → ffdc ┐
 be49 ┬ a8be, c7e8 ─────────┐
-     ├ 1ae4（Machine）─ f7b7 ─ ae04 ┤
+     ├ 1ae4*（Machine）─ f7b7 ─ ae04 ┤
      ├ 591d ─ 25f7 ─ bbcc  ├─ a8ef ─ eff6 ─ ddb4（Rust）
-     ├ a936 ─ d77c（生成器）┘
+     ├ a936* ─ d77c（生成器）┘
      └ ddbd
 fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
 機能: 4e0e → 44f8、0be7 → aedf → ac71 → 26c5 → 9c1b → 4b0e → a89e、4b0e → 9c04
 原典との照合: f18c → 各機能（0be7・aedf・4e0e・44f8・ac71・a89e）、f18c → 773f
 ```
+
+`*` はスキル port-lang の作業項目である（[スキルの backlog](../../.agents/skills/port-lang/references/docs/backlog/README.md)）。

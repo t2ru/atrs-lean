@@ -1,0 +1,70 @@
+---
+okf_version: "0.2"
+---
+
+# Method
+
+* [移植の手順](process.md) - 機能単位で進める移植の手順 1〜10 と、各手順の成果物・次へ進む条件・完了の定義。
+* [作業の進め方（既定）](workflow.md) - 人と AI エージェントがこの方法で移植を進めるときの既定の進め方: 評価・判断の記録・検査ゲート・敵対的レビュー。
+* [構成: 層・名前空間・依存・リファインメント・正規性](architecture.md) - 層・Lean の名前空間・依存の向き・B メソッドのリファインメントと証明課題・空虚化を防ぐ義務・正規性の順位。
+* [仕様文書の書き方](spec-documents.md) - Spec で表現できない仕様を書く Markdown の仕様文書の区分・節構成・差異の表と、道具が読む見出しと値。
+* [言語中立性の制約（Spec に課す）](portability.md) - Spec をあらゆる移植先言語へ同じ振る舞いで写すために課す、言語中立性の制約。
+* [両端の追跡（トレーサビリティ）](traceability.md) - 移植元ソース⇔SourceModel と TargetModel⇔移植先ソースの両端の追跡: ロケータ・注釈・検査済みハッシュ・インベントリ・manifest・TR 検査・道具とプロジェクトの設定。
+* [適合テストベクタの形式](conformance.md) - 言語中立な適合テストベクタの置き場所・JSON の形式・比較の規則・生成と実行器。
+* [検証の使い分け](verification.md) - 両端の一致を確かめる決定論的な手段と、Lean の証明・検証器・テストの使い分け、保証の限界の文書の必須項目。
+* [版上げへの追従](upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分オラクル、証明のグラフに沿った影響の洗い出し。
+* [言語パックの構成と追加のしかた](adding-a-language.md) - 言語パックの 6 ファイルの構成と、新しい言語・SQL 方言を追加するときの手順。
+* [スキルの文書の保守](maintenance.md) - references/docs（OKF v0.2 のバンドル）の形式、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。
+
+# Language: Java
+
+* [Java: LangSemantics.Java](java/semantics.md) - Java の基本型を整数演算だけでエミュレートする LangSemantics.Java の名前付き演算と、処理系との突き合わせ。
+* [Java: フレームワーク・ランタイムの効果](java/frameworks.md) - Java のフレームワーク・ランタイムが与える効果と、モデルへの写し方・dep: ロケータ。
+* [Java: ソースの構成と Lean 名前空間の対応](java/layout.md) - Java のソースの構成と、Lean の名前空間の対応。
+* [Java: ロケータとインベントリ](java/locators.md) - Java のロケータの文法とインベントリの作り方。
+* [Java: ベクタの実行（オラクル／照合）](java/harness.md) - Java のコードに適合テストベクタを当てるハーネス（オラクル／照合）の作り方。
+* [Java: 検証器](java/verification.md) - Java のソースとモデルの一致を確かめる決定論的な手段と、その保証の限界。
+
+# Language: SQL
+
+* [SQL: LangSemantics.Sql](sql/semantics.md) - DBMS に依存しない SQL の意味論 LangSemantics.Sql と、方言の分け方。
+* [SQL: 処理系・マッパの効果](sql/frameworks.md) - SQL の処理系・マッパが与える効果の共通事項と、方言パックへの振り分け。
+* [SQL: ソースの構成と Lean 名前空間の対応](sql/layout.md) - SQL（Mapper・クエリファイル）の構成と、Lean の名前空間の対応。
+* [SQL: ロケータとインベントリ](sql/locators.md) - SQL のロケータの文法とインベントリの作り方。
+* [SQL: ベクタの実行](sql/harness.md) - データベースを含む適合テストベクタの実行条件と、処理系との差分実行の結果の形。
+* [SQL: 検証](sql/verification.md) - SQL を LangSemantics.Sql の式として写し、リポジトリのリファインメントで確かめる方法と、その保証の限界。
+* [SQL 方言 PostgreSQL: LangSemantics.Sql.Postgresql](sql/dialects/postgresql/semantics.md) - PostgreSQL 固有の意味論 LangSemantics.Sql.Postgresql と、処理系との突き合わせ。
+* [SQL 方言 PostgreSQL: 処理系の効果と版](sql/dialects/postgresql/engine.md) - PostgreSQL の処理系が与える効果と、版の固定。
+* [SQL 方言 PostgreSQL: ベクタの実行環境](sql/dialects/postgresql/harness.md) - PostgreSQL で SQL の適合テストベクタを実行する環境の設定。
+
+# Language: Rust
+
+* [Rust: LangSemantics.Rust](rust/semantics.md) - Rust の値の意味論 LangSemantics.Rust の名前付き演算と、処理系との突き合わせ。
+* [Rust: ランタイム・クレートの効果](rust/frameworks.md) - Rust のランタイム・クレートが与える効果と、モデルへの写し方・dep: ロケータ。
+* [Rust: ソースの構成と Lean 名前空間の対応](rust/layout.md) - Rust のクレートの構成と、Lean の名前空間・Verus の写しの対応。
+* [Rust: ロケータとインベントリ](rust/locators.md) - Rust のロケータの文法とインベントリの作り方。
+* [Rust: ベクタの実行（照合／オラクル）](rust/harness.md) - Rust のコードに適合テストベクタを当てるテスト（照合／オラクル）の作り方。
+* [Rust: 検証器（Verus・Kani）](rust/verification.md) - Rust のソースとモデルの一致を確かめる検証器（Verus・Kani）と、その保証の限界。
+
+# Language: Lean
+
+* [Lean プロジェクトの規約](lean/rules.md) - 形式化言語 Lean 4 のプロジェクトの規約: ツールチェーン、依存、禁止する構文、名前、静的検査。
+* [Lean の追跡属性と trace-dump](lean/trace-attributes.md) - Lean の追跡属性・ギャップの登録簿と、trace-dump・obligation-check の実装。
+
+# Decisions
+
+* [スキルの意思決定記録](decision/README.md) - スキル port-lang の意思決定記録（MADR 4.0）の索引。
+* [スキル port-lang の Lean パッケージを assets/lean/ に置く](decision/6edf-lean-package-under-skill-assets-lean.md) - スキル port-lang の assets 直下にあった Lake パッケージ langSemantics（LangSemantics・Machine とその検査）を assets/lean/ に移し、assets の下を資産の種類ごとに分ける。Lean 以外の資産（assets/verus/ など）は assets/lean/ の外に置く。
+* [追跡の道具の未確定事項（本文ハッシュ・正規化・ロケータの細部・機能と backlog の対応）を決める](decision/0eea-trace-tooling-unresolved-details.md) - ATRS の ADR e2a4 と言語パックで未確定だった、本文ハッシュの方式、正規化での空白の扱い、private の呼び先の連結、ロケータとハッシュの区切り、seed:・tmpl:・xml:・http:・prop:/msg: の形、dep:/lang: の版の文字列、警告と誤りを決める機能と backlog の対応表（trace/features.json）、合格の記録が無い場合、TR-P の数え方を決める。
+* [rehash・diff・impact の細部（検査の登録・注釈の書き換え・改名・出典の検査）を決める](decision/9cd9-rehash-diff-impact-details.md) - ATRS の ADR e2a4 の rehash・diff・impact について、検査の登録（trace/checks.json）とそれが覆う定義、rehash の対象と手順、Lean の注釈の書き換え方、renames.json の検査、diff の分類と impact の伝播、文書の「出典:」のロケータの検査を決める。ADR 0eea を補う。
+* [移植が成り立つ条件をスキルに明示し、進め方の既定（評価・判断点・ゲート・敵対的レビュー・記録）を補う](decision/0b83-porting-conditions-and-workflow.md) - スキル port-lang に、移植が成り立つ条件（適用の前提 P1〜P6、成立の条件 S1〜S6、言えること・言えないこと）を明示する。AWS の AI-Driven Modernization（AI Modernization Flow）のプロセス面を参考に、評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録を、置き換えてよい既定の進め方として references/workflow.md に置く。
+* [追跡属性の仕組み（Trace）をスキル port-lang の assets に移す](decision/7fe4-move-trace-attributes-to-skill.md) - lean/Trace（追跡属性・trace-dump・obligation-check の本体）はアプリに依存しないので、スキル port-lang の assets/lean/Trace に移し、Lake の依存として取り込む。道具の入口（main）は ATRS の lean/Tools に残す。
+* [アプリに依存しない道具と Lean のライブラリをスキル port-lang へ移し、ATRS 固有の値を trace/project.json に集める](decision/edc8-skill-scripts-and-generic-lean-libraries.md) - tools/ の汎用の道具（追跡の CLI・Lean の静的検査・課題一覧との突き合わせ・上流の版の検査・突き合わせ表の検査・ID の道具）をスキルの scripts/ へ移し、ATRS 固有の値を trace/project.json から読ませる。Abstraction・Tests に混ざっていた汎用の Lean コードを、スキルの assets（Machine.Kernel・LangSemantics.Core（新設）・LangSemantics.Java/Sql・ConformanceKit（新設））へ移す。汎用の方法を文書でもスキルへ移し、スキルに紛れた ATRS 固有の記述を外す。
+* [スキルの文書を references/docs/ の OKF バンドルにし、スキルの決定と作業項目をスキルで持つ](decision/87b9-skill-docs-as-okf-bundle.md) - スキル port-lang の references を references/docs/ に移して OKF v0.2 の Knowledge Bundle とし、スキル自身の意思決定記録と作業項目を references/docs/{decision,backlog} で管理する。適用先のプロジェクトとは ID の空間を共有し、外の項目は来歴としてだけ挙げる。
+
+# Backlog
+
+* [スキルの作業項目](backlog/README.md) - スキル port-lang の作業項目の索引。状態と依存関係。
+* [Machine: 抽象機械と B メソッドのリファインメントの枠組み](backlog/1ae4-machine-refinement-framework.md) - アプリに依存しない Lean ライブラリ Machine（抽象機械、Refines、証明義務 INIT・適用可能性・正しさ、差異の仮定・成分）をスキルの assets/lean/Machine/ に実装する。
+* [LangSemantics.Rust: Rust の意味論](backlog/a936-lang-semantics-rust.md) - 固定長整数（検査付き・折り返し）、char、UTF-8 String、Vec、Result、パニックを、アプリ非依存の検証可能なモデルとして Lean に定義する。
+* [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](backlog/de90-skill-docs-okf-bundle-and-records.md) - references を references/docs/ の OKF v0.2 のバンドルにし、decision/・backlog/ を設けて、適用先にあったスキルの記録を移す。ID の道具を複数の置き場所と持ち出せることの検査に対応させる。

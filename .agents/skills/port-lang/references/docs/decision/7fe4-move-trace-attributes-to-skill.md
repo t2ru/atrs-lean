@@ -60,5 +60,6 @@ ATRS の ADR f4e1 は、移植の方法をアプリに依存しないスキル�
 
 ## More Information
 
+* 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * ギャップの登録簿（ATRS の ADR cc24）は、この移動の上に `Trace.Gap` として置いた。
 * 作業項目: ATRS の backlog 114a

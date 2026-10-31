@@ -6,7 +6,7 @@ tags: [rules, documentation, okf]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T19:40:00+09:00
 ---
 
 # 文書規約
@@ -48,6 +48,7 @@ generated:
 
 - リポジトリ内のリンクは **相対パス** で書く（OKF は `/` 始まりのバンドル相対リンクも認めるが、GitHub 上で解決されないため使わない）。
 - ADR は `[ADR xxxx](../decision/xxxx-<slug>.md)`、backlog は `[backlog yyyy](../backlog/yyyy-<slug>.md)` の形で参照する。リンクの文字列は ID の先頭 4 文字とする。リンクを張れない箇所（コードのコメントなど）は `ADR xxxx`・`backlog yyyy` と書く。先頭 4 文字が同じ種類の他の項目と重なる項目は、リンクの無い参照では stem（`ADR xxxx-<slug>`）で書く（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
+- スキルの ADR・backlog も、同じ形でスキルのバンドルへの相対パスで書く。ATRS の記録と紛らわしいときは「スキルの ADR xxxx」と書く。
 - 道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）には ID 全体を書く。参照は `python3 -I .agents/skills/port-lang/scripts/docs/ids.py check` で検査する。
 - 仕様節への参照はファイル名＋見出しアンカーで書く（例: `fare-calculation.md#基本運賃`）。
 
@@ -55,6 +56,7 @@ generated:
 
 `docs/` は **Open Knowledge Format (OKF) v0.2** の Knowledge Bundle である（[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
 バンドルのルートは `docs/` で、リポジトリ直下の `AGENTS.md`・`CLAUDE.md` はバンドル外である。
+スキル port-lang の文書は、別のバンドル [`.agents/skills/port-lang/references/docs/`](../../.agents/skills/port-lang/references/docs/index.md) である（規則はスキルの [maintenance.md](../../.agents/skills/port-lang/references/docs/maintenance.md)）。`docs/` からはリンクで参照してよいが、逆向きのリンクは張らない。
 
 ### 予約ファイル
 
