@@ -163,6 +163,8 @@ def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
     (∀ k ∈ i.flights, hasText k.flightName.val = true) ∧
     (totalFareOfKeys i.cfg i.md i.flights i.ages).isSome = true
 
+instance (i : TotalFareInput) : Decidable i.Pre := by unfold TotalFareInput.Pre; infer_instance
+
 /-- 合計金額の抽象機械（状態を持たない）。 -/
 @[spec_doc "docs/spec/fare-calculation.md#合計金額"]
 def totalFareMachine : Machine.Machine Unit TotalFareInput Nat :=
