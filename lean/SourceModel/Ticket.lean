@@ -24,17 +24,20 @@ structure TicketHelper where
   fareTypeProvider : FareTypeProvider := {}
   boardingClassProvider : BoardingClassProvider := {}
 
-/-- `toFlightList`: 選択フライト情報ごとに、出発日を写し、便マスタ・運賃種別・搭乗クラスを Provider から引いて
-フライト情報を作る。便名が `null` なら `getFlightMaster` の `Assert.hasText` で `IllegalArgumentException`。 -/
+/-- `toFlightList` の 1 件分: 出発日を写し、便マスタ・運賃種別・搭乗クラスを Provider から引いてフライト情報を作る。
+便名が `null` なら `getFlightMaster` の `Assert.hasText` で `IllegalArgumentException`。 -/
+def toFlight (h : TicketHelper) (form : SelectFlightForm) : JResult (JRef Flight) := do
+  let name ← match form.flightName with
+    | some n => pure n
+    | none => throw (.illegalArgument "flightName must have some text.")
+  let fm ← getFlightMaster h.flightMasterProvider name
+  let ft ← getFareType h.fareTypeProvider form.fareTypeCd
+  let bc ← getBoardingClass h.boardingClassProvider form.boardingClassCd
+  return some { departureDate := form.depDate, flightMaster := fm, fareType := ft, boardingClass := bc }
+
+/-- `toFlightList`: 選択フライト情報ごとにフライト情報を作る（`toFlight`）。 -/
 @[source "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)@3fef600108b03c6e"]
 def toFlightList (h : TicketHelper) (forms : List SelectFlightForm) : JResult (List (JRef Flight)) :=
-  forms.mapM fun form => do
-    let name ← match form.flightName with
-      | some n => pure n
-      | none => throw (.illegalArgument "flightName must have some text.")
-    let fm ← getFlightMaster h.flightMasterProvider name
-    let ft ← getFareType h.fareTypeProvider form.fareTypeCd
-    let bc ← getBoardingClass h.boardingClassProvider form.boardingClassCd
-    return some { departureDate := form.depDate, flightMaster := fm, fareType := ft, boardingClass := bc }
+  forms.mapM (toFlight h)
 
 end SourceModel.Ticket
