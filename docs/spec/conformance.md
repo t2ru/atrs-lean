@@ -45,7 +45,7 @@ generated:
 
 `master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。到着時刻 `2415` の便マスタ 2 行には `outsideSpec` が付く（[master-data.md](master-data.md)）。
 
-マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)）。
+マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
 
 `shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。`source-model/` の期待値は、[backlog 0013](../backlog/0013-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
 | `fixtures/world-*.json` | 状態を使う操作の初期状態（フライトの空席数、会員、予約、各シーケンスの次の値） |

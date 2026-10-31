@@ -71,6 +71,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | `NoFaultReachable` | [Spec] の各入力は、障害の無い環境（`ce` が標準の環境を返す）の [Source] の入力でも実現される。障害の無い環境では、[Source] は `Conflict`・I/O 失敗の結果（N-001・N-002）を返せない |
 | `StateSafe` | 「出力のみ」の前提型の差異（[前提型の差異の影響](#前提型の差異の影響)）ごとに、前提を破る 1 歩の後も状態が `J` を保つ |
 | 入口の全域性 | [入口の R 課題](#入口の-r-課題) の [Spec] の機械は、INV と環境の前提（`@[env_pre]`）の下で PRE が成り立つ（`TotalUnder`。SPEC-006）。環境の前提は、マスタ・設定の妥当性（MD-1〜MD-8）と入力の値域（[domain-model.md](domain-model.md#値域)）を入力の成分だけで書いたものとする。R 課題には、環境の前提を満たす像を持つ [Source] の入力があること（`EnvWitness`）も課す |
+| 成分の必要性 | R 課題で使う前提型・観測型の差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)。検査は TR-G の G9）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `Machine.anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `Machine.ofChoice` なら `Refines ∧ Pinned` でもよい<br>少なくとも 1 つの R 課題について示せばよく、W 課題に含める。他の必要な差異に覆われる差異（例: D-012 は D-001・D-002 に覆われる）は、同じ R 課題で `Covers` を示す。`@[deviation]` の定数には ID を 1 つだけ付ける |
 
 - [Source] の各操作は、マスタ・設定と環境（衝突が起きるか、どのポート操作が I/O で失敗するか、配備の設定）を入力の成分として受ける。原典がマスタを DB から読む場合も、マスタは不変なので状態に含めず入力とする。
   - aᵢ は環境を落とす。
@@ -105,9 +106,11 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 - **前提型**: 主定理の名前付きの仮定（Lean 名は `Abstraction.<機能>.dev_DNNN`）
 - **観測型**: `J`/`αₒ` の名前付きの成分（Lean 名は `Abstraction.<機能>.obs_DNNN`）。前提型・観測型には、R 課題と W 課題（`ABS-1NN` が `D-0NN` の証拠）が必須である
-- W 課題は両向きの例を示す（Lean では `Nontrivial`・`Nontrivial₂` を含む）。
-  - 前提型: 前提を満たす例と、前提を破って [Source] と [Spec] が一致しない例
-  - 観測型: 成分が関係づける例（標準の抽象化では関係しない出力）と、関係づけない例
+- W 課題は両向きの例と、差異の必要性を示す（[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）。
+  - 両向きの例（Lean では `Nontrivial`・`Nontrivial₂`）
+    - 前提型: 前提を満たす例と、前提を破る例
+    - 観測型: 成分が関係づける例（標準の抽象化では関係しない出力）と、関係づけない例
+  - 必要性: 差異を外した R 課題の命題が偽である（[空虚化を防ぐ義務](#空虚化を防ぐ義務) の「成分の必要性」）。前提型では、前提を破り、R 課題の他の差異の前提を満たし、[Source] と [Spec] が一致しない入力が、その証人になる。他の差異に覆われる差異では、必要性の代わりに被覆（`Covers`）を示す
 - **モデル外**: Lean のどのモデルにも現れない差異。[Spec] の外の規範節と原典の違いがこれに当たる。証明には現れないので、[assurance.md](assurance.md) に限界として載せる
 
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
@@ -133,7 +136,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込む。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: DB のマスタの各行と設定の値が、[Spec] の型で表せる（α が定義される） | ABS-026 | ABS-127 |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込む。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: DB のマスタの各行と設定の値が、[Spec] の型で表せる（α が定義される） | ABS-026 | ABS-127 |
 
 ### 前提型の差異の影響
 
@@ -186,7 +189,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 種類は次の 4 つである（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
 - R: リファインメントの主定理と、その付帯の義務（`InitSurj`、基底が `Machine.ofChoice` なら `Pinned`、出力のみの差異の `StateSafe`）。付帯の義務は同じ課題 ID に含める
-- W: 差異の証拠（両向きの例）
+- W: 差異の証拠（両向きの例と、差異の必要性）
 - C: 差異の特徴付け
 - L: 補題
 
@@ -265,7 +268,7 @@ ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利
 | SPEC-003 | PRE の下の各操作（`Conflict` と実行環境の失敗の結果を含む）が INV を保つ |
 | SPEC-004 | `Conflict` と実行環境の失敗の結果では、採番以外の状態が変わらない（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） |
 | SPEC-005 | 各機能の基底の機械は、`Machine.ofChoice`（選択の像）か `Machine.pure`（決定的な純粋計算）で作る。選択の型の葉は、[Spec の非決定性](#spec-の非決定性n-nnn) に登録した `@[nondet]` の型だけとし、環境の選択には種類「環境」の行の型を、自由な選択には種類「自由」の行の型を使う。自由な選択には、その選択が変えうる部分を核で示した射影についての `FreeFrame` を示す（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)。形は TR-G で検査する） |
-| SPEC-006 | [入口の R 課題](#入口の-r-課題) の機械は、INV と環境の前提（`@[env_pre]`。MD-1〜MD-8 と入力の値域）の下で PRE が成り立つ（`Machine.TotalUnder`）。環境の前提には両向きの例（`Nontrivial`）を示す |
+| SPEC-006 | [入口の R 課題](#入口の-r-課題) の機械は、INV と環境の前提（`@[env_pre]`。MD-1〜MD-8 と入力の値域）の下で PRE が成り立つ（`Machine.TotalUnder`）。環境の前提には両向きの例（`Nontrivial`）と、前提を外すと PRE が成り立たない入力があること（`¬ TotalUnder A always`。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）を示す。PRE が INV の下で全域な機械は、環境の前提を置かず `TotalUnder A always` を示す |
 | SPEC-007 | 各機能の初期状態は fixture の投入後の `World` の 1 点である（`Machine.InitIs`） |
 | SPEC-008 | 標準の環境の下では、`f` は環境の非決定性に固有の結果（N-001 の `Conflict`、N-002 の `System("e.ar.fw.9999")`）を返さない |
 

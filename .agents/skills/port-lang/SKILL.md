@@ -1,16 +1,16 @@
 ---
 name: port-lang
-description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application. Keywords: 言語間移植, language porting, migration, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, Verus, Kani, Java, SQL, Rust."
+description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/<lang>/ に記載。
 metadata:
-  version: "0.3"
+  version: "0.4"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
 
 # port-lang: Lean を介した言語間移植
 
-アプリケーションを、移植元言語から移植先言語へ **同じ振る舞いのまま** 移す。中間に Lean 4 による形式化を置く。
+アプリケーションを、移植元言語から移植先言語へ、`Spec` が定める振る舞いのまま移す。`Spec` と移植元・移植先との違いは、すべて名前を付けて明示する。中間に Lean 4 による形式化を置く。
 移植元と移植先は直接は結ばない。Lean のモデルと証明を介してだけつなぐ。
 両端（ソース ⇔ モデル）は決定論的な検証または変換でつなぐ。内側（モデル ⇔ `Spec`）は B メソッドのリファインメントの証明でつなぐ。両者の違いは、すべて名前を付けて証明と文書に出す。
 
@@ -35,6 +35,65 @@ metadata:
 - 既存アプリを別言語に書き直すとき、振る舞いの同一性を証明・検証付きで保ちたい。
 - 移植元に偶発的な振る舞い（浮動小数の丸め、フレームワークの暗黙の処理、不具合）があり、「再現するもの」と「意図」を分けて扱いたい。
 - 移植元が今後も版上げされ、それに追従し続けたい。
+
+## 移植が成り立つ条件
+
+この方法で主張できる移植の中身は、下の「言えること」にまとめた。主張が成り立つのは、適用した範囲で **成立の条件** をすべて満たすときに限る。
+**適用の前提** は、成立の条件を満たすための典型的な前提である。評価の目安として使う（参考）。
+
+### 適用の前提（参考）
+
+対象（機能・モジュール）ごとに確かめる。前提を欠く対象には、多くの場合、表の右列のように扱う。
+
+| # | 前提 | 欠けたときの典型的な扱い |
+| --- | --- | --- |
+| P1 | 移植元ソースが手元にあり、版を固定できる | その対象には適用できない。追跡（[traceability.md](references/traceability.md)）が成り立たない |
+| P2 | 観測可能な振る舞いを、入力・出力・ポートの効果として区切れる | 区切れない振る舞いは、規範の仕様文書に書く（[spec-documents.md](references/spec-documents.md)） |
+| P3 | 移植元とモデルの一致を、決定論的な手段（[verification.md](references/verification.md#決定論的な手段)。例: オラクル、処理系の差分実行）で確かめられる | 確かめられない部分は、保証の限界になる |
+| P4 | 使う言語の意味を、`LangSemantics` に書け、処理系と突き合わせられる | 言語パックを追加・拡充する（[adding-a-language.md](references/adding-a-language.md)）。突き合わせられない演算は、保証の限界になる |
+| P5 | 移植先ソースとモデルの一致を、決定論的な手段（例: 生成した写しと検証器、ベクタを通すハーネス）で確かめられる | 確かめられない部分は、保証の限界になる |
+| P6 | 業務規則を、言語中立な `Spec`（[portability.md](references/portability.md)）で表せる | 表せない性質（並行性・非機能など）は、規範節と保証の限界で扱う。リファインメントの証明の対象にはならない |
+
+- 前提を満たす範囲にだけ適用してよい（例: 中核の純粋な計算だけ）。
+- 外した範囲は、移植の範囲外とする意思決定とともに、範囲外の一覧に載せる（[traceability.md](references/traceability.md#対象外)）。ただし、残す範囲の振る舞いに影響するソースは外せない。
+- 対象が大きいときは、手順 0 の評価で前提を確かめてから範囲を決めるとよい（[workflow.md](references/workflow.md#評価)）。この方法を使わない判断もありうる。
+
+### 成立の条件
+
+成立の条件は、下の原則と、[process.md](references/process.md#完了の定義機能ごと) の完了の定義を、主張の側から並べ直したものである。新しい義務は足していない。食い違う場合は、原則と完了の定義が優先する。
+適用した範囲のすべての機能について、次をすべて満たさなければならない。
+
+| # | 条件 | 対応する規則 |
+| --- | --- | --- |
+| S1 | **両端**（原則 A）: 各モデル・各ソースが担当のベクタを全件通す。両端の一致を、言語パックの決定論的な手段で確かめている。移植先の検証器を使う場合は、写しを再生成して差分が無いことも確かめる | 完了の定義、言語パックの `verification.md`・`harness.md` |
+| S2 | **内側**（原則 B）: `ABS-NNN`・`REF-NNN` の R 課題・W 課題が、`Machine.Refines` の形と空虚化を防ぐ義務を備えて証明されている。W 課題は両向きの例と差異の必要性を持つ。`sorry`・新規 `axiom`・`native_decide`・`bv_decide` が無い。`Spec` 自身の義務が証明されている。移植元側と移植先側が互いに依存せず、`Spec` は他の層に依存しない | [verification.md](references/verification.md#証明の運用)、[architecture.md](references/architecture.md#空虚化を防ぐ義務)、[依存の向き](references/architecture.md#依存の向き) |
+| S3 | **差異**（原則 C）: `Spec` との差異が、すべて文書の登録簿とリファインメント定理の両方にある。`Spec` の非決定性は、登録簿と `@[nondet]` が対応している | 検査 TR-D・TR-G（G8）、非決定性は TR-N |
+| S4 | **追跡**: 追跡の検査 TR-* が、警告ではなく失敗扱いで通る（網羅・被覆・陳腐化・直接接続の禁止・参照切れ）。生成表が更新されている | [traceability.md](references/traceability.md#検査) |
+| S5 | **仕様文書**: 該当節が informative に置き換わり、規範節には `Spec` で表せないものだけが残っている | 完了の定義、[spec-documents.md](references/spec-documents.md) |
+| S6 | **限界**: 決定論的な手段と証明の届かない部分が、保証の限界の文書にすべて載っている。少なくとも、[verification.md](references/verification.md#保証の限界) が必ず載せるとする項目を含む。信頼している基盤の例: Lean の核、`Machine` の定義、検証器、生成器、検査器、処理系とその版 | verification.md |
+
+S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が広すぎないかは、証明でも検査でも決まらない。そのため、限界の文書に載せる。どう判断し、どう記録するかの既定は [workflow.md](references/workflow.md#判断を記録する事項) にある。
+
+### 言えること・言えないこと
+
+成立の条件を満たすとき、次のことが言える。
+
+- **モデルについて（証明）**: `SourceModel` は差異 `D-NNN` の下で、`TargetModel` は差異 `T-NNN` の下で、それぞれ同じ `Spec` をリファインする。具体的には次のとおり。
+  - 前提: 抽象側の状態が不変条件を満たし、具体側の状態と貼り合わせ不変条件で結ばれている。入力は、具体側の定義域にあり、`Spec` の事前条件と差異の前提を満たす。
+  - その前提の下で、具体側は結果を持ち、どの結果も正常終了である（パニック・前提違反・溢れが無い）。
+  - 具体側の正常終了は、`Spec` が許す結果で模倣される。環境を標準の抽象化で固定すれば、`Spec` の標準の結果と一致する（`Refines.complete`）。
+  - ここでの「一致」は、貼り合わせと出力の対応を通したものである。標準の抽象化の核（`@[kernel]`）が同一視するものは区別しない。
+  - 入口の機械では、環境の前提を満たす入力の列について、具体側の軌跡が `Spec` の軌跡で模倣される（`Refines.run`）。
+- **ソースについて**: 移植元ソースと移植先ソースは、S1 の手段が確かめた範囲で、それぞれのモデルと一致する。その範囲の外は、保証の限界の文書に載っている。
+
+次のことは言えない。
+
+- 移植元ソースと移植先ソースが、直接に同じ振る舞いをすること。両者は、`Spec` の非決定性と差異の範囲で異なりうる。
+- 事前条件・環境の前提の外の入力での振る舞い。
+- 「中断」の前提型の差異の前提を破った後の軌跡。
+- 活性。障害の無い環境では環境の失敗を選べない（`Refines.Pinned`・`NoFaultReachable`）が、環境が常に障害を示す配備では、常に失敗しうる（[architecture.md](references/architecture.md#関数型コアとポート)）。
+- `Spec` が業務の意図どおりであること。
+- 保証の限界の文書に載った部分。
 
 ## 原則
 
@@ -61,7 +120,9 @@ metadata:
 ## 手順（要約）
 
 詳細と完了の定義は [process.md](references/process.md)。
+人と AI エージェントの作業の進め方の既定は [workflow.md](references/workflow.md) にある。評価、判断を記録する事項、検査ゲート、未着手の可視化、独立した敵対的レビュー、記録を扱う。プロジェクトは、自分の規約で置き換えてよい。
 
+0. **評価する**（任意）。対象ごとに適用の前提を確かめ、適用する範囲を決める（[workflow.md](references/workflow.md#評価)）。
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。
 2. **草案を書く**。仕様文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/spec-documents.md)）。
 3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/lean/rules.md)）。
@@ -119,7 +180,7 @@ metadata:
 
 | 種類 | 内容 | 参照 |
 | --- | --- | --- |
-| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
+| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ。W 課題は両向きの例と差異の必要性を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/conformance.md) |
 | 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の文書と `@[deviation]` の対応）、TR-G（R 課題の形と付帯の義務）、TR-N（非決定性の文書と `@[nondet]` の対応）、TR-V（ベクタの前提のラベル）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/architecture.md) |
@@ -136,3 +197,6 @@ metadata:
 - 差異を文書や意思決定記録だけに書き、リファインメント定理の仮定・成分に出さない（またはその逆）。
 - 具体側に抽象側より大きな非決定性を持たせる（例: 順序不定の結果を、定順の `Spec` と直接比べる）。観測型の差異として明示する。
 - 移植元と移植先を直接結ぶ対応表を作る。版上げのたびに腐り、証明グラフと二重管理になる。
+- 完了を、検査の実行結果ではなく自己申告（「実装した」「確認した」）で宣言する。
+- 大きな対象で、適用の前提を確かめずに全体へ一度に適用する。形式化の工数は、対象の大きさに応じて増える。
+- 機械で再び検出できる誤りの指摘を、文章の注意書きだけで済ませる。指摘は、できる限り反例・検査・限界の行・差異の登録に落とす。

@@ -6,7 +6,7 @@ import Tests.ConformanceMaster
 /-!
 # Tests.MasterSql
 
-マスタの Mapper の文とコードリストの SQL の差分実行（backlog 0004、ADR 0043）。
+マスタの Mapper の文とコードリストの SQL の差分実行（backlog 0004、ADR 0045）。
 `conformance/sql/master-data.json`（`tools/conformance/master_sql.py` が PostgreSQL で生成）の表の行から
 `SourceModel.Repository.MasterData` の各文を評価し、PostgreSQL の結果と照合する。
 

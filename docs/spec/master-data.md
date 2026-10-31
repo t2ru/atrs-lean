@@ -41,7 +41,7 @@ sources:
 
 ### Route
 
-`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)）
+`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）
 
 ### FlightMaster
 
@@ -91,7 +91,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed`）である。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
 
-[Source] の具体機械は [`SourceModel.MasterQuery`](../../lean/SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)）。
+[Source] の具体機械は [`SourceModel.MasterQuery`](../../lean/SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
 - 起動時に、各 Provider の `load()` とコードリストの読み込みを行う。
 - Mapper の文の結果は順序が未規定なので、許される並びのどれでも答えが同じことを ABS-026 で示す（[backlog 0004](../backlog/0004-fare-calculation-both-models.md) の第 2 段 b）。
 - Mapper の SQL の写しは、PostgreSQL で差分実行して照合する（`conformance/sql/master-data.json`）。

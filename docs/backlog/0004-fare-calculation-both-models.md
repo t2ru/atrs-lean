@@ -33,13 +33,14 @@ generated:
 - [x] [fare-calculation.md](../spec/fare-calculation.md) の全例がベクタ化され、両モデルで通る
 - [ ] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
 - [x] 1430 円・30% の例で [Spec] 1100、[Source] 1000 になる
+- [ ] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）
 
 ## 進め方
 
 2 段に分ける（2026-10-31 の決定）。この項目は第 2 段で `done` にする。細部は [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md) で決めた。
 
 - **第 1 段（済み）**: 運賃計算の `Spec`・`SourceModel` と、両モデルで実行するベクタ
-- **第 2 段**は、さらに a・b に分けた（2026-10-31 の決定）。細部は [ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md) で決めた。
+- **第 2 段**は、さらに a・b に分けた（2026-10-31 の決定）。細部は [ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md) で決めた。
   - **2a（済み）**: [Spec] の修正、マスタ・設定・コードリストの読み込みの `SourceModel`、PostgreSQL での差分実行、差異 D-027 の登録
   - **2b（残り）**: ABS-026 の証明と付帯の義務（`InitSurj`・`Sound`・`InitIs`、`dev_D027` の `@[deviation]` と `Nontrivial`、`std_abs` の α と核）、W 課題 ABS-127。この項目は 2b で `done` にする
 
@@ -107,4 +108,4 @@ generated:
 ## 参照
 
 - [fare-calculation.md](../spec/fare-calculation.md)
-- [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)、[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)
+- [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)、[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)
