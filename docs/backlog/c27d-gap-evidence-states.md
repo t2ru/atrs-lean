@@ -31,6 +31,10 @@ generated:
   - `need_D001`・`need_D002`・`need_D012`・`need_D027` の `@[gap]`、`Spec.MasterData.MD5` の `@[gap "D-005"]`
   - 文書: ADR 6ab4、abstraction.md・assurance.md（生成した表と本文）、atrs-porting.md、index・log、AGENTS.md
 
+## 対象外
+
+- 記載なし（作成時に節が無かった。[backlog ddbd](ddbd-okf-bundle-lint.md) で文書の検査を入れたときに、節だけを補った）
+
 ## 完了条件
 
 - [x] `tools/ci/lean.sh` が全段通る

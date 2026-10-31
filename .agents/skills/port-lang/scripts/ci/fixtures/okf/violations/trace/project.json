@@ -1,0 +1,24 @@
+{
+  "okf": {
+    "bundles": [
+      {
+        "root": "docs",
+        "profile": {
+          "okf_version": true,
+          "index_complete": true,
+          "common": {"required": ["title", "description", "tags"], "quoted": ["title", "description"], "title_heading": true},
+          "rules": [
+            {"match": "**/README.md", "type": "Overview"},
+            {"match": "decision/*.md", "type": "Architecture Decision Record", "kind": "adr",
+             "required": ["id", "decision_status"], "outcome_markers": ["Chosen option", "採択"],
+             "sections": ["Context and Problem Statement", "Considered Options", "Decision Outcome"]},
+            {"match": "backlog/*.md", "type": "Backlog Item", "kind": "backlog", "required": ["id", "state"],
+             "sections": ["目的", "完了条件"]},
+            {"match": "guide/*.md", "type": "Guideline", "enum": {"level": ["a", "b"]}}
+          ]
+        }
+      }
+    ],
+    "links": {"roots": ["README.md", "docs"], "absolute": false}
+  }
+}

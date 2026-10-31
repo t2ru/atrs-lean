@@ -1,12 +1,12 @@
 ---
 type: Guideline
 title: "スキルの文書の保守"
-description: "references/docs（OKF v0.2 のバンドル）の形式、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。"
+description: "references/docs（OKF v0.2 のバンドル）の形式とその検査、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。"
 tags: [documentation, okf, adr, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:40:00+09:00
+  at: 2026-10-31T20:10:00+09:00
 ---
 
 # スキルの文書の保守
@@ -41,8 +41,29 @@ generated:
 | `verified` | 任意 | 人のレビューの記録 `[{by: human:<id>, at: …}]` |
 | `sources` | 任意 | 出典 `[{id, resource, title}]`。本文から脚注 `[^id]` で引く |
 
+- frontmatter は YAML の部分集合で書く（下の「バンドルの検査」）。
 - 文書を足す・改名する・廃止するときは、`index.md` と `log.md` を必ず更新する。
 - スキルの改訂は `SKILL.md` の `metadata.version` で管理する。版を上げたら `log.md` に書く。
+
+## バンドルの検査
+
+`scripts/docs/okf_check.py` が、OKF のバンドルの形と Markdown のリンクを検査する（[ADR 330e](decision/330e-okf-bundle-check-tool.md)）。
+
+```bash
+python3 -I <skill>/scripts/docs/okf_check.py              # 違反で終了コード 1
+python3 -I <skill>/scripts/docs/okf_check.py --self-test  # 違反例を検出できることを確かめる
+```
+
+| 検査 | 内容 |
+| --- | --- |
+| OKF の適合条件 | `index.md`・`log.md` 以外の `.md` の frontmatter が YAML の部分集合として読め、空でない `type` を持つ。`index.md`・`log.md` が OKF §8・§9 の形である |
+| プロファイルの規則 | パスごとの `type`・必須キー・値・ダブルクォート・`#` 見出し・必須の節。意思決定記録と作業項目の形（下の 2 節） |
+| 索引 | バンドルのルートの `index.md` がすべての文書を列挙し、題名・説明が frontmatter と一致する |
+| リンク | 相対リンクの指す先があり、見出しアンカー（GitHub の規則）が指す Markdown にある。`/` で始まるリンクを書かない |
+
+- frontmatter の YAML の部分集合: ブロックのマッピングと列（字下げは空白。列はキーより深く）、引用符付きと 1 行のプレーンのスカラ、要素がスカラだけのフローの列 `[a, b]`、コメント。フローのマッピング `{…}`・ブロックのスカラ `|`・`>`・複数行のプレーン・アンカー・タグ・キーの重複は使わない。
+- 道具の設定は、適用先の `trace/project.json` の `okf` にある（[traceability.md](traceability.md#プロジェクトの設定)）。このバンドルの規則は `scripts/docs/profiles/port-lang.json` で、適用先の設定からそのパスを指す。
+- 意思決定記録の `Decision Outcome` には、`Chosen option: "…", because …` か `採択: …` で始まる行を置く（プロファイルの `outcome_markers`）。
 
 ## 意思決定記録（`decision/`）
 

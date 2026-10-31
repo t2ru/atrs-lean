@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T23:00:00+09:00
+  at: 2026-10-31T20:10:00+09:00
 ---
 
 # バックログ
@@ -32,7 +32,7 @@ generated:
 | a89e | [Rust: HTTP 契約アダプタ](a89e-http-contract-adapter.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 31da | [第二言語での移植試行](31da-second-language-portability-pilot.md) | dropped | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
 | c7e8 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](c7e8-lang-semantics-sql.md) | done | [be49](be49-lean-project-scaffold.md) |
-| ddbd | [OKF バンドルとリンクの検査](ddbd-okf-bundle-lint.md) | todo | [be49](be49-lean-project-scaffold.md) |
+| ddbd | [OKF バンドルとリンクの検査](ddbd-okf-bundle-lint.md) | done | [be49](be49-lean-project-scaffold.md), [a49c](../../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md) |
 | fb50 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](fb50-rust-project-scaffold.md) | todo | — |
 | ddb4 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](ddb4-rust-spec-mirror-and-fare-core.md) | todo | [fb50](fb50-rust-project-scaffold.md), [eff6](eff6-target-model-fare-and-refinement.md), [d77c](d77c-verus-mirror-generator.md), [ffdc](ffdc-trace-tooling.md) |
 | 9c1b | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](9c1b-rust-usecases-core.md) | todo | [ddb4](ddb4-rust-spec-mirror-and-fare-core.md), [26c5](26c5-target-model-usecases-and-refinement.md), [ffdc](ffdc-trace-tooling.md) |
@@ -60,7 +60,7 @@ be49 ┬ a8be, c7e8 ─────────┐
      ├ 1ae4*（Machine）─ f7b7 ─ ae04 ┤
      ├ 591d ─ 25f7 ─ bbcc  ├─ a8ef ─ eff6 ─ ddb4（Rust）
      ├ a936* ─ d77c（生成器）┘
-     └ ddbd
+     └ ddbd（← a49c*）
 fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
 機能: 4e0e → 44f8、0be7 → aedf → ac71 → 26c5 → 9c1b → 4b0e → a89e、4b0e → 9c04
 原典との照合: f18c → 各機能（0be7・aedf・4e0e・44f8・ac71・a89e）、f18c → 773f

@@ -19,3 +19,4 @@ generated:
 | 1ae4 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](1ae4-machine-refinement-framework.md) | done | — |
 | a936 | [LangSemantics.Rust: Rust の意味論](a936-lang-semantics-rust.md) | todo | — |
 | de90 | [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](de90-skill-docs-okf-bundle-and-records.md) | done | — |
+| a49c | [OKF バンドルとリンクの検査の道具](a49c-okf-bundle-check-tool.md) | done | [de90](de90-skill-docs-okf-bundle-and-records.md) |

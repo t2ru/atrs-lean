@@ -1,5 +1,5 @@
 ---
-type: Guideline
+type: Overview
 title: "作業規約（rules）"
 description: "作業規約の索引と、規約・文書間の優先順位。"
 tags: [rules, index]

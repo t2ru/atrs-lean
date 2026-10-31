@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:40:00+09:00
+  at: 2026-10-31T20:10:00+09:00
 ---
 
 # バックログ規約
@@ -68,6 +68,7 @@ generated:
 | `done` | 完了条件をすべて満たした |
 | `dropped` | 取りやめ。理由を本文に書く |
 
+- 節（`目的`・`範囲`・`対象外`・`完了条件`・`参照`。この順。間に別の節を足してよい）と `state` の値、`done` の項目の完了条件が埋まっていることは、`okf_check.py` が検査する（[documentation.md](documentation.md#検査)）。
 - `depends_on` の項目が `done` になるまで着手してはならない（仕様の調査など、依存しない部分を先行する場合は範囲を分割した新項目を作る）。
 
 ## 完了の定義（Definition of Done）
