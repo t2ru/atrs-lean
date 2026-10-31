@@ -4,11 +4,11 @@ title: "運賃計算（Spec と SourceModel）"
 description: "基本運賃・運賃・合計金額を Spec（厳密整数）と SourceModel（LangSemantics.Java）の両方で実装する。"
 tags: [backlog, spec, source-model, fare]
 id: "25f7ef96-f77d-4ed8-973d-8cecc2a0f227"
-state: doing
+state: done
 depends_on: ["a8be97e4-d846-4b86-bfcc-413d6d980578", "591d9aa4-065b-4975-8146-86aae05b780a", "c7e8d83d-8d90-44fe-a6f5-de54b2efe811", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T14:40:17+09:00
+  at: 2026-10-31T15:16:09+09:00
 ---
 
 # 運賃計算（Spec と SourceModel）
@@ -31,9 +31,9 @@ generated:
 ## 完了条件
 
 - [x] [fare-calculation.md](../spec/fare-calculation.md) の全例がベクタ化され、両モデルで通る
-- [ ] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
+- [x] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
 - [x] 1430 円・30% の例で [Spec] 1100、[Source] 1000 になる
-- [ ] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）
+- [x] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）
 
 ## 進め方
 
@@ -46,7 +46,7 @@ generated:
     - **2b-1（済み）**: ABS-026 の補題と [Spec] の修正（MD-8 の `NOP`、D-027 の範囲）
     - **2b-2** は、さらに 2b-2a・2b-2b に分けた（2026-10-31 の決定）。
       - **2b-2a（済み）**: 標準の抽象化 α の葉と核（ABS-048）、`dev_D027` と `Nontrivial`、[Spec] の修正（参照の答えの射影、空白の便名）
-      - **2b-2b（残り）**: ABS-026 の主定理と付帯の義務（`InitSurj`、必要性 G9）、W 課題 ABS-127。この項目は 2b-2b で `done` にする
+      - **2b-2b（済み）**: ABS-026 の主定理と付帯の義務（`InitSurj`、必要性 G9）、W 課題 ABS-127
 
 ## 第 1 段の結果
 
@@ -146,6 +146,24 @@ generated:
   - 核: 定義域の上で単射な葉は汎用の `undefOrEq`、区間の行は `routeRowKer`（`FLIGHT_TIME` を捨てる）、答えは `answerKer`
 - 差異の成分: `@[deviation "D-027"] dev_D027`（`aiMQ` が定義される）と `Nontrivial`（未知の搭乗クラス `X` の DB が反例）
 - obligation-check の G7 で、`@[kernel]` の定数をその葉自身に適用した核を受けるようにした（`ObligationFixture` に正例・反例）。
+
+## 第 2 段 b-2b の結果
+
+- R 課題 ABS-026: `Abstraction.MasterData.queryRefines : Refines queryMachine (queryConcrete.restrict dev_D027) glueMQ`
+  - `run_correct`: 前提を満たす入力では、Mapper の結果のどの許される並びでも、`run` は例外を投げず、答えの写しは [Spec] の答えに等しい。
+  - 許される並びの存在は、`ORDER BY` の文を表示順で `mergeSort` した並び（`mergeOrder`）で示した。
+  - 問い合わせごとの一致は `Abstraction.MasterData.Query` にある。
+    - 参照: 搭乗クラス・運賃種別・区間・便マスタ
+    - ピーク時期と積算比率
+    - コードリスト 8 つ
+  - 前提の取り出し（`Pre`）と、キャッシュの参照の一般形（`Lookup`）を分けた。
+- 付帯の義務: `queryRefines_initSurj`。`Sound`・`InitIs` は既存の `queryMachine_sound`・`queryMachine_initIs`。
+- W 課題 ABS-127（G9 の必要性）: `need_D027 : ¬ Refines queryMachine queryConcrete glueMQ`
+  - 未知の搭乗クラス `X` の DB では α が定義されず、入力の全域性が破れる。
+  - [Source] がこの DB で `IllegalArgumentException` を投げることは、`unknownBoardingClass_throws` で示した。
+- α の修正: `dateOfJ`（`LocalDate`）を、通算日数で写す定義に改めた（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。
+- obligation-check の G4: 帰納型について処理系が生成する補助の定数（`ctorIdx`、列挙型の `ofNat`）を、構造的な参照として許した。[Source] が [Spec] の列挙型を使う（ADR 8f18）ためである。
+- 意図から書く例: `Tests.SpecChecks` に、fare-calculation.md の例の表の期待値を手で書いた検査を置いた。拒む例も含む（[Source] の値 1000、丸め前の 53560、マスタに無い入力）。
 
 ## 参照
 

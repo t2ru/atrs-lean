@@ -10,7 +10,7 @@ date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T14:40:17+09:00
+  at: 2026-10-31T15:16:09+09:00
 ---
 
 # ABS-026 の証明の構成と、空港コード NOP の禁止・D-027 の範囲・LocalDate の通算日数の修正を決める
@@ -65,6 +65,8 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 | 参照の答えの射影（2b-2a） | [Spec] の参照の答えのうち、搭乗クラス・運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）とする。[Source] の参照の結果には表示順が無い（Mapper が `display_order` を選ばない）。表示順はコードリストの問い合わせだけが観測する。差異は増えない（プロジェクトオーナーの決定） |
 | 空白の便名（2b-2a） | `Query.Valid` の便名に「空白でない」（`Spec.Prim.hasText`。文字クラス `Blank` は Java の `Character.isWhitespace` と同じ集合）を加える。`Query.Valid` は原典の `Assert.hasText` に当たるので、誤りの修正である。`FlightName.WellFormed` は変えない（プロジェクトオーナーの決定） |
 | 標準の抽象化 α の形（2b-2a） | 値・行・問い合わせ・答えの写しは `@[std_abs]` の葉とし、核の定理を示す（ABS-048）。<br>- 行の写しを合成にしないのは、`Varchar n` の述語（`String.length`）が項に現れ、G7 の許可した構成に収まらないためである<br>- マスタ全体・設定・入力（`masterDataOf`・`configOf`・`aiMQ`）は、葉を `Option.bind`・`List.mapM` などで組んだ合成とする<br>- 答えの写し `answerOf?` の核 `answerKer` は、[Spec] が観測する成分（`answerObs`）の一致である |
+| `LocalDate` の写し（2b-2b） | `dateOfJ` は、通算日数が同じ [Spec] の暦日に写す（`LocalDate` として正規な値だけに定義する）。年月日で写す定義では、[Spec] の `Date.ofEpochDay?` の完全性（範囲内の全日で値を返すこと。`lake test` の全日検査だけで、証明は無い）が要るためである |
+| 帰納型の補助の定数（2b-2b） | obligation-check の G4 は、[Spec] の帰納型について処理系が生成する補助の定数（`ctorIdx`、列挙型の `ofNat`）を、構造的な参照として許す。[Source] は [Spec] の列挙型を使う（ADR 8f18） |
 | 部分写像の汎用の核（2b-2a） | 定義域の上で単射な部分写像の核を、汎用の `@[kernel]` の定数 `undefOrEq`（どちらも定義されないか、等しい）をその葉自身に適用して書けるよう、obligation-check の G7 を広げる。別の葉に適用したものは受けない（`ObligationFixture` の正例・反例）。葉ごとに同じ形の核の定数を書く冗長を避ける |
 | 補題の置き場所 | 次のとおり置く。依存の向き（check_lean）に従う。<br>- アプリに依存しない補題（`LocalDate`・`HashMap`）: スキルの assets<br>- [Spec] と `LangSemantics.Java` をつなぐ補題（暦の一致など）: `Abstraction`<br>- R 課題の定理ではないので、`@[obligation]` は付けない |
 
@@ -83,6 +85,7 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 * 開発中に、JVM と 4229 点（-1316〜10183 年と、日付の範囲の端）を突き合わせ、両向きで一致することを確かめた。
 * `toEpochDay_ofEpochDay` などの補題が、`sorry`・公理なしでビルドされる（axiom-check）。
 * `Tests.SpecChecks` で、`NOP` の空港が MD-8 を破ることを確かめる。
+* ABS-026 は `Abstraction.MasterData.queryRefines`、W 課題 ABS-127 は `need_D027` として証明した（obligation-check の G0〜G9 に誤り無し）。
 * 2b-1 の補題の一覧は [backlog 25f7](../backlog/25f7-fare-calculation-both-models.md#第-2-段-b-1-の結果) に記す。
 
 ## More Information

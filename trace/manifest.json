@@ -5,6 +5,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.AirportCd.hasText_of_wellFormed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AirportCd.no_dash_of_wellFormed",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.Answer.boardingClass",
       "layer": "Abstraction"
     },
@@ -61,6 +69,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Date.le_iff_epochDay_le",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.RouteAt",
       "layer": "Abstraction"
     },
@@ -69,11 +81,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.aiMQ_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.airportCodes_nodup",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.airportOf",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.MasterData.airportOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.airportOfRow_code",
       "layer": "Abstraction"
     },
     {
@@ -94,6 +118,14 @@
     },
     {
       "name": "Abstraction.MasterData.airport_eq_insertNop",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.allowed_mergeSort",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.allowed_perm",
       "layer": "Abstraction"
     },
     {
@@ -121,7 +153,39 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.answer_boardingClassOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answer_fareTypeOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answer_flightMaster",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answer_peakTime",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.answer_route",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.apOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.apOf_at",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.append_sep_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.assertHasText_ok",
       "layer": "Abstraction"
     },
     {
@@ -134,6 +198,10 @@
     },
     {
       "name": "Abstraction.MasterData.bcCdOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.bcCdOf_mapping",
       "layer": "Abstraction"
     },
     {
@@ -157,7 +225,39 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.boardingClassOfRow_code",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.boardingClassOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.boardingClassOfRow_parts",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.boardingClass_query",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.codeList_airport",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.codeList_boardingClass",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.codeList_creditType",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.codeList_fareType",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.codeList_fixed",
       "layer": "Abstraction"
     },
     {
@@ -186,6 +286,10 @@
     },
     {
       "name": "Abstraction.MasterData.dateOfJ_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dateOfJ_ofEpochDay",
       "layer": "Abstraction"
     },
     {
@@ -225,6 +329,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.dummyAirport",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.dummyRoute",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.eqInt_holds",
       "layer": "Abstraction"
     },
@@ -245,7 +357,15 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.fareTypeOfRow_code",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.fareTypeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.fareType_query",
       "layer": "Abstraction"
     },
     {
@@ -265,11 +385,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.flightMasterOfRow_fields",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.flightMasterOfRow_kernel",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.MasterData.flightMasterResultOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.flightMaster_query",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.flightMaster_route",
       "layer": "Abstraction"
     },
     {
@@ -301,6 +433,26 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.ftCdOf_mapping",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.getPeakTime_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.getPeakTime_go",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.get_ofList_perm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.glueMQ",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.hmOfStr",
       "layer": "Abstraction"
     },
@@ -321,7 +473,31 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.isBlank_eq_isJavaWhitespace",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.isUpperAlpha_not_blank",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.jdbcCodeList_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.keyBC",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.keyBC_proj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.keyFT",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.keyFT_proj",
       "layer": "Abstraction"
     },
     {
@@ -337,7 +513,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.mapM_some_getD",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.masterDataOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.masterDataOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.mergeOrder",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.mergeOrder_allowed",
       "layer": "Abstraction"
     },
     {
@@ -369,7 +561,15 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.natOfJ32_int",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.natOfJ32_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.need_D027",
       "layer": "Abstraction"
     },
     {
@@ -389,11 +589,27 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.peakPred",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.peakPred_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.peakTimeOfRow",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.peakTimeOfRow_dates",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.peakTimeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.peakTime_query",
       "layer": "Abstraction"
     },
     {
@@ -402,6 +618,14 @@
     },
     {
       "name": "Abstraction.MasterData.planeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.projBC",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.projFT",
       "layer": "Abstraction"
     },
     {
@@ -421,6 +645,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.queryRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.queryRefines_initSurj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.ratio_query",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.routeFindAll_eq",
       "layer": "Abstraction"
     },
@@ -429,11 +665,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.routeNos_nodup",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.routeOfRow",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.routeOfRow_codes",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.routeOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.routeOfRow_no",
       "layer": "Abstraction"
     },
     {
@@ -445,11 +693,51 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.route_airport",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.route_query",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.rtOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.rtOf_at",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.run_correct",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.string_any_toList",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.toEntry",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.unknownBoardingClass_throws",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.adjacent_of_pairwise",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Prim.allowed_int_sorted",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Prim.allowed_map_eq_mergeSort",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.allowed_mergeSort_self",
       "layer": "Abstraction"
     },
     {
@@ -477,6 +765,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Prim.find?_congr",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.find?_mapM",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Prim.find?_perm",
       "layer": "Abstraction"
     },
@@ -493,7 +789,31 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Prim.mapM_some_cons",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.mapM_some_length",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.mapM_some_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.mapM_some_mem",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.mapM_some_mem'",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Prim.mem_cross",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Prim.nodup_map_of_imp",
       "layer": "Abstraction"
     },
     {
@@ -3523,6 +3843,11 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.MasterData.need_D027",
+      "to": "ABS-127"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.MasterData.peakTimeOfRow_kernel",
       "to": "ABS-048"
     },
@@ -3535,6 +3860,11 @@
       "type": "obligation",
       "from": "Abstraction.MasterData.queryOf?_kernel",
       "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.queryRefines",
+      "to": "ABS-026"
     },
     {
       "type": "obligation",

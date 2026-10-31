@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T15:16:09+09:00
 ---
 
 # バックログ
@@ -18,7 +18,7 @@ generated:
 | be49 | [Lean プロジェクトの雛形と CI](be49-lean-project-scaffold.md) | done | — |
 | a8be | [LangSemantics.Java: Java 基本型の意味論](a8be-lang-semantics-java.md) | done | [be49](be49-lean-project-scaffold.md) |
 | 591d | [Spec: ドメイン型・基本演算・マスタデータ](591d-abstract-domain-types-and-master-data.md) | done | [be49](be49-lean-project-scaffold.md) |
-| 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | doing | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | done | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
 | bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
 | 0be7 | [空席照会（B1）](0be7-flight-search-usecase.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | aedf | [予約（B0/B2）](aedf-reservation-usecase.md) | todo | [0be7](0be7-flight-search-usecase.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |

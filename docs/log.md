@@ -2,6 +2,15 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) を完了した（`done`）。R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と、W 課題 ABS-127（`need_D027`）を証明した。fare-calculation.md の例を、意図から書く例として `Tests.SpecChecks` に置いた。
+* **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 2 点の決定を加えた。
+  * `LocalDate` の写し `dateOfJ` を、通算日数で写す定義に改めた
+  * obligation-check の G4 で、帰納型の補助の定数を許すようにした
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（ABS-026・ABS-127 の定理名）
+  * [backlog/README.md](backlog/README.md)
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) の第 2 段 b-2a を終えた（`doing`）。ABS-026 の標準の抽象化 α（葉 19 個と核の定理、ABS-048）と `dev_D027`（D-027）を `Abstraction.MasterData` に置いた。
 * **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 4 点の決定を加えた。
   * 参照の答えの射影（表示順を除く）

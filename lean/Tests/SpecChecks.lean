@@ -100,4 +100,42 @@ def sample : MasterData where
 #guard (sample.routeOf ⟨"HND"⟩ ⟨"HND"⟩).isNone
 #guard CodeList.contains (CodeList.airport sample) "HND" && !CodeList.contains (CodeList.airport sample) "NOP"
 
+/-! ### 運賃計算の意図から書く例（`docs/spec/fare-calculation.md` の例の表。ADR 9ac6 の採用 C）
+
+期待値は表から手で書いたもので、`run`・ベクタから写していない。拒む例（[Source] の値・丸め前の値・マスタに無い入力）を含む。 -/
+
+-- 基本運賃: floorDiv((routeBasicFare + extraCharge) * ratio, 100)。ピーク時期は 12/19〜25 が 125、12/26〜31 が 140
+#guard Fare.basicFare sample 20600 .N (ymd 2026 11 1) == some 20600
+#guard Fare.basicFare sample 20600 .N (ymd 2026 12 26) == some 28840
+#guard Fare.basicFare sample 20600 .S (ymd 2026 12 20) == some 32000
+#guard Fare.basicFare sample 37900 .S (ymd 2026 12 31) == some 60060
+-- 拒む例: マスタに無い搭乗クラスでは基本運賃が無い
+#guard Fare.basicFare { sample with boardingClasses := [bcN] } 20600 .S (ymd 2026 11 1) == none
+
+-- 運賃: 割引後に 1 円未満を切り捨て、100 円単位に切り上げる
+#guard Fare.fare 20600 0 == 20600
+#guard Fare.fare 20600 5 == 19600
+#guard Fare.fare 28840 30 == 20200
+#guard Fare.fare 32000 10 == 28800
+#guard Fare.fare 1430 30 == 1100
+#guard Fare.fare 0 30 == 0
+-- 拒む例: [Source] の値 1000（D-002）にはならない
+#guard Fare.fare 1430 30 != 1000
+
+-- 合計金額: 区間の基本運賃 20600、片道 OW（0%）・往復 RT（5%）、小児の比率 60%、大人は 12 歳以上
+def rt : FareType := ⟨.RT, "往復運賃", 5, 90, 0, 1, 2⟩
+def fareMd : MasterData :=
+  { sample with routes := [{ route1 with basicFare := 20600 }, { route2 with basicFare := 20600 }],
+                fareTypes := [ow, rt] }
+def flight (name : String) (ft : FareTypeCd) : Flight := ⟨⟨ymd 2026 11 1, ⟨name⟩, .N, ft⟩, 10⟩
+def pax (age : Nat) : Passenger := ⟨"山田", "太郎", age, .M, none⟩
+
+#guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30] == some 20600
+#guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30, pax 28, pax 5] == some 53600
+#guard Fare.totalFare Config.default fareMd [flight "NTT001" .RT, flight "NTT002" .RT] [pax 40] == some 39200
+#guard Fare.totalFare Config.default fareMd [flight "NTT001" .RT, flight "NTT002" .RT] [pax 40, pax 11] == some 61900
+-- 拒む例: 切上げは合計にだけ行う（丸め前の 53560 ではない）。マスタに無い便名では合計が無い
+#guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30, pax 28, pax 5] != some 53560
+#guard Fare.totalFare Config.default fareMd [flight "NTT999" .OW] [pax 30] == none
+
 end Tests.SpecChecks
