@@ -2,6 +2,20 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR 0043](decision/0043-vacuity-literature-necessity-and-mutation.md) で、空虚化を防ぐ義務（ADR 0039）を既存の研究と対応づけた。作成時は 0042 だったが、main に [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md) が先に入ったため 0043 に採番し直した。対応づけた研究は、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies・CompCert である。
+  * 採用 A: 成分の必要性（成分を外すと R 課題の命題が偽になること。検査 G9）
+  * 採用 B: 仕様の変異テスト（[backlog 0033](backlog/0033-mutation-testing-of-named-components.md)）
+  * 採用 C: 意図から書く例（Spec-Testing Proofs）
+* **Creation**: [backlog 0032](backlog/0032-component-necessity-witness.md) を作った。スキル port-lang の `Machine.Adequacy` に必要性の補題を、`MachineTest/Adequacy.lean` に反例 12・13 と正例を加えた。`obligation-check` に G9 を加えた。
+* **Creation**: [backlog 0033](backlog/0033-mutation-testing-of-named-components.md) を作った（`todo`）。
+* **Update**: 「強すぎる前提になっていないか」を主眼に敵対的レビューを行い、G9 を改めた（差異 ID ごとの集計、被覆 `Covers`、観測型の和 `anyOf`、ID は定数に 1 つ、`¬ Refines`・`→ False` の受理、PRE が全域な基底の `TotalUnder A always`、R 課題の基底に限った環境の前提）。指摘と対応は [ADR 0043](decision/0043-vacuity-literature-necessity-and-mutation.md) に記した。backlog 0032 を完了した。
+* **Update**: ADR 0043 を次の文書に反映した。
+  * [spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)（W 課題・SPEC-006・空虚化を防ぐ義務）
+  * [spec/assurance.md](spec/assurance.md)（W 課題を人が読む限界を削り、必要性の範囲の限界を加えた）
+  * [ADR 0039](decision/0039-refinement-non-vacuity-obligations.md) の More Information（補足の追記）
+  * [backlog 0004](backlog/0004-fare-calculation-both-models.md) の完了条件
+  * スキル port-lang の SKILL・architecture・traceability・verification・conformance・spec-documents・lean/rules
+  * [AGENTS.md](../AGENTS.md)
 * **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 1 段を終えた（`doing`）。
   * Lean `Spec.Fare` と `SourceModel.Fare`（`SourceModel.Model`・`SourceModel.MasterData`）を作った。
   * 運賃計算の全例をベクタにし、両モデルで実行するようにした（`conformance/{spec,source-model,shared}/fare/`）。
@@ -25,11 +39,12 @@
   * スキル port-lang の conformance・lean/trace-attributes
   * [AGENTS.md](../AGENTS.md)
 
-* **Creation**: [ADR 0043](decision/0043-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
+* **Creation**: [ADR 0044](decision/0044-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
   * スキルの [SKILL.md](../.agents/skills/port-lang/SKILL.md) に「移植が成り立つ条件」（適用の前提・成立の条件・言えること・言えないこと）を加え、版を 0.4 にした。
   * 進め方の既定として [workflow.md](../.agents/skills/port-lang/references/workflow.md) を新設した（評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録）。プロジェクトは置き換えてよい。
   * スキルの process.md・verification.md から workflow.md を参照した。
-  * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0043 に記した。（作成時は 0042 だったが、main に [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md) が先に入ったため 0043 に採番し直した）
+  * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0044 に記した。作成時は 0042 だったが、main に [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md)・[ADR 0043](decision/0043-vacuity-literature-necessity-and-mutation.md) が先に入ったため、0044 に採番し直した。
+  * main の ADR 0043（成分の必要性・仕様の変異テスト・意図から書く例）に合わせて、成立の条件 S2 と workflow.md の判断を記録する事項・検査ゲートを整えた。
 * **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に「進め方の適用（ATRS）」を加えた。
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
   * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。

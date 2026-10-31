@@ -100,7 +100,7 @@ Chosen option: "成り立つ条件を SKILL.md に置き、進め方を「置き
 
 ## More Information
 
-* 作成時は 0042 だったが、main に [ADR 0042](0042-fare-source-model-and-shared-vectors.md) が先に入ったため、0043 に採番し直した。
+* 作成時は 0042 だったが、main に [ADR 0042](0042-fare-source-model-and-shared-vectors.md)・[ADR 0043](0043-vacuity-literature-necessity-and-mutation.md) が先に入ったため、0044 に採番し直した。
 * [ADR 0025](0025-extract-porting-method-as-agent-skill.md), [ADR 0033](0033-foundational-principles.md), [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md), [ADR 0037](0037-conflict-as-spec-nondeterminism.md), [ADR 0039](0039-refinement-non-vacuity-obligations.md)
 * スキル: [SKILL.md](../../.agents/skills/port-lang/SKILL.md#移植が成り立つ条件)、[workflow.md](../../.agents/skills/port-lang/references/workflow.md)
 
@@ -127,6 +127,14 @@ Chosen option: "成り立つ条件を SKILL.md に置き、進め方を「置き
 | 2 | B | 用語の残り（「人が判断する事項」）。`Spec` の独立の漏れ。TR-N を差異の検査としている | 直した |
 
 第 2 巡の後の修正は、指摘の文面に沿って行い、第 3 巡は行っていない。
+
+main に [ADR 0043](0043-vacuity-literature-necessity-and-mutation.md)（成分の必要性・仕様の変異テスト・意図から書く例）が入ったのに合わせ、次を整えた。
+
+* 成立の条件 S2 に、W 課題の差異の必要性を加えた。
+* workflow.md の判断を記録する事項に、意図から書く例と `Spec` の食い違い（既存の規則）を加え、意図から書く例・変異テストへの参照を添えた。
+* 検査ゲートの例に、仕様の変異テストを加えた。
+
+いずれも main の規範を参照・再掲するだけで、新しい義務は足していない。そのため、敵対的レビューは再び行っていない。
 
 [^aidm-blog]: AWS Japan「[AI-Driven Modernization] AIエージェントに規律ある移行作業をさせる「AI Modernization Flow」を公開しました」 <https://aws.amazon.com/jp/blogs/news/aidm-introducing-ai-modernization-flow/>
 [^aimf]: aws-samples/sample-ai-modernization-flow（v0.11.0） <https://github.com/aws-samples/sample-ai-modernization-flow>

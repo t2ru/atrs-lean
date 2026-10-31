@@ -120,7 +120,7 @@ generated:
 
 ## 進め方の適用（ATRS）
 
-スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0043](../decision/0043-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
+スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0044](../decision/0044-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
 
 | 項目 | ATRS での扱い |
 | --- | --- |

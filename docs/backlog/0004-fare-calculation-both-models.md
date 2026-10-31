@@ -33,6 +33,7 @@ generated:
 - [x] [fare-calculation.md](../spec/fare-calculation.md) の全例がベクタ化され、両モデルで通る
 - [ ] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
 - [x] 1430 円・30% の例で [Spec] 1100、[Source] 1000 になる
+- [ ] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）
 
 ## 進め方
 

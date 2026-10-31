@@ -66,7 +66,7 @@ metadata:
 | # | 条件 | 対応する規則 |
 | --- | --- | --- |
 | S1 | **両端**（原則 A）: 各モデル・各ソースが担当のベクタを全件通す。両端の一致を、言語パックの決定論的な手段で確かめている。移植先の検証器を使う場合は、写しを再生成して差分が無いことも確かめる | 完了の定義、言語パックの `verification.md`・`harness.md` |
-| S2 | **内側**（原則 B）: `ABS-NNN`・`REF-NNN` の R 課題・W 課題が、`Machine.Refines` の形と空虚化を防ぐ義務を備えて証明されている。`sorry`・新規 `axiom`・`native_decide`・`bv_decide` が無い。`Spec` 自身の義務が証明されている。移植元側と移植先側が互いに依存せず、`Spec` は他の層に依存しない | [verification.md](references/verification.md#証明の運用)、[architecture.md](references/architecture.md#空虚化を防ぐ義務)、[依存の向き](references/architecture.md#依存の向き) |
+| S2 | **内側**（原則 B）: `ABS-NNN`・`REF-NNN` の R 課題・W 課題が、`Machine.Refines` の形と空虚化を防ぐ義務を備えて証明されている。W 課題は両向きの例と差異の必要性を持つ。`sorry`・新規 `axiom`・`native_decide`・`bv_decide` が無い。`Spec` 自身の義務が証明されている。移植元側と移植先側が互いに依存せず、`Spec` は他の層に依存しない | [verification.md](references/verification.md#証明の運用)、[architecture.md](references/architecture.md#空虚化を防ぐ義務)、[依存の向き](references/architecture.md#依存の向き) |
 | S3 | **差異**（原則 C）: `Spec` との差異が、すべて文書の登録簿とリファインメント定理の両方にある。`Spec` の非決定性は、登録簿と `@[nondet]` が対応している | 検査 TR-D・TR-G（G8）、非決定性は TR-N |
 | S4 | **追跡**: 追跡の検査 TR-* が、警告ではなく失敗扱いで通る（網羅・被覆・陳腐化・直接接続の禁止・参照切れ）。生成表が更新されている | [traceability.md](references/traceability.md#検査) |
 | S5 | **仕様文書**: 該当節が informative に置き換わり、規範節には `Spec` で表せないものだけが残っている | 完了の定義、[spec-documents.md](references/spec-documents.md) |
@@ -180,7 +180,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 | 種類 | 内容 | 参照 |
 | --- | --- | --- |
-| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
+| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ。W 課題は両向きの例と差異の必要性を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/conformance.md) |
 | 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の文書と `@[deviation]` の対応）、TR-G（R 課題の形と付帯の義務）、TR-N（非決定性の文書と `@[nondet]` の対応）、TR-V（ベクタの前提のラベル）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/architecture.md) |
