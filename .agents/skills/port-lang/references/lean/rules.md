@@ -102,6 +102,7 @@ require <project> from "./lean"
   - `Spec` 自身の課題は `Machine.Machine.Sound`（INIT ⇒ INV、INV の保存）で表す。標準の選択が関係に含まれることは、`Machine.Machine` の成分 `run_step` である。
   - 状態を持たない計算は `Machine.Machine.pure`・`Machine.Concrete.pure` と `Machine.Refines.of_pure` で簡単に示せる。
 - 既知差異は、名前付きの述語（前提型）または貼り合わせ関係・出力の対応の名前付きの成分（観測型）として定義し、`@[deviation "D-NNN"]` / `@[deviation "T-NNN"]` を付ける。無名の仮定で差異を吸収してはならない。
+- 差異の登録は `Abstraction.Gap`・`Refinement.Gap` の `@[gap_entry]` の宣言に書き、差異の生じる定義に `@[gap]` を付ける（[trace-attributes.md](trace-attributes.md#ギャップの登録簿)）。
 - 証明が未完の定理を `sorry` で残してはならない。
 
 ## スタイル

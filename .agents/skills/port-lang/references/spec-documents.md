@@ -27,7 +27,7 @@
 | **[Target]** | 移植先モデル。既知差異 `T-NNN` がある場合にだけ書く |
 
 - 草案には [Spec] と [Source] を書く。[Target] 固有の事項（移植先のパッケージ構成など）は書かない。例外は、[Target] と [Spec] の差異（`T-NNN`）である。これは具体化の課題一覧に登録し、関係する節からリンクする。
-- 異なる場合は両方の定義を並べ、差異を既知差異の一覧に ID（`D-NNN`）付きで登録し、相互にリンクする。
+- 異なる場合は両方の定義を並べ、差異を既知差異の一覧に ID（`D-NNN`）付きで登録し、相互にリンクする。一覧の正は Lean の登録簿（`@[gap_entry]`）であり、文書の表は道具が生成する。差異の行を足す・直すときは、Lean の宣言を書き、表を再生成する（[lean/trace-attributes.md](lean/trace-attributes.md#ギャップの登録簿)）。
 - 差異には種類を付ける。種類は、前提型・観測型・モデル外の 3 つである（[architecture.md](architecture.md#差異)）。
   - 前提型と観測型には、次の 3 つを書く。
     - Lean の名前（`@[deviation]`）
@@ -35,15 +35,15 @@
     - 差異の証拠の課題（W）
   - モデル外の差異は、Lean 名と課題の欄に「— モデル外」と書き、保証の限界の文書へリンクする。
   - 前提型・観測型の差異では、課題欄を空欄や「—」にしてはならない。
-- [Spec] の PRE の外での [Source] の振る舞い（前提違反など）は差異ではない。記録する場合は、既知差異とは別の表に置く。
+- [Spec] の PRE の外での [Source] の振る舞い（前提違反など）は差異ではない。記録する場合は、既知差異とは別の表に置く（登録簿では種類「PRE の外」とする。ID は `D-NNN` の系列から採る）。種類を確かめる作業が残っている違いは、種類「未確定」として登録する。
 - [Source] の記述では、移植元言語の意味論を言語パックの名前付き演算で書く（例: `j32mul`, `jdmul`, `jd2i`。[java/semantics.md](java/semantics.md)）。
 
 ## ID の体系
 
 | ID | 対象 | 置き場所 |
 | --- | --- | --- |
-| `D-NNN` | 既知差異（[Spec] と [Source] の違い） | 抽象化の課題一覧（meta）。Lean の `@[deviation]` |
-| `T-NNN` | 既知差異（[Spec] と [Target] の違い） | 具体化の課題一覧（meta）。Lean の `@[deviation]` |
+| `D-NNN` | 既知差異（[Spec] と [Source] の違い）と、それに準じて明示するもの（PRE の外・未確定） | Lean の `@[gap_entry]`（正）と、そこから生成する抽象化の課題一覧（meta）の表。差異の述語・成分の `@[deviation]`、箇所の印 `@[gap]` |
+| `T-NNN` | 既知差異（[Spec] と [Target] の違い） | Lean の `@[gap_entry]`（正）と、そこから生成する具体化の課題一覧（meta）の表。`@[deviation]`・`@[gap]` |
 | `ABS-NNN` | 抽象化の証明課題（R・W・C・L）。W は `ABS-1NN` が `D-0NN` に対応する | 抽象化の課題一覧。Lean `Abstraction` の `@[obligation]` |
 | `REF-NNN` | 具体化の証明課題（R・W・C・L）。W は `REF-1NN` が `T-0NN` に対応する | 具体化の課題一覧（meta）。Lean `Refinement` の `@[obligation]` |
 | `SRC-NNN` | `TargetModel` ⇔ 移植先ソースの決定論的な確認課題 | 同上 |

@@ -2,6 +2,17 @@
 
 ## 2026-10-31
 
+* **Creation**: [backlog 114a](backlog/114a-gap-attributes-and-trace-in-skill.md) を作り、完了した（`done`）。
+* **Creation**: [ADR 7fe4](decision/7fe4-move-trace-attributes-to-skill.md) で、`lean/Trace`（追跡属性・trace-dump・obligation-check の本体）をスキル port-lang の `assets/lean/Trace` に移した。テストは `assets/lean/TraceTest` と `lake exe trace-test` に移した。
+* **Creation**: [ADR cc24](decision/cc24-gap-registry-as-lean-attributes.md) で、ギャップの登録簿を Lean の `@[gap_entry]`（型 `Trace.Gap`）に置き、箇所の印 `@[gap]` を足した。`lean/Abstraction/Gap.lean` に D-001〜D-030 を移し、未確定の差異に D-028、PRE の外の ID の無かった 2 行に D-029・D-030 を割り当てた。検査 TR-K・GK を足した。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)（差異の表を生成区画にした）
+  * [spec/assurance.md](spec/assurance.md)（検査器の置き場所、ギャップの登録簿の行）
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.5、`Trace` の置き場所）
+  * [backlog/README.md](backlog/README.md)
+  * スキル port-lang の SKILL.md（版 0.5）・`architecture.md`・`traceability.md`（TR-K）・`lean/trace-attributes.md`（ギャップの登録簿）・`spec-documents.md`・`lean/rules.md`・`workflow.md`
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) を完了した（`done`）。R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と、W 課題 ABS-127（`need_D027`）を証明した。fare-calculation.md の例を、意図から書く例として `Tests.SpecChecks` に置いた。
 * **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 2 点の決定を加えた。
   * `LocalDate` の写し `dateOfJ` を、通算日数で写す定義に改めた

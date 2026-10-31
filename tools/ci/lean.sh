@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7・114a）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -75,7 +75,7 @@ step "trace: インベントリ・manifest・traceability.md の生成区画が�
 "$trace" inventory target --check
 "$trace" manifest --dump "$out" --obligations "$ob" --check
 
-step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/X/R、TR-G・TR-N）"
+step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R、TR-G・TR-N）"
 "$trace" check --dump "$out" --obligations "$ob"
 
 step "workspace: ルートで lake setup-file（Lean LSP 用）"

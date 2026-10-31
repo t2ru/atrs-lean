@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T15:16:09+09:00
+  at: 2026-10-31T16:30:00+09:00
 ---
 
 # バックログ
@@ -48,6 +48,7 @@ generated:
 | 0fdf | [Spec の非決定性の選択の型と入口の環境の前提](0fdf-spec-nondet-and-entry-env.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [f7b7](f7b7-refinement-non-vacuity.md) |
 | ae04 | [名前付きの成分の必要性の義務と検査（G9）](ae04-component-necessity-witness.md) | done | [f7b7](f7b7-refinement-non-vacuity.md) |
 | 0d1a | [名前付きの成分の変異テスト](0d1a-mutation-testing-of-named-components.md) | todo | [bbcc](bbcc-fare-abstraction-proofs.md), [ae04](ae04-component-necessity-witness.md) |
+| 114a | [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](114a-gap-attributes-and-trace-in-skill.md) | done | [ffdc](ffdc-trace-tooling.md), [ae04](ae04-component-necessity-witness.md) |
 
 ## 推奨する着手順
 

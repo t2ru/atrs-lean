@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:40:00+09:00
+  at: 2026-10-31T16:30:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認

@@ -1,6 +1,17 @@
 # Lean の追跡属性と trace-dump
 
 追跡の考え方は [traceability.md](../traceability.md)。ここでは Lean 側の実装を定める。
+実装はスキルの `assets/lean/Trace/` にあり、プロジェクトは Lake の依存（`require langSemantics`）として取り込む。
+
+| モジュール | 内容 |
+| --- | --- |
+| `Trace.Attr` | 文字列引数の追跡属性 |
+| `Trace.Gap` | ギャップの登録簿（`Trace.Gap`・`@[gap_entry]`） |
+| `Trace.Dump` | `trace-dump` の本体 |
+| `Trace.Obligation` | `obligation-check` の本体（TR-G の Lean 側と GK） |
+
+道具の入口（`main`）は、モデルを import するプロジェクトの側に置く（例: `Tools/TraceDump.lean` が `Trace.Dump.loadEnv` と `Trace.Dump.dumpJson` を呼ぶ）。
+`assets/lean/` の `lake exe trace-test` は、`TraceTest/` のフィクスチャで `trace-dump`・`obligation-check` の処理を確かめる。
 
 ## 属性
 
@@ -13,6 +24,7 @@
 | `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理と補題、`Spec` 自身の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
 | `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.anyOf` で並べる） |
+| `@[gap "<ID>", …]` | ギャップの生じる `Spec`・`SourceModel`・`TargetModel` の定義（箇所の印）。`D-NNN` は `Spec`・`SourceModel`、`T-NNN` は `Spec`・`TargetModel` に付ける | `D-NNN` / `T-NNN`。宣言（`@[gap_entry]`）のある ID |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型（`Machine.ofChoice` の選択の型の葉） | `N-NNN` |
 | `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節 |
 | `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係。`KernelIs` の K） | α・β の表の節 |
@@ -31,6 +43,46 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 - `@[nondet]` の付け忘れ・余分と、`@[std_abs]`・`@[kernel]`・`@[env_pre]` の付け忘れは、TR-N・TR-G で検出される。追跡属性はモデルの層の定数にだけ付ける（TR-G の G0）。
 - `@[source]` / `@[target]` のハッシュは、決定論的な検査が合格したときに道具（`rehash`）が書き込む。手で書き換えてはならない（[traceability.md](../traceability.md#検査済みハッシュ)）。
 - 移植元側の層に `@[target]` を、移植先側の層に `@[source]` を付けてはならない（TR-X）。
+- `@[gap]` の不足・誤りは TR-K と obligation-check の GK で検出される。属性は `merkle` に含まれないので、印を足しても `@[source]` の再検査は要らない。
+
+## ギャップの登録簿
+
+`Spec` とモデルのギャップは、差異（前提型・観測型・モデル外。[architecture.md](../architecture.md#差異)）と、それに準じて明示するもの（`Spec` の PRE の外での振る舞い・種類が未確定のもの）である。
+登録簿の正は Lean とし、ID ごとに型 `Trace.Gap` の宣言を 1 つ置いて `@[gap_entry]` を付ける。`D-NNN` は `Abstraction` の層（例: `Abstraction.Gap`）、`T-NNN` は `Refinement` の層（例: `Refinement.Gap`）に置く。
+説明（表の「差異」「振る舞い」「状況」の列）は宣言の docstring に Markdown で書く。文書の表は、道具が `trace-dump` の `gaps` から生成する（手で編集しない）。
+
+```lean
+/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)` -/
+@[gap_entry]
+def D001 : Trace.Gap where
+  id := "D-001"
+  kind := .pre
+  sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
+  premise := "`dev_D001`: `x` が 0〜200,000"
+  rTasks := ["ABS-001", "ABS-004"]
+  wTask := some "ABS-101"
+  impact := some (.abort, "差のある運賃が保存される")
+  backlog := ["<Lean 側を完了させる作業項目の ID>"]
+```
+
+| 種類（`kind`） | 意味 | 必須の欄 | 書かない欄 | 印・差異の定数 |
+| --- | --- | --- | --- | --- |
+| `pre`・`preConcreteInput`・`preConcreteState`・`preConcreteEnv` | 前提型（抽象側／具体側の入力・状態・環境） | `premise`（前提）・`rTasks`・`wTask`・`impact`・`backlog` | `resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` |
+| `observational` | 観測型 | `premise`（成分）・`rTasks`・`wTask` | `impact`・`resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` |
+| `outOfModel` | モデル外 | `premise`（モデル外とする理由） | `rTasks`・`wTask`・`impact`・`resolution` | 持たない |
+| `outsidePre` | `Spec` の PRE・INV の外での具体側の振る舞い（差異ではない） | `premise`（それを除く `Spec` の前提） | `rTasks`・`wTask`・`impact`・`resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` は持たない |
+| `undetermined` | 種類が未確定 | `resolution`（確定させる作業） | `premise`・`rTasks`・`wTask`・`impact` | `@[deviation]` は持たない |
+
+- `sites`（1 つ以上）は、リポジトリのルートからの文書のパスとアンカーで書く。表では文書からの相対リンクになり、`note` はリンクの後に続く。
+- 値は、定義の展開だけで構築子と文字列リテラルの組み合わせになる式で書く（`Trace.Gap.ofConst?` が評価せずに式から読む）。
+- `@[gap_entry]` は付けた時点で値を読み、種類ごとの必須の欄と書かない欄（`Trace.Gap.problems`）を検査する。
+- obligation-check の GK は、次を検査する。
+  - 宣言の層と docstring
+  - ID の重複
+  - 印の層と、印の ID の宣言
+  - `@[deviation]` の ID が前提型・観測型の宣言を持つこと
+  - 種類と印・差異の定数が矛盾しないこと
+- `backlog` は、Lean 側（箇所の印・W 課題）を完了させる作業項目である。前提型の影響の表の列にもなる。TR-K の段階導入に使う。
 
 ## trace-dump
 
@@ -46,6 +98,8 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
   "module": "TargetModel.Fare"
 }
 ```
+
+出力の最上位は `{"lean_version", "definitions": [...], "gaps": [...]}` である。`gaps` の各要素は、登録の宣言の名前・モジュール・値の各欄（`id`・`kind`・`kind_label`・`sites`・`premise`・`r_tasks`・`w_task`・`impact`・`resolution`・`backlog`）・docstring（`doc`）と、同じ ID の `@[gap]` の定数（`markers`）・`@[deviation]` の定数（`deviations`）からなる。`obligation-check` の JSON も同じ `gaps` を持つ。
 
 - `references`: 定義の型と本体に現れる定数。`Abstraction`・`Refinement` の定理については、これからモデル間の対応を自動導出する（どの `SourceModel` / `TargetModel` 定義がどの `Spec` 定義と結ばれているか）。
 - `merkle`: 定義の型と本体の `Expr` のハッシュに、`references` のうち **同じ層と、その層が依存する `LangSemantics`・`Machine`** の定数の `merkle` を名前順に合成したもの。`LangSemantics` の変更でも、写しのハッシュがずれるようにするためである。依存する定義が変わっても値が変わる。循環参照（相互再帰）は、強連結成分ごとにまとめて計算する。
