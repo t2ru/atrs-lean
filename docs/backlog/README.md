@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T06:36:39+09:00
+  at: 2026-10-31T09:18:59+09:00
 ---
 
 # バックログ
@@ -18,7 +18,7 @@ generated:
 | 0001 | [Lean プロジェクトの雛形と CI](0001-lean-project-scaffold.md) | done | — |
 | 0002 | [LangSemantics.Java: Java 基本型の意味論](0002-lang-semantics-java.md) | done | 0001 |
 | 0003 | [Spec: ドメイン型・基本演算・マスタデータ](0003-abstract-domain-types-and-master-data.md) | done | 0001 |
-| 0004 | [運賃計算（Spec と SourceModel）](0004-fare-calculation-both-models.md) | todo | 0002, 0003, 0016, 0027, 0024 |
+| 0004 | [運賃計算（Spec と SourceModel）](0004-fare-calculation-both-models.md) | doing | 0002, 0003, 0016, 0027, 0024 |
 | 0005 | [運賃計算の抽象化証明](0005-fare-abstraction-proofs.md) | todo | 0004, 0027, 0013, 0024 |
 | 0006 | [空席照会（B1）](0006-flight-search-usecase.md) | todo | 0004, 0016, 0027, 0013, 0005, 0024 |
 | 0007 | [予約（B0/B2）](0007-reservation-usecase.md) | todo | 0006, 0027, 0013, 0005, 0024 |

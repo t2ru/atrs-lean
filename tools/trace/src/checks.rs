@@ -101,6 +101,15 @@ fn walk(dir: &Path, out: &mut Vec<std::path::PathBuf>) {
     }
 }
 
+/// ベクタの `modelDef`。文字列か、モデルごとの名前の配列（`shared/`。ADR 0042）。
+pub fn model_defs_of(v: &serde_json::Value) -> Vec<String> {
+    match &v["modelDef"] {
+        serde_json::Value::String(s) => vec![s.clone()],
+        serde_json::Value::Array(xs) => xs.iter().filter_map(|x| x.as_str().map(String::from)).collect(),
+        _ => vec![],
+    }
+}
+
 /// `vectors` の glob に当たるファイルの（リポジトリからの相対パス, `modelDef`）。
 fn vector_model_defs(repo: &Path, pats: &[String]) -> Result<Vec<(String, String)>, String> {
     let set = globs(pats)?;
@@ -119,8 +128,8 @@ fn vector_model_defs(repo: &Path, pats: &[String]) -> Result<Vec<(String, String
             }
             let v: serde_json::Value =
                 std::fs::read_to_string(&f).ok().and_then(|s| serde_json::from_str(&s).ok()).unwrap_or_default();
-            if let Some(n) = v["modelDef"].as_str() {
-                out.push((rel, n.to_string()));
+            for n in model_defs_of(&v) {
+                out.push((rel.clone(), n));
             }
         }
     }
@@ -172,6 +181,16 @@ pub fn run(repo: &Path, c: &Check) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn model_def_string_or_array() {
+        assert_eq!(model_defs_of(&serde_json::json!({"modelDef": "Spec.Fare.fare"})), vec!["Spec.Fare.fare"]);
+        assert_eq!(
+            model_defs_of(&serde_json::json!({"modelDef": ["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]})),
+            vec!["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]
+        );
+        assert!(model_defs_of(&serde_json::json!({"cases": []})).is_empty());
+    }
 
     #[test]
     fn literal_base_of_globs() {

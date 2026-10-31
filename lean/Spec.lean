@@ -5,6 +5,7 @@ import Spec.Model
 import Spec.Config
 import Spec.MasterData
 import Spec.CodeList
+import Spec.Fare
 
 /-!
 # Spec
@@ -19,4 +20,5 @@ import Spec.CodeList
 | `Spec.Config` | 設定値と不変条件 |
 | `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数、SPEC 課題 |
 | `Spec.CodeList` | コードリスト |
+| `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
 -/

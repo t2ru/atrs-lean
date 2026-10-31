@@ -100,6 +100,7 @@ Chosen option: "成り立つ条件を SKILL.md に置き、進め方を「置き
 
 ## More Information
 
+* 作成時は 0042 だったが、main に [ADR 0042](0042-fare-source-model-and-shared-vectors.md) が先に入ったため、0043 に採番し直した。
 * [ADR 0025](0025-extract-porting-method-as-agent-skill.md), [ADR 0033](0033-foundational-principles.md), [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md), [ADR 0037](0037-conflict-as-spec-nondeterminism.md), [ADR 0039](0039-refinement-non-vacuity-obligations.md)
 * スキル: [SKILL.md](../../.agents/skills/port-lang/SKILL.md#移植が成り立つ条件)、[workflow.md](../../.agents/skills/port-lang/references/workflow.md)
 

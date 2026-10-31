@@ -2,11 +2,34 @@
 
 ## 2026-10-31
 
-* **Creation**: [ADR 0042](decision/0042-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
+* **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 1 段を終えた（`doing`）。
+  * Lean `Spec.Fare` と `SourceModel.Fare`（`SourceModel.Model`・`SourceModel.MasterData`）を作った。
+  * 運賃計算の全例をベクタにし、両モデルで実行するようにした（`conformance/{spec,source-model,shared}/fare/`）。
+  * 共有入力 `conformance/fixtures/master-data.json`・`config.json` を、上流のシードから生成するようにした。生成器は `tools/conformance/master_fixture.py`。
+  * `@[source]` 9 件を `tools/trace rehash` で記録した。
+* **Creation**: [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md) で、次のことを決めた。
+  * マスタの表し方（Provider のキャッシュ）
+  * 列挙型
+  * `HashMap`
+  * 共有ベクタの `modelDef` の配列
+  * 共有入力の生成
+  * `source-model/` の暫定の期待値
+  * 翌日着の便の暫定の扱い
+* **Update**: 次の文書に、ADR 0042 による変更を反映した。
+  * [spec/fare-calculation.md](spec/fare-calculation.md): 要約（informative）に改め、Lean へのリンクを付けた
+  * [spec/conformance.md](spec/conformance.md)
+  * [spec/assurance.md](spec/assurance.md)
+  * [spec/master-data.md](spec/master-data.md): 到着時刻 `2415` の TODO
+  * [backlog 0006](backlog/0006-flight-search-usecase.md): 翌日着の便
+  * [ADR 0013](decision/0013-conformance-test-vectors.md)
+  * スキル port-lang の conformance・lean/trace-attributes
+  * [AGENTS.md](../AGENTS.md)
+
+* **Creation**: [ADR 0043](decision/0043-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
   * スキルの [SKILL.md](../.agents/skills/port-lang/SKILL.md) に「移植が成り立つ条件」（適用の前提・成立の条件・言えること・言えないこと）を加え、版を 0.4 にした。
   * 進め方の既定として [workflow.md](../.agents/skills/port-lang/references/workflow.md) を新設した（評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録）。プロジェクトは置き換えてよい。
   * スキルの process.md・verification.md から workflow.md を参照した。
-  * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0042 に記した。
+  * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0043 に記した。（作成時は 0042 だったが、main に [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md) が先に入ったため 0043 に採番し直した）
 * **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に「進め方の適用（ATRS）」を加えた。
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
   * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。

@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0004", "0016", "0027", "0013", "0005", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T09:18:59+09:00
 ---
 
 # 空席照会（B1）
@@ -22,6 +22,10 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 - `Spec.FlightSearch`
 - `SourceModel.Repository.Flight`（`findByVacantSeatSearchCriteria` を SQL 式で）と `SourceModel.FlightSearch`
 - ABS-010（L）, ABS-011（R。INV MD-5 の下で、SQL の許されるすべての結果について）
+- 翌日着の便（到着時刻 `2415`。シードの NTT523・NTT528）
+  - `Spec.MasterData.FlightMaster.arrivalTime` を、翌日着を表せる形に改める。
+  - [Source] の `DateTimeParseException` を既知差異 D-NNN として登録する（W 課題を含む）。
+  - fixture の `outsideSpec` を外す（[master-data.md](../spec/master-data.md)、[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。
 - ベクタ
 
 ## 対象外

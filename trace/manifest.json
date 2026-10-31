@@ -1,6 +1,742 @@
 {
   "nodes": [
     {
+      "name": "SourceModel.Fare.TicketReserveService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.adultPassengerMinAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.childFareRate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketReserveService.ticketSharedService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.boardingClassProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.TicketSharedService.peakTimeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.assertNotEmpty",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.calculateBasicFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.calculateFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.calculateFare_1430_30",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.calculateTotalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.ceilFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.getMultiplicationRatio",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Fare.multiplicationRatioInNormalTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.boardingClassCodeMap",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.BoardingClassProvider.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.PeakTimeProvider.peakTimeList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.getBoardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.getPeakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterData.getPeakTime.go",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.code",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.displayOrder",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.name",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Airport.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.boardingClassName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.extraCharge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.BoardingClass.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.discountRate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.fareTypeName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.passengerMinNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.rsrvAvailableEndDayNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FareType.rsrvAvailableStartDayNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.departureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.fareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.flightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Flight.vacantNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.arrivalTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.departureTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.plane",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.FlightMaster.route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.age",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.familyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.gender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.givenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.passengerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Passenger.reserveFlightNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.multiplicationRatio",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.peakEndDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.peakStartDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.PeakTime.peakTimeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.craftType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.nSeatNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Plane.sSeatNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.arrivalAirport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.basicFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.departureAirport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.Route.routeNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqAirport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqAirport.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqBoardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqBoardingClass.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFareType.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFlight.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFlightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqFlightMaster.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPassenger.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPeakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPeakTime.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPlane",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqPlane.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqRoute",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instDecidableEqRoute.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprAirport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprAirport.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprBoardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprBoardingClass.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFareType.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFlight.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFlightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprFlightMaster.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPassenger.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPeakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPeakTime.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPlane",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprPlane.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprRoute",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.instReprRoute.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "Spec.Airport",
       "layer": "Spec"
     },
@@ -90,6 +826,30 @@
     },
     {
       "name": "Spec.CreditTypeCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.basicFare",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.childNum",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.fare",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.flightTotal",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.routeOfFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFare",
       "layer": "Spec"
     },
     {
@@ -470,6 +1230,60 @@
       "to": "SPEC-003"
     },
     {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateBasicFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)",
+      "hash": "9872678663e9a896"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateBasicFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)",
+      "hash": "5b0822fe4c6991ac"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)",
+      "hash": "8088a7f2c9efaf7e"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)",
+      "hash": "1e12eb714e2bc395"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateTotalFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)",
+      "hash": "ca1a14757ce1cb33"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.calculateTotalFare",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)",
+      "hash": "35bc5d27ed5f2ca9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Fare.ceilFare",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareUtil#ceilFare(int)",
+      "hash": "345c1d9656b3930c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.MasterData.getBoardingClass",
+      "to": "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)",
+      "hash": "363af6d3dd2e282d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.MasterData.getPeakTime",
+      "to": "java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)",
+      "hash": "1b19d6cad612b687"
+    },
+    {
       "type": "spec_doc",
       "from": "Spec.Airport",
       "to": "docs/spec/master-data.md#airport"
@@ -583,6 +1397,36 @@
       "type": "spec_doc",
       "from": "Spec.CreditTypeCd",
       "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.basicFare",
+      "to": "docs/spec/fare-calculation.md#基本運賃"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.childNum",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.fare",
+      "to": "docs/spec/fare-calculation.md#運賃"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.flightTotal",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.routeOfFlight",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.totalFare",
+      "to": "docs/spec/fare-calculation.md#合計金額"
     },
     {
       "type": "spec_doc",
@@ -1025,5 +1869,87 @@
       "to": "docs/spec/domain-model.md#列挙"
     }
   ],
-  "checks": []
+  "checks": [
+    {
+      "definition": "SourceModel.Fare.calculateBasicFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)",
+      "hash": "9872678663e9a896",
+      "merkle": "6a08bcb78b1dd9e6",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.calculateBasicFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)",
+      "hash": "5b0822fe4c6991ac",
+      "merkle": "6a08bcb78b1dd9e6",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.calculateFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)",
+      "hash": "8088a7f2c9efaf7e",
+      "merkle": "1c22a3e36aa62ab8",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.calculateFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)",
+      "hash": "1e12eb714e2bc395",
+      "merkle": "1c22a3e36aa62ab8",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.calculateTotalFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)",
+      "hash": "ca1a14757ce1cb33",
+      "merkle": "7248163ebd54e59e",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.calculateTotalFare",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)",
+      "hash": "35bc5d27ed5f2ca9",
+      "merkle": "7248163ebd54e59e",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Fare.ceilFare",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareUtil#ceilFare(int)",
+      "hash": "345c1d9656b3930c",
+      "merkle": "7dc78d7a2bfbbece",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.MasterData.getBoardingClass",
+      "locator": "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)",
+      "hash": "363af6d3dd2e282d",
+      "merkle": "0460d53bcbba967c",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.MasterData.getPeakTime",
+      "locator": "java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)",
+      "hash": "1b19d6cad612b687",
+      "merkle": "fe401a53c26d84f1",
+      "checks": [
+        "lake-test"
+      ]
+    }
+  ]
 }
