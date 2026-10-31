@@ -13,7 +13,7 @@ generated:
 
 # 入力検証
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
 原典の Bean Validation と相関検証（`*Validator`）の **効果** を、検証関数 `validate(input) : [FieldError | GlobalError]` として定義する。
 結果が空なら合格。エラーは [errors-and-messages.md](errors-and-messages.md#入力検証エラー) の形式で表す。
@@ -44,7 +44,7 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 
 ## 文字クラス
 
-**[Spec=Source]**（[ADR 0010](../decision/0010-text-length-and-character-classes.md)）コードポイントの閉区間で定義する。
+**[Spec=Source]**（[ADR 10a5](../decision/10a5-text-length-and-character-classes.md)）コードポイントの閉区間で定義する。
 
 | 名前 | 文字集合 |
 | --- | --- |
@@ -71,7 +71,7 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 
 ### Email
 
-**[Spec]**（[ADR 0026](../decision/0026-email-validation-rule.md)）原典の Hibernate Validator 9.1.0.Final `AbstractEmailValidator`・`DomainNameUtil` の規則から、IDN 変換（`IDN.toASCII`）を除いたもの。文字列 `s` について:
+**[Spec]**（[ADR ac33](../decision/ac33-email-validation-rule.md)）原典の Hibernate Validator 9.1.0.Final `AbstractEmailValidator`・`DomainNameUtil` の規則から、IDN 変換（`IDN.toASCII`）を除いたもの。文字列 `s` について:
 
 1. `s` が空文字なら合格（REST で空文字が送られた場合も合格）。
 2. `s` に `@` が無ければ不合格。**最後の** `@` で、前をローカル部 `l`、後をドメイン部 `d` に分ける。
@@ -115,7 +115,7 @@ IPV6    = 下記の正規表現（原典 DomainNameUtil.IP_V6_DOMAIN と同一�
 1. 単項目検証を全項目について行う。1 項目に複数の違反があればすべて報告する。
 2. 相関検証を下記の順で行う。相関検証は、参照する項目に単項目エラーが無い場合にだけ行う。
 
-**[Spec]** 結果は次の順に並べる（[ADR 0027](../decision/0027-validation-error-ordering.md)）。
+**[Spec]** 結果は次の順に並べる（[ADR e24e](../decision/e24e-validation-error-ordering.md)）。
 
 1. 単項目検証のフィールドエラー: 項目の宣言順（各表の行の順。配列の要素は添字の昇順で、要素の中は表の順）。同じ項目のエラーは制約表（[文字クラス](#文字クラス)）の列挙順。
 2. 相関検証で生じるフィールドエラー（例 `homewardDate` の `NotNull`、`selectFlights` の `Invalid`、`passengers[i].*` の `NotNull`）: 発生順。

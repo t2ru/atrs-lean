@@ -1,4 +1,4 @@
-//! `tools/trace`: ATRS の両端の追跡の道具（backlog 0024、ADR 0036・0040・0041）。
+//! `tools/trace`: ATRS の両端の追跡の道具（backlog ffdc、ADR e2a4・0eea・9cd9）。
 //!
 //! ```text
 //! trace inventory source [--check]

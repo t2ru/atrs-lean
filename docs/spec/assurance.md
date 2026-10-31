@@ -13,7 +13,7 @@ generated:
 
 # 保証の限界
 
-> **区分: メタ情報（meta）。** 基本原則（[ADR 0033](../decision/0033-foundational-principles.md)）の原則 1 は、2 つのことを求める。1 つは、両端の一致を決定論的な検証または変換で確かめることである。もう 1 つは、手段の届かない部分を文書に明示することである。本書はその一覧である。
+> **区分: メタ情報（meta）。** 基本原則（[ADR c336](../decision/c336-foundational-principles.md)）の原則 1 は、2 つのことを求める。1 つは、両端の一致を決定論的な検証または変換で確かめることである。もう 1 つは、手段の届かない部分を文書に明示することである。本書はその一覧である。
 
 - **本書に無い限界があってはならない。** 次のときは、同じ変更で本書に追記する。
   - 新しい手段を採用したとき
@@ -26,13 +26,13 @@ generated:
 
 | 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
 | --- | --- | --- | --- |
-| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。0013 ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
-| フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog 0013](../backlog/0013-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
-| リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog 0016](../backlog/0016-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
-| 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | Thymeleaf |
-| 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0026](../backlog/0026-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
+| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。backlog f18c ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
+| フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog f18c](../backlog/f18c-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
+| リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
+| 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 84bf](../decision/84bf-porting-scope.md) で範囲外） | Thymeleaf |
+| 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 3f36](../decision/3f36-following-upstream-releases.md)、[backlog 773f](../backlog/773f-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
 | 改名の対応（`trace/renames.json`） | `tools/trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | `tools/trace` |
-| 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
+| 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
 | マスタ・設定を入力として写すこと | オラクルと SQL の差分実行は fixture のマスタで実行する | 原典は DB からマスタを読む。実行中にマスタが変わらないこと（不変の入力とみなせること）は前提とする |
 | 「今日」に依存する処理 | オラクルを JST・固定した時計で実行する | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
 | 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)） | — |
@@ -41,14 +41,14 @@ generated:
 | 採番（シーケンス）の一意性・巻き戻らないこと | SQL の差分実行（`nextval` の結果） | 最大値に達した後（前提型の差異 [D-009](abstraction.md#既知差異) の前提の外） | PostgreSQL のシーケンス |
 | ReportStore の `publish` の原子性・ReportQueue の配信保証のうち、プロセスの異常終了に対するもの（規範節） | なし（原典は ActiveMQ Artemis を内蔵し、ファイルの移動に OS を使う） | 異常終了をまたぐ配信回数と、ファイルの原子的な移動 | ActiveMQ Artemis、OS のファイル操作 |
 | パスワードの照合（PBKDF2）・パスワードハッシュの互換（規範節） | なし。`SourceModel` は `PasswordEncoder` を raw について単射な符号化として写し（ABS-024）、オラクルでは `{test}` 形式に差し替える（[conformance.md](conformance.md)） | 原典の `{pbkdf2}`（`DelegatingPasswordEncoder`）の経路は実行されない。PBKDF2 の衝突（モデルは衝突しないものとして写す） | PBKDF2 の衝突困難性 |
-| `LangSemantics.Java` | double は、Lean のネイティブ `Float`（ホストの IEEE 754 binary64）とビット単位で突き合わせる（`lean/Tests/JavaDouble.lean`、`lake test`）。範囲は運賃計算の [Source] の式で、次の 4,006,212 件である。<br>- 因子 `q × 0.01`（q = 0..1000）・`1 − r × 0.01`（r = 0..100）の全件<br>- 全因子 × 金額 0..2,000 の全件<br>- 積算比率 100・125・140 と割引率 0・5・10・20・30 × 金額 0..100,000 の全件<br>- 全因子 × 値域の上限（基本運賃 10,000,000、運賃 100,000,000）までの疑似乱数 1,000,000 件<br>`BigDecimal`（`setScale(-2, mode)` の全丸めモード、`intValue` の切詰め）・`String`（`length`・`trim`・`strip`・`split`）・`LocalDate`（`plusDays`・`minusDays`・`isBefore`・`isAfter`・`DAYS`/`YEARS.between`・`toEpochDay`・`ofEpochDay`）・double（リテラル・`*`・`-`・`(int)`・特殊値）は、固定の入力表で JVM の実行結果と突き合わせる。表は `JavaTable.java` が JVM で生成した 581 件の `#guard` で、CI（Temurin 17）で再生成して差分が無いことを確かめる（[backlog 0002](../backlog/0002-lang-semantics-java.md)） | 突き合わせた入力の範囲の外 | ホストの IEEE 754 binary64 が JVM の `double`（Java 17 以降は常に strictfp）と同じであること、JVM |
-| `LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` | PostgreSQL 16.15（照合順序 C・UTF8・UTC）の実行結果と、固定の入力表で突き合わせる。表は `pg_table.py` が PostgreSQL で生成した 373 件の `#guard` で、CI で再生成して差分が無いことを確かめる（[backlog 0016](../backlog/0016-lang-semantics-sql.md)）。範囲は次のとおり。<br>- 三値論理（AND・OR・NOT の全組合せ）<br>- 比較（`=`・`<`・`<=`。整数・文字列（ASCII・かな・漢字・補助文字・空文字列）・真偽・NULL）・`BETWEEN`・`IN`・`IS NULL`<br>- `ORDER BY`（同順位・NULL の位置・昇順と降順・複数キー。順序が未規定の照会は、処理系の結果が許される順列に含まれること）と照合順序 C の文字列の並び<br>- `TO_CHAR`（`FM` と `0`・`9` の書式 7 種 × 11 値）<br>- `int2`・`int4`・`int8` の範囲の境界と、`int4` の加算の溢れ<br>- `VARCHAR(n)` への格納（超過分が空白のときの切詰めを含む）<br>- シーケンス（`CYCLE`・尽きたときのエラー・`START`・`INCREMENT`）<br>- `UPDATE` の右辺が更新前の行で評価されること、`WHERE` の UNKNOWN<br>型の異なる値の比較（暗黙の型変換）と、日付の演算は突き合わせていない | 突き合わせた値の範囲の外。版の異なる PostgreSQL | PostgreSQL |
+| `LangSemantics.Java` | double は、Lean のネイティブ `Float`（ホストの IEEE 754 binary64）とビット単位で突き合わせる（`lean/Tests/JavaDouble.lean`、`lake test`）。範囲は運賃計算の [Source] の式で、次の 4,006,212 件である。<br>- 因子 `q × 0.01`（q = 0..1000）・`1 − r × 0.01`（r = 0..100）の全件<br>- 全因子 × 金額 0..2,000 の全件<br>- 積算比率 100・125・140 と割引率 0・5・10・20・30 × 金額 0..100,000 の全件<br>- 全因子 × 値域の上限（基本運賃 10,000,000、運賃 100,000,000）までの疑似乱数 1,000,000 件<br>`BigDecimal`（`setScale(-2, mode)` の全丸めモード、`intValue` の切詰め）・`String`（`length`・`trim`・`strip`・`split`）・`LocalDate`（`plusDays`・`minusDays`・`isBefore`・`isAfter`・`DAYS`/`YEARS.between`・`toEpochDay`・`ofEpochDay`）・double（リテラル・`*`・`-`・`(int)`・特殊値）は、固定の入力表で JVM の実行結果と突き合わせる。表は `JavaTable.java` が JVM で生成した 581 件の `#guard` で、CI（Temurin 17）で再生成して差分が無いことを確かめる（[backlog a8be](../backlog/a8be-lang-semantics-java.md)） | 突き合わせた入力の範囲の外 | ホストの IEEE 754 binary64 が JVM の `double`（Java 17 以降は常に strictfp）と同じであること、JVM |
+| `LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` | PostgreSQL 16.15（照合順序 C・UTF8・UTC）の実行結果と、固定の入力表で突き合わせる。表は `pg_table.py` が PostgreSQL で生成した 373 件の `#guard` で、CI で再生成して差分が無いことを確かめる（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)）。範囲は次のとおり。<br>- 三値論理（AND・OR・NOT の全組合せ）<br>- 比較（`=`・`<`・`<=`。整数・文字列（ASCII・かな・漢字・補助文字・空文字列）・真偽・NULL）・`BETWEEN`・`IN`・`IS NULL`<br>- `ORDER BY`（同順位・NULL の位置・昇順と降順・複数キー。順序が未規定の照会は、処理系の結果が許される順列に含まれること）と照合順序 C の文字列の並び<br>- `TO_CHAR`（`FM` と `0`・`9` の書式 7 種 × 11 値）<br>- `int2`・`int4`・`int8` の範囲の境界と、`int4` の加算の溢れ<br>- `VARCHAR(n)` への格納（超過分が空白のときの切詰めを含む）<br>- シーケンス（`CYCLE`・尽きたときのエラー・`START`・`INCREMENT`）<br>- `UPDATE` の右辺が更新前の行で評価されること、`WHERE` の UNKNOWN<br>型の異なる値の比較（暗黙の型変換）と、日付の演算は突き合わせていない | 突き合わせた値の範囲の外。版の異なる PostgreSQL | PostgreSQL |
 
 ## TargetModel ⇔ 移植先ソース
 
 | 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
 | --- | --- | --- | --- |
-| `rust/src/model/`（Verus の写し）と、各実行関数の `requires pre_x`・`ensures r == model::x` の形 | `TargetModel` から生成する（SRC-002）。形を `gen-verus --check-contracts` で検査する（SRC-003） | — | 生成器（[backlog 0028](../backlog/0028-verus-mirror-generator.md)）と、スキルの assets から写す対応表 `rust/src/model_prelude.rs`（例による照合だけ） |
+| `rust/src/model/`（Verus の写し）と、各実行関数の `requires pre_x`・`ensures r == model::x` の形 | `TargetModel` から生成する（SRC-002）。形を `gen-verus --check-contracts` で検査する（SRC-003） | — | 生成器（[backlog d77c](../backlog/d77c-verus-mirror-generator.md)）と、スキルの assets から写す対応表 `rust/src/model_prelude.rs`（例による照合だけ） |
 | 純粋な計算・ユースケースの中核・インメモリのアダプタの状態遷移 | Verus で、全入力について `model/` との一致と溢れが無いことを証明する（SRC-003）。`target-model/` のベクタを照合する（SRC-001） | なし（`verus!` の中） | Verus、vstd、rustc |
 | `#[verifier::external]` の境界 | 一覧（下表）に載せたものに限る。CI で一覧と一致することを確かめる | 各境界の行を参照 | — |
 | インメモリのアダプタの `Mutex` の層（external） | Kani（SRC-004） | Kani の境界の外（付録に記入） | Rust 標準の `Mutex` |
@@ -56,10 +56,10 @@ generated:
 | DB のアダプタ（external） | SQL の差分実行で `TargetModel.Adapter` の SQL の式と照合し（SRC-010）、固定フィクスチャで結合テストする（SRC-005） | 照合したデータ・テストの入力の外（付録に記入） | PostgreSQL |
 | ファイル・時計のアダプタ（external） | 固定フィクスチャの結合テスト（SRC-005）。時計は Asia/Tokyo の変換を固定した時刻で照合する | テストの入力の外。`publish` の原子性は OS の rename に依存する | OS のファイル操作、タイムゾーンのデータ |
 | 並行実行（直列化可能性） | インメモリでは、`Mutex` の下で操作を 1 つずつ実行する。DB では SERIALIZABLE と再試行を指定し、照会は `READ ONLY DEFERRABLE` で実行する。固定の実行順で結合テストする（SRC-005） | テストしていない実行順 | PostgreSQL の SERIALIZABLE の実装、Rust 標準の `Mutex` |
-| 活性（`Conflict`・I/O 失敗を返さないこと） | ベクタと結合テストで、失敗が出ないことを確かめる | 常に失敗を返す実装もリファインメントになる（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md#活性の限界)）。テストしていない状況での失敗の頻度 | — |
+| 活性（`Conflict`・I/O 失敗を返さないこと） | ベクタと結合テストで、失敗が出ないことを確かめる | 常に失敗を返す実装もリファインメントになる（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md#活性の限界)）。テストしていない状況での失敗の頻度 | — |
 | HTTP の規範節（セッション・Cookie・CSRF・トランザクショントークン・Basic 認証・エラー画面） | HTTP レベルのベクタ（SRC-006） | ベクタの入力の外 | 採用した Web フレームワーク |
 | 禁止 API（`std::time`・浮動小数点型など） | clippy の `disallowed-methods` / `disallowed-types`（SRC-009） | 一覧に載っていない API | clippy |
-| `LangSemantics.Rust` | rustc でビルドした実行結果との突き合わせ（[backlog 0021](../backlog/0021-lang-semantics-rust.md)） | 突き合わせた入力の範囲の外 | rustc |
+| `LangSemantics.Rust` | rustc でビルドした実行結果との突き合わせ（[backlog a936](../backlog/a936-lang-semantics-rust.md)） | 突き合わせた入力の範囲の外 | rustc |
 | パスワードの照合 | インメモリの参照実装は契約を厳密に満たす（Verus） | 本番のハッシュ関数の衝突 | 採用したハッシュ関数の衝突困難性 |
 | Verus の `assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` | 使わない（CI で数える） | （現在なし。使う場合は [refinement.md](refinement.md#未証明の前提) とここに列挙する） | — |
 
@@ -76,29 +76,29 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 0027](../backlog/0027-machine-refinement-framework.md)） |
+| `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
-| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（`lean/Tests/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
 
 ### モデル間の保証の限界
 
-リファインメント（`Machine.Refines` と [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
+リファインメント（`Machine.Refines` と [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md) の付帯の義務）が証明するのは、次のことである。
 
 - 名前付きの差異・非決定性を除けば、具体側の結果は [Spec] の結果と一致する（`Refines.complete`）。
-- 名前付きの差異は、ID ごとに、少なくとも 1 つの R 課題で必要である（外すと R 課題の命題が偽になる）か、必要な差異に覆われる（成分の必要性。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）。
+- 名前付きの差異は、ID ごとに、少なくとも 1 つの R 課題で必要である（外すと R 課題の命題が偽になる）か、必要な差異に覆われる（成分の必要性。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）。
 - 入口の機械では、差異の前提を保つ軌跡が [Spec] の軌跡で模倣される（`Refines.run`）。
 
 証明の届かない部分は次のとおりである。
 
 | 対象 | 確かめる手段 | 保証しないこと |
 | --- | --- | --- |
-| 仕様の妥当性 | 仕様文書の例を、期待値を手で書いた検査（意図から書く例。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）で [Spec] に照らす。`spec/` のベクタ（標準の選択 `run` の実行結果）を人が読む | [Spec] の標準の選択が、業務の意図どおりであること。B メソッドでも、仕様の妥当性は証明の外である |
-| 名前付きの成分の広さ（前提型の差異の述語、観測型の差異の成分、[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の選択の型と `FreeFrame` の核、入口の環境の前提 `@[env_pre]`） | 形の制限（TR-G）、両向きの例（W 課題・`Nontrivial`）、成分の必要性（G9）、`EnvWitness`、ベクタの前提のラベル（TR-V）。成分の変異テスト（[backlog 0033](../backlog/0033-mutation-testing-of-named-components.md)。未実装） | 成分が必要以上に広く、本来の差異を覆い隠していないこと。広さの判断は、登録簿の各行と ADR による。変異テストができた後も、変異の演算子で作れない広さは人の判断である。W 課題の両向きの例のうち「成り立たない例」の側が実際に差を示していることは、定理の文面を人が読んで確かめる |
+| 仕様の妥当性 | 仕様文書の例を、期待値を手で書いた検査（意図から書く例。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）で [Spec] に照らす。`spec/` のベクタ（標準の選択 `run` の実行結果）を人が読む | [Spec] の標準の選択が、業務の意図どおりであること。B メソッドでも、仕様の妥当性は証明の外である |
+| 名前付きの成分の広さ（前提型の差異の述語、観測型の差異の成分、[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の選択の型と `FreeFrame` の核、入口の環境の前提 `@[env_pre]`） | 形の制限（TR-G）、両向きの例（W 課題・`Nontrivial`）、成分の必要性（G9）、`EnvWitness`、ベクタの前提のラベル（TR-V）。成分の変異テスト（[backlog 0d1a](../backlog/0d1a-mutation-testing-of-named-components.md)。未実装） | 成分が必要以上に広く、本来の差異を覆い隠していないこと。広さの判断は、登録簿の各行と ADR による。変異テストができた後も、変異の演算子で作れない広さは人の判断である。W 課題の両向きの例のうち「成り立たない例」の側が実際に差を示していることは、定理の文面を人が読んで確かめる |
 | 標準の抽象化の核 | 葉ごとの `KernelIs`（ABS-048・REF-012）と、α・β の表の「同一視するもの」 | 表に書いた同一視（例: double の ±0、HTML の構造）が、業務上観測されないこと。`@[kernel]` の関係と表の記述が一致することは、人が確かめる。β・aᵢ の合成（射影で一部を落とすもの）には核を課さない（落とした部分は、aₒ の核と `J` の保存を通してだけ観測に現れる） |
-| 活性（環境の非決定性 N-001〜N-003） | `Pinned`（障害の無い環境では選ばない）、ベクタ、結合テスト | 実際の配備で、環境が障害・衝突を示す頻度。環境が常に障害を示せば、具体側は常に失敗しうる（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md#活性の限界)） |
+| 活性（環境の非決定性 N-001〜N-003） | `Pinned`（障害の無い環境では選ばない）、ベクタ、結合テスト | 実際の配備で、環境が障害・衝突を示す頻度。環境が常に障害を示せば、具体側は常に失敗しうる（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md#活性の限界)） |
 | 「中断」の前提型の差異（[前提型の差異の影響](abstraction.md#前提型の差異の影響)） | 差異の W 課題 | 前提を破る 1 歩の後の軌跡（状態が [Spec] から離れうる）。「出力のみ」と「中断」の分類は人の判断である（迷う場合は「中断」とする） |
-| 入口の値域の外の入力 | なし（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md) により、値域の外は差異ではない） | 入口の環境の前提（入力の値域）の外の入力での [Source]・[Target] の振る舞い |
+| 入口の値域の外の入力 | なし（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md) により、値域の外は差異ではない） | 入口の環境の前提（入力の値域）の外の入力での [Source]・[Target] の振る舞い |
 | SPEC-008（標準の環境で、環境に固有の結果を返さない） | 機能ごとの定理 | 定理の文面が SPEC-008 を表していること（検査器は形を確かめない） |
 | 入口でない R 課題の PRE | 入口の R 課題の証明で使われること | 入口から到達しない使われ方での振る舞い |
 | R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
@@ -109,13 +109,13 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR 0036](../decision/0036-traceability-hash-as-deterministic-check-record.md)） |
+| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)） |
 | Lean の Merkle ハッシュ | `lake exe trace-dump`。同じ層と、依存する `LangSemantics`・`Machine` の定数を合成する | Lean の `Expr` のハッシュ |
 | TR 検査と検査済みハッシュの更新 | `tools/trace check`・`tools/trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | `tools/trace` |
 
 ## 仕様の外（規範節）の対応
 
-[Spec] の外の規範節（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）は、リファインメントの証明の対象にならない。各規範節を確かめる行は次のとおり。
+[Spec] の外の規範節（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）は、リファインメントの証明の対象にならない。各規範節を確かめる行は次のとおり。
 
 | 規範節 | 移植元側の行 | 移植先側の行 |
 | --- | --- | --- |
@@ -124,13 +124,13 @@ generated:
 | [Clock のタイムゾーン](ports.md#clock) | 「今日」に依存する処理 | ファイル・時計のアダプタ |
 | [セッション](http-contract.md#セッション)・CSRF・トランザクショントークン | セッション・Cookie・トランザクショントークン・CSRF | HTTP の規範節 |
 | REST の Basic 認証・日付の JSON 表現・エラー画面（[http-contract.md](http-contract.md)） | REST の Basic 認証・日付の JSON 表現・エラー画面への遷移 | HTTP の規範節 |
-| パスワードハッシュの互換（[ADR 0015](../decision/0015-password-hashing-port.md)） | パスワードの照合 | パスワードの照合 |
+| パスワードハッシュの互換（[ADR 2d1f](../decision/2d1f-password-hashing-port.md)） | パスワードの照合 | パスワードの照合 |
 
 ## 付録: 範囲の詳細（記入待ち）
 
 | 対象 | 記入する内容 | 記入する backlog |
 | --- | --- | --- |
-| SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ。マスタの文（区間・便マスタ・搭乗クラス・運賃種別・ピーク時期の `findAll` と、コードリストの SQL 4 つ）は、シードの DB（投入日 2026-11-01）だけで照合した（パラメータ無し。NULL・同順位の行は含まない。`conformance/sql/master-data.json`） | [0004](../backlog/0004-fare-calculation-both-models.md)、[0006](../backlog/0006-flight-search-usecase.md)、[0007](../backlog/0007-reservation-usecase.md)、[0008](../backlog/0008-member-usecases-and-input-validation.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0029](../backlog/0029-rust-external-adapters.md) |
-| Kani のハーネス（ハーネスごと） | `kani::any()` の範囲、ループの展開数、保証しないこと | [0011](../backlog/0011-in-memory-adapters-and-seed-data.md)、[0014](../backlog/0014-http-contract-adapter.md) |
-| オラクルのハーネスの対象外 | 固定できない操作、差し替えた構成 | [0013](../backlog/0013-java-oracle-harness.md) |
-| 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [0002](../backlog/0002-lang-semantics-java.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0021](../backlog/0021-lang-semantics-rust.md) |
+| SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ。マスタの文（区間・便マスタ・搭乗クラス・運賃種別・ピーク時期の `findAll` と、コードリストの SQL 4 つ）は、シードの DB（投入日 2026-11-01）だけで照合した（パラメータ無し。NULL・同順位の行は含まない。`conformance/sql/master-data.json`） | [25f7](../backlog/25f7-fare-calculation-both-models.md)、[0be7](../backlog/0be7-flight-search-usecase.md)、[aedf](../backlog/aedf-reservation-usecase.md)、[4e0e](../backlog/4e0e-member-usecases-and-input-validation.md)、[c7e8](../backlog/c7e8-lang-semantics-sql.md)、[9c04](../backlog/9c04-rust-external-adapters.md) |
+| Kani のハーネス（ハーネスごと） | `kani::any()` の範囲、ループの展開数、保証しないこと | [4b0e](../backlog/4b0e-in-memory-adapters-and-seed-data.md)、[a89e](../backlog/a89e-http-contract-adapter.md) |
+| オラクルのハーネスの対象外 | 固定できない操作、差し替えた構成 | [f18c](../backlog/f18c-java-oracle-harness.md) |
+| 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [a8be](../backlog/a8be-lang-semantics-java.md)、[c7e8](../backlog/c7e8-lang-semantics-sql.md)、[a936](../backlog/a936-lang-semantics-rust.md) |

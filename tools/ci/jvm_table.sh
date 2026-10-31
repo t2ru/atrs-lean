@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LangSemanticsTest/JavaJvm.lean が、JVM での生成器の出力と一致することを確かめる（backlog 0002）。
+# LangSemanticsTest/JavaJvm.lean が、JVM での生成器の出力と一致することを確かめる（backlog a8be）。
 # java が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
 #   tools/ci/jvm_table.sh
 set -euo pipefail

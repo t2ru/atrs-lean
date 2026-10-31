@@ -3,9 +3,9 @@ import Machine.Concrete
 /-!
 # Machine.Refines
 
-具体機械が抽象機械をリファインすること（B メソッドの refinement）と、その証明義務（ADR 0034）。
+具体機械が抽象機械をリファインすること（B メソッドの refinement）と、その証明義務（ADR 01d4）。
 
-| ADR 0034 の証明義務 | `Refines` の成分 |
+| ADR 01d4 の証明義務 | `Refines` の成分 |
 | --- | --- |
 | INIT | `init` |
 | 入力の全域性 | `input_total` |

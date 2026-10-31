@@ -15,51 +15,51 @@ generated:
 
 | ID | 項目 | state | 依存 |
 | --- | --- | --- | --- |
-| 0001 | [Lean プロジェクトの雛形と CI](0001-lean-project-scaffold.md) | done | — |
-| 0002 | [LangSemantics.Java: Java 基本型の意味論](0002-lang-semantics-java.md) | done | 0001 |
-| 0003 | [Spec: ドメイン型・基本演算・マスタデータ](0003-abstract-domain-types-and-master-data.md) | done | 0001 |
-| 0004 | [運賃計算（Spec と SourceModel）](0004-fare-calculation-both-models.md) | doing | 0002, 0003, 0016, 0027, 0024 |
-| 0005 | [運賃計算の抽象化証明](0005-fare-abstraction-proofs.md) | todo | 0004, 0027, 0013, 0024 |
-| 0006 | [空席照会（B1）](0006-flight-search-usecase.md) | todo | 0004, 0016, 0027, 0013, 0005, 0024 |
-| 0007 | [予約（B0/B2）](0007-reservation-usecase.md) | todo | 0006, 0027, 0013, 0005, 0024 |
-| 0008 | [会員（C1/C2）と入力検証](0008-member-usecases-and-input-validation.md) | todo | 0003, 0027, 0013, 0007, 0024 |
-| 0009 | [認証（A1/A2）](0009-authentication-usecases.md) | todo | 0008, 0013, 0024 |
-| 0010 | [予約履歴レポート（D1）](0010-reservation-history-report.md) | todo | 0007, 0008, 0013, 0024 |
-| 0011 | [Rust: インメモリアダプタとシードデータ](0011-in-memory-adapters-and-seed-data.md) | todo | 0020, 0024 |
-| 0012 | [適合テストベクタの生成と検査（Lean 側）](0012-conformance-vector-format-and-generator.md) | todo | 0004 |
-| 0013 | [Java オラクルハーネス](0013-java-oracle-harness.md) | todo | 0012 |
-| 0014 | [Rust: HTTP 契約アダプタ](0014-http-contract-adapter.md) | todo | 0011, 0013, 0005, 0024 |
-| 0015 | [第二言語での移植試行](0015-second-language-portability-pilot.md) | dropped | 0012 |
-| 0016 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](0016-lang-semantics-sql.md) | done | 0001 |
-| 0017 | [OKF バンドルとリンクの検査](0017-okf-bundle-lint.md) | todo | 0001 |
-| 0018 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](0018-rust-project-scaffold.md) | todo | — |
-| 0019 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](0019-rust-spec-mirror-and-fare-core.md) | todo | 0018, 0022, 0028, 0024 |
-| 0020 | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](0020-rust-usecases-core.md) | todo | 0019, 0023, 0024 |
-| 0021 | [LangSemantics.Rust: Rust の意味論](0021-lang-semantics-rust.md) | todo | 0001 |
-| 0022 | [TargetModel と Refinement: 運賃計算](0022-target-model-fare-and-refinement.md) | todo | 0004, 0012, 0021, 0027, 0024 |
-| 0023 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](0023-target-model-usecases-and-refinement.md) | todo | 0022, 0006, 0007, 0008, 0009, 0010, 0024 |
-| 0024 | [追跡の道具（tools/trace）](0024-trace-tooling.md) | done | 0001, 0025 |
-| 0025 | [上流の submodule 化と版の宣言](0025-upstream-submodule-and-inventory.md) | done | — |
-| 0026 | [差分オラクル（新旧 2 版の振る舞い比較）](0026-differential-oracle.md) | todo | 0013, 0025 |
-| 0027 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](0027-machine-refinement-framework.md) | done | 0001 |
-| 0028 | [Lean TargetModel から Verus の写しを生成する道具](0028-verus-mirror-generator.md) | todo | 0001, 0021 |
-| 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
-| 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | done | 0001, 0027 |
-| 0031 | [Spec の非決定性の選択の型と入口の環境の前提](0031-spec-nondet-and-entry-env.md) | todo | 0003, 0030 |
-| 0032 | [名前付きの成分の必要性の義務と検査（G9）](0032-component-necessity-witness.md) | done | 0030 |
-| 0033 | [名前付きの成分の変異テスト](0033-mutation-testing-of-named-components.md) | todo | 0005, 0032 |
+| be49 | [Lean プロジェクトの雛形と CI](be49-lean-project-scaffold.md) | done | — |
+| a8be | [LangSemantics.Java: Java 基本型の意味論](a8be-lang-semantics-java.md) | done | [be49](be49-lean-project-scaffold.md) |
+| 591d | [Spec: ドメイン型・基本演算・マスタデータ](591d-abstract-domain-types-and-master-data.md) | done | [be49](be49-lean-project-scaffold.md) |
+| 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | doing | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
+| 0be7 | [空席照会（B1）](0be7-flight-search-usecase.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| aedf | [予約（B0/B2）](aedf-reservation-usecase.md) | todo | [0be7](0be7-flight-search-usecase.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| 4e0e | [会員（C1/C2）と入力検証](4e0e-member-usecases-and-input-validation.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [aedf](aedf-reservation-usecase.md), [ffdc](ffdc-trace-tooling.md) |
+| 44f8 | [認証（A1/A2）](44f8-authentication-usecases.md) | todo | [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
+| ac71 | [予約履歴レポート（D1）](ac71-reservation-history-report.md) | todo | [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
+| 4b0e | [Rust: インメモリアダプタとシードデータ](4b0e-in-memory-adapters-and-seed-data.md) | todo | [9c1b](9c1b-rust-usecases-core.md), [ffdc](ffdc-trace-tooling.md) |
+| a8ef | [適合テストベクタの生成と検査（Lean 側）](a8ef-conformance-vector-format-and-generator.md) | todo | [25f7](25f7-fare-calculation-both-models.md) |
+| f18c | [Java オラクルハーネス](f18c-java-oracle-harness.md) | todo | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
+| a89e | [Rust: HTTP 契約アダプタ](a89e-http-contract-adapter.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| 31da | [第二言語での移植試行](31da-second-language-portability-pilot.md) | dropped | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
+| c7e8 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](c7e8-lang-semantics-sql.md) | done | [be49](be49-lean-project-scaffold.md) |
+| ddbd | [OKF バンドルとリンクの検査](ddbd-okf-bundle-lint.md) | todo | [be49](be49-lean-project-scaffold.md) |
+| fb50 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](fb50-rust-project-scaffold.md) | todo | — |
+| ddb4 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](ddb4-rust-spec-mirror-and-fare-core.md) | todo | [fb50](fb50-rust-project-scaffold.md), [eff6](eff6-target-model-fare-and-refinement.md), [d77c](d77c-verus-mirror-generator.md), [ffdc](ffdc-trace-tooling.md) |
+| 9c1b | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](9c1b-rust-usecases-core.md) | todo | [ddb4](ddb4-rust-spec-mirror-and-fare-core.md), [26c5](26c5-target-model-usecases-and-refinement.md), [ffdc](ffdc-trace-tooling.md) |
+| a936 | [LangSemantics.Rust: Rust の意味論](a936-lang-semantics-rust.md) | todo | [be49](be49-lean-project-scaffold.md) |
+| eff6 | [TargetModel と Refinement: 運賃計算](eff6-target-model-fare-and-refinement.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [a8ef](a8ef-conformance-vector-format-and-generator.md), [a936](a936-lang-semantics-rust.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| 26c5 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](26c5-target-model-usecases-and-refinement.md) | todo | [eff6](eff6-target-model-fare-and-refinement.md), [0be7](0be7-flight-search-usecase.md), [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [44f8](44f8-authentication-usecases.md), [ac71](ac71-reservation-history-report.md), [ffdc](ffdc-trace-tooling.md) |
+| ffdc | [追跡の道具（tools/trace）](ffdc-trace-tooling.md) | done | [be49](be49-lean-project-scaffold.md), [455f](455f-upstream-submodule-and-inventory.md) |
+| 455f | [上流の submodule 化と版の宣言](455f-upstream-submodule-and-inventory.md) | done | — |
+| 773f | [差分オラクル（新旧 2 版の振る舞い比較）](773f-differential-oracle.md) | todo | [f18c](f18c-java-oracle-harness.md), [455f](455f-upstream-submodule-and-inventory.md) |
+| 1ae4 | [Machine: 抽象機械と B メソッドのリファインメントの枠組み](1ae4-machine-refinement-framework.md) | done | [be49](be49-lean-project-scaffold.md) |
+| d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](a936-lang-semantics-rust.md) |
+| 9c04 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](9c04-rust-external-adapters.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [c7e8](c7e8-lang-semantics-sql.md), [ffdc](ffdc-trace-tooling.md) |
+| f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](1ae4-machine-refinement-framework.md) |
+| 0fdf | [Spec の非決定性の選択の型と入口の環境の前提](0fdf-spec-nondet-and-entry-env.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [f7b7](f7b7-refinement-non-vacuity.md) |
+| ae04 | [名前付きの成分の必要性の義務と検査（G9）](ae04-component-necessity-witness.md) | done | [f7b7](f7b7-refinement-non-vacuity.md) |
+| 0d1a | [名前付きの成分の変異テスト](0d1a-mutation-testing-of-named-components.md) | todo | [bbcc](bbcc-fare-abstraction-proofs.md), [ae04](ae04-component-necessity-witness.md) |
 
 ## 推奨する着手順
 
 ```
 移植元側（Lean）                 内側（Lean）            移植先側（Lean → Rust）
-0025 → 0024 ┐
-0001 ┬ 0002, 0016 ─────────┐
-     ├ 0027（Machine）─ 0030 ─ 0032 ┤
-     ├ 0003 ─ 0004 ─ 0005  ├─ 0012 ─ 0022 ─ 0019（Rust）
-     ├ 0021 ─ 0028（生成器）┘
-     └ 0017
-0018（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
-機能: 0008 → 0009、0006 → 0007 → 0010 → 0023 → 0020 → 0011 → 0014、0011 → 0029
-原典との照合: 0013 → 各機能（0005〜0010・0014）、0013 → 0026
+455f → ffdc ┐
+be49 ┬ a8be, c7e8 ─────────┐
+     ├ 1ae4（Machine）─ f7b7 ─ ae04 ┤
+     ├ 591d ─ 25f7 ─ bbcc  ├─ a8ef ─ eff6 ─ ddb4（Rust）
+     ├ a936 ─ d77c（生成器）┘
+     └ ddbd
+fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
+機能: 4e0e → 44f8、0be7 → aedf → ac71 → 26c5 → 9c1b → 4b0e → a89e、4b0e → 9c04
+原典との照合: f18c → 各機能（bbcc・0be7・aedf・4e0e・44f8・ac71・a89e）、f18c → 773f
 ```

@@ -1,4 +1,4 @@
-//! `.properties` のインベントリ（`prop:`・`msg:`）。ハッシュは値の前後の空白を除いた値（ADR 0040）。
+//! `.properties` のインベントリ（`prop:`・`msg:`）。ハッシュは値の前後の空白を除いた値（ADR 0eea）。
 
 use crate::item::Item;
 

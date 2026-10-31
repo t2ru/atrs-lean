@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# LangSemanticsTest/PostgresqlDb.lean が、PostgreSQL での生成器の出力と一致することを確かめる（backlog 0016）。
+# LangSemanticsTest/PostgresqlDb.lean が、PostgreSQL での生成器の出力と一致することを確かめる（backlog c7e8）。
 # PostgreSQL が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
 #   tools/ci/pg_table.sh
 set -euo pipefail

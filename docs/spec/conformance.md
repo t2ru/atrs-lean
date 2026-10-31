@@ -13,9 +13,9 @@ generated:
 
 # 適合テストベクタ（ATRS）
 
-> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル port-lang の [conformance.md](../../.agents/skills/port-lang/references/conformance.md) に従う（[ADR 0013](../decision/0013-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
+ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル port-lang の [conformance.md](../../.agents/skills/port-lang/references/conformance.md) に従う（[ADR dc3a](../decision/dc3a-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
 
 ## 機能区分（`<feature>`）
 
@@ -43,20 +43,20 @@ generated:
 | `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[master-data.md](master-data.md#シードデータ) |
 | `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[configuration.md](configuration.md) |
 
-`master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。到着時刻 `2415` の便マスタ 2 行には `outsideSpec` が付く（[master-data.md](master-data.md)）。
+`master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。到着時刻 `2415` の便マスタ 2 行には `outsideSpec` が付く（[master-data.md](master-data.md)）。
 
-マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
+マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。
 
-`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。`source-model/` の期待値は、[backlog 0013](../backlog/0013-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
+`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。`source-model/` の期待値は、[backlog f18c](../backlog/f18c-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
 | `fixtures/world-*.json` | 状態を使う操作の初期状態（フライトの空席数、会員、予約、各シーケンスの次の値） |
 
 ## ATRS 固有の前提
 
 - `PasswordHasher` を使う操作のベクタは、参照ハッシュ `"{test}" ++ raw` を前提とする（[atrs-porting.md](../rules/atrs-porting.md#atrs-で採った値)）。
-- 投入日に依存するシードは、投入日 **2026-11-01**（投入年 `Y = 2026`）として展開する（[ADR 0028](../decision/0028-clock-timezone-and-fixture-base-date.md)）。
+- 投入日に依存するシードは、投入日 **2026-11-01**（投入年 `Y = 2026`）として展開する（[ADR 9ee4](../decision/9ee4-clock-timezone-and-fixture-base-date.md)）。
   - ピーク時期: 2026 年と 2027 年の 2 年分。
   - フライト: 2026-11-01 から 120 日後の 2027-03-01 まで（両端を含む 121 日分。原典 `00250_insert_flight.sql` の `currentDate <= current_date + 120`）。空席数のパターン `i mod 3` の `i` は 2026-11-01 を 0 とする。
   - ベクタの `today` は各ベクタで明示する。既定は投入日と同じ 2026-11-01。
 - シーケンスの初期値は、シード投入後の原典の値とする。採番を伴う操作のベクタは、参照実装（`n`, `n+1`, …）で採番した番号を期待値として厳密に比較する（[ports.md](ports.md#idgenerator)）。
-- `source-model/` のベクタでは、入力検証エラーを多重集合として比較する（[ADR 0027](../decision/0027-validation-error-ordering.md)）。
+- `source-model/` のベクタでは、入力検証エラーを多重集合として比較する（[ADR e24e](../decision/e24e-validation-error-ordering.md)）。
 - `source-model/` のベクタの `upstream` は `trace/upstream.json` の release・commit とする。

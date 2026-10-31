@@ -6,7 +6,7 @@ import LangSemantics.Sql.Postgresql
 # SourceModel.Repository.Schema
 
 マスタの表の行（`atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql`）。
-列の型は、処理系が許す範囲を持つ型で写す（ADR 0045）: `INT` は `Int4`、`DATE` は `PgDate`、
+列の型は、処理系が許す範囲を持つ型で写す（ADR c108）: `INT` は `Int4`、`DATE` は `PgDate`、
 `VARCHAR(n)` は `Varchar n`、NOT NULL の無い列は `Option`。
 主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3 が対応する）。
 -/

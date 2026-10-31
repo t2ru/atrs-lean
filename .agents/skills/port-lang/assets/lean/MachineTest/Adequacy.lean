@@ -3,7 +3,7 @@ import Machine
 /-!
 # MachineTest.Adequacy
 
-`Machine.Adequacy` の義務の例と反例（ADR 0039）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
+`Machine.Adequacy` の義務の例と反例（ADR 70eb）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
 成り立たないことを証明する。あわせて、すべての義務を満たす正例を示す。
 
 | 抜け道 | 反例 |
@@ -19,10 +19,10 @@ import Machine
 | 自由な選択が結果をすべて吸収する | `junk_refines_specFree`・`fFree_frame_forgets_all` |
 | 差異の前提の述語が `False` | `false_not_nontrivial` |
 | 環境の前提の外への入力の写し | `specStrong_total_lt10`・`glueBad_not_envWitness` |
-| 不要な差異（外しても成り立つ。ADR 0043） | `good_restrict_refines`・`devLang_unneeded_for_good` |
-| 環境の選択が不具合を吸収する（`Refines` だけでは必要性が示せない。ADR 0043） | `buggy_restrict_refines`・`buggy_refines`・`devNot3_needed_for_buggy` |
+| 不要な差異（外しても成り立つ。ADR 9ac6） | `good_restrict_refines`・`devLang_unneeded_for_good` |
+| 環境の選択が不具合を吸収する（`Refines` だけでは必要性が示せない。ADR 9ac6） | `buggy_restrict_refines`・`buggy_refines`・`devNot3_needed_for_buggy` |
 
-成分の必要性（ADR 0043）の正例は、`devLang_needed_for_langErr`（前提型・`not_of_error`）、
+成分の必要性（ADR 9ac6）の正例は、`devLang_needed_for_langErr`（前提型・`not_of_error`）、
 `devNot3_needed_for_buggy`（前提型・`Pinned.not_of_mismatch`）、`obsNaN_needed`（観測型・`not_of_mismatch`）、
 `specStrong_not_always`（環境の前提・`TotalUnder.not_always`）である。
 -/
@@ -410,7 +410,7 @@ theorem glueBad_not_envWitness : ¬ Refines.EnvWitness garbage glueBad fun n => 
   subst ha
   exact absurd he (by decide)
 
-/-! ## 反例 12: 不要な差異（ADR 0043） -/
+/-! ## 反例 12: 不要な差異（ADR 9ac6） -/
 
 /-- `good` に `devLang` の制限を付けた R 課題は成り立つ。`devLang` は両向きの例を持つ（`devLang_nontrivial`）。 -/
 theorem good_restrict_refines : Refines spec (good.restrict devLang) glue :=
@@ -421,7 +421,7 @@ theorem good_restrict_refines : Refines spec (good.restrict devLang) glue :=
 theorem devLang_unneeded_for_good : Refines spec good glue ∧ Refines.Pinned spec good glue fRes ce :=
   ⟨good_refines, good_pinned⟩
 
-/-! ## 正例: 必要な前提型の差異（ADR 0043） -/
+/-! ## 正例: 必要な前提型の差異（ADR 9ac6） -/
 
 /-- `lang` が真のとき正常終了しない具体機械（移植元の不具合による 500 の模擬）。 -/
 def langErr : Concrete Nat Req Out Unit :=
@@ -463,7 +463,7 @@ theorem devLang_needed_for_langErr :
     (ic := ⟨0, false, true⟩) (ia := 0) (e := ()) trivial (glue_J.2 rfl) (glue_αi.2 rfl) trivial trivial
     rfl h.1
 
-/-! ## 反例 13: 環境の選択が不具合を吸収する（ADR 0043） -/
+/-! ## 反例 13: 環境の選択が不具合を吸収する（ADR 9ac6） -/
 
 /-- 前提型の差異の述語の模擬: `buggy` の不具合の入力（`n = 3`）を除く。 -/
 def devNot3 (r : Req) : Prop := r.n ≠ 3
@@ -482,7 +482,7 @@ theorem devNot3_needed_for_buggy :
     (glue_αi.2 rfl) trivial trivial rfl
     (fun x _ ho => by cases x; simp [glue_αo, fRes, ce] at ho) h.2
 
-/-! ## 正例: 必要な観測型の差異（ADR 0043） -/
+/-! ## 正例: 必要な観測型の差異（ADR 9ac6） -/
 
 /-- 観測型の差異の成分の模擬: 具体側の NaN を抽象側の 0 に対応させる。 -/
 def obsNaN (c : Num) (a : Nat) : Prop := c = .nan ∧ a = 0
@@ -514,7 +514,7 @@ theorem obsNaN_needed : ¬ Refines half halfNaN (glueNum aoPartial) :=
     (ic := 0) (ia := 0) (t' := ()) (oc := .nan) trivial (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
     (fun _ _ _ _ ho => by simp [glueNum, Glue.ofStd, aoPartial, never] at ho)
 
-/-! ## 正例: 必要な環境の前提（ADR 0043） -/
+/-! ## 正例: 必要な環境の前提（ADR 9ac6） -/
 
 /-- `specStrong` の PRE（`n < 10`）は、環境の前提なしには成り立たない。 -/
 theorem specStrong_not_always : ¬ specStrong.TotalUnder always :=

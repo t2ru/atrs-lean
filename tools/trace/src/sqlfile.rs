@@ -1,8 +1,8 @@
-//! SQL ファイルのインベントリ（`ddl:`・`seed:`）。sql/locators.md と ADR 0040 による。
+//! SQL ファイルのインベントリ（`ddl:`・`seed:`）。sql/locators.md と ADR 0eea による。
 //!
 //! - `CREATE … <名前>` と `ALTER TABLE … ADD CONSTRAINT <名前>` は `ddl:<ファイル名>#<名前>`。
 //! - `INSERT INTO <テーブル>` を含む文（関数や `DO` ブロックの中を含む）は、テーブルごとに
-//!   `seed:<ファイル名>#<テーブル>` にまとめる（ADR 0040 でテーブル単位とした）。
+//!   `seed:<ファイル名>#<テーブル>` にまとめる（ADR 0eea でテーブル単位とした）。
 //! - 文の区切りは `;`。文字列・`$$` の引用・コメントの中の `;` は区切りにしない。
 
 use crate::item::Item;

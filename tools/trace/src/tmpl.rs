@@ -1,4 +1,4 @@
-//! Thymeleaf のテンプレートのインベントリ（`tmpl:`）。ADR 0040 による。
+//! Thymeleaf のテンプレートのインベントリ（`tmpl:`）。ADR 0eea による。
 //!
 //! - 単位: `th:*` 属性を持つ要素。
 //! - ロケータ: `tmpl:<WEB-INF/views/ からのパス>#<id>`、`id` が無ければ

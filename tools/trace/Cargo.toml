@@ -3,7 +3,7 @@ name = "trace"
 version = "0.1.0"
 edition = "2024"
 publish = false
-description = "ATRS の両端の追跡（インベントリ・Lean の取り込み・TR 検査・manifest・rehash・diff・impact）。backlog 0024、ADR 0036・0040・0041"
+description = "ATRS の両端の追跡（インベントリ・Lean の取り込み・TR 検査・manifest・rehash・diff・impact）。backlog ffdc、ADR e2a4・0eea・9cd9"
 
 [[bin]]
 name = "trace"

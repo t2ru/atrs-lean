@@ -16,10 +16,10 @@ sources:
 
 # ATRS 仕様文書
 
-> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である。本ディレクトリは、**`Spec` で表現できない仕様**（規範）と、仕様・検証を運用するためのメタ情報、そして Lean に形式化する前の業務規則の **草案** を置く（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
-移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)）。区分（normative / meta / draft / informative）と書き方は、スキル port-lang の [spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md) による。
+ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である。本ディレクトリは、**`Spec` で表現できない仕様**（規範）と、仕様・検証を運用するためのメタ情報、そして Lean に形式化する前の業務規則の **草案** を置く（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
+移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)）。区分（normative / meta / draft / informative）と書き方は、スキル port-lang の [spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md) による。
 
 | 優先 | 正規の定義 |
 | --- | --- |
@@ -29,7 +29,7 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 
 ## 対象版
 
-追従中の版の正は `trace/upstream.json`（[ADR 0024](../decision/0024-following-upstream-releases.md)、[backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)）である。下表は現在の値の写しで、道具の導入後は生成する。
+追従中の版の正は `trace/upstream.json`（[ADR 3f36](../decision/3f36-following-upstream-releases.md)、[backlog 455f](../backlog/455f-upstream-submodule-and-inventory.md)）である。下表は現在の値の写しで、道具の導入後は生成する。
 
 | 項目 | 値 |
 | --- | --- |
