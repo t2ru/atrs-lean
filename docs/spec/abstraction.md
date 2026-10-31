@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T23:00:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -118,6 +118,12 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
     - 観測型: 成分が関係づける例（標準の抽象化では関係しない出力）と、関係づけない例
   - 必要性: 差異を外した R 課題の命題が偽である（[空虚化を防ぐ義務](#空虚化を防ぐ義務) の「成分の必要性」）。前提型では、前提を破り、R 課題の他の差異の前提を満たし、[Source] と [Spec] が一致しない入力が、その証人になる。他の差異に覆われる差異では、必要性の代わりに被覆（`Covers`）を示す
 - **モデル外**: Lean のどのモデルにも現れない差異。[Spec] の外の規範節と原典の違いがこれに当たる。証明には現れないので、[assurance.md](assurance.md) に限界として載せる
+- **証明の状態**: ギャップは、リファインメントの証明の中で証明できない部分である。公理や `sorry` で仮定せず、登録簿の `evidence` に状態を書き、状態を裏付ける宣言に `@[gap "D-NNN"]` を付ける（[ADR 6ab4](../decision/6ab4-gap-evidence-states-without-axioms.md)）。表の「証明の状態」の列はこれを示す。
+  - 偽を証明済み（`refuted`）: 差異を外した R 課題の否定の定理（W 課題）がある
+  - 被覆（`covered`）: 必要な差異がこの差異を覆う定理（`Covers`）がある
+  - 未証明（`pending`）: 前提で制限したが、必要性も一致もまだ示していない。Lean に述語がまだ無い差異もこれに当たる（段階導入。登録の backlog が完了したら誤り）
+  - 形式化していない（`unformalized`）: 命題として書けない。主張は証明も公理も持たない `opaque` の命題（`Abstraction.Gap.claim_DNNN`）で、どの定理からも参照しない
+  - PRE の外（`excludedBy`）: 差異ではない。前提の述語（`Spec.MasterData.MD7` など）に印がある
 
 <!-- BEGIN GENERATED: gaps-known -->
 `trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。

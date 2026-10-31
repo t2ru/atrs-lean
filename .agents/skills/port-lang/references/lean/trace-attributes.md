@@ -59,30 +59,78 @@ def D001 : Trace.Gap where
   kind := .pre
   sites := [⟨"税込み価格", "docs/spec/pricing.md#税込み価格", ""⟩]
   premise := "`dev_D001`: `price` が 0〜100,000"
+  deviations := [``Abstraction.Pricing.dev_D001]
+  evidence := .refuted [``Abstraction.Pricing.need_D001]
   rTasks := ["ABS-001"]
-  wTask := some "ABS-101"
   impact := some (.abort, "差のある価格が注文に保存される")
   backlog := ["<Lean 側を完了させる作業項目の ID>"]
 ```
 
-| 種類（`kind`） | 意味 | 必須の欄 | 書かない欄 | 印・差異の定数 |
-| --- | --- | --- | --- | --- |
-| `pre`・`preConcreteInput`・`preConcreteState`・`preConcreteEnv` | 前提型（抽象側／具体側の入力・状態・環境） | `premise`（前提）・`rTasks`・`wTask`・`impact`・`backlog` | `resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` |
-| `observational` | 観測型 | `premise`（成分）・`rTasks`・`wTask` | `impact`・`resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` |
-| `outOfModel` | モデル外 | `premise`（モデル外とする理由） | `rTasks`・`wTask`・`impact`・`resolution` | 持たない |
-| `outsidePre` | `Spec` の PRE・INV の外での具体側の振る舞い（差異ではない） | `premise`（それを除く `Spec` の前提） | `rTasks`・`wTask`・`impact`・`resolution` | `Spec` と具体側の `@[gap]`。`@[deviation]` は持たない |
-| `undetermined` | 種類が未確定 | `resolution`（確定させる作業） | `premise`・`rTasks`・`wTask`・`impact` | `@[deviation]` は持たない |
+| 種類（`kind`） | 意味 | 必須の欄 | 書かない欄 | 許す証明の状態 | 印・差異の定数 |
+| --- | --- | --- | --- | --- | --- |
+| `pre`・`preConcreteInput`・`preConcreteState`・`preConcreteEnv` | 前提型（抽象側／具体側の入力・状態・環境） | `premise`（前提）・`rTasks`・`impact`・`backlog` | — | `refuted`・`covered`・`pending` | `Spec` と具体側の `@[gap]`。`@[deviation]`（すべて `deviations` に挙げる） |
+| `observational` | 観測型 | `premise`（成分）・`rTasks` | `impact` | `refuted`・`covered`・`pending` | 同上 |
+| `outOfModel` | モデル外 | `premise`（モデル外とする理由） | `deviations`・`rTasks`・`impact` | `unformalized` | 主張のほかに持たない |
+| `outsidePre` | `Spec` の PRE・INV の外での具体側の振る舞い（差異ではない） | `premise`（それを除く `Spec` の前提） | `deviations`・`rTasks`・`impact` | `excludedBy` | `Spec` と具体側の `@[gap]`。`@[deviation]` は持たない |
+| `undetermined` | 種類が未確定 | — | `premise`・`deviations`・`rTasks`・`impact` | `unformalized`（確定させる作業を書く）・`pending` | `@[deviation]` は持たない |
 
 - `sites`（1 つ以上）は、リポジトリのルートからの文書のパスとアンカーで書く。表では文書からの相対リンクになり、`note` はリンクの後に続く。
-- 値は、定義の展開だけで構築子と文字列リテラルの組み合わせになる式で書く（`Trace.Gap.ofConst?` が評価せずに式から読む）。
-- `@[gap_entry]` は付けた時点で値を読み、種類ごとの必須の欄と書かない欄（`Trace.Gap.problems`）を検査する。
-- obligation-check の GK は、次を検査する。
-  - 宣言の層と docstring
-  - ID の重複
-  - 印の層と、印の ID の宣言
-  - `@[deviation]` の ID が前提型・観測型の宣言を持つこと
+- 名前（`deviations` と証明の状態の宣言）は ``` ``名前`` ``` で書く。存在しない名前は、エラボレートの時点で誤りになる。
+- 値は、定義の展開だけで構築子・文字列リテラル・名前リテラルの組み合わせになる式で書く（`Trace.Gap.ofConst?` が評価せずに式から読む）。
+- `@[gap_entry]` は付けた時点で値を読み、種類ごとの必須の欄・書かない欄と、種類と証明の状態の組み合わせ（`Trace.Gap.problems`）を検査する。
+- `backlog` は、Lean 側（箇所の印・裏付けの宣言）を完了させる作業項目である。前提型の影響の表の列にもなる。TR-K の段階導入に使う。
+
+### 証明の状態（`evidence`）
+
+ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で仮定してはならない。
+ギャップが実在すれば、差異を外したリファインメントは偽なので、それを公理にすると矛盾する。
+代わりに、ギャップごとに「なぜ証明できないか」を状態（`Trace.Evidence`）で示し、状態を裏付ける Lean の宣言に `@[gap "<ID>"]` を付ける。
+裏付けの宣言は、証明の層（`Abstraction`・`Refinement`）に置いてよい。
+
+| 状態 | 意味 | 裏付けの宣言 | W 課題（表の列） |
+| --- | --- | --- | --- |
+| `.refuted [thm, …]` | 偽を証明済み。差異を外した R 課題の否定が定理である | 必要性の定理（G9 の形の `¬ Refines …`） | 定理の `@[obligation]` |
+| `.covered M [thm, …]` | 被覆。必要な差異の述語 `M` が、この差異を覆う | `Machine.Covers M d`・`Covers₂ M d` の定理（`d` は `deviations` のどれか） | 定理の `@[obligation]` |
+| `.pending 理由 (some W)` | 未証明。前提で制限して R 課題を証明したが、必要性（偽）も一致（真）もまだ示していない | なし | 予定の `W` |
+| `.unformalized claim 作業` | 形式化していない。Lean の命題として書けない（モデル外、または未確定で命題をまだ書けない） | `opaque claim : Prop`（docstring に主張を書く） | — |
+| `.excludedBy [pre, …]` | 差異ではない。`Spec` の PRE・INV の外である | 前提の述語（`Spec` の箇所の印を兼ねる） | — |
+
+- 制限（`restrict`）は仮定を強めるだけなので、差異が実在してもしなくても、`pending` の R 課題は公理なしに証明できる。
+- `opaque c : Prop` は公理を足さず（axiom-check を通る）、定義が見えないので、Lean の中で真とも偽とも証明できない。どの定数からも参照してはならない（仮定として推論に持ち込まない）。
+- 状態は確定に向けて移す。
+  - `pending` は、必要性の定理ができたら `refuted` に移す。一致が証明できたら、差異を取り消す。
+  - `unformalized`（未確定）は、モデルができたら命題に書き直して `pending` か `refuted` に移す。
+- 前提型・観測型で Lean に述語がまだ無いものは、`deviations := []` と `.pending "Lean に述語がまだ無い" (some W)` にする。
+
+```lean
+/-- D-013 の主張: [Source] は照合と更新を別のトランザクションで行うので、並行実行の下では [Spec] と観測が異なりうる -/
+@[gap "D-013"] opaque claim_D013 : Prop
+
+/-- …（説明） -/
+@[gap_entry]
+def D013 : Trace.Gap where
+  id := "D-013"
+  kind := .outOfModel
+  sites := [⟨"トランザクション", "docs/spec/ports.md#トランザクション", "（規範節）"⟩]
+  premise := "— モデル外（並行実行はモデルに現れない）"
+  evidence := .unformalized ``claim_D013 ""
+```
+
+### 検査
+
+- obligation-check の GK（`Trace.Obligation`）
+  - 宣言の層と docstring、ID の重複
+  - 印の層と、印の ID の宣言（裏付けの宣言は証明の層でもよい）
+  - `@[deviation]` の ID が前提型・観測型の宣言を持ち、その `deviations` に挙がっていること
   - 種類と印・差異の定数が矛盾しないこと
-- `backlog` は、Lean 側（箇所の印・W 課題）を完了させる作業項目である。前提型の影響の表の列にもなる。TR-K の段階導入に使う。
+  - 状態ごとの裏付け
+    - `refuted`: 定理が、どれかの R 課題について `deviations` のどれかの必要性の定理である
+    - `covered`: 定理の型と、被覆の連鎖が循環せずに `refuted` の差異に着くこと
+    - `pending`: 必要性の定理が無いこと
+    - `unformalized`: 主張が `opaque` の `Prop` で、どの定数からも参照されないこと
+    - 裏付けの宣言が `@[gap "<ID>"]` を持つこと
+  - `pending` の差異の G9 の誤りは、`warnings` に下げる
+- `trace check` の TR-K は、`pending` を段階導入の指摘にする（`backlog` がすべて完了したら誤り）。
 
 ## trace-dump
 
@@ -99,7 +147,7 @@ def D001 : Trace.Gap where
 }
 ```
 
-出力の最上位は `{"lean_version", "definitions": [...], "gaps": [...]}` である。`gaps` の各要素は、登録の宣言の名前・モジュール・値の各欄（`id`・`kind`・`kind_label`・`sites`・`premise`・`r_tasks`・`w_task`・`impact`・`resolution`・`backlog`）・docstring（`doc`）と、同じ ID の `@[gap]` の定数（`markers`）・`@[deviation]` の定数（`deviations`）からなる。`obligation-check` の JSON も同じ `gaps` を持つ。
+出力の最上位は `{"lean_version", "definitions": [...], "gaps": [...]}` である。`gaps` の各要素は、登録の宣言の名前・モジュール・値の各欄（`id`・`kind`・`kind_label`・`sites`・`premise`・`r_tasks`・`impact`・`backlog`）・証明の状態（`evidence`: `state`・`label`・`witnesses`・`reason`・`coverer`・`pre`）・W 課題（`w_task`。裏付けの定理の `@[obligation]` か予定）・確定させる作業（`resolution`）・docstring（`doc`）と、同じ ID の `@[gap]` の定数（`markers`）・`@[deviation]` の定数（`deviations`）からなる。`obligation-check` の JSON も同じ `gaps` を持つ。
 
 - `references`: 定義の型と本体に現れる定数。`Abstraction`・`Refinement` の定理については、これからモデル間の対応を自動導出する（どの `SourceModel` / `TargetModel` 定義がどの `Spec` 定義と結ばれているか）。
 - `merkle`: 定義の型と本体の `Expr` のハッシュに、`references` のうち **同じ層と、その層が依存する `LangSemantics`・`Machine`** の定数の `merkle` を名前順に合成したもの。`LangSemantics` の変更でも、写しのハッシュがずれるようにするためである。依存する定義が変わっても値が変わる。循環参照（相互再帰）は、強連結成分ごとにまとめて計算する。
