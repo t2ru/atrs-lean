@@ -149,4 +149,13 @@ def bfIn (rbf : Nat) (cd : BoardingClassCd) (d : Date) : Fare.BasicFareInput := 
 -- 拒む例: 割引率 101 は PRE の外
 #guard !decide (Fare.FareInput.Pre ⟨1430, 101⟩)
 
+-- 合計金額の抽象機械（ABS-004 の抽象側）: PRE と出力（キーと年齢で書いた合計金額は、totalFare と一致する）
+def tfIn (keys : List FlightKey) (ages : List Nat) : Fare.TotalFareInput := ⟨Config.default, fareMd, keys, ages⟩
+#guard decide (tfIn [(flight "NTT001" .OW).key] [30, 28, 5]).Pre
+#guard (Fare.totalFareMachine.run () (tfIn [(flight "NTT001" .OW).key] [30, 28, 5])).2 == 53600
+-- 拒む例: 搭乗者 7 名・フライト 0 便・マスタに無い便名は PRE の外
+#guard !decide (tfIn [(flight "NTT001" .OW).key] [30, 30, 30, 30, 30, 30, 30]).Pre
+#guard !decide (tfIn [] [30]).Pre
+#guard !decide (tfIn [(flight "NTT999" .OW).key] [30]).Pre
+
 end Tests.SpecChecks
