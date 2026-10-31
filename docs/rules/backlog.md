@@ -79,8 +79,8 @@ generated:
 - 関係する spec・ADR・[traceability.md](../spec/traceability.md) が更新されている。
 - Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
 - 基本原則（[ADR c336](../decision/c336-foundational-principles.md)）を満たす。項目が扱う機能について、次をすべて満たす。
-  - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。R 課題は付帯の義務（`InitSurj`・`Pinned`・出力のみの差異の `StateSafe`）と義務の束（`Machine.Adequate`。同じ課題 ID）を、W 課題は両向きの例を含む（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。
-  - 機能の R 課題の束が、トップレベルの主定理（`Abstraction.adequate`・`Refinement.adequate`）の並置に入っている（`Spec.machine`・`SourceModel.machine`・`TargetModel.machine` に機能の機械を加える。[ADR a41d](../decision/a41d-top-level-refines-adequate-and-source-side-gate.md)）。
+  - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。R 課題は束（`Machine.Preserves`。同じ課題 ID。`InitSurj`・`Pinned`・出力のみの差異の `StateSafe` などを成分に持つ）を、W 課題は両向きの例を含む（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。
+  - 機能の R 課題の主定理と束が、トップレベルの主定理（`Abstraction.refines`・`Abstraction.preserves`・`Refinement.refines`・`Refinement.preserves`）の並置に入っている（`Spec.machine`・`SourceModel.machine`・`TargetModel.machine` に機能の機械を加える。[ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)）。
   - `lake exe obligation-check` と port-lang の `scripts/ci/check_obligations.py` が、その機能について警告なしで通る（TR-G・TR-N）。
   - 両端の決定論的な手段がすべて通る（`source-model/` ベクタと Java オラクルの照合、SQL の差分実行、`target-model/` ベクタ、写しの再生成、Verus・Kani）。
   - 追跡の検査 TR-*（TR-D を含む）が失敗扱いで通る。段階導入は側ごとに判定する（`trace/features.json` の `source`・`target`）。移植元側の項目を `done` にする時点で、その機能の移植元側の検査（TR-S1・TR-P・TR-D・TR-K）が失敗扱いで通っていなければならない。以後は CI がそれを保ち、後の機能の取り込みで実装済みの範囲が壊れれば失敗する。未対応の一覧は `trace check --verbose --feature <機能>` で出す。

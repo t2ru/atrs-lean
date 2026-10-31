@@ -72,6 +72,7 @@ okf_version: "0.2"
 * [Lean の宣言をモジュール名の下に置き、機能の証明課題を機能のモジュールに置く](decision/1a30-lean-module-namespace-layout.md) - Lean の宣言の完全名をモジュール名そのものかその下に限り（NS-1）、技術的な必要がある 4 つの例外（型の名前空間・main・明示した例外・型名のモジュールのインスタンス）だけを認める。R・W・C 課題と付帯の義務は機能の名前空間のモジュールに、補題は下位のモジュールに置く（TR-L）。検査の道具 layout-check と改名の道具 rename.py を置く。
 * [スキルの文書を spec/・rules/・guide/・lang/ に分け、移動の道具 docmv.py を置く](decision/748c-skill-docs-category-directories.md) - references/docs の方法の文書（平置きの 11 本）を、規範の spec/、書き方の規約の rules/、手順と進め方の guide/ に分け、言語パックを lang/<lang>/ に移す。type は spec を Specification、rules を Guideline、guide を Guide、lang を Reference とする。移動とリンクの張り直しには、新しい道具 scripts/docs/docmv.py を使う。
 * [義務の束 Machine.Adequate、機械の並置によるトップレベルの主定理、側ごとの段階導入](decision/ab9e-adequate-bundle-sum-and-side-staging.md) - R 課題ごとに、Refines と空虚化を防ぐ義務を Machine.Adequate に束ね、同じ課題 ID の @[obligation] で示す（GA・OB-A）。機能の機械を Machine.sum で並置し、トップレベルの Refines・Adequate を Abstraction.lean・Refinement.lean に置く。追跡の検査の段階導入を、指摘の側（移植元・移植先）の作業項目で判定する。
+* [adequate の廃止: A abstracts B = A preserves B ∧ B refines A](decision/6b4b-preserves-refines-abstracts.md) - 義務の束 Machine.Adequate を廃止し、B メソッドのリファインメント Machine.Refines（B refines A）と、R 課題の空虚化を防ぐ意味的な義務のすべてを束ねた Machine.Preserves（A preserves B。Refines を含まない）に分ける。両者の組を Machine.Abstracts（A abstracts B）とする。G6 は束の ch・outs を照合し、GA を GP、OB-A を OB-P に改める。並置と側ごとの段階導入は ADR ab9e から引き継ぐ。
 
 # Backlog
 

@@ -125,6 +125,20 @@ generated:
 - PRE の外での具体側の振る舞いには、義務が無い。これは差異ではない。ただし、`Spec` がその入力に振る舞いを定めている場合は PRE の内である。
 - 汎用の定義（`Machine.Machine`、`Machine.Refines`、各証明義務）は、`assets/lean/Machine/` に置く。`Machine` は core だけに依存する。
 
+`Machine.Refines` は、B メソッドのリファインメントの証明義務を、入出力の対応 αᵢ・αₒ で一般化したものである（B refines A）。
+B の記法では、M（INVARIANT I）を M'（INVARIANT J）がリファインし、操作 `PRE P THEN S` を `PRE P' THEN S'` にリファインする。
+
+| B の証明義務 | 式 | `Refines` の成分 | 対応 |
+| --- | --- | --- | --- |
+| 初期化 | `[Init'] ¬[Init] ¬J` | `init` | 一致 |
+| 操作: 事前条件 | `I ∧ J ∧ P ⇒ P'` | `applicable` の「どの結果も正常終了」 | 一致。`Concrete.ofMachine` が PRE の違反を誤りに写すので、「誤りにならない」が「P' が成り立ち、abort しない」に当たる |
+| 操作: 停止 | `[S'] R` の trm(S') | `applicable` の「結果を持つ」 | 一致（やや強い）。wp の意味論では、奇跡（結果の無い S'）が義務を空虚に満たす。B は、実装（B0）が実行可能な代入だけを使うことでこれを排除する。具体機械は実装のモデルなので、結果を持つことを要求する |
+| 操作: 正しさ | `I ∧ J ∧ P ⇒ [S'] ¬[S] ¬(J ∧ out' = out)` | `correct` | 一致 |
+| （入力は同じ名前・型） | — | 入力の全域性と αᵢ・αₒ | 一般化。αᵢ・αₒ が等号なら B と同じ。入力の全域性は、像を持たない、制約の無い具体側の入力を生まないための条件である（B では入力が同一なので、自動的に成り立つ） |
+| 抽象機械の無矛盾性 | M 自身の義務 | `Machine.Sound`（`Refines` の外） | B でもリファインメントの義務ではない |
+
+`Refines` には、B に無い義務を足さない。空虚化を防ぐ義務（`Pinned`・`StateSafe` など）は、次節の `Machine.Preserves` に置く（[ADR 6b4b](../decision/6b4b-preserves-refines-abstracts.md)）。
+
 ### 空虚化を防ぐ義務
 
 `Refines` が保証するのは「具体側の振る舞いが、抽象側の許す範囲に収まる」ことだけである。そのため、次の場合にも空虚に、または自明に成り立ってしまう。
@@ -137,7 +151,9 @@ generated:
 - 名前付きの成分が要らない（外しても成り立つ。実在しない差異）
 - 具体側の不具合が、抽象側の環境の非決定性（衝突・I/O の失敗）に紛れる
 
-これを塞ぐため、次を課す（`assets/lean/Machine/Adequacy.lean`）。
+これを塞ぐため、次を課す。R 課題ごとの意味的な義務は、束 `Machine.Preserves`（A preserves B）にすべて入れる。`Preserves` は `Refines` を含まない。
+両者の組が `Machine.Abstracts`（**A abstracts B = A preserves B ∧ B refines A**）である。`Abstracts` は B のリファインメントより厳密に強い（`Abstracts` ⇒ B refines A。逆は成り立たない）。
+定義は `assets/lean/Machine/` の `Preserves`（`Machine.Preserves.Pred`・`Machine.{Machine,Glue,Refines}.Preserves`）と `Abstracts` にある（[ADR 6b4b](../decision/6b4b-preserves-refines-abstracts.md)）。
 
 | 対象 | 義務 | Lean |
 | --- | --- | --- |
@@ -154,32 +170,58 @@ generated:
 | 成分の必要性 | R 課題で使う差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（W 課題に含める）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `ofChoice` なら `Refines ∧ Pinned` でもよい（`Refines` だけでは、環境の非決定性が不具合を模倣して偽にならないことがある）<br>少なくとも 1 つの R 課題について示す。他の必要な差異 M に覆われる差異は、同じ R 課題で `Covers M d` を示す。差異の定数には ID を 1 つだけ付ける。環境の前提には、前提なしでは PRE が成り立たないこと（`¬ TotalUnder A always`）を示す。PRE が全域な機械は、環境の前提を置かず `TotalUnder A always` を示す | `always`・`anyOf`・`Covers`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always` |
 | 差異の前提の外の 1 歩 | 前提型の差異を「出力のみ」と「中断」に分けて登録する。出力のみの差異では、前提を破る 1 歩の後も状態は `J` を保つ。中断の差異では、前提を破った後の軌跡に保証が無く、保証の限界の文書に載せる | `Refines.StateSafe`・`StateSafeConcrete` |
 | 同語反復の禁止 | 具体機械は `Concrete.ofMachine` と `Spec` の関数（型・構成子・射影・インスタンス以外）を参照しない | — |
-| 義務の束 | R 課題ごとに、主定理と上の義務（`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`、環境の前提を置かないかその必要性）を 1 つの主張に束ね、R 課題と同じ課題 ID の `@[obligation]` で示す。入口でない R 課題にも課す（環境の前提は、マスタ・設定の妥当性と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語でよい。`@[env_pre]` は入口の機械に限る） | `Machine.Adequate` |
+| 束 | R 課題ごとに、上の義務のうち意味的なもの（下の表）を 1 つの主張 `Preserves A C g s₀ Env ch outs outsC` に束ね、R 課題と同じ課題 ID・同じ A・C・g の `@[obligation]` で示す。`Refines` は含めない。入口でない R 課題にも課す（環境の前提は、マスタ・設定の妥当性と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語でよい。`@[env_pre]` は入口の機械に限る） | `Machine.Preserves`、`Machine.Abstracts` |
+
+束 `Preserves` の成分は次のとおりである。条件付きの成分は、引数 `ch`（基底が `ofChoice` なら選択の像の材料 `some (Choice.mk E F P f ce e₀ m)`、`pure` なら `none`）と `outs`・`outsC`（「出力のみ」の差異の層 `⟨base, P⟩`）で渡す。当たらないとき（`none`・`[]`。既定値）は既定の証明で閉じる。
+
+| 成分 | 条件 | 向き | 意味 | 塞ぐもの |
+| --- | --- | --- | --- | --- |
+| `sound` | 常に | 抽象のみ | 抽象側の INV が初期化で成り立ち、PRE の下の歩みで保たれる | 不健全な INV |
+| `initIs` | 常に | 抽象のみ | 初期状態は fixture の 1 点（`sound` と合わせて、INV が空でない） | 仮定 INV が空で、Refines が空虚に成り立つこと |
+| `initSurj` | 常に | 抽象→具体 | 抽象側の各初期状態に、`J` で結ばれる具体側の初期状態がある（`Refines` の INIT の逆向き） | 具体側の初期状態が空であること |
+| `total` | 常に | 抽象のみ | INV と環境の前提の下で PRE が成り立つ | 強すぎる PRE |
+| `envWitness` | 常に | 抽象→具体 | 環境の前提を満たす抽象側の入力が、具体側の定義域の入力の像として実現される | αᵢ が PRE・環境の前提の外へ写すこと、定義域が空であること |
+| `envNeeded` | 常に | 抽象のみ | 環境の前提は、置かないか、無ければ PRE が成り立たない | 不要な前提で主張の範囲を狭めること |
+| `pinned` | 基底が `ofChoice` | 具体→抽象（模倣を絞る） | 具体側の正常終了は、環境の選択を `ce i_c` に固定した `f` の結果で模倣される（`correct` より強い。B には無い） | 環境の非決定性が具体側の不具合を吸収すること |
+| `noFault` | 基底が `ofChoice` | 抽象→具体 | 抽象側の入力の各像は、環境が標準 `e₀` の具体側の入力でも実現される | `ce` の悪用 |
+| `freeFrame` | 基底が `ofChoice` | 抽象のみ | 自由な選択が変えうるのは、射影 `m` が忘れる部分だけ | 自由な選択による結果の吸収 |
+| `stateSafe`・`stateSafeC` | 「出力のみ」の差異ごと | 具体→抽象（模倣を広げる） | 差異の前提を破る入力でも、具体側の正常終了の後の状態は `J` を保つ | 差異の前提の外の 1 歩が状態を壊すこと |
+
+`Abstracts` の外に残る義務は、課題をまたぐもの、定数ごとのもの、構文の条件である。obligation-check と文書の照合が扱う。
+
+| 義務 | 規則 | 外に残す理由 |
+| --- | --- | --- |
+| 差異の必要性 | G9（W 課題） | 差異 ID ごとに、少なくとも 1 つの R 課題について課す。`Refines` の否定を含む |
+| `Nontrivial`（`@[deviation]`・`@[env_pre]`）、`KernelIs`（`@[std_abs]` の葉、`Choice.m`） | G8・G7・G3 | 定数ごとの義務。核が等号か `@[kernel]` であることは構文の条件 |
+| `ch`・`outs` が R 課題の構造に合うこと | G6 | 基底と「出力のみ」の区別は、構文と登録簿で決まる |
+| 形と配置（閉じた型、`@[deviation]` の定数そのもの、`Glue.ofStd`、`ofChoice`/`pure`、同語反復の禁止、NS-1） | G0〜G5・G7、layout-check | 構文の条件 |
+| `Spec` 自身の課題 | SPEC-NNN | 抽象機械だけの義務 |
 
 - 具体側の状態の述語を前提とする差異は、`J` で対応する抽象側の状態の述語に書き直して `restrictState` で置く。
 - 具体側の不変条件 `Ic` は仮定ではない。初期化で成り立ち、正しさの義務で `J` とともに保たれることを示すので、到達可能な状態についての証明済みの不変条件である。
 - 標準の環境の下で、`f` が環境の非決定性に固有の結果（衝突・I/O の失敗）を返さないことを、`Spec` 自身の課題として示す。
-- 上の義務から、1 歩の可換式 `Refines.complete` が導かれる。内容は、PRE の下で具体側は必ず正常終了し、その像は環境を固定した `f` の結果と一致する、というものである。出力が関数で決まる機械（`Machine.pure` とその制限）では、`Refines.complete_fun` が出力の等式を与える。
-- 義務の束からは、初期状態からの複数歩の模倣（`Machine.Adequate.run_init`。`Refines.run` による）と、環境の前提を満たす具体側の入力が正常終了し抽象側の歩みで模倣されること（`Machine.Adequate.exists_ok`）が導かれる。
+- `Abstracts` から、1 歩の可換式 `Abstracts.complete`（`ch = some c` のとき。`Abstracts.complete_of` による）が導かれる。内容は、PRE の下で具体側は必ず正常終了し、その像は環境を固定した `f` の結果と一致する、というものである。出力が関数で決まる機械（`Machine.pure` とその制限）では、`Refines.complete_fun` が出力の等式を与える。
+- `Abstracts` からは、初期状態からの複数歩の模倣（`Machine.Abstracts.run_init`。`Abstracts.run_of` による）と、環境の前提を満たす具体側の入力が正常終了し抽象側の歩みで模倣されること（`Machine.Abstracts.exists_ok`）が導かれる。
 - 名前付きの成分の **広さ**（どこまでを差異・非決定性として許すか）は、形の制限・両向きの例・必要性・適合テストベクタの網羅（TR-V）を越えては、証明では確かめられない。仕様の変異テスト（成分を狭める変異体を作り、証明が通ったまま残るものを報告する）で兆候を探し、残りを保証の限界の文書に載せる。
 - `Spec` の標準の選択 `run` が業務の意図どおりであること（仕様の妥当性）は、どの義務でも確かめられない。仕様文書の例を、`run` と独立に期待値を書いた検査（意図から書く例。[conformance.md](conformance.md#意図から書く例)）で確かめ、保証の限界の文書に載せる。
 - R 課題は `Refines.trans` で合成できない（合成した貼り合わせは `Glue.ofStd` の形にならない）。主定理は、具体機械と `Spec` の間で直接に述べる。
-- 機能の機械は並置（`Machine.sum`・`Concrete.sum`・`Glue.sum`。入力は和、状態は積）でトップレベルの機械にまとめる。並置はリファインメントと義務の束を保つ（`Refines.sum`・`Adequate.sum`）。トップレベルの主定理（[トップレベルの主定理](#トップレベルの主定理)）は、R 課題ごとの束を並置して示す（[ADR ab9e](../decision/ab9e-adequate-bundle-sum-and-side-staging.md)）。
+- 機能の機械は並置（`Machine.sum`・`Concrete.sum`・`Glue.sum`。入力は和、状態は積）でトップレベルの機械にまとめる。並置はリファインメントと束を保つ（`Refines.sum`・`Preserves.sum`・`Abstracts.sum`）。トップレベルの主定理（[トップレベルの主定理](#トップレベルの主定理)）は、R 課題ごとの主定理と束をそれぞれ並置して示す（[ADR ab9e](../decision/ab9e-adequate-bundle-sum-and-side-staging.md)・[ADR 6b4b](../decision/6b4b-preserves-refines-abstracts.md)）。条件付きの成分を持つ束どうしの並置（`Choice` と層の並置）は、最初の `ofChoice`・「出力のみ」の R 課題を取り込むときに足す。
 
 #### トップレベルの主定理
 
-適用先の `Abstraction.lean`・`Refinement.lean` のトップレベル（下の名前空間ではなく、ファイルそのもの）に、次の 2 つを置く。
+適用先の `Abstraction.lean`・`Refinement.lean` のトップレベル（下の名前空間ではなく、ファイルそのもの）に、次の 3 つを置く。
 補題と R 課題ごとの定理は、機能ごとの下の名前空間に置く。
 
 ```lean
 theorem refines : Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue
-theorem adequate : Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+theorem preserves : Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+theorem abstracts : Machine.Abstracts (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
 ```
 
 - `Spec.machine`・`SourceModel.machine`（`TargetModel.machine`）は、実装済みの範囲の機能の機械を同じ並びで並置したもの。入口の機械ができたら、入口の機械を並置に加える。
 - `dev`・`devC`・`glue`・`env` は、R 課題ごとの前提型の差異・貼り合わせ・環境の前提を `sumPred`・`Glue.sum` で並置したもの。
-- 主定理は R 課題ごとの束を `Adequate.sum` で並べ、`Adequate.congrPre` で並置した制限に付け替えて示す。機能をまたぐので `@[obligation]` を付けない（形の検査は R 課題ごとに行う）。
-- 機能を取り込んだら、その R 課題の束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
+- `refines` は R 課題の主定理を `Refines.sum` で、`preserves` は R 課題ごとの束を `Preserves.sum` で並べ、それぞれ `congrPre` で並置した制限に付け替えて示す。互いを使わない。`abstracts` は両者の組である。機能をまたぐので `@[obligation]` を付けない（形の検査は R 課題ごとに行う）。
+- 機能を取り込んだら、その R 課題の主定理と束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
 
 既存の研究との対応は次のとおりである。義務の名前を研究の用語に読み替えるときに使う。
 
@@ -217,7 +259,7 @@ theorem adequate : Machine.Adequate (Spec.machine.restrict dev) (SourceModel.mac
 
 | 種類 | 内容 | 必須か |
 | --- | --- | --- |
-| R | リファインメントの主定理（`Machine.Refines`）と、付帯の義務（`InitSurj`、基底が `ofChoice` なら `Pinned`、出力のみの差異の `StateSafe`）、義務の束（`Machine.Adequate`。同じ課題 ID） | 機能ごとに必須。モデルの公開操作（ポートの実装を含む）を、**入口の** R 課題ですべて覆う。他の R 課題の操作を含む場合は、その仮定・成分を引き継ぐ |
+| R | リファインメントの主定理（`Machine.Refines`。B refines A）と、束（`Machine.Preserves`。A preserves B。同じ課題 ID。`InitSurj`・基底が `ofChoice` なら `Pinned`・出力のみの差異の `StateSafe` などを成分に持つ） | 機能ごとに必須。モデルの公開操作（ポートの実装を含む）を、**入口の** R 課題ですべて覆う。他の R 課題の操作を含む場合は、その仮定・成分を引き継ぐ |
 | W | 差異の証拠 | 前提型・観測型の差異ごとに必須 |
 | C | 差異の特徴付け（差の向きと大きさなど） | 任意。R の代わりにはならない |
 | L | 補題（同値、到達不能、溢れが無いこと、不変条件） | 任意 |

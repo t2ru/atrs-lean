@@ -20,28 +20,32 @@ Lean では、名前空間 `Abstraction` に、課題 ID を `@[obligation]` に
 
 ## トップレベルの主定理
 
-`lean/Abstraction.lean` のトップレベルに、実装済みの範囲の [Source] と [Spec] の関係を置く（[ADR a41d](../decision/a41d-top-level-refines-adequate-and-source-side-gate.md)）。
+`lean/Abstraction.lean` のトップレベルに、実装済みの範囲の [Source] と [Spec] の関係を置く（[ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)）。
 
 ```lean
 theorem Abstraction.refines :
     Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue
-theorem Abstraction.adequate :
-    Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+theorem Abstraction.preserves :
+    Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+theorem Abstraction.abstracts :
+    Machine.Abstracts (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
 ```
 
 - `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。
 - `dev`・`devC`・`glue`・`env` は、R 課題ごとの前提型の差異・貼り合わせ・環境の前提を並置したもの。
-- `Machine.Adequate` は、`Refines` と空虚化を防ぐ義務の束である。
-  - 義務: `Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`、環境の前提を置かないかその必要性。
+- `Machine.Refines`（[Source] refines [Spec]）は、B メソッドのリファインメントである。B に無い義務は含めない。
+- `Machine.Preserves`（[Spec] preserves [Source]）は、R 課題の空虚化を防ぐ意味的な義務のすべての束で、`Refines` を含まない。
+  - 成分: `Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`、環境の前提を置かないかその必要性。基底が `Machine.ofChoice` なら `Pinned`・`NoFaultReachable`・`FreeFrame`、「出力のみ」の差異ごとに `StateSafe`（現行の R 課題には当たらない）。
+- `Machine.Abstracts`（[Spec] abstracts [Source]）は、`Preserves ∧ Refines` である。
   - 系: 初期状態からの複数歩の模倣（`run_init`）、[Source] の正常終了が実在すること（`exists_ok`）。
-- 主定理は、R 課題ごとの束（下の表）を並置して示す。機能を取り込んだら、その R 課題の束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
+- `refines` は R 課題の主定理を、`preserves` は R 課題ごとの束（下の表）を並置して示す。互いを使わない。機能を取り込んだら、その R 課題の主定理と束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
 
-| R 課題 | 機能 | 束（`Machine.Adequate`。同じ課題 ID の `@[obligation]`） | 環境の前提 |
+| R 課題 | 機能 | 束（`Machine.Preserves`。同じ課題 ID の `@[obligation]`） | 環境の前提 |
 | --- | --- | --- | --- |
-| ABS-026 | マスタ・設定・コードリストの読み込み | `Abstraction.MasterData.queryAdequate` | `envMQ`: `masterConfigOk` と問い合わせの値域 |
-| ABS-001 | 基本運賃 | `Abstraction.Fare.basicFareAdequate` | `envBF`: `masterConfigOk`、`routeBasicFare + extraCharge` の値域、`dev_D001` |
-| ABS-002 | 運賃 | `Abstraction.Fare.fareAdequate` | `envF`: 基本運賃と割引率の値域、`dev_D002` |
-| ABS-004 | 合計金額 | `Abstraction.Fare.totalFareAdequate` | `envTF`: `masterConfigOk`、入力の値域、`dev_D001T`・`dev_D002T`・`dev_D012` |
+| ABS-026 | マスタ・設定・コードリストの読み込み | `Abstraction.MasterData.queryPreserves` | `envMQ`: `masterConfigOk` と問い合わせの値域 |
+| ABS-001 | 基本運賃 | `Abstraction.Fare.basicFarePreserves` | `envBF`: `masterConfigOk`、`routeBasicFare + extraCharge` の値域、`dev_D001` |
+| ABS-002 | 運賃 | `Abstraction.Fare.farePreserves` | `envF`: 基本運賃と割引率の値域、`dev_D002` |
+| ABS-004 | 合計金額 | `Abstraction.Fare.totalFarePreserves` | `envTF`: `masterConfigOk`、入力の値域、`dev_D001T`・`dev_D002T`・`dev_D012` |
 
 あわせて、R 課題ごとの 1 歩の可換式（`queryRefines_commutes`・`basicFareRefines_commutes`・`fareRefines_commutes`・`totalFareRefines_commutes`）を示す。
 内容は、環境の前提の下で [Source] のどの結果も正常終了で、出力の像が [Spec] の出力に等しい、というものである。
@@ -71,7 +75,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
                 (Machine.Glue.ofStd β Ic aᵢ aₒ obs_J obs_O)
 ```
 
-R 課題ごとに、主定理と同じ機械・貼り合わせについて義務の束 `Machine.Adequate` を、同じ課題 ID の `@[obligation]` で示す（obligation-check の GA、`check_obligations.py` の OB-A）。
+R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `Machine.Preserves` を、同じ課題 ID の `@[obligation]` で示す（obligation-check の G6・GP、`check_obligations.py` の OB-P）。下表の空虚化を防ぐ義務のうち意味的なものは、この束の成分として示す。
 
 主定理が前提として持ってよいのは、次の 3 つだけである（TR-D・TR-G で検査する）。前提型の差異の述語は、∀ の仮定ではなく `restrict` で機械の中に置く。
 
@@ -101,7 +105,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて義務
 | `NoFaultReachable` | [Spec] の各入力は、障害の無い環境（`ce` が標準の環境を返す）の [Source] の入力でも実現される。障害の無い環境では、[Source] は `Conflict`・I/O 失敗の結果（N-001・N-002）を返せない |
 | `StateSafe` | 「出力のみ」の前提型の差異（[前提型の差異の影響](#前提型の差異の影響)）ごとに、前提を破る 1 歩の後も状態が `J` を保つ |
 | 入口の全域性 | [入口の R 課題](#入口の-r-課題) の [Spec] の機械は、INV と環境の前提（`@[env_pre]`）の下で PRE が成り立つ（`TotalUnder`。SPEC-006）。環境の前提は、マスタ・設定の妥当性（MD-1〜MD-8）と入力の値域（[domain-model.md](domain-model.md#値域)）を入力の成分だけで書いたものとする。R 課題には、環境の前提を満たす像を持つ [Source] の入力があること（`EnvWitness`）も課す |
-| 成分の必要性 | R 課題で使う前提型・観測型の差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)。検査は TR-G の G9）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `Machine.Adequacy.anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `Machine.ofChoice` なら `Refines ∧ Pinned` でもよい<br>少なくとも 1 つの R 課題について示せばよく、W 課題に含める。他の必要な差異に覆われる差異（例: D-012 は D-001・D-002 に覆われる）は、同じ R 課題で `Covers` を示す。`@[deviation]` の定数には ID を 1 つだけ付ける |
+| 成分の必要性 | R 課題で使う前提型・観測型の差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)。検査は TR-G の G9）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `Machine.Preserves.anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `Machine.ofChoice` なら `Refines ∧ Pinned` でもよい<br>少なくとも 1 つの R 課題について示せばよく、W 課題に含める。他の必要な差異に覆われる差異（例: D-012 は D-001・D-002 に覆われる）は、同じ R 課題で `Covers` を示す。`@[deviation]` の定数には ID を 1 つだけ付ける |
 
 - [Source] の各操作は、マスタ・設定と環境（衝突が起きるか、どのポート操作が I/O で失敗するか、配備の設定）を入力の成分として受ける。原典がマスタを DB から読む場合も、マスタは不変なので状態に含めず入力とする。
   - aᵢ は環境を落とす。
@@ -247,7 +251,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて義務
 
 種類は次の 4 つである（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
-- R: リファインメントの主定理と、その付帯の義務（`InitSurj`、基底が `Machine.ofChoice` なら `Pinned`、出力のみの差異の `StateSafe`）、義務の束（`Machine.Adequate`）。付帯の義務と束は同じ課題 ID に含める
+- R: リファインメントの主定理（`Machine.Refines`）と、束（`Machine.Preserves`。`InitSurj`、基底が `Machine.ofChoice` なら `Pinned`、出力のみの差異の `StateSafe` などを成分に持つ）。束は同じ課題 ID に含める
 - W: 差異の証拠（両向きの例と、差異の必要性）
 - C: 差異の特徴付け
 - L: 補題
