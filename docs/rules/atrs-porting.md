@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T06:36:39+09:00
+  at: 2026-10-31T10:30:00+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -117,6 +117,20 @@ generated:
 | REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md#rest-apiapiv1) |
 | `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [ports.md#idgenerator](../spec/ports.md#idgenerator) |
 | `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [ports.md#トランザクション](../spec/ports.md#トランザクション) |
+
+## 進め方の適用（ATRS）
+
+スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0042](../decision/0042-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
+
+| 項目 | ATRS での扱い |
+| --- | --- |
+| 評価 | 済み。範囲は [ADR 0002](../decision/0002-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
+| 人が判断する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
+| 検査ゲート | `tools/ci/lean.sh` と CI。追跡は `tools/trace check`、ハッシュの更新は `tools/trace rehash` |
+| 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
+| 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） |
+| 画面の確認 | HTTP レベルのオラクルとベクタで行う。HTML の構造は範囲外（ADR 0002）。ブラウザでの操作の流れのテストは、現時点では採らない |
+| 記録 | 作業状態は [docs/backlog/](../backlog/README.md)、判断は ADR、文書の変更は [docs/log.md](../log.md)。git の運用は [version-control.md](version-control.md) |
 
 ## ATRS で採った値
 
