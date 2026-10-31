@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T23:00:00+09:00
 ---
 
 # 保証の限界
@@ -80,7 +80,7 @@ generated:
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
 | R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、port-lang の `scripts/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/TraceTest/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
-| ギャップ（既知差異・PRE の外・未確定）の登録簿と箇所の印（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`trace check`、表の生成（`trace manifest --check`） | 検査器と生成器（`TraceTest/` のフィクスチャと port-lang の `scripts/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である |
+| ギャップ（既知差異・PRE の外・未確定）の登録簿・箇所の印・証明の状態の裏付け（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)・[ADR 6ab4](../decision/6ab4-gap-evidence-states-without-axioms.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`trace check`、表の生成（`trace manifest --check`） | 検査器と生成器（`TraceTest/` のフィクスチャと port-lang の `scripts/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である。形式化していない主張（`opaque`）の中身は docstring にあり、Lean は何も主張しない |
 
 ### モデル間の保証の限界
 

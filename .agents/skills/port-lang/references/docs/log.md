@@ -2,7 +2,7 @@
 
 ## 2026-10-31
 
-* **Creation**: このバンドル（`references/docs/`）を作った（[ADR 87b9](decision/87b9-skill-docs-as-okf-bundle.md)、[backlog de90](backlog/de90-skill-docs-okf-bundle-and-records.md)）。スキルの版を 0.7 にした。
+* **Creation**: このバンドル（`references/docs/`）を作った（[ADR 87b9](decision/87b9-skill-docs-as-okf-bundle.md)、[backlog de90](backlog/de90-skill-docs-okf-bundle-and-records.md)）。スキルの版を 0.8 にした（0.7 はギャップの証明の状態 `Trace.Evidence` の追加。ATRS の ADR 6ab4 で入った）。
   * `references/*.md` と言語パック（`java/`・`sql/`・`rust/`・`lean/`）をここへ移し、OKF v0.2 の frontmatter を付けた。方法の文書は `Guideline`、言語パックは `Reference` とした。
   * [index.md](index.md)・log.md・[maintenance.md](maintenance.md)（保守の規則）・[decision/README.md](decision/README.md)・[backlog/README.md](backlog/README.md) を作った。
 * **Creation**: ATRS の `docs/` から、スキルの記録を移した。ID とファイル名は変えていない。ATRS へのリンクは来歴の文に直した。

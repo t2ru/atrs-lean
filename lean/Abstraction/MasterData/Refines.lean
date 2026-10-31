@@ -137,7 +137,7 @@ theorem queryRefines_initSurj : Refines.InitSurj MasterData.queryMachine (queryC
 
 /-- W 課題 ABS-127（D-027 の必要性。G9）: 前提を外すと、ABS-026 は成り立たない。未知の搭乗クラスコード `X` の行を
 持つ DB では α が定義されず、入力の全域性が破れる。 -/
-@[obligation "ABS-127"]
+@[obligation "ABS-127", gap "D-027"]
 theorem need_D027 : ¬ Refines MasterData.queryMachine queryConcrete glueMQ := fun h => by
   obtain ⟨ia, hia⟩ := h.input_total ic_unknownBoardingClass trivial
   have : aiMQ ic_unknownBoardingClass = none := by decide

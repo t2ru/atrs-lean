@@ -317,7 +317,7 @@ theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .o
 
 /-- W 課題 ABS-112（D-012 の必要性。G9）: 前提を外すと、ABS-004 は成り立たない。基本運賃 1 億円・割引率 0・小児 1 名で、
 [Source] は 17,050,400 円、[Spec] は 60,000,000 円。 -/
-@[obligation "ABS-112"]
+@[obligation "ABS-112", gap "D-012"]
 theorem need_D012 :
     ¬ Refines ((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T)
       (totalFareConcrete.restrict dev_D027TF) glueTF := fun h => by

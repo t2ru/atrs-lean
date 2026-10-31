@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T23:00:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -61,8 +61,8 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 <!-- BEGIN GENERATED: gaps-known -->
 `trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
-| ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
-| --- | --- | --- | --- | --- | --- | --- |
+| ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 | 証明の状態 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 
 （現在なし）
 <!-- END GENERATED: gaps-known -->

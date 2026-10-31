@@ -3,14 +3,23 @@
 ## 2026-10-31
 
 * **Creation**: [ADR 50f9](decision/50f9-move-skill-records-to-skill-bundle.md) で、スキル port-lang の記録をスキルのバンドルへ移した。スキル側の決定は [スキルの ADR 87b9](../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)、作業は [スキルの backlog de90](../.agents/skills/port-lang/references/docs/backlog/de90-skill-docs-okf-bundle-and-records.md)。
-  * スキルの `references/` を `references/docs/`（OKF v0.2 のバンドル。[索引](../.agents/skills/port-lang/references/docs/index.md)）に移し、スキルの版を 0.7 にした。ATRS の文書・`lean/`・`trace/project.json` のリンクとパスを張り直した。ADR とこのファイルの本文に書いたパスは記録として残し、リンクだけ直した。
+  * スキルの `references/` を `references/docs/`（OKF v0.2 のバンドル。[索引](../.agents/skills/port-lang/references/docs/index.md)）に移し、スキルの版を 0.8 にした。ATRS の文書・`lean/`・`trace/project.json` のリンクとパスを張り直した。ADR とこのファイルの本文に書いたパスは記録として残し、リンクだけ直した。
   * ADR edc8・7fe4・6edf・0b83・0eea・9cd9 と backlog 1ae4・a936 を、ID とファイル名を変えずにスキルの `references/docs/decision`・`backlog` へ移した。[index.md](index.md) と [backlog/README.md](backlog/README.md) からは外した。backlog の依存の列と着手順の図からは、スキルの項目をリンクで指す。
   * `trace/project.json` の `ids` に、スキルの置き場所と `isolated`（スキルが ATRS を指していないことの検査）を足した。
 * **Update**: 次の文書を改めた。
   * [rules/decision-records.md](rules/decision-records.md)（スキルの ADR）、[rules/backlog.md](rules/backlog.md)・[rules/documentation.md](rules/documentation.md)（スキルのバンドル）
-  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.7）
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.8）
   * [ADR f4e1](decision/f4e1-extract-porting-method-as-agent-skill.md)（More Information の補足）
   * [index.md](index.md)、[AGENTS.md](../AGENTS.md)
+
+* **Creation**: [backlog c27d](backlog/c27d-gap-evidence-states.md) を作り、完了した（`done`）。
+* **Creation**: [ADR 6ab4](decision/6ab4-gap-evidence-states-without-axioms.md) で、ギャップの証明の状態を Lean の型 `Trace.Evidence` で表し、公理・`sorry` を使わずに裏付けの宣言で示すことにした。
+  * `lean/Abstraction/Gap.lean` の 30 件に状態を与えた（偽を証明済み 4 件・未証明 13 件・形式化していない 6 件・PRE の外 7 件）。否定の定理 `need_D001`・`need_D002`・`need_D012`・`need_D027` と、`opaque` の主張に `@[gap]` を付けた。`Spec.MasterData.MD5` に `@[gap "D-005"]` を足した。
+  * obligation-check（GK）が状態ごとに裏付けを照合し、`trace manifest` が表に「証明の状態」の列を足す。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（証明の状態。表は生成）・[spec/refinement.md](spec/refinement.md)（表は生成）・[spec/assurance.md](spec/assurance.md)
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.7）、[backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
+  * スキル port-lang の SKILL.md（版 0.7）・[lean/trace-attributes.md](../.agents/skills/port-lang/references/docs/lean/trace-attributes.md)（証明の状態）・[architecture.md](../.agents/skills/port-lang/references/docs/architecture.md)（差異）
 
 * **Add**: [ADR cd33](decision/cd33-spec-nondet-types-and-env-pre.md)（[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める）。
 * **Update**: [backlog 0fdf](backlog/0fdf-spec-nondet-and-entry-env.md) を完了した（`done`）。`Spec.Nondet`（N-001〜N-005 の `@[nondet]`）、`Spec.EnvPre`（`masterConfigOk` の `@[env_pre]`・検査関数 `validB`）、生成した `Spec.Seed` とシードの妥当性 `seed_env` を置いた。入力の値域の前提は [backlog a89e](backlog/a89e-http-contract-adapter.md)・[ac71](backlog/ac71-reservation-history-report.md) の範囲に移した。

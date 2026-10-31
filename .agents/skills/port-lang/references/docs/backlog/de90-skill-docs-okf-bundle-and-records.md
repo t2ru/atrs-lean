@@ -38,7 +38,7 @@ generated:
 - [x] `references/docs/` の `index.md`・`log.md` 以外の `.md` が、`type` を持つ frontmatter を持つ
 - [x] `ids.py check` が通り、スキルの項目が外の項目を frontmatter やリンクで指すと失敗する
 - [x] スキルと適用先の Markdown の相対リンクがすべて解決する
-- [x] SKILL.md の `metadata.version` を 0.7 にした
+- [x] SKILL.md の `metadata.version` を 0.8 にした
 
 ## 参照
 

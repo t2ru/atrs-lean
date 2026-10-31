@@ -149,7 +149,7 @@ theorem runBasicFare_icBF29 : runBasicFare icBF29 (mergeOrder db29) = .ok (J32.o
 
 /-- W 課題 ABS-101（D-001 の必要性。G9）: 前提を外すと、ABS-001 は成り立たない。区間の運賃 100 円・加算料金 0・
 積算比率 29% で、[Source] は 28 円、[Spec] は 29 円。 -/
-@[obligation "ABS-101"]
+@[obligation "ABS-101", gap "D-001"]
 theorem need_D001 : ¬ Refines Spec.Fare.basicFareMachine (basicFareConcrete.restrict dev_D027BF) glueBF := fun h => by
   obtain ⟨ia, he, hpre, -⟩ := aiBF_icBF29
   have hout : (Spec.Fare.basicFare ia.md ia.routeBasicFare ia.boardingClassCd ia.depDate).getD 0 = 29 := by

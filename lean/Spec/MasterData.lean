@@ -142,7 +142,7 @@ def MD4 (md : MasterData) : Prop :=
   md.peakTimes.Pairwise fun p q => p.peakEndDate < q.peakStartDate ∨ q.peakEndDate < p.peakStartDate
 
 /-- MD-5: 同一区間の便マスタは、出発時刻が互いに異なる。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-005"]
 def MD5 (md : MasterData) : Prop :=
   md.flightMasters.Pairwise fun f g => f.routeNo = g.routeNo → f.departureTime ≠ g.departureTime
 

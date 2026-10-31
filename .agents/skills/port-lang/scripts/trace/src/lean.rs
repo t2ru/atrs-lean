@@ -56,6 +56,26 @@ pub struct Impact {
     pub reason: String,
 }
 
+/// ギャップの証明の状態（`Trace.Evidence`）。
+#[derive(Deserialize, Clone, Debug, Default)]
+pub struct Evidence {
+    /// `refuted` / `covered` / `pending` / `unformalized` / `excluded_by`
+    #[serde(default)]
+    pub state: String,
+    /// 文書の表に出す名前
+    #[serde(default)]
+    pub label: String,
+    /// 裏付けの宣言（否定の定理・被覆の定理・`opaque` の主張・前提の述語）
+    #[serde(default)]
+    pub witnesses: Vec<String>,
+    /// `pending` の理由
+    #[serde(default)]
+    pub reason: String,
+    /// `covered` の、覆う差異の述語
+    #[serde(default)]
+    pub coverer: Option<String>,
+}
+
 /// ギャップの登録（`Trace.Gap` と、その宣言・印）。
 #[derive(Deserialize, Clone, Debug, Default)]
 pub struct Gap {
@@ -78,6 +98,10 @@ pub struct Gap {
     pub premise: String,
     #[serde(default)]
     pub r_tasks: Vec<String>,
+    /// 証明の状態
+    #[serde(default)]
+    pub evidence: Evidence,
+    /// W 課題（`refuted`・`covered` は裏付けの定理の `@[obligation]`、`pending` は予定）
     #[serde(default)]
     pub w_task: Option<String>,
     #[serde(default)]
@@ -86,7 +110,7 @@ pub struct Gap {
     pub resolution: String,
     #[serde(default)]
     pub backlog: Vec<String>,
-    /// `@[gap]` の印を付けた定義
+    /// `@[gap]` の印を付けた定義（裏付けの宣言を含む）
     #[serde(default)]
     pub markers: Vec<String>,
     /// `@[deviation]` を付けた定義（同じ ID）
@@ -102,6 +126,11 @@ impl Gap {
     /// 名前付きの仮定・成分としてリファインメント定理に現れる種類（前提型・観測型）か。
     pub fn is_typed(&self) -> bool {
         self.is_pre() || self.kind == "observational"
+    }
+    /// 箇所の印（証明の層に置く裏付けの宣言を除く `@[gap]`。PRE の外の前提の述語は `Spec` の箇所の印でもある）。
+    pub fn site_markers(&self) -> impl Iterator<Item = &String> {
+        let proof = self.evidence.state != "excluded_by";
+        self.markers.iter().filter(move |m| !(proof && self.evidence.witnesses.contains(m)))
     }
 }
 
