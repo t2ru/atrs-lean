@@ -85,7 +85,7 @@ theorem dateOfJ_eq_some {d : JLocalDate} {D : Date} (h : dateOfJ d = some D) :
 
 /-- 通算日数から作った `LocalDate` の写しは、同じ通算日数の [Spec] の暦日。 -/
 theorem dateOfJ_ofEpochDay (z : Int) : dateOfJ (JLocalDate.ofEpochDay z) = Date.ofEpochDay? z := by
-  simp only [dateOfJ, JLocalDate.toEpochDay_ofEpochDay, if_true]
+  simp only [dateOfJ, JLocalDate.toEpochDay_ofEpochDay, ite_true]
 
 @[obligation "ABS-048"]
 theorem dateOfJ_kernel : KernelIs dateOfJ (undefOrEq dateOfJ) :=

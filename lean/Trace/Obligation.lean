@@ -167,10 +167,22 @@ def moduleRoot? (env : Environment) (n : Name) : Option Name := do
 /-- 枠組み・標準ライブラリのモジュール（参照の閉包をたどらない）。 -/
 def libraryRoots : List Name := [`Init, `Std, `Lean, `Lake, `Batteries, `Machine, `LangSemantics]
 
-/-- 計算の中身を持たない、参照してよい定数か（型・構成子・射影・インスタンス・再帰子・matcher・定理）。 -/
+/-- 帰納型について処理系が生成する補助の定数か（構成子の番号 `ctorIdx`、列挙型の番号からの構成 `ofNat`。
+`deriving DecidableEq` などが使う）。 -/
+def isInductiveAux (env : Environment) (n : Name) : Bool :=
+  match n with
+  | .str p s =>
+    match env.find? p with
+    | some (.inductInfo iv) =>
+      s == "ctorIdx" || (s == "ofNat" && iv.ctors.all fun c =>
+        (env.find? c).any fun cc => match cc with | .ctorInfo ci => ci.numFields == 0 | _ => false)
+    | _ => false
+  | _ => false
+
+/-- 計算の中身を持たない、参照してよい定数か（型・構成子・射影・インスタンス・再帰子・matcher・定理・帰納型の補助）。 -/
 def isStructural (env : Environment) (n : Name) (ci : ConstantInfo) : Bool :=
   isTypeFormer ci || ci.isCtor || ci.isInductive || ci.isTheorem || env.isProjectionFn n ||
-    Meta.isInstanceCore env n || isAuxRecursor env n || Meta.isMatcherCore env n ||
+    Meta.isInstanceCore env n || isAuxRecursor env n || Meta.isMatcherCore env n || isInductiveAux env n ||
     (match ci with | .recInfo _ => true | _ => false)
 
 /-- 定数の値から参照をたどった閉包（枠組み・標準ライブラリのモジュールは除く）。 -/

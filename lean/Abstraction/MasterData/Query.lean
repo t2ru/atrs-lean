@@ -43,8 +43,8 @@ theorem answer_boardingClassOf {r : BoardingClassRow} {x : BoardingClass} (h : b
 
 theorem boardingClass_query {db : MasterDb} {bcs : List BoardingClass}
     (hm : db.boardingClass.mapM boardingClassOfRow = some bcs) (hnd : (bcs.map (·.boardingClassCd)).Nodup)
-    {o : List BoardingClassResult} (hp : o.Perm (boardingClassFindAll db)) (cd : BoardingClassCd) :
-    ∃ bcp, BoardingClassProvider.load o = .ok bcp ∧
+    {o : List BoardingClassResult} (hp : o.Perm (boardingClassFindAll db)) :
+    ∃ bcp, BoardingClassProvider.load o = .ok bcp ∧ ∀ cd : BoardingClassCd,
       answerOf? (.boardingClass (bcp.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((bcs.find? fun b => b.boardingClassCd == cd).map (·.info))) := by
   have hp' : o.Perm (db.boardingClass.map projBC) := hp
@@ -54,7 +54,7 @@ theorem boardingClass_query {db : MasterDb} {bcs : List BoardingClass}
     obtain ⟨x, _, hx⟩ := mapM_some_mem hm hr
     rw [keyBC_proj hx]
     exact bcCdOf_mapping (boardingClassOfRow_code hx)
-  refine ⟨_, boardingClassLoad_eq o keyBC hk, ?_⟩
+  refine ⟨_, boardingClassLoad_eq o keyBC hk, fun cd => ?_⟩
   have hkeys : db.boardingClass.map (keyBC ∘ projBC) = bcs.map (·.boardingClassCd) :=
     (mapM_some_map hm fun _ _ h => (keyBC_proj h).symm).symm
   rw [get_ofList_perm hp' (hkeys ▸ hnd) cd,
@@ -95,8 +95,8 @@ theorem answer_fareTypeOf {r : FareTypeRow} {x : FareType} (h : fareTypeOfRow r 
 
 theorem fareType_query {db : MasterDb} {fts : List FareType}
     (hm : db.fareType.mapM fareTypeOfRow = some fts) (hnd : (fts.map (·.fareTypeCd)).Nodup)
-    {o : List FareTypeResult} (hp : o.Perm (fareTypeFindAll db)) (cd : FareTypeCd) :
-    ∃ ftp, FareTypeProvider.load o = .ok ftp ∧
+    {o : List FareTypeResult} (hp : o.Perm (fareTypeFindAll db)) :
+    ∃ ftp, FareTypeProvider.load o = .ok ftp ∧ ∀ cd : FareTypeCd,
       answerOf? (.fareType (ftp.fareTypeCodeMap.get cd)) =
         some (.fareType ((fts.find? fun f => f.fareTypeCd == cd).map (·.info))) := by
   have hp' : o.Perm (db.fareType.map projFT) := hp
@@ -106,7 +106,7 @@ theorem fareType_query {db : MasterDb} {fts : List FareType}
     obtain ⟨x, _, hx⟩ := mapM_some_mem hm hr
     rw [keyFT_proj hx]
     exact ftCdOf_mapping (fareTypeOfRow_code hx)
-  refine ⟨_, fareTypeLoad_eq o keyFT hk, ?_⟩
+  refine ⟨_, fareTypeLoad_eq o keyFT hk, fun cd => ?_⟩
   have hkeys : db.fareType.map (keyFT ∘ projFT) = fts.map (·.fareTypeCd) :=
     (mapM_some_map hm fun _ _ h => (keyFT_proj h).symm).symm
   rw [get_ofList_perm hp' (hkeys ▸ hnd) cd,
@@ -187,16 +187,17 @@ theorem answer_route {db : MasterDb} {r : RouteRow} {x : Route} (h : routeOfRow 
     natOfJ32_int, hno, hbf, hd.2, ha.2, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (routeFindAll db))
-    {dep arr : AirportCd} (hdep : dep.WellFormed) (harr : arr.WellFormed) :
-    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∃ ans, getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
+    (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (routeFindAll db)) :
+    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : AirportCd, dep.WellFormed → arr.WellFormed →
+      ∃ ans, getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
       answerOf? (.route ans) = some (.route (md.routeOf dep arr)) := by
   obtain ⟨ha, hrt, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
     fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
   rw [routeFindAll_eq hapnd hat] at hp
-  refine ⟨_, routeLoad_eq o, (JHashMap.ofList (o.map fun r =>
+  refine ⟨_, routeLoad_eq o, fun dep arr hdep harr => ?_⟩
+  refine ⟨(JHashMap.ofList (o.map fun r =>
     (makeCacheKey r.depAirportCd.val r.aarAirportCd.val, SourceModel.Repository.Mapping.route r))).get
       (makeCacheKey dep.val arr.val), ?_, ?_⟩
   · simp only [getRouteByAirportCd, assertHasText_ok (AirportCd.hasText_of_wellFormed hdep),
@@ -309,9 +310,9 @@ theorem answer_flightMaster {db : MasterDb} {f : FlightMasterRow} {x : FlightMas
     Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db))
-    {name : FlightName} (hname : hasText name.val = true) :
-    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∃ ans, getFlightMaster fmp name.val = .ok ans ∧
+    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db)) :
+    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
+      ∃ ans, getFlightMaster fmp name.val = .ok ans ∧
       answerOf? (.flightMaster ans) = some (.flightMaster (md.flightMasterOf name)) := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
@@ -330,7 +331,8 @@ theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf 
     exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
-  refine ⟨_, flightMasterLoad_eq hnd, (JHashMap.ofList (o.map fun f =>
+  refine ⟨_, flightMasterLoad_eq hnd, fun name hname => ?_⟩
+  refine ⟨(JHashMap.ofList (o.map fun f =>
     (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val, ?_, ?_⟩
   · simp only [getFlightMaster, assertHasText_ok hname]; rfl
   rw [get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]

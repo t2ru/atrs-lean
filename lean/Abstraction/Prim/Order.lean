@@ -45,4 +45,26 @@ theorem allowed_map_eq_mergeSort {α β : Type} [BEq α] [LawfulBEq α] {cfg : S
   have := hd b (hp.mem_iff.mp hb)
   omega
 
+/-- 整列した列では、隣り合う要素も関係を満たす。 -/
+theorem adjacent_of_pairwise {α : Type} {R : α → α → Prop} : ∀ {l : List α}, l.Pairwise R →
+    ∀ p ∈ l.zip l.tail, R p.1 p.2
+  | [], _, _, h => by simp at h
+  | [_], _, _, h => by simp at h
+  | a :: b :: l, hl, p, hp => by
+    simp only [List.tail_cons, List.zip_cons_cons, List.mem_cons] at hp
+    rcases hp with rfl | hp
+    · exact List.rel_of_pairwise_cons hl (List.mem_cons_self ..)
+    · exact adjacent_of_pairwise (List.pairwise_cons.mp hl).2 p hp
+
+/-- 許される並びは存在する: 整数のキーで `mergeSort` した並び。 -/
+theorem allowed_mergeSort_self {α : Type} [BEq α] [LawfulBEq α] (cfg : SortConfig) (rows : List α) (f : α → Int) :
+    isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows (rows.mergeSort fun a b => decide (f a ≤ f b)) = true := by
+  simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm, List.all_eq_true, bne_iff_ne, ne_eq,
+    compareKeys_int_asc, Int.compare_ne_gt]
+  refine ⟨(List.mergeSort_perm _ _).symm, adjacent_of_pairwise (R := fun a b => f a ≤ f b) ?_⟩
+  have := List.pairwise_mergeSort (le := fun a b => decide (f a ≤ f b))
+    (fun a b c hab hbc => by simp only [decide_eq_true_eq] at *; omega)
+    (fun a b => by simp only [Bool.or_eq_true, decide_eq_true_eq]; omega) rows
+  simpa using this
+
 end Abstraction.Prim
