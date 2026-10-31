@@ -1,5 +1,5 @@
 import Lean.Util.CollectAxioms
-import Trace.Attr
+import Trace.Gap
 
 /-!
 # Trace.Dump
@@ -14,6 +14,7 @@ import Trace.Attr
   相互再帰は強連結成分（SCC）ごとにまとめて計算する。値は 64 bit の 16 進 16 桁。
   属性（追跡属性を含む）は含めない。注釈のハッシュを `rehash` が書き換えても値は変わらない。
 - **module**: 定義のあるモジュール。`tools/trace rehash` が注釈を書き換えるファイルを引くのに使う。
+- **gaps**: ギャップの登録簿（`@[gap_entry]` の宣言の値と docstring、印 `@[gap]`・`@[deviation]` の定数。`Trace.gapsJson`）。
 - ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると全定義の値が変わりうる。
 -/
 
@@ -263,7 +264,8 @@ def dump (env : Environment) (cfg : Config) : Array Entry := Id.run do
 def dumpJson (env : Environment) (cfg : Config) : Json :=
   Json.mkObj [
     ("lean_version", toJson Lean.versionString),
-    ("definitions", toJson ((dump env cfg).map Entry.toJson))]
+    ("definitions", toJson ((dump env cfg).map Entry.toJson)),
+    ("gaps", Trace.gapsJson env (moduleOf env))]
 
 /-- 定数が依存する公理のうち、`allowed` に無いもの。 -/
 def disallowedAxioms (env : Environment) (allowed : List Name) (name : Name) : IO (Array Name) := do

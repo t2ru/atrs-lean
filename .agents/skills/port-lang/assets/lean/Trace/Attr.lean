@@ -12,12 +12,15 @@ import Lean
 | `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` | 移植先ロケータと検査済みハッシュ |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement`・`Spec` の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
 | `@[deviation "<ID>"]` | 既知差異の述語・成分 | `D-NNN` / `T-NNN` |
+| `@[gap "<ID>", …]` | ギャップが生じる `Spec`・`SourceModel`・`TargetModel` の定義（箇所の印） | `D-NNN` / `T-NNN` |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型 | `N-NNN` |
 | `@[std_abs "<path>#<anchor>"]` | 標準の抽象化の関数（`Abstraction`・`Refinement`） | α・β の表の節 |
 | `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係） | α・β の表の節 |
 | `@[env_pre "<ID>"]` | 入口の機械の環境の前提（マスタ・設定の妥当性と入力の値域） | `MD-N` など |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
+
+ギャップの登録の宣言 `@[gap_entry]`（引数なし。値は型 `Trace.Gap`）は `Trace.Gap` にある。
 -/
 
 namespace Trace
@@ -32,6 +35,8 @@ syntax (name := target) "target" ppSpace str (atomic(", " str))* : attr
 syntax (name := obligation) "obligation" ppSpace str (atomic(", " str))* : attr
 /-- `@[deviation "<ID>", …]` -/
 syntax (name := deviation) "deviation" ppSpace str (atomic(", " str))* : attr
+/-- `@[gap "<ID>", …]` -/
+syntax (name := gap) "gap" ppSpace str (atomic(", " str))* : attr
 /-- `@[nondet "<ID>", …]` -/
 syntax (name := nondet) "nondet" ppSpace str (atomic(", " str))* : attr
 /-- `@[std_abs "<path>#<anchor>", …]` -/
@@ -82,6 +87,8 @@ initialize obligationAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.obligationAttr
 initialize deviationAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `deviation "既知差異の ID（D-NNN / T-NNN）" `Trace.deviationAttr
+initialize gapAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `gap "ギャップが生じる定義の印（D-NNN / T-NNN）" `Trace.gapAttr
 initialize nondetAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `nondet "Spec の非決定性の ID（N-NNN）" `Trace.nondetAttr
 initialize stdAbsAttr : ParametricAttribute (Array String) ←
@@ -98,7 +105,7 @@ initialize noSourceAttr : ParametricAttribute (Array String) ←
 /-- 追跡属性の一覧（JSON のキー名と属性）。キー名は属性名と同じ。 -/
 def traceAttrs : List (String × ParametricAttribute (Array String)) :=
   [("source", sourceAttr), ("target", targetAttr), ("obligation", obligationAttr),
-   ("deviation", deviationAttr), ("nondet", nondetAttr), ("std_abs", stdAbsAttr),
+   ("deviation", deviationAttr), ("gap", gapAttr), ("nondet", nondetAttr), ("std_abs", stdAbsAttr),
    ("kernel", kernelAttr), ("env_pre", envPreAttr),
    ("spec_doc", specDocAttr), ("no_source", noSourceAttr)]
 

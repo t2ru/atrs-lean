@@ -36,8 +36,11 @@ skippable tools/ci/pg_table.sh
 step "conformance: マスタの Mapper の文・コードリストの SQL の PostgreSQL での結果（conformance/sql/master-data.json）が最新である"
 skippable tools/ci/master_sql.sh
 
-step "assets/lean: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
+step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 LangSemanticsTest・MachineTest・TraceTest）"
 (cd .agents/skills/port-lang/assets/lean && lake build)
+
+step "assets/lean: trace-test（trace-dump・obligation-check の処理をフィクスチャにかける）"
+(cd .agents/skills/port-lang/assets/lean && lake exe trace-test)
 
 step "lean: lake build"
 (cd lean && lake build)
