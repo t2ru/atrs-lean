@@ -67,7 +67,8 @@ theorem double_eq (n : Nat) (_h : Spec.smallInput n) :
 /-- フィクスチャの **ギャップ** の説明。 -/
 @[gap_entry]
 def gT998 : Trace.Gap :=
-  { id := "T-998", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", "（注記）"⟩], premise := "PRE X-1" }
+  { id := "T-998", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", "（注記）"⟩], premise := "PRE X-1",
+    evidence := .excludedBy [] }
 end Refinement
 
 end TraceTest.Fixture

@@ -186,19 +186,43 @@ def obligationTests (env : Environment) : IO Unit := do
     "G7: TraceTest.ObFix.Abstraction.via", "G8: TraceTest.ObFix.Abstraction.devK", "G8: TraceTest.ObFix.Abstraction.devNoW",
     "G0: TraceTest.ObFix.Abstraction.v0_notRefines", "G3: TraceTest.ObFix.Spec.specRel",
     "G0: TraceTest.ObFixHelpers.devFalse", "G8: TraceTest.ObFixHelpers.devFalse",
-    "G9: D-905", "G9: D-911", "G9: D-912", "G9: D-913", "G9: TraceTest.ObFix.Abstraction.devTwo",
+    "G9: D-905", "G9: D-911", "G9: D-912", "G9: TraceTest.ObFix.Abstraction.devTwo",
     "G9: TraceTest.ObFix.Spec.envNoNeed", "G8: TraceTest.ObFix.Abstraction.devUndetermined",
     "GK: D-922 is declared by both", "GK: TraceTest.ObFix.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
     "GK: TraceTest.ObFix.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
     "GK: TraceTest.ObFix.Abstraction.markedAbstraction has @[gap \"D-922\"] but is not in",
     "GK: TraceTest.ObFix.Spec.markedOutOfModel has @[gap \"D-920\"] but D-920 is out_of_model",
     "GK: TraceTest.ObFix.Spec.markedUnknown has @[gap \"D-999\"] but D-999 has no @[gap_entry]",
-    "GK: TraceTest.ObFix.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined"]
+    "GK: TraceTest.ObFix.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined",
+    "GK: TraceTest.ObFix.Abstraction.devLangB has @[deviation \"D-901\"] but the @[gap_entry] of D-901 does not list it",
+    "GK: D-905: TraceTest.ObFix.Abstraction.need_arrow is not a necessity theorem",
+    "GK: D-907: TraceTest.ObFix.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
+    "GK: D-911: the covered chain is cyclic", "GK: D-912: the covered chain is cyclic",
+    "GK: D-921: the claim TraceTest.ObFix.Abstraction.claim921 must be an opaque Prop",
+    "GK: TraceTest.ObFix.Abstraction.usesClaim refers to TraceTest.ObFix.Abstraction.claim920"]
   check s!"global errors: exactly {expectedGlobal.length}"
     (r.errors.size == expectedGlobal.length &&
       expectedGlobal.all fun p => r.errors.any (·.startsWith p))
   unless r.errors.size == expectedGlobal.length do
     for e in r.errors do IO.println s!"    global error: {e}"
+  check "warnings: G9 of the pending D-913 only"
+    (r.warnings.size == 1 && r.warnings.all (·.startsWith "G9: D-913"))
+  let gapOf (id : String) : Json :=
+    ((r.gaps.getArr?.toOption.getD #[]).find? fun g => g.getObjValD "id" == Json.str id).getD Json.null
+  let evOf (id : String) (k : String) : Json := ((gapOf id).getObjValD "evidence").getObjValD k
+  check "gaps: evidence states and labels"
+    (evOf "D-901" "state" == "refuted" && evOf "D-910" "state" == "covered" && evOf "D-913" "state" == "pending" &&
+      evOf "D-920" "state" == "unformalized" && evOf "D-922" "state" == "excluded_by" &&
+      evOf "D-901" "label" == "偽を証明済み")
+  check "gaps: witnesses, coverer and pre"
+    (evOf "D-901" "witnesses" == Json.arr #["TraceTest.ObFix.Abstraction.need_devLang"] &&
+      evOf "D-910" "coverer" == "TraceTest.ObFix.Abstraction.devLang" &&
+      evOf "D-922" "pre" == Json.arr #["TraceTest.ObFix.Spec.markedSpec"])
+  check "gaps: w_task from the @[obligation] of the refuting theorem, or the planned one"
+    ((gapOf "D-901").getObjValD "w_task" == "ABS-951" && (gapOf "D-913").getObjValD "w_task" == "ABS-990" &&
+      (gapOf "D-906").getObjValD "w_task" == Json.null)
+  check "gaps: resolution of an unformalized undetermined gap"
+    ((gapOf "D-921").getObjValD "resolution" == "オラクルで確かめる")
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
   check "nondet listed" (r.nondets.map (·.1) == #[`TraceTest.ObFix.Spec.AnyResult, `TraceTest.ObFix.Spec.Conflict])

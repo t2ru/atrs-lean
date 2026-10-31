@@ -367,7 +367,7 @@ theorem need_noFault : Refines.NoFaultReachable (langErr.restrict devLang) glue 
   MachineTest.Adequacy.langErr_noFaultReachable
 
 /-- `devLang` の必要性。W 課題の形で `@[obligation]` を付けても、G0 の誤りにならない。 -/
-@[obligation "ABS-951"]
+@[obligation "ABS-951", gap "D-901"]
 theorem need_devLang : ¬ (Refines spec langErr glue ∧ Refines.Pinned spec langErr glue fRes ceS) :=
   MachineTest.Adequacy.devLang_needed_for_langErr
 
@@ -393,7 +393,7 @@ theorem obs_initSurj :
     Refines.InitSurj half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) :=
   fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
 
-theorem obs_needed : ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never never) :=
+@[gap "D-907"] theorem obs_needed : ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never never) :=
   MachineTest.Adequacy.obsNaN_needed
 
 /-- 違反例: 外しても成り立つ差異（必要性の定理が無い）。 -/
@@ -422,12 +422,12 @@ theorem v9_noPinned_pinned : Refines.Pinned spec (langErr2.restrict devLang2) gl
 theorem v9_noPinned_noFault : Refines.NoFaultReachable (langErr2.restrict devLang2) glue ceS false :=
   MachineTest.Adequacy.langErr_noFaultReachable
 
-theorem v9_noPinned_nec : ¬ Refines spec langErr2 glue :=
+@[gap "D-906"] theorem v9_noPinned_nec : ¬ Refines spec langErr2 glue :=
   Refines.not_of_error (A := spec) (C := langErr2) (g := glue) (s := 5) (t := 5)
     (ic := ⟨0, false, true⟩) (ia := 0) (e := ()) trivial (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
 
 /-- 正例: 必要性を `→ False` の形で書いた W 課題（G0 の誤りにならない）。 -/
-@[obligation "ABS-955"]
+@[obligation "ABS-955", gap "D-905"]
 theorem need_arrow : Refines spec langErr2 glue → False := v9_noPinned_nec
 
 /-- 同じ差異 ID の別の定数（差異 ID ごとに必要性を数えるので、G9 の誤りにならない）。 -/
@@ -450,7 +450,7 @@ theorem devTwo_nontrivial : Nontrivial devTwo := MachineTest.Adequacy.devLang_no
 theorem devWeak_nontrivial : Nontrivial devWeak :=
   ⟨⟨⟨0, false, false⟩, Or.inl rfl⟩, ⟨⟨0, false, true⟩, by simp [devWeak]⟩⟩
 
-theorem devWeak_covered : Covers devLang devWeak := fun _ h => Or.inl h
+@[gap "D-910"] theorem devWeak_covered : Covers devLang devWeak := fun _ h => Or.inl h
 
 @[obligation "ABS-957"]
 theorem cover_refines : Refines spec ((langErr.restrict devLang).restrict devWeak) glue :=
@@ -462,8 +462,8 @@ theorem cover_refines : Refines spec ((langErr.restrict devLang).restrict devWea
 
 theorem devC1_nontrivial : Nontrivial devC1 := MachineTest.Adequacy.devLang_nontrivial
 theorem devC2_nontrivial : Nontrivial devC2 := MachineTest.Adequacy.devLang_nontrivial
-theorem devC1_covers : Covers devC1 devC2 := fun _ h => h
-theorem devC2_covers : Covers devC2 devC1 := fun _ h => h
+@[gap "D-912"] theorem devC1_covers : Covers devC1 devC2 := fun _ h => h
+@[gap "D-911"] theorem devC2_covers : Covers devC2 devC1 := fun _ h => h
 
 @[obligation "ABS-958"]
 theorem v9_circular : Refines spec ((good.restrict devC1).restrict devC2) glue :=
@@ -514,68 +514,6 @@ end TraceTest.ObFix.Abstraction
 /-- モデルの層の外に置いた差異の述語。 -/
 @[deviation "D-904"] def TraceTest.ObFixHelpers.devFalse (_ : Req) : Prop := False
 
-/-! ## ギャップの登録簿（GK）
-
-`@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
-
-namespace TraceTest.ObFix.Abstraction
-
-open Trace
-
-/-- 前提型の宣言を作る補助（値は展開して読まれる）。 -/
-def preGap (id : String) : Gap :=
-  { id, kind := .pre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "前提", rTasks := ["ABS-900"],
-    wTask := some "ABS-990", impact := some (.abort, "理由"), backlog := ["backlog-x"] }
-
-/-- 観測型の宣言を作る補助。 -/
-def obsGap (id : String) : Gap :=
-  { id, kind := .observational, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "成分",
-    rTasks := ["ABS-900"], wTask := some "ABS-990" }
-
-/-- D-901 -/ @[gap_entry] def gD901 : Gap := preGap "D-901"
-/-- D-902 -/ @[gap_entry] def gD902 : Gap := preGap "D-902"
-/-- D-903 -/ @[gap_entry] def gD903 : Gap := preGap "D-903"
-/-- D-904 -/ @[gap_entry] def gD904 : Gap := preGap "D-904"
-/-- D-905 -/ @[gap_entry] def gD905 : Gap := preGap "D-905"
-/-- D-906 -/ @[gap_entry] def gD906 : Gap := preGap "D-906"
-/-- D-907 -/ @[gap_entry] def gD907 : Gap := obsGap "D-907"
-/-- D-908 -/ @[gap_entry] def gD908 : Gap := preGap "D-908"
-/-- D-909 -/ @[gap_entry] def gD909 : Gap := preGap "D-909"
-/-- D-910 -/ @[gap_entry] def gD910 : Gap := preGap "D-910"
-/-- D-911 -/ @[gap_entry] def gD911 : Gap := preGap "D-911"
-/-- D-912 -/ @[gap_entry] def gD912 : Gap := preGap "D-912"
-/-- D-913 -/ @[gap_entry] def gD913 : Gap := obsGap "D-913"
-
-/-- モデル外の宣言（リテラルで書く）。 -/
-@[gap_entry] def gD920 : Gap :=
-  { id := "D-920", kind := .outOfModel, sites := [⟨"例", "docs/spec/example.md#base", "（規範節）"⟩],
-    premise := "— モデル外" }
-
-/-- 未確定の宣言。 -/
-@[gap_entry] def gD921 : Gap :=
-  { id := "D-921", kind := .undetermined, sites := [⟨"例", "docs/spec/example.md#base", ""⟩],
-    resolution := "オラクルで確かめる" }
-
-/-- PRE の外の振る舞いの宣言。 -/
-@[gap_entry] def gD922 : Gap :=
-  { id := "D-922", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
-
--- 違反: docstring が無い（GK）
-@[gap_entry] def gD923 : Gap :=
-  { id := "D-923", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
-
-/-- 違反: 同じ ID の宣言が 2 つ（GK）。 -/
-@[gap_entry] def gD922dup : Gap := gD922
-
-/-- 違反: `D-NNN` の宣言が `Refinement` の層にある（下の名前空間。GK）。 -/
-@[gap_entry] def _root_.TraceTest.ObFix.Refinement.gD924 : Gap :=
-  { id := "D-924", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
-
-/-- 違反: 未確定の差異に `@[deviation]` がある（GK）。 -/
-@[deviation "D-921"] def devUndetermined (r : Req) : Prop := r.lang = false
-
-end TraceTest.ObFix.Abstraction
-
 namespace TraceTest.ObFix.Spec
 
 /-- 箇所の印（正例）。 -/
@@ -588,6 +526,92 @@ namespace TraceTest.ObFix.Spec
 @[gap "D-999"] def markedUnknown (n : Nat) : Nat := n
 
 end TraceTest.ObFix.Spec
+
+/-! ## ギャップの登録簿（GK）
+
+`@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
+
+namespace TraceTest.ObFix.Abstraction
+
+open Trace
+
+/-- 前提型の宣言を作る補助（値は展開して読まれる）。 -/
+def preGap (id : String) (devs : List Lean.Name) (ev : Evidence) : Gap :=
+  { id, kind := .pre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "前提", rTasks := ["ABS-900"],
+    deviations := devs, evidence := ev, impact := some (.abort, "理由"), backlog := ["backlog-x"] }
+
+/-- 観測型の宣言を作る補助。 -/
+def obsGap (id : String) (devs : List Lean.Name) (ev : Evidence) : Gap :=
+  { id, kind := .observational, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "成分",
+    rTasks := ["ABS-900"], deviations := devs, evidence := ev }
+
+/-- 未証明（必要性の定理がまだ無い）の状態。 -/
+def noW : Evidence := .pending "必要性の定理がまだ無い" (some "ABS-990")
+
+/-- 偽を証明済み。違反: 同じ ID の `devLangB` を `deviations` に挙げていない（GK）。 -/
+@[gap_entry] def gD901 : Gap := preGap "D-901" [``devLang] (.refuted [``need_devLang])
+/-- D-902 -/ @[gap_entry] def gD902 : Gap := preGap "D-902" [``devNoW] noW
+/-- D-903 -/ @[gap_entry] def gD903 : Gap := preGap "D-903" [``devK] noW
+/-- D-904 -/ @[gap_entry] def gD904 : Gap := preGap "D-904" [``TraceTest.ObFixHelpers.devFalse] noW
+/-- 違反: 別の差異の必要性の定理を、偽の証明に挙げる（GK）。 -/
+@[gap_entry] def gD905 : Gap := preGap "D-905" [``devUnneeded] (.refuted [``need_arrow])
+/-- 偽を証明済み（`¬ Refines`）。 -/
+@[gap_entry] def gD906 : Gap := preGap "D-906" [``devLang2] (.refuted [``v9_noPinned_nec])
+/-- 違反: 偽の証明の定理 `obs2_needed` に `@[gap]` が無い（GK）。 -/
+@[gap_entry] def gD907 : Gap := obsGap "D-907" [``obsNaN] (.refuted [``obs_needed, ``obs2_needed])
+/-- D-908 -/ @[gap_entry] def gD908 : Gap := preGap "D-908" [``devTwo] noW
+/-- D-909 -/ @[gap_entry] def gD909 : Gap := preGap "D-909" [``devTwo] noW
+/-- 被覆（`devLang` は偽を証明済みの D-901）。 -/
+@[gap_entry] def gD910 : Gap := preGap "D-910" [``devWeak] (.covered ``devLang [``devWeak_covered])
+/-- 違反: 被覆が循環する（GK）。 -/
+@[gap_entry] def gD911 : Gap := preGap "D-911" [``devC1] (.covered ``devC2 [``devC2_covers])
+/-- 違反: 被覆が循環する（GK）。 -/
+@[gap_entry] def gD912 : Gap := preGap "D-912" [``devC2] (.covered ``devC1 [``devC1_covers])
+/-- 未証明なので、G9 は警告になる。 -/
+@[gap_entry] def gD913 : Gap := obsGap "D-913" [``obsZero] noW
+
+/-- D-920（モデル外）の主張。命題として書けないので `opaque` にする。 -/
+@[gap "D-920"] opaque claim920 : Prop
+
+/-- 違反: 形式化していない主張を仮定に使う（GK）。 -/
+theorem usesClaim (h : claim920) : claim920 := h
+
+/-- モデル外の宣言（リテラルで書く）。 -/
+@[gap_entry] def gD920 : Gap :=
+  { id := "D-920", kind := .outOfModel, sites := [⟨"例", "docs/spec/example.md#base", "（規範節）"⟩],
+    premise := "— モデル外", evidence := .unformalized ``claim920 "" }
+
+/-- 違反: 主張が `opaque` でない（GK）。 -/
+@[gap "D-921"] def claim921 : Prop := True
+
+/-- 未確定の宣言。 -/
+@[gap_entry] def gD921 : Gap :=
+  { id := "D-921", kind := .undetermined, sites := [⟨"例", "docs/spec/example.md#base", ""⟩],
+    evidence := .unformalized ``claim921 "オラクルで確かめる" }
+
+/-- PRE の外の振る舞いの宣言（前提の述語には印がある）。 -/
+@[gap_entry] def gD922 : Gap :=
+  { id := "D-922", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1",
+    evidence := .excludedBy [``TraceTest.ObFix.Spec.markedSpec] }
+
+-- 違反: docstring が無い（GK）
+@[gap_entry] def gD923 : Gap :=
+  { id := "D-923", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1",
+    evidence := .excludedBy [] }
+
+/-- 違反: 同じ ID の宣言が 2 つ（GK）。 -/
+@[gap_entry] def gD922dup : Gap := gD922
+
+/-- 違反: `D-NNN` の宣言が `Refinement` の層にある（下の名前空間。GK）。 -/
+@[gap_entry] def _root_.TraceTest.ObFix.Refinement.gD924 : Gap :=
+  { id := "D-924", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1",
+    evidence := .excludedBy [] }
+
+/-- 違反: 未確定の差異に `@[deviation]` がある（GK）。 -/
+@[deviation "D-921"] def devUndetermined (r : Req) : Prop := r.lang = false
+
+end TraceTest.ObFix.Abstraction
+
 
 namespace TraceTest.ObFix.Abstraction
 
