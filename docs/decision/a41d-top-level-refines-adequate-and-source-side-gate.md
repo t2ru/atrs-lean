@@ -4,8 +4,9 @@ title: "実装済みの範囲のトップレベルの Refines・Adequate と、�
 description: "Abstraction.lean のトップレベルに、機能を並置した Spec.machine と SourceModel.machine の Machine.Refines・Machine.Adequate を置き、R 課題ごとの義務の束から組み立てる。追跡の検査の段階導入を側ごとにし、運賃計算・マスタの移植元側を失敗扱いにする。移植元の項目の機能への振り直しと、ドメインモデルのアクセサ・DDL の制約・シード・設定の Bean の追跡の仕方を決める。"
 tags: [adr, abstraction, refinement, traceability]
 id: "a41db4fd-9066-4269-8b32-b3e7b818bf70"
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "91be0644-99b4-4f70-9c52-3dbbd8eff66e"
 date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:

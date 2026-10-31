@@ -1,5 +1,5 @@
 {
- "note": "Lean の宣言・モジュールの改名の対応（adequate の語彙の廃止と、Preserves・Abstracts への分割。スキルの ADR 4c1e・ATRS の ADR 7d2b・backlog 5e3a）。旧い名前は docs/log.md などの来歴に残る。スキルの scripts/lean/rename.py の対応表の形（renames）で、check に渡すと旧い名前の残りを列挙する",
+ "note": "Lean の宣言・モジュールの改名の対応（adequate の語彙の廃止と、Preserves・Abstracts への分割。スキルの ADR 6b4b・ATRS の ADR 91be・backlog cb23）。旧い名前は docs/log.md などの来歴に残る。スキルの scripts/lean/rename.py の対応表の形（renames）で、check に渡すと旧い名前の残りを列挙する",
  "renames": {
   "Machine.Adequacy.Forall₂": "Machine.Abstracts.Forall₂",
   "Machine.Adequacy": "Machine.Preserves",

@@ -3,7 +3,7 @@ name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。
 metadata:
-  version: "0.13"
+  version: "0.14"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -126,7 +126,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。
 2. **草案を書く**。仕様文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/docs/rules/spec-documents.md)）。
 3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/docs/lang/lean/rules.md)）。
-4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R）とその義務の束（`Machine.Adequate`）、差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。`Abstraction.lean` のトップレベルには、機能の機械を並置した `Spec.machine` と `SourceModel.machine` の `Machine.Refines`・`Machine.Adequate` を置く（[architecture.md](references/docs/spec/architecture.md#トップレベルの主定理)）。
+4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R。`Machine.Refines`、B refines A）とその束（`Machine.Preserves`、A preserves B）、差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。`Abstraction.lean` のトップレベルには、機能の機械を並置した `Spec.machine` と `SourceModel.machine` の `Machine.Refines`・`Machine.Preserves`・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）を置く（[architecture.md](references/docs/spec/architecture.md#トップレベルの主定理)）。
 5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN`（R・W）を証明する。
 6. **ベクタを生成する**。`Spec`・`SourceModel`・`TargetModel` を実行して期待値を作る。`SourceModel` 側は移植元オラクルでも確かめる（[conformance.md](references/docs/spec/conformance.md)）。
 7. **移植先ソースを書く**。`TargetModel` と同じ構造で書く（移植先の言語パックの `layout.md`）。一致は `verification.md`・`harness.md` の決定論的な手段で確認する。例: 生成した写しに対する Verus の証明、Kani、照合テスト。
@@ -168,13 +168,13 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新、結合と許される順列の補題） | `assets/lean/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/lean/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/lean/LangSemantics/Rust/` |
-| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務 `Machine.Adequacy` と義務の束 `Machine.Adequate`、機能の機械の並置 `Machine.Sum`、標準の抽象化の汎用の核 `Machine.Kernel.undefOrEq`） | `assets/lean/Machine/` |
+| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務の束 `Machine.Preserves`（`Refines` を含まない）と `Machine.Abstracts`、機能の機械の並置 `Machine.Sum`、標準の抽象化の汎用の核 `Machine.Kernel.undefOrEq`） | `assets/lean/Machine/` |
 | `Trace`（追跡属性、ギャップの登録簿 `Trace.Gap`、`trace-dump`・`obligation-check` の本体。道具の入口 `main` はプロジェクトの側に置く。[lean/trace-attributes.md](references/docs/lang/lean/trace-attributes.md)） | `assets/lean/Trace/` |
 | `ConformanceKit`（適合テストベクタの実行器と、SQL の差分実行の結果の表の読み取り。メタ層。[conformance.md](references/docs/spec/conformance.md)） | `assets/lean/ConformanceKit/` |
 | Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
 
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets/lean"` とする（[lean/rules.md](references/docs/lang/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
-- 検査: `assets/lean/` で `lake build` を実行すると、`Test/LangSemantics/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`Test/ConformanceKit/` では実行器をメモリ上のベクタで確かめる。`Test/Trace/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`Test/Machine/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`Test/Machine/Adequacy.lean`）である。`Test/LangSemantics/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `Test/LangSemantics/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/docs/lang/sql/dialects/postgresql/harness.md)）。
+- 検査: `assets/lean/` で `lake build` を実行すると、`Test/LangSemantics/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`Test/ConformanceKit/` では実行器をメモリ上のベクタで確かめる。`Test/Trace/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`Test/Machine/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`Test/Machine/Preserves.lean`）である。`Test/LangSemantics/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `Test/LangSemantics/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/docs/lang/sql/dialects/postgresql/harness.md)）。
 
 ### 道具（scripts）
 
@@ -188,7 +188,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 | 種類 | 内容 | 参照 |
 | --- | --- | --- |
-| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務と義務の束 `Machine.Adequate` を持つ。トップレベルの `Refines`・`Adequate` が成り立つ。W 課題は両向きの例と差異の必要性を持つ | [verification.md](references/docs/spec/verification.md)、[architecture.md](references/docs/spec/architecture.md#空虚化を防ぐ義務) |
+| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ意味的な義務をすべて持つ束 `Machine.Preserves` を持つ。トップレベルの `Refines`・`Preserves`・`Abstracts` が成り立つ。W 課題は両向きの例と差異の必要性を持つ | [verification.md](references/docs/spec/verification.md)、[architecture.md](references/docs/spec/architecture.md#空虚化を防ぐ義務) |
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/docs/spec/conformance.md) |
 | 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の登録簿と `@[deviation]` の対応）、TR-K（差異の箇所の印 `@[gap]`）、TR-G（R 課題の形と付帯の義務）、TR-N（非決定性の文書と `@[nondet]` の対応）、TR-V（ベクタの前提のラベル）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/docs/spec/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/docs/spec/architecture.md) |

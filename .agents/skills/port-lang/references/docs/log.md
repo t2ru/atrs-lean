@@ -2,6 +2,12 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR 6b4b](decision/6b4b-preserves-refines-abstracts.md) で、義務の束 `Machine.Adequate` を廃止し、`Machine.Refines`（B refines A。B メソッドのリファインメント）・`Machine.Preserves`（A preserves B。R 課題の空虚化を防ぐ意味的な義務のすべて。`Refines` を含まない）・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）に分けた。[ADR ab9e](decision/ab9e-adequate-bundle-sum-and-side-staging.md) を置き換えた（並置と側ごとの段階導入は引き継ぐ）。スキルの版を 0.14 にした。
+  * assets: `Machine.Preserves`（`Choice`・`OutLayer`・`OutLayerC`、条件付きの成分 `pinned`・`noFault`・`freeFrame`・`stateSafe`・`stateSafeC`）・`Machine.Abstracts` と、その並置。モジュール `Machine.Adequacy`・`Machine.{Machine,Concrete,Glue,Refines}.Adequacy` を `Machine.Preserves.Pred`・`Machine.{Machine,Glue,Refines}.Preserves`・`Machine.{Machine,Concrete}.Run` に改めた。`Refines.run`・`Refines.complete` は `Abstracts.run_of`・`Abstracts.complete_of` に改めた。
+  * 検査: obligation-check の G6（束の `ch`・`outs` の照合）と GP（旧 GA）、`check_obligations.py` の OB-P（旧 OB-A。フィクスチャ `r-without-preserves`）、`scripts/trace` の `preserves`。
+  * [architecture.md](spec/architecture.md#空虚化を防ぐ義務)（B との照合、`Preserves`・`Abstracts` の定義、外に残る義務、トップレベルの主定理）、[traceability.md](spec/traceability.md#検査)、[lean/rules.md](lang/lean/rules.md)・[trace-attributes.md](lang/lean/trace-attributes.md)・`SKILL.md` を改めた。
+  * 来歴: 適用先 ATRS のオーナーの依頼（ATRS の ADR 91be・backlog cb23）。
+
 * **Creation**: [ADR 1a30](decision/1a30-lean-module-namespace-layout.md) で、Lean の宣言をモジュール名の下に置く規則（NS-1。例外 E1〜E4）と、機能の証明課題を機能のモジュールに置く規則（TR-L1・TR-L2）を定めた（[backlog ce23](backlog/ce23-lean-module-namespace-layout.md)）。スキルの版を 0.13 にした。
   * [lean/rules.md](lang/lean/rules.md#モジュールと名前空間)・[architecture.md](spec/architecture.md#層)・[traceability.md](spec/traceability.md#検査)・[trace-attributes.md](lang/lean/trace-attributes.md)・`scripts/README.md` を改めた。
   * 道具: `Trace.Layout` と `lake exe layout-check`、属性 `@[ns_exception]`、`trace check` の TR-L、改名の道具 `scripts/lean/rename.py`。

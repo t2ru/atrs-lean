@@ -4,8 +4,9 @@ title: "義務の束 Machine.Adequate、機械の並置によるトップレベ�
 description: "R 課題ごとに、Refines と空虚化を防ぐ義務を Machine.Adequate に束ね、同じ課題 ID の @[obligation] で示す（GA・OB-A）。機能の機械を Machine.sum で並置し、トップレベルの Refines・Adequate を Abstraction.lean・Refinement.lean に置く。追跡の検査の段階導入を、指摘の側（移植元・移植先）の作業項目で判定する。"
 tags: [adr, skill, lean, refinement, traceability]
 id: "ab9e8324-7818-4618-9335-9c61321f3916"
-status: stable
-decision_status: accepted
+status: deprecated
+decision_status: superseded
+superseded_by: "6b4b86f4-2870-4f6f-a655-1602c5e068ee"
 date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:

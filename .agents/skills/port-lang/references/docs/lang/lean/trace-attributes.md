@@ -36,7 +36,7 @@ generated:
 | `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版） |
 | `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理と補題、`Spec` 自身の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
-| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Adequacy.anyOf` で並べる） |
+| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Preserves.anyOf` で並べる） |
 | `@[gap "<ID>", …]` | ギャップの生じる `Spec`・`SourceModel`・`TargetModel` の定義（箇所の印）。`D-NNN` は `Spec`・`SourceModel`、`T-NNN` は `Spec`・`TargetModel` に付ける | `D-NNN` / `T-NNN`。宣言（`@[gap_entry]`）のある ID |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型（`Machine.ofChoice` の選択の型の葉） | `N-NNN` |
 | `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節 |
@@ -104,7 +104,7 @@ def D001 : Trace.Gap where
 | 状態 | 意味 | 裏付けの宣言 | W 課題（表の列） |
 | --- | --- | --- | --- |
 | `.refuted [thm, …]` | 偽を証明済み。差異を外した R 課題の否定が定理である | 必要性の定理（G9 の形の `¬ Refines …`） | 定理の `@[obligation]` |
-| `.covered M [thm, …]` | 被覆。必要な差異の述語 `M` が、この差異を覆う | `Machine.Adequacy.Covers M d`・`Covers₂ M d` の定理（`d` は `deviations` のどれか） | 定理の `@[obligation]` |
+| `.covered M [thm, …]` | 被覆。必要な差異の述語 `M` が、この差異を覆う | `Machine.Preserves.Covers M d`・`Covers₂ M d` の定理（`d` は `deviations` のどれか） | 定理の `@[obligation]` |
 | `.pending 理由 (some W)` | 未証明。前提で制限して R 課題を証明したが、必要性（偽）も一致（真）もまだ示していない | なし | 予定の `W` |
 | `.unformalized claim 作業` | 形式化していない。Lean の命題として書けない（モデル外、または未確定で命題をまだ書けない） | `opaque claim : Prop`（docstring に主張を書く） | — |
 | `.excludedBy [pre, …]` | 差異ではない。`Spec` の PRE・INV の外である | 前提の述語（`Spec` の箇所の印を兼ねる） | — |

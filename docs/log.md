@@ -2,6 +2,11 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR 91be](decision/91be-top-level-preserves-refines-abstracts.md) で、義務の束 `Machine.Adequate` の語を廃止し、トップレベルの主定理を `Abstraction.refines`（B refines A。B メソッドのリファインメント）・`Abstraction.preserves`（A preserves B。空虚化を防ぐ意味的な義務のすべて。`Refines` を含まない）・`Abstraction.abstracts`（A abstracts B）にした。[ADR a41d](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) を置き換えた（段階導入とゲートは引き継ぐ）。[backlog cb23](backlog/cb23-adequate-to-preserves-abstracts.md) を作り、完了した（`done`）。スキル側の決定は [スキルの ADR 6b4b](../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md)（スキルの版 0.14）。
+  * R 課題ごとの束を `queryPreserves`・`basicFarePreserves`・`farePreserves`・`totalFarePreserves`（旧 `*Adequate`）に、部品のモジュールを `Abstraction.{MasterData,Fare}.Preserves`（旧 `…Adequacy`）にした。`preserves` と `refines` は R 課題の並置から独立に示す。
+  * スキルの道具 `rename.py` と対応表 `tools/docs/lean-renames-preserves.json` で名前を書き換えた。来歴の文書（置き換えた ADR・完了した backlog・この変更履歴の過去の行）は書き換えていない。`trace manifest` で `trace/manifest.json` を作り直した（`trace rehash` の対象は 0 件）。
+  * [spec/abstraction.md](spec/abstraction.md#トップレベルの主定理)、[spec/refinement.md](spec/refinement.md)、[rules/backlog.md](rules/backlog.md#完了の定義definition-of-done)、[rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.14）、[backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)、`trace/features.json` を改めた。
+
 * **Update**: [スキルの ADR 1a30](../.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md) の規則（宣言をモジュール名の下に置く NS-1、証明課題を機能のモジュールに置く TR-L）を ATRS の `lean/` に適用した（[backlog 9ed8](backlog/9ed8-atrs-module-namespace-layout.md)。スキルの側は [スキルの backlog ce23](../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md)）。スキルの版は 0.13。
   * `lake exe layout-check`（`lean/Tools/LayoutCheck.lean`）を足し、`tools/ci/lean.sh` から実行する。
   * 名前を改めた。例: `Spec.FlightType` → `Spec.Model.FlightType`、`Spec.Airport` → `Spec.MasterData.Airport`、`Spec.MasterData.queryMachine` → `Spec.MasterQuery.queryMachine`、`Spec.Prim.floorDiv` → `Spec.Prim.Int.floorDiv`。R・W・C 課題と義務の束を `lean/Abstraction/Fare.lean`・`lean/Abstraction/MasterData.lean` に集め（`Abstraction.Adequacy` を分けた。可換式は `*Refines_commutes`）、補題のモジュールを `*Run` にした（旧 `*Refines`）。
