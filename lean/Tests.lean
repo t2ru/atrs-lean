@@ -4,6 +4,7 @@ import Tests.ConformanceMaster
 import Tests.MasterSql
 import Tests.SpecChecks
 import Tests.JavaDouble
+import Tests.TicketChecks
 
 /-!
 # Tests

@@ -9,6 +9,7 @@
 - `find?_congr`: 要素の上で等しい述語の検索は等しい。
 - `append_sep_inj`: 区切り文字を含まない 2 つの列を区切りで連結したものは単射（キャッシュのキーなど）。
 - `string_any_toList`: `String.any` は文字の列の `any`。
+- `Forall₂`: 2 つの列の要素ごとの関係（core に無いので置く）。`sum_map_le`: 和の上限。
 -/
 
 namespace LangSemantics.Core
@@ -90,5 +91,19 @@ theorem append_sep_inj {c : Char} : ∀ {a a' b b' : List Char}, c ∉ a → c �
     exact ⟨rfl, rfl⟩
 
 theorem string_any_toList (s : String) (p : Char → Bool) : s.any p = s.toList.any p := by simp [String.any]
+
+/-- 2 つの列の要素ごとの関係（core に無いので置く）。 -/
+inductive Forall₂ {α β : Type} (R : α → β → Prop) : List α → List β → Prop
+  | nil : Forall₂ R [] []
+  | cons {a : α} {b : β} {as : List α} {bs : List β} : R a b → Forall₂ R as bs → Forall₂ R (a :: as) (b :: bs)
+
+theorem sum_map_le {α : Type} {V : α → Nat} {M : Nat} : ∀ (xs : List α), (∀ x ∈ xs, V x ≤ M) →
+    (xs.map V).sum ≤ xs.length * M
+  | [], _ => by simp
+  | x :: xs, h => by
+    have := sum_map_le xs fun y hy => h y (List.mem_cons_of_mem _ hy)
+    have hx := h x (List.mem_cons_self ..)
+    simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.succ_mul]
+    omega
 
 end LangSemantics.Core

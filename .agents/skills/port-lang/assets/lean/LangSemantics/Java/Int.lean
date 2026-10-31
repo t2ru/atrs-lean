@@ -68,4 +68,43 @@ theorem j32add_val_of_inRange (a b : J32)
   simp only [Nat.reducePow]
   split <;> omega
 
+/-- 値域内では `int` の減算は数学的整数の減算と一致する。 -/
+theorem j32sub_val_of_inRange (a b : J32)
+    (h : J32.minValue ≤ a.val - b.val ∧ a.val - b.val ≤ J32.maxValue) :
+    (j32sub a b).val = a.val - b.val := by
+  simp only [j32sub, J32.val, J32.minValue, J32.maxValue] at *
+  rw [BitVec.toInt_sub]
+  unfold Int.bmod
+  simp only [Nat.reducePow]
+  split <;> omega
+
+/-- 値域内では `int` の乗算は数学的整数の乗算と一致する。 -/
+theorem j32mul_val_of_inRange (a b : J32)
+    (h : J32.minValue ≤ a.val * b.val ∧ a.val * b.val ≤ J32.maxValue) :
+    (j32mul a b).val = a.val * b.val := by
+  simp only [j32mul, J32.val, J32.minValue, J32.maxValue] at *
+  rw [BitVec.toInt_mul]
+  generalize a.toInt * b.toInt = P at *
+  unfold Int.bmod
+  simp only [Nat.reducePow]
+  split <;> omega
+
+/-- 非負の被除数と正の除数による `int` の除算は、整数の除算と一致する。 -/
+theorem jdiv32_val_of_nonneg (a b : J32) (ha : 0 ≤ a.val) (hb : 0 < b.val) :
+    ∃ c, jdiv32 a b = .ok c ∧ c.val = a.val / b.val := by
+  have hb0 : ¬ b = 0 := by
+    intro e; subst e; simp [J32.val] at hb
+  refine ⟨BitVec.sdiv a b, by unfold jdiv32; simp only [hb0, ↓reduceIte], ?_⟩
+  simp only [J32.val] at *
+  rw [BitVec.toInt_sdiv]
+  have h1 := a.toInt_lt
+  generalize a.toInt = x at *
+  generalize b.toInt = y at *
+  rw [Int.tdiv_eq_ediv_of_nonneg ha]
+  have q1 : x / y ≤ x := Int.ediv_le_self y ha
+  have q2 : 0 ≤ x / y := Int.ediv_nonneg ha (by omega)
+  unfold Int.bmod
+  simp only [Nat.reducePow] at *
+  split <;> omega
+
 end LangSemantics.Java

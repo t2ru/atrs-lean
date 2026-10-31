@@ -74,11 +74,15 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 | ABS-006 | ピーク時期の参照 `peakTimeOn`・積算比率 `multiplicationRatioOn` の一致は ABS-026（`Abstraction.MasterData.Query`）で証明済みなので、ABS-006 は ABS-026 に含めて取り消す（プロジェクトオーナーの決定） |
 | 運賃の R 課題の具体側の入力 | DB のマスタと引数とし、ABS-026 の α と補題を再利用する（bbcc 第 2・3 段。プロジェクトオーナーの決定） |
 | Java オラクルとの一致 | bbcc の完了条件「運賃計算の `source-model/` ベクタが Java オラクルと一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、bbcc の `depends_on` から f18c を外す（プロジェクトオーナーの決定） |
-| bbcc の分割 | 第 1 段（本 ADR の補題と差異の解析）、第 2 段（ABS-001・002・003・007 と W 課題 ABS-101・102）、第 3 段（ABS-004・005・112、運賃計算の `Spec` の機械、SPEC-001）に分ける（プロジェクトオーナーの決定） |
+| bbcc の分割 | 第 1 段（本 ADR の補題と差異の解析）、第 2 段（ABS-001・002・003・007 と W 課題 ABS-101・102）、第 3 段（ABS-004・005・112、合計金額の `Spec` の機械、SPEC-001）に分ける（プロジェクトオーナーの決定） |
 | 抽象機械の置き場所（第 2 段） | 基本運賃・運賃の抽象機械 `Spec.Fare.basicFareMachine`・`fareMachine`（`Machine.pure`）と、その SPEC 課題（SPEC-001〜003・007）は第 2 段で作る。R 課題に抽象機械が要るためである。第 3 段には合計金額の機械が残る。PRE は、設定とマスタの不変条件、搭乗クラスの存在（MD-3）、値域（`routeBasicFare + extraCharge ≤ 10,000,000`、基本運賃 `≤ 100,000,000`（`Range.maxBasicFare` を追加）、割引率 `≤ 100`） |
 | 具体側の入力（第 2 段） | 基本運賃は、DB のマスタ・設定・`calculateBasicFare` の引数とし、許される並びのどれかで起動時の読み込み（`SourceModel.MasterQuery.load`。`run` から切り出した）を行ってから計算する（`SourceModel.FareQuery.basicFareConcrete`）。運賃の `calculateFare` はマスタを読まないので、引数だけを入力とする（`fareConcrete`）。「DB と引数」の決定は、マスタを読む操作に当てはめる |
 | D-027 の定数（第 2 段） | 引数の `null` と負の値も [Spec] の型で表せない入力として D-027 に含め、機械ごとに `@[deviation "D-027"]` の定数（`dev_D027BF`・`dev_D027F`）を置く。必要性（G9）は ID ごとに少なくとも 1 つの R 課題で示せばよく、ABS-127 で足りる |
 | 差異の前提の形（第 2 段） | `dev_D001`・`dev_D002` は、安全でない因子の一覧（`unsafeBasicRatios`・`unsafeDiscountRates`。カーネルの評価の表 `basicFactor_unsafe`・`fareFactor_unsafe` と同じ）への非所属で書く。double の値を参照せず、言語に依らない数の条件になる |
+| 合計金額の [Spec]（第 3 段） | `Spec.Fare.totalFare` を、フライトのキーの列と搭乗者の年齢の列の関数 `totalFareOfKeys` で書き直す（`totalFare` は `totalFareOfKeys` を呼ぶ。等しいことは `totalFare_eq`）。合計金額が観測するのはキーと年齢だけで、空席数・氏名は [Source] の入力に無いからである。抽象機械 `totalFareMachine` の入力は (設定, マスタ, キーの列, 年齢の列) とし、PRE は設定とマスタの不変条件、予約フライト数 1〜2・搭乗者数 1〜6・年齢 0〜999、便名が空白でないこと、各フライトのマスタが在ること（プロジェクトオーナーの決定） |
+| 合計金額の具体側の入力（第 3 段） | DB のマスタ・設定・選択フライト情報（`SelectFlightForm`）・搭乗者とする。1 歩は、許される並びのどれかで読み込み、`TicketHelper.toFlightList`（`SourceModel.Ticket`。`@[source]` 付き）でフライト情報を組み立て、`calculateTotalFare` を呼ぶ（プロジェクトオーナーの決定） |
+| D-001・D-002・D-012 の前提（第 3 段） | `dev_D001T`・`dev_D002T` は、各フライトに基本運賃・運賃の前提を課す。`dev_D012` は、各フライトで `b × (childFareRate − r) ≤ 2,147,483,647` とする。小児がいなければ折り返しは合計に現れないが、登録どおりの十分条件のまま置く。D-001・D-002 の必要性は ABS-101・102 で足りるので、ABS-004 では D-012 の必要性（ABS-112）だけを示す |
+| 証人の文字列（第 3 段） | 文字列の述語（`hasText`・`AirportCd.WellFormed`）は、`String.all`・`String.any` がカーネルの評価で進まない。証人の PRE は、`toList` に書き直す補題（`string_any_toList`・`String.all_bool_eq`）で示す。[Spec] の定義は変えない |
 
 ### Consequences
 
@@ -95,6 +99,7 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 * 安全でない因子の一覧は、開発中に Python（ホストの binary64）で求めた一覧と一致した。
 * 安全でない因子ごとの最小の反例を開発中に探索し、積算比率 47 個・割引率 31 個で差異があることを確かめた（例: 積算比率 820 で `X = 15`、割引率 80 で `b = 5`）。
 * 第 2 段: R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`、C 課題 ABS-003 `fare_diff`、L 課題 ABS-007 `runBasicFare_spec`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002` を証明した（obligation-check の G0〜G9 に誤り無し。D-001・D-002 の必要性を認識）。
+* 第 3 段: R 課題 ABS-004 `totalFareRefines`、L 課題 ABS-005 `runTotalFare_eq`、W 課題 ABS-112 `need_D012` を証明した（obligation-check で D-012 の必要性を認識）。スキルに `int` の減算・乗算・除算の値域内の補題（`j32sub_val_of_inRange`・`j32mul_val_of_inRange`・`jdiv32_val_of_nonneg`）を加えた。
 
 ## More Information
 

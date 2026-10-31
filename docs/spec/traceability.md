@@ -131,7 +131,7 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 54 件。`trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 55 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
@@ -192,6 +192,7 @@ pub fn basic_fare(...) -> (r: u64)
 | `ddl:00100_create_all_tables.sql#PEAK_TIME` | `SourceModel.Repository.Schema.PeakTimeRow` | `2639ea660139925b` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PLANE` | `SourceModel.Repository.Schema.PlaneRow` | `31641da45eeb4327` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#ROUTE` | `SourceModel.Repository.Schema.RouteRow` | `b26d30be10a7908d` | lake-test, pg-master-sql |
+| `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)` | `SourceModel.Ticket.toFlightList` | `3fef600108b03c6e` | lake-test |
 <!-- END GENERATED: source-trace -->
 
 ### ② TargetModel ⇔ 移植先ソース

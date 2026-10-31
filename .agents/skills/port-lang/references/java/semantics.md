@@ -46,6 +46,7 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 | --- | --- |
 | `LangSemantics.Java.DoubleLemmas` | `jd2i_mul_nat`: 正の整数 `X` と正の因子 `F = fm·2^(−fs)` について、`(int)((double) X * F)` を閉じた形 `min J32.maxValue (rneTrunc (X·fm) (2^fs))` に書き直す。`rneTrunc_spec` は、`rneTrunc N D`（`N/D` を binary64 に丸めて切り捨てた値）の不等式の形。`ofInt_nat`・`toJ32_ofRat` |
 | `LangSemantics.Java.BigDecimal` | `bdCeilHundredUp_val`: 非負の値の 100 単位の切上げ |
+| `LangSemantics.Java.Int` | `j32add_val_of_inRange`・`j32sub_val_of_inRange`・`j32mul_val_of_inRange`: 値域内の加減乗算は数学的整数と一致。`jdiv32_val_of_nonneg`: 非負の被除数・正の除数の除算 |
 | `LangSemantics.Java.LocalDateLemmas` | `toEpochDay_ofEpochDay` |
 | `LangSemantics.Java.HashMapLemmas` | `ofList_entries`・`get_ofList` |
 

@@ -164,7 +164,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | モジュール | ファイル |
 | --- | --- |
 | `LangSemantics.Core`（言語に依存しない列・`mapM`・文字列の補題。どの言語パック・層からも使える） | `assets/lean/LangSemantics/Core/` |
-| `LangSemantics.Java`（int/long、double のソフトモデルと百分率の因子の比較、BigDecimal、String、LocalDate、例外と `JResult` の補題、HashMap） | `assets/lean/LangSemantics/Java/` |
+| `LangSemantics.Java`（int/long、double のソフトモデルと百分率の因子の比較、値域内の int の演算と `for` 文の補題、BigDecimal、String、LocalDate、例外と `JResult` の補題、HashMap） | `assets/lean/LangSemantics/Java/` |
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新、結合と許される順列の補題） | `assets/lean/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/lean/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/lean/LangSemantics/Rust/` |

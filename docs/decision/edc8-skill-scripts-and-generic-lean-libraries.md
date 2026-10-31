@@ -101,6 +101,7 @@ generated:
 | `Abstraction.Prim` の列・`mapM` の補題、`append_sep_inj`・`string_any_toList`・`mapM_some_getD` | `LangSemantics.Core`（新設） |
 | 結合（`filter_cross`）と `ORDER BY` の許される順列の補題、`allowed_perm` | `LangSemantics.Sql.QueryLemmas` |
 | `ok_bind`・`mapM_ok`・`forIn_ok`、`get_ofList_perm`、`Abstraction.Fare.Double` と `Factors` の汎用部 | `LangSemantics.Java`（`ResultLemmas`・`HashMapLemmas`・`DoubleCompare`） |
+| main の backlog bbcc 第 3 段で `Abstraction.Fare.Loop` などに足された汎用の補題（`Forall₂`・`forall₂_of_mapM`・`mapM_eq_map_getD`・`mapM_length`・`sum_map_le`、値域内の `int` の演算と `for` 文の和・計数 `forIn_sum_eq`・`forIn_count_eq`） | `LangSemantics.Core`、`LangSemantics.Java.IntLemmas`（取り込みのときに移した） |
 | `Tests.Conformance` の実行器の骨格、`Tests.MasterSql` の表の読み取り | `ConformanceKit`（新設のメタ層） |
 
 * `LangSemantics.Core` は core だけに依存する。どの言語パックからも、移植元側・移植先側のどの層からも import してよい。

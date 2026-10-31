@@ -27,7 +27,7 @@ generated:
   - `Machine.Kernel`
   - `LangSemantics.Core`（新設）
   - `LangSemantics.Sql.QueryLemmas`
-  - `LangSemantics.Java`（`ResultLemmas`・`HashMapLemmas`・`DoubleCompare`）
+  - `LangSemantics.Java`（`ResultLemmas`・`HashMapLemmas`・`DoubleCompare`・`IntLemmas`）
   - `ConformanceKit`（新設）と `ConformanceKitTest`
   - obligation-check の G7 の拡張
 - 文書

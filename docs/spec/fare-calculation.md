@@ -8,7 +8,7 @@ spec_role: informative
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:42:19+09:00
+  at: 2026-10-31T17:49:17+09:00
 ---
 
 # 運賃計算
@@ -157,6 +157,8 @@ totalFare       = bdCeilHundredUp( foldl j32add 0 [flightTotal(f) | f ← flight
 （原典: `boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum` を左から評価）
 
 差異: [D-002](abstraction.md#既知差異)（`fare` 経由）、[D-012](abstraction.md#既知差異)（`b × (childFareRate − r)` が int32 を超えるとき、[Source] の `j32mul` が折り返す）。`discountRate > childFareRate` のときの [Source] の振る舞い（D-003）は、[Spec] の前提 MD-7 の外なので差異ではない（[abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。
+
+抽象機械は `Spec.Fare.totalFareMachine`（`Machine.pure`）である。入力はフライトのキーの列と搭乗者の年齢の列で、合計金額はこの 2 つだけで決まる（`totalFareOfKeys`）。PRE は、設定とマスタの不変条件、予約フライト数 1〜2・搭乗者数 1〜6・年齢 0〜999（[値域](domain-model.md#値域)）、便名が空白でないこと、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること（MD-3）である。
 
 ### 例
 
