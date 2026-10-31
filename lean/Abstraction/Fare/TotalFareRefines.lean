@@ -143,6 +143,21 @@ example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = s
     obtain ⟨k, hk, hfk⟩ := mapM_some_mem hks hf
     exact toFlight_ok p hfk (hpt k hk)
   obtain ⟨hamin, hcfr⟩ := configOf_fields hcfg
+  obtain ⟨parts, hparts⟩ : ∃ parts, ks.mapM (Spec.Fare.flightTotalOfKey cfg md ages) = some parts := by
+    simp only [Spec.Fare.totalFareOfKeys, Option.bind_eq_bind, Option.isSome_iff_exists, Option.bind_eq_some_iff,
+      Option.pure_def] at hsome
+    obtain ⟨_, parts, hp, -⟩ := hsome
+    exact ⟨parts, hp⟩
+  have hVle : ∀ k ∈ ks, (Spec.Fare.flightTotalOfKey cfg md ages k).getD 0 ≤ 100000000 * ages.length := by
+    intro k hk
+    obtain ⟨v, -, hv'⟩ := mapM_some_mem hparts hk
+    rw [hv', Option.getD_some]
+    exact flightTotalOfKey_le hcv hv hv'
+  have hsum : (ks.map fun k => (Spec.Fare.flightTotalOfKey cfg md ages k).getD 0).sum ≤ 1200000000 := by
+    have := sum_map_le ks hVle
+    have : ks.length * (100000000 * ages.length) ≤ 2 * (100000000 * 6) :=
+      Nat.mul_le_mul hf2 (Nat.mul_le_mul_left _ hp2)
+    omega
   have hfne : ic.flights.map (fun f => some (mkFlight p f)) ≠ [] := by
     have := mapM_length hks; intro e; rw [List.map_eq_nil_iff] at e; rw [e] at this; simp at this; omega
   have hpne : ic.passengers ≠ [] := by
@@ -154,9 +169,21 @@ example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = s
   · simp only [ok_bind, Nat.zero_add]
     rw [forIn_sum_eq (V := fun k => (Spec.Fare.flightTotalOfKey cfg md ages k).getD 0)
       (ic.flights.map fun f => some (mkFlight p f)) ks (J32.ofInt 0) 0 ?_ (by decide) ?_]
+    · have htot : Spec.Fare.totalFareOfKeys cfg md ks ages =
+          some (ceilTo (ks.map fun k => (Spec.Fare.flightTotalOfKey cfg md ages k).getD 0).sum 100) := by
+        simp only [Spec.Fare.totalFareOfKeys, hparts, mapM_eq_map_getD 0 hparts, Option.bind_eq_bind,
+          Option.bind_some, Option.pure_def]
+      rw [htot, Option.getD_some, Nat.zero_add]
+      generalize (ks.map fun k => (Spec.Fare.flightTotalOfKey cfg md ages k).getD 0).sum = S at hsum ⊢
+      have hS : (J32.ofInt (S : Int)).val = (S : Int) := J32.val_ofInt_of_inRange _ ⟨by
+        simp only [J32.minValue]; omega, by simp only [J32.maxValue]; omega⟩
+      show Except.ok _ = _
+      rw [← J32.ofInt_val (SourceModel.Fare.ceilFare _), SourceModel.Fare.ceilFare,
+        bdCeilHundredUp_val (by rw [hS]; omega) (by rw [hS, Int.toNat_natCast]; omega), hS, Int.toNat_natCast]
+      simp only [ceilTo]
+      congr 4
     · sorry
-    · sorry
-    · sorry
+    · simp only [Nat.zero_add]; omega
   · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a _ ha b => ?_
     obtain ⟨pp, aJ, rfl, hage, haJ⟩ := ageOfPassenger_eq ha
     simp only [pure_bind, JRef.deref, hage, ok_bind, Providers.ticketReserveService, haJ, hamin]
