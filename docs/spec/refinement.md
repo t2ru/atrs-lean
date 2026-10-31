@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-31T09:40:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -35,7 +35,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 - 入力の対応 `αᵢ`
 - 出力の対応 `αₒ`
 
-そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)）。
+そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`、差異の必要性）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)・[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）。
 `TargetModel` の各操作も、マスタ・設定と環境（衝突・I/O の失敗・配備の設定）を入力の成分として受ける。
 
 抽象化関数 β の標準の抽象化:
@@ -61,7 +61,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 
 （現在なし。移植先は [Spec] をそのまま実装する方針である。差異が必要になったら、意思決定を記録したうえで、ここに登録する）
 
-W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
+W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例と、差異の必要性（差異を外した R 課題の命題が偽であること。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
 
 ### 前提型の差異の影響
 
@@ -75,7 +75,7 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 種類は次の 4 つである（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
 - R: 主定理と、その付帯の義務（[abstraction.md](abstraction.md#空虚化を防ぐ義務) と同じ）
-- W: 証拠（両向きの例）
+- W: 証拠（両向きの例と、差異の必要性）
 - C: 特徴付け
 - L: 補題
 

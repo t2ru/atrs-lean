@@ -119,7 +119,7 @@ metadata:
 
 | 種類 | 内容 | 参照 |
 | --- | --- | --- |
-| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
+| 証明 | `ABS-NNN`, `REF-NNN`, `Spec` 自身の課題の定理が、`sorry` 無し・新規 `axiom` 無し・`native_decide` と `bv_decide` 無し。R 課題は `Machine.Refines` の形で、空虚化を防ぐ付帯の義務を持つ。W 課題は両向きの例と差異の必要性を持つ | [verification.md](references/verification.md)、[architecture.md](references/architecture.md#空虚化を防ぐ義務) |
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/conformance.md) |
 | 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の文書と `@[deviation]` の対応）、TR-G（R 課題の形と付帯の義務）、TR-N（非決定性の文書と `@[nondet]` の対応）、TR-V（ベクタの前提のラベル）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/architecture.md) |

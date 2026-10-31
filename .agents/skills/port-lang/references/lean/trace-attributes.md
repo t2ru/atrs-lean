@@ -12,7 +12,7 @@
 | `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版） |
 | `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理と補題、`Spec` 自身の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
-| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN` |
+| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.anyOf` で並べる） |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型（`Machine.ofChoice` の選択の型の葉） | `N-NNN` |
 | `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節 |
 | `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係。`KernelIs` の K） | α・β の表の節 |
