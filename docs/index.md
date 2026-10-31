@@ -56,6 +56,7 @@ okf_version: "0.2"
 * [rehash・diff・impact の細部（検査の登録・注釈の書き換え・改名・出典の検査）を決める](decision/0041-rehash-diff-impact-details.md) - ADR 0036 の rehash・diff・impact について、検査の登録（trace/checks.json）とそれが覆う定義、rehash の対象と手順、Lean の注釈の書き換え方、renames.json の検査、diff の分類と impact の伝播、文書の「出典:」のロケータの検査を決める。ADR 0040 を補う。
 * [運賃計算の SourceModel の表し方（マスタのキャッシュ・列挙型・HashMap）と、共有ベクタの modelDef・共有入力を決める](decision/0042-fare-source-model-and-shared-vectors.md) - 運賃計算の SourceModel で、マスタを Provider のキャッシュとして入力に受けること、Java の列挙型に Spec の型を使うこと、HashMap の最小のモデルを決める。共有ベクタの modelDef をモデルごとの配列にできること、共有入力 fixtures を上流のシードから生成すること、source-model の期待値を仕様の例の表から取ること、翌日着の便の暫定の扱いを決める。
 * [空虚化を防ぐ義務を既存の研究に照らして補う（成分の必要性・変異テスト・意図から書く例）](decision/0043-vacuity-literature-necessity-and-mutation.md) - ADR 0039 の義務を、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies などの研究と対応づける。その上で、名前付きの成分を外すと R 課題の命題が偽になること（成分の必要性。G9）を義務に加える。成分の広さには仕様の変異テストを、仕様の妥当性には意図から書く例を採る。
+* [移植が成り立つ条件をスキルに明示し、進め方の既定（評価・判断点・ゲート・敵対的レビュー・記録）を補う](decision/0044-porting-conditions-and-workflow.md) - スキル port-lang に、移植が成り立つ条件（適用の前提 P1〜P6、成立の条件 S1〜S6、言えること・言えないこと）を明示し、AWS AIDM（AI Modernization Flow）のプロセス面を参考に、置き換えてよい既定の進め方を references/workflow.md に置く。
 
 # Specification
 

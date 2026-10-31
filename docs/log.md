@@ -39,6 +39,13 @@
   * スキル port-lang の conformance・lean/trace-attributes
   * [AGENTS.md](../AGENTS.md)
 
+* **Creation**: [ADR 0044](decision/0044-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
+  * スキルの [SKILL.md](../.agents/skills/port-lang/SKILL.md) に「移植が成り立つ条件」（適用の前提・成立の条件・言えること・言えないこと）を加え、版を 0.4 にした。
+  * 進め方の既定として [workflow.md](../.agents/skills/port-lang/references/workflow.md) を新設した（評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録）。プロジェクトは置き換えてよい。
+  * スキルの process.md・verification.md から workflow.md を参照した。
+  * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0044 に記した。作成時は 0042 だったが、main に [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md)・[ADR 0043](decision/0043-vacuity-literature-necessity-and-mutation.md) が先に入ったため、0044 に採番し直した。
+  * main の ADR 0043（成分の必要性・仕様の変異テスト・意図から書く例）に合わせて、成立の条件 S2 と workflow.md の判断を記録する事項・検査ゲートを整えた。
+* **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に「進め方の適用（ATRS）」を加えた。
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
   * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。
   * `rehash` は、検査の登録 `trace/checks.json` を使う。
