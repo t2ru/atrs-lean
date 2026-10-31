@@ -14,9 +14,9 @@ namespace Abstraction.Fare
 
 open LangSemantics.Java LangSemantics.Java.JDouble
 
-/-- 上からの評価: `X·F ≤ (k + 99/100)·(1 + 2^-52)` なら `rneTrunc ≤ k`。 -/
+/-- 上からの評価: `X·F ≤ (k + 99/100)·(1 + 2^-48)` なら `rneTrunc ≤ k`。 -/
 theorem rneTrunc_le {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 29)
-    (hk : k < 2 ^ 30) (h : 100 * 2 ^ 52 * N ≤ (2 ^ 52 + 1) * (100 * k + 99) * D) : rneTrunc N D ≤ k := by
+    (hk : k < 2 ^ 30) (h : 100 * 2 ^ 48 * N ≤ (2 ^ 48 + 1) * (100 * k + 99) * D) : rneTrunc N D ≤ k := by
   obtain ⟨Q, M, ht, hQ, -, -, r1, -⟩ := rneTrunc_spec hN hD hlo hhi
   rw [ht]
   apply Nat.lt_succ_iff.mp
@@ -26,8 +26,8 @@ theorem rneTrunc_le {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N *
   have h1 := Nat.mul_le_mul_right Q h
   have h2 : 2 ^ 23 * D ≤ Q * D := Nat.mul_le_mul_right D hQ
   have h3 : k * (Q * D) ≤ 2 ^ 30 * (Q * D) := Nat.mul_le_mul_right _ (Nat.le_of_lt hk)
-  have e1 : 100 * 2 ^ 52 * N * Q = 100 * 2 ^ 52 * (N * Q) := by simp only [Nat.mul_assoc]
-  have e2 : (2 ^ 52 + 1) * (100 * k + 99) * D * Q = (2 ^ 52 + 1) * 100 * (k * (Q * D)) + (2 ^ 52 + 1) * 99 * (Q * D) := by
+  have e1 : 100 * 2 ^ 48 * N * Q = 100 * 2 ^ 48 * (N * Q) := by simp only [Nat.mul_assoc]
+  have e2 : (2 ^ 48 + 1) * (100 * k + 99) * D * Q = (2 ^ 48 + 1) * 100 * (k * (Q * D)) + (2 ^ 48 + 1) * 99 * (Q * D) := by
     simp only [Nat.mul_add, Nat.add_mul, Nat.mul_assoc, Nat.mul_comm D Q, Nat.mul_left_comm k]
   have e3 : (k + 1) * Q * D = k * (Q * D) + Q * D := by simp only [Nat.add_mul, Nat.one_mul, Nat.mul_assoc]
   rw [e1, e2] at h1
@@ -58,9 +58,9 @@ theorem le_rneTrunc {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N *
   generalize k * (Q * D) = P at *
   omega
 
-/-- 整数の場合の下からの評価: `X·F ≥ k·(1 − 2^-52)` なら `rneTrunc ≥ k − 1`。 -/
+/-- 整数の場合の下からの評価: `X·F ≥ k·(1 − 2^-48)` なら `rneTrunc ≥ k − 1`。 -/
 theorem pred_le_rneTrunc {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 29)
-    (hk : k < 2 ^ 30) (h : 2 ^ 52 * (k * D) ≤ 2 ^ 52 * N + k * D) : k - 1 ≤ rneTrunc N D := by
+    (hk : k < 2 ^ 30) (h : 2 ^ 48 * (k * D) ≤ 2 ^ 48 * N + k * D) : k - 1 ≤ rneTrunc N D := by
   obtain ⟨Q, M, ht, hQ, -, -, -, r2⟩ := rneTrunc_spec hN hD hlo hhi
   rw [ht]
   apply (Nat.le_div_iff_mul_le (by have := Nat.two_pow_pos 23; omega)).mpr
@@ -69,9 +69,9 @@ theorem pred_le_rneTrunc {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D �
   have h1 := Nat.mul_le_mul_right Q h
   have h2 : 2 ^ 23 * D ≤ Q * D := Nat.mul_le_mul_right D hQ
   have h3 : k * (Q * D) ≤ 2 ^ 30 * (Q * D) := Nat.mul_le_mul_right _ (Nat.le_of_lt hk)
-  have e1 : (2 ^ 52 * (k * D) * Q) = 2 ^ 52 * (k * (Q * D)) := by
+  have e1 : (2 ^ 48 * (k * D) * Q) = 2 ^ 48 * (k * (Q * D)) := by
     simp only [Nat.mul_assoc, Nat.mul_comm D Q]
-  have e2 : (2 ^ 52 * N + k * D) * Q = 2 ^ 52 * (N * Q) + k * (Q * D) := by
+  have e2 : (2 ^ 48 * N + k * D) * Q = 2 ^ 48 * (N * Q) + k * (Q * D) := by
     simp only [Nat.add_mul, Nat.mul_assoc, Nat.mul_comm D Q]
   have e3 : (M + 1) * D = M * D + D := by simp only [Nat.add_mul, Nat.one_mul]
   have e4 : (k - 1) * Q * D = k * (Q * D) - Q * D := by
@@ -118,9 +118,9 @@ theorem le_rneTrunc_safe {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D �
   generalize k * (Q * D) = P at *
   omega
 
-/-- 因子 `F = fm·2^(−fs)` が `c/100` の相対誤差 `2^-52` 以内にある。 -/
+/-- 因子 `F = fm·2^(−fs)` が `c/100` の相対誤差 `2^-48` 以内にある。 -/
 def Close (c fm fs : Nat) : Prop :=
-  2 ^ 52 * (100 * fm) ≤ (2 ^ 52 + 1) * (c * 2 ^ fs) ∧ 2 ^ 52 * (c * 2 ^ fs) ≤ (2 ^ 52 + 1) * (100 * fm)
+  2 ^ 48 * (100 * fm) ≤ (2 ^ 48 + 1) * (c * 2 ^ fs) ∧ 2 ^ 48 * (c * 2 ^ fs) ≤ (2 ^ 48 + 1) * (100 * fm)
 
 /-- 安全な因子: `F` が `c/100` より小さくても、その相対誤差が `2^-54` 未満（大きい場合も含む）。 -/
 def Safe (c fm fs : Nat) : Prop := 2 ^ 54 * (c * 2 ^ fs) < 2 ^ 54 * (100 * fm) + c * 2 ^ fs
@@ -154,10 +154,10 @@ theorem rneTrunc_factor {X c fm fs : Nat} (hX : X ≠ 0) (hc : c ≠ 0) (hfs : f
     simp at h2; omega
   have hN : X * fm ≠ 0 := Nat.mul_ne_zero hX hfm
   have hk30 : k < 2 ^ 30 := by omega
-  have a1 : X * (2 ^ 52 * (100 * fm)) = 2 ^ 52 * (X * (100 * fm)) := by ac_rfl
-  have a2 : X * ((2 ^ 52 + 1) * (c * 2 ^ fs)) = (2 ^ 52 + 1) * (X * (c * 2 ^ fs)) := by ac_rfl
-  have a3 : X * (2 ^ 52 * (c * 2 ^ fs)) = 2 ^ 52 * (X * (c * 2 ^ fs)) := by ac_rfl
-  have a4 : X * ((2 ^ 52 + 1) * (100 * fm)) = (2 ^ 52 + 1) * (X * (100 * fm)) := by ac_rfl
+  have a1 : X * (2 ^ 48 * (100 * fm)) = 2 ^ 48 * (X * (100 * fm)) := by ac_rfl
+  have a2 : X * ((2 ^ 48 + 1) * (c * 2 ^ fs)) = (2 ^ 48 + 1) * (X * (c * 2 ^ fs)) := by ac_rfl
+  have a3 : X * (2 ^ 48 * (c * 2 ^ fs)) = 2 ^ 48 * (X * (c * 2 ^ fs)) := by ac_rfl
+  have a4 : X * ((2 ^ 48 + 1) * (100 * fm)) = (2 ^ 48 + 1) * (X * (100 * fm)) := by ac_rfl
   rw [a1, a2, eN, eC] at g1
   rw [a3, a4, eN, eC] at g2
   have hlo : 2 ^ fs ≤ X * fm * 2 ^ 1000 := by
@@ -177,7 +177,7 @@ theorem rneTrunc_factor {X c fm fs : Nat} (hX : X ≠ 0) (hc : c ≠ 0) (hfs : f
     omega
   have up : rneTrunc (X * fm) (2 ^ fs) ≤ k := by
     apply rneTrunc_le hN hD hlo hhi hk30
-    have e : (2 ^ 52 + 1) * (100 * k + 99) * 2 ^ fs = (2 ^ 52 + 1) * (100 * (k * 2 ^ fs) + 99 * 2 ^ fs) := by
+    have e : (2 ^ 48 + 1) * (100 * k + 99) * 2 ^ fs = (2 ^ 48 + 1) * (100 * (k * 2 ^ fs) + 99 * 2 ^ fs) := by
       rw [Nat.mul_assoc]; congr 1; rw [Nat.add_mul, Nat.mul_assoc]
     rw [e, Nat.mul_assoc]
     generalize X * fm = N at *
