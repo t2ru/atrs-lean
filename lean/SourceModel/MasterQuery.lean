@@ -33,9 +33,9 @@ inductive SrcQuery where
   /-- `FlightMasterProvider.getFlightMaster` -/
   | flightMasterOf (name : String)
   /-- `FareTypeProvider.getFareType` -/
-  | fareTypeOf (cd : Spec.FareTypeCd)
+  | fareTypeOf (cd : Spec.Model.FareTypeCd)
   /-- `BoardingClassProvider.getBoardingClass` -/
-  | boardingClassOf (cd : Spec.BoardingClassCd)
+  | boardingClassOf (cd : Spec.Model.BoardingClassCd)
   /-- `PeakTimeProvider.getPeakTime` -/
   | peakTimeOn (d : JLocalDate)
   /-- `TicketSharedServiceImpl.getMultiplicationRatio`（private。`calculateBasicFare` が使う） -/
@@ -43,7 +43,7 @@ inductive SrcQuery where
   /-- 注入された設定 -/
   | config
   /-- コードリストの `asMap()` -/
-  | codeList (n : Spec.CodeListName)
+  | codeList (n : Spec.MasterQuery.CodeListName)
   deriving DecidableEq, Repr
 
 /-- 結果。 -/

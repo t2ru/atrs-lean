@@ -7,7 +7,7 @@ Provider の `load()` の形。各行の対応（`Enum.valueOf` など）が例�
 キャッシュは、行ごとの（キー, 値）の列を順に `put` した表（`JHashMap.ofList`）である。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Load
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Repository.MasterData SourceModel.Repository
@@ -17,12 +17,12 @@ open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Rep
 
 
 /-- 搭乗クラスの行の対応（コード `cd` の値に対応したとき）。 -/
-def boardingClassOf (b : BoardingClassResult) (cd : Spec.BoardingClassCd) : BoardingClass :=
+def boardingClassOf (b : BoardingClassResult) (cd : Spec.Model.BoardingClassCd) : BoardingClass :=
   { boardingClassCd := some cd, boardingClassName := b.boardingClassName.map (·.val),
     extraCharge := Mapping.int b.extraCharge }
 
 /-- 運賃種別の行の対応。 -/
-def fareTypeOf (f : FareTypeResult) (cd : Spec.FareTypeCd) : FareType :=
+def fareTypeOf (f : FareTypeResult) (cd : Spec.Model.FareTypeCd) : FareType :=
   { fareTypeCd := some cd, fareTypeName := Mapping.str f.fareTypeName,
     discountRate := Mapping.int f.discountRate,
     rsrvAvailableStartDayNum := Mapping.int f.rsrvAvailableStartDayNum,
@@ -30,7 +30,7 @@ def fareTypeOf (f : FareTypeResult) (cd : Spec.FareTypeCd) : FareType :=
     passengerMinNum := Mapping.int f.passengerMinNum }
 
 /-- `BoardingClassProvider.load`: 各行のコードが列挙型の値なら、キャッシュはコードをキーにした表。 -/
-theorem boardingClassLoad_eq (rows : List BoardingClassResult) (k : BoardingClassResult → Spec.BoardingClassCd)
+theorem boardingClassLoad_eq (rows : List BoardingClassResult) (k : BoardingClassResult → Spec.Model.BoardingClassCd)
     (hk : ∀ b ∈ rows, Mapping.boardingClassCd b.boardingClassCd.val = .ok (k b)) :
     BoardingClassProvider.load rows =
       .ok { boardingClassCodeMap := JHashMap.ofList (rows.map fun b => (k b, boardingClassOf b (k b))) } := by
@@ -46,7 +46,7 @@ theorem boardingClassLoad_eq (rows : List BoardingClassResult) (k : BoardingClas
     rfl
 
 /-- `FareTypeProvider.load`: 各行のコードが列挙型の値なら、キャッシュはコードをキーにした表。 -/
-theorem fareTypeLoad_eq (rows : List FareTypeResult) (k : FareTypeResult → Spec.FareTypeCd)
+theorem fareTypeLoad_eq (rows : List FareTypeResult) (k : FareTypeResult → Spec.Model.FareTypeCd)
     (hk : ∀ f ∈ rows, Mapping.fareTypeCd f.fareTypeCd.val = .ok (k f)) :
     FareTypeProvider.load rows =
       .ok { fareTypeCodeMap := JHashMap.ofList (rows.map fun f => (k f, fareTypeOf f (k f))) } := by
@@ -110,4 +110,4 @@ theorem flightMasterLoad_eq {rows : List FlightMasterResult} (h : (rows.map (·.
     obtain ⟨y, -, rfl⟩ := List.mem_map.mp hx
     rfl
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Load

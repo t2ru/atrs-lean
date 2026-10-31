@@ -15,8 +15,8 @@ open LangSemantics.Java SourceModel.Model SourceModel.MasterData
 structure SelectFlightForm where
   depDate : JRef JLocalDate := none
   flightName : JRef String := none
-  fareTypeCd : JRef Spec.FareTypeCd := none
-  boardingClassCd : JRef Spec.BoardingClassCd := none
+  fareTypeCd : JRef Spec.Model.FareTypeCd := none
+  boardingClassCd : JRef Spec.Model.BoardingClassCd := none
   deriving DecidableEq, Repr
 
 /-- `TicketHelper` が受ける Provider（`@Inject`）。 -/

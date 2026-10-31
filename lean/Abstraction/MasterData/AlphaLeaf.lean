@@ -20,10 +20,11 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.AlphaLeaf
+open Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
-open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Spec.Prim.HourMinute LangSemantics.Core
+open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Spec.Prim.Time.HourMinute LangSemantics.Core
 
 /-! ## 数 -/
 
@@ -221,4 +222,4 @@ theorem bcCdOf_kernel : KernelIs bcCdOf (undefOrEq bcCdOf) :=
 theorem ftCdOf_kernel : KernelIs ftCdOf (undefOrEq ftCdOf) :=
   kernelIs_undefOrEq fun _ _ _ hx hy => (ftCdOf_eq_some hx).trans (ftCdOf_eq_some hy).symm
 
-end Abstraction.MasterData
+end Abstraction.MasterData.AlphaLeaf

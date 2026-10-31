@@ -144,9 +144,6 @@ pub struct Refinement {
     pub deviations: Vec<String>,
     #[serde(default)]
     pub observations: Vec<String>,
-    /// W 課題の必要性の定理（`¬ Refines …`）
-    #[serde(default)]
-    pub necessity: Vec<String>,
     #[serde(default)]
     pub errors: Vec<String>,
 }

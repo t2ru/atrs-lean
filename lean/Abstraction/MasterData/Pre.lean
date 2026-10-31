@@ -9,7 +9,8 @@ ABS-026 の証明の前提の取り出し。`aiMQ` が定義されることと [
 DB の行と [Source] の対応（MyBatis の対応・`Assert.hasText`）について使う事実を導く。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Pre
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Load Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
@@ -17,7 +18,7 @@ open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Lang
 
 /-! ## α の分解 -/
 
-theorem aiMQ_eq_some {ic : SrcInput} {cfg : Config} {md : MasterData} {q : MasterData.Query} :
+theorem aiMQ_eq_some {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.MasterQuery.Query} :
     aiMQ ic = some (cfg, md, q) ↔
       configOf ic.config = some cfg ∧ masterDataOf ic.db = some md ∧ queryOf? ic.query = some q := by
   simp only [aiMQ, Option.bind_eq_some_iff, Option.map_eq_some_iff, Prod.mk.injEq]
@@ -105,4 +106,4 @@ theorem ftCdOf_mapping {s : String} {c : FareTypeCd} (h : ftCdOf s = some c) :
     SourceModel.Repository.Mapping.fareTypeCd s = .ok c := by
   rw [ftCdOf_eq_some h]; cases c <;> rfl
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Pre

@@ -1,8 +1,6 @@
 import Trace
-import Abstraction.MasterData.Refines
-import Abstraction.Fare.BasicFareRefines
-import Abstraction.Fare.FareRefines
-import Abstraction.Fare.TotalFareRefines
+import Abstraction.MasterData
+import Abstraction.Fare
 
 /-!
 # Abstraction.Gap
@@ -21,27 +19,27 @@ open Trace.Attr
 
 open Trace Trace.Gap
 
-/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`x·ratio` が 100 で割り切れ（厳密値が整数）、積算比率の因子 `fl(ratio × fl(0.01))` が `ratio/100` を `2^-54` 以上下回る（安全でない）ときに限る（`Abstraction.Fare.basicFare_src`）。安全でない積算比率は 1〜1000 のうち 49 個（29, 58, 116, 117, 141, 205, …。`basicFactor_unsafe`）で、シードの比率（100・110・120・125・130・140・150）は安全である。条件は十分条件で、安全でない比率でも差異が起きるとは限らない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
+/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`x·ratio` が 100 で割り切れ（厳密値が整数）、積算比率の因子 `fl(ratio × fl(0.01))` が `ratio/100` を `2^-54` 以上下回る（安全でない）ときに限る（`Abstraction.Fare.Factors.basicFare_src`）。安全でない積算比率は 1〜1000 のうち 49 個（29, 58, 116, 117, 141, 205, …。`basicFactor_unsafe`）で、シードの比率（100・110・120・125・130・140・150）は安全である。条件は十分条件で、安全でない比率でも差異が起きるとは限らない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
 @[gap_entry]
 def D001 : Gap where
   id := "D-001"
   kind := .pre
   sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
   premise := "`dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）"
-  deviations := [``Abstraction.Fare.dev_D001, ``Abstraction.Fare.dev_D001T]
+  deviations := [``Abstraction.Fare.Alpha.dev_D001, ``Abstraction.Fare.TotalAlpha.dev_D001T]
   evidence := .refuted [``Abstraction.Fare.need_D001]
   rTasks := ["ABS-001", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "予約確定で、差のある運賃が合計金額として保存される")
   backlog := ["bbcce088-c475-4378-9cc6-e3d821acc0f5"]
 
-/-- [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k` で `k ≡ 1 (mod 100)` のとき、切り捨てた値が `k − 1` になって 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100）。[Source] は [Spec] に等しいか 100 円少なく、少ないのは `b·(100−r) ≡ 100 (mod 10000)` で、割引率の因子 `fl(1 − fl(r × fl(0.01)))` が安全でないときに限る（`Abstraction.Fare.fare_src`）。安全でない割引率は 0〜99 のうち 33 個（6, 7, 30〜35, 53〜57, 65〜70, 77〜83, 89〜95。`fareFactor_unsafe`）で、シードの割引率 0・5・10・20 は安全、30 は安全でない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
+/-- [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k` で `k ≡ 1 (mod 100)` のとき、切り捨てた値が `k − 1` になって 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100）。[Source] は [Spec] に等しいか 100 円少なく、少ないのは `b·(100−r) ≡ 100 (mod 10000)` で、割引率の因子 `fl(1 − fl(r × fl(0.01)))` が安全でないときに限る（`Abstraction.Fare.Factors.fare_src`）。安全でない割引率は 0〜99 のうち 33 個（6, 7, 30〜35, 53〜57, 65〜70, 77〜83, 89〜95。`fareFactor_unsafe`）で、シードの割引率 0・5・10・20 は安全、30 は安全でない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
 @[gap_entry]
 def D002 : Gap where
   id := "D-002"
   kind := .pre
   sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
   premise := "`dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）"
-  deviations := [``Abstraction.Fare.dev_D002, ``Abstraction.Fare.dev_D002T]
+  deviations := [``Abstraction.Fare.Alpha.dev_D002, ``Abstraction.Fare.TotalAlpha.dev_D002T]
   evidence := .refuted [``Abstraction.Fare.need_D002]
   rTasks := ["ABS-002", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "同上")
@@ -153,7 +151,7 @@ def D012 : Gap where
   kind := .pre
   sites := [⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
   premise := "`dev_D012`（`Abstraction.Fare`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件）"
-  deviations := [``Abstraction.Fare.dev_D012]
+  deviations := [``Abstraction.Fare.TotalAlpha.dev_D012]
   evidence := .refuted [``Abstraction.Fare.need_D012]
   rTasks := ["ABS-004", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "折り返した合計金額が保存される")
@@ -331,7 +329,7 @@ def D027 : Gap where
   kind := .preConcreteInput
   sites := [⟨"マスタ", "docs/spec/master-data.md", ""⟩, ⟨"設定", "docs/spec/configuration.md", ""⟩]
   premise := "`dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）"
-  deviations := [``Abstraction.MasterData.dev_D027, ``Abstraction.Fare.dev_D027BF, ``Abstraction.Fare.dev_D027F, ``Abstraction.Fare.dev_D027TF]
+  deviations := [``Abstraction.MasterData.Alpha.dev_D027, ``Abstraction.Fare.Alpha.dev_D027BF, ``Abstraction.Fare.Alpha.dev_D027F, ``Abstraction.Fare.TotalAlpha.dev_D027TF]
   evidence := .refuted [``Abstraction.MasterData.need_D027]
   rTasks := ["ABS-001", "ABS-002", "ABS-004", "ABS-026"]
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
@@ -366,7 +364,7 @@ def D030 : Gap where
   kind := .outsidePre
   sites := [⟨"値域", "docs/spec/domain-model.md#値域", ""⟩]
   premise := "PRE（入力の値域・MD-8）"
-  evidence := .excludedBy [``Spec.Range.maxBasicFareWithCharge, ``Spec.Range.maxMultiplicationRatio, ``Spec.Range.maxDiscountRate]
+  evidence := .excludedBy [``Spec.Model.Range.maxBasicFareWithCharge, ``Spec.Model.Range.maxMultiplicationRatio, ``Spec.Model.Range.maxDiscountRate]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
 
 end Abstraction.Gap

@@ -15,6 +15,7 @@ set_option maxRecDepth 4096
 namespace Spec.Seed
 
 open Spec.Prim
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType)
 
 def airports0 : List Airport := [
   ⟨⟨"HND"⟩, "東京(羽田)", 1⟩,

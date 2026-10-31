@@ -75,7 +75,7 @@ def decodeDb (doc : Json) : Except String MasterDb := do
 def sI (v : Int4) : Option String := some (toString v.val)
 def sV {n : Nat} (v : Varchar n) : Option String := some v.val
 def sD (d : PgDate) : Option String :=
-  (Spec.Prim.Date.ofEpochDay? d.val).map Spec.Prim.fmtIsoDate
+  (Spec.Prim.Date.ofEpochDay? d.val).map Spec.Prim.Format.fmtIsoDate
 
 def routeRow (r : RouteResult) : Row :=
   [sI r.routeNo, sI r.basicFare, sV r.depAirportCd, sV r.depAirportName, sV r.aarAirportCd, sV r.aarAirportName]

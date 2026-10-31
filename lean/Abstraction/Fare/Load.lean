@@ -1,4 +1,4 @@
-import Abstraction.MasterData.Refines
+import Abstraction.MasterData.QueryRun
 
 /-!
 # Abstraction.Fare.Load
@@ -10,7 +10,9 @@ import Abstraction.MasterData.Refines
 - `load_correct'`: `load_correct` に、便マスタ・運賃種別のキャッシュの性質を加えたもの
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.Fare.Load
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 open LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
@@ -90,13 +92,13 @@ theorem boardingClass_of_answer {r : JRef SourceModel.Model.BoardingClass} {bc :
     ∃ b e, r = some b ∧ b.boardingClassCd = some bc.boardingClassCd ∧ b.extraCharge = some e ∧
       e.val = (bc.extraCharge : Int) := by
   cases r with
-  | none => simp [answerOf?, Answer.opt] at h
+  | none => simp [answerOf?, AnswerOf.opt] at h
   | some b =>
-    simp only [answerOf?, Answer.opt, Option.map_map, Option.map_eq_some_iff] at h
+    simp only [answerOf?, AnswerOf.opt, Option.map_map, Option.map_eq_some_iff] at h
     obtain ⟨x, hx, hxe⟩ := h
-    simp only [Function.comp, MasterData.Answer.boardingClass.injEq, Option.some.injEq] at hxe
+    simp only [Function.comp, Spec.MasterQuery.Answer.boardingClass.injEq, Option.some.injEq] at hxe
     subst hxe
-    simp only [Answer.boardingClass, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+    simp only [AnswerOf.boardingClass, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
       Option.some.injEq] at hx
     obtain ⟨cd, hcd, nm, -, ex, hex, he⟩ := hx
     obtain ⟨e, he1, he2⟩ := hex
@@ -110,13 +112,13 @@ theorem fareType_of_answer {r : JRef SourceModel.Model.FareType} {ft : FareType}
     (h : answerOf? (.fareType r) = some (.fareType (some ft.info))) :
     ∃ f d, r = some f ∧ f.discountRate = some d ∧ d.val = (ft.discountRate : Int) := by
   cases r with
-  | none => simp [answerOf?, Answer.opt] at h
+  | none => simp [answerOf?, AnswerOf.opt] at h
   | some f =>
-    simp only [answerOf?, Answer.opt, Option.map_map, Option.map_eq_some_iff] at h
+    simp only [answerOf?, AnswerOf.opt, Option.map_map, Option.map_eq_some_iff] at h
     obtain ⟨x, hx, hxe⟩ := h
-    simp only [Function.comp, MasterData.Answer.fareType.injEq, Option.some.injEq] at hxe
+    simp only [Function.comp, Spec.MasterQuery.Answer.fareType.injEq, Option.some.injEq] at hxe
     subst hxe
-    simp only [Answer.fareType, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+    simp only [AnswerOf.fareType, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
       Option.some.injEq] at hx
     obtain ⟨cd, hc0, nm, hn0, dr, hdr, s0, hs0, e0, he0, pm0, hp0, he⟩ := hx
     obtain ⟨d, hd1, hd2⟩ := hdr
@@ -144,4 +146,4 @@ theorem load_correct' {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mas
   obtain ⟨fmp, hml, hmf⟩ := flightMaster_fare hm hv.md1 hv.md3 hv.md8 hpf
   exact ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd, fun cd => hfq cd, hmf⟩
 
-end Abstraction.MasterData
+end Abstraction.Fare.Load

@@ -1,7 +1,7 @@
 {
   "operation": "master.boardingClassOf",
   "modelDef": [
-    "Spec.MasterData.queryMachine",
+    "Spec.MasterQuery.queryMachine",
     "SourceModel.MasterQuery.queryConcrete"
   ],
   "specRef": "docs/spec/master-data.md#参照関数",

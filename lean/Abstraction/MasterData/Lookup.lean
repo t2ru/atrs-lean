@@ -7,10 +7,11 @@ Provider のキャッシュ（`JHashMap`）の参照と、[Spec] の検索の対
 DB の行を写した列の並べ替えである。キーが重複しなければ、`get` はどの並びでも、DB の行での検索の写しになる。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Lookup
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Load Abstraction.MasterData.Pre
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Core
 
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Lookup

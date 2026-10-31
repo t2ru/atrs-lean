@@ -6,7 +6,7 @@ import Trace
 整数の基本演算（`docs/spec/domain-model.md#基本演算specprim`）。引数は数学的整数で、溢れは無い（ADR e41d）。
 -/
 
-namespace Spec.Prim
+namespace Spec.Prim.Int
 
 /-- `a / b` 以下の最大の整数（`b > 0`）。Lean の `Int` の `/` は、`b > 0` で床除算に一致する。 -/
 @[spec_doc "docs/spec/domain-model.md#基本演算specprim"]
@@ -93,4 +93,4 @@ theorem pct_eq_floorDiv (a r : Nat) : (pct a r : Int) = floorDiv (a * r) 100 := 
 #guard ceilTo 0 100 == 0
 #guard pct 1430 70 == 1001
 
-end Spec.Prim
+end Spec.Prim.Int

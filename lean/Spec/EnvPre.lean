@@ -13,7 +13,8 @@ import Spec.Seed
 - `seed_env`: シードの設定とマスタ（`Spec.Seed`）は、環境の前提を満たす。
 -/
 
-namespace Spec
+namespace Spec.EnvPre
+open Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 
 open Spec.Prim
 
@@ -24,7 +25,6 @@ def masterConfigOk (x : Config × MasterData) : Prop := x.1.Valid ∧ x.2.Valid 
 
 instance (x : Config × MasterData) : Decidable (masterConfigOk x) := by unfold masterConfigOk; infer_instance
 
-namespace EnvPre
 
 /-! ## 真偽値の検査 -/
 
@@ -107,7 +107,6 @@ theorem validB_sound {cfg : Config} {md : MasterData} (h : validB cfg md = true)
   simp only [bne_iff_ne, ne_eq] at this
   exact ⟨wellFormedB_sound this.1, this.2⟩
 
-end EnvPre
 
 /-! ## シードと非自明性 -/
 
@@ -130,4 +129,4 @@ theorem badMasterData_not_env : ¬ masterConfigOk (Seed.config, badMasterData) :
 theorem masterConfigOk_nontrivial : Machine.Adequacy.Nontrivial masterConfigOk :=
   ⟨⟨_, seed_env⟩, ⟨_, badMasterData_not_env⟩⟩
 
-end Spec
+end Spec.EnvPre

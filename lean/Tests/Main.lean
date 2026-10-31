@@ -14,6 +14,8 @@ import Tests
 
 open Lean Trace.Dump
 
+namespace Tests.Main
+
 /-- 失敗した検査の数。 -/
 initialize failures : IO.Ref Nat ← IO.mkRef 0
 
@@ -77,6 +79,10 @@ def javaDoubleTests : IO Unit := do
   let r := Tests.JavaDouble.run
   for b in r.bad do IO.eprintln s!"    mismatch: {b}"
   check s!"java double: bit-exact ({r.count} cases)" r.bad.isEmpty
+
+end Tests.Main
+
+open Tests.Main
 
 unsafe def main : IO UInt32 := do
   dateTests

@@ -354,11 +354,15 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     let proof_layers = ["Abstraction", "Refinement"];
     let in_proof_layer = |n: &str| proof_layers.iter().any(|l| n.starts_with(&format!("{l}.")));
     let parent = |n: &str| n.rsplit_once('.').map(|(p, _)| p.to_string()).unwrap_or_default();
+    // W 課題の定理: 登録簿の W 課題の ID を @[obligation] に持つ定理
+    let w_ids: BTreeSet<&str> = inp.dump.gaps.iter().filter_map(|g| g.w_task.as_deref()).collect();
     let mut placed: Vec<(String, &str)> = vec![];
     for r in &inp.obligations.refinements {
         placed.push((r.name.clone(), "R task"));
-        for w in &r.necessity {
-            placed.push((w.clone(), "W task (necessity)"));
+    }
+    for d in &inp.dump.definitions {
+        if d.attr("obligation").iter().any(|i| w_ids.contains(i.as_str())) {
+            placed.push((d.name.clone(), "W task"));
         }
     }
     for (n, what) in &placed {
@@ -553,18 +557,24 @@ mod tests {
         let ob = |n: &str, id: &str, r: bool| Obligation { name: n.into(), ids: vec![id.into()], refines: r };
         let obl = Obligations {
             refinements: vec![
-                Refinement { name: "Abstraction.Fare.fareRefines".into(), necessity: vec!["Abstraction.Fare.need_D001".into()], ..Default::default() },
+                Refinement { name: "Abstraction.Fare.fareRefines".into(), ..Default::default() },
                 Refinement { name: "Abstraction.Fare.Total.totalRefines".into(), ..Default::default() },
             ],
             obligations: vec![ob("Abstraction.Fare.fareRefines", "ABS-001", true), ob("Abstraction.Fare.need_D001", "ABS-101", false),
                 ob("Abstraction.Fare.Total.totalRefines", "ABS-031", true)],
             errors: vec![],
         };
-        let fs = run_with(defs, obl, inv(&[]), &feats(true), vec![], &[]);
+        // W 課題は登録簿の W 課題の ID から引く。下位のモジュールの W 課題は違反
+        let mut defs = defs;
+        defs.push(modl(def("Abstraction.Fare.Alpha.need_D002", "Abstraction", &[("obligation", &["ABS-102"])], &[]), "Abstraction.Fare.Alpha"));
+        let gaps = vec![Gap { id: "D-001".into(), w_task: Some("ABS-101".into()), ..Default::default() },
+            Gap { id: "D-002".into(), w_task: Some("ABS-102".into()), ..Default::default() }];
+        let fs = run_with(defs, obl, inv(&[]), &feats(true), gaps, &[]);
         let l: Vec<&Finding> = fs.iter().filter(|f| f.rule.starts_with("TR-L")).collect();
+        assert!(l.iter().any(|f| f.error && f.rule == "TR-L1" && f.msg.starts_with("Abstraction.Fare.Alpha.need_D002")), "{l:?}");
         assert!(l.iter().any(|f| f.error && f.rule == "TR-L1" && f.msg.starts_with("Abstraction.Fare.Total.totalRefines")), "{l:?}");
         assert!(l.iter().any(|f| f.error && f.rule == "TR-L2" && f.msg.starts_with("Abstraction.Fare.helper")), "{l:?}");
-        assert_eq!(l.len(), 2, "{l:?}");
+        assert_eq!(l.len(), 3, "{l:?}");
     }
 
     #[test]
@@ -604,7 +614,7 @@ mod tests {
     fn tr_d_missing_deviation_and_anonymous_hypothesis() {
         let devs = vec![gap("D-001", "pre", &["ABS-001"], Some("ABS-101"))];
         let obl = Obligations {
-            refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-001".into()], deviations: vec![], observations: vec![], necessity: vec![],
+            refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-001".into()], deviations: vec![], observations: vec![],
                 errors: vec!["G1: the type has hypotheses (∀); state deviations with restrict".into()] }],
             ..Default::default()
         };
@@ -651,7 +661,7 @@ mod tests {
         d3.backlog = vec!["00000000-0000-4000-8000-000000000099".into()];
         let obl = Obligations {
             refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-031".into()],
-                deviations: vec!["Abstraction.Fare.dev_D005".into()], observations: vec![], necessity: vec![], errors: vec![] }],
+                deviations: vec!["Abstraction.Fare.dev_D005".into()], observations: vec![], errors: vec![] }],
             ..Default::default()
         };
         let gaps = vec![d1.clone(), d13, d5, d3];

@@ -1,6 +1,6 @@
 {
   "operation": "format.fmtPaymentDate",
-  "modelDef": "Spec.Prim.fmtPaymentDate",
+  "modelDef": "Spec.Prim.Format.fmtPaymentDate",
   "specRef": "docs/spec/domain-model.md#書式",
   "cases": [
     {

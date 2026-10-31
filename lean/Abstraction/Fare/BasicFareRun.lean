@@ -1,7 +1,7 @@
 import Abstraction.Fare.Alpha
 
 /-!
-# Abstraction.Fare.BasicFareRefines
+# Abstraction.Fare.BasicFareRun
 
 R 課題 ABS-001（基本運賃）: `SourceModel.FareQuery.basicFareConcrete`（起動時の読み込みと `calculateBasicFare`）は、
 既知差異 D-001・D-027 の前提の下で、[Spec] の `Spec.Fare.basicFareMachine` をリファインする。Mapper の結果のどの
@@ -9,7 +9,9 @@ R 課題 ABS-001（基本運賃）: `SourceModel.FareQuery.basicFareConcrete`（
 （W 課題 ABS-101）を示す。
 -/
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.BasicFareRun
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
@@ -29,13 +31,13 @@ theorem extraCharge_of_answer {r : JRef SourceModel.Model.BoardingClass} {bc : B
     (h : answerOf? (.boardingClass r) = some (.boardingClass (some bc.info))) :
     ∃ b e, r = some b ∧ b.extraCharge = some e ∧ e.val = (bc.extraCharge : Int) := by
   cases r with
-  | none => simp [answerOf?, Answer.opt] at h
+  | none => simp [answerOf?, AnswerOf.opt] at h
   | some b =>
-    simp only [answerOf?, Answer.opt, Option.map_map, Option.map_eq_some_iff] at h
+    simp only [answerOf?, AnswerOf.opt, Option.map_map, Option.map_eq_some_iff] at h
     obtain ⟨x, hx, hxe⟩ := h
-    simp only [Function.comp, MasterData.Answer.boardingClass.injEq, Option.some.injEq] at hxe
+    simp only [Function.comp, Spec.MasterQuery.Answer.boardingClass.injEq, Option.some.injEq] at hxe
     subst hxe
-    simp only [Answer.boardingClass, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+    simp only [AnswerOf.boardingClass, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
       Option.some.injEq] at hx
     obtain ⟨cd, -, nm, -, ex, hex, he⟩ := hx
     obtain ⟨e, he1, he2⟩ := hex
@@ -74,7 +76,7 @@ theorem runBasicFare_spec {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} 
   obtain ⟨bJ, e, hget, hex, heval⟩ := extraCharge_of_answer (by rw [hbq cd, hbc]; rfl)
   obtain ⟨-, -, -, -, hppt, -⟩ := ho
   obtain ⟨n, hn, hna⟩ := ratio_query hm hv.md4 hppt hD p.boardingClass
-  simp only [answerOf?, Option.map_eq_some_iff, MasterData.Answer.ratio.injEq] at hna
+  simp only [answerOf?, Option.map_eq_some_iff, Spec.MasterQuery.Answer.ratio.injEq] at hna
   obtain ⟨c, hc, rfl⟩ := hna
   rw [natOfJ32_eq_some] at hc
   have hshared : p.shared = { boardingClassProvider := p.boardingClass, peakTimeProvider := PeakTimeProvider.load o.peakTime } := by
@@ -106,67 +108,8 @@ theorem runBasicFare_spec {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} 
       · exact hm'
       · exact absurd (basicFactor_safe_of (by rintro h0; rw [h0] at h2; simp at h2) hc1000 hm') h3
 
-/-- R 課題 ABS-001。 -/
-@[obligation "ABS-001"]
-theorem basicFareRefines :
-    Refines (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF where
-  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-  input_total ic hd := by
-    obtain ⟨ia, h⟩ := Option.isSome_iff_exists.mp hd.2
-    exact ⟨ia, h⟩
-  applicable s t ic ia _ _ hα hpre _ := by
-    refine ⟨⟨_, mergeOrder ic.db, mergeOrder_allowed ic.db, rfl⟩, fun e ⟨o, ho, he⟩ => ?_⟩
-    obtain ⟨v, -, -, hr, -⟩ := runBasicFare_spec hα hpre.1 ho
-    rw [hr] at he
-    cases he
-  correct s t ic ia t' oc _ _ hα hpre _ hs := by
-    obtain ⟨o, ho, he⟩ := hs
-    obtain ⟨v, X, C, hr, hsp, hC, ⟨bc, hbc, hX⟩, hv⟩ := runBasicFare_spec hα hpre.1 ho
-    rw [hr] at he
-    simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
-    obtain ⟨-, rfl⟩ := he
-    refine ⟨(), _, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl ?_⟩
-    show natOfJ32 oc = some ((Spec.Fare.basicFare ia.md ia.routeBasicFare ia.boardingClassCd ia.depDate).getD 0)
-    rw [hsp, Option.getD_some]
-    apply natOfJ32_eq_some.mpr
-    rcases hv with h | ⟨h1, -, h3, -⟩
-    · exact h
-    · have hd : dev_D001 ia := hpre.2
-      unfold dev_D001 at hd
-      rw [hbc] at hd
-      simp only at hd
-      rw [← hX, ← hC] at hd
-      rcases hd with hd | hd
-      · exact absurd h1 hd
-      · exact absurd h3 hd
-
-/-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
-theorem basicFareRefines_initSurj :
-    Refines.InitSurj (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF :=
-  fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-
 /-- `icBF29` の [Source] の基本運賃は 28 円（`(int)(100 * (29 * 0.01))`）。 -/
 theorem runBasicFare_icBF29 : runBasicFare icBF29 (mergeOrder db29) = .ok (J32.ofInt 28) := by
   rfl
 
-/-- W 課題 ABS-101（D-001 の必要性。G9）: 前提を外すと、ABS-001 は成り立たない。区間の運賃 100 円・加算料金 0・
-積算比率 29% で、[Source] は 28 円、[Spec] は 29 円。 -/
-@[obligation "ABS-101", gap "D-001"]
-theorem need_D001 : ¬ Refines Spec.Fare.basicFareMachine (basicFareConcrete.restrict dev_D027BF) glueBF := fun h => by
-  obtain ⟨ia, he, hpre, -⟩ := aiBF_icBF29
-  have hout : (Spec.Fare.basicFare ia.md ia.routeBasicFare ia.boardingClassCd ia.depDate).getD 0 = 29 := by
-    have : (aiBF icBF29).map
-        (fun ia => (Spec.Fare.basicFare ia.md ia.routeBasicFare ia.boardingClassCd ia.depDate).getD 0) = some 29 := by
-      decide
-    rw [he] at this
-    simpa using this
-  obtain ⟨s', oa, hst, -, ho⟩ := h.correct () () icBF29 ia () (J32.ofInt 28) trivial (Or.inl ⟨rfl, trivial⟩) he hpre
-    ⟨trivial, by unfold dev_D027BF; rw [he]; rfl⟩
-    ⟨mergeOrder db29, mergeOrder_allowed db29, by rw [runBasicFare_icBF29]; rfl⟩
-  have : oa = 29 := hst.trans hout
-  subst this
-  rcases ho with ho | ho
-  · exact absurd ho (by decide)
-  · exact ho
-
-end Abstraction.Fare
+end Abstraction.Fare.BasicFareRun

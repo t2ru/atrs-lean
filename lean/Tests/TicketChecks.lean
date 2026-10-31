@@ -29,14 +29,14 @@ def form (name : JRef String) : SelectFlightForm :=
 def providers : Option Providers := (load (standardOrder db)).toOption
 
 -- toFlightList: 便マスタ（区間の運賃を含む）・運賃種別・搭乗クラスを Provider から引く
-#guard (providers.map fun p => (toFlightList p.ticketHelper [form (some "NTT001")]).toOption.map fun fl =>
+#guard (providers.map fun p => (toFlightList (SourceModel.FareQuery.ticketHelper p) [form (some "NTT001")]).toOption.map fun fl =>
   fl.map fun f => (f.bind (·.flightMaster)).bind (·.route) |>.bind (·.basicFare) |>.map (·.val)) ==
   some (some [some 20600])
 -- マスタに無い便名は null のフライト情報の成分になる（例外ではない）
-#guard (providers.map fun p => (toFlightList p.ticketHelper [form (some "NTT999")]).toOption.map fun fl =>
+#guard (providers.map fun p => (toFlightList (SourceModel.FareQuery.ticketHelper p) [form (some "NTT999")]).toOption.map fun fl =>
   fl.map fun f => (f.bind (·.flightMaster)).isSome) == some (some [false])
 -- 拒む例: 便名が null なら IllegalArgumentException
-#guard (providers.map fun p => match toFlightList p.ticketHelper [form none] with
+#guard (providers.map fun p => match toFlightList (SourceModel.FareQuery.ticketHelper p) [form none] with
   | .error (.illegalArgument _) => true | _ => false) == some true
 
 -- 合計金額（fare-calculation.md の例: 大人 2 名・小児 1 名で 53,600 円）

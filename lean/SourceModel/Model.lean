@@ -48,14 +48,14 @@ structure FlightMaster where
 
 /-- `BoardingClass`。 -/
 structure BoardingClass where
-  boardingClassCd : JRef Spec.BoardingClassCd := none
+  boardingClassCd : JRef Spec.Model.BoardingClassCd := none
   boardingClassName : JRef String := none
   extraCharge : JRef J32 := none
   deriving Repr, DecidableEq
 
 /-- `FareType`。 -/
 structure FareType where
-  fareTypeCd : JRef Spec.FareTypeCd := none
+  fareTypeCd : JRef Spec.Model.FareTypeCd := none
   fareTypeName : JRef String := none
   discountRate : JRef J32 := none
   rsrvAvailableStartDayNum : JRef J32 := none
@@ -87,7 +87,7 @@ structure Passenger where
   familyName : JRef String := none
   givenName : JRef String := none
   age : JRef J32 := none
-  gender : JRef Spec.Gender := none
+  gender : JRef Spec.Model.Gender := none
   deriving Repr, DecidableEq
 
 end SourceModel.Model

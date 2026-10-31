@@ -1,6 +1,6 @@
 import Abstraction.Fare.TotalAlpha
 import Abstraction.Fare.Load
-import Abstraction.Fare.BasicFareRefines
+import Abstraction.Fare.BasicFareRun
 
 /-!
 # Abstraction.Fare.Loop
@@ -9,15 +9,19 @@ import Abstraction.Fare.BasicFareRefines
 `for` 文・`int` の演算・`mapM` の汎用の補題は、スキルの `LangSemantics.Java.IntLemmas`・`LangSemantics.Core` にある。
 -/
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.Loop
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Alpha Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData
 
-end Abstraction.Fare
+end Abstraction.Fare.Loop
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.Loop
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Alpha Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
@@ -36,7 +40,7 @@ theorem calculateBasicFare_eq {db : SourceModel.Repository.Schema.MasterDb} {cfg
     ∃ v, SourceModel.Fare.calculateBasicFare p.shared rbJ (some cd) (some dj) = .ok v ∧
       v.val = (((b + ex) * md.multiplicationRatioOn D / 100 : Nat) : Int) := by
   obtain ⟨n, hn, hna⟩ := ratio_query hm hv.md4 hppt hD p.boardingClass
-  simp only [answerOf?, Option.map_eq_some_iff, MasterData.Answer.ratio.injEq] at hna
+  simp only [answerOf?, Option.map_eq_some_iff, Spec.MasterQuery.Answer.ratio.injEq] at hna
   obtain ⟨c, hc, hcc⟩ := hna
   rw [natOfJ32_eq_some] at hc
   have hshared : p.shared = ⟨p.boardingClass, PeakTimeProvider.load o.peakTime⟩ := by
@@ -66,4 +70,4 @@ theorem calculateFare_ok {bJ rJ : J32} {b r : Nat} (hb : bJ.val = (b : Int)) (hr
   simp only [SourceModel.Fare.calculateFare, hb, hr, e1, e2, e3, ok_bind, SourceModel.Fare.ceilFare, fareFactor]
   rfl
 
-end Abstraction.Fare
+end Abstraction.Fare.Loop

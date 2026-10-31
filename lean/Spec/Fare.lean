@@ -12,6 +12,7 @@ import Spec.MasterData
 -/
 
 namespace Spec.Fare
+open Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 
 open Spec.Prim Spec.MasterData
 

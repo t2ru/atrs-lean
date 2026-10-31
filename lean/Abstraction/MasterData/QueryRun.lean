@@ -1,14 +1,16 @@
 import Abstraction.MasterData.Query
 
 /-!
-# Abstraction.MasterData.Refines
+# Abstraction.MasterData.QueryRun
 
 R 課題 ABS-026: マスタ・設定・コードリストの読み込み（`SourceModel.MasterQuery.queryConcrete`）は、既知差異 D-027 の
-前提（`dev_D027`）の下で、[Spec] の `Spec.MasterData.queryMachine` をリファインする。Mapper の結果のどの許される
+前提（`dev_D027`）の下で、[Spec] の `Spec.MasterQuery.queryMachine` をリファインする。Mapper の結果のどの許される
 並びでも成り立つ。あわせて、付帯の義務（`InitSurj`）と、D-027 の必要性（W 課題 ABS-127）を示す。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.QueryRun
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
@@ -33,9 +35,9 @@ theorem load_correct {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mast
   refine ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd⟩
 
 /-- 前提を満たす入力では、どの許される並びでも `run` は例外を投げず、答えの写しは [Spec] の答え。 -/
-theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : MasterData.Query}
+theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.MasterQuery.Query}
     (hα : aiMQ ic = some (cfg, md, q)) (hv : md.Valid cfg) (hq : q.Valid) {o : Order} (ho : o.Allowed ic.db) :
-    ∃ a, run ic o = .ok a ∧ answerOf? a = some (MasterData.answer cfg md q) := by
+    ∃ a, run ic o = .ok a ∧ answerOf? a = some (Spec.MasterQuery.answer cfg md q) := by
   obtain ⟨hc, hm, hqq⟩ := aiMQ_eq_some.mp hα
   obtain ⟨-, -, -, hbcs, hfts, -⟩ := masterDataOf_eq_some.mp hm
   obtain ⟨hpr, hpf, hpb, hpft, hppt, hoa, hob, hof, hoc⟩ := ho
@@ -73,11 +75,11 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Master
   | config =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
     refine ⟨_, rfl, ?_⟩
-    simp only [answerOf?, hc, Option.map_some, MasterData.answer]
+    simp only [answerOf?, hc, Option.map_some, Spec.MasterQuery.answer]
   | codeList n =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
     refine ⟨_, rfl, ?_⟩
-    simp only [answerOf?, MasterData.answer, Option.some.injEq, MasterData.Answer.codeList.injEq]
+    simp only [answerOf?, Spec.MasterQuery.answer, Option.some.injEq, Spec.MasterQuery.Answer.codeList.injEq]
     obtain ⟨f1, f2, f3, f4⟩ := codeList_fixed
     cases n
     · exact codeList_airport hm hv.md1 hv.md8 hoa
@@ -108,43 +110,6 @@ theorem mergeOrder_allowed (db : MasterDb) : (mergeOrder db).Allowed db :=
     allowed_mergeSort_self _ _ (fun r : FareTypeRow => r.displayOrder.val),
     allowed_mergeSort_self _ _ (fun r : CreditTypeRow => r.displayOrder.val)⟩
 
-/-- R 課題 ABS-026。 -/
-@[obligation "ABS-026"]
-theorem queryRefines : Refines MasterData.queryMachine (queryConcrete.restrict dev_D027) glueMQ where
-  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-  input_total ic hd := by
-    obtain ⟨ia, h⟩ := Option.isSome_iff_exists.mp hd.2
-    exact ⟨ia, h⟩
-  applicable s t ic ia _ _ hα hpre _ := by
-    obtain ⟨cfg, md, q⟩ := ia
-    have hα' : aiMQ ic = some (cfg, md, q) := hα
-    refine ⟨⟨_, mergeOrder ic.db, mergeOrder_allowed ic.db, rfl⟩, fun e ⟨o, ho, he⟩ => ?_⟩
-    obtain ⟨a, hr, -⟩ := run_correct hα' hpre.2.1 hpre.2.2 ho
-    rw [hr] at he
-    cases he
-  correct s t ic ia t' oc _ _ hα hpre _ hs := by
-    obtain ⟨cfg, md, q⟩ := ia
-    have hα' : aiMQ ic = some (cfg, md, q) := hα
-    obtain ⟨o, ho, he⟩ := hs
-    obtain ⟨a, hr, ha⟩ := run_correct hα' hpre.2.1 hpre.2.2 ho
-    rw [hr] at he
-    simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
-    obtain ⟨-, rfl⟩ := he
-    exact ⟨(), _, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl ha⟩
-
-/-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
-theorem queryRefines_initSurj : Refines.InitSurj MasterData.queryMachine (queryConcrete.restrict dev_D027) glueMQ :=
-  fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
-
-/-- W 課題 ABS-127（D-027 の必要性。G9）: 前提を外すと、ABS-026 は成り立たない。未知の搭乗クラスコード `X` の行を
-持つ DB では α が定義されず、入力の全域性が破れる。 -/
-@[obligation "ABS-127", gap "D-027"]
-theorem need_D027 : ¬ Refines MasterData.queryMachine queryConcrete glueMQ := fun h => by
-  obtain ⟨ia, hia⟩ := h.input_total ic_unknownBoardingClass trivial
-  have : aiMQ ic_unknownBoardingClass = none := by decide
-  rw [show glueMQ.αi ic_unknownBoardingClass ia = (aiMQ ic_unknownBoardingClass = some ia) from rfl, this] at hia
-  cases hia
-
 /-- ABS-127 の [Source] の振る舞い: 未知の搭乗クラスコード `X` の行を持つ DB では、どの許される並びでも、
 読み込み（`BoardingClassProvider.load` の `Enum.valueOf`）が `IllegalArgumentException` を投げる。 -/
 theorem unknownBoardingClass_throws {r : Except JThrow (Unit × SrcAnswer)}
@@ -158,4 +123,4 @@ theorem unknownBoardingClass_throws {r : Except JThrow (Unit × SrcAnswer)}
     SourceModel.Repository.Mapping.boardingClassCd]
   rfl
 
-end Abstraction.MasterData
+end Abstraction.MasterData.QueryRun

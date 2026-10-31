@@ -34,14 +34,14 @@ def date (d : PgDate) : JRef JLocalDate := some (JLocalDate.ofEpochDay d.val)
 def str {n : Nat} (s : Varchar n) : JRef String := some s.val
 
 /-- `Enum.valueOf(BoardingClassCd.class, s)`。 -/
-def boardingClassCd (s : String) : JResult Spec.BoardingClassCd :=
+def boardingClassCd (s : String) : JResult Spec.Model.BoardingClassCd :=
   match s with
   | "N" => pure .N
   | "S" => pure .S
   | _ => throw (.illegalArgument s!"No enum constant BoardingClassCd.{s}")
 
 /-- `Enum.valueOf(FareTypeCd.class, s)`。 -/
-def fareTypeCd (s : String) : JResult Spec.FareTypeCd :=
+def fareTypeCd (s : String) : JResult Spec.Model.FareTypeCd :=
   match s with
   | "OW" => pure .OW | "RT" => pure .RT | "RD1" => pure .RD1 | "RD7" => pure .RD7 | "ED" => pure .ED
   | "LD" => pure .LD | "GD" => pure .GD | "SOW" => pure .SOW | "SRT" => pure .SRT | "SRD" => pure .SRD

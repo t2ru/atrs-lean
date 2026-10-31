@@ -6,7 +6,7 @@ import Spec.Prim.Date
 時刻と日時（`docs/spec/domain-model.md#hourminute`・`#datetime`、ADR 6eb2）。
 -/
 
-namespace Spec.Prim
+namespace Spec.Prim.Time
 
 /-- 時分（0:00〜23:59）。 -/
 @[spec_doc "docs/spec/domain-model.md#hourminute"]
@@ -86,4 +86,4 @@ theorem toEpochMinutes_at (d : Date) (t : HourMinute) :
 
 end DateTime
 
-end Spec.Prim
+end Spec.Prim.Time

@@ -10,7 +10,8 @@ import Abstraction.Fare.Alpha
   フライトごとに小児分の途中計算 `b × (childFareRate − r)` が int32 に収まること。D-027 は具体側の入力が表せること。
 -/
 
-namespace Abstraction.Fare
+namespace Abstraction.Fare.TotalAlpha
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
@@ -166,4 +167,4 @@ theorem dev_D002T_nontrivial : Nontrivial dev_D002T := ⟨⟨iaTFempty, by decid
 
 theorem dev_D012_nontrivial : Nontrivial dev_D012 := ⟨⟨iaTFempty, by decide⟩, ⟨iaTF012, iaTF012_devs.2.2⟩⟩
 
-end Abstraction.Fare
+end Abstraction.Fare.TotalAlpha

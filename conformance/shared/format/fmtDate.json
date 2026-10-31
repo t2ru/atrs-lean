@@ -1,6 +1,6 @@
 {
   "operation": "format.fmtDate",
-  "modelDef": "Spec.Prim.fmtDate",
+  "modelDef": "Spec.Prim.Format.fmtDate",
   "specRef": "docs/spec/domain-model.md#書式",
   "cases": [
     {

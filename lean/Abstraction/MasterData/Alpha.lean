@@ -15,7 +15,9 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 - `dev_D027`: 入力全体が [Spec] の型で表せる（`aiMQ` が定義される）。
 -/
 
-namespace Abstraction.MasterData
+namespace Abstraction.MasterData.Alpha
+open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 open LangSemantics.Core.List LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
@@ -107,7 +109,7 @@ theorem routeOfRow_kernel : KernelIs routeOfRow routeRowKer := by
       simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
       obtain ⟨no, hno, bf, hbf, rfl⟩ := h
       obtain ⟨no', hno', bf', hbf', h⟩ := h'
-      simp only [Spec.Route.mk.injEq, AirportCd.mk.injEq] at h
+      simp only [Spec.MasterData.Route.mk.injEq, AirportCd.mk.injEq] at h
       obtain ⟨rfl, h2, h3, rfl⟩ := h
       cases r; cases r'
       simp only [RouteRow.mk.injEq] at *
@@ -236,7 +238,7 @@ theorem configOf_inj {c c' : AtrsConfig} {x : Config} (h : configOf c = some x) 
 
 /-- 問い合わせの引数。日付は `dateOfJ`、空港コード・便名はそのまま。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def queryOf? : SrcQuery → Option MasterData.Query
+def queryOf? : SrcQuery → Option Spec.MasterQuery.Query
   | .routeOf dep arr => some (.routeOf ⟨dep⟩ ⟨arr⟩)
   | .flightMasterOf name => some (.flightMasterOf ⟨name⟩)
   | .fareTypeOf cd => some (.fareTypeOf cd)
@@ -247,7 +249,7 @@ def queryOf? : SrcQuery → Option MasterData.Query
   | .codeList n => some (.codeList n)
 
 /-- `queryOf?` の逆（定義域の上）。 -/
-def queryBack : MasterData.Query → SrcQuery
+def queryBack : Spec.MasterQuery.Query → SrcQuery
   | .routeOf dep arr => .routeOf dep.val arr.val
   | .flightMasterOf name => .flightMasterOf name.val
   | .fareTypeOf cd => .fareTypeOf cd
@@ -257,7 +259,7 @@ def queryBack : MasterData.Query → SrcQuery
   | .config => .config
   | .codeList n => .codeList n
 
-theorem queryOf?_eq_some {x : SrcQuery} {q : MasterData.Query} (h : queryOf? x = some q) : x = queryBack q := by
+theorem queryOf?_eq_some {x : SrcQuery} {q : Spec.MasterQuery.Query} (h : queryOf? x = some q) : x = queryBack q := by
   cases x <;> simp only [queryOf?, Option.some.injEq, Option.map_eq_some_iff] at h
   all_goals first
     | (subst h; rfl)
@@ -278,13 +280,13 @@ theorem betaMQ_kernel : KernelIs betaMQ Eq := fun x y => by simp [betaMQ]
 
 /-- 入力: 設定・マスタ・問い合わせ。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def aiMQ (ic : SrcInput) : Option (Config × MasterData × MasterData.Query) :=
+def aiMQ (ic : SrcInput) : Option (Config × MasterData × Spec.MasterQuery.Query) :=
   (configOf ic.config).bind fun cfg => (masterDataOf ic.db).bind fun md =>
     (queryOf? ic.query).map fun q => (cfg, md, q)
 
 /-! ## 出力（葉） -/
 
-namespace Answer
+namespace AnswerOf
 
 /-- 区間のうち [Spec] が観測する成分（区間番号・運賃・出発・到着の空港コード）。 -/
 def routeObs (r : SourceModel.Model.Route) : SourceModel.Model.Route :=
@@ -302,14 +304,14 @@ def opt {α β : Type} (f : α → Option β) : Option α → Option (Option β)
   | none => some none
   | some a => (f a).map some
 
-def route (r : SourceModel.Model.Route) : Option Spec.Route := do
+def route (r : SourceModel.Model.Route) : Option Spec.MasterData.Route := do
   let no ← r.routeNo.bind natOfJ32
   let bf ← r.basicFare.bind natOfJ32
   let dep ← r.departureAirport.bind (·.code)
   let arr ← r.arrivalAirport.bind (·.code)
   pure ⟨no, ⟨dep⟩, ⟨arr⟩, bf⟩
 
-def flightMaster (f : SourceModel.Model.FlightMaster) : Option Spec.FlightMaster := do
+def flightMaster (f : SourceModel.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
   let name ← f.flightName
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
@@ -332,30 +334,30 @@ def fareType (f : SourceModel.Model.FareType) : Option MasterData.FareTypeInfo :
   let pm ← f.passengerMinNum.bind natOfJ32
   pure ⟨cd, nm, dr, s, e, pm⟩
 
-def peakTime (p : SourceModel.Model.PeakTime) : Option Spec.PeakTime := do
+def peakTime (p : SourceModel.Model.PeakTime) : Option Spec.MasterData.PeakTime := do
   let cd ← p.peakTimeCd
   let s ← p.peakStartDate.bind dateOfJ
   let e ← p.peakEndDate.bind dateOfJ
   let r ← p.multiplicationRatio.bind natOfJ32
   pure ⟨cd, s, e, r⟩
 
-end Answer
+end AnswerOf
 
 /-- 答えのうち [Spec] が観測する成分。区間の空港名・空港の表示順、便マスタの区間の運賃・空港、
 機材の座席数は捨てる。 -/
 def answerObs : SrcAnswer → SrcAnswer
-  | .route r => .route (r.map Answer.routeObs)
-  | .flightMaster f => .flightMaster (f.map Answer.flightMasterObs)
+  | .route r => .route (r.map AnswerOf.routeObs)
+  | .flightMaster f => .flightMaster (f.map AnswerOf.flightMasterObs)
   | a => a
 
 /-- 出力: 答えを [Spec] の答えに写す。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def answerOf? : SrcAnswer → Option MasterData.Answer
-  | .route r => (Answer.opt Answer.route r).map .route
-  | .flightMaster f => (Answer.opt Answer.flightMaster f).map .flightMaster
-  | .fareType f => (Answer.opt Answer.fareType f).map .fareType
-  | .boardingClass b => (Answer.opt Answer.boardingClass b).map .boardingClass
-  | .peakTime p => (Answer.opt Answer.peakTime p).map .peakTime
+def answerOf? : SrcAnswer → Option Spec.MasterQuery.Answer
+  | .route r => (AnswerOf.opt AnswerOf.route r).map .route
+  | .flightMaster f => (AnswerOf.opt AnswerOf.flightMaster f).map .flightMaster
+  | .fareType f => (AnswerOf.opt AnswerOf.fareType f).map .fareType
+  | .boardingClass b => (AnswerOf.opt AnswerOf.boardingClass b).map .boardingClass
+  | .peakTime p => (AnswerOf.opt AnswerOf.peakTime p).map .peakTime
   | .ratio n => (natOfJ32 n).map .ratio
   | .config c => (configOf c).map .config
   | .codeList l => some (.codeList (l.map fun e => ⟨e.1, e.2⟩))
@@ -371,20 +373,20 @@ theorem answerOf?_obs (a : SrcAnswer) : answerOf? (answerObs a) = answerOf? a :=
     cases r with
     | none => simp [answerObs]
     | some r =>
-      simp only [answerObs, answerOf?, Option.map_some, Answer.opt, Answer.route, Answer.routeObs]
+      simp only [answerObs, answerOf?, Option.map_some, AnswerOf.opt, AnswerOf.route, AnswerOf.routeObs]
       cases r.departureAirport <;> cases r.arrivalAirport <;> rfl
   | flightMaster f =>
     cases f with
     | none => simp [answerObs]
     | some f =>
-      simp only [answerObs, answerOf?, Option.map_some, Answer.opt, Answer.flightMaster, Answer.flightMasterObs]
+      simp only [answerObs, answerOf?, Option.map_some, AnswerOf.opt, AnswerOf.flightMaster, AnswerOf.flightMasterObs]
       cases f.route <;> cases f.plane <;> rfl
   | _ => simp [answerObs]
 
 theorem opt_inj {α β : Type} {f : α → Option β} {g : α → α} {x y : Option α} {b : Option β}
     (hf : ∀ a a' c, f a = some c → f a' = some c → g a = g a')
-    (hx : Answer.opt f x = some b) (hy : Answer.opt f y = some b) : x.map g = y.map g := by
-  cases x <;> cases y <;> simp only [Answer.opt, Option.some.injEq, Option.map_eq_some_iff] at hx hy
+    (hx : AnswerOf.opt f x = some b) (hy : AnswerOf.opt f y = some b) : x.map g = y.map g := by
+  cases x <;> cases y <;> simp only [AnswerOf.opt, Option.some.injEq, Option.map_eq_some_iff] at hx hy
   · rfl
   · obtain ⟨c, _, rfl⟩ := hy; cases hx
   · obtain ⟨c, _, rfl⟩ := hx; cases hy
@@ -397,14 +399,14 @@ theorem opt_inj {α β : Type} {f : α → Option β} {g : α → α} {x y : Opt
 theorem natOfJ32_inj {x y : J32} {n : Nat} (hx : natOfJ32 x = some n) (hy : natOfJ32 y = some n) : x = y :=
   inj_of_kernel natOfJ32_kernel hx hy
 
-namespace Answer
+namespace AnswerOf
 
-theorem route_inj {r r' : SourceModel.Model.Route} {c : Spec.Route} (h : route r = some c)
+theorem route_inj {r r' : SourceModel.Model.Route} {c : Spec.MasterData.Route} (h : route r = some c)
     (h' : route r' = some c) : routeObs r = routeObs r' := by
   simp only [route, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨no, ⟨v, hv, e1⟩, bf, ⟨w, hw, e2⟩, dep, ⟨a, ha, e3⟩, arr, ⟨b, hb, e4⟩, rfl⟩ := h
   obtain ⟨no', ⟨v', hv', f1⟩, bf', ⟨w', hw', f2⟩, dep', ⟨a', ha', f3⟩, arr', ⟨b', hb', f4⟩, h⟩ := h'
-  simp only [Spec.Route.mk.injEq, AirportCd.mk.injEq] at h
+  simp only [Spec.MasterData.Route.mk.injEq, AirportCd.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl⟩ := h
   obtain ⟨ac, an, ad⟩ := a; obtain ⟨ac', an', ad'⟩ := a'; obtain ⟨bc, bn, bd⟩ := b; obtain ⟨bc', bn', bd'⟩ := b'
   simp only at e3 e4 f3 f4
@@ -414,12 +416,12 @@ theorem route_inj {r r' : SourceModel.Model.Route} {c : Spec.Route} (h : route r
   subst hv hw ha hb hv' hw' ha' hb'
   simp only [routeObs, Option.map_some, natOfJ32_inj e1 f1, natOfJ32_inj e2 f2]
 
-theorem flightMaster_inj {f f' : SourceModel.Model.FlightMaster} {c : Spec.FlightMaster}
+theorem flightMaster_inj {f f' : SourceModel.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
     (h : flightMaster f = some c) (h' : flightMaster f' = some c) : flightMasterObs f = flightMasterObs f' := by
   simp only [flightMaster, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨nm, hn, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
   obtain ⟨nm', hn', no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩, h⟩ := h'
-  simp only [Spec.FlightMaster.mk.injEq, FlightName.mk.injEq] at h
+  simp only [Spec.MasterData.FlightMaster.mk.injEq, FlightName.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
   obtain ⟨rn, rb, ra, rd⟩ := r; obtain ⟨rn', rb', ra', rd'⟩ := r'
   obtain ⟨pc, pn, ps⟩ := p; obtain ⟨pc', pn', ps'⟩ := p'
@@ -455,21 +457,21 @@ theorem fareType_inj {f f' : SourceModel.Model.FareType} {c : MasterData.FareTyp
   subst hc hn h1 h2 h3 h4 hc' hn' k1 k2 k3 k4
   rw [natOfJ32_inj e1 f1, natOfJ32_inj e2 f2, natOfJ32_inj e3 f3, natOfJ32_inj e4 f4]
 
-theorem peakTime_inj {p p' : SourceModel.Model.PeakTime} {c : Spec.PeakTime}
+theorem peakTime_inj {p p' : SourceModel.Model.PeakTime} {c : Spec.MasterData.PeakTime}
     (h : peakTime p = some c) (h' : peakTime p' = some c) : p = p' := by
   simp only [peakTime, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨cd, hc, s, ⟨d1, h1, e1⟩, e, ⟨d2, h2, e2⟩, r, ⟨v, h3, e3⟩, rfl⟩ := h
   obtain ⟨cd', hc', s', ⟨d1', k1, f1⟩, e', ⟨d2', k2, f2⟩, r', ⟨v', k3, f3⟩, h⟩ := h'
-  simp only [Spec.PeakTime.mk.injEq] at h
+  simp only [Spec.MasterData.PeakTime.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl⟩ := h
   cases p; cases p'
   simp only at hc h1 h2 h3 hc' k1 k2 k3
   subst hc h1 h2 h3 hc' k1 k2 k3
   rw [inj_of_kernel dateOfJ_kernel e1 f1, inj_of_kernel dateOfJ_kernel e2 f2, natOfJ32_inj e3 f3]
 
-end Answer
+end AnswerOf
 
-theorem answerOf?_inj {a b : SrcAnswer} {x : MasterData.Answer} (ha : answerOf? a = some x)
+theorem answerOf?_inj {a b : SrcAnswer} {x : Spec.MasterQuery.Answer} (ha : answerOf? a = some x)
     (hb : answerOf? b = some x) : answerObs a = answerObs b := by
   cases a <;> cases b <;> simp only [answerOf?, Option.map_eq_some_iff, Option.some.injEq] at ha hb
   -- 構築子が違えば、答えの構築子も違う
@@ -482,20 +484,20 @@ theorem answerOf?_inj {a b : SrcAnswer} {x : MasterData.Answer} (ha : answerOf? 
   case route.route r r' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
     simp only [answerObs, SrcAnswer.route.injEq]
-    exact opt_inj (fun _ _ _ => Answer.route_inj) hc hc'
+    exact opt_inj (fun _ _ _ => AnswerOf.route_inj) hc hc'
   case flightMaster.flightMaster f f' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
     simp only [answerObs, SrcAnswer.flightMaster.injEq]
-    exact opt_inj (fun _ _ _ => Answer.flightMaster_inj) hc hc'
+    exact opt_inj (fun _ _ _ => AnswerOf.flightMaster_inj) hc hc'
   case fareType.fareType f f' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
-    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => Answer.fareType_inj) hc hc'
+    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => AnswerOf.fareType_inj) hc hc'
   case boardingClass.boardingClass b b' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
-    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => Answer.boardingClass_inj) hc hc'
+    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => AnswerOf.boardingClass_inj) hc hc'
   case peakTime.peakTime p p' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
-    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => Answer.peakTime_inj) hc hc'
+    simpa [answerObs] using opt_inj (g := id) (fun _ _ _ => AnswerOf.peakTime_inj) hc hc'
   case ratio.ratio n n' =>
     obtain ⟨c, hc, rfl⟩ := ha; obtain ⟨c', hc', h⟩ := hb; cases h
     simp only [answerObs, natOfJ32_inj hc hc']
@@ -504,7 +506,7 @@ theorem answerOf?_inj {a b : SrcAnswer} {x : MasterData.Answer} (ha : answerOf? 
     simp only [answerObs, configOf_inj hy hy']
   case codeList.codeList l l' =>
     subst ha
-    simp only [MasterData.Answer.codeList.injEq] at hb
+    simp only [Spec.MasterQuery.Answer.codeList.injEq] at hb
     simp only [answerObs, SrcAnswer.codeList.injEq]
     have hi : Function.Injective fun e : String × String => (⟨e.1, e.2⟩ : CodeEntry) := by
       intro e e' h; simp only [CodeEntry.mk.injEq] at h; exact Prod.ext h.1 h.2
@@ -559,4 +561,4 @@ theorem mapM_airportOfRow {rows : List AirportRow} {as : List Airport} (h : rows
     obtain ⟨a, ha, as', has, rfl⟩ := h
     simp only [List.map_cons, airportOfRow_eq_some ha, ih has]
 
-end Abstraction.MasterData
+end Abstraction.MasterData.Alpha

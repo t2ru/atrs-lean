@@ -6,7 +6,8 @@ import Spec.Prim.Time
 書式（`docs/spec/domain-model.md#書式`）。いずれもゼロ埋めの固定桁である（年は 1〜9999 なので 4 桁）。
 -/
 
-namespace Spec.Prim
+namespace Spec.Prim.Format
+open Spec.Prim.Time
 
 /-- `n` を十進で `w` 桁以上にゼロ埋めする。 -/
 def padNat (w n : Nat) : String :=
@@ -56,4 +57,4 @@ def fmtPaymentDate (d : Date) : String :=
 #guard fmtYen 28800 == "28,800"
 #guard fmtYen 1200000000 == "1,200,000,000"
 
-end Spec.Prim
+end Spec.Prim.Format
