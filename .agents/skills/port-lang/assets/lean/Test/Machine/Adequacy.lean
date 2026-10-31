@@ -29,7 +29,7 @@ import Machine
 
 namespace Test.Machine.Adequacy
 
-open Machine
+open _root_.Machine
 
 /-! ## 正例: 衝突を環境の選択とする予約 -/
 

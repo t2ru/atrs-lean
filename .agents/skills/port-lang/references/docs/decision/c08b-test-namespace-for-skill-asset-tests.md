@@ -52,7 +52,7 @@ Chosen option: "トップレベルの `Test` の下に置き、Lake のライブ
 
 * Good, because `assets/lean/` の一覧が、4 つのライブラリと `Test/` に分かれる
 * Good, because パスと名前空間の一致が保たれる
-* Bad, because `Test.Machine.*` の中で `open Machine` とすると、`Test.Machine` も開かれる。本体と同じ名前の定義を検査に置くと、名前が曖昧になる。今の検査には、そのような名前は無い
+* Bad, because `namespace Test.Machine.…` の中で `open Machine` と書くと、Lean は `Test.Machine` を開き、本体の `Machine` を開かない（警告 Ambiguous namespace）。検査の名前空間の中では `open _root_.Machine`・`open _root_.Trace` と書く。`open` を `namespace` の外に置いてもよい
 
 ### Confirmation
 
