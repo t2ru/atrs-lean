@@ -11,6 +11,7 @@ import SourceModel.Repository.Mapping
 import SourceModel.CodeList
 import SourceModel.Config
 import SourceModel.MasterQuery
+import SourceModel.FareQuery
 
 /-!
 # SourceModel
@@ -28,6 +29,7 @@ import SourceModel.MasterQuery
 | `SourceModel.Config` | 注入される設定 |
 | `SourceModel.MasterQuery` | マスタ・設定・コードリストの参照の具体機械（ABS-026 の具体側） |
 | `SourceModel.Fare` | 運賃計算 |
+| `SourceModel.FareQuery` | 運賃計算の具体機械（ABS-001・ABS-002 の具体側） |
 -/
 
 namespace SourceModel

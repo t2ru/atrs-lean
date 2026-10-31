@@ -241,4 +241,62 @@ theorem fare_witness :
     (bdCeilHundredUp (jd2i (jdmul (jd 1430) (fareFactor 30)))).val = 1000 ∧ Spec.Fare.fare 1430 30 = 1100 := by
   decide
 
+/-! ## 安全でない因子の一覧（差異の前提に使う） -/
+
+/-- 安全でない積算比率（`basicFactor_unsafe`）。D-001 の前提 `dev_D001` に使う。 -/
+def unsafeBasicRatios : List Nat :=
+  [29, 58, 116, 117, 141, 205, 207, 209, 211, 232, 234, 257, 282, 410, 414, 418, 422, 439, 443, 447, 464, 468,
+   489, 493, 514, 539, 564, 803, 811, 819, 820, 828, 836, 844, 845, 853, 861, 869, 878, 886, 894, 903, 911, 928,
+   936, 953, 961, 978, 986]
+
+/-- 安全でない割引率（`fareFactor_unsafe`）。D-002 の前提 `dev_D002` に使う。 -/
+def unsafeDiscountRates : List Nat :=
+  [6, 7, 30, 31, 32, 33, 34, 35, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 77, 78, 79, 80, 81, 82, 83, 89, 90,
+   91, 92, 93, 94, 95]
+
+theorem basicFactor_safe_of {c : Nat} (h0 : c ≠ 0) (h : c ≤ 1000) (hn : c ∉ unsafeBasicRatios) :
+    FactorSafe (basicFactor c) c := by
+  apply factorSafe_of
+  cases hs : factorSafe? (basicFactor c) c
+  · exfalso; apply hn
+    show c ∈ unsafeBasicRatios
+    rw [show unsafeBasicRatios = _ from basicFactor_unsafe.symm]
+    exact List.mem_filter.mpr ⟨List.mem_range.mpr (by omega), by simp [hs, h0]⟩
+  · rfl
+
+theorem fareFactor_safe_of {r : Nat} (h : r < 100) (hn : r ∉ unsafeDiscountRates) :
+    FactorSafe (fareFactor r) (100 - r) := by
+  apply factorSafe_of
+  cases hs : factorSafe? (fareFactor r) (100 - r)
+  · exfalso; apply hn
+    show r ∈ unsafeDiscountRates
+    rw [show unsafeDiscountRates = _ from fareFactor_unsafe.symm]
+    exact List.mem_filter.mpr ⟨List.mem_range.mpr (by omega), by simp [hs, show r ≠ 100 by omega]⟩
+  · rfl
+
+/-- D-001 の前提（一覧の形）の下での一致。 -/
+theorem basicFare_src_eq' {X c : Nat} (hc : c ≤ 1000) (hX : X < 2 ^ 53) (hr : X * c < 100 * 2 ^ 28)
+    (h : X * c % 100 ≠ 0 ∨ c ∉ unsafeBasicRatios) :
+    (jd2i (jdmul (jd (X : Int)) (basicFactor c))).val = ((X * c / 100 : Nat) : Int) := by
+  rcases basicFare_src hc hX hr with e | ⟨h1, h2, h3, -⟩
+  · exact e
+  · have hc0 : c ≠ 0 := by rintro rfl; simp at h2
+    rcases h with h | h
+    · exact absurd h1 h
+    · exact absurd (basicFactor_safe_of hc0 hc h) h3
+
+/-- D-002 の前提（一覧の形）の下での一致。 -/
+theorem fare_src_eq' {b r : Nat} (hr : r ≤ 100) (hb : b < 2 ^ 53) (hbr : b * (100 - r) < 100 * 2 ^ 28)
+    (h : b * (100 - r) % 10000 ≠ 100 ∨ r ∉ unsafeDiscountRates) :
+    (bdCeilHundredUp (jd2i (jdmul (jd (b : Int)) (fareFactor r)))).val = (Spec.Fare.fare b r : Int) := by
+  rcases fare_src hr hb hbr with e | ⟨h1, h2, -⟩
+  · exact e
+  · rcases h with h | h
+    · exact absurd h1 h
+    · have hr' : r < 100 := by
+        rcases Nat.lt_or_ge r 100 with h' | h'
+        · exact h'
+        · exfalso; rw [show 100 - r = 0 by omega, Nat.mul_zero] at h1; simp at h1
+      exact absurd (fareFactor_safe_of hr' h) h2
+
 end Abstraction.Fare
