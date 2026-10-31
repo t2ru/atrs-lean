@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T14:40:17+09:00
+  at: 2026-10-31T15:16:09+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -214,7 +214,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | ABS-023 | R | 予約・空席照会のリポジトリの [Source] 実装（`LangSemantics.Sql` で写した SQL）が、[ports.md](ports.md) の契約をリファインする | — |
 | ABS-024 | R | 会員のリポジトリと `PasswordHasher` の [Source] 実装が、[ports.md](ports.md) の契約をリファインする。`SourceModel` は原典の `PasswordEncoder` を、raw について単射な符号化として写す。PBKDF2 の衝突を写さないことは、移植元ソース ⇔ `SourceModel` の限界である（[assurance.md](assurance.md)） | — |
 | ABS-025 | R | `ReportStore`・`ReportQueue` の [Source] 実装が、[ports.md](ports.md) の契約をリファインする | — |
-| ABS-026 | R | マスタ・設定・コードリストの読み込み（`SourceModel.MasterData`・`CodeList`・`Config` と、マスタの Mapper の SQL）が、[Spec] の `MasterData`・設定をリファインする（`dev_D027` の下で、読み込んだ値が MD-1〜MD-8 を満たすときに一致する。抽象側は `Spec.MasterData.queryMachine`、具体側は `SourceModel.MasterQuery.queryConcrete`。Mapper の文の結果のどの許される順列でも成り立つ）。書式（`SourceModel.Format`）は、それを使う R 課題（ABS-044・ABS-045・ABS-046）が覆う | D-027 |
+| ABS-026 | R | マスタ・設定・コードリストの読み込み（`SourceModel.MasterData`・`CodeList`・`Config` と、マスタの Mapper の SQL）が、[Spec] の `MasterData`・設定をリファインする（`dev_D027` の下で、読み込んだ値が MD-1〜MD-8 を満たすときに一致する。抽象側は `Spec.MasterData.queryMachine`、具体側は `SourceModel.MasterQuery.queryConcrete`。Mapper の文の結果のどの許される順列でも成り立つ）。書式（`SourceModel.Format`）は、それを使う R 課題（ABS-044・ABS-045・ABS-046）が覆うLean: `Abstraction.MasterData.queryRefines`。 | D-027 |
 | ABS-030 | L | 補助文字を含まない文字列で `utf16Len = scalarLen` | D-006 |
 | ABS-031 | R | REST 予約 API: `dev_D007`・`dev_D026` と、運賃計算・採番・Clock・入力検証から引き継ぐ仮定・成分の下でリファインする | D-001, D-002, D-006, D-007, D-008, D-009, D-011, D-012, D-014, D-018, D-021, D-022, D-026 |
 | ABS-032 | L | ドメイン部が ASCII だけからなる文字列で、[Source] と [Spec] の Email 判定が一致する | D-011 |
@@ -245,7 +245,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | ABS-121 | W | D-021 の証拠: `+10000/01/01`、`0000/01/01` で、解析結果が異なる | D-021 |
 | ABS-122 | W | D-022 の証拠: 単項目の違反が 2 件以上ある入力で、[Source] の許される順序の 1 つが [Spec] の列と異なり、`obs_D022` で対応する | D-022 |
 | ABS-126 | W | D-026 の証拠: `"\ud800"` を含む REST の要求で、[Source] は処理を続け、[Spec] は `InvalidRequest` を返す | D-026 |
-| ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB（到着時刻 `2415` の 2 行を除く） | D-027 |
+| ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB（到着時刻 `2415` の 2 行を除く）。Lean: `Abstraction.MasterData.need_D027`（前提を外すと入力の全域性が破れる）と `unknownBoardingClass_throws` | D-027 |
 
 ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利用しない）。
 
