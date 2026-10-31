@@ -128,7 +128,11 @@ theorem mapM_length {α β : Type} {g : α → Option β} : ∀ {xs : List α} {
     obtain ⟨y, -, ys', hys, rfl⟩ := h
     simp only [List.length_cons, mapM_length hys]
 
-example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = some ia) (hp : ia.Pre)
+/-- L 課題 ABS-005: 前提（D-001・D-002・D-012・D-027 と [Spec] の PRE）を満たす入力では、どの許される並びでも、
+[Source] の合計金額の計算（読み込み・`toFlightList`・`calculateTotalFare`）は例外も int32 の溢れも無く、[Spec] の
+合計金額を返す。 -/
+@[obligation "ABS-005"]
+theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = some ia) (hp : ia.Pre)
     (h1 : dev_D001T ia) (h2 : dev_D002T ia) (h12 : dev_D012 ia) {o : Order} (ho : o.Allowed ic.db) :
     runTotalFare ic o = .ok (J32.ofInt ((Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0)) := by
   simp only [aiTF, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hα
@@ -258,5 +262,85 @@ example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = s
     by_cases hlt : a < cfg.adultPassengerMinAge
     · simp [hlt]; rfl
     · simp [hlt]; rfl
+
+/-- [Spec] の合計金額は 12 億円以下（予約フライト 2・搭乗者 6 名・基本運賃 1 億円以下）。 -/
+theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
+    (Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0 ≤ 1200000000 := by
+  obtain ⟨hcv, hv, -, hf2, -, hp2, -, -, hsome⟩ := hp
+  simp only [Range.maxReserveFlights, Range.maxPassengers] at hf2 hp2
+  obtain ⟨parts, hparts⟩ : ∃ parts, ia.flights.mapM (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages) = some parts := by
+    simp only [Spec.Fare.totalFareOfKeys, Option.bind_eq_bind, Option.isSome_iff_exists, Option.bind_eq_some_iff,
+      Option.pure_def] at hsome
+    obtain ⟨_, parts, hp, -⟩ := hsome
+    exact ⟨parts, hp⟩
+  have hVle : ∀ k ∈ ia.flights, (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages k).getD 0 ≤ 100000000 * ia.ages.length := by
+    intro k hk
+    obtain ⟨v, -, hv'⟩ := mapM_some_mem hparts hk
+    rw [hv', Option.getD_some]
+    exact flightTotalOfKey_le hcv hv hv'
+  have hsum := sum_map_le ia.flights hVle
+  have : ia.flights.length * (100000000 * ia.ages.length) ≤ 2 * (100000000 * 6) :=
+    Nat.mul_le_mul hf2 (Nat.mul_le_mul_left _ hp2)
+  simp only [Spec.Fare.totalFareOfKeys, hparts, mapM_eq_map_getD 0 hparts, Option.bind_eq_bind, Option.bind_some,
+    Option.pure_def, Option.getD_some, ceilTo]
+  generalize (ia.flights.map fun k => (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages k).getD 0).sum = S at *
+  omega
+
+/-- R 課題 ABS-004。 -/
+@[obligation "ABS-004"]
+theorem totalFareRefines :
+    Refines (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
+      (totalFareConcrete.restrict dev_D027TF) glueTF where
+  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+  input_total ic hd := by
+    obtain ⟨ia, h⟩ := Option.isSome_iff_exists.mp hd.2
+    exact ⟨ia, h⟩
+  applicable s t ic ia _ _ hα hpre _ := by
+    obtain ⟨⟨⟨hp, h1⟩, h2⟩, h12⟩ := hpre
+    refine ⟨⟨_, mergeOrder ic.db, mergeOrder_allowed ic.db, rfl⟩, fun e ⟨o, ho, he⟩ => ?_⟩
+    rw [runTotalFare_eq hα hp h1 h2 h12 ho] at he
+    cases he
+  correct s t ic ia t' oc _ _ hα hpre _ hs := by
+    obtain ⟨⟨⟨hp, h1⟩, h2⟩, h12⟩ := hpre
+    obtain ⟨o, ho, he⟩ := hs
+    rw [runTotalFare_eq hα hp h1 h2 h12 ho] at he
+    simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
+    obtain ⟨-, rfl⟩ := he
+    refine ⟨(), _, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl ?_⟩
+    exact natOfJ32_eq_some.mpr (ofInt_nat (Nat.le_trans (totalFareOfKeys_le hp) (by decide)))
+
+/-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
+theorem totalFareRefines_initSurj :
+    Refines.InitSurj (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
+      (totalFareConcrete.restrict dev_D027TF) glueTF :=
+  fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+
+/-- `icTF012` の [Source] の合計金額は 17,050,400 円（小児分の途中計算 `100,000,000 × 60` が int32 で折り返す）。 -/
+theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .ok (J32.ofInt 17050400) := by
+  have ht : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
+  have hA : ∀ m, SourceModel.MasterData.assertHasText "NTT001" m = .ok () := fun m => assertHasText_ok ht m
+  have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩] := rfl
+  simp only [runTotalFare, hfl, toFlightList, List.mapM_cons, List.mapM_nil, toFlight, pure_bind, getFlightMaster, hA,
+    ok_bind]
+  rfl
+
+/-- W 課題 ABS-112（D-012 の必要性。G9）: 前提を外すと、ABS-004 は成り立たない。基本運賃 1 億円・割引率 0・小児 1 名で、
+[Source] は 17,050,400 円、[Spec] は 60,000,000 円。 -/
+@[obligation "ABS-112"]
+theorem need_D012 :
+    ¬ Refines ((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T)
+      (totalFareConcrete.restrict dev_D027TF) glueTF := fun h => by
+  obtain ⟨hd1, hd2, -⟩ := iaTF012_devs
+  have hout : (Spec.Fare.totalFareOfKeys iaTF012.cfg iaTF012.md iaTF012.flights iaTF012.ages).getD 0 = 60000000 := by
+    decide
+  obtain ⟨s', oa, hst, -, ho⟩ := h.correct () () icTF012 iaTF012 () (J32.ofInt 17050400) trivial
+    (Or.inl ⟨rfl, trivial⟩) aiTF_icTF012 ⟨⟨iaTF012_pre, hd1⟩, hd2⟩
+    ⟨trivial, by unfold dev_D027TF; rw [aiTF_icTF012]; rfl⟩
+    ⟨mergeOrder icTF012.db, mergeOrder_allowed _, by rw [runTotalFare_icTF012]; rfl⟩
+  have : oa = 60000000 := hst.trans hout
+  subst this
+  rcases ho with ho | ho
+  · exact absurd ho (by decide)
+  · exact ho
 
 end Abstraction.Fare
