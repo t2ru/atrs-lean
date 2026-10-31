@@ -13,8 +13,7 @@ import Machine
   `Concrete.restrict`（前提型の差異の模擬）で成り立つ。
 -/
 
-open Machine.Adequacy
-open _root_.Machine _root_.Machine.Adequacy
+open _root_.Machine
 
 namespace Test.Machine.Nondet
 

@@ -13,7 +13,7 @@ Spring の `Assert` は `IllegalArgumentException`、参照の `null` と `Integ
 
 namespace SourceModel.Fare
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData
 

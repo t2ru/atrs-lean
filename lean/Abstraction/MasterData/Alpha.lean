@@ -17,10 +17,10 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 
 namespace Abstraction.MasterData.Alpha
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
-open LangSemantics.Core.List LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
+open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.CodeList Spec.Model
+open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Adequacy Machine.Kernel
 
-open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
+open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
 
 

@@ -2,7 +2,7 @@ import LangSemantics.Rust
 
 /-! LangSemantics.Rust の検査。 -/
 
-open LangSemantics.Rust.Int LangSemantics.Rust.Panic LangSemantics.Rust.Text
+open LangSemantics.Rust.Int LangSemantics.Rust.Text
 open LangSemantics.Rust
 
 namespace Test.LangSemantics.Rust

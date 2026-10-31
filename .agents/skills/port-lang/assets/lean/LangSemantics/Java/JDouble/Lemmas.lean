@@ -12,7 +12,7 @@ set_option exponentiation.threshold 2048
 
 namespace LangSemantics.Java
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.Exception LangSemantics.Java.Int
+open LangSemantics.Java.Int
 
 namespace JDouble
 

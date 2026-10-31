@@ -14,9 +14,8 @@ import Spec.Seed
 -/
 
 namespace Spec.EnvPre
-open Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Model
 
-open Spec.Prim
 
 /-- 入口の環境の前提: 設定の不変条件と、マスタの不変条件 MD-1〜MD-8。 -/
 @[env_pre "MD-1", "MD-2", "MD-3", "MD-4", "MD-5", "MD-6", "MD-7", "MD-8", "CFG",

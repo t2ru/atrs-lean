@@ -8,8 +8,8 @@ import LangSemantics.Sql.Postgresql
 再生成: `python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`
 -/
 
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
-open LangSemantics.Sql LangSemantics.Sql.Postgresql
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Postgresql
 
 namespace Test.LangSemantics.PostgresqlDb
 

@@ -10,9 +10,9 @@ Mapper の結合の文（`routeFindAll`・`flightMasterFindAll`）の形。空�
 
 namespace Abstraction.MasterData.Join
 open LangSemantics.Core.List
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
 
-open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
   SourceModel.Repository.MasterData LangSemantics.Core
 
 theorem eqText_holds {m n : Nat} (a : Varchar m) (b : Varchar n) : (eqText a b).holds = (a.val == b.val) :=

@@ -10,7 +10,7 @@ lang: `dep:java.base#java.math.BigDecimal.setScale`, `dep:java.base#java.math.Ro
 -/
 
 namespace LangSemantics.Java.BigDecimal
-open LangSemantics.Java.Exception LangSemantics.Java.Int
+open LangSemantics.Java.Int
 
 /-- `java.math.RoundingMode`。 -/
 inductive RoundingMode where

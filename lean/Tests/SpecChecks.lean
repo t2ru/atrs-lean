@@ -12,7 +12,7 @@ import Spec
 
 open Spec Spec.Prim
 
-open Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Config Spec.EnvPre Spec.Model Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
 
 namespace Tests.SpecChecks
 open Spec.Prim.Date

@@ -11,9 +11,8 @@ lang: `lang:postgresql#datatype-numeric`, `lang:postgresql#datatype-character`, 
 -/
 
 namespace LangSemantics.Sql.Postgresql
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.Sequence
 
-open LangSemantics.Sql
 
 /-- 整数型の範囲。範囲外はエラー（折り返さない）。 -/
 def int2 (v : Int) : SqlResult Int := if -32768 ≤ v && v ≤ 32767 then .ok v else .error .numericOutOfRange

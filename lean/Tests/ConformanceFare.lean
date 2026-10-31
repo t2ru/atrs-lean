@@ -14,11 +14,11 @@ import Tests.Conformance
   `fare.totalFare` の `Flight` は、便マスタ・区間・空港・搭乗クラス・運賃種別を引いて組み立てる（Mapper の結果の形）。
 -/
 
-open Lean Spec Spec.Prim ConformanceKit Tests.Conformance
+open Lean Spec ConformanceKit Tests.Conformance
 
-open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.CodeList Spec.Config Spec.Model Spec.Prim.Time
 
 namespace Tests.ConformanceFare
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
@@ -95,7 +95,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
 
 /-! ## SourceModel -/
 
-open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Fare
+open LangSemantics.Java SourceModel.Model SourceModel.Fare
 
 def j32 (j : Json) (k : String) : Except String J32 := do return J32.ofInt (← getInt j k)
 

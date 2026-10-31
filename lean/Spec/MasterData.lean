@@ -13,7 +13,7 @@ import Spec.Config
 -/
 
 namespace Spec
-open Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Config Spec.Model Spec.Prim.Time
 
 open Spec.Prim
 

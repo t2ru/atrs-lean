@@ -14,7 +14,7 @@ lang: `lang:java#JLS-4.2.3`, `lang:java#JLS-4.2.4`, `lang:java#JLS-5.1.3`, `lang
 -/
 
 namespace LangSemantics.Java
-open LangSemantics.Java.Exception LangSemantics.Java.Int
+open LangSemantics.Java.Int
 
 /-- binary64 の値。有限値は `(-1)^sign * mant * 2^exp`。
 正規化数は `2^52 ≤ mant < 2^53` かつ `-1074 ≤ exp ≤ 971`、

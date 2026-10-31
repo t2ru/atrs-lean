@@ -11,11 +11,11 @@ R 課題 ABS-001（基本運賃）: `SourceModel.FareQuery.basicFareConcrete`（
 
 namespace Abstraction.Fare.BasicFareRun
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Query Abstraction.MasterData.QueryRun
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
+open LangSemantics.Java Spec LangSemantics.Core SourceModel.MasterData
   SourceModel.MasterQuery SourceModel.FareQuery
 
 /-- 積算比率は値域内（MD-8）。 -/

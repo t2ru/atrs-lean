@@ -9,10 +9,10 @@ SQL の差分実行の結果（スキルの `references/docs/lang/sql/harness.md
 列の値は、`LangSemantics.Sql.Postgresql` の型（`Varchar n`・`Int4`）に、型の範囲を検査して読む。
 -/
 
-open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql
+open Lean LangSemantics.Sql.Postgresql
 
 namespace ConformanceKit.SqlTable
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Core
 
 /-- 表の行（列の値は文字列か `null`）。 -/
 abbrev Row := List (Option String)

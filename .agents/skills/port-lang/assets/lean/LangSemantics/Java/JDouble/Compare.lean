@@ -18,7 +18,7 @@ set_option exponentiation.threshold 2048
 
 namespace LangSemantics.Java.JDouble
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.Exception LangSemantics.Java.Int
+open LangSemantics.Java.Int
 
 /-- 上からの評価: `X·F ≤ (k + 99/100)·(1 + 2^-48)` なら `rneTrunc ≤ k`。 -/
 theorem rneTrunc_le {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 29)

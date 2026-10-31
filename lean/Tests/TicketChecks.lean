@@ -7,7 +7,7 @@ import SourceModel
 期待値は原典のコードを読んで手で書いた（オラクルとの照合は backlog f18c）。
 -/
 
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 open LangSemantics.Java SourceModel.Model SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
 
 namespace Tests.TicketChecks

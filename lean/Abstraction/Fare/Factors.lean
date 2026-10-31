@@ -19,7 +19,7 @@ set_option exponentiation.threshold 2048
 
 namespace Abstraction.Fare.Factors
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java LangSemantics.Java.JDouble
 

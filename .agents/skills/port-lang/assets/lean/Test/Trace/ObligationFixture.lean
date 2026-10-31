@@ -15,7 +15,7 @@ import Test.Machine.Adequacy
 open Machine
 open Test.Machine.Adequacy (Out Req Num)
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -93,7 +93,7 @@ theorem half_initIs : half.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivi
 
 end Test.Trace.ObligationFixture.Spec
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 open Test.Trace.ObligationFixture.Spec
 
 namespace Test.Trace.ObligationFixture.SourceModel
@@ -134,7 +134,7 @@ def usesSpec : Concrete Nat Req Out Unit :=
 
 end Test.Trace.ObligationFixture.SourceModel
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 open Test.Trace.ObligationFixture.Spec Test.Trace.ObligationFixture.SourceModel
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -518,7 +518,7 @@ end Test.Trace.ObligationFixture.Abstraction
 /-- モデルの層の外に置いた差異の述語。 -/
 @[deviation "D-904"] def Test.Trace.ObligationFixture.Helpers.devFalse (_ : Req) : Prop := False
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -537,7 +537,7 @@ end Test.Trace.ObligationFixture.Spec
 
 `@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 open _root_.Trace
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -620,7 +620,7 @@ theorem usesClaim (h : claim920) : claim920 := h
 end Test.Trace.ObligationFixture.Abstraction
 
 
-open Machine.Adequacy Machine.Kernel Trace.Gap
+open Machine.Adequacy Trace.Gap
 
 namespace Test.Trace.ObligationFixture.Abstraction
 

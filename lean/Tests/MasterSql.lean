@@ -16,10 +16,10 @@ import Tests.ConformanceMaster
   （共有入力の生成器 `master_fixture.py` と、PostgreSQL への投入の突き合わせ）。
 -/
 
-open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
+open Lean LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
   ConformanceKit Tests.Conformance
 
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence ConformanceKit.SqlTable ConformanceKit.Runner
+open LangSemantics.Sql.Query ConformanceKit.SqlTable ConformanceKit.Runner
 
 namespace Tests.MasterSql
 

@@ -12,7 +12,7 @@ import LangSemantics.Core.List
 -/
 
 namespace LangSemantics.Java.IntLemmas
-open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int
+open LangSemantics.Core.List LangSemantics.Java.Int
 
 open LangSemantics.Core
 

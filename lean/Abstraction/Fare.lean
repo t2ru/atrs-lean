@@ -11,7 +11,7 @@ import Abstraction.Fare.TotalFareRun
 
 namespace Abstraction.Fare
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model LangSemantics.Java.DoubleOps LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.MasterData Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.Load Abstraction.Fare.Loop Abstraction.Fare.TotalAlpha Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time Spec.Prim Abstraction.Fare.TotalFareRun SourceModel.MasterQuery SourceModel.Ticket
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun
 
 /-- R 課題 ABS-001。 -/
 @[obligation "ABS-001"]

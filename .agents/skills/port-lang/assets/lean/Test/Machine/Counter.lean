@@ -12,8 +12,7 @@ import Machine
 - `Refines.refl`・`Refines.trans` の使用例
 -/
 
-open Machine.Adequacy
-open _root_.Machine _root_.Machine.Adequacy
+open _root_.Machine
 
 namespace Test.Machine.Counter
 

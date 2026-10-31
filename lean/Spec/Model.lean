@@ -12,7 +12,7 @@ import Spec.Prim
 -/
 
 namespace Spec.Model
-open Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Prim.Text
 
 open Spec.Prim
 

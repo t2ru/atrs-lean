@@ -16,11 +16,11 @@ import Tests.ConformanceFare
 結果は、両モデルに共通の JSON に写して比べる（区間の空港名など [Spec] が持たない値は写さない）。
 -/
 
-open Lean Spec Spec.Prim ConformanceKit Tests.Conformance Tests.ConformanceFare
+open Lean ConformanceKit Tests.Conformance Tests.ConformanceFare
 
-open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open Spec.CodeList Spec.Config Spec.EnvPre Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.CodeList Spec.Config Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Time
 
 namespace Tests.ConformanceMaster
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)

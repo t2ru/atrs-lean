@@ -8,7 +8,7 @@ import Spec.Model
 -/
 
 namespace Spec
-open Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Model
 
 open Spec.Prim
 

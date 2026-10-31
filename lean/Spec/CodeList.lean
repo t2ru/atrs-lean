@@ -9,9 +9,8 @@ import Spec.MasterData
 
 namespace Spec.CodeList
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Prim.Format
 
-open Spec.Prim
 
 /-- コードリストの要素。 -/
 @[spec_doc "docs/spec/master-data.md#空港コードリスト画面用"]

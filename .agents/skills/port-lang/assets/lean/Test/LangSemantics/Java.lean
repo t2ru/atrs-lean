@@ -3,7 +3,7 @@ import LangSemantics.Java
 /-! LangSemantics.Java の検査（ビルド時に実行される）。 -/
 
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.BigDecimal LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
 open LangSemantics.Java
 
 namespace Test.LangSemantics.Java

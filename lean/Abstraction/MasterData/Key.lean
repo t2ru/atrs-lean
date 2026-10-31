@@ -11,7 +11,7 @@ import LangSemantics.Core.List
 namespace Abstraction.MasterData.Key
 open LangSemantics.Core.List
 
-open SourceModel.MasterData LangSemantics.Core
+open SourceModel.MasterData
 
 
 /-- 出発の空港コードがどちらも `-` を含まなければ、キーが等しい区間は、出発・到着の空港コードが等しい。 -/

@@ -2,8 +2,8 @@ import LangSemantics.Sql.Postgresql
 
 /-! LangSemantics.Sql と PostgreSQL 方言の検査。 -/
 
-open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
-open LangSemantics.Sql LangSemantics.Sql.Postgresql
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Postgresql
 
 namespace Test.LangSemantics.Sql
 

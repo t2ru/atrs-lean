@@ -11,7 +11,7 @@ getter・setter は欄の参照として写す。
 -/
 
 namespace SourceModel.Model
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java
 

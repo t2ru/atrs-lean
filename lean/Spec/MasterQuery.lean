@@ -12,7 +12,7 @@ import Spec.CodeList
 
 namespace Spec.MasterQuery
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Spec.CodeList Spec.Config Spec.Model Spec.Prim.Format Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.CodeList Spec.Model Spec.Prim.Text
 
 open Spec.Prim
 

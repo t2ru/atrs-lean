@@ -11,9 +11,9 @@ import Spec.CodeList
 -/
 
 namespace Abstraction.MasterData.CodeList
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+open LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.CodeList
+open LangSemantics.Java SourceModel.Repository.Schema SourceModel.CodeList
 
 /-- 空港の行の、[Spec] の空港（コード・名前・表示順）。 -/
 def airportOf (r : AirportRow) : Spec.MasterData.Airport := ⟨⟨r.airportCd.val⟩, r.airportName.val, r.displayOrder.val.toNat⟩
