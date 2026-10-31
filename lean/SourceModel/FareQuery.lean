@@ -16,6 +16,7 @@ namespace SourceModel.FareQuery
 open LangSemantics.Java SourceModel.Model SourceModel.Repository.Schema SourceModel.Config SourceModel.MasterQuery
 
 /-- 基本運賃の入力。 -/
+@[gap "D-027"]
 structure BasicFareInput where
   db : MasterDb
   config : AtrsConfig
@@ -35,6 +36,7 @@ def basicFareConcrete : Machine.Concrete Unit BasicFareInput J32 JThrow where
   step _ ic r := ∃ o, o.Allowed ic.db ∧ r = (runBasicFare ic o).map fun a => ((), a)
 
 /-- 運賃の入力（`calculateFare` の引数）。 -/
+@[gap "D-027"]
 structure FareInput where
   basicFare : J32
   discountRate : J32

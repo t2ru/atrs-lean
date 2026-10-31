@@ -31,7 +31,7 @@ def getMultiplicationRatio (svc : TicketSharedService) (departureDate : JRef JLo
 
 /-- `calculateBasicFare`: `(int) ((basicFareOfRoute + boardingClassFare) * (multiplicationRatio * 0.01))`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)@5b0822fe4c6991ac",
-  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)@9872678663e9a896"]
+  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)@9872678663e9a896", gap "D-001", "D-030"]
 def calculateBasicFare (svc : TicketSharedService) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.BoardingClassCd)
     (depDate : JRef JLocalDate) : JResult J32 := do
   jAssert (decide (basicFareOfRoute.val ≥ 0)) "basicFareOfRoute must be 0 or higher."
@@ -49,7 +49,7 @@ def ceilFare (fare : J32) : J32 := bdCeilHundredUp fare
 
 /-- `calculateFare`: `FareUtil.ceilFare((int) (basicFare * (1 - (discountRate * 0.01))))`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)@1e12eb714e2bc395",
-  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e"]
+  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e", gap "D-002"]
 def calculateFare (basicFare discountRate : J32) : JResult J32 := do
   jAssert (decide (basicFare.val ≥ 0)) "basicFare must be 0 or higher."
   jAssert (decide (discountRate.val ≥ 0)) "discountRate must be 0 or higher."
@@ -74,7 +74,7 @@ def assertNotEmpty {α : Type} (xs : JRef (List α)) (message : String) : JResul
 /-- `calculateTotalFare`: 小児の人数を数え、フライトごとに `boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum`
 を左から int で計算して合計し、最後に `FareUtil.ceilFare` で 100 円単位に切り上げる。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)@35bc5d27ed5f2ca9",
-  "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)@ca1a14757ce1cb33"]
+  "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)@ca1a14757ce1cb33", gap "D-003", "D-012"]
 def calculateTotalFare (svc : TicketReserveService) (flightList : JRef (List (JRef Flight)))
     (passengerList : JRef (List (JRef Passenger))) : JResult J32 := do
   let flights ← assertNotEmpty flightList "flightList must not empty."

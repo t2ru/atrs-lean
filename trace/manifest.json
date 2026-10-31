@@ -313,6 +313,126 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Gap.D001",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D002",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D003",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D004",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D005",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D006",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D007",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D008",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D009",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D010",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D011",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D013",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D014",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D015",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D016",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D017",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D018",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D019",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D020",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D021",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D022",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D023",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D024",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D025",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D026",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D027",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D028",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D029",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D030",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.AirportAt",
       "layer": "Abstraction"
     },
@@ -3989,6 +4109,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.MasterData.airportNopCode",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.MasterData.boardingClassOf",
       "layer": "Spec"
     },
@@ -4314,6 +4438,306 @@
       "type": "deviation",
       "from": "Abstraction.MasterData.dev_D027",
       "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.CodeList.airportCodeList",
+      "to": "D-029"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Fare.calculateBasicFare",
+      "to": "D-001"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Fare.calculateBasicFare",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Fare.calculateFare",
+      "to": "D-002"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Fare.calculateTotalFare",
+      "to": "D-003"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Fare.calculateTotalFare",
+      "to": "D-012"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FareQuery.BasicFareInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FareQuery.FareInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterData.BoardingClassProvider.load",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterData.FareTypeProvider.load",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterData.FlightMasterProvider.load",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterData.RouteProvider.load",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterData.getPeakTime",
+      "to": "D-004"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.MasterQuery.SrcInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.basicFare",
+      "to": "D-001"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.fare",
+      "to": "D-002"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.flightTotal",
+      "to": "D-003"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.flightTotal",
+      "to": "D-012"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD1",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD2",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD3",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD4",
+      "to": "D-004"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD7",
+      "to": "D-003"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD8",
+      "to": "D-029"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.airportNopCode",
+      "to": "D-029"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.peakTimeOn",
+      "to": "D-004"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.queryMachine",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Range.maxBasicFareWithCharge",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Range.maxDiscountRate",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Range.maxMultiplicationRatio",
+      "to": "D-030"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D001",
+      "to": "D-001"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D002",
+      "to": "D-002"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D003",
+      "to": "D-003"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D004",
+      "to": "D-004"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D005",
+      "to": "D-005"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D006",
+      "to": "D-006"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D007",
+      "to": "D-007"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D008",
+      "to": "D-008"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D009",
+      "to": "D-009"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D010",
+      "to": "D-010"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D011",
+      "to": "D-011"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D012",
+      "to": "D-012"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D013",
+      "to": "D-013"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D014",
+      "to": "D-014"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D015",
+      "to": "D-015"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D016",
+      "to": "D-016"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D017",
+      "to": "D-017"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D018",
+      "to": "D-018"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D019",
+      "to": "D-019"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D020",
+      "to": "D-020"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D021",
+      "to": "D-021"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D022",
+      "to": "D-022"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D023",
+      "to": "D-023"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D024",
+      "to": "D-024"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D025",
+      "to": "D-025"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D026",
+      "to": "D-026"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D027",
+      "to": "D-027"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D028",
+      "to": "D-028"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D029",
+      "to": "D-029"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D030",
+      "to": "D-030"
     },
     {
       "type": "kernel",

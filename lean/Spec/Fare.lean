@@ -16,12 +16,12 @@ namespace Spec.Fare
 open Spec.Prim Spec.MasterData
 
 /-- 基本運賃。`floorDiv((routeBasicFare + extra) * ratio, 100)`。搭乗クラスがマスタに無ければ `none`（PRE: MD-3）。 -/
-@[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
+@[spec_doc "docs/spec/fare-calculation.md#基本運賃", gap "D-001"]
 def basicFare (md : MasterData) (routeBasicFare : Nat) (cd : BoardingClassCd) (depDate : Date) : Option Nat :=
   (md.boardingClassOf cd).map fun bc => (routeBasicFare + bc.extraCharge) * md.multiplicationRatioOn depDate / 100
 
 /-- 運賃（大人 1 名・1 区間）。基本運賃に `(100 − discountRate)`% を掛けて 1 円未満を切り捨て、100 円単位に切り上げる。 -/
-@[spec_doc "docs/spec/fare-calculation.md#運賃"]
+@[spec_doc "docs/spec/fare-calculation.md#運賃", gap "D-002"]
 def fare (basicFare discountRate : Nat) : Nat :=
   ceilTo (pct basicFare (100 - discountRate)) 100
 
@@ -37,7 +37,7 @@ def childNum (cfg : Config) (passengers : List Passenger) : Nat :=
   (passengers.filter fun p => decide (p.age < cfg.adultPassengerMinAge)).length
 
 /-- 1 便の合計（100 円単位の切上げ前）。小児 1 名分は `floorDiv(b * (childFareRate − r), 100)`。 -/
-@[spec_doc "docs/spec/fare-calculation.md#合計金額"]
+@[spec_doc "docs/spec/fare-calculation.md#合計金額", gap "D-003", "D-012"]
 def flightTotal (cfg : Config) (md : MasterData) (passengers : List Passenger) (f : Flight) : Option Nat := do
   let route ← routeOfFlight md f
   let b ← basicFare md route.basicFare f.key.boardingClassCd f.key.departureDate

@@ -1,6 +1,7 @@
 import SourceModel
 import Spec
 import Trace
+import Abstraction.Gap
 import Abstraction.Prim.Date
 import Abstraction.Prim.List
 import Abstraction.Prim.Order

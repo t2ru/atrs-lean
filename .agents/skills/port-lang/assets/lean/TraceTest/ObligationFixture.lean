@@ -3,19 +3,19 @@ import Machine
 import MachineTest.Adequacy
 
 /-!
-# Tests.ObligationFixture
+# TraceTest.ObligationFixture
 
-`obligation-check`（`Trace.Obligation`）のフィクスチャ。`Tests.ObFix.<層>` の下に、規則をすべて満たす R 課題と、
-規則ごとの違反例を置く（テストは接頭辞 `Tests.ObFix` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
+`obligation-check`（`Trace.Obligation`）のフィクスチャ。`TraceTest.ObFix.<層>` の下に、規則をすべて満たす R 課題と、
+規則ごとの違反例を置く（テストは接頭辞 `TraceTest.ObFix` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
 作られた迂回（ADR 70eb の「実装後の敵対的レビュー」）を含める。証明は `MachineTest.Adequacy` の定理を定義の展開で使い回す。
 
-期待する判定は `Tests/Main.lean` の `obligationTests` に書く。
+期待する判定は `TraceTest/Main.lean` の `obligationTests` に書く。
 -/
 
 open Machine
 open MachineTest.Adequacy (Out Req Num)
 
-namespace Tests.ObFix.Spec
+namespace TraceTest.ObFix.Spec
 
 /-- 衝突の選択（環境）。 -/
 @[nondet "N-901"] abbrev Conflict : Type := Bool
@@ -89,11 +89,11 @@ def half : Machine.Machine Unit Nat Nat := MachineTest.Adequacy.half
 theorem half_sound : half.Sound := Machine.sound_pure (fun _ => True) (· / 2)
 theorem half_initIs : half.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
-end Tests.ObFix.Spec
+end TraceTest.ObFix.Spec
 
-namespace Tests.ObFix.SourceModel
+namespace TraceTest.ObFix.SourceModel
 
-open Tests.ObFix.Spec
+open TraceTest.ObFix.Spec
 
 /-- 具体機械。 -/
 def good : Concrete Nat Req Out Unit := MachineTest.Adequacy.good
@@ -129,11 +129,11 @@ def halfNaN : Concrete Unit Nat Num Unit := MachineTest.Adequacy.halfNaN
 def usesSpec : Concrete Nat Req Out Unit :=
   Concrete.ofFun (· = 5) fun t r => .ok (Spec.fRes t r.n (r.env, ()))
 
-end Tests.ObFix.SourceModel
+end TraceTest.ObFix.SourceModel
 
-namespace Tests.ObFix.Abstraction
+namespace TraceTest.ObFix.Abstraction
 
-open Tests.ObFix.Spec Tests.ObFix.SourceModel
+open TraceTest.ObFix.Spec TraceTest.ObFix.SourceModel
 
 /-- 標準の抽象化（葉）: 状態。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def betaS (t : Nat) : Option Nat := some t
@@ -495,7 +495,89 @@ theorem pre_refines : Refines specPre good glue where
   correct s t ic ia t' oc hi hJ ha _ hd hs :=
     MachineTest.Adequacy.good_refines.correct s t ic ia t' oc hi hJ ha trivial hd hs
 
-end Tests.ObFix.Abstraction
+end TraceTest.ObFix.Abstraction
 
 /-- モデルの層の外に置いた差異の述語。 -/
-@[deviation "D-904"] def Tests.ObFixHelpers.devFalse (_ : Req) : Prop := False
+@[deviation "D-904"] def TraceTest.ObFixHelpers.devFalse (_ : Req) : Prop := False
+
+/-! ## ギャップの登録簿（GK）
+
+`@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
+
+namespace TraceTest.ObFix.Abstraction
+
+open Trace
+
+/-- 前提型の宣言を作る補助（値は展開して読まれる）。 -/
+def preGap (id : String) : Gap :=
+  { id, kind := .pre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "前提", rTasks := ["ABS-900"],
+    wTask := some "ABS-990", impact := some (.abort, "理由"), backlog := ["backlog-x"] }
+
+/-- 観測型の宣言を作る補助。 -/
+def obsGap (id : String) : Gap :=
+  { id, kind := .observational, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "成分",
+    rTasks := ["ABS-900"], wTask := some "ABS-990" }
+
+/-- D-901 -/ @[gap_entry] def gD901 : Gap := preGap "D-901"
+/-- D-902 -/ @[gap_entry] def gD902 : Gap := preGap "D-902"
+/-- D-903 -/ @[gap_entry] def gD903 : Gap := preGap "D-903"
+/-- D-904 -/ @[gap_entry] def gD904 : Gap := preGap "D-904"
+/-- D-905 -/ @[gap_entry] def gD905 : Gap := preGap "D-905"
+/-- D-906 -/ @[gap_entry] def gD906 : Gap := preGap "D-906"
+/-- D-907 -/ @[gap_entry] def gD907 : Gap := obsGap "D-907"
+/-- D-908 -/ @[gap_entry] def gD908 : Gap := preGap "D-908"
+/-- D-909 -/ @[gap_entry] def gD909 : Gap := preGap "D-909"
+/-- D-910 -/ @[gap_entry] def gD910 : Gap := preGap "D-910"
+/-- D-911 -/ @[gap_entry] def gD911 : Gap := preGap "D-911"
+/-- D-912 -/ @[gap_entry] def gD912 : Gap := preGap "D-912"
+/-- D-913 -/ @[gap_entry] def gD913 : Gap := obsGap "D-913"
+
+/-- モデル外の宣言（リテラルで書く）。 -/
+@[gap_entry] def gD920 : Gap :=
+  { id := "D-920", kind := .outOfModel, sites := [⟨"例", "docs/spec/example.md#base", "（規範節）"⟩],
+    premise := "— モデル外" }
+
+/-- 未確定の宣言。 -/
+@[gap_entry] def gD921 : Gap :=
+  { id := "D-921", kind := .undetermined, sites := [⟨"例", "docs/spec/example.md#base", ""⟩],
+    resolution := "オラクルで確かめる" }
+
+/-- PRE の外の振る舞いの宣言。 -/
+@[gap_entry] def gD922 : Gap :=
+  { id := "D-922", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
+
+-- 違反: docstring が無い（GK）
+@[gap_entry] def gD923 : Gap :=
+  { id := "D-923", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
+
+/-- 違反: 同じ ID の宣言が 2 つ（GK）。 -/
+@[gap_entry] def gD922dup : Gap := gD922
+
+/-- 違反: `D-NNN` の宣言が `Refinement` の層にある（下の名前空間。GK）。 -/
+@[gap_entry] def _root_.TraceTest.ObFix.Refinement.gD924 : Gap :=
+  { id := "D-924", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1" }
+
+/-- 違反: 未確定の差異に `@[deviation]` がある（GK）。 -/
+@[deviation "D-921"] def devUndetermined (r : Req) : Prop := r.lang = false
+
+end TraceTest.ObFix.Abstraction
+
+namespace TraceTest.ObFix.Spec
+
+/-- 箇所の印（正例）。 -/
+@[gap "D-922"] def markedSpec (n : Nat) : Nat := n
+
+/-- 違反: モデル外の差異の印（GK）。 -/
+@[gap "D-920"] def markedOutOfModel (n : Nat) : Nat := n
+
+/-- 違反: 宣言の無い ID の印（GK）。 -/
+@[gap "D-999"] def markedUnknown (n : Nat) : Nat := n
+
+end TraceTest.ObFix.Spec
+
+namespace TraceTest.ObFix.Abstraction
+
+/-- 違反: 印を `Abstraction` の層に付ける（GK）。 -/
+@[gap "D-922"] def markedAbstraction (n : Nat) : Nat := n
+
+end TraceTest.ObFix.Abstraction

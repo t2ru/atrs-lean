@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T10:30:00+09:00
+  at: 2026-10-31T16:30:00+09:00
 ---
 
 # ATRS での port-lang スキルの適用
@@ -23,15 +23,16 @@ generated:
 | 移植先 | Rust | `references/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.2`。言語意味論の Lean モデルは、スキルの `assets/lean/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+使うスキルの版: `metadata.version` = `0.5`。言語意味論の Lean モデルは、スキルの `assets/lean/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
 | スキルでの名前 | ATRS での置き場所 |
 | --- | --- |
 | 保証の限界の文書 | [spec/assurance.md](../spec/assurance.md) |
-| 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md) |
-| 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md) |
+| 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md)。差異の表は `lean/Abstraction/Gap.lean`（ギャップの登録簿。正）から生成する（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)） |
+| 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md)。差異の表は `lean/Refinement/Gap.lean` から生成する |
+| 追跡属性・ギャップの登録簿の型・`trace-dump`・`obligation-check` の本体 `Trace` | スキルの `assets/lean/Trace/` を Lake 依存として取り込む。道具の入口は `lean/Tools/`（[ADR 7fe4](../decision/7fe4-move-trace-attributes-to-skill.md)） |
 | リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)。[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)） |
 | 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog d77c](../backlog/d77c-verus-mirror-generator.md)） |
 

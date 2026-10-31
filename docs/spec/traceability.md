@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T11:02:17+09:00
+  at: 2026-10-31T16:30:00+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -29,7 +29,7 @@ generated:
 
 ## 方式
 
-ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D・TR-G・TR-N・TR-V・TR-PE を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
+ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D・TR-K・TR-G・TR-N・TR-V・TR-PE を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
 ATRS が使うロケータの種別は次のとおり（文法は各言語パックの `locators.md`）。
 
 | 側 | 種別 | 言語パック |
@@ -117,10 +117,11 @@ pub fn basic_fare(...) -> (r: u64)
 | TR-T2 | `<h3>` が `target-inventory` と、`<m1>` が `TargetModel.Fare.basicFare` の Merkle ハッシュと一致すれば合格。Rust の本文を変えると `<h3>` がずれ、Lean を変えると `<m1>` がずれる |
 | TR-P | `SourceModel.Fare.calculateBasicFare` は、R 課題 ABS-001 の具体機械 `SourceModel.Fare.basicFareMachine` の操作（定義が参照する定数の閉包）に含まれる。`TargetModel.Fare.basicFare` も同様に REF-004 の具体機械に含まれるので合格 |
 | TR-D | D-001 の `Abstraction.Fare.dev_D001` が `@[deviation "D-001"]` を持ち、ABS-001 の型に現れ、W 課題 ABS-101 があれば合格 |
+| TR-K | D-001 の登録 `Abstraction.Gap.D001`（`@[gap_entry]`）に対し、`Spec.Fare.basicFare` と `SourceModel.Fare.calculateBasicFare` が `@[gap "D-001"]` を持てば合格 |
 | TR-X | Lean の移植元側に `rust:` が無く、Rust と `TargetModel` に `java:` が無いので合格 |
 | TR-R | 参照先がすべて存在すれば合格 |
 
-影響分析の例: 上流で `calculateBasicFare` の本文が変わると、TR-S2 → `SourceModel.Fare.calculateBasicFare` → ABS-001 → `Spec.Fare.basicFare` の順に影響が出る。`Spec` を変えない判断なら、ここで止まる（`TargetModel`・Rust には影響しない）。
+影響分析の例: 上流で `calculateBasicFare` の本文が変わると、TR-S2 → `SourceModel.Fare.calculateBasicFare` → ABS-001 → `Spec.Fare.basicFare` の順に影響が出る。印 `@[gap]` から、見直すギャップとして D-001・D-030 が出る。`Spec` を変えない判断なら、ここで止まる（`TargetModel`・Rust には影響しない）。
 
 ## 生成される表
 

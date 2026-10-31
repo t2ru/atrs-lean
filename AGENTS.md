@@ -56,7 +56,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/rules/](docs/rules/) | ATRS の運用規約 |
 | [.agents/skills/port-lang/](.agents/skills/port-lang/SKILL.md) | 言語間移植の方法（アプリ非依存のスキル） |
 | `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets/lean` を `require` する |
-| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Trace`（追跡属性・trace-dump）/ `Spec`（正規仕様）/ `SourceModel` / `Abstraction` / `TargetModel` / `Refinement` / `Tests` / `Tools`。`LangSemantics` はスキルの `assets/lean` を Lake 依存として取り込む（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)） |
+| `lean/` | Lean プロジェクト（パッケージ `atrs`）。`Spec`（正規仕様）/ `SourceModel` / `Abstraction`（`Abstraction.Gap` はギャップの登録簿）/ `TargetModel` / `Refinement` / `Tests` / `Tools`（道具の入口）。`LangSemantics`・`Machine`・`Trace`（追跡属性・ギャップの登録簿の型・trace-dump・obligation-check の本体）はスキルの `assets/lean` を Lake 依存として取り込む（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)、[ADR 7fe4](docs/decision/7fe4-move-trace-attributes-to-skill.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog fb50](docs/backlog/fb50-rust-project-scaffold.md)） |
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 455f](docs/backlog/455f-upstream-submodule-and-inventory.md)） |
 | `trace/` | 版の宣言（`upstream.json`）・対象外一覧（`out-of-scope.json`）・機能と backlog の対応表（`features.json`）・インベントリ（`source-inventory.json`・`target-inventory.json`）・manifest（[ADR e2a4](docs/decision/e2a4-traceability-hash-as-deterministic-check-record.md)、[ADR 0eea](docs/decision/0eea-trace-tooling-unresolved-details.md)） |
@@ -79,7 +79,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
    移植元と抽象を分け、関係を B メソッドのリファインメントとして証明する方針は [ADR 01d4](docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)。
 3. 抽象モデルでは浮動小数点数を使わない（[ADR e41d](docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。
-4. 移植元・移植先との差異は、必ず既知差異（[docs/spec/abstraction.md](docs/spec/abstraction.md) の `D-NNN`、[docs/spec/refinement.md](docs/spec/refinement.md) の `T-NNN`）として登録する。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
+4. 移植元・移植先との差異は、必ず既知差異（`D-NNN`・`T-NNN`）として、Lean の登録簿（`lean/Abstraction/Gap.lean`・`lean/Refinement/Gap.lean` の `@[gap_entry]`）に登録する。[docs/spec/abstraction.md](docs/spec/abstraction.md)・[docs/spec/refinement.md](docs/spec/refinement.md) の表は `tools/trace manifest` がそこから生成する（手で編集しない）。差異の生じる `Spec`・`SourceModel`・`TargetModel` の定義には `@[gap "D-NNN"]` を付ける（[ADR cc24](docs/decision/cc24-gap-registry-as-lean-attributes.md)）。前提型・観測型の差異は、Lean のリファインメント定理の名前付きの仮定・成分（`@[deviation]`）と、差異の証拠の定理（W 課題）にも置く。意図の判断を伴う場合は、あわせて ADR を書く。ADR だけに記録してはならない。
 5. 業務ロジックは純粋関数、副作用はポート経由（[ADR f0e4](docs/decision/f0e4-functional-core-with-ports.md)）。
 6. `docs/` の文書を追加・変更したら、frontmatter（OKF v0.2）・[docs/index.md](docs/index.md)・[docs/log.md](docs/log.md) を更新する（[documentation.md](docs/rules/documentation.md#okf-v02)）。
 7. **一通りの作業が終わったら `git commit` する。`git push` は自分で作ったブランチに限り、そこから PR を作成してよい。既定ブランチと他人のブランチには push しない**（[version-control.md](docs/rules/version-control.md)）。
@@ -94,7 +94,7 @@ Lean の雛形（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)。�
 - 第 2 段 b-2b: ABS-026 の主定理 `queryRefines`・`InitSurj`・W 課題 ABS-127（`need_D027`）、意図から書く例
 
 運賃計算の抽象化証明（[backlog bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md)）は 3 段に分け、第 1 段で double の誤差を定理で確定した（D-001 は値域内に差異がある。D-001・D-002 の前提は「100 で割り切れないか、因子が安全」。[ADR e9bc](docs/decision/e9bc-fare-double-analysis.md)）。第 2 段で、基本運賃・運賃の R 課題 ABS-001・ABS-002 と、W 課題 ABS-101・ABS-102（D-001・D-002 の必要性）を証明した。
-空虚化を防ぐ義務を既存の研究に照らして補い、名前付きの成分の必要性（G9）を加えた（[ADR 9ac6](docs/decision/9ac6-vacuity-literature-necessity-and-mutation.md)、[backlog ae04](docs/backlog/ae04-component-necessity-witness.md)）。成分の変異テストは [backlog 0d1a](docs/backlog/0d1a-mutation-testing-of-named-components.md) で扱う。Rust のコードはまだ無い。
+空虚化を防ぐ義務を既存の研究に照らして補い、名前付きの成分の必要性（G9）を加えた（[ADR 9ac6](docs/decision/9ac6-vacuity-literature-necessity-and-mutation.md)、[backlog ae04](docs/backlog/ae04-component-necessity-witness.md)）。成分の変異テストは [backlog 0d1a](docs/backlog/0d1a-mutation-testing-of-named-components.md) で扱う。追跡属性の仕組み（`Trace`）をスキルへ移し、[Spec] と `SourceModel` のギャップ（既知差異・PRE の外・未確定）を Lean の登録簿 `@[gap_entry]` と箇所の印 `@[gap]` で表すようにした（[ADR 7fe4](docs/decision/7fe4-move-trace-attributes-to-skill.md)・[ADR cc24](docs/decision/cc24-gap-registry-as-lean-attributes.md)、[backlog 114a](docs/backlog/114a-gap-attributes-and-trace-in-skill.md)）。Rust のコードはまだ無い。
 次に着手できるのは、Lean 側の [bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md) の第 3 段（合計金額の R 課題 ABS-004）・[0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[a936](docs/backlog/a936-lang-semantics-rust.md)（言語意味論）・[ddbd](docs/backlog/ddbd-okf-bundle-lint.md)（OKF の検査）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

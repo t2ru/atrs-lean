@@ -9,6 +9,9 @@
 //!    （`Spec` を変える場合だけ影響する。分けて示す）
 //!
 //! 移植先の起点（`rust:`・`TargetModel` の名前）は、逆向きに `Refinement` の R 課題と `Spec` まで示す。
+//!
+//! あわせて、影響を受ける `SourceModel`・`Spec`・`TargetModel` の定義に箇所の印（`@[gap]`）を持つギャップを、
+//! 見直すギャップとして示す（ADR cc24）。
 //! 移植元ソースと移植先ソースを直接は結ばない（ADR e2a4）。
 
 use crate::lean::{closure, split_hash, Dump, Obligations};
@@ -31,6 +34,8 @@ pub struct Impact {
     pub target_defs: Vec<String>,
     pub refinement: Vec<String>,
     pub spec_of_target: Vec<String>,
+    /// 見直すギャップ（`<ID> (<宣言>)`。印の付いた定義が上のどれかに含まれる）
+    pub gaps: Vec<String>,
     /// どの定義にも当たらなかった起点
     pub unmatched: Vec<String>,
 }
@@ -120,6 +125,13 @@ pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impac
     let (rf2, rf2_reach) = tasks("Refinement", &tgt);
     out.refinement = rf2;
     out.spec_of_target = in_layer(&rf2_reach, &["Spec"]);
+
+    let touched: BTreeSet<&String> = out.source_defs.iter().chain(&out.spec).chain(&out.target_defs)
+        .chain(&out.spec_of_target).collect();
+    out.gaps = dump.gaps.iter()
+        .filter(|g| g.markers.iter().any(|m| touched.contains(m)))
+        .map(|g| format!("{} ({})", g.id, g.name))
+        .collect();
     out
 }
 
@@ -140,6 +152,7 @@ pub fn render(i: &Impact) -> String {
     sec("移植先の起点: TargetModel・移植先の LangSemantics", &i.target_defs);
     sec("移植先の起点: Refinement の R 課題", &i.refinement);
     sec("移植先の起点: Spec（確認する）", &i.spec_of_target);
+    sec("見直すギャップ（@[gap] の印が上の定義にある）", &i.gaps);
     sec("どの定義にも当たらない起点", &i.unmatched);
     s
 }
@@ -161,7 +174,7 @@ mod tests {
     fn propagates_in_layer_order() {
         let dump = Dump {
             definitions: vec![
-                def("SourceModel.Fare.calc", "SourceModel", &[("source", "java:A#calc()@11")], &[]),
+                def("SourceModel.Fare.calc", "SourceModel", &[("source", "java:A#calc()@11"), ("gap", "D-001")], &[]),
                 def("SourceModel.Fare.machine", "SourceModel", &[], &["SourceModel.Fare.calc"]),
                 def("SourceModel.Other.x", "SourceModel", &[("source", "java:A#x()@22")], &[]),
                 def("Spec.Fare.basic", "Spec", &[], &[]),
@@ -178,6 +191,11 @@ mod tests {
                 .collect(),
             ..Default::default()
         };
+        let mut dump = dump;
+        dump.gaps = vec![
+            crate::lean::Gap { name: "Abstraction.Gap.D001".into(), id: "D-001".into(), markers: vec!["SourceModel.Fare.calc".into()], ..Default::default() },
+            crate::lean::Gap { name: "Abstraction.Gap.D002".into(), id: "D-002".into(), markers: vec!["SourceModel.Other.x".into()], ..Default::default() },
+        ];
         let i = impact(&dump, &obl, &["java:A#calc()".to_string(), "java:Z#none()".to_string()]);
         assert_eq!(i.source_defs, vec!["SourceModel.Fare.calc", "SourceModel.Fare.machine"]);
         assert_eq!(i.abstraction, vec!["Abstraction.Fare.r"]);
@@ -187,6 +205,7 @@ mod tests {
         assert_eq!(i.rust_if_spec_changes, vec!["rust:atrs::fare::basic"]);
         assert!(i.target_defs.is_empty());
         assert_eq!(i.unmatched, vec!["java:Z#none()"]);
+        assert_eq!(i.gaps, vec!["D-001 (Abstraction.Gap.D001)"]);
 
         let j = impact(&dump, &obl, &["rust:atrs::fare::basic".to_string()]);
         assert!(j.source_defs.is_empty() && j.abstraction.is_empty());

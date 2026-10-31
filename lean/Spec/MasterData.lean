@@ -112,7 +112,7 @@ namespace MasterData
 /-! ## 不変条件 MD-1〜MD-8 -/
 
 /-- MD-1: 各キーは一意。各マスタの `displayOrder` も一意。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-015"]
 def MD1 (md : MasterData) : Prop :=
   (md.airports.map (·.code)).Nodup ∧ (md.routes.map (·.routeNo)).Nodup ∧
   (md.flightMasters.map (·.flightName)).Nodup ∧ (md.boardingClasses.map (·.boardingClassCd)).Nodup ∧
@@ -123,20 +123,20 @@ def MD1 (md : MasterData) : Prop :=
   (md.fareTypes.map (·.displayOrder)).Nodup ∧ (md.creditTypes.map (·.displayOrder)).Nodup
 
 /-- MD-2: `(depAirportCd, arrAirportCd)` は区間の間で一意で、`depAirportCd ≠ arrAirportCd`。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-015"]
 def MD2 (md : MasterData) : Prop :=
   (md.routes.map fun r => (r.depAirportCd, r.arrAirportCd)).Nodup ∧
   ∀ r ∈ md.routes, r.depAirportCd ≠ r.arrAirportCd
 
 /-- MD-3: 参照整合性（区間の空港、便マスタの区間）。フライトの便名・搭乗クラス・運賃種別の存在は、
 フライトを持つ `World` の不変条件で課す。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-015"]
 def MD3 (md : MasterData) : Prop :=
   (∀ r ∈ md.routes, (∃ a ∈ md.airports, a.code = r.depAirportCd) ∧ (∃ a ∈ md.airports, a.code = r.arrAirportCd)) ∧
   ∀ f ∈ md.flightMasters, ∃ r ∈ md.routes, r.routeNo = f.routeNo
 
 /-- MD-4: ピーク時期の期間は互いに重ならず、`peakStartDate ≤ peakEndDate`。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-004"]
 def MD4 (md : MasterData) : Prop :=
   (∀ p ∈ md.peakTimes, p.peakStartDate ≤ p.peakEndDate) ∧
   md.peakTimes.Pairwise fun p q => p.peakEndDate < q.peakStartDate ∨ q.peakEndDate < p.peakStartDate
@@ -152,16 +152,17 @@ def MD6 (md : MasterData) : Prop := ∀ f ∈ md.flightMasters, f.departureTime 
 
 /-- MD-7: 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、
 `discountRate ≤ childFareRate`、`passengerMinNum ≥ 1`。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-003"]
 def MD7 (cfg : Config) (md : MasterData) : Prop :=
   ∀ ft ∈ md.fareTypes, ft.rsrvAvailableEndDayNum ≤ ft.rsrvAvailableStartDayNum ∧
     ft.discountRate ≤ cfg.childFareRate ∧ 1 ≤ ft.passengerMinNum
 
 /-- 空港コードリストの区切り行のコード（`CL_AIRPORT` の `airportNopValue`）。空港のコードには使えない（MD-8）。 -/
+@[gap "D-029"]
 def airportNopCode : String := "NOP"
 
 /-- MD-8: 値域（`docs/spec/domain-model.md#値域` のうちマスタのもの）。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-029"]
 def MD8 (md : MasterData) : Prop :=
   (∀ a ∈ md.airports, a.code.WellFormed ∧ a.code.val ≠ airportNopCode) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
@@ -217,7 +218,7 @@ def boardingClassOf (md : MasterData) (cd : BoardingClassCd) : Option BoardingCl
   md.boardingClasses.find? fun b => b.boardingClassCd == cd
 
 /-- 日付 `d` を含むピーク時期。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
+@[spec_doc "docs/spec/master-data.md#参照関数", gap "D-004"]
 def peakTimeOn (md : MasterData) (d : Date) : Option PeakTime :=
   md.peakTimes.find? fun p => decide (p.peakStartDate ≤ d ∧ d ≤ p.peakEndDate)
 

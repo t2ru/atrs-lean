@@ -1,19 +1,10 @@
-//! 文書の読み込み: 既知差異（D/T）と入口の R 課題の表、backlog の状態、`trace/features.json`。
+//! 文書の読み込み: 入口の R 課題と証明課題の表、backlog の状態、`trace/features.json`。
+//! 既知差異（D/T）の登録簿は Lean にある（`trace-dump` の `gaps`。ADR cc24）。
 
 use globset::{Glob, GlobMatcher};
 use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::path::Path;
-
-/// 既知差異の行。
-#[derive(Clone, Debug)]
-pub struct Deviation {
-    pub id: String,
-    /// 種類（「前提型」「観測型」「モデル外」…）
-    pub kind: String,
-    pub r_tasks: Vec<String>,
-    pub w_tasks: Vec<String>,
-}
 
 fn ids_in(s: &str) -> Vec<String> {
     let mut out = vec![];
@@ -58,36 +49,6 @@ fn section_rows(md: &str, heading: &str) -> Vec<Vec<String>> {
             let cells: Vec<String> = l.trim().trim_matches('|').split('|').map(|c| c.trim().to_string()).collect();
             out.push(cells);
         }
-    }
-    out
-}
-
-/// 既知差異の表（`## 既知差異` の直下の表。小節の表は含めない）。
-pub fn deviations(md: &str, heading: &str) -> Vec<Deviation> {
-    let mut out = vec![];
-    let mut inside = false;
-    for l in md.lines() {
-        if l.starts_with('#') {
-            let lv = l.chars().take_while(|c| *c == '#').count();
-            if inside {
-                break;
-            }
-            inside = lv == 2 && l[lv..].trim().starts_with(heading);
-            continue;
-        }
-        if !inside || !l.starts_with('|') || l.contains("---") {
-            continue;
-        }
-        let cells: Vec<&str> = l.trim().trim_matches('|').split('|').map(str::trim).collect();
-        if cells.len() < 7 || !cells[0].contains('-') || cells[0] == "ID" {
-            continue;
-        }
-        out.push(Deviation {
-            id: cells[0].to_string(),
-            kind: cells[1].to_string(),
-            r_tasks: ids_in(cells[cells.len() - 2]),
-            w_tasks: ids_in(cells[cells.len() - 1]),
-        });
     }
     out
 }
@@ -237,6 +198,11 @@ impl Features {
         f.backlog.iter().all(|b| self.states.get(b).map(|s| s == "done").unwrap_or(false))
     }
 
+    /// backlog 項目が `done` か。
+    pub fn backlog_done(&self, b: &str) -> bool {
+        self.states.get(b).map(|s| s == "done").unwrap_or(false)
+    }
+
     pub fn backlog_exists(&self, b: &str) -> bool {
         self.states.contains_key(b)
     }
@@ -253,11 +219,6 @@ mod tests {
                   | D-013 | モデル外 | a | b | — | — | — |\n\n### 小節\n\n| D-001 | 中断 | x | 00000000-0000-4000-8000-000000000005 |\n\
                   ## 証明課題\n\n| ID | 種類 | 内容 | 差異 |\n| ABS-001 | R | x | D-001 |\n| ABS-101 | W | y | D-001 |\n\
                   ### 入口の R 課題\n\n| ID | 入口 | backlog |\n| --- | --- | --- |\n| ABS-031 | REST | 00000000-0000-4000-8000-000000000014 |\n";
-        let ds = deviations(md, "既知差異");
-        assert_eq!(ds.len(), 2);
-        assert_eq!(ds[0].r_tasks, vec!["ABS-001", "ABS-004"]);
-        assert_eq!(ds[0].w_tasks, vec!["ABS-101"]);
-        assert_eq!(ds[1].kind, "モデル外");
         assert_eq!(entry_tasks(md), vec!["ABS-031"]);
         assert_eq!(r_tasks(md), vec!["ABS-001"]);
     }

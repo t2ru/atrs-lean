@@ -1,6 +1,7 @@
 import TargetModel
 import Spec
 import Trace
+import Refinement.Gap
 
 /-!
 # Refinement
