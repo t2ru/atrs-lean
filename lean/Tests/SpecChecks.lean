@@ -158,4 +158,18 @@ def tfIn (keys : List FlightKey) (ages : List Nat) : Fare.TotalFareInput := ⟨C
 #guard !decide (tfIn [] [30]).Pre
 #guard !decide (tfIn [(flight "NTT999" .OW).key] [30]).Pre
 
+-- 非決定性の選択の型（N-001〜N-005）: 標準の値と、標準でない値
+#guard Nondet.ConflictChoice.std == .none
+#guard Nondet.ConflictChoice.conflict != Nondet.ConflictChoice.std
+#guard Nondet.IoFailureChoice.std == .none
+#guard Nondet.IoFailureChoice.failure != Nondet.IoFailureChoice.std
+#guard Nondet.ReportDeliveryChoice.std.retryLimit == 10 && Nondet.ReportDeliveryChoice.std.next == 0 &&
+  !Nondet.ReportDeliveryChoice.std.duplicate
+#guard (⟨1, by decide, 2, true⟩ : Nondet.ReportDeliveryChoice) != Nondet.ReportDeliveryChoice.std
+#guard Nondet.InvalidRequestDetail.std.override == none
+#guard Nondet.PasswordHashChoice.std.hash "secret" == "{test}secret"
+-- 入口の環境の前提: シードは満たし、空港コードを重複させると破れる
+#guard decide (masterConfigOk (Seed.config, Seed.masterData))
+#guard !decide (masterConfigOk (Seed.config, badMasterData))
+
 end Tests.SpecChecks

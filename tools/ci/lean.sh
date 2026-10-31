@@ -14,6 +14,7 @@ python3 -I tools/docs/ids.py check
 
 step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check
+python3 -I tools/conformance/seed_lean.py --check
 
 step "static: 静的検査の自己テスト（違反例を検出できること）"
 python3 -I tools/ci/check_lean.py --self-test
