@@ -7,6 +7,7 @@ import LangSemantics.Java.LocalDate
 import LangSemantics.Java.HashMap
 import LangSemantics.Java.LocalDateLemmas
 import LangSemantics.Java.HashMapLemmas
+import LangSemantics.Java.DoubleLemmas
 
 /-!
 # LangSemantics.Java
