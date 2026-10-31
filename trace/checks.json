@@ -5,7 +5,7 @@
       "id": "lake-test",
       "description": "適合テストベクタの照合（Lean の Tests。lake test）",
       "steps": [{ "cwd": "lean", "argv": ["lake", "test"] }],
-      "covers": { "vectors": ["conformance/**/*.json"] }
+      "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.Ticket.*"] }
     },
     {
       "id": "pg-master-sql",

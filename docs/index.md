@@ -94,7 +94,7 @@ okf_version: "0.2"
 * [LangSemantics.Java: Java 基本型の意味論](backlog/a8be-lang-semantics-java.md) - int32・IEEE 754 binary64（必要部分）・BigDecimal 丸め・UTF-16 文字列・LocalDate を、アプリ非依存の検証可能なモデルとして実装する。
 * [Spec: ドメイン型・基本演算・マスタデータ](backlog/591d-abstract-domain-types-and-master-data.md) - Spec.Prim（floorDiv・暦日・書式・文字クラス）、エンティティ型、MasterData と不変条件、参照関数を実装する。
 * [運賃計算（Spec と SourceModel）](backlog/25f7-fare-calculation-both-models.md) - 基本運賃・運賃・合計金額を Spec（厳密整数）と SourceModel（LangSemantics.Java）の両方で実装する。
-* [運賃計算の抽象化証明](backlog/bbcc-fare-abstraction-proofs.md) - 運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、第 1 段で double の誤差を定理で確定し、第 2 段で基本運賃・運賃の R 課題を証明した。
+* [運賃計算の抽象化証明](backlog/bbcc-fare-abstraction-proofs.md) - 運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、double の誤差を定理で確定し、基本運賃・運賃・合計金額の R 課題を証明した。
 * [空席照会（B1）](backlog/0be7-flight-search-usecase.md) - 照会可能期間・運賃種別の予約可能判定・searchFlight を両モデルで実装し、ABS-010/011 を証明する。
 * [予約（B0/B2）](backlog/aedf-reservation-usecase.md) - validateFlightList・validateReservation・reserveConfirm・reserve を SourceModel と Spec で実装し、空席の不変条件を証明する。
 * [会員（C1/C2）と入力検証](backlog/4e0e-member-usecases-and-input-validation.md) - 会員登録・変更と、全画面の入力検証（前処理・文字クラス・単項目・相関）を両モデルで実装する。

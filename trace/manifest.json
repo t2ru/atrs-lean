@@ -13,7 +13,47 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.Forall₂",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.below",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.below.cons",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.below.nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.brecOn",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.cons",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Forall₂.nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.J32.ofInt_val",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.Safe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.ageOfPassenger",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.ageOfPassenger_eq",
       "layer": "Abstraction"
     },
     {
@@ -26,6 +66,22 @@
     },
     {
       "name": "Abstraction.Fare.aiF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.aiTF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.aiTF_icTF012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.assertNotEmpty_cons",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.assertNotEmpty_ok",
       "layer": "Abstraction"
     },
     {
@@ -81,7 +137,19 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.boardingClassOf_mem",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.calculateBasicFare_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.calculateFare_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.calculateFare_ok",
       "layer": "Abstraction"
     },
     {
@@ -89,11 +157,31 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.configOf_fields",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.day0",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.db29",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.dbTF",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.dev_D001",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D001T",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D001T_nontrivial",
       "layer": "Abstraction"
     },
     {
@@ -105,7 +193,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.dev_D002T",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D002T_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.dev_D002_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D012_nontrivial",
       "layer": "Abstraction"
     },
     {
@@ -122,6 +226,14 @@
     },
     {
       "name": "Abstraction.Fare.dev_D027F_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027TF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027TF_nontrivial",
       "layer": "Abstraction"
     },
     {
@@ -181,6 +293,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.fareTypeOf_mem",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.fare_diff",
       "layer": "Abstraction"
     },
@@ -205,11 +321,63 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.flightTotalOfKey_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.flightTotalOfKey_le",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.forIn_count_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.forIn_sum_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.forall₂_of_mapM",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.forall₂_of_mapM_id",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.glueBF",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Fare.glueF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.glueTF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTF012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTF012_devs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTF012_pre",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTF1430",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTF29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.iaTFempty",
       "layer": "Abstraction"
     },
     {
@@ -225,6 +393,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.icTF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.icTF012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.icTFnull",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.instDecidableClose",
       "layer": "Abstraction"
     },
@@ -237,7 +417,35 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.instDecidablePredTotalFareInputDev_D001T",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.instDecidablePredTotalFareInputDev_D002T",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.instDecidablePredTotalFareInputDev_D012",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.instDecidableSafe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.j32add_nat",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.j32add_ofInt",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.j32mul_nat",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.j32sub_nat",
       "layer": "Abstraction"
     },
     {
@@ -253,11 +461,55 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.jdiv32_nat",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.keyBasic",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.keyFare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.keyOfForm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.keyOfForm_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.le_rneTrunc",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Fare.le_rneTrunc_safe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mapM_eq_map_getD",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mapM_length",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mdTF012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mdTF1430",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mdTF29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.mkFlight",
       "layer": "Abstraction"
     },
     {
@@ -277,6 +529,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.need_D012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.ofInt_nat",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.pred_le_rneTrunc",
       "layer": "Abstraction"
     },
@@ -293,6 +553,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.routeOfFlightName_mem",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.runBasicFare_icBF29",
       "layer": "Abstraction"
     },
@@ -301,7 +565,35 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.runTotalFare_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.runTotalFare_icTF012",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.sum_map_le",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.toFlight_ok",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.toJ32_zero",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.totalFareOfKeys_le",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.totalFareRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.totalFareRefines_initSurj",
       "layer": "Abstraction"
     },
     {
@@ -669,6 +961,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.boardingClass_of_answer",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.boardingClass_query",
       "layer": "Abstraction"
     },
@@ -797,6 +1093,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.fareType_of_answer",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.fareType_query",
       "layer": "Abstraction"
     },
@@ -826,6 +1126,10 @@
     },
     {
       "name": "Abstraction.MasterData.flightMasterResultOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.flightMaster_fare",
       "layer": "Abstraction"
     },
     {
@@ -934,6 +1238,10 @@
     },
     {
       "name": "Abstraction.MasterData.load_correct",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.load_correct'",
       "layer": "Abstraction"
     },
     {
@@ -1110,6 +1418,10 @@
     },
     {
       "name": "Abstraction.MasterData.routeOfRow_codes",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.routeOfRow_fare",
       "layer": "Abstraction"
     },
     {
@@ -1629,6 +1941,50 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FareQuery.TotalFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.config",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.db",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.flights",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.TotalFareInput.passengers",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FareQuery.basicFareConcrete",
       "layer": "SourceModel"
     },
@@ -1653,6 +2009,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FareQuery.instDecidableEqTotalFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instDecidableEqTotalFareInput.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FareQuery.instReprBasicFareInput",
       "layer": "SourceModel"
     },
@@ -1669,7 +2033,23 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FareQuery.instReprTotalFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instReprTotalFareInput.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FareQuery.runBasicFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.runTotalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.totalFareConcrete",
       "layer": "SourceModel"
     },
     {
@@ -2002,6 +2382,14 @@
     },
     {
       "name": "SourceModel.MasterQuery.Providers.shared",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.ticketHelper",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.ticketReserveService",
       "layer": "SourceModel"
     },
     {
@@ -3857,6 +4245,114 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Ticket.SelectFlightForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.SelectFlightForm.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.boardingClassProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.fareTypeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.flightMasterProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.TicketHelper.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.instDecidableEqSelectFlightForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.instDecidableEqSelectFlightForm.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.instReprSelectFlightForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.instReprSelectFlightForm.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.toFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Ticket.toFlightList",
+      "layer": "SourceModel"
+    },
+    {
       "name": "Spec.Airport",
       "layer": "Spec"
     },
@@ -3965,6 +4461,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Fare.TotalFareInput.Pre",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.basicFare",
       "layer": "Spec"
     },
@@ -3986,6 +4486,10 @@
     },
     {
       "name": "Spec.Fare.childNum",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.childNumOfAges",
       "layer": "Spec"
     },
     {
@@ -4013,11 +4517,39 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Fare.flightTotalOfKey",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.routeOfFlight",
       "layer": "Spec"
     },
     {
+      "name": "Spec.Fare.routeOfFlightName",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.totalFare",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFareMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFareMachine_initIs",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFareMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFareMachine_sound",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.totalFareOfKeys",
       "layer": "Spec"
     },
     {
@@ -4421,8 +4953,23 @@
     },
     {
       "type": "deviation",
+      "from": "Abstraction.Fare.dev_D001T",
+      "to": "D-001"
+    },
+    {
+      "type": "deviation",
       "from": "Abstraction.Fare.dev_D002",
       "to": "D-002"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D002T",
+      "to": "D-002"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D012",
+      "to": "D-012"
     },
     {
       "type": "deviation",
@@ -4432,6 +4979,11 @@
     {
       "type": "deviation",
       "from": "Abstraction.Fare.dev_D027F",
+      "to": "D-027"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D027TF",
       "to": "D-027"
     },
     {
@@ -4481,6 +5033,11 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.FareQuery.TotalFareInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.MasterData.BoardingClassProvider.load",
       "to": "D-015"
     },
@@ -4521,12 +5078,12 @@
     },
     {
       "type": "gap",
-      "from": "Spec.Fare.flightTotal",
+      "from": "Spec.Fare.flightTotalOfKey",
       "to": "D-003"
     },
     {
       "type": "gap",
-      "from": "Spec.Fare.flightTotal",
+      "from": "Spec.Fare.flightTotalOfKey",
       "to": "D-012"
     },
     {
@@ -4781,8 +5338,23 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.Fare.need_D012",
+      "to": "ABS-112"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.Fare.runBasicFare_spec",
       "to": "ABS-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.runTotalFare_eq",
+      "to": "ABS-005"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.totalFareRefines",
+      "to": "ABS-004"
     },
     {
       "type": "obligation",
@@ -4927,6 +5499,26 @@
     {
       "type": "obligation",
       "from": "Spec.Fare.fareMachine_sound",
+      "to": "SPEC-003"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.totalFareMachine_initIs",
+      "to": "SPEC-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.totalFareMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.totalFareMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.totalFareMachine_sound",
       "to": "SPEC-003"
     },
     {
@@ -5292,6 +5884,12 @@
       "hash": "b26d30be10a7908d"
     },
     {
+      "type": "source",
+      "from": "SourceModel.Ticket.toFlightList",
+      "to": "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)",
+      "hash": "3fef600108b03c6e"
+    },
+    {
       "type": "spec_doc",
       "from": "Spec.Airport",
       "to": "docs/spec/master-data.md#airport"
@@ -5428,6 +6026,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Fare.TotalFareInput.Pre",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Fare.basicFare",
       "to": "docs/spec/fare-calculation.md#基本運賃"
     },
@@ -5439,6 +6042,11 @@
     {
       "type": "spec_doc",
       "from": "Spec.Fare.childNum",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.childNumOfAges",
       "to": "docs/spec/fare-calculation.md#合計金額"
     },
     {
@@ -5458,12 +6066,32 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Fare.flightTotalOfKey",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Fare.routeOfFlight",
       "to": "docs/spec/fare-calculation.md#合計金額"
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Fare.routeOfFlightName",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Fare.totalFare",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.totalFareMachine",
+      "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.totalFareOfKeys",
       "to": "docs/spec/fare-calculation.md#合計金額"
     },
     {
@@ -5938,12 +6566,27 @@
     },
     {
       "type": "std_abs",
+      "from": "Abstraction.Fare.ageOfPassenger",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
       "from": "Abstraction.Fare.aiBF",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
       "type": "std_abs",
       "from": "Abstraction.Fare.aiF",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Fare.aiTF",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Fare.keyOfForm",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -6559,6 +7202,15 @@
       "checks": [
         "lake-test",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Ticket.toFlightList",
+      "locator": "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)",
+      "hash": "3fef600108b03c6e",
+      "merkle": "98048f3abeee8ef3",
+      "checks": [
+        "lake-test"
       ]
     }
   ]

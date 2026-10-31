@@ -22,7 +22,7 @@ def D001 : Gap where
   id := "D-001"
   kind := .pre
   sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
-  premise := "`dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）"
+  premise := "`dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）"
   rTasks := ["ABS-001", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   wTask := some "ABS-101"
   impact := some (.abort, "予約確定で、差のある運賃が合計金額として保存される")
@@ -34,7 +34,7 @@ def D002 : Gap where
   id := "D-002"
   kind := .pre
   sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
-  premise := "`dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）"
+  premise := "`dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）"
   rTasks := ["ABS-002", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   wTask := some "ABS-102"
   impact := some (.abort, "同上")
@@ -141,7 +141,7 @@ def D012 : Gap where
   id := "D-012"
   kind := .pre
   sites := [⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
-  premise := "`dev_D012`: 各フライトで `b × (childFareRate − r) ≤ 2,147,483,647`"
+  premise := "`dev_D012`（`Abstraction.Fare`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件）"
   rTasks := ["ABS-004", "ABS-031", "ABS-041", "ABS-045"]
   wTask := some "ABS-112"
   impact := some (.abort, "折り返した合計金額が保存される")
@@ -297,8 +297,8 @@ def D027 : Gap where
   id := "D-027"
   kind := .preConcreteInput
   sites := [⟨"マスタ", "docs/spec/master-data.md", ""⟩, ⟨"設定", "docs/spec/configuration.md", ""⟩]
-  premise := "`dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）"
-  rTasks := ["ABS-001", "ABS-002", "ABS-026"]
+  premise := "`dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）"
+  rTasks := ["ABS-001", "ABS-002", "ABS-004", "ABS-026"]
   wTask := some "ABS-127"
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5"]
