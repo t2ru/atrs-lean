@@ -18,7 +18,7 @@
 //! `done` なら誤り、そうでなければ警告とする（references/docs/spec/traceability.md#道具）。TR-K の印の不足と未証明の状態は、登録の `backlog`（無ければ R 課題の機能）が
 //! すべて `done` なら誤り、そうでなければ警告とする（references/docs/lang/lean/trace-attributes.md#ギャップの登録簿）。それ以外は常に誤り。
 
-use crate::docs::{Feature, Features};
+use crate::docs::{Feature, Features, Side};
 use crate::inventory::Inventory;
 use crate::lean::{closure, kind_of, split_hash, Dump, Gap, Obligations};
 use crate::project::{source_kinds, source_langs, target_kinds, target_langs};
@@ -76,18 +76,18 @@ impl<'f> Out<'f> {
     fn err(&mut self, rule: &'static str, msg: String) {
         self.list.push(Finding { error: true, rule, feature: String::new(), msg });
     }
-    /// 機能の backlog がすべて done なら誤り、そうでなければ警告。機能が無ければ誤り。
-    fn staged(&mut self, rule: &'static str, f: Option<&Feature>, msg: String) {
+    /// 機能の、指摘の側の backlog がすべて done なら誤り、そうでなければ警告。機能が無ければ誤り。
+    fn staged(&mut self, rule: &'static str, side: Side, f: Option<&Feature>, msg: String) {
         let (error, feature) = match f {
-            Some(f) => (self.features.done(f), f.name.clone()),
+            Some(f) => (self.features.done_side(f, side), f.name.clone()),
             None => (true, "(unassigned)".into()),
         };
         self.list.push(Finding { error, rule, feature, msg });
     }
-    /// 登録の backlog がすべて done なら誤り、そうでなければ警告。backlog が無ければ機能で決める（`staged`）。
-    fn staged_by(&mut self, rule: &'static str, backlog: &[String], f: Option<&Feature>, msg: String) {
+    /// 登録の backlog がすべて done なら誤り、そうでなければ警告。backlog が無ければ機能の側で決める（`staged`）。
+    fn staged_by(&mut self, rule: &'static str, side: Side, backlog: &[String], f: Option<&Feature>, msg: String) {
         if backlog.is_empty() {
-            return self.staged(rule, f, msg);
+            return self.staged(rule, side, f, msg);
         }
         let error = backlog.iter().all(|b| self.features.backlog_done(b));
         self.list.push(Finding { error, rule, feature: format!("backlog {}", backlog.join(",")), msg });
@@ -206,7 +206,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         }
         // TR-T1（Lean 側）: TargetModel の定義は @[target] を持つ
         if d.layer == "TargetModel" && d.attr("target").is_empty() {
-            out.staged("TR-T1", inp.features.of_lean(&d.name), format!("{}: no @[target]", d.name));
+            out.staged("TR-T1", Side::Target, inp.features.of_lean(&d.name), format!("{}: no @[target]", d.name));
         }
     }
 
@@ -215,14 +215,14 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         if it.out_of_scope || covered_src.contains(&it.locator) {
             continue;
         }
-        out.staged("TR-S1", inp.features.of_locator(&it.locator), format!("{} is not covered by any @[source]", it.locator));
+        out.staged("TR-S1", Side::Source, inp.features.of_locator(&it.locator), format!("{} is not covered by any @[source]", it.locator));
     }
     let generated: BTreeSet<&String> = inp.target.generated.iter().collect();
     for it in &inp.target.items {
         if generated.contains(&it.locator) || covered_tgt.contains(&it.locator) {
             continue;
         }
-        out.staged("TR-T1", inp.features.of_locator(&it.locator), format!("{} is not covered by any @[target]", it.locator));
+        out.staged("TR-T1", Side::Target, inp.features.of_locator(&it.locator), format!("{} is not covered by any @[target]", it.locator));
     }
 
     // ---- TR-T2・TR-R: /// trace: models ----
@@ -236,19 +236,20 @@ pub fn run(inp: &Input) -> Vec<Finding> {
 
     // ---- TR-P・TR-PE ----
     let r_names = |pred: &dyn Fn(&crate::lean::Obligation) -> bool, layer: &str| -> Vec<String> {
-        inp.obligations.obligations.iter().filter(|o| o.refines && o.name.starts_with(&format!("{layer}.")) && pred(o))
+        // R 課題と、同じ課題 ID の義務の束（`Machine.Adequate`）
+        inp.obligations.obligations.iter().filter(|o| (o.refines || o.adequate) && o.name.starts_with(&format!("{layer}.")) && pred(o))
             .map(|o| o.name.clone()).collect()
     };
-    for (ops, layer) in [(&src_ops, "Abstraction"), (&tgt_ops, "Refinement")] {
+    for (ops, layer, side) in [(&src_ops, "Abstraction", Side::Source), (&tgt_ops, "Refinement", Side::Target)] {
         let all = closure(inp.dump, &r_names(&|_| true, layer));
         let entry = closure(inp.dump, &r_names(&|o| o.ids.iter().any(|i| inp.entry_tasks.contains(i)), layer));
         for op in ops.iter() {
             let f = inp.features.of_lean(op);
             if !all.contains(op) {
-                out.staged("TR-P", f, format!("{op}: not in the closure of any R task in {layer}"));
+                out.staged("TR-P", side, f, format!("{op}: not in the closure of any R task in {layer}"));
             }
             if !entry.contains(op) {
-                out.staged("TR-PE", f, format!("{op}: not in the closure of any entry R task in {layer}"));
+                out.staged("TR-PE", Side::Both, f, format!("{op}: not in the closure of any entry R task in {layer}"));
             }
         }
     }
@@ -264,20 +265,23 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         inp.obligations.refinements.iter().flat_map(|r| r.deviations.iter().chain(r.observations.iter())).collect();
     let obligation_ids: BTreeSet<&String> = inp.dump.definitions.iter().flat_map(|d| d.attr("obligation")).collect();
     let gap_ids: BTreeMap<&str, &Gap> = inp.dump.gaps.iter().map(|g| (g.id.as_str(), g)).collect();
+    // ギャップの側: D-NNN は移植元側、T-NNN は移植先側
+    let side_of_gap = |g: &Gap| if g.id.starts_with("T-") { Side::Target } else { Side::Source };
     let feature_of_gap = |g: &Gap| -> Option<&Feature> {
         let feats: Vec<&Feature> = g.r_tasks.iter().filter_map(|t| inp.features.of_task(t)).collect();
-        feats.iter().find(|f| inp.features.done(f)).or(feats.first()).copied()
+        feats.iter().find(|f| inp.features.done_side(f, side_of_gap(g))).or(feats.first()).copied()
     };
+    let side_of_layer = |n: &str| if n.starts_with("Refinement.") || n.starts_with("TargetModel.") { Side::Target } else { Side::Source };
     for g in inp.dump.gaps.iter().filter(|g| g.is_typed()) {
         // 行の R 課題の機能のうち、完了したものがあれば誤り
         let f = feature_of_gap(g);
         if !lean_devs.contains_key(&g.id) {
-            out.staged("TR-D", f, format!("{}: no @[deviation \"{}\"] in Lean", g.id, g.id));
+            out.staged("TR-D", side_of_gap(g), f, format!("{}: no @[deviation \"{}\"] in Lean", g.id, g.id));
         }
         match &g.w_task {
             None => out.err("TR-D", format!("{}: no W task in the registry", g.id)),
             Some(w) if !obligation_ids.contains(w) => {
-                out.staged("TR-D", f, format!("{}: W task {w} has no @[obligation] theorem", g.id))
+                out.staged("TR-D", side_of_gap(g), f, format!("{}: W task {w} has no @[obligation] theorem", g.id))
             }
             _ => {}
         }
@@ -292,7 +296,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         }
         for n in names {
             if !in_theorems.contains(n) {
-                out.staged("TR-D", inp.features.of_lean(n), format!("{n} (@[deviation \"{id}\"]) appears in no R task"));
+                out.staged("TR-D", side_of_layer(n), inp.features.of_lean(n), format!("{n} (@[deviation \"{id}\"]) appears in no R task"));
             }
         }
     }
@@ -305,7 +309,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         if g.is_typed() || g.kind == "outside_pre" {
             for l in ["Spec", concrete] {
                 if !in_layer(l) {
-                    out.staged_by("TR-K", &g.backlog, feature_of_gap(g),
+                    out.staged_by("TR-K", side_of_gap(g), &g.backlog, feature_of_gap(g),
                         format!("{} ({}): no @[gap \"{}\"] on a {l} definition", g.id, g.kind_label, g.id));
                 }
             }
@@ -316,7 +320,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         }
         // 証明の状態が未証明なら、段階導入（backlog が完了したら誤り）
         if g.evidence.state == "pending" {
-            out.staged_by("TR-K", &g.backlog, feature_of_gap(g),
+            out.staged_by("TR-K", side_of_gap(g), &g.backlog, feature_of_gap(g),
                 format!("{} ({}): the evidence is pending ({})", g.id, g.kind_label, g.evidence.reason));
         }
         if !g.is_typed() && g.kind != "out_of_model" && !g.deviations.is_empty() {
@@ -369,7 +373,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
 
     // ---- TR-R: 対応表・ベクタ ----
     for f in &inp.features.list {
-        for b in &f.backlog {
+        for b in f.backlog.all() {
             if !inp.features.backlog_exists(b) {
                 out.err("TR-R", format!("trace/features.json: {}: backlog {b} does not exist", f.name));
             }
@@ -459,7 +463,7 @@ mod tests {
         Features::from(
             vec![Feature {
                 name: "Fare".into(),
-                backlog: vec!["00000000-0000-4000-8000-000000000004".into()],
+                backlog: crate::docs::Backlog::Common(vec!["00000000-0000-4000-8000-000000000004".into()]),
                 lean: vec!["SourceModel.Fare".into(), "Abstraction.Fare".into(), "TargetModel.Fare".into(), "Refinement.Fare".into()],
                 tasks: vec!["ABS-001".into(), "ABS-031".into()],
                 locators: vec!["java:a.Fare*".into()],
@@ -606,6 +610,54 @@ mod tests {
         assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-001 (pre): the evidence is pending")), "{fs:?}");
     }
 
+    /// 移植元側だけが完了した機能（側ごとの段階導入）。
+    fn feats_sides() -> Features {
+        let (b1, b2) = ("00000000-0000-4000-8000-000000000004", "00000000-0000-4000-8000-000000000005");
+        Features::from(
+            vec![Feature {
+                name: "Fare".into(),
+                backlog: crate::docs::Backlog::Sides { source: vec![b1.into()], target: vec![b2.into()] },
+                lean: vec!["SourceModel.Fare".into(), "Abstraction.Fare".into(), "TargetModel.Fare".into(), "Refinement.Fare".into()],
+                tasks: vec!["ABS-001".into()],
+                locators: vec!["java:a.Fare*".into()],
+            }],
+            BTreeMap::from([(b1.to_string(), "done".to_string()), (b2.to_string(), "todo".to_string())]),
+        )
+    }
+
+    #[test]
+    fn staged_by_side() {
+        let defs = vec![
+            def("SourceModel.Fare.f", "SourceModel", &[("source", &["java:a.Fare#f()@aa"])], &[]),
+            def("TargetModel.Fare.g", "TargetModel", &[], &[]),
+        ];
+        let fs = run_with(defs, Obligations::default(), inv(&[("java:a.Fare#f()", "aa"), ("java:a.Fare#g()", "bb")]),
+            &feats_sides(), vec![], &["ABS-031"]);
+        // 移植元側が完了: TR-S1・TR-P は誤り
+        assert!(fs.iter().any(|f| f.error && f.rule == "TR-S1" && f.msg.contains("#g()")), "{fs:?}");
+        assert!(fs.iter().any(|f| f.error && f.rule == "TR-P" && f.msg.contains("SourceModel.Fare.f")), "{fs:?}");
+        // 移植先側は未完了: TR-T1 は警告。入口からの到達（TR-PE）は両側の完了まで警告
+        assert!(fs.iter().any(|f| !f.error && f.rule == "TR-T1" && f.msg.contains("TargetModel.Fare.g")), "{fs:?}");
+        assert!(fs.iter().any(|f| !f.error && f.rule == "TR-PE" && f.msg.contains("SourceModel.Fare.f")), "{fs:?}");
+    }
+
+    #[test]
+    fn tr_p_follows_adequate_bundle() {
+        let defs = vec![
+            def("SourceModel.Fare.f", "SourceModel", &[("source", &["java:a.Fare#f()@aa"])], &[]),
+            def("SourceModel.Fare.cfg", "SourceModel", &[("source", &["java:a.Fare#cfg()@cc"])], &[]),
+            def("SourceModel.Fare.machine", "SourceModel", &[], &["SourceModel.Fare.f"]),
+            def("Abstraction.Fare.r", "Abstraction", &[("obligation", &["ABS-001"])], &["SourceModel.Fare.machine"]),
+            def("Abstraction.Fare.adq", "Abstraction", &[("obligation", &["ABS-001"])], &["Abstraction.Fare.r", "SourceModel.Fare.cfg"]),
+        ];
+        let ob = |n: &str, r: bool| crate::lean::Obligation { name: n.into(), ids: vec!["ABS-001".into()], refines: r, adequate: !r };
+        let obl = Obligations { obligations: vec![ob("Abstraction.Fare.r", true), ob("Abstraction.Fare.adq", false)], ..Default::default() };
+        let src = inv(&[("java:a.Fare#f()", "aa"), ("java:a.Fare#cfg()", "cc")]);
+        let fs = run_with(defs, obl, src, &feats_sides(), vec![], &[]);
+        // 束の証人（cfg）も R 課題の閉包に入る
+        assert!(!fs.iter().any(|f| f.rule == "TR-P"), "{fs:?}");
+    }
+
     #[test]
     fn tr_pe_operation_only_in_non_entry_r_task() {
         let defs = vec![
@@ -614,7 +666,7 @@ mod tests {
             def("Abstraction.Fare.inner_refines", "Abstraction", &[("obligation", &["ABS-001"])], &["SourceModel.Fare.machine"]),
         ];
         let obl = Obligations {
-            obligations: vec![crate::lean::Obligation { name: "Abstraction.Fare.inner_refines".into(), ids: vec!["ABS-001".into()], refines: true }],
+            obligations: vec![crate::lean::Obligation { name: "Abstraction.Fare.inner_refines".into(), ids: vec!["ABS-001".into()], refines: true, adequate: false }],
             ..Default::default()
         };
         let fs = run_with(defs.clone(), obl.clone(), inv(&[("java:a.Fare#f()", "aa")]), &feats(true), vec![], &["ABS-031"]);

@@ -2,6 +2,10 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR a41d](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) で、実装済みの範囲（マスタ・設定・コードリストの読み込みと運賃計算）のトップレベルの主定理と、移植元側の段階導入を決めた。[backlog 76a6](backlog/76a6-source-side-adequacy-gate.md) を作り、完了した（`done`）。スキル側の決定は [スキルの ADR ab9e](../.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)（スキルの版 0.12）。
+  * `lean/Abstraction.lean` のトップレベルに `Abstraction.refines`・`Abstraction.adequate`、R 課題ごとの束と 1 歩の可換式を `Abstraction.Adequacy` に置いた。`Spec.machine`・`SourceModel.machine` を足した。`lean/Refinement.lean` に同じ形を書いた（`TargetModel` ができるまで主定理は置かない）。
+  * `trace/features.json` を側ごとの作業項目にし、他の機能の移植元の項目を移した。運賃計算・マスタの残りの項目に `@[source]` を付け、`trace/checks.json` に `seed-lean` を、`trace/out-of-scope.json` に `commons-logging.properties` を足した。
+  * [spec/abstraction.md](spec/abstraction.md#トップレベルの主定理)、[spec/refinement.md](spec/refinement.md)、[rules/backlog.md](rules/backlog.md#完了の定義definition-of-done)、[backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md) を改めた。
 * **Update**: スキル port-lang の文書を、性格ごとのディレクトリ `spec/`・`rules/`・`guide/`・`lang/<lang>/` に分けた（[スキルの ADR 748c](../.agents/skills/port-lang/references/docs/decision/748c-skill-docs-category-directories.md)、[スキルの backlog 97a7](../.agents/skills/port-lang/references/docs/backlog/97a7-skill-docs-category-directories.md)）。スキルの版は 0.11。
   * スキルの道具 `docmv.py` で、ATRS の文書・`lean/`・`trace/project.json`・`.github/workflows/` のリンクとパスの言及を張り直した。ADR とこのファイルの本文に書いたリンクでないパスは記録として残し、リンクだけ直した。
   * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.11）、[AGENTS.md](../AGENTS.md)（言語パックの置き場所）。`tools/ci/lean.sh` に `docmv.py --self-test` を足した。

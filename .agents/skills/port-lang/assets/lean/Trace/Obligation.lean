@@ -19,12 +19,13 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G4 | 具体側の基底は `Concrete.ofFun`・`Concrete.pure`、または `Dom` を既定（全体）にした構造体で、`toConcrete` と `Spec` の関数を参照しない |
 | G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.anyOf` で並べてよい） |
 | G6 | 付帯の定理: `InitSurj`、基底の `Sound`・`InitIs`、基底が `ofChoice` なら `Pinned`（同じ `f`、`ce` は `@[std_abs]`）と `NoFaultReachable`（同じ `ce`・`e₀`） |
+| GA | 義務の束: 結論が `Machine.Adequate A C g s₀ Env` の `@[obligation]` 定理は、同じ課題 ID の R 課題と同じ `A`・`C`・`g` を束ねる。束の有無の判定（R 課題ごとに 1 つ）は `scripts/ci/check_obligations.py` が行う（OB-A） |
 
 あわせて、環境全体について次を判定する。
 
 | 規則 | 内容 |
 | --- | --- |
-| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
+| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum` で並置したもので作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
@@ -71,6 +72,8 @@ open Lean
 -- `Machine` の定数の名前。
 namespace N
 def refines : Name := `Machine.Refines
+def adequate : Name := `Machine.Adequate
+def sum : Name := `Machine.Machine.sum
 def restrict : Name := `Machine.Machine.restrict
 def restrictState : Name := `Machine.Machine.restrictState
 def cRestrict : Name := `Machine.Concrete.restrict
@@ -293,6 +296,8 @@ structure Companions where
 structure Report where
   rs : Array RInfo
   obligations : Array (Name × Array String × Bool)
+  /-- 結論が `Machine.Adequate` の `@[obligation]` 定理（GA） -/
+  adequate : Array Name := #[]
   nondets : Array (Name × Array String)
   deviations : Array (Name × Array String)
   stdAbs : Array (Name × Array String)
@@ -378,6 +383,16 @@ def unfoldTo (env : Environment) (targets : List Name) (e : Expr) : Option Expr 
     | some e' => e := e'
     | none => return none
   return none
+
+/-- `Spec` の層の機械の定義が、`ofChoice`・`pure` か、それらを `Machine.sum` で並置したものか（G3'）。 -/
+partial def specMachineOk (env : Environment) (e : Expr) : Bool :=
+  match unfoldTo env [N.ofChoice, N.pure, N.sum] e with
+  | some e' =>
+    if e'.getAppFn.constName? == some N.sum then
+      let args := e'.getAppArgs
+      args.size == 8 && specMachineOk env (unfoldReducible env args[6]!) && specMachineOk env (unfoldReducible env args[7]!)
+    else true
+  | none => false
 
 /-- 選択の型を `Prod` で分解した葉。 -/
 partial def prodLeaves (e : Expr) : Array Expr :=
@@ -741,6 +756,10 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let cs := collectCompanions env
   let mut rs := #[]
   let mut obligations := #[]
+  let mut adequate : Array Name := #[]
+  -- R 課題と束の (定理, ID, A, C, g)（GA の照合）
+  let mut rArgs : Array (Array String × Array Expr) := #[]
+  let mut aArgs : Array (Name × Array String × Array Expr) := #[]
   let mut nondets := #[]
   let mut devs := #[]
   let mut stds := #[]
@@ -780,18 +799,30 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
       if (conclusion ci.type).1.isAppOf N.machine then
         let mut v := ci.value!
         while v.isLambda do v := v.bindingBody!
-        if (unfoldTo env [N.ofChoice, N.pure] (unfoldReducible env v)).isNone then
+        if !specMachineOk env (unfoldReducible env v) then
           errors := errors.push s!"G3: {n} (Spec machine) is not built with Machine.ofChoice or Machine.pure"
     if let some ids := obligationAttr.getParam? env n then
       if let .thmInfo _ := ci then
         let (concl, _) := conclusion ci.type
         let concl := unfoldReducible env concl
         let isR := concl.isAppOfArity N.refines 10
+        let isA := concl.isAppOfArity N.adequate 12
         obligations := obligations.push (n, ids, isR)
-        if isR then rs := rs.push (checkR env sc cs n ids ci.type)
+        let acg (e : Expr) (i : Nat) : Array Expr :=
+          (e.getAppArgs.extract i (i + 3)).map fun x => normalize env (unfoldReducible env x)
+        if isA then
+          adequate := adequate.push n
+          aArgs := aArgs.push (n, ids, acg concl 7)
+        if isR then
+          rs := rs.push (checkR env sc cs n ids ci.type)
+          rArgs := rArgs.push (ids, acg concl 7)
         else if (normalize env ci.type).getUsedConstants.contains N.refines &&
             (necessityForm? env ci.type).isNone then
           errors := errors.push s!"G0: {n} mentions Machine.Refines but its conclusion is not Refines"
+  -- GA: 束は、同じ課題 ID の R 課題と同じ A・C・g を束ねる
+  for (n, ids, xs) in aArgs do
+    unless rArgs.any (fun (rids, ys) => ids.any rids.contains && xs == ys) do
+      errors := errors.push s!"GA: {n} (Machine.Adequate) does not bundle an R obligation with the same ID {ids.toList} (A, C and g must match)"
   -- G9: 成分の必要性（差異 ID ごとに、少なくとも 1 つの R 課題について。被覆は必要な差異から広げる）
   let used := (rs.foldl (fun acc ri => acc ++ ri.devs ++ ri.obs) #[]).toList.eraseDups
   let mut needed := rs.foldl (fun acc ri => acc ++ ri.necessity) #[]
@@ -819,7 +850,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
           s!"G9: {e} (@[env_pre]) is used for the abstract base {b} of an R obligation without a ¬ TotalUnder (base) always theorem (if PRE is total, state TotalUnder (base) always instead)"
   errors := errors ++ checkGaps env sc rs cs
   let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
-  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
+  return { rs, obligations, adequate, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
            gaps := Trace.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
@@ -846,7 +877,8 @@ def Report.toJson (r : Report) : Json :=
       ("state_safe", names ri.stateSafe), ("necessity", names ri.necessity),
       ("errors", Lean.toJson ri.errors)])),
     ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
-      ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR)])),
+      ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR),
+      ("adequate", Lean.toJson (r.adequate.contains n))])),
     ("nondet", attrd r.nondets), ("deviation", attrd r.deviations), ("std_abs", attrd r.stdAbs),
     ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors),
     ("warnings", Lean.toJson r.warnings), ("gaps", r.gaps)]

@@ -21,7 +21,8 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `Refines.StateSafe`・`StateSafeConcrete` | 出力のみの差異の前提が破れても、状態は `J` を保つ | 差異の前提の外の 1 歩による状態の破壊 |
 | `Nontrivial`・`Nontrivial₂` | 名前付きの述語・関係は、成り立つ値と成り立たない値を持つ | `True`・`False` の成分 |
 | `KernelIs` | 標準の抽象化の葉が同一視するもの（核） | 標準の抽象化に隠れた同一視 |
-| `Refines.complete`・`Refines.run` | 1 歩の可換式と、複数歩の模倣 | — |
+| `Refines.complete`・`Refines.complete_fun`・`Refines.run` | 1 歩の可換式（`ofChoice` の機械と、出力が関数で決まる機械）と、複数歩の模倣 | — |
+| `Machine.Adequate` | リファインメントと付帯の義務（`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提を置かないか、その必要性）の束。系として、初期状態からの複数歩の模倣（`run_init`）と、具体側の正常終了が実在すること（`exists_ok`） | 義務の一部だけを示して、R 課題を完了とすること |
 | `Refines.congr` | 各点で同値な貼り合わせへの付け替え | — |
 | `always`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
 | `Covers`・`Covers₂` | 被覆: 必要な差異 M の下では差異 d が常に成り立つ（d は M に覆われ、必要性の代わりにこれを示す） | 他の差異に覆われた実在の差異が、必要性を示せないこと |
@@ -303,7 +304,79 @@ theorem run (hS : A.Sound) (h : Refines A C g) {Env : ιa → Prop} (hT : A.Tota
       ih hi₁ hJ₁ fun ic' hm => hin ic' (List.Mem.tail _ hm)
     exact ⟨ia :: ias, s', oa :: oas, .cons ha hai, .cons hpre hst hrun, hJ', hi', .cons ho hao⟩
 
+/-- 出力が関数で決まる抽象機械（`Machine.pure` とその制限）の 1 歩の可換式: PRE の下で、具体側は必ず結果を持ち、
+どの結果も正常終了で、出力は `αo` で `f ia` に対応する。`Pinned` を持たない（環境の選択の無い）機械の完全性である。 -/
+theorem complete_fun {f : ιa → οa} (h : Refines A C g) (hf : ∀ s i s' o, A.step s i s' o → o = f i) {s : σ}
+    {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia)
+    (hd : C.Dom ic) :
+    (∃ r, C.step t ic r) ∧ ∀ r, C.step t ic r → ∃ t' oc, r = .ok (t', oc) ∧ (∃ s', g.J s' t') ∧ g.αo oc (f ia) := by
+  obtain ⟨hex, hne⟩ := h.applicable s t ic ia hi hJ ha hpre hd
+  refine ⟨hex, fun r hr => ?_⟩
+  match r, hr with
+  | .error e, hr => exact absurd hr (hne e)
+  | .ok (t', oc), hr =>
+    obtain ⟨s', oa, hst, hJ', ho⟩ := h.correct s t ic ia t' oc hi hJ ha hpre hd hr
+    exact ⟨t', oc, rfl, ⟨s', hJ'⟩, hf s ia s' oa hst ▸ ho⟩
+
+
 end Refines
+
+/-- リファインメントと、空虚化を防ぐ付帯の義務の束（references/docs/spec/architecture.md#空虚化を防ぐ義務）。
+入口でない R 課題にも課せる形で、環境の固定（`Pinned`・`NoFaultReachable`）は含めない（基底が `ofChoice` の機械は
+別に示す）。
+
+- `refines`: R 課題の主定理
+- `sound`・`initIs`: 抽象側の INV が空でなく、初期状態は fixture の 1 点 `s₀`
+- `initSurj`: 抽象側の初期状態に、対応する具体側の初期状態がある
+- `total`: INV と環境の前提 `Env` の下で PRE が成り立つ
+- `envWitness`: 環境の前提を満たす像を持つ、具体側の入力がある
+- `envNeeded`: 環境の前提を置かない（`Env = always`。PRE が INV の下で全域）か、環境の前提が無ければ PRE が
+  成り立たない入力がある（前提は不要でない） -/
+structure Adequate (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε) (g : Glue σ τ ιa ιc οa οc) (s₀ : σ)
+    (Env : ιa → Prop) : Prop where
+  refines : Refines A C g
+  sound : A.Sound
+  initIs : A.InitIs s₀
+  initSurj : Refines.InitSurj A C g
+  total : A.TotalUnder Env
+  envWitness : Refines.EnvWitness C g Env
+  envNeeded : Env = always ∨ ¬ A.TotalUnder always
+
+namespace Adequate
+
+variable {A : Machine σ ιa οa} {C : Concrete τ ιc οc ε} {g : Glue σ τ ιa ιc οa οc} {s₀ : σ} {Env : ιa → Prop}
+
+/-- 具体側の初期状態は、抽象側の初期状態 `s₀` と `J` で結ばれ、`s₀` は INV を満たす。 -/
+theorem init_glue (h : Adequate A C g s₀ Env) {t : τ} (ht : C.Init t) : g.J s₀ t ∧ A.Inv s₀ := by
+  obtain ⟨s, hs, hJ⟩ := h.refines.init t ht
+  rw [(h.initIs s).1 hs] at hJ
+  exact ⟨hJ, h.initIs.inv h.sound⟩
+
+/-- 初期状態からの複数歩の模倣: 具体側の初期状態からの正常終了の列は、各入力が定義域と環境の前提を満たせば、
+`s₀` からの PRE を満たす抽象側の歩みの列で、`J`・`αi`・`αo` を保って模倣される。 -/
+theorem run_init (h : Adequate A C g s₀ Env) {t : τ} {ics : List ιc} {t' : τ} {ocs : List οc} (ht : C.Init t)
+    (hr : C.Run t ics t' ocs) (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → Env ia) :
+    ∃ ias s' oas, Forall₂ g.αi ics ias ∧ A.Run s₀ ias s' oas ∧ g.J s' t' ∧ A.Inv s' ∧ Forall₂ g.αo ocs oas :=
+  let ⟨hJ, hi⟩ := h.init_glue ht
+  h.refines.run h.sound h.total hi hJ hr hin
+
+/-- 非空虚性: 環境の前提を満たす具体側の入力が、`s₀` に対応する具体側の初期状態から正常終了し、その結果は
+抽象側の歩みで模倣される。リファインメントが、空でない具体側の振る舞いについて述べていることを示す。 -/
+theorem exists_ok (h : Adequate A C g s₀ Env) :
+    ∃ t ic ia t' oc s' oa, C.Init t ∧ C.Dom ic ∧ g.αi ic ia ∧ Env ia ∧ C.step t ic (.ok (t', oc)) ∧
+      A.step s₀ ia s' oa ∧ g.J s' t' ∧ g.αo oc oa := by
+  obtain ⟨ic, ia, hd, ha, he⟩ := h.envWitness
+  have hi := h.initIs.inv h.sound
+  obtain ⟨t, ht, hJ⟩ := h.initSurj s₀ ((h.initIs s₀).2 rfl)
+  have hpre := h.total s₀ ia hi he
+  obtain ⟨⟨r, hr⟩, hne⟩ := h.refines.applicable s₀ t ic ia hi hJ ha hpre hd
+  match r, hr with
+  | .error e, hr => exact absurd hr (hne e)
+  | .ok (t', oc), hr =>
+    obtain ⟨s', oa, hst, hJ', ho⟩ := h.refines.correct s₀ t ic ia t' oc hi hJ ha hpre hd hr
+    exact ⟨t, ic, ia, t', oc, s', oa, ht, hd, ha, he, hr, hst, hJ', ho⟩
+
+end Adequate
 
 /-- 標準の貼り合わせでは、具体側の入力の全域性は `ai` が定義域で `none` にならないことに帰着する。 -/
 theorem Glue.ofStd_input_total {β : τ → Option σ} {Ic : τ → Prop} {ai : ιc → Option ιa}

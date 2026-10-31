@@ -1,5 +1,6 @@
 import Spec.MasterData
 import Spec.Config
+import Trace
 
 /-!
 # Spec.Seed
@@ -8,6 +9,7 @@ import Spec.Config
 `tools/conformance/seed_lean.py` が生成する。手で編集しない。
 上流: release/5.11.0.RELEASE / f4bfbf0615eb91805546c9c780d4761be92ce17e。行の順はシードの順。
 `outsideSpec` の行（到着時刻 2415 の便マスタ 2 行。[Spec] の値域の外）は除く（ADR 8f18。backlog 0be7 で [Spec] を改める）。
+各表の `@[source]` は上流のシードの文（この変換の入力の出所）を指す。
 -/
 
 set_option maxRecDepth 4096
@@ -71,6 +73,7 @@ def airports0 : List Airport := [
 ]
 
 /-- `airports`（51 行）。 -/
+@[source "seed:00200_insert_fixed_value.sql#AIRPORT@e5f2a74a341d1ab1"]
 def airports : List Airport := airports0
 
 def routes0 : List Route := [
@@ -97,6 +100,7 @@ def routes0 : List Route := [
 ]
 
 /-- `routes`（20 行）。 -/
+@[source "seed:00210_insert_route.sql#ROUTE@376e285ef8a7ec0a"]
 def routes : List Route := routes0
 
 def flightMasters0 : List FlightMaster := [
@@ -230,6 +234,7 @@ def flightMasters1 : List FlightMaster := [
 ]
 
 /-- `flightMasters`（124 行）。 -/
+@[source "seed:00220_insert_flight_master.sql#FLIGHT_MASTER@ce88990bf3547005"]
 def flightMasters : List FlightMaster := flightMasters0 ++ flightMasters1
 
 def boardingClasses0 : List BoardingClass := [
@@ -238,6 +243,7 @@ def boardingClasses0 : List BoardingClass := [
 ]
 
 /-- `boardingClasses`（2 行）。 -/
+@[source "seed:00200_insert_fixed_value.sql#BOARDING_CLASS@0c0030e40bed7655"]
 def boardingClasses : List BoardingClass := boardingClasses0
 
 def fareTypes0 : List FareType := [
@@ -254,6 +260,7 @@ def fareTypes0 : List FareType := [
 ]
 
 /-- `fareTypes`（10 行）。 -/
+@[source "seed:00200_insert_fixed_value.sql#FARE_TYPE@9d4738994cba9a16"]
 def fareTypes : List FareType := fareTypes0
 
 def peakTimes0 : List PeakTime := [
@@ -276,6 +283,7 @@ def peakTimes0 : List PeakTime := [
 ]
 
 /-- `peakTimes`（16 行）。 -/
+@[source "seed:00240_insert_peak_time.sql#PEAK_TIME@3eead422572ddcea"]
 def peakTimes : List PeakTime := peakTimes0
 
 def planes0 : List Plane := [
@@ -1720,6 +1728,7 @@ def planes13 : List Plane := [
 ]
 
 /-- `planes`（1399 行）。 -/
+@[source "seed:00200_insert_fixed_value.sql#PLANE@4dd53d69f0fe3e83"]
 def planes : List Plane := planes0 ++ planes1 ++ planes2 ++ planes3 ++ planes4 ++ planes5 ++ planes6 ++ planes7 ++ planes8 ++ planes9 ++ planes10 ++ planes11 ++ planes12 ++ planes13
 
 def creditTypes0 : List CreditType := [
@@ -1731,6 +1740,7 @@ def creditTypes0 : List CreditType := [
 ]
 
 /-- `creditTypes`（5 行）。 -/
+@[source "seed:00200_insert_fixed_value.sql#CREDIT_TYPE@5cac07149240715c"]
 def creditTypes : List CreditType := creditTypes0
 
 /-- シードのマスタ。 -/

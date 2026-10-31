@@ -155,6 +155,9 @@ pub struct Obligation {
     pub ids: Vec<String>,
     #[serde(default)]
     pub refines: bool,
+    /// 結論が義務の束 `Machine.Adequate`
+    #[serde(default)]
+    pub adequate: bool,
 }
 
 #[derive(Deserialize, Clone, Debug, Default)]

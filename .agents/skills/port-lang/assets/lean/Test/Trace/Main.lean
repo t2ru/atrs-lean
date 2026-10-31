@@ -199,7 +199,8 @@ def obligationTests (env : Environment) : IO Unit := do
     "GK: D-907: Test.Trace.ObFix.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
     "GK: D-911: the covered chain is cyclic", "GK: D-912: the covered chain is cyclic",
     "GK: D-921: the claim Test.Trace.ObFix.Abstraction.claim921 must be an opaque Prop",
-    "GK: Test.Trace.ObFix.Abstraction.usesClaim refers to Test.Trace.ObFix.Abstraction.claim920"]
+    "GK: Test.Trace.ObFix.Abstraction.usesClaim refers to Test.Trace.ObFix.Abstraction.claim920",
+    "GA: Test.Trace.ObFix.Abstraction.ga_mismatch", "GA: Test.Trace.ObFix.Abstraction.ga_noR"]
   check s!"global errors: exactly {expectedGlobal.length}"
     (r.errors.size == expectedGlobal.length &&
       expectedGlobal.all fun p => r.errors.any (·.startsWith p))
@@ -223,6 +224,9 @@ def obligationTests (env : Environment) : IO Unit := do
       (gapOf "D-906").getObjValD "w_task" == Json.null)
   check "gaps: resolution of an unformalized undetermined gap"
     ((gapOf "D-921").getObjValD "resolution" == "オラクルで確かめる")
+  check "adequate: obs_adequate, ga_mismatch and ga_noR listed as Machine.Adequate bundles"
+    (r.adequate == #[ab "ga_mismatch", ab "ga_noR", ab "obs_adequate"] ||
+      (r.adequate.size == 3 && [ab "obs_adequate", ab "ga_mismatch", ab "ga_noR"].all r.adequate.contains))
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
   check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObFix.Spec.AnyResult, `Test.Trace.ObFix.Spec.Conflict])

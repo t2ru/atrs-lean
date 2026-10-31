@@ -62,6 +62,7 @@ okf_version: "0.2"
 * [ギャップの証明の状態を Lean の型で表し、公理・sorry を使わずに裏付けの宣言で示す](decision/6ab4-gap-evidence-states-without-axioms.md) - ギャップ（リファインメントの証明の中で証明できない部分）を axiom・sorry で仮定せず、登録簿 Trace.Gap に証明の状態 Evidence（偽を証明済み・被覆・未証明・形式化していない・PRE の外）を持たせ、状態を裏付ける宣言（否定の定理・被覆の定理・opaque の主張・前提の述語）に @[gap] を付けて obligation-check で照合する。
 * [スキル port-lang の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する](decision/50f9-move-skill-records-to-skill-bundle.md) - スキル port-lang の文書が references/docs/ の OKF バンドルになり、スキル自身の意思決定記録・作業項目を持つようになったのに合わせ、ATRS の docs/ にあった純粋にスキルの記録（ADR 6 件・backlog 2 件）を移す。ID の道具は ATRS とスキルを 1 つの ID 空間で検査する。
 * [docs/ とスキルのバンドルを okf_check.py で検査し、CI の一括検査に入れる](decision/920d-docs-bundle-check-in-ci.md) - ATRS の docs/ とスキル port-lang の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。
+* [実装済みの範囲のトップレベルの Refines・Adequate と、移植元側の段階導入](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) - Abstraction.lean のトップレベルに、機能を並置した Spec.machine と SourceModel.machine の Machine.Refines・Machine.Adequate を置き、R 課題ごとの義務の束から組み立てる。追跡の検査の段階導入を側ごとにし、運賃計算・マスタの移植元側を失敗扱いにする。移植元の項目の機能への振り直しと、ドメインモデルのアクセサ・DDL の制約・シード・設定の Bean の追跡の仕方を決める。
 
 # Specification
 
@@ -123,6 +124,7 @@ okf_version: "0.2"
 * [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](backlog/114a-gap-attributes-and-trace-in-skill.md) - lean/Trace をスキル port-lang の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。
 * [アプリに依存しない道具・Lean のライブラリ・方法をスキルへ移す](backlog/38fb-move-generic-elements-to-skill.md) - tools/ の汎用の道具をスキルの scripts/ へ、Abstraction・Tests の汎用の Lean コードをスキルの assets へ移し、ATRS 固有の値を trace/project.json に集める。汎用の方法を文書でもスキルへ移し、スキルに紛れた ATRS 固有の記述を外す。
 * [ギャップの証明の状態を Lean で表す](backlog/c27d-gap-evidence-states.md) - Trace.Gap に証明の状態 Evidence を足し、obligation-check（GK）で裏付けの宣言と照合する。ATRS の登録簿の 30 件に状態を与え、否定の定理と opaque の主張に @[gap] を付け、生成する表に証明の状態の列を足す。
+* [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](backlog/76a6-source-side-adequacy-gate.md) - 運賃計算・マスタの読み込みの R 課題を義務の束 Machine.Adequate に束ね、機能を並置した Spec.machine・SourceModel.machine についてトップレベルの Machine.Refines・Machine.Adequate を Abstraction.lean に示す。移植元側の追跡の検査を、移植元側の作業項目の完了で失敗扱いにする（側ごとの段階導入）。
 
 # Skill
 
