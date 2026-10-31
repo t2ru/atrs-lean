@@ -1,14 +1,14 @@
 ---
 type: Backlog Item
 title: "運賃計算の抽象化証明"
-description: "運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、第 1 段で double の誤差を定理で確定した。"
+description: "運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、第 1 段で double の誤差を定理で確定し、第 2 段で基本運賃・運賃の R 課題を証明した。"
 tags: [backlog, abstraction, proof, fare]
 id: "bbcce088-c475-4378-9cc6-e3d821acc0f5"
 state: doing
 depends_on: ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:13:09+09:00
+  at: 2026-10-31T16:42:19+09:00
 ---
 
 # 運賃計算の抽象化証明
@@ -24,8 +24,8 @@ generated:
 | 段 | 内容 |
 | --- | --- |
 | 第 1 段 | double・BigDecimal の補題（スキル）と、基本運賃・運賃の差異の条件（D-001・D-002）の定理 |
-| 第 2 段 | R 課題 ABS-001（基本運賃）・ABS-002（運賃）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102 |
-| 第 3 段 | R 課題 ABS-004（合計金額）、L 課題 ABS-005、W 課題 ABS-112、運賃計算の `Spec` の機械、SPEC-001 |
+| 第 2 段 | R 課題 ABS-001（基本運賃）・ABS-002（運賃）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102、基本運賃・運賃の `Spec` の機械と SPEC 課題 |
+| 第 3 段 | R 課題 ABS-004（合計金額）、L 課題 ABS-005、W 課題 ABS-112、合計金額の `Spec` の機械、SPEC-001 |
 
 - R 課題は `Machine.Refines` の形で示す。具体側の入力は DB のマスタと引数とし、ABS-026 の α と補題を再利用する
 - 前提型の差異の述語 `dev_D001`・`dev_D002`・`dev_D012`（`@[deviation]`）
@@ -40,8 +40,10 @@ generated:
 
 - [x] D-001 を確定した（第 1 段。値域内に差異があり、証拠は 100 円・積算比率 29%。ABS-007 は否定的に解決した）
 - [x] D-001・D-002 の前提を、差異が起きない十分条件の定理で書き、[abstraction.md](../spec/abstraction.md) を更新した（第 1 段）
-- [ ] 各課題に対応する定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する
-- [ ] 運賃計算の SPEC-001 を証明した
+- [x] 基本運賃・運賃の R 課題（ABS-001・002）と ABS-003・007・101・102 の定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する（第 2 段）
+- [x] 基本運賃・運賃の機械の SPEC-001〜003・007 を証明した（第 2 段）
+- [ ] 合計金額の課題（ABS-004・005・112）の定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する
+- [ ] 合計金額の機械の SPEC-001 を証明した
 - [ ] D-012 の前提を証明結果で更新し、TR-D が通る
 
 ## 第 1 段の結果
@@ -57,6 +59,20 @@ generated:
 | `Abstraction.Fare.basicFare_src`・`basicFare_src_eq` | 基本運賃の [Source] と [Spec] の関係と、D-001 の前提の下での一致 |
 | `Abstraction.Fare.fare_src`・`fare_src_eq` | 運賃の [Source] と [Spec] の関係（差は 0 か 100 円）と、D-002 の前提の下での一致 |
 | `Abstraction.Fare.basicFare_witness`・`fare_witness` | 差異の証拠（100 円・29% で 28 と 29、1430 円・30% で 1000 と 1100） |
+
+## 第 2 段の結果
+
+| 定理・定義 | 内容 |
+| --- | --- |
+| `Spec.Fare.basicFareMachine`・`fareMachine` | 基本運賃・運賃の抽象機械（`Machine.pure`）と SPEC-001〜003・007 |
+| `SourceModel.MasterQuery.load` | 起動時の読み込み（`run` から切り出した）。`Abstraction.MasterData.load_correct` |
+| `SourceModel.FareQuery.basicFareConcrete`・`fareConcrete` | 基本運賃（DB のマスタ・設定・引数）・運賃（引数）の具体機械 |
+| `Abstraction.Fare.aiBF`・`aiF`・`dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` | α と差異の述語（一覧 `unsafeBasicRatios`・`unsafeDiscountRates`） |
+| `Abstraction.Fare.basicFareRefines`（ABS-001）・`fareRefines`（ABS-002） | R 課題と `InitSurj` |
+| `Abstraction.Fare.runBasicFare_spec`（ABS-007）・`fare_diff`（ABS-003） | 前提によらない差の範囲 |
+| `Abstraction.Fare.need_D001`（ABS-101）・`need_D002`（ABS-102） | 差異の必要性（G9） |
+
+第 3 段に残るもの: 合計金額の抽象機械・具体機械と ABS-004・005・112、D-012。
 
 ## 参照
 

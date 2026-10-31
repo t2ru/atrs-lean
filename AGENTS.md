@@ -93,8 +93,8 @@ Lean の雛形（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)。�
 - 第 2 段 b-2a: ABS-026 の標準の抽象化 α と核、`dev_D027`、[Spec] の修正（参照の答えの射影、空白の便名）
 - 第 2 段 b-2b: ABS-026 の主定理 `queryRefines`・`InitSurj`・W 課題 ABS-127（`need_D027`）、意図から書く例
 
-運賃計算の抽象化証明（[backlog bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md)）は 3 段に分け、第 1 段で double の誤差を定理で確定した（D-001 は値域内に差異がある。D-001・D-002 の前提は「100 で割り切れないか、因子が安全」。[ADR e9bc](docs/decision/e9bc-fare-double-analysis.md)）。
+運賃計算の抽象化証明（[backlog bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md)）は 3 段に分け、第 1 段で double の誤差を定理で確定した（D-001 は値域内に差異がある。D-001・D-002 の前提は「100 で割り切れないか、因子が安全」。[ADR e9bc](docs/decision/e9bc-fare-double-analysis.md)）。第 2 段で、基本運賃・運賃の R 課題 ABS-001・ABS-002 と、W 課題 ABS-101・ABS-102（D-001・D-002 の必要性）を証明した。
 空虚化を防ぐ義務を既存の研究に照らして補い、名前付きの成分の必要性（G9）を加えた（[ADR 9ac6](docs/decision/9ac6-vacuity-literature-necessity-and-mutation.md)、[backlog ae04](docs/backlog/ae04-component-necessity-witness.md)）。成分の変異テストは [backlog 0d1a](docs/backlog/0d1a-mutation-testing-of-named-components.md) で扱う。Rust のコードはまだ無い。
-次に着手できるのは、Lean 側の [bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md) の第 2 段（基本運賃・運賃の R 課題）・[0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[a936](docs/backlog/a936-lang-semantics-rust.md)（言語意味論）・[ddbd](docs/backlog/ddbd-okf-bundle-lint.md)（OKF の検査）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
+次に着手できるのは、Lean 側の [bbcc](docs/backlog/bbcc-fare-abstraction-proofs.md) の第 3 段（合計金額の R 課題 ABS-004）・[0fdf](docs/backlog/0fdf-spec-nondet-and-entry-env.md)（`Spec` の非決定性の型と入口の環境の前提）・[a936](docs/backlog/a936-lang-semantics-rust.md)（言語意味論）・[ddbd](docs/backlog/ddbd-okf-bundle-lint.md)（OKF の検査）、原典との照合の [f18c](docs/backlog/f18c-java-oracle-harness.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 Lean 側の検査は `tools/ci/lean.sh` で一括して実行する。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

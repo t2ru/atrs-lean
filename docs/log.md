@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 2 段を終えた（`doing`）。R 課題 ABS-001（`Abstraction.Fare.basicFareRefines`）・ABS-002（`fareRefines`）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102（D-001・D-002 の必要性）を証明した。基本運賃・運賃の抽象機械と SPEC 課題を `Spec.Fare` に置いた。
+* **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 2 段の決定（抽象機械の置き場所、具体側の入力、D-027 の定数、差異の前提の形）を加えた。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（ABS-001・002・003・007・101・102 の定理名、D-001・D-002・D-027 の前提、α の表）
+  * [spec/fare-calculation.md](spec/fare-calculation.md)（抽象機械）
+  * [index.md](index.md)、[AGENTS.md](../AGENTS.md)
+
 * **Add**: [ADR e9bc](decision/e9bc-fare-double-analysis.md)（運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く）。
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 1 段を終えた（`doing`）。3 段に分け、Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、`depends_on` から f18c を外した。double・BigDecimal の補題（スキルの `LangSemantics.Java.DoubleLemmas`・`bdCeilHundredUp_val`）と、基本運賃・運賃の差異の条件（`Abstraction.Fare`）を証明した。
 * **Update**: 次の文書を改めた。

@@ -10,7 +10,7 @@ date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:13:09+09:00
+  at: 2026-10-31T16:42:19+09:00
 ---
 
 # 運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く
@@ -75,6 +75,10 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 | 運賃の R 課題の具体側の入力 | DB のマスタと引数とし、ABS-026 の α と補題を再利用する（bbcc 第 2・3 段。プロジェクトオーナーの決定） |
 | Java オラクルとの一致 | bbcc の完了条件「運賃計算の `source-model/` ベクタが Java オラクルと一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、bbcc の `depends_on` から f18c を外す（プロジェクトオーナーの決定） |
 | bbcc の分割 | 第 1 段（本 ADR の補題と差異の解析）、第 2 段（ABS-001・002・003・007 と W 課題 ABS-101・102）、第 3 段（ABS-004・005・112、運賃計算の `Spec` の機械、SPEC-001）に分ける（プロジェクトオーナーの決定） |
+| 抽象機械の置き場所（第 2 段） | 基本運賃・運賃の抽象機械 `Spec.Fare.basicFareMachine`・`fareMachine`（`Machine.pure`）と、その SPEC 課題（SPEC-001〜003・007）は第 2 段で作る。R 課題に抽象機械が要るためである。第 3 段には合計金額の機械が残る。PRE は、設定とマスタの不変条件、搭乗クラスの存在（MD-3）、値域（`routeBasicFare + extraCharge ≤ 10,000,000`、基本運賃 `≤ 100,000,000`（`Range.maxBasicFare` を追加）、割引率 `≤ 100`） |
+| 具体側の入力（第 2 段） | 基本運賃は、DB のマスタ・設定・`calculateBasicFare` の引数とし、許される並びのどれかで起動時の読み込み（`SourceModel.MasterQuery.load`。`run` から切り出した）を行ってから計算する（`SourceModel.FareQuery.basicFareConcrete`）。運賃の `calculateFare` はマスタを読まないので、引数だけを入力とする（`fareConcrete`）。「DB と引数」の決定は、マスタを読む操作に当てはめる |
+| D-027 の定数（第 2 段） | 引数の `null` と負の値も [Spec] の型で表せない入力として D-027 に含め、機械ごとに `@[deviation "D-027"]` の定数（`dev_D027BF`・`dev_D027F`）を置く。必要性（G9）は ID ごとに少なくとも 1 つの R 課題で示せばよく、ABS-127 で足りる |
+| 差異の前提の形（第 2 段） | `dev_D001`・`dev_D002` は、安全でない因子の一覧（`unsafeBasicRatios`・`unsafeDiscountRates`。カーネルの評価の表 `basicFactor_unsafe`・`fareFactor_unsafe` と同じ）への非所属で書く。double の値を参照せず、言語に依らない数の条件になる |
 
 ### Consequences
 
@@ -90,6 +94,7 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 * `Abstraction.Fare.Factors` の定理（`basicFare_src`・`basicFare_src_eq`・`fare_src`・`fare_src_eq`・`basicFactor_unsafe`・`fareFactor_unsafe`・`basicFare_witness`・`fare_witness`）が、`sorry`・公理なしでビルドされる（axiom-check）。
 * 安全でない因子の一覧は、開発中に Python（ホストの binary64）で求めた一覧と一致した。
 * 安全でない因子ごとの最小の反例を開発中に探索し、積算比率 47 個・割引率 31 個で差異があることを確かめた（例: 積算比率 820 で `X = 15`、割引率 80 で `b = 5`）。
+* 第 2 段: R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`、C 課題 ABS-003 `fare_diff`、L 課題 ABS-007 `runBasicFare_spec`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002` を証明した（obligation-check の G0〜G9 に誤り無し。D-001・D-002 の必要性を認識）。
 
 ## More Information
 

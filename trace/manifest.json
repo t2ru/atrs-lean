@@ -17,6 +17,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.aiBF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.aiBF_icBF29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.aiF",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.basicFactor",
       "layer": "Abstraction"
     },
@@ -33,11 +45,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.basicFactor_safe_of",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.basicFactor_safe_seed",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Fare.basicFactor_unsafe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.basicFareRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.basicFareRefines_initSurj",
       "layer": "Abstraction"
     },
     {
@@ -49,11 +73,59 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.basicFare_src_eq'",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.basicFare_witness",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.calculateFare_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.close_range",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.db29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D001",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D001_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D002",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D002_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027BF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027BF_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027F",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.dev_D027F_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.extraCharge_of_answer",
       "layer": "Abstraction"
     },
     {
@@ -89,11 +161,31 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.fareFactor_safe_of",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.fareFactor_safe_seed",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Fare.fareFactor_unsafe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.fareRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.fareRefines_initSurj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.fare_diff",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.fare_range",
       "layer": "Abstraction"
     },
     {
@@ -105,11 +197,43 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.fare_src_eq'",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.fare_witness",
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.glueBF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.glueF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.icBF29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.icBFnull",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.icF1430",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.instDecidableClose",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.instDecidablePredBasicFareInputDev_D001",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.instDecidablePredFareInputDev_D002",
       "layer": "Abstraction"
     },
     {
@@ -145,7 +269,19 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.need_D001",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.need_D002",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.pred_le_rneTrunc",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.ratioOn_le",
       "layer": "Abstraction"
     },
     {
@@ -157,7 +293,23 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.runBasicFare_icBF29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.runBasicFare_spec",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.toJ32_zero",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.unsafeBasicRatios",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.unsafeDiscountRates",
       "layer": "Abstraction"
     },
     {
@@ -658,6 +810,10 @@
     },
     {
       "name": "Abstraction.MasterData.keyFT_proj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.load_correct",
       "layer": "Abstraction"
     },
     {
@@ -1269,6 +1425,134 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FareQuery.BasicFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.basicFareOfRoute",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.config",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.db",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.BasicFareInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.basicFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.discountRate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.FareInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.basicFareConcrete",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.fareConcrete",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instDecidableEqBasicFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instDecidableEqBasicFareInput.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instDecidableEqFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instDecidableEqFareInput.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instReprBasicFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instReprBasicFareInput.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instReprFareInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.instReprFareInput.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FareQuery.runBasicFare",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.MasterData.BoardingClassProvider",
       "layer": "SourceModel"
     },
@@ -1546,6 +1830,58 @@
     },
     {
       "name": "SourceModel.MasterQuery.Order.route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.fareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.flightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.peakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.Providers.shared",
       "layer": "SourceModel"
     },
     {
@@ -1914,6 +2250,10 @@
     },
     {
       "name": "SourceModel.MasterQuery.instReprSrcQuery.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.MasterQuery.load",
       "layer": "SourceModel"
     },
     {
@@ -3497,7 +3837,31 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Fare.BasicFareInput.Pre",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.FareInput.Pre",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.basicFare",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.basicFareMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.basicFareMachine_initIs",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.basicFareMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.basicFareMachine_sound",
       "layer": "Spec"
     },
     {
@@ -3506,6 +3870,22 @@
     },
     {
       "name": "Spec.Fare.fare",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.fareMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.fareMachine_initIs",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.fareMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Fare.fareMachine_sound",
       "layer": "Spec"
     },
     {
@@ -3845,6 +4225,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Range.maxBasicFare",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Range.maxBasicFareWithCharge",
       "layer": "Spec"
     },
@@ -3908,6 +4292,26 @@
   "links": [
     {
       "type": "deviation",
+      "from": "Abstraction.Fare.dev_D001",
+      "to": "D-001"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D002",
+      "to": "D-002"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D027BF",
+      "to": "D-027"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.Fare.dev_D027F",
+      "to": "D-027"
+    },
+    {
+      "type": "deviation",
       "from": "Abstraction.MasterData.dev_D027",
       "to": "D-027"
     },
@@ -3925,6 +4329,36 @@
       "type": "kernel",
       "from": "Abstraction.Prim.undefOrEq",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.basicFareRefines",
+      "to": "ABS-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.fareRefines",
+      "to": "ABS-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.fare_diff",
+      "to": "ABS-003"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.need_D001",
+      "to": "ABS-101"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.need_D002",
+      "to": "ABS-102"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Fare.runBasicFare_spec",
+      "to": "ABS-007"
     },
     {
       "type": "obligation",
@@ -4030,6 +4464,46 @@
       "type": "obligation",
       "from": "Abstraction.MasterData.routeOfRow_kernel",
       "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.basicFareMachine_initIs",
+      "to": "SPEC-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.basicFareMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.basicFareMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.basicFareMachine_sound",
+      "to": "SPEC-003"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.fareMachine_initIs",
+      "to": "SPEC-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.fareMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.fareMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.Fare.fareMachine_sound",
+      "to": "SPEC-003"
     },
     {
       "type": "obligation",
@@ -4520,7 +4994,22 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Fare.BasicFareInput.Pre",
+      "to": "docs/spec/fare-calculation.md#基本運賃"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.FareInput.Pre",
+      "to": "docs/spec/fare-calculation.md#運賃"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Fare.basicFare",
+      "to": "docs/spec/fare-calculation.md#基本運賃"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.basicFareMachine",
       "to": "docs/spec/fare-calculation.md#基本運賃"
     },
     {
@@ -4531,6 +5020,11 @@
     {
       "type": "spec_doc",
       "from": "Spec.Fare.fare",
+      "to": "docs/spec/fare-calculation.md#運賃"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Fare.fareMachine",
       "to": "docs/spec/fare-calculation.md#運賃"
     },
     {
@@ -4940,6 +5434,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Range.maxBasicFare",
+      "to": "docs/spec/domain-model.md#値域"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Range.maxBasicFareWithCharge",
       "to": "docs/spec/domain-model.md#値域"
     },
@@ -5012,6 +5511,16 @@
       "type": "spec_doc",
       "from": "Spec.roundTripFareTypes",
       "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Fare.aiBF",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Fare.aiF",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
       "type": "std_abs",
