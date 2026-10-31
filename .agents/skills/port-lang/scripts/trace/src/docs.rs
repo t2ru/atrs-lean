@@ -77,7 +77,7 @@ pub fn r_tasks(md: &str) -> Vec<String> {
 /// 文書の「出典:」の行にある、バッククォートで囲んだロケータ（行番号は 1 始まり）。
 /// ロケータの種類（`java:`・`sql:`・`rust:`・`dep:`・`lang:` など）で始まるものだけを拾う。
 pub fn citations(md: &str) -> Vec<(usize, String)> {
-    let kinds: Vec<&str> = crate::check::SOURCE_KINDS.iter().chain(crate::check::TARGET_KINDS).chain(&["dep", "lang"]).copied().collect();
+    let kinds: Vec<&str> = crate::project::source_kinds().into_iter().chain(crate::project::target_kinds()).chain(["dep", "lang"]).collect();
     let mut out = vec![];
     for (i, l) in md.lines().enumerate() {
         let Some(p) = l.find("出典:") else { continue };
@@ -94,7 +94,7 @@ pub fn citations(md: &str) -> Vec<(usize, String)> {
 /// `docs/backlog/*.md` の `state`（frontmatter の `id` ごと。ADR f57e）。
 pub fn backlog_states(repo: &Path) -> BTreeMap<String, String> {
     let mut out = BTreeMap::new();
-    if let Ok(rd) = std::fs::read_dir(repo.join("docs/backlog")) {
+    if let Ok(rd) = std::fs::read_dir(repo.join(&crate::project::get().docs.backlog)) {
         for e in rd.flatten() {
             let name = e.file_name().to_string_lossy().to_string();
             if !name.ends_with(".md") || name == "README.md" {
@@ -225,7 +225,7 @@ mod tests {
 
     #[test]
     fn reads_citations() {
-        let md = "本文 `java:a.B#x()`\n出典: `java:a.B#f(int)`（private の `g` を含む）, `sql:a.M#find`\n出典: atrs-domain/.../B.java `f`\n";
+        let md = "本文 `java:a.B#x()`\n出典: `java:a.B#f(int)`（private の `g` を含む）, `sql:a.M#find`\n出典: app-domain/.../B.java `f`\n";
         assert_eq!(citations(md), vec![(2, "java:a.B#f(int)".to_string()), (2, "sql:a.M#find".to_string())]);
     }
 }

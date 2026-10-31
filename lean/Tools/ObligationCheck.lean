@@ -12,7 +12,7 @@ import Refinement
 `lake exe obligation-check`
 
 R 課題の形と付帯の義務（TR-G の Lean 側。ADR 70eb）を判定し、結果を JSON で標準出力へ書く。
-誤りがあれば標準エラーに書き、終了コード 1 で終わる。文書との突き合わせは `tools/ci/check_obligations.py` が行う。
+誤りがあれば標準エラーに書き、終了コード 1 で終わる。文書との突き合わせは port-lang の `scripts/ci/check_obligations.py` が行う。
 追跡属性はモデルの層（`Spec`・`SourceModel`・`Abstraction`・`TargetModel`・`Refinement`）の定数にだけ付けてよい（G0）。
 -/
 

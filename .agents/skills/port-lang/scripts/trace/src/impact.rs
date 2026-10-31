@@ -18,8 +18,6 @@ use crate::lean::{closure, split_hash, Dump, Obligations};
 use serde::Serialize;
 use std::collections::{BTreeSet, HashMap};
 
-const SOURCE_SIDE: &[&str] = &["SourceModel", "LangSemantics.Java", "LangSemantics.Sql"];
-const TARGET_SIDE: &[&str] = &["TargetModel", "LangSemantics.Rust"];
 
 #[derive(Serialize, Debug, Default, PartialEq)]
 pub struct Impact {
@@ -46,6 +44,10 @@ fn hits(seed: &str, loc: &str) -> bool {
 }
 
 pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impact {
+    // 同じ側のモデル層（言語の組は trace/project.json による）
+    let source_side: Vec<String> = std::iter::once("SourceModel".to_string()).chain(crate::project::source_langs()).collect();
+    let target_side: Vec<String> = std::iter::once("TargetModel".to_string()).chain(crate::project::target_langs()).collect();
+    let target_kinds = crate::project::target_kinds();
     let layer: HashMap<&str, &str> = dump.definitions.iter().map(|d| (d.name.as_str(), d.layer.as_str())).collect();
     let mut rev: HashMap<&str, Vec<&str>> = HashMap::new();
     for d in &dump.definitions {
@@ -62,9 +64,9 @@ pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impac
             let annotated = d.attr("source").iter().chain(d.attr("target")).any(|v| hits(s, split_hash(v).0));
             if annotated || d.name == *s {
                 found = true;
-                if SOURCE_SIDE.contains(&d.layer.as_str()) {
+                if source_side.contains(&d.layer) {
                     src0.insert(d.name.clone());
-                } else if TARGET_SIDE.contains(&d.layer.as_str()) {
+                } else if target_side.contains(&d.layer) {
                     tgt0.insert(d.name.clone());
                 }
             }
@@ -74,12 +76,12 @@ pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impac
         }
     }
     // 同じ側のモデル層で、参照する定義へ広げる
-    let widen = |start: &BTreeSet<String>, side: &[&str]| -> BTreeSet<String> {
+    let widen = |start: &BTreeSet<String>, side: &[String]| -> BTreeSet<String> {
         let mut seen = start.clone();
         let mut stack: Vec<String> = start.iter().cloned().collect();
         while let Some(n) = stack.pop() {
             for r in rev.get(n.as_str()).into_iter().flatten() {
-                if side.contains(layer.get(r).unwrap_or(&"")) && seen.insert(r.to_string()) {
+                if side.iter().any(|s| s == layer.get(r).unwrap_or(&"")) && seen.insert(r.to_string()) {
                     stack.push(r.to_string());
                 }
             }
@@ -104,12 +106,12 @@ pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impac
     let rust_of = |defs: &[String]| -> Vec<String> {
         let mut v: BTreeSet<String> = BTreeSet::new();
         for d in dump.definitions.iter().filter(|d| defs.contains(&d.name)) {
-            v.extend(d.attr("target").iter().map(|t| split_hash(t).0.to_string()).filter(|l| l.starts_with("rust:")));
+            v.extend(d.attr("target").iter().map(|t| split_hash(t).0.to_string()).filter(|l| target_kinds.contains(&crate::lean::kind_of(l))));
         }
         v.into_iter().collect()
     };
 
-    let src = widen(&src0, SOURCE_SIDE);
+    let src = widen(&src0, &source_side);
     out.source_defs = src.iter().cloned().collect();
     let (abs, abs_reach) = tasks("Abstraction", &src);
     out.abstraction = abs;
@@ -120,7 +122,7 @@ pub fn impact(dump: &Dump, obligations: &Obligations, seeds: &[String]) -> Impac
     out.target_defs_if_spec_changes = in_layer(&rf_reach, &["TargetModel"]);
     out.rust_if_spec_changes = rust_of(&out.target_defs_if_spec_changes);
 
-    let tgt = widen(&tgt0, TARGET_SIDE);
+    let tgt = widen(&tgt0, &target_side);
     out.target_defs = tgt.iter().cloned().collect();
     let (rf2, rf2_reach) = tasks("Refinement", &tgt);
     out.refinement = rf2;
@@ -179,7 +181,7 @@ mod tests {
                 def("SourceModel.Other.x", "SourceModel", &[("source", "java:A#x()@22")], &[]),
                 def("Spec.Fare.basic", "Spec", &[], &[]),
                 def("Abstraction.Fare.r", "Abstraction", &[], &["SourceModel.Fare.machine", "Spec.Fare.basic"]),
-                def("TargetModel.Fare.basic", "TargetModel", &[("target", "rust:atrs::fare::basic@33")], &[]),
+                def("TargetModel.Fare.basic", "TargetModel", &[("target", "rust:app::fare::basic@33")], &[]),
                 def("Refinement.Fare.r", "Refinement", &[], &["Spec.Fare.basic", "TargetModel.Fare.basic"]),
             ],
             ..Default::default()
@@ -202,12 +204,12 @@ mod tests {
         assert_eq!(i.spec, vec!["Spec.Fare.basic"]);
         assert_eq!(i.refinement_if_spec_changes, vec!["Refinement.Fare.r"]);
         assert_eq!(i.target_defs_if_spec_changes, vec!["TargetModel.Fare.basic"]);
-        assert_eq!(i.rust_if_spec_changes, vec!["rust:atrs::fare::basic"]);
+        assert_eq!(i.rust_if_spec_changes, vec!["rust:app::fare::basic"]);
         assert!(i.target_defs.is_empty());
         assert_eq!(i.unmatched, vec!["java:Z#none()"]);
         assert_eq!(i.gaps, vec!["D-001 (Abstraction.Gap.D001)"]);
 
-        let j = impact(&dump, &obl, &["rust:atrs::fare::basic".to_string()]);
+        let j = impact(&dump, &obl, &["rust:app::fare::basic".to_string()]);
         assert!(j.source_defs.is_empty() && j.abstraction.is_empty());
         assert_eq!(j.target_defs, vec!["TargetModel.Fare.basic"]);
         assert_eq!(j.refinement, vec!["Refinement.Fare.r"]);

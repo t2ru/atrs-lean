@@ -125,7 +125,7 @@ fn region(m: &Manifest, inv: &Inventory, kind: &str, title: &str) -> String {
     let covered_n = inv.items.iter().filter(|i| covered.contains(i.locator.as_str())).count();
     let mut s = String::new();
     s.push_str(&format!(
-        "{title}: インベントリ {} 件（対象範囲 {in_scope} 件、対象外 {} 件）、対応あり {covered_n} 件。`tools/trace manifest` が生成する（手で編集しない）。\n\n",
+        "{title}: インベントリ {} 件（対象範囲 {in_scope} 件、対象外 {} 件）、対応あり {covered_n} 件。`trace manifest` が生成する（手で編集しない）。\n\n",
         inv.items.len(),
         inv.items.len() - in_scope
     ));

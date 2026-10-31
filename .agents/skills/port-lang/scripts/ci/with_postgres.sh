@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# PostgreSQL に接続できる環境で <command> を実行する（backlog c7e8）。
-#   tools/ci/with_postgres.sh <command> [args...]
+# PostgreSQL に接続できる環境で <command> を実行する（port-lang の道具。scripts/README.md）。
+#   <skill>/scripts/ci/with_postgres.sh <command> [args...]
 #
 # - 環境変数 PGHOST が設定されていれば、そのサーバを使う（CI はサービスコンテナ）。
 # - 無ければ、一時クラスタを作って起動する。設定は port-lang の

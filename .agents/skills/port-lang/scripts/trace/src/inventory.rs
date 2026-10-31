@@ -49,7 +49,7 @@ fn rel(repo: &Path, p: &Path) -> String {
     p.strip_prefix(repo).unwrap_or(p).to_string_lossy().replace('\\', "/")
 }
 
-/// `out-of-scope.json` の glob（`JavaConfig-Thymeleaf/atrs` からの相対）。
+/// `out-of-scope.json` の glob（設定の移植元のルート `source.root` からの相対）。
 pub fn out_of_scope(repo: &Path) -> Result<GlobSet, String> {
     let v: Value = serde_json::from_str(&fs::read_to_string(repo.join("trace/out-of-scope.json")).map_err(|e| e.to_string())?)
         .map_err(|e| e.to_string())?;
@@ -83,10 +83,8 @@ fn finish(mut items: Vec<Item>) -> Result<Vec<Item>, String> {
 pub fn source(repo: &Path) -> Result<Inventory, String> {
     let up: Value = serde_json::from_str(&fs::read_to_string(repo.join("trace/upstream.json")).map_err(|e| e.to_string())?)
         .map_err(|e| e.to_string())?;
-    let base = repo
-        .join(up["submodule"].as_str().unwrap_or("upstream/atrs"))
-        .join(up["variant"].as_str().unwrap_or("JavaConfig-Thymeleaf"))
-        .join("atrs");
+    let cfg = crate::project::get();
+    let base = repo.join(&cfg.source.root);
     if !base.is_dir() {
         return Err(format!("{} not found (git submodule update --init)", base.display()));
     }
@@ -110,7 +108,7 @@ pub fn source(repo: &Path) -> Result<Inventory, String> {
         } else if name.ends_with(".xml") && in_base.contains("/src/main/resources/") {
             let s = read()?;
             if s.contains("<mapper") { crate::mapper::scan(&r, &s)? } else { continue }
-        } else if name.ends_with(".sql") && in_base.starts_with("atrs-initdb/") {
+        } else if name.ends_with(".sql") && cfg.source.sql_dirs.iter().any(|d| in_base.starts_with(&format!("{d}/"))) {
             crate::sqlfile::scan(&r, &read()?)
         } else if name.ends_with(".html") && in_base.contains("/WEB-INF/views/") {
             let v = in_base.split("/WEB-INF/views/").nth(1).unwrap_or(&in_base).to_string();
@@ -131,9 +129,11 @@ pub fn source(repo: &Path) -> Result<Inventory, String> {
     Ok(Inventory { root: rel(repo, &base), version, counts: counts(&items), items, ..Default::default() })
 }
 
-/// 移植先のインベントリ（`rust/src/`）。`rust/` が無ければ 0 件。
-pub fn target(repo: &Path, crate_name: &str) -> Result<Inventory, String> {
-    let base = repo.join("rust/src");
+/// 移植先のインベントリ（設定の `target.src`）。無ければ 0 件。
+pub fn target(repo: &Path) -> Result<Inventory, String> {
+    let cfg = crate::project::get();
+    let crate_name = cfg.target.crate_name.as_str();
+    let base = repo.join(&cfg.target.src);
     let mut items = vec![];
     let mut tags = vec![];
     let mut generated = vec![];
@@ -145,7 +145,7 @@ pub fn target(repo: &Path, crate_name: &str) -> Result<Inventory, String> {
             let in_src = rel(&base, &p);
             let src = fs::read_to_string(&p).map_err(|e| format!("{r}: {e}"))?;
             let (its, tg) = crate::rust::scan(&r, &crate::rust::module_path(crate_name, &in_src), &src);
-            if in_src.starts_with("model/") {
+            if in_src.starts_with(&format!("{}/", cfg.target.generated)) {
                 generated.extend(its.iter().map(|i| i.locator.clone()));
             }
             items.extend(its);
@@ -154,7 +154,7 @@ pub fn target(repo: &Path, crate_name: &str) -> Result<Inventory, String> {
     }
     let items = finish(items)?;
     generated.sort();
-    Ok(Inventory { root: "rust/src".into(), counts: counts(&items), items, model_tags: tags, generated, ..Default::default() })
+    Ok(Inventory { root: cfg.target.src.clone(), counts: counts(&items), items, model_tags: tags, generated, ..Default::default() })
 }
 
 /// JSON の文字列（末尾の改行付き、決定的）。

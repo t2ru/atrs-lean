@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""ADR・backlog の ID（UUID v4）の採番・検査・旧番号からの書き換え（ADR f57e）。
+"""ADR・backlog の ID（UUID v4）の採番・検査・旧番号からの書き換え（port-lang の道具。scripts/README.md）。
+
+プロジェクト固有の値（ADR・backlog の置き場所、登録簿、検査の範囲、旧番号の対応表）は、リポジトリの
+`trace/project.json` の `ids` から読む。リポジトリのルートは、作業ディレクトリから上にたどって探す（`--repo` でも指定できる）。
 
 ID は小文字 16 進・ハイフン付きの UUID v4。ファイル名は `<ID の先頭 4 文字>-<slug>.md`（先頭 4 文字の重複は許し、
 slug で区別する）。道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json` の
@@ -7,12 +10,12 @@ slug で区別する）。道具が読む箇所（frontmatter の `id`・`depend
 先頭 4 文字が同じ種類の他の項目と重なる項目は、リンク無しの本文では `ADR xxxx-<slug>` と書く。
 
 使い方:
-  python3 -I tools/docs/ids.py new adr <slug>       # 新しい ID とファイル名を表示する
-  python3 -I tools/docs/ids.py new backlog <slug>
-  python3 -I tools/docs/ids.py check                # ID・ファイル名・参照を検査する（違反で終了コード 1）
-  python3 -I tools/docs/ids.py migrate              # 旧番号（NNNN-<slug>.md、`ADR NNNN`）を新 ID に書き換える
+  python3 -I <skill>/scripts/docs/ids.py new adr <slug>       # 新しい ID とファイル名を表示する
+  python3 -I <skill>/scripts/docs/ids.py new backlog <slug>
+  python3 -I <skill>/scripts/docs/ids.py check                # ID・ファイル名・参照を検査する（違反で終了コード 1）
+  python3 -I <skill>/scripts/docs/ids.py migrate              # 旧番号（NNNN-<slug>.md、`ADR NNNN`）を新 ID に書き換える
 
-`migrate` は旧番号の対応表 `tools/docs/legacy-ids.json`（旧 stem → ID）を使う。表に無い旧番号のファイルには
+`migrate` は旧番号の対応表（設定の `ids.legacy`。旧 stem → ID）を使う。表に無い旧番号のファイルには
 新しい ID を振り、`--write-map` を付けたときだけ表に加える。旧番号を含むブランチを取り込んだ後に実行する。
 """
 import json
@@ -22,9 +25,25 @@ import subprocess
 import sys
 import uuid
 
-REPO = pathlib.Path(__file__).resolve().parents[2]
-MAP = REPO / "tools" / "docs" / "legacy-ids.json"
-KINDS = {"adr": "docs/decision", "backlog": "docs/backlog"}
+def find_repo():
+    """`--repo <dir>` か、作業ディレクトリから上にたどって `trace/project.json` があるところ。"""
+    if "--repo" in sys.argv:
+        i = sys.argv.index("--repo")
+        root = pathlib.Path(sys.argv[i + 1]).resolve()
+        del sys.argv[i:i + 2]
+        return root
+    d = pathlib.Path.cwd().resolve()
+    for c in (d, *d.parents):
+        if (c / "trace" / "project.json").is_file():
+            return c
+    sys.exit("ids: repository root (trace/project.json) not found")
+
+
+REPO = find_repo()
+# プロジェクトの設定（trace/project.json の ids。port-lang の references/traceability.md#プロジェクトの設定）
+CFG = json.loads((REPO / "trace" / "project.json").read_text(encoding="utf-8"))["ids"]
+MAP = REPO / CFG.get("legacy", "docs/legacy-ids.json")
+KINDS = dict(CFG["kinds"])
 WORDS = {"adr": ("ADR",), "backlog": ("backlog", "Backlog", "バックログ")}
 WORD_KIND = {w: k for k, ws in WORDS.items() for w in ws}
 UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
@@ -37,18 +56,18 @@ REF_ITEM = rf"[0-9a-f]{{4}}(?:-{SLUG})?(?![0-9a-z])"
 REF_RE = re.compile(rf"(?<![0-9A-Za-z])({'|'.join(WORD_KIND)}) ({REF_ITEM}(?:(?:・|、|, ?){REF_ITEM})*)")
 LINK_RE = re.compile(r"\[([^\]\n]*)\]\(([^)\s]+)\)")
 # 道具が読む ID の表（docs/spec の登録簿の backlog の列）
-REGISTERS = ("docs/spec/abstraction.md", "docs/spec/refinement.md")
+REGISTERS = tuple(CFG.get("registers", []))
 # 本文の参照と UUID を検査する範囲（道具の自己テストの例は除く）
-CHECK_ROOTS = ("AGENTS.md", "docs/", "trace/", "lean/", "tools/", ".agents/", "conformance/")
+CHECK_ROOTS = tuple(CFG.get("check_roots", ["docs/"]))
 # UUID がすべて ADR・backlog の ID であるべき範囲（コードの例の UUID は除く）
-UUID_ROOTS = ("AGENTS.md", "docs/", "trace/")
-CHECK_SKIP = ("tools/ci/fixtures/", "tools/docs/legacy-ids.json", "trace/source-inventory.json",
-              "trace/target-inventory.json", "trace/manifest.json")
+UUID_ROOTS = tuple(CFG.get("uuid_roots", ["docs/"]))
+CHECK_SKIP = tuple(CFG.get("check_skip", []))
 
 
 def git_files():
     out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"], cwd=REPO, capture_output=True, text=True, check=True).stdout
-    return [p for p in out.splitlines() if not p.startswith("upstream/") and (REPO / p).is_file()]
+    skip = tuple(CFG.get("exclude", ["upstream/"]))
+    return [p for p in out.splitlines() if not p.startswith(skip) and (REPO / p).is_file()]
 
 
 def read_text(rel):
@@ -162,7 +181,7 @@ def cmd_check():
             sb = unquote(fm_value(fm, "superseded_by"))
             if sb and sb not in all_ids["adr"]:
                 errs.append(f"{rel}: superseded_by {sb!r} is not an ADR id")
-    feats = json.loads((REPO / "trace/features.json").read_text(encoding="utf-8"))
+    feats = json.loads((REPO / CFG.get("features", "trace/features.json")).read_text(encoding="utf-8"))
     for f in feats["features"]:
         for b in f.get("backlog", []):
             if b not in all_ids["backlog"]:
@@ -292,7 +311,7 @@ def cmd_migrate(write_map):
                 leftovers.append(f"{rel}:{n}: {line.strip()[:160]}")
     add_adr_ids(legacy)
     if write_map:
-        data = {"note": note or "旧番号の stem → ID（ADR f57e）。tools/docs/ids.py migrate が使う。", **legacy}
+        data = {"note": note or "旧番号の stem → ID（ADR f57e）。port-lang の scripts/docs/ids.py migrate が使う。", **legacy}
         MAP.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"migrate: renamed {len(renames)} file(s), rewrote {changed} file(s)")
     if leftovers:
@@ -350,7 +369,7 @@ def rewrite(rel, text, num, stems, short, new_stem, all_ids):
         def reg(m):
             return m.group(1) + num["backlog"].get(m.group(2), m.group(2)) + m.group(3)
         text = re.sub(r"^(\|.*\| )(\d{4})( \|)$", reg, text, flags=re.M)
-    if rel == "docs/backlog/README.md":
+    if rel == CFG.get("backlog_index", "docs/backlog/README.md"):
         def row(m):
             cells = m.group(0).strip().strip("|").split("|")
             cells = [c.strip() for c in cells]

@@ -21,13 +21,10 @@
 use crate::docs::{Feature, Features};
 use crate::inventory::Inventory;
 use crate::lean::{closure, kind_of, split_hash, Dump, Gap, Obligations};
+use crate::project::{source_kinds, source_langs, target_kinds, target_langs};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
-pub const SOURCE_KINDS: &[&str] = &["java", "prop", "msg", "http", "xml", "tmpl", "sql", "ddl", "seed"];
-pub const TARGET_KINDS: &[&str] = &["rust"];
-const SOURCE_LAYERS: &[&str] = &["SourceModel", "Abstraction", "Spec", "LangSemantics.Java", "LangSemantics.Sql"];
-const TARGET_LAYERS: &[&str] = &["TargetModel", "Refinement", "LangSemantics.Rust"];
 const FEATURE_LAYERS: &[&str] = &["SourceModel", "Abstraction", "TargetModel", "Refinement"];
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -130,17 +127,21 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     // ---- 定義ごとの追跡属性: TR-X・TR-R・TR-S2・TR-T2 ----
     // ギャップの登録の宣言は機能をまたぐ登録簿なので、機能の対応表に載せない（段階導入は登録の backlog による）
     let gap_decls: BTreeSet<&str> = inp.dump.gaps.iter().map(|g| g.name.as_str()).collect();
+    // 移植元側・移植先側の層（言語の組は trace/project.json による）
+    let src_layers: Vec<String> = ["SourceModel", "Abstraction", "Spec"].iter().map(|s| s.to_string()).chain(source_langs()).collect();
+    let tgt_layers: Vec<String> = ["TargetModel", "Refinement"].iter().map(|s| s.to_string()).chain(target_langs()).collect();
+    let (src_kinds, tgt_kinds) = (source_kinds(), target_kinds());
     for d in &inp.dump.definitions {
-        let src_side = SOURCE_LAYERS.contains(&d.layer.as_str());
-        let tgt_side = TARGET_LAYERS.contains(&d.layer.as_str());
+        let src_side = src_layers.contains(&d.layer);
+        let tgt_side = tgt_layers.contains(&d.layer);
         if FEATURE_LAYERS.contains(&d.layer.as_str()) && inp.features.of_lean(&d.name).is_none()
             && !gap_decls.contains(d.name.as_str())
         {
             out.err("TR-R", format!("{}: no feature in trace/features.json covers this namespace", d.name));
         }
         for (attr, side_ok, own_kinds, decl) in [
-            ("source", src_side, SOURCE_KINDS, &inp.upstream),
-            ("target", tgt_side, TARGET_KINDS, &inp.target_decl),
+            ("source", src_side, &src_kinds[..], &inp.upstream),
+            ("target", tgt_side, &tgt_kinds[..], &inp.target_decl),
         ] {
             let values = d.attr(attr);
             if values.is_empty() {
@@ -375,7 +376,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     }
     // renames.json: old は現在のインベントリに無く、new はある
     for (old, new) in &inp.renames {
-        let side = |l: &str| if TARGET_KINDS.contains(&kind_of(l)) { &tgt_items } else { &src_items };
+        let side = |l: &str| if tgt_kinds.contains(&kind_of(l)) { &tgt_items } else { &src_items };
         if side(old).contains_key(old.as_str()) {
             out.err("TR-R", format!("trace/renames.json: {old} -> {new}: the old locator is still in the inventory"));
         }
@@ -388,7 +389,7 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         let k = kind_of(loc);
         let ok = if is_version_kind(k) {
             declared_version(&inp.upstream, loc).is_some() || declared_version(&inp.target_decl, loc).is_some()
-        } else if TARGET_KINDS.contains(&k) {
+        } else if tgt_kinds.contains(&k) {
             tgt_items.contains_key(loc.as_str())
         } else {
             src_items.contains_key(loc.as_str())
@@ -404,14 +405,14 @@ pub fn run(inp: &Input) -> Vec<Finding> {
 
 /// 行に移植元のロケータ（`java:a…`・`http:GET /…` など）があれば、その種類。
 fn source_locator_in(l: &str) -> Option<&'static str> {
-    for k in SOURCE_KINDS {
+    for k in source_kinds() {
         let pat = format!("{k}:");
         let mut start = 0;
         while let Some(p) = l[start..].find(&pat) {
             let at = start + p;
             let before_ok = at == 0 || !l[..at].chars().last().map(|c| c.is_alphanumeric()).unwrap_or(false);
             let after = &l[at + pat.len()..];
-            let looks = if *k == "http" {
+            let looks = if k == "http" {
                 ["GET ", "POST ", "PUT ", "DELETE ", "PATCH ", "* "].iter().any(|m| after.starts_with(m))
             } else {
                 after.chars().next().map(|c| c.is_alphanumeric()).unwrap_or(false) && !after.starts_with("//")

@@ -111,8 +111,8 @@ mod tests {
         assert_eq!(p[0].1, "{0}を");
         assert_eq!(p[1], ("multi".into(), "a b".into(), 3, 4));
         assert_eq!(p[2].0, "k");
-        assert_eq!(kind_of("a/i18n/atrs-messages_ja.properties"), "msg");
+        assert_eq!(kind_of("a/i18n/app-messages_ja.properties"), "msg");
         assert_eq!(kind_of("a/ValidationMessages.properties"), "msg");
-        assert_eq!(kind_of("a/META-INF/spring/atrs.properties"), "prop");
+        assert_eq!(kind_of("a/META-INF/spring/app.properties"), "prop");
     }
 }

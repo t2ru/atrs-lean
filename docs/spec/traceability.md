@@ -130,7 +130,7 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 54 件。`tools/trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 54 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
@@ -196,7 +196,7 @@ pub fn basic_fare(...) -> (r: u64)
 ### ② TargetModel ⇔ 移植先ソース
 
 <!-- BEGIN GENERATED: target-trace -->
-TargetModel ⇔ 移植先ソース: インベントリ 0 件（対象範囲 0 件、対象外 0 件）、対応あり 0 件。`tools/trace manifest` が生成する（手で編集しない）。
+TargetModel ⇔ 移植先ソース: インベントリ 0 件（対象範囲 0 件、対象外 0 件）、対応あり 0 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |

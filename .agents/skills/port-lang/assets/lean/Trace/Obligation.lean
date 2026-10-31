@@ -52,7 +52,7 @@ GK の内容は次のとおりである。
 - 印・差異の定数と種類が矛盾しない（モデル外は印も `@[deviation]` も持たない。PRE の外・未確定は `@[deviation]` を持たない）
 
 入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
-文書（入口の R 課題、前提型の差異の影響）との突き合わせは `tools/ci/check_obligations.py` が行う（TR-N）。
+文書（入口の R 課題、前提型の差異の影響）との突き合わせは `scripts/ci/check_obligations.py` が行う（TR-N）。
 -/
 
 namespace Trace.Obligation

@@ -1,4 +1,4 @@
-//! `tools/trace`: ATRS の両端の追跡の道具（backlog ffdc、ADR e2a4・0eea・9cd9）。
+//! `trace`: 両端の追跡の道具（port-lang の `references/traceability.md#道具`）。
 //!
 //! ```text
 //! trace inventory source [--check]
@@ -10,8 +10,8 @@
 //! trace impact --dump <trace-dump.json> --obligations <obligation-check.json> [--diff <file|git:REV>] [--json] [<起点>…]
 //! ```
 //!
-//! リポジトリのルートは、作業ディレクトリから上にたどって `trace/upstream.json` があるところとする
-//! （`--repo <dir>` で指定もできる）。
+//! リポジトリのルートは、作業ディレクトリから上にたどって `trace/project.json` があるところとする
+//! （`--repo <dir>` で指定もできる）。アプリ固有の値は `trace/project.json` から読む（`project.rs`）。
 
 mod check;
 mod checks;
@@ -26,6 +26,7 @@ mod lean;
 mod manifest;
 mod mapper;
 mod normalize;
+mod project;
 mod props;
 mod rehash;
 mod rust;
@@ -36,20 +37,17 @@ mod webxml;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-/// ATRS の移植先の crate 名（rules/atrs-porting.md）。
-const CRATE: &str = "atrs";
-
 fn find_repo(args: &[String]) -> Result<PathBuf, String> {
     if let Some(i) = args.iter().position(|a| a == "--repo") {
         return args.get(i + 1).map(PathBuf::from).ok_or("--repo needs a value".into());
     }
     let mut d = std::env::current_dir().map_err(|e| e.to_string())?;
     loop {
-        if d.join("trace/upstream.json").is_file() {
+        if d.join(project::FILE).is_file() {
             return Ok(d);
         }
         if !d.pop() {
-            return Err("repository root (trace/upstream.json) not found".into());
+            return Err(format!("repository root ({}) not found", project::FILE));
         }
     }
 }
@@ -59,7 +57,7 @@ fn write_or_check(path: &Path, content: &str, check: bool) -> Result<(), String>
     if check {
         let old = std::fs::read_to_string(path).unwrap_or_default();
         if old != content {
-            return Err(format!("{} is out of date (regenerate with tools/trace)", path.display()));
+            return Err(format!("{} is out of date (regenerate with trace)", path.display()));
         }
         Ok(())
     } else {
@@ -69,12 +67,13 @@ fn write_or_check(path: &Path, content: &str, check: bool) -> Result<(), String>
 
 fn run(args: &[String]) -> Result<ExitCode, String> {
     let repo = find_repo(args)?;
+    let cfg = project::load(&repo)?;
     let check = args.iter().any(|a| a == "--check");
     match args.first().map(String::as_str) {
         Some("inventory") => {
             let (inv, path) = match args.get(1).map(String::as_str) {
                 Some("source") => (inventory::source(&repo)?, "trace/source-inventory.json"),
-                Some("target") => (inventory::target(&repo, CRATE)?, "trace/target-inventory.json"),
+                Some("target") => (inventory::target(&repo)?, "trace/target-inventory.json"),
                 _ => return Err("usage: trace inventory source|target [--check]".into()),
             };
             write_or_check(&repo.join(path), &inventory::to_json(&inv), check)?;
@@ -91,13 +90,13 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
             let old = manifest::load(&mpath)?;
             let m = manifest::build(&dump, &target, &old);
             write_or_check(&mpath, &manifest::to_json(&m), check)?;
-            let dpath = repo.join("docs/spec/traceability.md");
+            let dpath = repo.join(&cfg.docs.traceability);
             let doc = std::fs::read_to_string(&dpath).map_err(|e| e.to_string())?;
             write_or_check(&dpath, &manifest::render_doc(&doc, &m, &source, &target)?, check)?;
-            for (path, prefix, side, regions) in gaps::DOCS {
-                let gpath = repo.join(path);
+            for (path, prefix, side, regions) in gaps::docs() {
+                let gpath = repo.join(&path);
                 let doc = std::fs::read_to_string(&gpath).map_err(|e| e.to_string())?;
-                write_or_check(&gpath, &gaps::render_doc(&doc, path, &dump.gaps, prefix, side, regions)?, check)?;
+                write_or_check(&gpath, &gaps::render_doc(&doc, &path, &dump.gaps, prefix, side, regions)?, check)?;
             }
             println!(
                 "trace/manifest.json: {} nodes, {} links, {} check records{}",
@@ -151,10 +150,10 @@ fn files_with_ext(dir: &Path, ext: &str, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// `docs/spec/*.md` の「出典:」のロケータ。
+/// 仕様文書（設定の `docs.spec`）の「出典:」のロケータ。
 fn citations(repo: &Path) -> Vec<(String, String)> {
     let mut mds = vec![];
-    files_with_ext(&repo.join("docs/spec"), "md", &mut mds);
+    files_with_ext(&repo.join(&project::get().docs.spec), "md", &mut mds);
     let mut out = vec![];
     for p in mds {
         let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
@@ -165,10 +164,12 @@ fn citations(repo: &Path) -> Vec<(String, String)> {
     out
 }
 
-/// `check_obligations.py` を実行し、その誤り・警告を TR-G・TR-N として取り込む。
+/// スキルの `scripts/ci/check_obligations.py` を実行し、その誤り・警告を TR-G・TR-N として取り込む。
 fn obligation_script(repo: &Path, obligations: &Path) -> Result<Vec<check::Finding>, String> {
+    let script = Path::new(&project::get().skill).join("scripts/ci/check_obligations.py");
     let out = std::process::Command::new("python3")
-        .args(["-I", "tools/ci/check_obligations.py"])
+        .arg("-I")
+        .arg(&script)
         .arg(obligations)
         .current_dir(repo)
         .output()
@@ -321,7 +322,7 @@ fn rehash_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     }
     let m2 = manifest::build(&dump2, &target, &m);
     std::fs::write(&mpath, manifest::to_json(&m2)).map_err(|e| e.to_string())?;
-    let dpath = repo.join("docs/spec/traceability.md");
+    let dpath = repo.join(&project::get().docs.traceability);
     let doc = std::fs::read_to_string(&dpath).map_err(|e| e.to_string())?;
     std::fs::write(&dpath, manifest::render_doc(&doc, &m2, &source, &target)?).map_err(|e| e.to_string())?;
     for (id, ok) in &out.results {
@@ -350,22 +351,23 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     let source = inventory::load(&repo.join("trace/source-inventory.json"))?;
     let target = inventory::load(&repo.join("trace/target-inventory.json"))?;
     let features = docs::Features::load(repo)?;
-    let abs = std::fs::read_to_string(repo.join("docs/spec/abstraction.md")).map_err(|e| e.to_string())?;
-    let rfn = std::fs::read_to_string(repo.join("docs/spec/refinement.md")).map_err(|e| e.to_string())?;
+    let cfg = project::get();
+    let abs = std::fs::read_to_string(repo.join(&cfg.docs.abstraction)).map_err(|e| e.to_string())?;
+    let rfn = std::fs::read_to_string(repo.join(&cfg.docs.refinement)).map_err(|e| e.to_string())?;
     let mut entry_tasks = docs::entry_tasks(&abs);
     entry_tasks.extend(docs::entry_tasks(&rfn));
     let mut r_tasks = docs::r_tasks(&abs);
     r_tasks.extend(docs::r_tasks(&rfn));
     let mut rust_files = vec![];
     let mut rs = vec![];
-    files_with_ext(&repo.join("rust"), "rs", &mut rs);
+    files_with_ext(&repo.join(&cfg.target.root), "rs", &mut rs);
     for p in rs {
         let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
         rust_files.push((rel, std::fs::read_to_string(&p).unwrap_or_default()));
     }
     let mut model_defs = vec![];
     let mut vecs = vec![];
-    files_with_ext(&repo.join("conformance"), "json", &mut vecs);
+    files_with_ext(&repo.join(&cfg.conformance), "json", &mut vecs);
     for p in vecs {
         let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
         for n in checks::model_defs_of(&read_json(&p)) {

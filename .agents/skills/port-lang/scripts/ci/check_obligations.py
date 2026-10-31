@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 70eb）。
+"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。port-lang の道具。scripts/README.md）。
 
-`lake exe obligation-check` の JSON（Lean 側の判定と事実）と、`docs/spec/abstraction.md`・`refinement.md` の
+`lake exe obligation-check` の JSON（Lean 側の判定と事実）と、抽象化・具体化の課題一覧（`trace/project.json` の
+`docs.abstraction`・`docs.refinement`）の
 登録簿、`docs/backlog/` の状態を突き合わせる。既知差異とその影響の登録簿は Lean の `@[gap_entry]` にあり、
-JSON の `gaps` から読む（ADR cc24）。
+JSON の `gaps` から読む（references/lean/trace-attributes.md#ギャップの登録簿）。見出しの文字列は
+references/spec-documents.md#道具が読む見出しと値 が定める。
 
 | 規則 | 失敗条件 |
 | --- | --- |
@@ -21,19 +23,17 @@ JSON の `gaps` から読む（ADR cc24）。
 | OB-S2  | 「出力のみ」の差異に `@[deviation]` がまだ無い（段階導入） |
 
 段階導入（OB-N2・OB-E2・OB-S2）: 登録簿の各行の backlog の列にある項目が `done` でなければ警告、`done` なら失敗とする
-（スキル port-lang の traceability.md、ADR 70eb）。
+（スキル port-lang の traceability.md）。
 
 使い方:
-  python3 -I tools/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる
-  python3 -I tools/ci/check_obligations.py --self-test                  # tools/ci/fixtures/obligations の例で確かめる
+  python3 -I <skill>/scripts/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる
+  python3 -I <skill>/scripts/ci/check_obligations.py --self-test                  # scripts/ci/fixtures/obligations の例で確かめる
 """
 import json
 import pathlib
 import re
 import sys
 
-REPO = pathlib.Path(__file__).resolve().parents[2]
-DOCS = REPO / "docs"
 FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures" / "obligations"
 
 ID_CELL = re.compile(r"^\|\s*`?([A-Z]+-\d{3})`?\s*\|(.*)$")
@@ -86,9 +86,9 @@ def backlog_states(backlog_dir: pathlib.Path):
     return states
 
 
-def parse_docs(spec_dir: pathlib.Path, backlog_dir: pathlib.Path):
-    abstraction = (spec_dir / "abstraction.md").read_text(encoding="utf-8")
-    refinement = (spec_dir / "refinement.md").read_text(encoding="utf-8")
+def parse_docs(abstraction_md: pathlib.Path, refinement_md: pathlib.Path, backlog_dir: pathlib.Path):
+    abstraction = abstraction_md.read_text(encoding="utf-8")
+    refinement = refinement_md.read_text(encoding="utf-8")
     docs = {"nondet": {}, "entries": {}, "impact": {}, "deviation_kind": {}, "r_tasks": set(),
             "backlog": backlog_states(backlog_dir)}
     for i, cells in section_rows(abstraction, "Spec の非決定性"):
@@ -198,9 +198,9 @@ def check(report: dict, docs: dict):
     return found
 
 
-def run(report: dict, spec_dir: pathlib.Path, backlog_dir: pathlib.Path):
+def run(report: dict, abstraction_md: pathlib.Path, refinement_md: pathlib.Path, backlog_dir: pathlib.Path):
     try:
-        docs = parse_docs(spec_dir, backlog_dir)
+        docs = parse_docs(abstraction_md, refinement_md, backlog_dir)
     except DocError as e:
         return [("error", "OB-DOC", str(e))]
     return check(report, docs)
@@ -218,9 +218,25 @@ def report_and_exit(found, label: str) -> int:
     return 0
 
 
-def main_check(path: str) -> int:
+def find_repo() -> pathlib.Path:
+    """`--repo <dir>` か、作業ディレクトリから上にたどって `trace/project.json` があるところ。"""
+    if "--repo" in sys.argv:
+        i = sys.argv.index("--repo")
+        root = pathlib.Path(sys.argv[i + 1]).resolve()
+        del sys.argv[i:i + 2]
+        return root
+    d = pathlib.Path.cwd().resolve()
+    for c in (d, *d.parents):
+        if (c / "trace" / "project.json").is_file():
+            return c
+    sys.exit("check_obligations: repository root (trace/project.json) not found")
+
+
+def main_check(path: str, repo: pathlib.Path) -> int:
     report = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
-    return report_and_exit(run(report, DOCS / "spec", DOCS / "backlog"), "check_obligations")
+    docs = json.loads((repo / "trace" / "project.json").read_text(encoding="utf-8"))["docs"]
+    found = run(report, repo / docs["abstraction"], repo / docs["refinement"], repo / docs["backlog"])
+    return report_and_exit(found, "check_obligations")
 
 
 def read_set(path: pathlib.Path):
@@ -236,7 +252,7 @@ def main_self_test() -> int:
     cases = sorted(p for p in FIXTURES.iterdir() if p.is_dir())
     for case in cases:
         report = json.loads((case / "report.json").read_text(encoding="utf-8"))
-        found = run(report, case, case / "backlog")
+        found = run(report, case / "abstraction.md", case / "refinement.md", case / "backlog")
         for sev, fname in (("error", "expect.txt"), ("warning", "expect-warnings.txt")):
             expected = read_set(case / fname)
             actual = {rule for s, rule, _ in found if s == sev}
@@ -254,10 +270,11 @@ def main_self_test() -> int:
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    if "--self-test" in args:
+    if "--self-test" in sys.argv[1:]:
         sys.exit(main_self_test())
+    repo = find_repo()
+    args = sys.argv[1:]
     if len(args) != 1:
         print(__doc__, file=sys.stderr)
         sys.exit(2)
-    sys.exit(main_check(args[0]))
+    sys.exit(main_check(args[0], repo))

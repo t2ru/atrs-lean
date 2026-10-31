@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""上流 submodule の commit と trace/upstream.json の宣言が一致するかを検査する（backlog 455f）。
+"""上流 submodule の commit と trace/upstream.json の宣言が一致するかを検査する（port-lang の道具。scripts/README.md）。
 
-使い方: python3 -I tools/ci/check_upstream.py [リポジトリのルート]
+使い方: python3 -I <skill>/scripts/ci/check_upstream.py [リポジトリのルート]
 """
 import json
 import pathlib

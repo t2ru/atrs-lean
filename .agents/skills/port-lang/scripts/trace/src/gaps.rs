@@ -1,6 +1,6 @@
 //! ギャップの表: `docs/spec/abstraction.md`・`refinement.md` の生成区画（ADR cc24）。
 //!
-//! 登録簿の正は Lean の `@[gap_entry]`（`trace-dump` の `gaps`）である。表は `tools/trace manifest` が書き、
+//! 登録簿の正は Lean の `@[gap_entry]`（`trace-dump` の `gaps`）である。表は `trace manifest` が書き、
 //! `--check` で最新であることを確かめる。
 //!
 //! | 区画 | 行 |
@@ -83,7 +83,7 @@ fn table(header: &[&str], rows: Vec<Vec<String>>) -> String {
 
 /// 区画の中身。`side` は具体側の名前（`[Source]`・`[Target]`）。
 pub fn region(name: &str, doc_dir: &Path, gaps: &[&Gap], side: &str) -> Result<String, String> {
-    let note = "`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。\n\n";
+    let note = "`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。\n\n";
     let body = match name {
         "gaps-known" => table(
             &["ID", "種類", "箇所", "差異", "前提（前提型）／成分（観測型）", "R 課題", "W 課題"],
@@ -151,11 +151,14 @@ pub fn render_doc(
     Ok(out)
 }
 
-/// 生成する文書（パス, ID の接頭辞, 具体側の名前, 区画）。
-pub const DOCS: &[(&str, &str, &str, &[&str])] = &[
-    ("docs/spec/abstraction.md", "D-", "[Source]", &["gaps-known", "gaps-impact", "gaps-outside-pre", "gaps-undetermined"]),
-    ("docs/spec/refinement.md", "T-", "[Target]", &["gaps-known", "gaps-impact"]),
-];
+/// 生成する文書（パス, ID の接頭辞, 具体側の名前, 区画）。パスは設定の `docs.abstraction`・`docs.refinement`。
+pub fn docs() -> Vec<(String, &'static str, &'static str, &'static [&'static str])> {
+    let d = &crate::project::get().docs;
+    vec![
+        (d.abstraction.clone(), "D-", "[Source]", &["gaps-known", "gaps-impact", "gaps-outside-pre", "gaps-undetermined"]),
+        (d.refinement.clone(), "T-", "[Target]", &["gaps-known", "gaps-impact"]),
+    ]
+}
 
 #[cfg(test)]
 mod tests {

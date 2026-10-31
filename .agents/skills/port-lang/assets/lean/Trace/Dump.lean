@@ -13,7 +13,7 @@ import Trace.Gap
   同じ層と、`LangSemantics`・`Machine` の層の定数の `merkle` を名前順に合成したもの。
   相互再帰は強連結成分（SCC）ごとにまとめて計算する。値は 64 bit の 16 進 16 桁。
   属性（追跡属性を含む）は含めない。注釈のハッシュを `rehash` が書き換えても値は変わらない。
-- **module**: 定義のあるモジュール。`tools/trace rehash` が注釈を書き換えるファイルを引くのに使う。
+- **module**: 定義のあるモジュール。`scripts/trace` の `rehash` が注釈を書き換えるファイルを引くのに使う。
 - **gaps**: ギャップの登録簿（`@[gap_entry]` の宣言の値と docstring、印 `@[gap]`・`@[deviation]` の定数。`Trace.gapsJson`）。
 - ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると全定義の値が変わりうる。
 -/

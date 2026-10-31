@@ -19,7 +19,6 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::{Path, PathBuf};
 
 /// Lean のソースの置き場所（モジュール名 `A.B` → `<root>/A/B.lean`）。
-pub const LEAN_ROOTS: &[&str] = &["lean", ".agents/skills/port-lang/assets/lean"];
 
 /// `trace/renames.json` の（old, new）。
 pub fn load_renames(repo: &Path) -> Result<Vec<(String, String)>, String> {
@@ -123,7 +122,7 @@ pub fn plan(cx: &Context) -> Plan {
 /// モジュールのファイル。
 pub fn module_file(repo: &Path, module: &str) -> Option<PathBuf> {
     let rel = module.replace('.', "/") + ".lean";
-    LEAN_ROOTS.iter().map(|r| repo.join(r).join(&rel)).find(|p| p.is_file())
+    crate::project::get().lean.roots.iter().map(|r| repo.join(r).join(&rel)).find(|p| p.is_file())
 }
 
 #[derive(Debug, Default)]

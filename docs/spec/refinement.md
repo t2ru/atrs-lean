@@ -59,7 +59,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 登録簿の正は Lean の `Refinement.Gap`（`@[gap_entry]` の宣言）であり、下の表はそこから生成する（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。移植先は [Spec] をそのまま実装する方針であり、現在は登録が無い。差異が必要になったら、意思決定を記録したうえで、`Refinement.Gap` に登録し、`TargetModel` の該当する定義と [Spec] の定義に `@[gap "T-NNN"]` を付ける。
 
 <!-- BEGIN GENERATED: gaps-known -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -72,7 +72,7 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 ### 前提型の差異の影響
 
 <!-- BEGIN GENERATED: gaps-impact -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 影響 | 理由 | backlog |
 | --- | --- | --- | --- |

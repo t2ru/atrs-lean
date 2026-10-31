@@ -231,18 +231,18 @@ verus! {
 
     #[test]
     fn scans_pub_items_and_tags() {
-        let (items, tags) = scan("rust/src/fare.rs", &module_path("atrs", "fare.rs"), SRC);
+        let (items, tags) = scan("rust/src/fare.rs", &module_path("app", "fare.rs"), SRC);
         let locs: Vec<&str> = items.iter().map(|i| i.locator.as_str()).collect();
-        assert!(locs.contains(&"rust:atrs::fare::basic_fare"));
-        assert!(locs.contains(&"rust:atrs::fare::Fare"));
-        assert!(locs.contains(&"rust:atrs::fare::Fare::get"));
-        assert!(locs.contains(&"rust:atrs::fare::<Fare as Default>::default"));
-        assert!(locs.contains(&"rust:atrs::fare::inner::C"));
-        assert!(locs.contains(&"rust:atrs::fare::spec_fare"));
+        assert!(locs.contains(&"rust:app::fare::basic_fare"));
+        assert!(locs.contains(&"rust:app::fare::Fare"));
+        assert!(locs.contains(&"rust:app::fare::Fare::get"));
+        assert!(locs.contains(&"rust:app::fare::<Fare as Default>::default"));
+        assert!(locs.contains(&"rust:app::fare::inner::C"));
+        assert!(locs.contains(&"rust:app::fare::spec_fare"));
         assert!(!locs.iter().any(|l| l.contains("helper") || l.contains("hidden")));
         assert_eq!(tags[0].name, "TargetModel.Fare.basicFare");
         assert_eq!(tags[0].merkle, "0123456789abcdef");
-        let (items2, _) = scan("f", "atrs::fare", &SRC.replace("a * 2", "a * 3"));
+        let (items2, _) = scan("f", "app::fare", &SRC.replace("a * 2", "a * 3"));
         let h = |v: &[Item]| v.iter().find(|i| i.locator.ends_with("::basic_fare")).unwrap().hash.clone();
         assert_ne!(h(&items), h(&items2));
     }

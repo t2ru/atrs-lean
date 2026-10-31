@@ -1,5 +1,5 @@
 {
-  "note": "旧番号の stem → ID（ADR f57e）。tools/docs/ids.py migrate が使う。",
+  "note": "旧番号の stem → ID（ADR f57e）。port-lang の scripts/docs/ids.py migrate が使う。",
   "adr": {
     "0001-record-architecture-decisions-with-madr": "d845e30d-651f-4772-a180-4abe056d7796",
     "0002-porting-scope": "84bfbea8-5da1-49a5-ace7-f38db5992d26",

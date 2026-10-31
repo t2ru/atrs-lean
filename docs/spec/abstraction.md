@@ -120,7 +120,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 - **モデル外**: Lean のどのモデルにも現れない差異。[Spec] の外の規範節と原典の違いがこれに当たる。証明には現れないので、[assurance.md](assurance.md) に限界として載せる
 
 <!-- BEGIN GENERATED: gaps-known -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -156,7 +156,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。
 
 <!-- BEGIN GENERATED: gaps-impact -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 影響 | 理由 | backlog |
 | --- | --- | --- | --- |
@@ -182,7 +182,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 次は、[Spec] の PRE・INV の外での [Source] の振る舞いである。B メソッドのリファインメントでは、PRE の外の振る舞いに義務は無い。したがって差異ではない（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#リファインメント具体機械が抽象機械をリファインする)）。ID は過去に既知差異として付けたものを保つ。ID の無かった行には D-029・D-030 を割り当てた（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。主定理は、これらに差異の仮定を置かない。登録簿では種類「PRE の外」とし、箇所の印を付ける。
 
 <!-- BEGIN GENERATED: gaps-outside-pre -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 箇所 | [Source] の振る舞い | [Spec] の前提 |
 | --- | --- | --- | --- |
@@ -200,7 +200,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 ### 未確定の差異
 
 <!-- BEGIN GENERATED: gaps-undetermined -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 対象 | 状況 | 確定させる作業 |
 | --- | --- | --- | --- |

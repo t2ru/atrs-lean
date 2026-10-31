@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Lean ソースの静的検査（backlog be49）。
+"""Lean ソースの静的検査（port-lang の道具。scripts/README.md）。
 
 port-lang の lean/rules.md（全域性と安全性）と architecture.md（依存の向き）を、
-コメントと文字列リテラルを除いたトークンで検査する。
+コメントと文字列リテラルを除いたトークンで検査する。検査する Lean のルートと言語の組は、
+リポジトリの `trace/project.json`（`lean.roots`・`languages`）から読む。
 
 | 規則 | 失敗条件 |
 | --- | --- |
@@ -14,22 +15,19 @@ port-lang の lean/rules.md（全域性と安全性）と architecture.md（依�
 | LEAN-IMPORT | 名前空間の依存の向きに反する import がある（移植元側と移植先側の相互依存を含む） |
 
 使い方:
-  python3 -I tools/ci/check_lean.py              # lean/ と port-lang の assets を検査
-  python3 -I tools/ci/check_lean.py --self-test  # 違反例（tools/ci/fixtures/lean）で検出できることを確かめる
+  python3 -I <skill>/scripts/ci/check_lean.py              # trace/project.json の lean.roots を検査
+  python3 -I <skill>/scripts/ci/check_lean.py --self-test  # 違反例（scripts/ci/fixtures/lean）で検出できることを確かめる
 """
+import json
 import pathlib
 import re
 import sys
 
-REPO = pathlib.Path(__file__).resolve().parents[2]
-# (パッケージのルート, 表示名)。モジュール名はルートからの相対パスで決まる
-DEFAULT_ROOTS = [REPO / "lean", REPO / ".agents/skills/port-lang/assets/lean"]
 FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures" / "lean"
 
-# ATRS の言語ペア（docs/rules/atrs-porting.md）
-SOURCE_LANGS = {"LangSemantics.Java", "LangSemantics.Sql"}
-TARGET_LANGS = {"LangSemantics.Rust"}
-ALL_LANGS = SOURCE_LANGS | TARGET_LANGS
+# スキルの assets にある言語パックの LangSemantics の層（言語の組に関わらず、すべて検査の対象）
+KNOWN_LANGS = {"LangSemantics.Java", "LangSemantics.Sql", "LangSemantics.Rust"}
+ALL_LANGS = set(KNOWN_LANGS)
 
 EXTERNAL_FOR_MODELS = {"Init", "Std", "Batteries"}
 EXTERNAL_FOR_META = EXTERNAL_FOR_MODELS | {"Lean", "Lake"}
@@ -37,24 +35,56 @@ META_LAYERS = {"Trace", "Tests", "Tools"}
 MODEL_LAYERS = {"Machine", "Spec", "SourceModel", "Abstraction", "TargetModel", "Refinement", "LangSemantics"} | ALL_LANGS
 ALL_LAYERS = MODEL_LAYERS | META_LAYERS
 
-# architecture.md#依存の向き（自分自身の層への依存は常に許す）
-ALLOWED = {
-    "Trace": set(),
-    "Machine": set(),
-    "Spec": {"Machine", "Trace"},
-    "SourceModel": {"Spec", "Machine", "Trace"} | SOURCE_LANGS,
-    "Abstraction": {"SourceModel", "Spec", "Machine", "Trace"} | SOURCE_LANGS,
-    "TargetModel": {"Spec", "Machine", "Trace"} | TARGET_LANGS,
-    "Refinement": {"TargetModel", "Spec", "Machine", "Trace"} | TARGET_LANGS,
-    "LangSemantics": set(ALL_LANGS),  # 集約モジュール LangSemantics.lean
-    "Tests": ALL_LAYERS,
-    "Tools": ALL_LAYERS,
-}
-for _l in ALL_LANGS:
-    ALLOWED[_l] = {"Trace"}
+# 言語の組で決まる表（configure で設定する）
+SOURCE_LANGS: set = set()
+TARGET_LANGS: set = set()
+ALLOWED: dict = {}
+SOURCE_SIDE: set = set()
+TARGET_SIDE: set = set()
 
-SOURCE_SIDE = {"SourceModel", "Abstraction"} | SOURCE_LANGS
-TARGET_SIDE = {"TargetModel", "Refinement"} | TARGET_LANGS
+
+def lang_layer(lang: str) -> str:
+    """言語パックの名前（`java`）から LangSemantics の層（`LangSemantics.Java`）。"""
+    return "LangSemantics." + lang[:1].upper() + lang[1:]
+
+
+def configure(source: list, target: list) -> None:
+    """言語の組（trace/project.json の languages）から、依存の向きの表を作る（architecture.md#依存の向き）。"""
+    global SOURCE_LANGS, TARGET_LANGS, ALLOWED, SOURCE_SIDE, TARGET_SIDE
+    SOURCE_LANGS = {lang_layer(l) for l in source}
+    TARGET_LANGS = {lang_layer(l) for l in target}
+    unknown = (SOURCE_LANGS | TARGET_LANGS) - KNOWN_LANGS
+    if unknown:
+        sys.exit(f"check_lean: unknown language pack(s) {sorted(unknown)}")
+    # 自分自身の層への依存は常に許す
+    ALLOWED = {
+        "Trace": set(),
+        "Machine": set(),
+        "Spec": {"Machine", "Trace"},
+        "SourceModel": {"Spec", "Machine", "Trace"} | SOURCE_LANGS,
+        "Abstraction": {"SourceModel", "Spec", "Machine", "Trace"} | SOURCE_LANGS,
+        "TargetModel": {"Spec", "Machine", "Trace"} | TARGET_LANGS,
+        "Refinement": {"TargetModel", "Spec", "Machine", "Trace"} | TARGET_LANGS,
+        "LangSemantics": set(ALL_LANGS),  # 集約モジュール LangSemantics.lean
+        "Tests": ALL_LAYERS,
+        "Tools": ALL_LAYERS,
+    }
+    for l in ALL_LANGS:
+        ALLOWED[l] = {"Trace"}
+    SOURCE_SIDE = {"SourceModel", "Abstraction"} | SOURCE_LANGS
+    TARGET_SIDE = {"TargetModel", "Refinement"} | TARGET_LANGS
+
+
+def find_repo() -> pathlib.Path:
+    """`--repo <dir>` か、作業ディレクトリから上にたどって `trace/project.json` があるところ。"""
+    if "--repo" in sys.argv:
+        return pathlib.Path(sys.argv[sys.argv.index("--repo") + 1]).resolve()
+    d = pathlib.Path.cwd().resolve()
+    for c in (d, *d.parents):
+        if (c / "trace" / "project.json").is_file():
+            return c
+    sys.exit("check_lean: repository root (trace/project.json) not found")
+
 
 TOKEN_RULES = [
     ("LEAN-SORRY", re.compile(r"(?<![\w.'])(sorry|admit)(?![\w'!?])"), ALL_LAYERS),
@@ -187,12 +217,16 @@ def run(roots):
 
 
 def main_check() -> int:
+    repo = find_repo()
+    cfg = json.loads((repo / "trace" / "project.json").read_text(encoding="utf-8"))
+    configure(cfg["languages"]["source"], cfg["languages"]["target"])
+    roots = [repo / r for r in cfg["lean"]["roots"]]
     bad = 0
     nfiles = 0
-    for p, found in run(DEFAULT_ROOTS).items():
+    for p, found in run(roots).items():
         nfiles += 1
         for rule, line, msg in found:
-            print(f"{p.relative_to(REPO)}:{line}: {rule}: {msg}", file=sys.stderr)
+            print(f"{p.relative_to(repo)}:{line}: {rule}: {msg}", file=sys.stderr)
             bad += 1
     if bad:
         print(f"check_lean: FAIL ({bad} violation(s))", file=sys.stderr)
@@ -205,7 +239,9 @@ EXPECT_RE = re.compile(r"^-- expect:(.*)$", re.M)
 
 
 def main_self_test() -> int:
-    """各フィクスチャの先頭の `-- expect: RULE, …`（空なら違反なし）と、検出した規則の集合を比べる。"""
+    """各フィクスチャの先頭の `-- expect: RULE, …`（空なら違反なし）と、検出した規則の集合を比べる。
+    フィクスチャは言語の組 Java・SQL → Rust で書いてある。"""
+    configure(["java", "sql"], ["rust"])
     bad = 0
     n = 0
     for p, found in run([FIXTURES]).items():
