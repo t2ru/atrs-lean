@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T15:16:09+09:00
+  at: 2026-10-31T16:13:09+09:00
 ---
 
 # バックログ
@@ -19,7 +19,7 @@ generated:
 | a8be | [LangSemantics.Java: Java 基本型の意味論](a8be-lang-semantics-java.md) | done | [be49](be49-lean-project-scaffold.md) |
 | 591d | [Spec: ドメイン型・基本演算・マスタデータ](591d-abstract-domain-types-and-master-data.md) | done | [be49](be49-lean-project-scaffold.md) |
 | 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | done | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
-| bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
+| bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | doing | [25f7](25f7-fare-calculation-both-models.md), [1ae4](1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
 | 0be7 | [空席照会（B1）](0be7-flight-search-usecase.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | aedf | [予約（B0/B2）](aedf-reservation-usecase.md) | todo | [0be7](0be7-flight-search-usecase.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 4e0e | [会員（C1/C2）と入力検証](4e0e-member-usecases-and-input-validation.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [1ae4](1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [aedf](aedf-reservation-usecase.md), [ffdc](ffdc-trace-tooling.md) |
@@ -61,5 +61,5 @@ be49 ┬ a8be, c7e8 ─────────┐
      └ ddbd
 fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
 機能: 4e0e → 44f8、0be7 → aedf → ac71 → 26c5 → 9c1b → 4b0e → a89e、4b0e → 9c04
-原典との照合: f18c → 各機能（bbcc・0be7・aedf・4e0e・44f8・ac71・a89e）、f18c → 773f
+原典との照合: f18c → 各機能（0be7・aedf・4e0e・44f8・ac71・a89e）、f18c → 773f
 ```

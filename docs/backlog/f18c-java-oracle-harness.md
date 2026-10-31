@@ -8,7 +8,7 @@ state: todo
 depends_on: ["a8ef4e5b-1870-4669-9398-1916a439a6f7"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T16:13:09+09:00
 ---
 
 # Java オラクルハーネス
@@ -31,7 +31,7 @@ generated:
 
 ## 完了条件
 
-- [ ] 運賃計算の [Source] ベクタが Java オラクルと一致する
+- [ ] 運賃計算の [Source] ベクタが Java オラクルと一致する（[backlog bbcc](bbcc-fare-abstraction-proofs.md) から移した。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）
 - [ ] http-contract.md と authentication.md の TODO(spec) を解消した
 - [ ] HTTP レベルのハーネスで、Spring を起動した原典に要求を送り、応答をベクタの形式で採取できる（`SourceModel.Http`・`SourceModel.Validation` との照合は、[backlog 4e0e](4e0e-member-usecases-and-input-validation.md)・[a89e](a89e-http-contract-adapter.md) で行う）
 - [ ] ハーネスの対象外とした操作と、ベクタの範囲を [assurance.md](../spec/assurance.md) に記載した

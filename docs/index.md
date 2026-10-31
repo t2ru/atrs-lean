@@ -60,6 +60,7 @@ okf_version: "0.2"
 * [マスタ・設定・コードリストの読み込みの SourceModel と、[Spec] の修正（所要時間・空港コードの値域・問い合わせ）を決める](decision/c108-master-data-source-model-and-spec-fixes.md) - マスタの読み込みの SourceModel の写し方（列の型は処理系の範囲で写す、Mapper の結果の順列を選ぶ具体機械、MyBatis の対応、コードリスト、設定）と、Spec.Route の所要時間の削除、MD-8 の空港コードの値域、問い合わせの機械の拡張、表せない値の差異 D-027、PostgreSQL での差分実行の形を決める。
 * [ADR と backlog の ID を UUID にし、ファイル名を ID の先頭 4 文字と slug にする](decision/f57e-uuid-ids-for-decisions-and-backlog.md) - ADR・backlog の ID を 4 桁の連番から UUID v4（小文字 16 進）に改め、ファイル名を <ID の先頭 4 文字>-<slug>.md とする。道具が読む箇所は ID 全体を、本文は先頭 4 文字を書く。既存の 78 件を採番し直し、旧番号との対応表を残す。ADR d845 のファイル名の部分を置き換える。
 * [ABS-026 の証明の構成と、空港コード NOP の禁止・D-027 の範囲・LocalDate の通算日数の修正を決める](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) - R 課題 ABS-026 の証明に向けて、空港コード NOP を MD-8 で禁じること、D-027 の対象を具体側の入力全体に広げること、LangSemantics.Java の LocalDate の通算日数の変換を床除算で書き直すこと（負の年で JVM と食い違っていた）、補題の置き場所と、有限の範囲の検査にカーネルの評価（decide +kernel）を使うことを決める。
+* [運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く](decision/e9bc-fare-double-analysis.md) - backlog bbcc の第 1 段として、[Source] の運賃計算の double の式と [Spec] の整数の式の差を、因子の表（カーネルの評価）と閉じた形の補題で確定する。D-001 は値域内に差異があり（ABS-007 は否定的に解決）、D-001・D-002 の前提を「100 で割り切れない、または因子が安全」の形に改める。あわせて ABS-006 を ABS-026 に含めて取り消し、Java オラクルとの一致の完了条件を backlog f18c に移し、bbcc を 3 段に分ける。
 
 # Specification
 
@@ -91,7 +92,7 @@ okf_version: "0.2"
 * [LangSemantics.Java: Java 基本型の意味論](backlog/a8be-lang-semantics-java.md) - int32・IEEE 754 binary64（必要部分）・BigDecimal 丸め・UTF-16 文字列・LocalDate を、アプリ非依存の検証可能なモデルとして実装する。
 * [Spec: ドメイン型・基本演算・マスタデータ](backlog/591d-abstract-domain-types-and-master-data.md) - Spec.Prim（floorDiv・暦日・書式・文字クラス）、エンティティ型、MasterData と不変条件、参照関数を実装する。
 * [運賃計算（Spec と SourceModel）](backlog/25f7-fare-calculation-both-models.md) - 基本運賃・運賃・合計金額を Spec（厳密整数）と SourceModel（LangSemantics.Java）の両方で実装する。
-* [運賃計算の抽象化証明](backlog/bbcc-fare-abstraction-proofs.md) - ABS-001〜ABS-006 を Abstraction.Fare で証明し、成り立たない場合は反例と前提を abstraction.md に記録する。
+* [運賃計算の抽象化証明](backlog/bbcc-fare-abstraction-proofs.md) - 運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、第 1 段で double の誤差を定理で確定した。
 * [空席照会（B1）](backlog/0be7-flight-search-usecase.md) - 照会可能期間・運賃種別の予約可能判定・searchFlight を両モデルで実装し、ABS-010/011 を証明する。
 * [予約（B0/B2）](backlog/aedf-reservation-usecase.md) - validateFlightList・validateReservation・reserveConfirm・reserve を SourceModel と Spec で実装し、空席の不変条件を証明する。
 * [会員（C1/C2）と入力検証](backlog/4e0e-member-usecases-and-input-validation.md) - 会員登録・変更と、全画面の入力検証（前処理・文字クラス・単項目・相関）を両モデルで実装する。
