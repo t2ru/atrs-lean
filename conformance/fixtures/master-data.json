@@ -1,0 +1,8521 @@
+{
+  "note": "上流のシードのマスタ（tools/conformance/master_fixture.py が生成する。手で編集しない）。投入日 2026-11-01、ピーク時期は 2026・2027 年。行の順はシードの順",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "loadDate": "2026-11-01",
+  "airports": [
+    {
+      "code": "HND",
+      "name": "東京(羽田)",
+      "displayOrder": 1
+    },
+    {
+      "code": "NRT",
+      "name": "東京(成田)",
+      "displayOrder": 2
+    },
+    {
+      "code": "ITM",
+      "name": "大阪(伊丹)",
+      "displayOrder": 3
+    },
+    {
+      "code": "KIX",
+      "name": "大阪(関西)",
+      "displayOrder": 4
+    },
+    {
+      "code": "UKB",
+      "name": "大阪(神戸)",
+      "displayOrder": 5
+    },
+    {
+      "code": "SPK",
+      "name": "札幌(千歳)",
+      "displayOrder": 6
+    },
+    {
+      "code": "NGO",
+      "name": "名古屋(中部)",
+      "displayOrder": 7
+    },
+    {
+      "code": "FUK",
+      "name": "福岡",
+      "displayOrder": 8
+    },
+    {
+      "code": "OKA",
+      "name": "沖縄",
+      "displayOrder": 9
+    },
+    {
+      "code": "OKD",
+      "name": "札幌(丘珠)",
+      "displayOrder": 100
+    },
+    {
+      "code": "RIS",
+      "name": "利尻",
+      "displayOrder": 101
+    },
+    {
+      "code": "WKJ",
+      "name": "稚内",
+      "displayOrder": 102
+    },
+    {
+      "code": "MBE",
+      "name": "オホーツク紋別",
+      "displayOrder": 103
+    },
+    {
+      "code": "MMB",
+      "name": "女満別",
+      "displayOrder": 104
+    },
+    {
+      "code": "AKJ",
+      "name": "旭川",
+      "displayOrder": 105
+    },
+    {
+      "code": "SHB",
+      "name": "根室中標津",
+      "displayOrder": 106
+    },
+    {
+      "code": "KUH",
+      "name": "釧路",
+      "displayOrder": 107
+    },
+    {
+      "code": "HKD",
+      "name": "函館",
+      "displayOrder": 108
+    },
+    {
+      "code": "ONJ",
+      "name": "大館能代",
+      "displayOrder": 109
+    },
+    {
+      "code": "AXT",
+      "name": "秋田",
+      "displayOrder": 110
+    },
+    {
+      "code": "SYO",
+      "name": "庄内",
+      "displayOrder": 111
+    },
+    {
+      "code": "SDJ",
+      "name": "仙台",
+      "displayOrder": 112
+    },
+    {
+      "code": "FKS",
+      "name": "福島",
+      "displayOrder": 113
+    },
+    {
+      "code": "OIM",
+      "name": "大島",
+      "displayOrder": 114
+    },
+    {
+      "code": "MYE",
+      "name": "三宅島",
+      "displayOrder": 115
+    },
+    {
+      "code": "HAC",
+      "name": "八丈島",
+      "displayOrder": 116
+    },
+    {
+      "code": "KIJ",
+      "name": "新潟",
+      "displayOrder": 117
+    },
+    {
+      "code": "TOY",
+      "name": "富山",
+      "displayOrder": 118
+    },
+    {
+      "code": "KMQ",
+      "name": "小松",
+      "displayOrder": 119
+    },
+    {
+      "code": "NTQ",
+      "name": "能登",
+      "displayOrder": 120
+    },
+    {
+      "code": "OKJ",
+      "name": "岡山",
+      "displayOrder": 121
+    },
+    {
+      "code": "HIJ",
+      "name": "広島",
+      "displayOrder": 122
+    },
+    {
+      "code": "UBJ",
+      "name": "山口宇部",
+      "displayOrder": 123
+    },
+    {
+      "code": "TTJ",
+      "name": "鳥取",
+      "displayOrder": 124
+    },
+    {
+      "code": "YGJ",
+      "name": "米子",
+      "displayOrder": 125
+    },
+    {
+      "code": "IWJ",
+      "name": "萩・石見",
+      "displayOrder": 126
+    },
+    {
+      "code": "TAK",
+      "name": "高松",
+      "displayOrder": 127
+    },
+    {
+      "code": "TKS",
+      "name": "徳島",
+      "displayOrder": 128
+    },
+    {
+      "code": "MYJ",
+      "name": "松山",
+      "displayOrder": 129
+    },
+    {
+      "code": "KCZ",
+      "name": "高知",
+      "displayOrder": 130
+    },
+    {
+      "code": "KKJ",
+      "name": "北九州",
+      "displayOrder": 131
+    },
+    {
+      "code": "HSG",
+      "name": "佐賀",
+      "displayOrder": 132
+    },
+    {
+      "code": "OIT",
+      "name": "大分",
+      "displayOrder": 133
+    },
+    {
+      "code": "KMJ",
+      "name": "熊本",
+      "displayOrder": 134
+    },
+    {
+      "code": "NGS",
+      "name": "長崎",
+      "displayOrder": 135
+    },
+    {
+      "code": "TSJ",
+      "name": "対馬",
+      "displayOrder": 136
+    },
+    {
+      "code": "FUJ",
+      "name": "五島福江",
+      "displayOrder": 137
+    },
+    {
+      "code": "KMI",
+      "name": "宮崎",
+      "displayOrder": 138
+    },
+    {
+      "code": "KOJ",
+      "name": "鹿児島",
+      "displayOrder": 139
+    },
+    {
+      "code": "MMY",
+      "name": "宮古",
+      "displayOrder": 140
+    },
+    {
+      "code": "ISG",
+      "name": "石垣",
+      "displayOrder": 141
+    }
+  ],
+  "routes": [
+    {
+      "routeNo": 1,
+      "depAirportCd": "HND",
+      "arrAirportCd": "ITM",
+      "flightTime": "0100",
+      "basicFare": 20600
+    },
+    {
+      "routeNo": 2,
+      "depAirportCd": "HND",
+      "arrAirportCd": "MBE",
+      "flightTime": "0130",
+      "basicFare": 30700
+    },
+    {
+      "routeNo": 3,
+      "depAirportCd": "FUK",
+      "arrAirportCd": "NRT",
+      "flightTime": "0130",
+      "basicFare": 33700
+    },
+    {
+      "routeNo": 4,
+      "depAirportCd": "ISG",
+      "arrAirportCd": "OIM",
+      "flightTime": "0230",
+      "basicFare": 37400
+    },
+    {
+      "routeNo": 5,
+      "depAirportCd": "KIX",
+      "arrAirportCd": "SPK",
+      "flightTime": "0150",
+      "basicFare": 37900
+    },
+    {
+      "routeNo": 6,
+      "depAirportCd": "UKB",
+      "arrAirportCd": "HSG",
+      "flightTime": "0120",
+      "basicFare": 20100
+    },
+    {
+      "routeNo": 7,
+      "depAirportCd": "ITM",
+      "arrAirportCd": "OKA",
+      "flightTime": "0205",
+      "basicFare": 31400
+    },
+    {
+      "routeNo": 8,
+      "depAirportCd": "NGO",
+      "arrAirportCd": "SPK",
+      "flightTime": "0140",
+      "basicFare": 34200
+    },
+    {
+      "routeNo": 9,
+      "depAirportCd": "OKD",
+      "arrAirportCd": "KOJ",
+      "flightTime": "0335",
+      "basicFare": 52400
+    },
+    {
+      "routeNo": 10,
+      "depAirportCd": "ISG",
+      "arrAirportCd": "FUK",
+      "flightTime": "0345",
+      "basicFare": 46400
+    },
+    {
+      "routeNo": 11,
+      "depAirportCd": "HND",
+      "arrAirportCd": "SPK",
+      "flightTime": "0130",
+      "basicFare": 30700
+    },
+    {
+      "routeNo": 12,
+      "depAirportCd": "HND",
+      "arrAirportCd": "OKA",
+      "flightTime": "0230",
+      "basicFare": 37400
+    },
+    {
+      "routeNo": 13,
+      "depAirportCd": "HND",
+      "arrAirportCd": "KIX",
+      "flightTime": "0115",
+      "basicFare": 20600
+    },
+    {
+      "routeNo": 14,
+      "depAirportCd": "HND",
+      "arrAirportCd": "FUK",
+      "flightTime": "0145",
+      "basicFare": 33700
+    },
+    {
+      "routeNo": 15,
+      "depAirportCd": "ITM",
+      "arrAirportCd": "HND",
+      "flightTime": "0110",
+      "basicFare": 20600
+    },
+    {
+      "routeNo": 16,
+      "depAirportCd": "SPK",
+      "arrAirportCd": "HND",
+      "flightTime": "0130",
+      "basicFare": 30700
+    },
+    {
+      "routeNo": 17,
+      "depAirportCd": "OKA",
+      "arrAirportCd": "HND",
+      "flightTime": "0220",
+      "basicFare": 37400
+    },
+    {
+      "routeNo": 18,
+      "depAirportCd": "KIX",
+      "arrAirportCd": "HND",
+      "flightTime": "0105",
+      "basicFare": 20600
+    },
+    {
+      "routeNo": 19,
+      "depAirportCd": "FUK",
+      "arrAirportCd": "HND",
+      "flightTime": "0135",
+      "basicFare": 33700
+    },
+    {
+      "routeNo": 20,
+      "depAirportCd": "SPK",
+      "arrAirportCd": "KIX",
+      "flightTime": "0150",
+      "basicFare": 37900
+    }
+  ],
+  "flightMasters": [
+    {
+      "flightName": "NTT001",
+      "routeNo": 1,
+      "departureTime": "0900",
+      "arrivalTime": "1000",
+      "craftType": "101"
+    },
+    {
+      "flightName": "NTT031",
+      "routeNo": 1,
+      "departureTime": "0945",
+      "arrivalTime": "1045",
+      "craftType": "151"
+    },
+    {
+      "flightName": "NTT061",
+      "routeNo": 1,
+      "departureTime": "1030",
+      "arrivalTime": "1130",
+      "craftType": "201"
+    },
+    {
+      "flightName": "NTT091",
+      "routeNo": 1,
+      "departureTime": "1115",
+      "arrivalTime": "1215",
+      "craftType": "251"
+    },
+    {
+      "flightName": "NTT121",
+      "routeNo": 1,
+      "departureTime": "1200",
+      "arrivalTime": "1300",
+      "craftType": "301"
+    },
+    {
+      "flightName": "NTT151",
+      "routeNo": 1,
+      "departureTime": "1245",
+      "arrivalTime": "1345",
+      "craftType": "351"
+    },
+    {
+      "flightName": "NTT181",
+      "routeNo": 1,
+      "departureTime": "1330",
+      "arrivalTime": "1430",
+      "craftType": "401"
+    },
+    {
+      "flightName": "NTT211",
+      "routeNo": 1,
+      "departureTime": "1415",
+      "arrivalTime": "1515",
+      "craftType": "451"
+    },
+    {
+      "flightName": "NTT241",
+      "routeNo": 1,
+      "departureTime": "1500",
+      "arrivalTime": "1600",
+      "craftType": "501"
+    },
+    {
+      "flightName": "NTT271",
+      "routeNo": 1,
+      "departureTime": "1545",
+      "arrivalTime": "1645",
+      "craftType": "551"
+    },
+    {
+      "flightName": "NTT301",
+      "routeNo": 1,
+      "departureTime": "1630",
+      "arrivalTime": "1730",
+      "craftType": "601"
+    },
+    {
+      "flightName": "NTT331",
+      "routeNo": 1,
+      "departureTime": "1715",
+      "arrivalTime": "1815",
+      "craftType": "651"
+    },
+    {
+      "flightName": "NTT361",
+      "routeNo": 1,
+      "departureTime": "1800",
+      "arrivalTime": "1900",
+      "craftType": "701"
+    },
+    {
+      "flightName": "NTT391",
+      "routeNo": 1,
+      "departureTime": "1845",
+      "arrivalTime": "1945",
+      "craftType": "751"
+    },
+    {
+      "flightName": "NTT421",
+      "routeNo": 1,
+      "departureTime": "1930",
+      "arrivalTime": "2030",
+      "craftType": "801"
+    },
+    {
+      "flightName": "NTT451",
+      "routeNo": 1,
+      "departureTime": "2015",
+      "arrivalTime": "2115",
+      "craftType": "851"
+    },
+    {
+      "flightName": "NTT481",
+      "routeNo": 1,
+      "departureTime": "2100",
+      "arrivalTime": "2200",
+      "craftType": "901"
+    },
+    {
+      "flightName": "NTT511",
+      "routeNo": 1,
+      "departureTime": "2145",
+      "arrivalTime": "2245",
+      "craftType": "951"
+    },
+    {
+      "flightName": "NTT006",
+      "routeNo": 5,
+      "departureTime": "0900",
+      "arrivalTime": "1050",
+      "craftType": "106"
+    },
+    {
+      "flightName": "NTT036",
+      "routeNo": 5,
+      "departureTime": "0945",
+      "arrivalTime": "1135",
+      "craftType": "156"
+    },
+    {
+      "flightName": "NTT066",
+      "routeNo": 5,
+      "departureTime": "1030",
+      "arrivalTime": "1220",
+      "craftType": "206"
+    },
+    {
+      "flightName": "NTT096",
+      "routeNo": 5,
+      "departureTime": "1115",
+      "arrivalTime": "1305",
+      "craftType": "256"
+    },
+    {
+      "flightName": "NTT126",
+      "routeNo": 5,
+      "departureTime": "1200",
+      "arrivalTime": "1350",
+      "craftType": "306"
+    },
+    {
+      "flightName": "NTT156",
+      "routeNo": 5,
+      "departureTime": "1245",
+      "arrivalTime": "1435",
+      "craftType": "356"
+    },
+    {
+      "flightName": "NTT186",
+      "routeNo": 5,
+      "departureTime": "1330",
+      "arrivalTime": "1520",
+      "craftType": "406"
+    },
+    {
+      "flightName": "NTT216",
+      "routeNo": 5,
+      "departureTime": "1415",
+      "arrivalTime": "1605",
+      "craftType": "456"
+    },
+    {
+      "flightName": "NTT246",
+      "routeNo": 5,
+      "departureTime": "1500",
+      "arrivalTime": "1650",
+      "craftType": "506"
+    },
+    {
+      "flightName": "NTT276",
+      "routeNo": 5,
+      "departureTime": "1545",
+      "arrivalTime": "1735",
+      "craftType": "556"
+    },
+    {
+      "flightName": "NTT306",
+      "routeNo": 5,
+      "departureTime": "1630",
+      "arrivalTime": "1820",
+      "craftType": "606"
+    },
+    {
+      "flightName": "NTT336",
+      "routeNo": 5,
+      "departureTime": "1715",
+      "arrivalTime": "1905",
+      "craftType": "656"
+    },
+    {
+      "flightName": "NTT366",
+      "routeNo": 5,
+      "departureTime": "1800",
+      "arrivalTime": "1950",
+      "craftType": "706"
+    },
+    {
+      "flightName": "NTT396",
+      "routeNo": 5,
+      "departureTime": "1845",
+      "arrivalTime": "2035",
+      "craftType": "756"
+    },
+    {
+      "flightName": "NTT426",
+      "routeNo": 5,
+      "departureTime": "1930",
+      "arrivalTime": "2120",
+      "craftType": "806"
+    },
+    {
+      "flightName": "NTT456",
+      "routeNo": 5,
+      "departureTime": "2015",
+      "arrivalTime": "2205",
+      "craftType": "856"
+    },
+    {
+      "flightName": "NTT486",
+      "routeNo": 5,
+      "departureTime": "2100",
+      "arrivalTime": "2250",
+      "craftType": "906"
+    },
+    {
+      "flightName": "NTT516",
+      "routeNo": 5,
+      "departureTime": "2145",
+      "arrivalTime": "2335",
+      "craftType": "956"
+    },
+    {
+      "flightName": "NTT013",
+      "routeNo": 12,
+      "departureTime": "0900",
+      "arrivalTime": "1130",
+      "craftType": "113"
+    },
+    {
+      "flightName": "NTT043",
+      "routeNo": 12,
+      "departureTime": "0945",
+      "arrivalTime": "1215",
+      "craftType": "163"
+    },
+    {
+      "flightName": "NTT073",
+      "routeNo": 12,
+      "departureTime": "1030",
+      "arrivalTime": "1300",
+      "craftType": "213"
+    },
+    {
+      "flightName": "NTT103",
+      "routeNo": 12,
+      "departureTime": "1115",
+      "arrivalTime": "1345",
+      "craftType": "263"
+    },
+    {
+      "flightName": "NTT133",
+      "routeNo": 12,
+      "departureTime": "1200",
+      "arrivalTime": "1430",
+      "craftType": "313"
+    },
+    {
+      "flightName": "NTT163",
+      "routeNo": 12,
+      "departureTime": "1245",
+      "arrivalTime": "1515",
+      "craftType": "363"
+    },
+    {
+      "flightName": "NTT193",
+      "routeNo": 12,
+      "departureTime": "1330",
+      "arrivalTime": "1600",
+      "craftType": "413"
+    },
+    {
+      "flightName": "NTT223",
+      "routeNo": 12,
+      "departureTime": "1415",
+      "arrivalTime": "1645",
+      "craftType": "463"
+    },
+    {
+      "flightName": "NTT253",
+      "routeNo": 12,
+      "departureTime": "1500",
+      "arrivalTime": "1730",
+      "craftType": "513"
+    },
+    {
+      "flightName": "NTT283",
+      "routeNo": 12,
+      "departureTime": "1545",
+      "arrivalTime": "1815",
+      "craftType": "563"
+    },
+    {
+      "flightName": "NTT313",
+      "routeNo": 12,
+      "departureTime": "1630",
+      "arrivalTime": "1900",
+      "craftType": "613"
+    },
+    {
+      "flightName": "NTT343",
+      "routeNo": 12,
+      "departureTime": "1715",
+      "arrivalTime": "1945",
+      "craftType": "663"
+    },
+    {
+      "flightName": "NTT373",
+      "routeNo": 12,
+      "departureTime": "1800",
+      "arrivalTime": "2030",
+      "craftType": "713"
+    },
+    {
+      "flightName": "NTT403",
+      "routeNo": 12,
+      "departureTime": "1845",
+      "arrivalTime": "2115",
+      "craftType": "763"
+    },
+    {
+      "flightName": "NTT433",
+      "routeNo": 12,
+      "departureTime": "1930",
+      "arrivalTime": "2145",
+      "craftType": "813"
+    },
+    {
+      "flightName": "NTT463",
+      "routeNo": 12,
+      "departureTime": "2015",
+      "arrivalTime": "2245",
+      "craftType": "863"
+    },
+    {
+      "flightName": "NTT493",
+      "routeNo": 12,
+      "departureTime": "2100",
+      "arrivalTime": "2330",
+      "craftType": "913"
+    },
+    {
+      "flightName": "NTT523",
+      "routeNo": 12,
+      "departureTime": "2145",
+      "arrivalTime": "2415",
+      "craftType": "963",
+      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0006 で Spec を改める。ADR 0042）"
+    },
+    {
+      "flightName": "NTT016",
+      "routeNo": 15,
+      "departureTime": "0900",
+      "arrivalTime": "1010",
+      "craftType": "116"
+    },
+    {
+      "flightName": "NTT046",
+      "routeNo": 15,
+      "departureTime": "0945",
+      "arrivalTime": "1055",
+      "craftType": "166"
+    },
+    {
+      "flightName": "NTT076",
+      "routeNo": 15,
+      "departureTime": "1030",
+      "arrivalTime": "1140",
+      "craftType": "216"
+    },
+    {
+      "flightName": "NTT106",
+      "routeNo": 15,
+      "departureTime": "1115",
+      "arrivalTime": "1225",
+      "craftType": "266"
+    },
+    {
+      "flightName": "NTT136",
+      "routeNo": 15,
+      "departureTime": "1200",
+      "arrivalTime": "1310",
+      "craftType": "316"
+    },
+    {
+      "flightName": "NTT166",
+      "routeNo": 15,
+      "departureTime": "1245",
+      "arrivalTime": "1355",
+      "craftType": "366"
+    },
+    {
+      "flightName": "NTT196",
+      "routeNo": 15,
+      "departureTime": "1330",
+      "arrivalTime": "1440",
+      "craftType": "416"
+    },
+    {
+      "flightName": "NTT226",
+      "routeNo": 15,
+      "departureTime": "1415",
+      "arrivalTime": "1525",
+      "craftType": "466"
+    },
+    {
+      "flightName": "NTT256",
+      "routeNo": 15,
+      "departureTime": "1500",
+      "arrivalTime": "1610",
+      "craftType": "516"
+    },
+    {
+      "flightName": "NTT286",
+      "routeNo": 15,
+      "departureTime": "1545",
+      "arrivalTime": "1655",
+      "craftType": "566"
+    },
+    {
+      "flightName": "NTT316",
+      "routeNo": 15,
+      "departureTime": "1630",
+      "arrivalTime": "1740",
+      "craftType": "616"
+    },
+    {
+      "flightName": "NTT346",
+      "routeNo": 15,
+      "departureTime": "1715",
+      "arrivalTime": "1825",
+      "craftType": "666"
+    },
+    {
+      "flightName": "NTT376",
+      "routeNo": 15,
+      "departureTime": "1800",
+      "arrivalTime": "1910",
+      "craftType": "716"
+    },
+    {
+      "flightName": "NTT406",
+      "routeNo": 15,
+      "departureTime": "1845",
+      "arrivalTime": "1955",
+      "craftType": "766"
+    },
+    {
+      "flightName": "NTT436",
+      "routeNo": 15,
+      "departureTime": "1930",
+      "arrivalTime": "2040",
+      "craftType": "816"
+    },
+    {
+      "flightName": "NTT466",
+      "routeNo": 15,
+      "departureTime": "2015",
+      "arrivalTime": "2125",
+      "craftType": "866"
+    },
+    {
+      "flightName": "NTT496",
+      "routeNo": 15,
+      "departureTime": "2100",
+      "arrivalTime": "2210",
+      "craftType": "916"
+    },
+    {
+      "flightName": "NTT526",
+      "routeNo": 15,
+      "departureTime": "2145",
+      "arrivalTime": "2255",
+      "craftType": "966"
+    },
+    {
+      "flightName": "NTT018",
+      "routeNo": 17,
+      "departureTime": "0910",
+      "arrivalTime": "1130",
+      "craftType": "118"
+    },
+    {
+      "flightName": "NTT048",
+      "routeNo": 17,
+      "departureTime": "0955",
+      "arrivalTime": "1215",
+      "craftType": "168"
+    },
+    {
+      "flightName": "NTT078",
+      "routeNo": 17,
+      "departureTime": "1040",
+      "arrivalTime": "1300",
+      "craftType": "218"
+    },
+    {
+      "flightName": "NTT108",
+      "routeNo": 17,
+      "departureTime": "1125",
+      "arrivalTime": "1345",
+      "craftType": "268"
+    },
+    {
+      "flightName": "NTT138",
+      "routeNo": 17,
+      "departureTime": "1210",
+      "arrivalTime": "1430",
+      "craftType": "318"
+    },
+    {
+      "flightName": "NTT168",
+      "routeNo": 17,
+      "departureTime": "1255",
+      "arrivalTime": "1515",
+      "craftType": "368"
+    },
+    {
+      "flightName": "NTT198",
+      "routeNo": 17,
+      "departureTime": "1340",
+      "arrivalTime": "1600",
+      "craftType": "418"
+    },
+    {
+      "flightName": "NTT228",
+      "routeNo": 17,
+      "departureTime": "1425",
+      "arrivalTime": "1645",
+      "craftType": "468"
+    },
+    {
+      "flightName": "NTT258",
+      "routeNo": 17,
+      "departureTime": "1510",
+      "arrivalTime": "1730",
+      "craftType": "518"
+    },
+    {
+      "flightName": "NTT288",
+      "routeNo": 17,
+      "departureTime": "1555",
+      "arrivalTime": "1815",
+      "craftType": "568"
+    },
+    {
+      "flightName": "NTT318",
+      "routeNo": 17,
+      "departureTime": "1640",
+      "arrivalTime": "1900",
+      "craftType": "618"
+    },
+    {
+      "flightName": "NTT348",
+      "routeNo": 17,
+      "departureTime": "1725",
+      "arrivalTime": "1945",
+      "craftType": "668"
+    },
+    {
+      "flightName": "NTT378",
+      "routeNo": 17,
+      "departureTime": "1810",
+      "arrivalTime": "2030",
+      "craftType": "718"
+    },
+    {
+      "flightName": "NTT408",
+      "routeNo": 17,
+      "departureTime": "1855",
+      "arrivalTime": "2115",
+      "craftType": "768"
+    },
+    {
+      "flightName": "NTT438",
+      "routeNo": 17,
+      "departureTime": "1940",
+      "arrivalTime": "2145",
+      "craftType": "818"
+    },
+    {
+      "flightName": "NTT468",
+      "routeNo": 17,
+      "departureTime": "2025",
+      "arrivalTime": "2245",
+      "craftType": "868"
+    },
+    {
+      "flightName": "NTT498",
+      "routeNo": 17,
+      "departureTime": "2110",
+      "arrivalTime": "2330",
+      "craftType": "918"
+    },
+    {
+      "flightName": "NTT528",
+      "routeNo": 17,
+      "departureTime": "2155",
+      "arrivalTime": "2415",
+      "craftType": "968",
+      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0006 で Spec を改める。ADR 0042）"
+    },
+    {
+      "flightName": "NTT019",
+      "routeNo": 18,
+      "departureTime": "0900",
+      "arrivalTime": "1005",
+      "craftType": "119"
+    },
+    {
+      "flightName": "NTT049",
+      "routeNo": 18,
+      "departureTime": "0945",
+      "arrivalTime": "1050",
+      "craftType": "169"
+    },
+    {
+      "flightName": "NTT079",
+      "routeNo": 18,
+      "departureTime": "1030",
+      "arrivalTime": "1135",
+      "craftType": "219"
+    },
+    {
+      "flightName": "NTT109",
+      "routeNo": 18,
+      "departureTime": "1115",
+      "arrivalTime": "1220",
+      "craftType": "269"
+    },
+    {
+      "flightName": "NTT139",
+      "routeNo": 18,
+      "departureTime": "1200",
+      "arrivalTime": "1305",
+      "craftType": "319"
+    },
+    {
+      "flightName": "NTT169",
+      "routeNo": 18,
+      "departureTime": "1245",
+      "arrivalTime": "1350",
+      "craftType": "369"
+    },
+    {
+      "flightName": "NTT199",
+      "routeNo": 18,
+      "departureTime": "1330",
+      "arrivalTime": "1435",
+      "craftType": "419"
+    },
+    {
+      "flightName": "NTT229",
+      "routeNo": 18,
+      "departureTime": "1415",
+      "arrivalTime": "1520",
+      "craftType": "469"
+    },
+    {
+      "flightName": "NTT259",
+      "routeNo": 18,
+      "departureTime": "1500",
+      "arrivalTime": "1605",
+      "craftType": "519"
+    },
+    {
+      "flightName": "NTT289",
+      "routeNo": 18,
+      "departureTime": "1545",
+      "arrivalTime": "1650",
+      "craftType": "569"
+    },
+    {
+      "flightName": "NTT319",
+      "routeNo": 18,
+      "departureTime": "1630",
+      "arrivalTime": "1745",
+      "craftType": "619"
+    },
+    {
+      "flightName": "NTT349",
+      "routeNo": 18,
+      "departureTime": "1715",
+      "arrivalTime": "1820",
+      "craftType": "669"
+    },
+    {
+      "flightName": "NTT379",
+      "routeNo": 18,
+      "departureTime": "1800",
+      "arrivalTime": "1905",
+      "craftType": "719"
+    },
+    {
+      "flightName": "NTT409",
+      "routeNo": 18,
+      "departureTime": "1845",
+      "arrivalTime": "1950",
+      "craftType": "769"
+    },
+    {
+      "flightName": "NTT439",
+      "routeNo": 18,
+      "departureTime": "1930",
+      "arrivalTime": "2035",
+      "craftType": "819"
+    },
+    {
+      "flightName": "NTT469",
+      "routeNo": 18,
+      "departureTime": "2015",
+      "arrivalTime": "2120",
+      "craftType": "869"
+    },
+    {
+      "flightName": "NTT499",
+      "routeNo": 18,
+      "departureTime": "2100",
+      "arrivalTime": "2205",
+      "craftType": "919"
+    },
+    {
+      "flightName": "NTT529",
+      "routeNo": 18,
+      "departureTime": "2145",
+      "arrivalTime": "2250",
+      "craftType": "969"
+    },
+    {
+      "flightName": "NTT021",
+      "routeNo": 20,
+      "departureTime": "0900",
+      "arrivalTime": "1050",
+      "craftType": "121"
+    },
+    {
+      "flightName": "NTT051",
+      "routeNo": 20,
+      "departureTime": "0945",
+      "arrivalTime": "1135",
+      "craftType": "171"
+    },
+    {
+      "flightName": "NTT081",
+      "routeNo": 20,
+      "departureTime": "1030",
+      "arrivalTime": "1220",
+      "craftType": "221"
+    },
+    {
+      "flightName": "NTT111",
+      "routeNo": 20,
+      "departureTime": "1115",
+      "arrivalTime": "1305",
+      "craftType": "271"
+    },
+    {
+      "flightName": "NTT141",
+      "routeNo": 20,
+      "departureTime": "1200",
+      "arrivalTime": "1350",
+      "craftType": "321"
+    },
+    {
+      "flightName": "NTT171",
+      "routeNo": 20,
+      "departureTime": "1245",
+      "arrivalTime": "1435",
+      "craftType": "371"
+    },
+    {
+      "flightName": "NTT201",
+      "routeNo": 20,
+      "departureTime": "1330",
+      "arrivalTime": "1520",
+      "craftType": "421"
+    },
+    {
+      "flightName": "NTT231",
+      "routeNo": 20,
+      "departureTime": "1415",
+      "arrivalTime": "1605",
+      "craftType": "471"
+    },
+    {
+      "flightName": "NTT261",
+      "routeNo": 20,
+      "departureTime": "1500",
+      "arrivalTime": "1650",
+      "craftType": "521"
+    },
+    {
+      "flightName": "NTT291",
+      "routeNo": 20,
+      "departureTime": "1545",
+      "arrivalTime": "1735",
+      "craftType": "571"
+    },
+    {
+      "flightName": "NTT321",
+      "routeNo": 20,
+      "departureTime": "1630",
+      "arrivalTime": "1820",
+      "craftType": "621"
+    },
+    {
+      "flightName": "NTT351",
+      "routeNo": 20,
+      "departureTime": "1715",
+      "arrivalTime": "1905",
+      "craftType": "671"
+    },
+    {
+      "flightName": "NTT381",
+      "routeNo": 20,
+      "departureTime": "1800",
+      "arrivalTime": "1950",
+      "craftType": "721"
+    },
+    {
+      "flightName": "NTT411",
+      "routeNo": 20,
+      "departureTime": "1845",
+      "arrivalTime": "2035",
+      "craftType": "771"
+    },
+    {
+      "flightName": "NTT441",
+      "routeNo": 20,
+      "departureTime": "1930",
+      "arrivalTime": "2120",
+      "craftType": "821"
+    },
+    {
+      "flightName": "NTT471",
+      "routeNo": 20,
+      "departureTime": "2015",
+      "arrivalTime": "2205",
+      "craftType": "871"
+    },
+    {
+      "flightName": "NTT501",
+      "routeNo": 20,
+      "departureTime": "2100",
+      "arrivalTime": "2250",
+      "craftType": "921"
+    },
+    {
+      "flightName": "NTT531",
+      "routeNo": 20,
+      "departureTime": "2145",
+      "arrivalTime": "2335",
+      "craftType": "971"
+    }
+  ],
+  "boardingClasses": [
+    {
+      "boardingClassCd": "N",
+      "boardingClassName": "一般席",
+      "extraCharge": 0,
+      "displayOrder": 1
+    },
+    {
+      "boardingClassCd": "S",
+      "boardingClassName": "特別席",
+      "extraCharge": 5000,
+      "displayOrder": 2
+    }
+  ],
+  "fareTypes": [
+    {
+      "fareTypeCd": "OW",
+      "fareTypeName": "片道運賃",
+      "discountRate": 0,
+      "rsrvAvailableStartDayNum": 90,
+      "rsrvAvailableEndDayNum": 0,
+      "passengerMinNum": 1,
+      "displayOrder": 1
+    },
+    {
+      "fareTypeCd": "RT",
+      "fareTypeName": "往復運賃",
+      "discountRate": 5,
+      "rsrvAvailableStartDayNum": 90,
+      "rsrvAvailableEndDayNum": 0,
+      "passengerMinNum": 1,
+      "displayOrder": 2
+    },
+    {
+      "fareTypeCd": "RD1",
+      "fareTypeName": "予約割1",
+      "discountRate": 10,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 1,
+      "passengerMinNum": 1,
+      "displayOrder": 3
+    },
+    {
+      "fareTypeCd": "RD7",
+      "fareTypeName": "予約割7",
+      "discountRate": 20,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 7,
+      "passengerMinNum": 1,
+      "displayOrder": 4
+    },
+    {
+      "fareTypeCd": "ED",
+      "fareTypeName": "早期割",
+      "discountRate": 30,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 30,
+      "passengerMinNum": 1,
+      "displayOrder": 5
+    },
+    {
+      "fareTypeCd": "LD",
+      "fareTypeName": "レディース割",
+      "discountRate": 30,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 1,
+      "passengerMinNum": 1,
+      "displayOrder": 6
+    },
+    {
+      "fareTypeCd": "GD",
+      "fareTypeName": "グループ割",
+      "discountRate": 30,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 1,
+      "passengerMinNum": 3,
+      "displayOrder": 7
+    },
+    {
+      "fareTypeCd": "SOW",
+      "fareTypeName": "特別片道運賃",
+      "discountRate": 0,
+      "rsrvAvailableStartDayNum": 90,
+      "rsrvAvailableEndDayNum": 0,
+      "passengerMinNum": 1,
+      "displayOrder": 100
+    },
+    {
+      "fareTypeCd": "SRT",
+      "fareTypeName": "特別往復運賃",
+      "discountRate": 5,
+      "rsrvAvailableStartDayNum": 90,
+      "rsrvAvailableEndDayNum": 0,
+      "passengerMinNum": 1,
+      "displayOrder": 101
+    },
+    {
+      "fareTypeCd": "SRD",
+      "fareTypeName": "特別予約割",
+      "discountRate": 10,
+      "rsrvAvailableStartDayNum": 60,
+      "rsrvAvailableEndDayNum": 1,
+      "passengerMinNum": 1,
+      "displayOrder": 102
+    }
+  ],
+  "planes": [
+    {
+      "craftType": "101",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "102",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "103",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "104",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "105",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "106",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "107",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "108",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "109",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "110",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "111",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "112",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "113",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "114",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "115",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "116",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "117",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "118",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "119",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "120",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "121",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "122",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "123",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "124",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "125",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "126",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "127",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "128",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "129",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "130",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "131",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "132",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "133",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "134",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "135",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "136",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "137",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "138",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "139",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "140",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "141",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "142",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "143",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "144",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "145",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "146",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "147",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "148",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "149",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "150",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "151",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "152",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "153",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "154",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "155",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "156",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "157",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "158",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "159",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "160",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "161",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "162",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "163",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "164",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "165",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "166",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "167",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "168",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "169",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "170",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "171",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "172",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "173",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "174",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "175",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "176",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "177",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "178",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "179",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "180",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "181",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "182",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "183",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "184",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "185",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "186",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "187",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "188",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "189",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "190",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "191",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "192",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "193",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "194",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "195",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "196",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "197",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "198",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "199",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "200",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "201",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "202",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "203",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "204",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "205",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "206",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "207",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "208",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "209",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "210",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "211",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "212",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "213",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "214",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "215",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "216",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "217",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "218",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "219",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "220",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "221",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "222",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "223",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "224",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "225",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "226",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "227",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "228",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "229",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "230",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "231",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "232",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "233",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "234",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "235",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "236",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "237",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "238",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "239",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "240",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "241",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "242",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "243",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "244",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "245",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "246",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "247",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "248",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "249",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "250",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "251",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "252",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "253",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "254",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "255",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "256",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "257",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "258",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "259",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "260",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "261",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "262",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "263",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "264",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "265",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "266",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "267",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "268",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "269",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "270",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "271",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "272",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "273",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "274",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "275",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "276",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "277",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "278",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "279",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "280",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "281",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "282",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "283",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "284",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "285",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "286",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "287",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "288",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "289",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "290",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "291",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "292",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "293",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "294",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "295",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "296",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "297",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "298",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "299",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "300",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "301",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "302",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "303",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "304",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "305",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "306",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "307",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "308",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "309",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "310",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "311",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "312",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "313",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "314",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "315",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "316",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "317",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "318",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "319",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "320",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "321",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "322",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "323",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "324",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "325",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "326",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "327",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "328",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "329",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "330",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "331",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "332",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "333",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "334",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "335",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "336",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "337",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "338",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "339",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "340",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "341",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "342",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "343",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "344",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "345",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "346",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "347",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "348",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "349",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "350",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "351",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "352",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "353",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "354",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "355",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "356",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "357",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "358",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "359",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "360",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "361",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "362",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "363",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "364",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "365",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "366",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "367",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "368",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "369",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "370",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "371",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "372",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "373",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "374",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "375",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "376",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "377",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "378",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "379",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "380",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "381",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "382",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "383",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "384",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "385",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "386",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "387",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "388",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "389",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "390",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "391",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "392",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "393",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "394",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "395",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "396",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "397",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "398",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "399",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "400",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "401",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "402",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "403",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "404",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "405",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "406",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "407",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "408",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "409",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "410",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "411",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "412",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "413",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "414",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "415",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "416",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "417",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "418",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "419",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "420",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "421",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "422",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "423",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "424",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "425",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "426",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "427",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "428",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "429",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "430",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "431",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "432",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "433",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "434",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "435",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "436",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "437",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "438",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "439",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "440",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "441",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "442",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "443",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "444",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "445",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "446",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "447",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "448",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "449",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "450",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "451",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "452",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "453",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "454",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "455",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "456",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "457",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "458",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "459",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "460",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "461",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "462",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "463",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "464",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "465",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "466",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "467",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "468",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "469",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "470",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "471",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "472",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "473",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "474",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "475",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "476",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "477",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "478",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "479",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "480",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "481",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "482",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "483",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "484",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "485",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "486",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "487",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "488",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "489",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "490",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "491",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "492",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "493",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "494",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "495",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "496",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "497",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "498",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "499",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "500",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "501",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "502",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "503",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "504",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "505",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "506",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "507",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "508",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "509",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "510",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "511",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "512",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "513",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "514",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "515",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "516",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "517",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "518",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "519",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "520",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "521",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "522",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "523",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "524",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "525",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "526",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "527",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "528",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "529",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "530",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "531",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "532",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "533",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "534",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "535",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "536",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "537",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "538",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "539",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "540",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "541",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "542",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "543",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "544",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "545",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "546",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "547",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "548",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "549",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "550",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "551",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "552",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "553",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "554",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "555",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "556",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "557",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "558",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "559",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "560",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "561",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "562",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "563",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "564",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "565",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "566",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "567",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "568",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "569",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "570",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "571",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "572",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "573",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "574",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "575",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "576",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "577",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "578",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "579",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "580",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "581",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "582",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "583",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "584",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "585",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "586",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "587",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "588",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "589",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "590",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "591",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "592",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "593",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "594",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "595",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "596",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "597",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "598",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "599",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "600",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "601",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "602",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "603",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "604",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "605",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "606",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "607",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "608",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "609",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "610",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "611",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "612",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "613",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "614",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "615",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "616",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "617",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "618",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "619",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "620",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "621",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "622",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "623",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "624",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "625",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "626",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "627",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "628",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "629",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "630",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "631",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "632",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "633",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "634",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "635",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "636",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "637",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "638",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "639",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "640",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "641",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "642",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "643",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "644",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "645",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "646",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "647",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "648",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "649",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "650",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "651",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "652",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "653",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "654",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "655",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "656",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "657",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "658",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "659",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "660",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "661",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "662",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "663",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "664",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "665",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "666",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "667",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "668",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "669",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "670",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "671",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "672",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "673",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "674",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "675",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "676",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "677",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "678",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "679",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "680",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "681",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "682",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "683",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "684",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "685",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "686",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "687",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "688",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "689",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "690",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "691",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "692",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "693",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "694",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "695",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "696",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "697",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "698",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "699",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "700",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "701",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "702",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "703",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "704",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "705",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "706",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "707",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "708",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "709",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "710",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "711",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "712",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "713",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "714",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "715",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "716",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "717",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "718",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "719",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "720",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "721",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "722",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "723",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "724",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "725",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "726",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "727",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "728",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "729",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "730",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "731",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "732",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "733",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "734",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "735",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "736",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "737",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "738",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "739",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "740",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "741",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "742",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "743",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "744",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "745",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "746",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "747",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "748",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "749",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "750",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "751",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "752",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "753",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "754",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "755",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "756",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "757",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "758",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "759",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "760",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "761",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "762",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "763",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "764",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "765",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "766",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "767",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "768",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "769",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "770",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "771",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "772",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "773",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "774",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "775",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "776",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "777",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "778",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "779",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "780",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "781",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "782",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "783",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "784",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "785",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "786",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "787",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "788",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "789",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "790",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "791",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "792",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "793",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "794",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "795",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "796",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "797",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "798",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "799",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "800",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "801",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "802",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "803",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "804",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "805",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "806",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "807",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "808",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "809",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "810",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "811",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "812",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "813",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "814",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "815",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "816",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "817",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "818",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "819",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "820",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "821",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "822",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "823",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "824",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "825",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "826",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "827",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "828",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "829",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "830",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "831",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "832",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "833",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "834",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "835",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "836",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "837",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "838",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "839",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "840",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "841",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "842",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "843",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "844",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "845",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "846",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "847",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "848",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "849",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "850",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "851",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "852",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "853",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "854",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "855",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "856",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "857",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "858",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "859",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "860",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "861",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "862",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "863",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "864",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "865",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "866",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "867",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "868",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "869",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "870",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "871",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "872",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "873",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "874",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "875",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "876",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "877",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "878",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "879",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "880",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "881",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "882",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "883",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "884",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "885",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "886",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "887",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "888",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "889",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "890",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "891",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "892",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "893",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "894",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "895",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "896",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "897",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "898",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "899",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "900",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "901",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "902",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "903",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "904",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "905",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "906",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "907",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "908",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "909",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "910",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "911",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "912",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "913",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "914",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "915",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "916",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "917",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "918",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "919",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "920",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "921",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "922",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "923",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "924",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "925",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "926",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "927",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "928",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "929",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "930",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "931",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "932",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "933",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "934",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "935",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "936",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "937",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "938",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "939",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "940",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "941",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "942",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "943",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "944",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "945",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "946",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "947",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "948",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "949",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "950",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "951",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "952",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "953",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "954",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "955",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "956",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "957",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "958",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "959",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "960",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "961",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "962",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "963",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "964",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "965",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "966",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "967",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "968",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "969",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "970",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "971",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "972",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "973",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "974",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "975",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "976",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "977",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "978",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "979",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "980",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "981",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "982",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "983",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "984",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "985",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "986",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "987",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "988",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "989",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "990",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "991",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "992",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "993",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "994",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "995",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "996",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "997",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "998",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "999",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1000",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1001",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1002",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1003",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1004",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1005",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1006",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1007",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1008",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1009",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1010",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1011",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1012",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1013",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1014",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1015",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1016",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1017",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1018",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1019",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1020",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1021",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1022",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1023",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1024",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1025",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1026",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1027",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1028",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1029",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1030",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1031",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1032",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1033",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1034",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1035",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1036",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1037",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1038",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1039",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1040",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1041",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1042",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1043",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1044",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1045",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1046",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1047",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1048",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1049",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1050",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1051",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1052",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1053",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1054",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1055",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1056",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1057",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1058",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1059",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1060",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1061",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1062",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1063",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1064",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1065",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1066",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1067",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1068",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1069",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1070",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1071",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1072",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1073",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1074",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1075",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1076",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1077",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1078",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1079",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1080",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1081",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1082",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1083",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1084",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1085",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1086",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1087",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1088",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1089",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1090",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1091",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1092",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1093",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1094",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1095",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1096",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1097",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1098",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1099",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1100",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1101",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1102",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1103",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1104",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1105",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1106",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1107",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1108",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1109",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1110",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1111",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1112",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1113",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1114",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1115",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1116",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1117",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1118",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1119",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1120",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1121",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1122",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1123",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1124",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1125",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1126",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1127",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1128",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1129",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1130",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1131",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1132",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1133",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1134",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1135",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1136",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1137",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1138",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1139",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1140",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1141",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1142",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1143",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1144",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1145",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1146",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1147",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1148",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1149",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1150",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1151",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1152",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1153",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1154",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1155",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1156",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1157",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1158",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1159",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1160",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1161",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1162",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1163",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1164",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1165",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1166",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1167",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1168",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1169",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1170",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1171",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1172",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1173",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1174",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1175",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1176",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1177",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1178",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1179",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1180",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1181",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1182",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1183",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1184",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1185",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1186",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1187",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1188",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1189",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1190",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1191",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1192",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1193",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1194",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1195",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1196",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1197",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1198",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1199",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1200",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1201",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1202",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1203",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1204",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1205",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1206",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1207",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1208",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1209",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1210",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1211",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1212",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1213",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1214",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1215",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1216",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1217",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1218",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1219",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1220",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1221",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1222",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1223",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1224",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1225",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1226",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1227",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1228",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1229",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1230",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1231",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1232",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1233",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1234",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1235",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1236",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1237",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1238",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1239",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1240",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1241",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1242",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1243",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1244",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1245",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1246",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1247",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1248",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1249",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1250",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1251",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1252",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1253",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1254",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1255",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1256",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1257",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1258",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1259",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1260",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1261",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1262",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1263",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1264",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1265",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1266",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1267",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1268",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1269",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1270",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1271",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1272",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1273",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1274",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1275",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1276",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1277",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1278",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1279",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1280",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1281",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1282",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1283",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1284",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1285",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1286",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1287",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1288",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1289",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1290",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1291",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1292",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1293",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1294",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1295",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1296",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1297",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1298",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1299",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1300",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1301",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1302",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1303",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1304",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1305",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1306",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1307",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1308",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1309",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1310",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1311",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1312",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1313",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1314",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1315",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1316",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1317",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1318",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1319",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1320",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1321",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1322",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1323",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1324",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1325",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1326",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1327",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1328",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1329",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1330",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1331",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1332",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1333",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1334",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1335",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1336",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1337",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1338",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1339",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1340",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1341",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1342",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1343",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1344",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1345",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1346",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1347",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1348",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1349",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1350",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1351",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1352",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1353",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1354",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1355",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1356",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1357",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1358",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1359",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1360",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1361",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1362",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1363",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1364",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1365",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1366",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1367",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1368",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1369",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1370",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1371",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1372",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1373",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1374",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1375",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1376",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1377",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1378",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1379",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1380",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1381",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1382",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1383",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1384",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1385",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1386",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1387",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1388",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1389",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1390",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1391",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1392",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1393",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1394",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1395",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1396",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1397",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1398",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1399",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1400",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1401",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1402",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1403",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1404",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1405",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1406",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1407",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1408",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1409",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1410",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1411",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1412",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1413",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1414",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1415",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1416",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1417",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1418",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1419",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1420",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1421",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1422",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1423",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1424",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1425",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1426",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1427",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1428",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1429",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1430",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1431",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1432",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1433",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1434",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1435",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1436",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1437",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1438",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1439",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1440",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1441",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1442",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1443",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1444",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1445",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1446",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1447",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1448",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1449",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1450",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1451",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1452",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1453",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1454",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1455",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1456",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1457",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1458",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1459",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1460",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1461",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1462",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1463",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1464",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1465",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1466",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1467",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1468",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1469",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1470",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1471",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1472",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1473",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1474",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1475",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1476",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1477",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1478",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1479",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1480",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1481",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1482",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1483",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1484",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1485",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1486",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1487",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1488",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1489",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1490",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1491",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1492",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1493",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1494",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1495",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1496",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1497",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1498",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    },
+    {
+      "craftType": "1499",
+      "nSeatNum": 500,
+      "sSeatNum": 50
+    }
+  ],
+  "creditTypes": [
+    {
+      "creditTypeCd": "VIS",
+      "creditFirm": "VISA",
+      "displayOrder": 1
+    },
+    {
+      "creditTypeCd": "MTR",
+      "creditFirm": "MASTER",
+      "displayOrder": 2
+    },
+    {
+      "creditTypeCd": "JCB",
+      "creditFirm": "JCB",
+      "displayOrder": 3
+    },
+    {
+      "creditTypeCd": "DNS",
+      "creditFirm": "DNS",
+      "displayOrder": 4
+    },
+    {
+      "creditTypeCd": "AMX",
+      "creditFirm": "American Express",
+      "displayOrder": 5
+    }
+  ],
+  "peakTimes": [
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2026-01-01",
+      "peakEndDate": "2026-01-05",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2026-03-20",
+      "peakEndDate": "2026-03-31",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2026-08-08",
+      "peakEndDate": "2026-08-18",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2026-12-26",
+      "peakEndDate": "2026-12-31",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2026-07-18",
+      "peakEndDate": "2026-08-07",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2026-08-19",
+      "peakEndDate": "2026-08-31",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2026-12-19",
+      "peakEndDate": "2026-12-25",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2026-03-13",
+      "peakEndDate": "2026-03-19",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2027-01-01",
+      "peakEndDate": "2027-01-05",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2027-03-20",
+      "peakEndDate": "2027-03-31",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2027-08-08",
+      "peakEndDate": "2027-08-18",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK1",
+      "peakStartDate": "2027-12-26",
+      "peakEndDate": "2027-12-31",
+      "multiplicationRatio": 140
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2027-07-18",
+      "peakEndDate": "2027-08-07",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2027-08-19",
+      "peakEndDate": "2027-08-31",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2027-12-19",
+      "peakEndDate": "2027-12-25",
+      "multiplicationRatio": 125
+    },
+    {
+      "peakTimeCd": "PEAK2",
+      "peakStartDate": "2027-03-13",
+      "peakEndDate": "2027-03-19",
+      "multiplicationRatio": 125
+    }
+  ]
+}

@@ -68,7 +68,7 @@ def specFree : Machine.Machine Nat Nat Out :=
 theorem specFree_sound : specFree.Sound := ⟨fun _ _ => trivial, fun _ _ _ _ _ _ _ => trivial⟩
 theorem specFree_initIs : specFree.InitIs 5 := fun _ => Iff.rfl
 
-/-- PRE を入力の値域で制限した抽象機械（環境の前提の必要性の正例。ADR 0042）。 -/
+/-- PRE を入力の値域で制限した抽象機械（環境の前提の必要性の正例。ADR 0043）。 -/
 def specPre : Machine.Machine Nat Nat Out :=
   Machine.ofChoice (fun _ => True) (· = 5) (fun _ n => n < 1000) fRes false ()
 
@@ -116,7 +116,7 @@ def domSet : Concrete Nat Req Out Unit where
 /-- 抽象機械そのものを具体機械とする（同語反復）。 -/
 def taut : Concrete Nat Nat Out Unit := spec.toConcrete
 
-/-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。ADR 0042）。 -/
+/-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。ADR 0043）。 -/
 def langErr : Concrete Nat Req Out Unit := MachineTest.Adequacy.langErr
 
 /-- `langErr` と同じ具体機械（別の基底の違反例のため）。 -/
@@ -319,7 +319,7 @@ def aoIf (o : Out) : Option Out := if o = .full then some .ok else some o
 @[obligation "ABS-927"]
 theorem v0_notRefines : Refines spec (good.restrict devLang) glue ∧ True := ⟨good_refines, trivial⟩
 
-/-! ## 成分の必要性（G9。ADR 0042） -/
+/-! ## 成分の必要性（G9。ADR 0043） -/
 
 /-- 正例: 前提型の差異 `devLang` が必要な R 課題。 -/
 @[obligation "ABS-950"]

@@ -1,0 +1,22 @@
+{
+  "operation": "fare.fare",
+  "modelDef": "Spec.Fare.fare",
+  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "differences": [
+    "D-002"
+  ],
+  "cases": [
+    {
+      "id": "fare-spec-1430-30",
+      "description": "基本運賃 1430 円・割引率 30%: 厳密値 1001 を 100 円単位に切り上げて 1100（[Source] は 1000。D-002）",
+      "input": {
+        "basicFare": 1430,
+        "discountRate": 30
+      },
+      "expected": {
+        "ok": 1100
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

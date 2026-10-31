@@ -1,0 +1,131 @@
+{
+  "operation": "fare.totalFare",
+  "modelDef": [
+    "Spec.Fare.totalFare",
+    "SourceModel.Fare.calculateTotalFare"
+  ],
+  "specRef": "docs/spec/fare-calculation.md#合計金額",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "totalFare-1",
+      "description": "片道・大人 1（基本運賃 20600、OW 0%、30 歳）",
+      "input": {
+        "flights": [
+          {
+            "flightName": "NTT001",
+            "departureDate": "2026-11-01",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "passengers": [
+          {
+            "age": 30
+          }
+        ]
+      },
+      "expected": {
+        "ok": 20600
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "totalFare-2",
+      "description": "片道・大人 2 小児 1（20600×2 + floorDiv(20600×60, 100) = 53560 → 53600）",
+      "input": {
+        "flights": [
+          {
+            "flightName": "NTT001",
+            "departureDate": "2026-11-01",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "passengers": [
+          {
+            "age": 30
+          },
+          {
+            "age": 28
+          },
+          {
+            "age": 5
+          }
+        ]
+      },
+      "expected": {
+        "ok": 53600
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "totalFare-3",
+      "description": "往復・大人 1（往路・復路とも基本運賃 20600、RT 5%: 19600 + 19600）",
+      "input": {
+        "flights": [
+          {
+            "flightName": "NTT001",
+            "departureDate": "2026-11-01",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "flightName": "NTT016",
+            "departureDate": "2026-11-03",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "passengers": [
+          {
+            "age": 40
+          }
+        ]
+      },
+      "expected": {
+        "ok": 39200
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "totalFare-4",
+      "description": "往復・大人 1 小児 1（(19600 + floorDiv(20600×55, 100)) × 2 = 61860 → 61900）",
+      "input": {
+        "flights": [
+          {
+            "flightName": "NTT001",
+            "departureDate": "2026-11-01",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "flightName": "NTT016",
+            "departureDate": "2026-11-03",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "passengers": [
+          {
+            "age": 40
+          },
+          {
+            "age": 11
+          }
+        ]
+      },
+      "expected": {
+        "ok": 61900
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

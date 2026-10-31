@@ -1,7 +1,7 @@
 ---
 type: Backlog Item
 title: "名前付きの成分の変異テスト"
-description: "ADR 0042 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。"
+description: "ADR 0043 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。"
 tags: [backlog, lean, refinement, tooling]
 id: "0033"
 state: todo
@@ -15,7 +15,7 @@ generated:
 
 ## 目的
 
-名前付きの成分の **広さ**（差異・環境の前提・自由な選択の枠が、必要以上に広くないこと）は、[ADR 0042](../decision/0042-vacuity-literature-necessity-and-mutation.md) の必要性（G9）でも確かめられない。
+名前付きの成分の **広さ**（差異・環境の前提・自由な選択の枠が、必要以上に広くないこと）は、[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md) の必要性（G9）でも確かめられない。
 IronSpec・mCoq の仕様の変異テストで、広すぎる成分の兆候を機械的に見つける。
 生き残った変異体の処置を記録し、処置の無い変異体を失敗とする。
 
@@ -54,5 +54,5 @@ IronSpec・mCoq の仕様の変異テストで、広すぎる成分の兆候を�
 
 ## 参照
 
-- [ADR 0042](../decision/0042-vacuity-literature-necessity-and-mutation.md)
+- [ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)
 - [backlog 0032](0032-component-necessity-witness.md)

@@ -9,7 +9,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T09:18:59+09:00
 ---
 
 # 言語中立な適合テストベクタを JSON で管理し、全実装の完了条件とする
@@ -77,3 +77,4 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 ## More Information
 
 * [spec/conformance.md](../spec/conformance.md), [port-lang/verification.md](../../.agents/skills/port-lang/references/verification.md)
+* `shared/` の `modelDef` の配列、共有入力の生成器、`source-model/` の暫定の期待値は [ADR 0042](0042-fare-source-model-and-shared-vectors.md) で補った

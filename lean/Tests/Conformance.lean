@@ -8,7 +8,9 @@ import Spec
 
 - ファイルの読み込み・形式の検査・`expected` の比較は、機能に依存しない（backlog 0012 で生成器と
   他の機能に広げる）。
-- 操作ごとの割当（`operation` → `Spec` の関数）は `formatOps` のような表で与える。
+- 操作ごとの割当（`operation` → モデルの関数）は `formatOps` のような表で与える。共有入力（`fixtures`）を使う
+  操作の表は、`Fixtures` から作る（`Tests.ConformanceFare`）。
+- `modelDef` は文字列か、モデルごとの名前の配列（`shared/` 用。ADR 0042）。実行するモデルの層の名前を選ぶ。
 - 現在は `ok` の期待値だけを扱う。
 -/
 
@@ -94,16 +96,35 @@ structure FileResult where
   passed : Nat := 0
   failures : Array String := #[]
 
+/-- ベクタの共有入力（`fixtures` の `master`・`config`。無ければ `null`）。 -/
+structure Fixtures where
+  master : Json := .null
+  config : Json := .null
+
+/-- `modelDef` のうち、層 `layer`（`Spec`・`SourceModel` など）の名前。`layer` が無ければ文字列だけを受ける。 -/
+def selectModelDef (doc : Json) (layer : Option String) : Except String String :=
+  match doc.getObjVal? "modelDef", layer with
+  | .ok (.str s), none => .ok s
+  | .ok (.str s), some l => if s.startsWith (l ++ ".") then .ok s else .error s!"modelDef {s} is not in layer {l}"
+  | .ok (.arr xs), some l =>
+    match xs.toList.filterMap (fun x => match x with | .str s => if s.startsWith (l ++ ".") then some s else none | _ => none) with
+    | [s] => .ok s
+    | [] => .error s!"no modelDef in layer {l}"
+    | _ => .error s!"more than one modelDef in layer {l}"
+  | _, _ => .error "missing modelDef"
+
 /-- ケースの必須キー。 -/
 def requiredCaseKeys : List String := ["id", "description", "input", "expected", "source"]
 
 /-- 1 ファイルを実行する。`hasDef` はモデル定義の存在の確認（`modelDef`）。 -/
-def runDoc (ops : List (String × Op)) (hasDef : Name → Bool) (path : System.FilePath) (doc : Json) :
-    FileResult := Id.run do
+def runDoc (ops : List (String × Op)) (hasDef : Name → Bool) (path : System.FilePath) (doc : Json)
+    (layer : Option String := none) : FileResult := Id.run do
   let mut r : FileResult := { path }
   let fail (r : FileResult) (msg : String) : FileResult := { r with failures := r.failures.push msg }
   let .ok operation := getStr doc "operation" | return fail r "missing operation"
-  let .ok modelDef := getStr doc "modelDef" | return fail r "missing modelDef"
+  let modelDef ← match selectModelDef doc layer with
+    | .ok m => pure m
+    | .error e => return fail r e
   if !(hasDef modelDef.toName) then r := fail r s!"modelDef not found: {modelDef}"
   if (getStr doc "specRef").toOption.isNone then r := fail r "missing specRef"
   let some op := ops.lookup operation | return fail r s!"unknown operation: {operation}"
@@ -137,6 +158,39 @@ def runDir (ops : List (String × Op)) (hasDef : Name → Bool) (dir : System.Fi
     match Json.parse (← IO.FS.readFile p) with
     | .error e => out := out.push { path := p, failures := #[s!"invalid JSON: {e}"] }
     | .ok doc => out := out.push (runDoc ops hasDef p doc)
+  return out
+
+/-- ベクタの `fixtures`（`{"master": …, "config": …}`。`conformance/` からの相対パス）を読む。`root` は `conformance/`。 -/
+def loadFixtures (root : System.FilePath) (doc : Json) : IO (Except String Fixtures) := do
+  let fxs := (doc.getObjVal? "fixtures").toOption.getD (.obj {})
+  let read (k : String) : IO (Except String Json) := do
+    match fxs.getObjValAs? String k with
+    | .error _ => return .ok .null
+    | .ok n =>
+      let p := root / n
+      if !(← p.pathExists) then return .error s!"fixture not found: {n}"
+      return (Json.parse (← IO.FS.readFile p)).mapError (s!"{n}: invalid JSON: " ++ ·)
+  match ← read "master", ← read "config" with
+  | .ok master, .ok config => return .ok { master, config }
+  | .error e, _ | _, .error e => return .error e
+
+/-- 共有入力を使うディレクトリの実行。操作の表は、ベクタごとの `Fixtures` から作る。
+`layer` は実行するモデルの層で、`modelDef` の配列から名前を選ぶのに使う。 -/
+def runDirFx (mkOps : Fixtures → Except String (List (String × Op))) (layer : String) (hasDef : Name → Bool)
+    (root dir : System.FilePath) : IO (Array FileResult) := do
+  let entries ← dir.readDir
+  let files := (entries.map (·.path)).filter (·.extension == some "json") |>.qsort (·.toString < ·.toString)
+  let mut out := #[]
+  for p in files do
+    match Json.parse (← IO.FS.readFile p) with
+    | .error e => out := out.push { path := p, failures := #[s!"invalid JSON: {e}"] }
+    | .ok doc =>
+      match ← loadFixtures root doc with
+      | .error e => out := out.push { path := p, failures := #[e] }
+      | .ok fx =>
+        match mkOps fx with
+        | .error e => out := out.push { path := p, failures := #[s!"fixtures: {e}"] }
+        | .ok ops => out := out.push (runDoc ops hasDef p doc (some layer))
   return out
 
 end Tests.Conformance

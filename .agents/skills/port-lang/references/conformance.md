@@ -45,10 +45,10 @@ conformance/
 | キー | 必須 | 内容 |
 | --- | --- | --- |
 | `operation` | 必須 | 操作名 |
-| `modelDef` | 必須 | ベクタが試すモデル定義の完全名（`Spec.*` / `SourceModel.*` / `TargetModel.*`）。追跡の検査 TR-R の対象 |
+| `modelDef` | 必須 | ベクタが試すモデル定義の完全名（`Spec.*` / `SourceModel.*` / `TargetModel.*`）。`shared/` では、モデルごとの名前の配列にしてよい（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。実行器は、実行するモデルの層の名前を選ぶ。追跡の検査 TR-R と、`rehash` の検査の登録（`vectors`）の対象 |
 | `specRef` | 必須 | 仕様文書の節への相対パス＋アンカー |
 | `upstream` | `source-model/` では必須 | 期待値を得た移植元の版 `{"release": …, "commit": …}` |
-| `fixtures` | 任意 | 既定の共有入力。ケースの `input` で上書きできる |
+| `fixtures` | 任意 | 既定の共有入力（`{"master": …, "config": …}`）。ケースの `input` で上書きできる。共有入力は、移植元のシードから生成器で作るとよい（転記の誤りを防ぎ、版上げで差分が見える）。モデルの値域の外の行は、行を残したまま `outsideSpec` に理由を書き、`Spec` 用の読み込みだけが除く |
 | `cases[].id` | 必須 | ファイル内で一意 |
 | `cases[].today` / `now` | 日付・日時に依存する操作では必須 | `"yyyy-MM-dd"` / `"yyyy-MM-ddTHH:mm:ss"`（タイムゾーン無し） |
 | `cases[].world` | 状態を使う操作では必須 | 実行前の状態、またはその fixture への参照 |

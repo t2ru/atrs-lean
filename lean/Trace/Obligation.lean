@@ -16,7 +16,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G2 | 抽象機械・具体機械は、名前付きの基底に `.restrict p`・`.restrictState p` を連ねた形で、`p` は `@[deviation]` の定数そのもの |
 | G3 | 抽象側の基底は `Machine.ofChoice` か `Machine.pure`。選択の型の葉は `@[nondet]` か `Unit`。自由な選択があれば `FreeFrame` がある |
 | G4 | 具体側の基底は `Concrete.ofFun`・`Concrete.pure`、または `Dom` を既定（全体）にした構造体で、`toConcrete` と `Spec` の関数を参照しない |
-| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か `@[deviation]` の定数そのもの |
+| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.anyOf` で並べてよい） |
 | G6 | 付帯の定理: `InitSurj`、基底の `Sound`・`InitIs`、基底が `ofChoice` なら `Pinned`（同じ `f`、`ce` は `@[std_abs]`）と `NoFaultReachable`（同じ `ce`・`e₀`） |
 
 あわせて、環境全体について次を判定する。
@@ -26,7 +26,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
-| G9 | 成分の必要性（ADR 0042）。下の 3 つ |
+| G9 | 成分の必要性（ADR 0043）。下の 3 つ |
 
 G9 の内容は次のとおりである。
 

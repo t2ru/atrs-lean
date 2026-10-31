@@ -10,7 +10,7 @@ import Tests
 - `Tests.TraceFixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュを確かめる。
 - `Tests.ObligationFixture` を `obligation-check` と同じ処理にかけ、正例を通し、違反例を規則ごとに検出することを確かめる。
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
-- 適合テストベクタ（`../conformance/shared/format/`）を `Spec` で実行する（`Tests.Conformance`）。
+- 適合テストベクタ（`../conformance/`）を実行する（`Tests.Conformance`・`Tests.ConformanceFare`）。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。
 - 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
 - 運賃計算の double 式の、ソフトモデルとネイティブ `Float` の突き合わせ（`Tests.JavaDouble`）。
   カーネルの定義は直接には再帰しないため、相互再帰の閉路は実際の定義からは作れない。
@@ -124,15 +124,20 @@ def fixtureTests (env : Environment) : IO Unit := do
   check "dump: sorted by name"
     ((es.map (·.name.toString)).toList == ((es.map (·.name.toString)).qsort (· < ·)).toList)
 
-/-- 適合テストベクタを `Spec` で実行する。 -/
+/-- 適合テストベクタを実行する。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。 -/
 unsafe def conformanceTests : IO Unit := do
-  IO.println "conformance (Spec: shared/format)"
-  let env ← loadEnv #[`Spec]
-  let results ← Tests.Conformance.runDir Tests.Conformance.formatOps env.contains "../conformance/shared/format"
-  check "conformance: files found" (!results.isEmpty)
-  for r in results do
-    for f in r.failures do IO.eprintln s!"    {r.path.fileName.getD ""}: {f}"
-    check s!"conformance: {r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
+  IO.println "conformance (Spec: shared/format, spec/fare, shared/fare; SourceModel: source-model/fare, shared/fare)"
+  let env ← loadEnv #[`Spec, `SourceModel]
+  let root : System.FilePath := "../conformance"
+  let report (label : String) (results : Array Tests.Conformance.FileResult) : IO Unit := do
+    check s!"conformance: {label}: files found" (!results.isEmpty)
+    for r in results do
+      for f in r.failures do IO.eprintln s!"    {label}/{r.path.fileName.getD ""}: {f}"
+      check s!"conformance: {label}/{r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
+  report "shared/format (Spec)" (← Tests.Conformance.runDir Tests.Conformance.formatOps env.contains (root / "shared/format"))
+  for (dir, layer, ops) in [("spec/fare", "Spec", Tests.ConformanceFare.specOps), ("shared/fare", "Spec", Tests.ConformanceFare.specOps),
+      ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps)] do
+    report s!"{dir} ({layer})" (← Tests.Conformance.runDirFx ops layer env.contains root (root / dir))
 
 /-- 暦日の全日の検査。 -/
 def dateTests : IO Unit := do

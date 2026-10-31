@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T08:12:23+09:00
+  at: 2026-10-31T09:18:59+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -169,6 +169,11 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 `VIS`（VISA）, `MTR`（MASTER）, `JCB`（JCB）, `DNS`（DNS）, `AMX`（American Express）
 
-> **TODO(spec):** 空港名・区間・便マスタの全件を、投入日 2026-11-01 として `conformance/fixtures/master-data.json` に転記する（[backlog 0011](../backlog/0011-in-memory-adapters-and-seed-data.md)）。
+シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。
+
+> **TODO(spec):** 便マスタ NTT523（HND→OKA）と NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`Spec.MasterData.FlightMaster.arrivalTime`（0:00〜23:59）では表せない。
+> - [Source] の `DateTimeFormatter("HHmm")` は `DateTimeParseException` を投げる（空席照会でこの便が結果に入るとき）。
+> - [Spec] で翌日着を表せるように改め、[Source] の例外を既知差異として登録する（[backlog 0006](../backlog/0006-flight-search-usecase.md)）。
+> - それまで fixture では、その 2 行に `outsideSpec` を付ける。`Spec` 用の読み込みは、その行を除く（ADR 0042）。
 
 [^seed-fixed]: atrs-initdb/src/sqls/integration-test-postgres/00200〜00250_*.sql
