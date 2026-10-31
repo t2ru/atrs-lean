@@ -116,11 +116,14 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
   - 必要性: 差異を外した R 課題の命題が偽である（[空虚化を防ぐ義務](#空虚化を防ぐ義務) の「成分の必要性」）。前提型では、前提を破り、R 課題の他の差異の前提を満たし、[Source] と [Spec] が一致しない入力が、その証人になる。他の差異に覆われる差異では、必要性の代わりに被覆（`Covers`）を示す
 - **モデル外**: Lean のどのモデルにも現れない差異。[Spec] の外の規範節と原典の違いがこれに当たる。証明には現れないので、[assurance.md](assurance.md) に限界として載せる
 
+<!-- BEGIN GENERATED: gaps-known -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
 | D-001 | 前提型 | [基本運賃](fare-calculation.md#基本運賃) | [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。下の前提の範囲の全探索では差異が 0 件だが、値域全体で差異があるかは未確定である。証拠（ABS-101）が見つからず、値域全体での一致を証明できた場合（L 課題 ABS-007）は、本行を取り消す | `dev_D001`: `x = routeBasicFare + extra` が 0〜200,000、かつ ratio ∈ {100, 110, 120, 125, 130, 140, 150} | ABS-001, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-101 |
 | D-002 | 前提型 | [運賃](fare-calculation.md#運賃) | [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k*100 + 1` 付近のとき 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100） | `dev_D002`: 次の 2 つを満たす。<br>- 基本運賃がシード由来（路線運賃が 100 円単位、比率 100/125/140、加算料金 0/5000）<br>- 割引率がシードの値（0/5/10/20/30） | ABS-002, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-102 |
-| D-006 | 前提型 | [文字列長](input-validation.md#文字クラス)、[ログインの事前検査](authentication.md#ログインlogin)、[レポート要求の長さ](reservation-history-report.md#要求の受信onreportrequested) | [Source] は UTF-16 単位、[Spec] はスカラ値単位で長さを数える | `dev_D006`: 入力が補助文字（U+10000 以上）を含まない | ABS-031, ABS-034, ABS-042, ABS-043, ABS-044, ABS-045, ABS-046 | ABS-106 |
+| D-006 | 前提型 | [文字列長](input-validation.md#文字クラス)・[ログインの事前検査](authentication.md#ログインlogin)・[レポート要求の長さ](reservation-history-report.md#要求の受信onreportrequested) | [Source] は UTF-16 単位、[Spec] はスカラ値単位で長さを数える | `dev_D006`: 入力が補助文字（U+10000 以上）を含まない | ABS-031, ABS-034, ABS-042, ABS-043, ABS-044, ABS-045, ABS-046 | ABS-106 |
 | D-007 | 前提型 | [REST 予約 API](http-contract.md#post-apiv1ticket) | [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[input-validation.md](input-validation.md#予約入力b2)） | `dev_D007`: 入力が相関検証を満たし、搭乗者が 1〜6 名 | ABS-031 | ABS-107 |
 | D-008 | 観測型 | [表示名](errors-and-messages.md#項目の表示名) | [Source] の表示名「登場クラスコード」は誤記。[Spec] は「搭乗クラスコード」 | `obs_D008`: エラーメッセージの表示名の対応で、[Source] の「登場クラスコード」を [Spec] の「搭乗クラスコード」に対応させる | ABS-031, ABS-045, ABS-046 | ABS-108 |
 | D-009 | 前提型（具体側の状態） | [採番](ports.md#idgenerator) | [Source] のシーケンスは最大値の後に 1 へ循環し、使用済みの値を返しうる。[Spec] は常に未使用の値を返す | `dev_D009`: [Source] の各シーケンスが最大値に達していない | ABS-021, ABS-031, ABS-041, ABS-042, ABS-045 | ABS-109 |
@@ -137,9 +140,10 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-022 | 観測型 | [入力検証エラーの並び](input-validation.md)・[ADR e24e](../decision/e24e-validation-error-ordering.md) | [Source] の単項目の検証エラーは順序不定（Bean Validation の `HashSet`）。[Spec] は定順の列。[Source] のほうが非決定性が大きいので、エラーの列を多重集合として比べる成分を、名前付きで置く | `obs_D022`: 検証エラーの列を多重集合として対応させる | ABS-031, ABS-045, ABS-046 | ABS-122 |
 | D-023 | モデル外 | [Clock](ports.md#clock)・[ADR 9ee4](../decision/9ee4-clock-timezone-and-fixture-base-date.md) | [Spec] の本番の Clock は Asia/Tokyo で今日を決める。[Source] は JVM の既定のタイムゾーンで決める | — モデル外（各モデルは「今日」を入力として受け取る。オラクルは JST で実行する。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
-| D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
+| D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） | ABS-026 | ABS-127 |
+<!-- END GENERATED: gaps-known -->
 
 ### 前提型の差異の影響
 
@@ -147,6 +151,9 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 - **出力のみ**: 前提を破っても、変わるのは出力だけである。R 課題に `StateSafe` を課す。
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。
+
+<!-- BEGIN GENERATED: gaps-impact -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 影響 | 理由 | backlog |
 | --- | --- | --- | --- |
@@ -165,10 +172,14 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 4e0e3dd1-d282-46e2-aa98-719853bc9fd2 |
 | D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
 | D-027 | 中断 | [Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける | 25f7ef96-f77d-4ed8-973d-8cecc2a0f227 |
+<!-- END GENERATED: gaps-impact -->
 
 ### [Spec] の前提の外での [Source] の振る舞い（差異ではない）
 
 次は、[Spec] の PRE・INV の外での [Source] の振る舞いである。B メソッドのリファインメントでは、PRE の外の振る舞いに義務は無い。したがって差異ではない（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#リファインメント具体機械が抽象機械をリファインする)）。ID は過去に既知差異として付けたものを保つ。主定理は、これらに差異の仮定を置かない。
+
+<!-- BEGIN GENERATED: gaps-outside-pre -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 箇所 | [Source] の振る舞い | [Spec] の前提 |
 | --- | --- | --- | --- |
@@ -177,16 +188,21 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-005 | [空席照会の集約](flight-search.md#searchflight) | 同一区間に同じ出発時刻の便があると、1 グループに統合し、運賃種別ごとに後勝ちになる | PRE MD-5 |
 | D-010 | [更新件数](reservation.md#予約確定reserve)・[ログイン](authentication.md#ログインlogin)・[会員登録](member.md) | 登録・更新の件数 ≠ 1 で `System("e.ar.a0.L9002")` になる | `J` と INV（キーが存在する）。到達しないことは ABS-022 で示す |
 | D-015 | [マスタの不変条件](master-data.md#不変条件spec) | MD-1〜MD-3 が破れると、後勝ちの上書きか、`null` による前提違反になる | PRE MD-1〜MD-3 |
-| （ID なし） | [空港コードリスト](master-data.md#空港コードリスト画面用) | コードが区切り行と同じ `NOP` の空港があると、`LinkedHashMap` の同じキーへの `put` で、区切り行の表示がその空港の名前に置き換わり、空港の行は現れない | PRE（MD-8: 空港のコードは `NOP` でない。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） |
-| （ID なし） | [値域](domain-model.md#値域) | マスタ・入力が値域の外のとき、int32 で折り返す | PRE（入力の値域・MD-8） |
+| D-029 | [空港コードリスト](master-data.md#空港コードリスト画面用) | コードが区切り行と同じ `NOP` の空港があると、`LinkedHashMap` の同じキーへの `put` で、区切り行の表示がその空港の名前に置き換わり、空港の行は現れない | PRE（MD-8: 空港のコードは `NOP` でない。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） |
+| D-030 | [値域](domain-model.md#値域) | マスタ・入力が値域の外のとき、int32 で折り返す | PRE（入力の値域・MD-8） |
+<!-- END GENERATED: gaps-outside-pre -->
 
 [Spec] が型で除外している入力での [Source] の前提違反（`Assert`・`NullPointerException`）も、同じ扱いとする（例: [fare-calculation.md](fare-calculation.md)、[reservation.md](reservation.md)、[flight-search.md](flight-search.md)、[member.md](member.md) の [Source] の前提違反）。ただし、これは HTTP の要求から到達できない入力に限る。`Spec.Http` はすべての要求文字列に応答を定めるので、HTTP から到達できる前提違反は PRE の内である。その場合は、前提型の差異として登録する（例: D-020）か、L 課題 ABS-047 で到達しないことを示す。
 
 ### 未確定の差異
 
-| 対象 | 状況 | 確定させる作業 |
-| --- | --- | --- |
-| [ログイン時の状態更新](authentication.md#ログインlogin)（`loginDateTime`・`loginFlg`） | [Source] で更新されない可能性がある（認証イベントが発行されない構成）。オラクルで確かめた結果に応じて、D-0NN（前提型または観測型）として登録するか、差異が無いことを本表から消す | [backlog 44f8](../backlog/44f8-authentication-usecases.md) の完了条件 |
+<!-- BEGIN GENERATED: gaps-undetermined -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+
+| ID | 対象 | 状況 | 確定させる作業 |
+| --- | --- | --- | --- |
+| D-028 | [ログイン時の状態更新](authentication.md#ログインlogin)（`loginDateTime`・`loginFlg`） | [Source] で更新されない可能性がある（認証イベントが発行されない構成）。オラクルで確かめた結果に応じて、D-0NN（前提型または観測型）として登録するか、差異が無いことを本表から消す | [backlog 44f8](../backlog/44f8-authentication-usecases.md) の完了条件 |
+<!-- END GENERATED: gaps-undetermined -->
 
 ## 証明課題
 

@@ -56,19 +56,29 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 
 [Spec] と [Target] が一致しない点である。種類は [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#差異) による。前提型・観測型には、R 課題と W 課題（`REF-1NN` が `T-0NN` の証拠）が必須である。
 
-| ID | 種類 | 箇所 | 差異 | 前提／成分 | R 課題 | W 課題 |
+登録簿の正は Lean の `Refinement.Gap`（`@[gap_entry]` の宣言）であり、下の表はそこから生成する（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。移植先は [Spec] をそのまま実装する方針であり、現在は登録が無い。差異が必要になったら、意思決定を記録したうえで、`Refinement.Gap` に登録し、`TargetModel` の該当する定義と [Spec] の定義に `@[gap "T-NNN"]` を付ける。
+
+<!-- BEGIN GENERATED: gaps-known -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+
+| ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
 
-（現在なし。移植先は [Spec] をそのまま実装する方針である。差異が必要になったら、意思決定を記録したうえで、ここに登録する）
+（現在なし）
+<!-- END GENERATED: gaps-known -->
 
 W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例と、差異の必要性（差異を外した R 課題の命題が偽であること。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
 
 ### 前提型の差異の影響
 
+<!-- BEGIN GENERATED: gaps-impact -->
+`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+
 | ID | 影響 | 理由 | backlog |
 | --- | --- | --- | --- |
 
 （現在なし）
+<!-- END GENERATED: gaps-impact -->
 
 ## REF: TargetModel が Spec をリファインする（Lean で証明）
 

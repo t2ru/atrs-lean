@@ -8,17 +8,19 @@
 //! | TR-T2 | `@[target]` のハッシュ・版が違う、合格の記録が無い、`/// trace: models` の Merkle が違う |
 //! | TR-P | 公開操作（`@[source]`・`@[target]` を持つ `SourceModel`・`TargetModel` の定義）が、どの R 課題の参照の閉包にも無い |
 //! | TR-PE | 公開操作が、入口の R 課題の参照の閉包に無い |
-//! | TR-D | 文書の前提型・観測型の D/T と `@[deviation]` が 1 対 1 でない、R 課題に現れない、W 課題が無い、R 課題に無名の仮定（G1・G2） |
+//! | TR-D | 登録簿（`@[gap_entry]`）の前提型・観測型の D/T と `@[deviation]` が 1 対 1 でない、R 課題に現れない、W 課題が無い、R 課題に無名の仮定（G1・G2） |
+//! | TR-K | ギャップの箇所の印（`@[gap]`）が種類と合わない（前提型・観測型・PRE の外に `Spec` と具体側の印が無い、モデル外に印・差異がある、未確定に差異がある）、`@[deviation]` を使う R 課題が登録の R 課題に無い |
 //! | TR-X | 移植元と移植先の直接の接続（層と種類の取り違え、`rust/` の中の移植元のロケータ） |
 //! | TR-R | 存在しないロケータ・名前・ID への参照、対応表の抜け、`renames.json` と文書の「出典:」の参照切れ |
 //! | TR-G・TR-N | `obligation-check` と `check_obligations.py` の結果 |
 //!
 //! TR-S1・TR-T1・TR-P・TR-PE・TR-D は、該当する機能（`trace/features.json`）の backlog がすべて
-//! `done` なら誤り、そうでなければ警告とする（ADR 0eea）。それ以外は常に誤り。
+//! `done` なら誤り、そうでなければ警告とする（ADR 0eea）。TR-K の印の不足は、登録の `backlog`（無ければ R 課題の機能）が
+//! すべて `done` なら誤り、そうでなければ警告とする（ADR cc24）。それ以外は常に誤り。
 
-use crate::docs::{Deviation, Feature, Features};
+use crate::docs::{Feature, Features};
 use crate::inventory::Inventory;
-use crate::lean::{closure, kind_of, split_hash, Dump, Obligations};
+use crate::lean::{closure, kind_of, split_hash, Dump, Gap, Obligations};
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
@@ -51,7 +53,6 @@ pub struct Input<'a> {
     pub source: &'a Inventory,
     pub target: &'a Inventory,
     pub features: &'a Features,
-    pub deviations: Vec<Deviation>,
     pub entry_tasks: Vec<String>,
     pub r_tasks: Vec<String>,
     /// `trace/upstream.json`
@@ -86,6 +87,14 @@ impl<'f> Out<'f> {
         };
         self.list.push(Finding { error, rule, feature, msg });
     }
+    /// 登録の backlog がすべて done なら誤り、そうでなければ警告。backlog が無ければ機能で決める（`staged`）。
+    fn staged_by(&mut self, rule: &'static str, backlog: &[String], f: Option<&Feature>, msg: String) {
+        if backlog.is_empty() {
+            return self.staged(rule, f, msg);
+        }
+        let error = backlog.iter().all(|b| self.features.backlog_done(b));
+        self.list.push(Finding { error, rule, feature: format!("backlog {}", backlog.join(",")), msg });
+    }
 }
 
 pub fn is_version_kind(k: &str) -> bool {
@@ -119,10 +128,14 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     let mut tgt_ops: Vec<String> = vec![];
 
     // ---- 定義ごとの追跡属性: TR-X・TR-R・TR-S2・TR-T2 ----
+    // ギャップの登録の宣言は機能をまたぐ登録簿なので、機能の対応表に載せない（段階導入は登録の backlog による）
+    let gap_decls: BTreeSet<&str> = inp.dump.gaps.iter().map(|g| g.name.as_str()).collect();
     for d in &inp.dump.definitions {
         let src_side = SOURCE_LAYERS.contains(&d.layer.as_str());
         let tgt_side = TARGET_LAYERS.contains(&d.layer.as_str());
-        if FEATURE_LAYERS.contains(&d.layer.as_str()) && inp.features.of_lean(&d.name).is_none() {
+        if FEATURE_LAYERS.contains(&d.layer.as_str()) && inp.features.of_lean(&d.name).is_none()
+            && !gap_decls.contains(d.name.as_str())
+        {
             out.err("TR-R", format!("{}: no feature in trace/features.json covers this namespace", d.name));
         }
         for (attr, side_ok, own_kinds, decl) in [
@@ -243,38 +256,77 @@ pub fn run(inp: &Input) -> Vec<Finding> {
     let in_theorems: BTreeSet<&String> =
         inp.obligations.refinements.iter().flat_map(|r| r.deviations.iter().chain(r.observations.iter())).collect();
     let obligation_ids: BTreeSet<&String> = inp.dump.definitions.iter().flat_map(|d| d.attr("obligation")).collect();
-    let doc_ids: BTreeMap<&str, &Deviation> = inp.deviations.iter().map(|d| (d.id.as_str(), d)).collect();
-    for dv in &inp.deviations {
-        let typed = dv.kind.starts_with("前提型") || dv.kind.starts_with("観測型");
-        if !typed {
-            continue;
-        }
+    let gap_ids: BTreeMap<&str, &Gap> = inp.dump.gaps.iter().map(|g| (g.id.as_str(), g)).collect();
+    let feature_of_gap = |g: &Gap| -> Option<&Feature> {
+        let feats: Vec<&Feature> = g.r_tasks.iter().filter_map(|t| inp.features.of_task(t)).collect();
+        feats.iter().find(|f| inp.features.done(f)).or(feats.first()).copied()
+    };
+    for g in inp.dump.gaps.iter().filter(|g| g.is_typed()) {
         // 行の R 課題の機能のうち、完了したものがあれば誤り
-        let feats: Vec<&Feature> = dv.r_tasks.iter().filter_map(|t| inp.features.of_task(t)).collect();
-        let f = feats.iter().find(|f| inp.features.done(f)).or(feats.first()).copied();
-        if !lean_devs.contains_key(&dv.id) {
-            out.staged("TR-D", f, format!("{}: no @[deviation \"{}\"] in Lean", dv.id, dv.id));
+        let f = feature_of_gap(g);
+        if !lean_devs.contains_key(&g.id) {
+            out.staged("TR-D", f, format!("{}: no @[deviation \"{}\"] in Lean", g.id, g.id));
         }
-        if dv.w_tasks.is_empty() {
-            out.err("TR-D", format!("{}: no W task in the registry", dv.id));
-        }
-        for w in &dv.w_tasks {
-            if !obligation_ids.contains(w) {
-                out.staged("TR-D", f, format!("{}: W task {w} has no @[obligation] theorem", dv.id));
+        match &g.w_task {
+            None => out.err("TR-D", format!("{}: no W task in the registry", g.id)),
+            Some(w) if !obligation_ids.contains(w) => {
+                out.staged("TR-D", f, format!("{}: W task {w} has no @[obligation] theorem", g.id))
             }
+            _ => {}
         }
     }
     for (id, names) in &lean_devs {
-        match doc_ids.get(id.as_str()) {
-            None => out.err("TR-D", format!("{id}: @[deviation] on {} but no row in the registry", names.join(", "))),
-            Some(dv) if !(dv.kind.starts_with("前提型") || dv.kind.starts_with("観測型")) => {
-                out.err("TR-D", format!("{id}: @[deviation] on {} but the registry kind is {}", names.join(", "), dv.kind))
+        match gap_ids.get(id.as_str()) {
+            None => out.err("TR-D", format!("{id}: @[deviation] on {} but no @[gap_entry] in the registry", names.join(", "))),
+            Some(g) if !g.is_typed() => {
+                out.err("TR-D", format!("{id}: @[deviation] on {} but the registry kind is {}", names.join(", "), g.kind_label))
             }
             _ => {}
         }
         for n in names {
             if !in_theorems.contains(n) {
                 out.staged("TR-D", inp.features.of_lean(n), format!("{n} (@[deviation \"{id}\"]) appears in no R task"));
+            }
+        }
+    }
+
+    // ---- TR-K: ギャップの箇所の印 ----
+    let layer_of: HashMap<&str, &str> = inp.dump.definitions.iter().map(|d| (d.name.as_str(), d.layer.as_str())).collect();
+    for g in &inp.dump.gaps {
+        let concrete = if g.id.starts_with("T-") { "TargetModel" } else { "SourceModel" };
+        let in_layer = |l: &str| g.markers.iter().any(|m| layer_of.get(m.as_str()) == Some(&l));
+        if g.is_typed() || g.kind == "outside_pre" {
+            for l in ["Spec", concrete] {
+                if !in_layer(l) {
+                    out.staged_by("TR-K", &g.backlog, feature_of_gap(g),
+                        format!("{} ({}): no @[gap \"{}\"] on a {l} definition", g.id, g.kind_label, g.id));
+                }
+            }
+        }
+        if g.kind == "out_of_model" && !(g.markers.is_empty() && g.deviations.is_empty()) {
+            out.err("TR-K", format!("{} (モデル外): has @[gap] / @[deviation] on {}", g.id,
+                g.markers.iter().chain(g.deviations.iter()).cloned().collect::<Vec<_>>().join(", ")));
+        }
+        if !g.is_typed() && g.kind != "out_of_model" && !g.deviations.is_empty() {
+            out.err("TR-K", format!("{} ({}): has @[deviation] on {}", g.id, g.kind_label, g.deviations.join(", ")));
+        }
+        for r in &inp.obligations.refinements {
+            if r.deviations.iter().chain(r.observations.iter()).any(|d| g.deviations.contains(d)) {
+                for t in r.ids.iter().filter(|t| !g.r_tasks.contains(t)) {
+                    out.err("TR-K", format!("{}: R task {t} ({}) uses it but is not in the registry's R tasks", g.id, r.name));
+                }
+            }
+        }
+        for b in &g.backlog {
+            if !inp.features.backlog_exists(b) {
+                out.err("TR-R", format!("{} ({}): backlog {b} does not exist", g.id, g.name));
+            }
+        }
+    }
+    for d in &inp.dump.definitions {
+        for id in d.attr("gap") {
+            if !gap_ids.contains_key(id.as_str()) {
+                out.err("TR-R", format!("{}: @[gap \"{id}\"] but {id} has no @[gap_entry]", d.name));
             }
         }
     }
@@ -411,15 +463,14 @@ mod tests {
         }
     }
 
-    fn run_with(defs: Vec<Def>, obl: Obligations, src: Inventory, f: &Features, devs: Vec<Deviation>, entry: &[&str]) -> Vec<Finding> {
-        let dump = Dump { lean_version: "x".into(), definitions: defs };
+    fn run_with(defs: Vec<Def>, obl: Obligations, src: Inventory, f: &Features, gaps: Vec<Gap>, entry: &[&str]) -> Vec<Finding> {
+        let dump = Dump { lean_version: "x".into(), definitions: defs, gaps };
         let input = Input {
             dump: &dump,
             obligations: &obl,
             source: &src,
             target: &Inventory::default(),
             features: f,
-            deviations: devs,
             entry_tasks: entry.iter().map(|s| s.to_string()).collect(),
             r_tasks: vec![],
             upstream: serde_json::json!({"languages": {"java": {"version": "17"}}, "dependencies": [{"coordinate": "org.x:lib", "version": "1.0"}]}),
@@ -468,7 +519,7 @@ mod tests {
 
     #[test]
     fn tr_d_missing_deviation_and_anonymous_hypothesis() {
-        let devs = vec![Deviation { id: "D-001".into(), kind: "前提型".into(), r_tasks: vec!["ABS-001".into()], w_tasks: vec!["ABS-101".into()] }];
+        let devs = vec![gap("D-001", "pre", &["ABS-001"], Some("ABS-101"))];
         let obl = Obligations {
             refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-001".into()], deviations: vec![], observations: vec![],
                 errors: vec!["G1: the type has hypotheses (∀); state deviations with restrict".into()] }],
@@ -482,6 +533,58 @@ mod tests {
         let defs = vec![def("Abstraction.Fare.dev_D999", "Abstraction", &[("deviation", &["D-999"])], &[])];
         let fs = run_with(defs, Obligations::default(), inv(&[]), &feats(false), vec![], &[]);
         assert!(fs.iter().any(|f| f.error && f.rule == "TR-D" && f.msg.contains("D-999: @[deviation]")));
+    }
+
+    fn gap(id: &str, kind: &str, r: &[&str], w: Option<&str>) -> Gap {
+        Gap {
+            name: format!("Abstraction.Gap.{}", id.replace('-', "")),
+            id: id.into(),
+            kind: kind.into(),
+            kind_label: kind.into(),
+            r_tasks: r.iter().map(|s| s.to_string()).collect(),
+            w_task: w.map(|s| s.to_string()),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn tr_k_markers_by_kind() {
+        let defs = vec![
+            def("Spec.Fare.f", "Spec", &[("gap", &["D-001", "D-013"])], &[]),
+            def("SourceModel.Fare.g", "SourceModel", &[("gap", &["D-077"])], &[]),
+            def("Abstraction.Fare.dev_D005", "Abstraction", &[("deviation", &["D-005"])], &[]),
+        ];
+        let mut d1 = gap("D-001", "pre", &["ABS-001"], Some("ABS-101"));
+        d1.markers = vec!["Spec.Fare.f".into()];
+        d1.backlog = vec!["00000000-0000-4000-8000-000000000004".into()];
+        let mut d13 = gap("D-013", "out_of_model", &[], None);
+        d13.markers = vec!["Spec.Fare.f".into()];
+        let mut d5 = gap("D-005", "undetermined", &[], None);
+        d5.deviations = vec!["Abstraction.Fare.dev_D005".into()];
+        let mut d3 = gap("D-003", "outside_pre", &[], None);
+        d3.backlog = vec!["00000000-0000-4000-8000-000000000099".into()];
+        let obl = Obligations {
+            refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-031".into()],
+                deviations: vec!["Abstraction.Fare.dev_D005".into()], observations: vec![], errors: vec![] }],
+            ..Default::default()
+        };
+        let gaps = vec![d1.clone(), d13, d5, d3];
+        let fs = run_with(defs.clone(), obl.clone(), inv(&[]), &feats(false), gaps.clone(), &[]);
+        let k = |f: &&Finding| f.rule == "TR-K";
+        // 前提型に具体側の印が無い（backlog が未完了なので警告）
+        assert!(fs.iter().filter(k).any(|f| !f.error && f.msg.contains("D-001") && f.msg.contains("SourceModel")), "{fs:?}");
+        assert!(!fs.iter().filter(k).any(|f| f.msg.contains("D-001") && f.msg.contains("a Spec")), "{fs:?}");
+        // モデル外に印、未確定に差異
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-013 (モデル外)")), "{fs:?}");
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.starts_with("D-005 (undetermined): has @[deviation]")), "{fs:?}");
+        // 差異を使う R 課題が登録に無い
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("R task ABS-031")), "{fs:?}");
+        // 宣言の無い印、存在しない backlog
+        assert!(fs.iter().any(|f| f.error && f.rule == "TR-R" && f.msg.contains("@[gap \"D-077\"]")), "{fs:?}");
+        assert!(fs.iter().any(|f| f.error && f.rule == "TR-R" && f.msg.contains("backlog 00000000-0000-4000-8000-000000000099")), "{fs:?}");
+        // backlog が完了すれば、印の不足は誤り
+        let fs = run_with(defs, obl, inv(&[]), &feats(true), gaps, &[]);
+        assert!(fs.iter().filter(k).any(|f| f.error && f.msg.contains("D-001") && f.msg.contains("SourceModel")), "{fs:?}");
     }
 
     #[test]

@@ -2,20 +2,21 @@
 """obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 70eb）。
 
 `lake exe obligation-check` の JSON（Lean 側の判定と事実）と、`docs/spec/abstraction.md`・`refinement.md` の
-登録簿、`docs/backlog/` の状態を突き合わせる。
+登録簿、`docs/backlog/` の状態を突き合わせる。既知差異とその影響の登録簿は Lean の `@[gap_entry]` にあり、
+JSON の `gaps` から読む（ADR cc24）。
 
 | 規則 | 失敗条件 |
 | --- | --- |
 | OB-L   | Lean 側の判定に誤りがある（G0〜G9） |
-| OB-DOC | 登録簿の節（Spec の非決定性・入口の R 課題・前提型の差異の影響・既知差異・証明課題）が見つからない |
+| OB-DOC | 登録簿の節（Spec の非決定性・入口の R 課題・証明課題）が見つからない |
 | OB-N1  | `@[nondet]` の ID が「Spec の非決定性」の表に無い。または同じ ID の `@[nondet]` が 2 つ以上ある |
 | OB-N3  | 環境の選択に 自由 の行の型が、自由な選択に 環境 の行の型が使われている |
 | OB-N2  | 表の N-NNN に対応する `@[nondet]` が無い（段階導入） |
 | OB-R   | 文書で種類 R の課題 ID を持つ `@[obligation]` 定理が、`Refines` を結論に持たない |
 | OB-E1  | 「入口の R 課題」の R 課題に、環境の前提の `EnvWitness` を伴う `TotalUnder` が無い |
 | OB-E2  | 「入口の R 課題」の R 課題が Lean に無い（段階導入） |
-| OB-D1  | 前提型の差異が「前提型の差異の影響」の表に無い、影響が「出力のみ」「中断」でない、または表の ID が前提型でない |
-| OB-D2  | `@[deviation]` の ID が既知差異の表に無い。または `restrict` に使われた差異が前提型でない |
+| OB-D1  | 前提型の差異に影響（「出力のみ」「中断」）が無い、または影響を持つ差異が前提型でない |
+| OB-D2  | `@[deviation]` の ID が登録簿（`gaps`）に無い。または `restrict` に使われた差異が前提型でない |
 | OB-S1  | 「出力のみ」の差異を `restrict` に使う R 課題に、その差異の `StateSafe`・`StateSafeConcrete` が無い |
 | OB-S2  | 「出力のみ」の差異に `@[deviation]` がまだ無い（段階導入） |
 
@@ -95,11 +96,6 @@ def parse_docs(spec_dir: pathlib.Path, backlog_dir: pathlib.Path):
     for text, task_heading in ((abstraction, "証明課題"), (refinement, "REF:")):
         for i, cells in section_rows(text, "入口の R 課題"):
             docs["entries"][i] = cells[-1]
-        for i, cells in section_rows(text, "前提型の差異の影響"):
-            docs["impact"][i] = {"kind": cells[0], "backlog": cells[-1]}
-        for i, cells in section_rows(text, "既知差異", own_only=True):
-            if re.match(r"^[DT]-\d{3}$", i):
-                docs["deviation_kind"][i] = cells[0]
         for i, cells in section_rows(text, task_heading):
             if cells and cells[0] == "R":
                 docs["r_tasks"].add(i)
@@ -111,9 +107,18 @@ def staged(docs, backlog_id: str):
     return "error" if docs["backlog"].get(backlog_id) == "done" else "warning"
 
 
+def gap_registry(report: dict, docs: dict):
+    """report の `gaps`（Lean の登録簿）から、差異の種類と前提型の影響を docs に入れる。"""
+    for g in report.get("gaps", []):
+        docs["deviation_kind"][g["id"]] = g["kind_label"]
+        if g.get("impact"):
+            docs["impact"][g["id"]] = {"kind": g["impact"]["label"], "backlog": (g.get("backlog") or [""])[0]}
+
+
 def check(report: dict, docs: dict):
     """(重さ, 規則, 内容) の列を返す。重さは "error" か "warning"。"""
     found = []
+    gap_registry(report, docs)
     refinements = report.get("refinements", [])
     for e in report.get("errors", []):
         found.append(("error", "OB-L", e))
@@ -172,7 +177,7 @@ def check(report: dict, docs: dict):
     for name, ids in dev_by_name.items():
         for i in ids:
             if i not in docs["deviation_kind"]:
-                found.append(("error", "OB-D2", f"@[deviation \"{i}\"] ({name}) is not in the known-difference table"))
+                found.append(("error", "OB-D2", f"@[deviation \"{i}\"] ({name}) has no @[gap_entry] in the registry"))
     for ob in refinements:
         for d in ob.get("deviations", []):
             for i in dev_by_name.get(d, []):

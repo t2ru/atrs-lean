@@ -2,7 +2,8 @@
 //!
 //! - ノード: 追跡属性を持つ Lean の定義と、`SourceModel`・`Abstraction`・`TargetModel`・`Refinement` の定義。
 //!   インベントリの項目はインベントリのファイルにあるので、ここには写さない。
-//! - リンク: 定義 → ロケータ（`source`・`target`）、定義 → ID（`obligation`・`deviation`・`nondet`）、
+//! - リンク: 定義 → ロケータ（`source`・`target`）、定義 → ID（`obligation`・`deviation`・`gap`・`nondet`、
+//!   ギャップの登録の宣言 `gap_entry`）、
 //!   定義 → 文書（`spec_doc`）、移植先の写し → 定義（`model`）。型付き。
 //! - 合格した検査（`checks`）: `rehash` が書く。ここでは既存の記録を保ち、現在の注釈に無い
 //!   （定義, ロケータ）の記録だけを捨てる（ADR 9cd9）。
@@ -69,6 +70,9 @@ pub fn build(dump: &Dump, target: &Inventory, old: &Manifest) -> Manifest {
                 links.insert(Link { kind: attr.clone(), from: d.name.clone(), to, hash });
             }
         }
+    }
+    for g in &dump.gaps {
+        links.insert(Link { kind: "gap_entry".into(), from: g.name.clone(), to: g.id.clone(), hash: String::new() });
     }
     for t in &target.model_tags {
         links.insert(Link { kind: "model".into(), from: format!("{}:{}", t.file, t.line), to: t.name.clone(), hash: t.merkle.clone() });

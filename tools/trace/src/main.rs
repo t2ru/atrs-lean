@@ -17,6 +17,7 @@ mod check;
 mod checks;
 mod diff;
 mod docs;
+mod gaps;
 mod impact;
 mod inventory;
 mod item;
@@ -93,6 +94,11 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
             let dpath = repo.join("docs/spec/traceability.md");
             let doc = std::fs::read_to_string(&dpath).map_err(|e| e.to_string())?;
             write_or_check(&dpath, &manifest::render_doc(&doc, &m, &source, &target)?, check)?;
+            for (path, prefix, side, regions) in gaps::DOCS {
+                let gpath = repo.join(path);
+                let doc = std::fs::read_to_string(&gpath).map_err(|e| e.to_string())?;
+                write_or_check(&gpath, &gaps::render_doc(&doc, path, &dump.gaps, prefix, side, regions)?, check)?;
+            }
             println!(
                 "trace/manifest.json: {} nodes, {} links, {} check records{}",
                 m.nodes.len(),
@@ -346,8 +352,6 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     let features = docs::Features::load(repo)?;
     let abs = std::fs::read_to_string(repo.join("docs/spec/abstraction.md")).map_err(|e| e.to_string())?;
     let rfn = std::fs::read_to_string(repo.join("docs/spec/refinement.md")).map_err(|e| e.to_string())?;
-    let mut deviations = docs::deviations(&abs, "既知差異");
-    deviations.extend(docs::deviations(&rfn, "既知差異"));
     let mut entry_tasks = docs::entry_tasks(&abs);
     entry_tasks.extend(docs::entry_tasks(&rfn));
     let mut r_tasks = docs::r_tasks(&abs);
@@ -374,7 +378,6 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
         source: &source,
         target: &target,
         features: &features,
-        deviations,
         entry_tasks,
         r_tasks,
         upstream: read_json(&repo.join("trace/upstream.json")),
