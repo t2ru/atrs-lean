@@ -8,6 +8,15 @@
       "covers": { "vectors": ["conformance/**/*.json"] }
     },
     {
+      "id": "pg-master-sql",
+      "description": "マスタの Mapper の文・コードリストの SQL の PostgreSQL での差分実行（結果の再生成と lake test の Tests.MasterSql）",
+      "steps": [
+        { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
+        { "cwd": "lean", "argv": ["lake", "test"] }
+      ],
+      "covers": { "names": ["SourceModel.Repository.Schema.*", "SourceModel.Repository.MasterData.*", "SourceModel.Config.*"] }
+    },
+    {
       "id": "jvm-table",
       "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と LangSemanticsTest の #guard）",
       "steps": [

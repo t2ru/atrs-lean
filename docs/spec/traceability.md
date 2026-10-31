@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # 追跡（トレーサビリティ）
@@ -129,10 +129,27 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 9 件。`tools/trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1323 件、対象外 640 件）、対応あり 54 件。`tools/trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
+| `java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()` | `SourceModel.CodeList.airportCodeList` | `ee05610976981369` | lake-test |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_CREDITMONTH()` | `SourceModel.CodeList.creditMonth` | `80b00a5795cfaa5b` | lake-test |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_CREDITYEAR()` | `SourceModel.CodeList.creditYear` | `8771de6e4c3fecac` | lake-test |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_FLIGHTTYPE()` | `SourceModel.CodeList.flightType` | `53a98f3857bc2251` | lake-test |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_GENDER()` | `SourceModel.CodeList.gender` | `ae7bc36378865373` | lake-test |
+| `dep:org.terasoluna.gfw:terasoluna-gfw-common#JdbcCodeList.retrieveMap` | `SourceModel.CodeList.jdbcCodeList` | `terasoluna-gfw-common-5.11.0.RELEASE` | （なし） |
+| `dep:org.terasoluna.gfw:terasoluna-gfw-common#NumberRangeCodeList.afterPropertiesSet` | `SourceModel.CodeList.numberRange` | `terasoluna-gfw-common-5.11.0.RELEASE` | （なし） |
+| `prop:atrs.properties#atrs.adultPassengerMinAge` | `SourceModel.Config.upstreamConfig` | `6b51d431df5d7f14` | pg-master-sql |
+| `prop:atrs.properties#atrs.childFareRate` | `SourceModel.Config.upstreamConfig` | `39fa9ec190eee7b6` | pg-master-sql |
+| `prop:atrs.properties#atrs.dateOfBirthMinDate` | `SourceModel.Config.upstreamConfig` | `16b66d733ba7d984` | pg-master-sql |
+| `prop:atrs.properties#atrs.limitDay` | `SourceModel.Config.upstreamConfig` | `69f59c273b6e669a` | pg-master-sql |
+| `prop:atrs.properties#atrs.representativeMinAge` | `SourceModel.Config.upstreamConfig` | `4ec9599fc203d176` | pg-master-sql |
+| `prop:atrs.properties#atrs.reserveIntervalTime` | `SourceModel.Config.upstreamConfig` | `2abaca4911e68fa9` | pg-master-sql |
+| `prop:atrs.properties#default.arrAirportCd` | `SourceModel.Config.upstreamConfig` | `44f7c891ed8c4f86` | pg-master-sql |
+| `prop:atrs.properties#default.boardingClassCd` | `SourceModel.Config.upstreamConfig` | `8ce86a6ae65d3692` | pg-master-sql |
+| `prop:atrs.properties#default.depAirportCd` | `SourceModel.Config.upstreamConfig` | `44f7c891ed8c4f86` | pg-master-sql |
+| `prop:atrs.properties#default.flightType` | `SourceModel.Config.upstreamConfig` | `3165be96f5833ae0` | pg-master-sql |
 | `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)` | `SourceModel.Fare.calculateBasicFare` | `9872678663e9a896` | lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)` | `SourceModel.Fare.calculateBasicFare` | `5b0822fe4c6991ac` | lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)` | `SourceModel.Fare.calculateFare` | `8088a7f2c9efaf7e` | lake-test |
@@ -140,8 +157,39 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)` | `SourceModel.Fare.calculateTotalFare` | `ca1a14757ce1cb33` | lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)` | `SourceModel.Fare.calculateTotalFare` | `35bc5d27ed5f2ca9` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.util.FareUtil#ceilFare(int)` | `SourceModel.Fare.ceilFare` | `345c1d9656b3930c` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#load()` | `SourceModel.MasterData.BoardingClassProvider.load` | `ea4f74c6c99e9b67` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll()` | `SourceModel.MasterData.BoardingClassProvider.load` | `a75e2344e7b09314` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#load()` | `SourceModel.MasterData.FareTypeProvider.load` | `accd51e500f0cb16` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.faretype.FareTypeRepository#findAll()` | `SourceModel.MasterData.FareTypeProvider.load` | `c01904394de5db65` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#load()` | `SourceModel.MasterData.FlightMasterProvider.load` | `42b24c5f9549b118` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster()` | `SourceModel.MasterData.FlightMasterProvider.load` | `0563c719a0a21f51` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#load()` | `SourceModel.MasterData.PeakTimeProvider.load` | `604b187a665e10c5` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll()` | `SourceModel.MasterData.PeakTimeProvider.load` | `4020414e93f77c78` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#load()` | `SourceModel.MasterData.RouteProvider.load` | `ce13818ba91368aa` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()` | `SourceModel.MasterData.RouteProvider.load` | `3cd8d3e7f6409637` | lake-test |
+| `dep:org.springframework:spring-core#Assert.hasText` | `SourceModel.MasterData.assertHasText` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)` | `SourceModel.MasterData.getBoardingClass` | `363af6d3dd2e282d` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#getFareType(FareTypeCd)` | `SourceModel.MasterData.getFareType` | `8cca1518f179d5a0` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#getFlightMaster(String)` | `SourceModel.MasterData.getFlightMaster` | `73525e4cbaf2e787` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)` | `SourceModel.MasterData.getPeakTime` | `1b19d6cad612b687` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)` | `SourceModel.MasterData.getRouteByAirportCd` | `4266ccb1fdc24df9` | lake-test |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_AIRPORT()` | `SourceModel.Repository.MasterData.airportCodeListRows` | `6236d6ba59dfd39c` | lake-test, pg-master-sql |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_BOARDINGCLASS()` | `SourceModel.Repository.MasterData.boardingClassCodeListRows` | `c0ccb970d9355072` | lake-test, pg-master-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll` | `SourceModel.Repository.MasterData.boardingClassFindAll` | `9b228eec7b3acd6a` | lake-test, pg-master-sql |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_CREDITTYPE()` | `SourceModel.Repository.MasterData.creditTypeCodeListRows` | `14fc9ae274494f99` | lake-test, pg-master-sql |
+| `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_FARETYPE()` | `SourceModel.Repository.MasterData.fareTypeCodeListRows` | `49649a5d73522449` | lake-test, pg-master-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.faretype.FareTypeRepository#findAll` | `SourceModel.Repository.MasterData.fareTypeFindAll` | `7ff78a19a79f16de` | lake-test, pg-master-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster` | `SourceModel.Repository.MasterData.flightMasterFindAll` | `ebfbc030ba80f150` | lake-test, pg-master-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll` | `SourceModel.Repository.MasterData.peakTimeFindAll` | `52311345757d8bde` | lake-test, pg-master-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll` | `SourceModel.Repository.MasterData.routeFindAll` | `0a9a6b28094e3e9a` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#AIRPORT` | `SourceModel.Repository.Schema.AirportRow` | `bf8ca7804ba932ce` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#BOARDING_CLASS` | `SourceModel.Repository.Schema.BoardingClassRow` | `74a735596ef8e4ee` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#CREDIT_TYPE` | `SourceModel.Repository.Schema.CreditTypeRow` | `22a8264dca01d374` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FARE_TYPE` | `SourceModel.Repository.Schema.FareTypeRow` | `25297f0a00f0d6fc` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FLIGHT_MASTER` | `SourceModel.Repository.Schema.FlightMasterRow` | `d92b2c0f805256a1` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#PEAK_TIME` | `SourceModel.Repository.Schema.PeakTimeRow` | `2639ea660139925b` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#PLANE` | `SourceModel.Repository.Schema.PlaneRow` | `31641da45eeb4327` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#ROUTE` | `SourceModel.Repository.Schema.RouteRow` | `b26d30be10a7908d` | lake-test, pg-master-sql |
 <!-- END GENERATED: source-trace -->
 
 ### ② TargetModel ⇔ 移植先ソース

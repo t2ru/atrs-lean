@@ -28,6 +28,44 @@ def varchar (column : String) (n : Nat) (v : String) : SqlResult String :=
   else if (v.toList.drop n).all (· == ' ') then .ok (String.ofList (v.toList.take n))
   else .error (.stringTooLong column)
 
+/-! ## 列の型
+
+列の値は、処理系が許す範囲を型で持つ（物理的なビット幅ではなく、取りうる値の範囲を再現する）。
+格納・変換の関数（`int4`・`date`・`varchar`）が範囲を検査し、範囲内の値だけを作る。
+モデル（`SourceModel` の表の行）は、`INT`・`DATE`・`VARCHAR(n)` の列をこれらの型で持つ。 -/
+
+/-- `INT`（int4）の値。 -/
+abbrev Int4 := {v : Int // -2147483648 ≤ v ∧ v ≤ 2147483647}
+
+/-- `INT` への格納。範囲外は `numericOutOfRange`。 -/
+def Int4.ofInt (v : Int) : SqlResult Int4 :=
+  if h : -2147483648 ≤ v ∧ v ≤ 2147483647 then .ok ⟨v, h⟩ else .error .numericOutOfRange
+
+/-- `DATE` の下限（紀元前 4714 年 11 月 24 日）の通算日数（1970-01-01 を 0）。 -/
+def dateMin : Int := -2440588
+/-- `DATE` の上限（5874897 年 12 月 31 日）の通算日数。 -/
+def dateMax : Int := 2145042905
+
+/-- `DATE` の値（1970-01-01 を 0 とする通算日数。`SqlValue.date` と同じ表し方）。 -/
+abbrev PgDate := {d : Int // dateMin ≤ d ∧ d ≤ dateMax}
+
+/-- `DATE` への格納。範囲外は `dateOutOfRange`。 -/
+def date (epochDay : Int) : SqlResult PgDate :=
+  if h : dateMin ≤ epochDay ∧ epochDay ≤ dateMax then .ok ⟨epochDay, h⟩ else .error .dateOutOfRange
+
+/-- `VARCHAR(n)` の値（文字数が n 以下）。 -/
+abbrev Varchar (n : Nat) := {s : String // s.length ≤ n}
+
+/-- `VARCHAR(n)` への格納（`varchar` と同じ規則）の結果を、型に持つ。 -/
+def Varchar.ofString (column : String) (n : Nat) (v : String) : SqlResult (Varchar n) := do
+  let s ← varchar column n v
+  if h : s.length ≤ n then pure ⟨s, h⟩ else throw (.stringTooLong column)
+
+/-- 列の値を `SqlValue` に写す（比較・整列に使う）。 -/
+def Int4.toSql (v : Int4) : SqlValue := .int v.val
+def PgDate.toSql (d : PgDate) : SqlValue := .date d.val
+def Varchar.toSql {n : Nat} (s : Varchar n) : SqlValue := .text s.val
+
 /-- 照合順序 `C`。 -/
 def collationC : Collation := Collation.codepoint
 

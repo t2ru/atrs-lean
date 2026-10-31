@@ -1,0 +1,64 @@
+{
+  "operation": "master.routeOf",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "routeOf-1",
+      "description": "羽田→伊丹の区間",
+      "input": {
+        "dep": "HND",
+        "arr": "ITM"
+      },
+      "expected": {
+        "ok": {
+          "routeNo": 1,
+          "depAirportCd": "HND",
+          "arrAirportCd": "ITM",
+          "basicFare": 20600
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "routeOf-2",
+      "description": "同じ空港どうしの区間は無い",
+      "input": {
+        "dep": "HND",
+        "arr": "HND"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "routeOf-3",
+      "description": "向きが逆の区間（伊丹→羽田）は別の区間",
+      "input": {
+        "dep": "ITM",
+        "arr": "HND"
+      },
+      "expected": {
+        "ok": {
+          "routeNo": 15,
+          "depAirportCd": "ITM",
+          "arrAirportCd": "HND",
+          "basicFare": 20600
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

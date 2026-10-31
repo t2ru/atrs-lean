@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -133,6 +133,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込む。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR 0043](../decision/0043-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: DB のマスタの各行と設定の値が、[Spec] の型で表せる（α が定義される） | ABS-026 | ABS-127 |
 
 ### 前提型の差異の影響
 
@@ -157,6 +158,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-020 | 出力のみ | 予約入力画面の表示（状態を変えない `GET`）の応答だけが異なる | 0014 |
 | D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 0008 |
 | D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる | 0014 |
+| D-027 | 中断 | [Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける | 0004 |
 
 ### [Spec] の前提の外での [Source] の振る舞い（差異ではない）
 
@@ -205,7 +207,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | ABS-023 | R | 予約・空席照会のリポジトリの [Source] 実装（`LangSemantics.Sql` で写した SQL）が、[ports.md](ports.md) の契約をリファインする | — |
 | ABS-024 | R | 会員のリポジトリと `PasswordHasher` の [Source] 実装が、[ports.md](ports.md) の契約をリファインする。`SourceModel` は原典の `PasswordEncoder` を、raw について単射な符号化として写す。PBKDF2 の衝突を写さないことは、移植元ソース ⇔ `SourceModel` の限界である（[assurance.md](assurance.md)） | — |
 | ABS-025 | R | `ReportStore`・`ReportQueue` の [Source] 実装が、[ports.md](ports.md) の契約をリファインする | — |
-| ABS-026 | R | マスタ・設定・コードリストの読み込み（`SourceModel.MasterData`・`CodeList`・`Config` と、マスタの Mapper の SQL）が、[Spec] の `MasterData`・設定をリファインする（読み込んだ値が MD-1〜MD-8 を満たすときに一致する）。書式（`SourceModel.Format`）は、それを使う R 課題（ABS-044・ABS-045・ABS-046）が覆う | — |
+| ABS-026 | R | マスタ・設定・コードリストの読み込み（`SourceModel.MasterData`・`CodeList`・`Config` と、マスタの Mapper の SQL）が、[Spec] の `MasterData`・設定をリファインする（`dev_D027` の下で、読み込んだ値が MD-1〜MD-8 を満たすときに一致する。抽象側は `Spec.MasterData.queryMachine`、具体側は `SourceModel.MasterQuery.queryConcrete`。Mapper の文の結果のどの許される順列でも成り立つ）。書式（`SourceModel.Format`）は、それを使う R 課題（ABS-044・ABS-045・ABS-046）が覆う | D-027 |
 | ABS-030 | L | 補助文字を含まない文字列で `utf16Len = scalarLen` | D-006 |
 | ABS-031 | R | REST 予約 API: `dev_D007`・`dev_D026` と、運賃計算・採番・Clock・入力検証から引き継ぐ仮定・成分の下でリファインする | D-001, D-002, D-006, D-007, D-008, D-009, D-011, D-012, D-014, D-018, D-021, D-022, D-026 |
 | ABS-032 | L | ドメイン部が ASCII だけからなる文字列で、[Source] と [Spec] の Email 判定が一致する | D-011 |
@@ -236,6 +238,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | ABS-121 | W | D-021 の証拠: `+10000/01/01`、`0000/01/01` で、解析結果が異なる | D-021 |
 | ABS-122 | W | D-022 の証拠: 単項目の違反が 2 件以上ある入力で、[Source] の許される順序の 1 つが [Spec] の列と異なり、`obs_D022` で対応する | D-022 |
 | ABS-126 | W | D-026 の証拠: `"\ud800"` を含む REST の要求で、[Source] は処理を続け、[Spec] は `InvalidRequest` を返す | D-026 |
+| ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB（到着時刻 `2415` の 2 行を除く） | D-027 |
 
 ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利用しない）。
 

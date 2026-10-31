@@ -14,6 +14,7 @@
   },
   "dependencies": [
     { "coordinate": "org.terasoluna.gfw:terasoluna-gfw-parent", "version": "5.11.0.RELEASE", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#parent" },
+    { "coordinate": "org.terasoluna.gfw:terasoluna-gfw-common", "version": "5.11.0.RELEASE", "from": "terasoluna-gfw-parent 5.11.0.RELEASE", "note": "コードリスト（JdbcCodeList・NumberRangeCodeList・SimpleMapCodeList）" },
     { "coordinate": "org.terasoluna.bom:terasoluna-dependencies", "version": "3.0.0.RELEASE", "from": "terasoluna-gfw-parent 5.11.0.RELEASE" },
     { "coordinate": "org.springframework.boot:spring-boot-dependencies", "version": "4.0.2", "from": "terasoluna-dependencies 3.0.0.RELEASE", "note": "依存管理のみ。Spring Boot 本体は使わない" },
     { "coordinate": "org.springframework:spring-framework-bom", "version": "7.0.3", "from": "spring-boot-dependencies 4.0.2" },
@@ -21,6 +22,7 @@
     { "coordinate": "tools.jackson.core:jackson-databind", "version": "3.0.4", "from": "spring-boot-dependencies 4.0.2" },
     { "coordinate": "com.fasterxml.jackson.core:jackson-databind", "version": "2.20.2", "from": "terasoluna-gfw-common-dependencies 5.11.0.RELEASE" },
     { "coordinate": "org.mybatis:mybatis", "version": "3.5.19", "from": "terasoluna-dependencies 3.0.0.RELEASE" },
+    { "coordinate": "org.springframework:spring-core", "version": "7.0.3", "from": "spring-framework-bom 7.0.3", "note": "Assert" },
     { "coordinate": "org.postgresql:postgresql", "version": "42.7.9", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#properties/postgresql.version" },
     { "coordinate": "org.apache.tomcat:tomcat", "version": "11.0.15", "from": "terasoluna-gfw-parent 5.11.0.RELEASE", "note": "cargo で起動するコンテナ" }
   ]

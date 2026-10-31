@@ -1,0 +1,51 @@
+{
+  "operation": "master.multiplicationRatioOn",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "ratio-1",
+      "description": "ピーク時期でなければ 100",
+      "input": {
+        "date": "2026-11-01"
+      },
+      "expected": {
+        "ok": 100
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "ratio-2",
+      "description": "PEAK1 は 140",
+      "input": {
+        "date": "2027-01-02"
+      },
+      "expected": {
+        "ok": 140
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "ratio-3",
+      "description": "PEAK2 は 125",
+      "input": {
+        "date": "2026-12-20"
+      },
+      "expected": {
+        "ok": 125
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

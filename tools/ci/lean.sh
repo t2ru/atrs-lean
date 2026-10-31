@@ -30,6 +30,9 @@ skippable tools/ci/jvm_table.sh
 step "assets/lean: PostgreSQL との突き合わせ表（LangSemanticsTest/PostgresqlDb.lean）が生成器の出力と一致する"
 skippable tools/ci/pg_table.sh
 
+step "conformance: マスタの Mapper の文・コードリストの SQL の PostgreSQL での結果（conformance/sql/master-data.json）が最新である"
+skippable tools/ci/master_sql.sh
+
 step "assets/lean: lake build（LangSemantics・Machine と、その検査 LangSemanticsTest・MachineTest）"
 (cd .agents/skills/port-lang/assets/lean && lake build)
 

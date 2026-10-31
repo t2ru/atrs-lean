@@ -32,9 +32,7 @@ structure Route where
   routeNo : Nat
   depAirportCd : AirportCd
   arrAirportCd : AirportCd
-  /-- 所要時間（`HHmm`、参考値）。 -/
-  flightTime : String
-  /-- 路線基本運賃。 -/
+  /-- 路線基本運賃。所要時間（DB の `FLIGHT_TIME`）は、原典のどの処理も読まないので持たない（ADR 0043）。 -/
   basicFare : Nat
   deriving DecidableEq, Repr
 
@@ -162,6 +160,7 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
 /-- MD-8: 値域（`docs/spec/domain-model.md#値域` のうちマスタのもの）。 -/
 @[spec_doc "docs/spec/master-data.md#不変条件spec"]
 def MD8 (md : MasterData) : Prop :=
+  (∀ a ∈ md.airports, a.code.WellFormed) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
   (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
   (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate)
@@ -300,50 +299,6 @@ theorem peakTimeOn_eq_some_iff {md : MasterData} (h : md.MD4) {d : Date} {p : Pe
     rcases hpq with hpq | hpq
     · have : a.peakEndDate.ordinal < b.peakStartDate.ordinal := hpq; omega
     · have : b.peakEndDate.ordinal < a.peakStartDate.ordinal := hpq; omega
-
-/-! ## SPEC 課題 -/
-
-/-- 参照関数の問い合わせ。 -/
-inductive Query where
-  | routeOf (dep arr : AirportCd)
-  | flightMasterOf (name : FlightName)
-  | fareTypeOf (cd : FareTypeCd)
-  | boardingClassOf (cd : BoardingClassCd)
-  | peakTimeOn (d : Date)
-  | multiplicationRatioOn (d : Date)
-
-/-- 問い合わせの結果。 -/
-inductive Answer where
-  | route (r : Option Route)
-  | flightMaster (f : Option FlightMaster)
-  | fareType (f : Option FareType)
-  | boardingClass (b : Option BoardingClass)
-  | peakTime (p : Option PeakTime)
-  | ratio (n : Nat)
-
-/-- 問い合わせに答える。 -/
-def answer (md : MasterData) : Query → Answer
-  | .routeOf dep arr => .route (md.routeOf dep arr)
-  | .flightMasterOf name => .flightMaster (md.flightMasterOf name)
-  | .fareTypeOf cd => .fareType (md.fareTypeOf cd)
-  | .boardingClassOf cd => .boardingClass (md.boardingClassOf cd)
-  | .peakTimeOn d => .peakTime (md.peakTimeOn d)
-  | .multiplicationRatioOn d => .ratio (md.multiplicationRatioOn d)
-
-/-- マスタの参照関数の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
-def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
-  Machine.Machine.pure (fun i => i.1.Valid ∧ i.2.1.Valid i.1) (fun i => i.2.1.answer i.2.2)
-
-/-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
-@[obligation "SPEC-001"]
-theorem queryMachine_run_step :
-    ∀ s i, queryMachine.Pre s i → queryMachine.step s i (queryMachine.run s i).1 (queryMachine.run s i).2 :=
-  queryMachine.run_step
-
-/-- SPEC-002・SPEC-003: 初期化は INV を満たし、PRE の下の操作は INV を保つ。 -/
-@[obligation "SPEC-002", "SPEC-003"]
-theorem queryMachine_sound : queryMachine.Sound := Machine.Machine.sound_pure _ _
 
 end MasterData
 

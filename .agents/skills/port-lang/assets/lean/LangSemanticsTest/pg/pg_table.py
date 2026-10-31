@@ -203,6 +203,21 @@ def int_ranges():
         line(f"#guard int4 ({lean_int(a)} + {lean_int(b)}) matches {pat}")
 
 
+def dates():
+    line()
+    line("/-! ## DATE の範囲（1970-01-01 を 0 とする通算日数） -/")
+    line()
+    lo = int(one("SELECT '4714-11-24 BC'::date - '1970-01-01'::date"))
+    hi = int(one("SELECT '5874897-12-31'::date - '1970-01-01'::date"))
+    line(f"#guard dateMin == {lean_int(lo)} && dateMax == {lean_int(hi)}")
+    for v in [lo, hi]:
+        st, _ = psql(f"SELECT '1970-01-01'::date + ({v})")
+        line(f"#guard date {lean_int(v)} matches " + (".ok _" if st == "ok" else ".error .dateOutOfRange"))
+    for v in [lo - 1, hi + 1]:
+        st, _ = psql(f"SELECT '1970-01-01'::date + ({v})")
+        line(f"#guard date {lean_int(v)} matches " + (".ok _" if st == "ok" else ".error .dateOutOfRange"))
+
+
 def varchar():
     line()
     line("/-! ## VARCHAR(n) への格納 -/")
@@ -300,6 +315,7 @@ def main():
     order_by()
     to_char()
     int_ranges()
+    dates()
     varchar()
     sequences()
     updates()

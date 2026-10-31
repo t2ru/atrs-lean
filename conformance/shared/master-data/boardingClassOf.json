@@ -1,0 +1,33 @@
+{
+  "operation": "master.boardingClassOf",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "boardingClassOf-1",
+      "description": "特別席",
+      "input": {
+        "cd": "S"
+      },
+      "expected": {
+        "ok": {
+          "boardingClassCd": "S",
+          "boardingClassName": "特別席",
+          "extraCharge": 5000
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

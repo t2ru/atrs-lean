@@ -2,6 +2,26 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 2 段 a を終えた（`doing`）。
+  * マスタ・設定・コードリストの読み込みの `SourceModel` を作った（Mapper の文、MyBatis の対応、Provider、コードリスト、設定、具体機械 `queryConcrete`）。
+  * Mapper の SQL を PostgreSQL で差分実行して照合した（`conformance/sql/master-data.json`）。
+  * マスタのベクタを両モデルで実行した。
+  * `@[source]` 45 件を rehash で記録した。
+* **Creation**: [ADR 0043](decision/0043-master-data-source-model-and-spec-fixes.md) で、次の 5 点を決めた。
+  * 読み込みの `SourceModel` の写し方。列の型は、処理系の範囲で写す。
+  * `Spec.Route.flightTime` の削除
+  * MD-8 の空港コード
+  * 問い合わせの機械の拡張
+  * 差分実行
+* **Update**: [spec/abstraction.md](spec/abstraction.md) に、既知差異 D-027（前提型・具体側の入力）、影響（中断）、W 課題 ABS-127 を登録した。ABS-026 の行も改めた。
+* **Update**: 次の文書を改めた。
+  * [spec/master-data.md](spec/master-data.md)
+  * [spec/domain-model.md](spec/domain-model.md)（値域）
+  * [spec/assurance.md](spec/assurance.md)（SQL の差分実行の付録）
+  * [spec/conformance.md](spec/conformance.md)（`master.*`）
+  * スキル port-lang の `sql/semantics.md`・`java/semantics.md`
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 1 段を終えた（`doing`）。
   * Lean `Spec.Fare` と `SourceModel.Fare`（`SourceModel.Model`・`SourceModel.MasterData`）を作った。
   * 運賃計算の全例をベクタにし、両モデルで実行するようにした（`conformance/{spec,source-model,shared}/fare/`）。

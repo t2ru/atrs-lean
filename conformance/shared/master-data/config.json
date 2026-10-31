@@ -1,0 +1,38 @@
+{
+  "operation": "master.config",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/configuration.md",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "config-1",
+      "description": "上流の atrs.properties の値",
+      "input": {},
+      "expected": {
+        "ok": {
+          "limitDay": 90,
+          "reserveIntervalTime": 120,
+          "representativeMinAge": 18,
+          "adultPassengerMinAge": 12,
+          "childFareRate": 60,
+          "dateOfBirthMinDate": "1900-01-01",
+          "defaultFlightType": "RT",
+          "defaultDepAirportCd": "HND",
+          "defaultArrAirportCd": "HND",
+          "defaultBoardingClassCd": "N"
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}
