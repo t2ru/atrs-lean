@@ -53,7 +53,7 @@ Chosen option: "Rust + Verus + Kani + 適合テストベクタ", because Rust �
   * `spec`: Lean `Spec` を **Verus の spec 関数として写したもの**。数学的整数（`int`, `nat`）で書き、実行コードを持たない。
   * `target_model`: 実行コード。純粋なコア（運賃・照会・検証・状態遷移）は `verus!` の中に置き、各関数の `ensures` で `spec` の対応する関数との一致を述べる。アダプタ（永続化・HTTP・ファイル・時計）は `#[verifier::external]` として Verus の対象外に置く。
   * `refinement`: `ensures` の証明に使う補題（proof 関数）、Kani のハーネス（`#[cfg(kani)]`）、適合テストベクタの実行器。
-* Rust の具体的な規約は [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)。
+* Rust の具体的な規約は [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)。
 
 ### 充足方法
 
@@ -65,7 +65,7 @@ Chosen option: "Rust + Verus + Kani + 適合テストベクタ", because Rust �
 | 結合テスト・設計レビュー | 原子性・直列化可能性、HTTP 契約 | DB アダプタ（REF-003）、HTTP（REF-006） |
 
 **信頼の連鎖**: Lean `Spec` →（適合テストベクタ）→ Rust の実行コード →（Verus の証明）→ Verus の写し `spec`。
-写しの誤りは「写しと一致する実装」がベクタで Lean `Spec` と食い違うことで検出される。加えて、写しは Lean `Spec` と **1 定義ずつ同じ名前・同じ構造** で書くことを規約とし、レビューで照合する（[port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)）。
+写しの誤りは「写しと一致する実装」がベクタで Lean `Spec` と食い違うことで検出される。加えて、写しは Lean `Spec` と **1 定義ずつ同じ名前・同じ構造** で書くことを規約とし、レビューで照合する（[port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)）。
 
 ### ツールチェーン
 
@@ -108,5 +108,5 @@ Chosen option: "Rust + Verus + Kani + 適合テストベクタ", because Rust �
 * **本 ADR は [ADR 796c](796c-models-in-lean-and-sources-traced-at-both-ends.md) に置き換えられた**。Rust を移植先とすることと Verus・Kani の採用は引き継ぎ、`TargetModel` を Lean のモデル、Rust を移植先ソースとする構成に改めた。Verus・Kani は `TargetModel` ⇔ Rust ソースの対応の確認手段になった。
 
 * [ADR 3e1d](3e1d-language-neutral-top-level-namespaces.md) の配置の記述を本 ADR で更新する（名前空間の規則そのものは変えない）。
-* [spec/refinement.md](../spec/refinement.md), [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)
+* [spec/refinement.md](../spec/refinement.md), [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)
 * [backlog 31da](../backlog/31da-second-language-portability-pilot.md) は Rust 移植そのものに置き換わるため取りやめる。

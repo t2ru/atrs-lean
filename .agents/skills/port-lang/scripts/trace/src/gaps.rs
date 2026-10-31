@@ -1,4 +1,4 @@
-//! ギャップの表: `docs/spec/abstraction.md`・`refinement.md` の生成区画（references/lean/trace-attributes.md#ギャップの登録簿）。
+//! ギャップの表: `docs/spec/abstraction.md`・`refinement.md` の生成区画（references/docs/lean/trace-attributes.md#ギャップの登録簿）。
 //!
 //! 登録簿の正は Lean の `@[gap_entry]`（`trace-dump` の `gaps`）である。表は `trace manifest` が書き、
 //! `--check` で最新であることを確かめる。

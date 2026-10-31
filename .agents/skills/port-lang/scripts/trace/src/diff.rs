@@ -1,4 +1,4 @@
-//! `diff`: 新旧のインベントリを分類する（port-lang の upgrade.md の手順 3。references/traceability.md#道具）。
+//! `diff`: 新旧のインベントリを分類する（port-lang の upgrade.md の手順 3。references/docs/traceability.md#道具）。
 //!
 //! | 分類 | 判定 |
 //! | --- | --- |

@@ -15,7 +15,7 @@ generated:
 
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル port-lang の [conformance.md](../../.agents/skills/port-lang/references/conformance.md) に従う（[ADR dc3a](../decision/dc3a-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
+ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル port-lang の [conformance.md](../../.agents/skills/port-lang/references/docs/conformance.md) に従う（[ADR dc3a](../decision/dc3a-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
 
 ## 機能区分（`<feature>`）
 

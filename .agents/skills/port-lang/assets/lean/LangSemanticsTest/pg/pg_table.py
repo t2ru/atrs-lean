@@ -4,7 +4,7 @@
     python3 -I pg_table.py [--expect-version 16.15] > ../PostgresqlDb.lean
 
 接続先は psql の環境変数（PGHOST・PGPORT・PGUSER・PGDATABASE）で与える。データベースは照合順序 C・
-UTF8 で、セッションのタイムゾーンは UTC とする（references/sql/dialects/postgresql/harness.md）。
+UTF8 で、セッションのタイムゾーンは UTC とする（references/docs/sql/dialects/postgresql/harness.md）。
 固定の入力について PostgreSQL で値を計算し、Lean の `#guard` 行を標準出力に書く。出力はコミットし、
 CI で再生成して差分が無いことを確かめる。出力に処理系の版は含めない。
 """

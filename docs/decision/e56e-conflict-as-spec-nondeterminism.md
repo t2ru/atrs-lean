@@ -20,7 +20,7 @@ generated:
 [ADR 41f7](41f7-concurrency-failure-as-conflict-error.md) は、排他制御の失敗を `AtrsError.Conflict` として表すと決めた。対象は、デッドロック・ロック待ちのタイムアウト・直列化の失敗・楽観ロックの衝突である。
 そのうえで「[Spec] では `Conflict` は発生せず、`TargetModel` と実行環境が返してよい」とした。
 この定め方では、具体側（`TargetModel`）に、抽象側（`Spec`）で模倣できない遷移ができる。そのため、B メソッドのリファインメント（[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)）が成り立たない。
-また、「仕様にない振る舞いを実装してはならない」（[AGENTS.md](../../AGENTS.md)、[port-lang/process.md](../../.agents/skills/port-lang/references/process.md)）とも矛盾する。
+また、「仕様にない振る舞いを実装してはならない」（[AGENTS.md](../../AGENTS.md)、[port-lang/process.md](../../.agents/skills/port-lang/references/docs/process.md)）とも矛盾する。
 
 ## Decision Drivers
 

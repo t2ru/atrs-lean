@@ -29,29 +29,29 @@ generated:
 
 ## 方式
 
-ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D・TR-K・TR-G・TR-N・TR-V・TR-PE を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/traceability.md) に従う（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
+ロケータの文法、版の宣言とインベントリ、注釈と検査済みハッシュ、検査（TR-S1〜TR-R。TR-D・TR-K・TR-G・TR-N・TR-V・TR-PE を含む）、道具は、スキル port-lang の [traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md) に従う（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
 ATRS が使うロケータの種別は次のとおり（文法は各言語パックの `locators.md`）。
 
 | 側 | 種別 | 言語パック |
 | --- | --- | --- |
-| 移植元 | `java:` `prop:` `msg:` `http:` `xml:` `tmpl:` | [java/locators.md](../../.agents/skills/port-lang/references/java/locators.md) |
-| 移植元 | `sql:` `ddl:` `seed:` | [sql/locators.md](../../.agents/skills/port-lang/references/sql/locators.md) |
-| 移植先 | `rust:`（クレート `atrs`） | [rust/locators.md](../../.agents/skills/port-lang/references/rust/locators.md) |
+| 移植元 | `java:` `prop:` `msg:` `http:` `xml:` `tmpl:` | [java/locators.md](../../.agents/skills/port-lang/references/docs/java/locators.md) |
+| 移植元 | `sql:` `ddl:` `seed:` | [sql/locators.md](../../.agents/skills/port-lang/references/docs/sql/locators.md) |
+| 移植先 | `rust:`（クレート `atrs`） | [rust/locators.md](../../.agents/skills/port-lang/references/docs/rust/locators.md) |
 | 両側 | `dep:` `lang:` | ATRS で必須の `dep:` は [atrs-porting.md](../rules/atrs-porting.md#source-に必ず含める依存atrs) |
 
-道具は port-lang の `scripts/trace`（以下 `trace`。[backlog ffdc](../backlog/ffdc-trace-tooling.md)）である。細部（本文ハッシュ・正規化・ロケータの形・版の文字列・警告と誤りの区別）は [ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md) による。
+道具は port-lang の `scripts/trace`（以下 `trace`。[backlog ffdc](../backlog/ffdc-trace-tooling.md)）である。細部（本文ハッシュ・正規化・ロケータの形・版の文字列・警告と誤りの区別）は [ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md) による。
 
 | ファイル | 内容 | 作り方 |
 | --- | --- | --- |
 | `trace/source-inventory.json` | 移植元のインベントリ（上流の submodule の走査結果） | `trace inventory source` |
 | `trace/target-inventory.json` | 移植先のインベントリ（`rust/src/` の走査結果と `/// trace: models` の札） | `trace inventory target` |
 | `trace/manifest.json` | ノード・型付きのリンク・合格した検査の記録 | `trace manifest`（合格の記録は `trace rehash`） |
-| `trace/project.json` | スキルの道具が読む ATRS の設定（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ID の道具。形はスキルの [traceability.md](../../.agents/skills/port-lang/references/traceability.md#プロジェクトの設定)） | 手で書く |
+| `trace/project.json` | スキルの道具が読む ATRS の設定（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ID の道具。形はスキルの [traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md#プロジェクトの設定)） | 手で書く |
 | `trace/features.json` | 機能と backlog・ロケータ・Lean の名前空間・R 課題の対応表。TR-S1・TR-T1・TR-P・TR-PE・TR-D の警告と誤りを決める | 手で書く |
 | `trace/checks.json` | `rehash` が実行する決定論的な検査と、それが覆う Lean の定義（名前の glob と、ベクタの `modelDef`） | 手で書く（検査を足す backlog が登録する） |
 | `trace/renames.json` | ハッシュで判別できない改名の対応 | 手で書く（版上げのとき） |
 
-道具の細部のうち `rehash`・`diff`・`impact`・`checks.json`・`renames.json`・「出典:」の検査は [ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md) による。
+道具の細部のうち `rehash`・`diff`・`impact`・`checks.json`・`renames.json`・「出典:」の検査は [ADR 9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md) による。
 
 | 使い方 | コマンド |
 | --- | --- |
@@ -112,7 +112,7 @@ pub fn basic_fare(...) -> (r: u64)
 
 | 検査 | この例での判定 |
 | --- | --- |
-| TR-S1 | `calculateBasicFare` は `@[source]` で覆われる。private の `getMultiplicationRatio` はインベントリの単位ではなく、その本文は `<h1>` に含まれる（[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)）。同じクラスの他のメソッドは、別の `SourceModel` 定義が覆う必要がある |
+| TR-S1 | `calculateBasicFare` は `@[source]` で覆われる。private の `getMultiplicationRatio` はインベントリの単位ではなく、その本文は `<h1>` に含まれる（[ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)）。同じクラスの他のメソッドは、別の `SourceModel` 定義が覆う必要がある |
 | TR-S2 | `<h1>` が `source-inventory` の現在値と一致し、`<h1>` と定義の Merkle の組に合格の記録があれば合格。上流の版上げで本文が変わると失敗する。`trace rehash` が、`trace/checks.json` で `SourceModel.Fare.calculateBasicFare` を覆う検査（`source-model/fare` のベクタの照合）を実行し、合格した場合に限ってハッシュを更新して記録する |
 | TR-T1 | `TargetModel.Fare.basicFare` は `@[target]` を持つ。Rust の `atrs::fare::basic_fare` は覆われる。`atrs::model::fare::basic_fare`（写し）は TR-T2 で扱う |
 | TR-T2 | `<h3>` が `target-inventory` と、`<m1>` が `TargetModel.Fare.basicFare` の Merkle ハッシュと一致すれば合格。Rust の本文を変えると `<h3>` がずれ、Lean を変えると `<m1>` がずれる |

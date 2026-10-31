@@ -1,5 +1,5 @@
 //! 文書の読み込み: 入口の R 課題と証明課題の表、backlog の状態、`trace/features.json`。
-//! 既知差異（D/T）の登録簿は Lean にある（`trace-dump` の `gaps`。references/lean/trace-attributes.md#ギャップの登録簿）。
+//! 既知差異（D/T）の登録簿は Lean にある（`trace-dump` の `gaps`。references/docs/lean/trace-attributes.md#ギャップの登録簿）。
 
 use globset::{Glob, GlobMatcher};
 use serde::Deserialize;
@@ -130,7 +130,7 @@ pub struct FeaturesFile {
 
 const LAYERS: &[&str] = &["SourceModel", "Abstraction", "TargetModel", "Refinement"];
 
-/// 機能の対応表（references/traceability.md#道具）。
+/// 機能の対応表（references/docs/traceability.md#道具）。
 pub struct Features {
     pub list: Vec<Feature>,
     globs: Vec<Vec<GlobMatcher>>,

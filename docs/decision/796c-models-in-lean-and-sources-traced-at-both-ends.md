@@ -73,7 +73,7 @@ Chosen option: "すべてのモデルと証明を Lean に置き、ソースは�
   * `rust/src/proof/`: Verus の補題
   * `rust/kani/`: Kani のハーネス
   * `rust/tests/`: 適合テスト
-* 規約は [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)。
+* 規約は [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)。
 
 ### 両端の対応の確認（対称）
 

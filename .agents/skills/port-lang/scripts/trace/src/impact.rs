@@ -1,4 +1,4 @@
-//! `impact`: 変化の起点から、証明のグラフ（参照）に沿って影響を求める（port-lang の upgrade.md の手順 5。references/traceability.md#道具）。
+//! `impact`: 変化の起点から、証明のグラフ（参照）に沿って影響を求める（port-lang の upgrade.md の手順 5。references/docs/traceability.md#道具）。
 //!
 //! 移植元の起点（移植元のロケータ・`SourceModel` などの名前）は、次の順に伝播させる。
 //!
@@ -11,8 +11,8 @@
 //! 移植先の起点（`rust:`・`TargetModel` の名前）は、逆向きに `Refinement` の R 課題と `Spec` まで示す。
 //!
 //! あわせて、影響を受ける `SourceModel`・`Spec`・`TargetModel` の定義に箇所の印（`@[gap]`）を持つギャップを、
-//! 見直すギャップとして示す（references/lean/trace-attributes.md#ギャップの登録簿）。
-//! 移植元ソースと移植先ソースを直接は結ばない（references/traceability.md#検査済みハッシュ）。
+//! 見直すギャップとして示す（references/docs/lean/trace-attributes.md#ギャップの登録簿）。
+//! 移植元ソースと移植先ソースを直接は結ばない（references/docs/traceability.md#検査済みハッシュ）。
 
 use crate::lean::{closure, split_hash, Dump, Obligations};
 use serde::Serialize;

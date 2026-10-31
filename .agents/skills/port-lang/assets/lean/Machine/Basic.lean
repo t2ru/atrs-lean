@@ -1,7 +1,7 @@
 /-!
 # Machine.Basic
 
-抽象機械（B メソッドの abstract machine）。`Spec` の各機能をこの形で与える（references/architecture.md#リファインメントb-メソッド の「抽象機械」）。
+抽象機械（B メソッドの abstract machine）。`Spec` の各機能をこの形で与える（references/docs/architecture.md#リファインメントb-メソッド の「抽象機械」）。
 
 - 状態 σ・入力 ι・出力 ο を持つ 1 つの操作として表す。複数の操作を持つ機能は、入力を直和
   （操作ごとの構成子を持つ `inductive`）にして 1 つの機械にまとめる。

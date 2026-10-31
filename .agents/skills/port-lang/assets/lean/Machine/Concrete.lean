@@ -3,14 +3,14 @@ import Machine.Basic
 /-!
 # Machine.Concrete
 
-具体機械。`SourceModel`・`TargetModel` の各機能をこの形で与える（references/architecture.md#リファインメントb-メソッド の「リファインメント」）。
+具体機械。`SourceModel`・`TargetModel` の各機能をこの形で与える（references/docs/architecture.md#リファインメントb-メソッド の「リファインメント」）。
 
 - 結果は `Except ε (τ × ο)` とする。`.ok (t', o)` が正常終了、`.error e` が正常終了でない結果である。
   `ε` は言語ごとに選ぶ（パニック、`PreconditionViolation`・`Assert` の失敗、溢れを誤りとする言語の
   算術の溢れ、NaN、不対サロゲートなど）。
 - 業務エラー（例外として投げられ、α/β でエラー値に写るもの）は、出力 `ο` の値として正常な結果に含める。
 - α/β の未定義は、貼り合わせ不変条件 `J`・出力の対応 `αₒ` に像が無いことである。これは
-  `Machine.Refines` の正しさの義務が排除する（references/architecture.md#リファインメントb-メソッド の適用可能性の「α/β の未定義」は、
+  `Machine.Refines` の正しさの義務が排除する（references/docs/architecture.md#リファインメントb-メソッド の適用可能性の「α/β の未定義」は、
   適用可能性と正しさの組で満たされる）。
 - 非決定性（例: SQL の未規定の並び順）は、`step` が複数の結果を許すことで表す。
 - `Dom` は、具体側の入力の定義域である。既定は全体で、前提型の差異（`restrict`）でだけ狭める。

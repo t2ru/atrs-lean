@@ -1,5 +1,5 @@
 {
-  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/traceability.md#プロジェクトの設定）",
+  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/docs/traceability.md#プロジェクトの設定）",
   "skill": ".agents/skills/port-lang",
   "lean": {
     "roots": [

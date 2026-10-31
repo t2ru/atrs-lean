@@ -3,7 +3,7 @@ import Lean.Data.Json
 /-!
 # ConformanceKit.Runner
 
-言語中立な適合テストベクタの実行器（スキルの `references/conformance.md`）。機能に依存しない部分だけを置く。
+言語中立な適合テストベクタの実行器（スキルの `references/docs/conformance.md`）。機能に依存しない部分だけを置く。
 
 - 操作の割当（`operation` → モデルの関数）は、プロジェクトが `List (String × Op)` の表として与える。
   共有入力（`fixtures`）を使う操作の表は、`Fixtures` から作る（`runDirFx`）。

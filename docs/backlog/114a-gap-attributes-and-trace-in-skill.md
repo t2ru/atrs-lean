@@ -15,7 +15,7 @@ generated:
 
 ## 目的
 
-追跡属性の仕組みはアプリに依存しないので、スキルに置く（[ADR 7fe4](../decision/7fe4-move-trace-attributes-to-skill.md)）。
+追跡属性の仕組みはアプリに依存しないので、スキルに置く（[ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)）。
 あわせて、[Spec] とモデルのギャップを Lean の属性で表し、機械で扱えるようにする（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。
 
 ## 範囲
@@ -58,7 +58,7 @@ generated:
 
 ## 参照
 
-- [ADR 7fe4](../decision/7fe4-move-trace-attributes-to-skill.md)
+- [ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)
 - [ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)
 - [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)
 - [backlog ffdc](ffdc-trace-tooling.md)

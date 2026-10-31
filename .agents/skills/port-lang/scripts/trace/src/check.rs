@@ -1,4 +1,4 @@
-//! `check`: 追跡の検査 TR-*（references/traceability.md#検査済みハッシュ・70eb・0eea）。
+//! `check`: 追跡の検査 TR-*（references/docs/traceability.md#検査済みハッシュ・70eb・0eea）。
 //!
 //! | ID | 内容 |
 //! | --- | --- |
@@ -15,8 +15,8 @@
 //! | TR-G・TR-N | `obligation-check` と `check_obligations.py` の結果 |
 //!
 //! TR-S1・TR-T1・TR-P・TR-PE・TR-D は、該当する機能（`trace/features.json`）の backlog がすべて
-//! `done` なら誤り、そうでなければ警告とする（references/traceability.md#道具）。TR-K の印の不足は、登録の `backlog`（無ければ R 課題の機能）が
-//! すべて `done` なら誤り、そうでなければ警告とする（references/lean/trace-attributes.md#ギャップの登録簿）。それ以外は常に誤り。
+//! `done` なら誤り、そうでなければ警告とする（references/docs/traceability.md#道具）。TR-K の印の不足は、登録の `backlog`（無ければ R 課題の機能）が
+//! すべて `done` なら誤り、そうでなければ警告とする（references/docs/lean/trace-attributes.md#ギャップの登録簿）。それ以外は常に誤り。
 
 use crate::docs::{Feature, Features};
 use crate::inventory::Inventory;
@@ -98,7 +98,7 @@ pub fn is_version_kind(k: &str) -> bool {
     k == "dep" || k == "lang"
 }
 
-/// `lang:<言語>#…` / `dep:<座標>#…` の宣言された版の文字列（`<名前>-<版>`。references/traceability.md#道具）。
+/// `lang:<言語>#…` / `dep:<座標>#…` の宣言された版の文字列（`<名前>-<版>`。references/docs/traceability.md#道具）。
 pub fn declared_version(decl: &Value, loc: &str) -> Option<String> {
     let (kind, rest) = loc.split_once(':')?;
     let key = rest.split('#').next().unwrap_or(rest);

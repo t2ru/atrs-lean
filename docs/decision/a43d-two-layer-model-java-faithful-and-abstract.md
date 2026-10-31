@@ -60,7 +60,7 @@ Chosen option: "二層モデル", because 原典互換と言語中立性を両�
   1. **一致定理**: 前提（例: シードデータのマスタ制約、値域）の下で `α(Source(x)) = Spec(α(x))`。
   2. **差異の特徴付け**: 一般入力での差の向きと大きさ（例: [Source] の運賃 ≤ [Spec] の運賃、差は 100 円以下）。
   3. **安全性**: 前提の下で [Source] に int32 オーバーフローや前提違反が起きないこと。
-* 仕様の各定義は [Spec]/[Source] を併記し、差異には `D-NNN` の ID を付ける（[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md)）。
+* 仕様の各定義は [Spec]/[Source] を併記し、差異には `D-NNN` の ID を付ける（[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/docs/spec-documents.md)）。
 
 ### Consequences
 

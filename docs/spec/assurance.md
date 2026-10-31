@@ -19,7 +19,7 @@ generated:
   - 新しい手段を採用したとき
   - 手段の対象外を作ったとき（ハーネスの対象外、Kani の境界、ベクタに無い入力の範囲、`#[verifier::external]` など）
 - 人や LLM のレビューは、ここでは手段として数えない（補助にとどまる）。
-- 手段の一般的な説明は、スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/verification.md) と各言語パックの `verification.md` による。
+- 手段の一般的な説明は、スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/docs/verification.md) と各言語パックの `verification.md` による。
 - 「（付録に記入）」とある行は、詳細な範囲を付録の表に記入する。記入する backlog 項目を付録に示す。
 
 ## 移植元ソース ⇔ SourceModel
@@ -59,7 +59,7 @@ generated:
 | 活性（`Conflict`・I/O 失敗を返さないこと） | ベクタと結合テストで、失敗が出ないことを確かめる | 常に失敗を返す実装もリファインメントになる（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md#活性の限界)）。テストしていない状況での失敗の頻度 | — |
 | HTTP の規範節（セッション・Cookie・CSRF・トランザクショントークン・Basic 認証・エラー画面） | HTTP レベルのベクタ（SRC-006） | ベクタの入力の外 | 採用した Web フレームワーク |
 | 禁止 API（`std::time`・浮動小数点型など） | clippy の `disallowed-methods` / `disallowed-types`（SRC-009） | 一覧に載っていない API | clippy |
-| `LangSemantics.Rust` | rustc でビルドした実行結果との突き合わせ（[backlog a936](../backlog/a936-lang-semantics-rust.md)） | 突き合わせた入力の範囲の外 | rustc |
+| `LangSemantics.Rust` | rustc でビルドした実行結果との突き合わせ（[backlog a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md)） | 突き合わせた入力の範囲の外 | rustc |
 | パスワードの照合 | インメモリの参照実装は契約を厳密に満たす（Verus） | 本番のハッシュ関数の衝突 | 採用したハッシュ関数の衝突困難性 |
 | Verus の `assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` | 使わない（CI で数える） | （現在なし。使う場合は [refinement.md](refinement.md#未証明の前提) とここに列挙する） | — |
 
@@ -76,7 +76,7 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)） |
+| `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
 | R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、port-lang の `scripts/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/TraceTest/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
@@ -112,7 +112,7 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| インベントリと本文ハッシュ | `trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)） |
+| インベントリと本文ハッシュ | `trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)） |
 | Lean の Merkle ハッシュ | `lake exe trace-dump`。同じ層と、依存する `LangSemantics`・`Machine` の定数を合成する | Lean の `Expr` のハッシュ |
 | TR 検査と検査済みハッシュの更新 | `trace check`・`trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | port-lang の `scripts/trace` |
 
@@ -136,4 +136,4 @@ generated:
 | SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ。マスタの文（区間・便マスタ・搭乗クラス・運賃種別・ピーク時期の `findAll` と、コードリストの SQL 4 つ）は、シードの DB（投入日 2026-11-01）だけで照合した（パラメータ無し。NULL・同順位の行は含まない。`conformance/sql/master-data.json`） | [25f7](../backlog/25f7-fare-calculation-both-models.md)、[0be7](../backlog/0be7-flight-search-usecase.md)、[aedf](../backlog/aedf-reservation-usecase.md)、[4e0e](../backlog/4e0e-member-usecases-and-input-validation.md)、[c7e8](../backlog/c7e8-lang-semantics-sql.md)、[9c04](../backlog/9c04-rust-external-adapters.md) |
 | Kani のハーネス（ハーネスごと） | `kani::any()` の範囲、ループの展開数、保証しないこと | [4b0e](../backlog/4b0e-in-memory-adapters-and-seed-data.md)、[a89e](../backlog/a89e-http-contract-adapter.md) |
 | オラクルのハーネスの対象外 | 固定できない操作、差し替えた構成 | [f18c](../backlog/f18c-java-oracle-harness.md) |
-| 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [a8be](../backlog/a8be-lang-semantics-java.md)、[c7e8](../backlog/c7e8-lang-semantics-sql.md)、[a936](../backlog/a936-lang-semantics-rust.md) |
+| 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [a8be](../backlog/a8be-lang-semantics-java.md)、[c7e8](../backlog/c7e8-lang-semantics-sql.md)、[a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) |

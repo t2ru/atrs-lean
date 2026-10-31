@@ -4,7 +4,7 @@
 #
 # - 環境変数 PGHOST が設定されていれば、そのサーバを使う（CI はサービスコンテナ）。
 # - 無ければ、一時クラスタを作って起動する。設定は port-lang の
-#   references/sql/dialects/postgresql/harness.md に従う（initdb --locale=C --encoding=UTF8、TimeZone=UTC）。
+#   references/docs/sql/dialects/postgresql/harness.md に従う（initdb --locale=C --encoding=UTF8、TimeZone=UTC）。
 #   root で実行した場合は postgres ユーザで起動する。
 set -euo pipefail
 

@@ -31,7 +31,7 @@ pub struct Dump {
     #[allow(dead_code)]
     pub lean_version: String,
     pub definitions: Vec<Def>,
-    /// ギャップの登録簿（`@[gap_entry]`。references/lean/trace-attributes.md#ギャップの登録簿）
+    /// ギャップの登録簿（`@[gap_entry]`。references/docs/lean/trace-attributes.md#ギャップの登録簿）
     #[serde(default)]
     pub gaps: Vec<Gap>,
 }
@@ -143,7 +143,7 @@ pub fn load<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, String> {
     serde_json::from_str(&s).map_err(|e| format!("{}: {e}", path.display()))
 }
 
-/// `"<locator>@<hash>"` を最後の `@` で分ける（references/traceability.md#道具）。
+/// `"<locator>@<hash>"` を最後の `@` で分ける（references/docs/traceability.md#道具）。
 pub fn split_hash(s: &str) -> (&str, &str) {
     match s.rfind('@') {
         Some(i) => (&s[..i], &s[i + 1..]),

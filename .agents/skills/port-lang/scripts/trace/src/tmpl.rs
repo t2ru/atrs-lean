@@ -1,4 +1,4 @@
-//! Thymeleaf のテンプレートのインベントリ（`tmpl:`）。references/traceability.md#道具 による。
+//! Thymeleaf のテンプレートのインベントリ（`tmpl:`）。references/docs/traceability.md#道具 による。
 //!
 //! - 単位: `th:*` 属性を持つ要素。
 //! - ロケータ: `tmpl:<WEB-INF/views/ からのパス>#<id>`、`id` が無ければ

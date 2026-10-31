@@ -87,7 +87,7 @@ generated:
    - 会員が存在しなければ `Business("e.ar.b2.2005", [pos])`。
    - `familyName = member.kanaFamilyName ∧ givenName = member.kanaGivenName ∧ gender = member.gender` でなければ `Business("e.ar.b2.2006", [pos])`。
 
-文字列比較はスカラ値の完全一致（[port-lang/portability.md](../../.agents/skills/port-lang/references/portability.md#文字列)）。
+文字列比較はスカラ値の完全一致（[port-lang/portability.md](../../.agents/skills/port-lang/references/docs/portability.md#文字列)）。
 
 出典: `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)` ほか
 

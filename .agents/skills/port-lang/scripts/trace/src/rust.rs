@@ -1,4 +1,4 @@
-//! Rust のインベントリ（`rust:`）と `/// trace: models` の札。rust/locators.md と references/traceability.md#道具 による。
+//! Rust のインベントリ（`rust:`）と `/// trace: models` の札。rust/locators.md と references/docs/traceability.md#道具 による。
 //!
 //! - 単位: `pub` の関数・メソッド・型・定数・トレイト。ロケータは `rust:<crate>::<モジュール>::<名前>`、
 //!   メソッドは `<型>::<名前>`、トレイトの実装は `<<型> as <トレイト>>::<名前>`。
