@@ -34,6 +34,9 @@ python3 -I "$scripts/ci/check_lean.py" --self-test
 step "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
 python3 -I "$scripts/ci/check_lean.py"
 
+step "static: Lean の名前の改名の道具の自己テスト"
+python3 -I "$scripts/lean/rename.py" --self-test
+
 step "static: 証明義務と文書の突き合わせの自己テスト（違反例を検出できること）"
 python3 -I "$scripts/ci/check_obligations.py" --self-test
 
@@ -52,8 +55,11 @@ skippable tools/ci/master_sql.sh
 step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 Test.LangSemantics・Test.Machine・Test.Trace）"
 (cd "$skill/assets/lean" && lake build)
 
-step "assets/lean: trace-test（trace-dump・obligation-check の処理をフィクスチャにかける）"
+step "assets/lean: trace-test（trace-dump・obligation-check・layout-check の処理をフィクスチャにかける）"
 (cd "$skill/assets/lean" && lake exe trace-test)
+
+step "assets/lean: layout-check（宣言がモジュール名の下にあること。NS-1）"
+(cd "$skill/assets/lean" && lake exe layout-check)
 
 step "lean: lake build"
 (cd lean && lake build)
@@ -63,6 +69,9 @@ step "lean: lake test"
 
 step "lean: 公理の検査"
 (cd lean && lake exe axiom-check)
+
+step "lean: layout-check（宣言がモジュール名の下にあること。NS-1）"
+(cd lean && lake exe layout-check)
 
 out="$(mktemp)"
 ob="$(mktemp)"
@@ -88,7 +97,7 @@ step "trace: インベントリ・manifest・traceability.md の生成区画が�
 "$trace" inventory target --check
 "$trace" manifest --dump "$out" --obligations "$ob" --check
 
-step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R、TR-G・TR-N）"
+step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L、TR-G・TR-N）"
 "$trace" check --dump "$out" --obligations "$ob"
 
 step "workspace: ルートで lake setup-file（Lean LSP 用）"

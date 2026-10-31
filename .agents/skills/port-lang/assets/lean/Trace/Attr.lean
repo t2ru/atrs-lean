@@ -19,6 +19,7 @@ import Lean
 | `@[env_pre "<ID>"]` | 入口の機械の環境の前提（マスタ・設定の妥当性と入力の値域） | `MD-N` など |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
+| `@[ns_exception "<理由>"]` | モジュール名の下に置けない宣言（`layout-check` の例外 E3。`Trace.Layout`） | 技術的な必要性 |
 
 ギャップの登録の宣言 `@[gap_entry]`（引数なし。値は型 `Trace.Gap`）は `Trace.Gap` にある。
 -/
@@ -49,6 +50,8 @@ syntax (name := env_pre) "env_pre" ppSpace str (atomic(", " str))* : attr
 syntax (name := spec_doc) "spec_doc" ppSpace str (atomic(", " str))* : attr
 /-- `@[no_source "<理由>"]` -/
 syntax (name := no_source) "no_source" ppSpace str (atomic(", " str))* : attr
+/-- `@[ns_exception "<理由>"]` -/
+syntax (name := ns_exception) "ns_exception" ppSpace str (atomic(", " str))* : attr
 
 /-- 構文木に現れる文字列リテラルを、現れる順に集める。 -/
 partial def collectStrLits (stx : Syntax) : Array Syntax :=
@@ -101,6 +104,9 @@ initialize specDocAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.specDocAttr
 initialize noSourceAttr : ParametricAttribute (Array String) ←
   registerTraceAttr `no_source "移植元に対応が無い理由" `Trace.noSourceAttr
+/-- `layout-check` の例外（E3）。`trace-dump` の属性には含めない（追跡の対象ではないため）。 -/
+initialize nsExceptionAttr : ParametricAttribute (Array String) ←
+  registerTraceAttr `ns_exception "モジュール名の下に置けない理由" `Trace.nsExceptionAttr
 
 /-- 追跡属性の一覧（JSON のキー名と属性）。キー名は属性名と同じ。 -/
 def traceAttrs : List (String × ParametricAttribute (Array String)) :=

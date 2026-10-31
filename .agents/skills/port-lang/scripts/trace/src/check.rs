@@ -348,6 +348,45 @@ pub fn run(inp: &Input) -> Vec<Finding> {
         }
     }
 
+    // ---- TR-L: 証明課題の配置（references/docs/lang/lean/rules.md#証明課題の配置） ----
+    // TR-L1: R 課題と W 課題の必要性の定理は、機能の名前空間（features.json の lean）に直接置く
+    // TR-L2: 機能のモジュールには、@[obligation] の定理と、R 課題の名前で始まる付帯の義務だけを置く
+    let proof_layers = ["Abstraction", "Refinement"];
+    let in_proof_layer = |n: &str| proof_layers.iter().any(|l| n.starts_with(&format!("{l}.")));
+    let parent = |n: &str| n.rsplit_once('.').map(|(p, _)| p.to_string()).unwrap_or_default();
+    let mut placed: Vec<(String, &str)> = vec![];
+    for r in &inp.obligations.refinements {
+        placed.push((r.name.clone(), "R task"));
+        for w in &r.necessity {
+            placed.push((w.clone(), "W task (necessity)"));
+        }
+    }
+    for (n, what) in &placed {
+        if !in_proof_layer(n) {
+            continue;
+        }
+        let Some(f) = inp.features.of_lean(n) else { continue };
+        let ns = parent(n);
+        if !f.lean.contains(&ns) {
+            out.err("TR-L1", format!("{n}: the {what} must be directly in a feature namespace of {} ({}), not in {ns}", f.name, f.lean.join(", ")));
+        }
+    }
+    let obligation_names: BTreeSet<&str> = inp.obligations.obligations.iter().map(|o| o.name.as_str()).collect();
+    let r_names_all: Vec<&str> = inp.obligations.refinements.iter().map(|r| r.name.as_str()).collect();
+    for d in &inp.dump.definitions {
+        if !proof_layers.contains(&d.layer.as_str()) {
+            continue;
+        }
+        let Some(f) = inp.features.of_lean(&d.module) else { continue };
+        if !f.lean.contains(&d.module) {
+            continue;
+        }
+        let companion = r_names_all.iter().any(|r| parent(r) == d.module && d.name.starts_with(&format!("{r}_")));
+        if !obligation_names.contains(d.name.as_str()) && !companion {
+            out.err("TR-L2", format!("{}: the feature module {} holds only @[obligation] theorems and companions of its R tasks (<R>_initSurj …); move it to a submodule", d.name, d.module));
+        }
+    }
+
     // ---- TR-G（obligation-check の誤り） ----
     for e in &inp.obligations.errors {
         out.err("TR-G", e.clone());
@@ -497,6 +536,38 @@ mod tests {
     }
 
     #[test]
+    fn tr_l_obligation_placement() {
+        use crate::lean::{Obligation, Refinement};
+        let modl = |mut d: Def, m: &str| { d.module = m.into(); d };
+        let defs = vec![
+            modl(def("Abstraction.Fare.fareRefines", "Abstraction", &[("obligation", &["ABS-001"])], &[]), "Abstraction.Fare"),
+            modl(def("Abstraction.Fare.fareRefines_initSurj", "Abstraction", &[], &[]), "Abstraction.Fare"),
+            modl(def("Abstraction.Fare.need_D001", "Abstraction", &[("obligation", &["ABS-101"])], &[]), "Abstraction.Fare"),
+            // 違反（TR-L2）: 機能のモジュールの補題
+            modl(def("Abstraction.Fare.helper", "Abstraction", &[], &[]), "Abstraction.Fare"),
+            // 合格: 下位のモジュールの補題
+            modl(def("Abstraction.Fare.Alpha.aiF", "Abstraction", &[], &[]), "Abstraction.Fare.Alpha"),
+            // 違反（TR-L1）: 下位の名前空間の R 課題
+            modl(def("Abstraction.Fare.Total.totalRefines", "Abstraction", &[("obligation", &["ABS-031"])], &[]), "Abstraction.Fare.Total"),
+        ];
+        let ob = |n: &str, id: &str, r: bool| Obligation { name: n.into(), ids: vec![id.into()], refines: r };
+        let obl = Obligations {
+            refinements: vec![
+                Refinement { name: "Abstraction.Fare.fareRefines".into(), necessity: vec!["Abstraction.Fare.need_D001".into()], ..Default::default() },
+                Refinement { name: "Abstraction.Fare.Total.totalRefines".into(), ..Default::default() },
+            ],
+            obligations: vec![ob("Abstraction.Fare.fareRefines", "ABS-001", true), ob("Abstraction.Fare.need_D001", "ABS-101", false),
+                ob("Abstraction.Fare.Total.totalRefines", "ABS-031", true)],
+            errors: vec![],
+        };
+        let fs = run_with(defs, obl, inv(&[]), &feats(true), vec![], &[]);
+        let l: Vec<&Finding> = fs.iter().filter(|f| f.rule.starts_with("TR-L")).collect();
+        assert!(l.iter().any(|f| f.error && f.rule == "TR-L1" && f.msg.starts_with("Abstraction.Fare.Total.totalRefines")), "{l:?}");
+        assert!(l.iter().any(|f| f.error && f.rule == "TR-L2" && f.msg.starts_with("Abstraction.Fare.helper")), "{l:?}");
+        assert_eq!(l.len(), 2, "{l:?}");
+    }
+
+    #[test]
     fn tr_x_java_locator_in_target_model() {
         let defs = vec![def("TargetModel.Fare.f", "TargetModel", &[("target", &["java:a.Fare#f()@00"])], &[])];
         let fs = run_with(defs, Obligations::default(), inv(&[]), &feats(false), vec![], &[]);
@@ -533,7 +604,7 @@ mod tests {
     fn tr_d_missing_deviation_and_anonymous_hypothesis() {
         let devs = vec![gap("D-001", "pre", &["ABS-001"], Some("ABS-101"))];
         let obl = Obligations {
-            refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-001".into()], deviations: vec![], observations: vec![],
+            refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-001".into()], deviations: vec![], observations: vec![], necessity: vec![],
                 errors: vec!["G1: the type has hypotheses (∀); state deviations with restrict".into()] }],
             ..Default::default()
         };
@@ -580,7 +651,7 @@ mod tests {
         d3.backlog = vec!["00000000-0000-4000-8000-000000000099".into()];
         let obl = Obligations {
             refinements: vec![crate::lean::Refinement { name: "Abstraction.Fare.r".into(), ids: vec!["ABS-031".into()],
-                deviations: vec!["Abstraction.Fare.dev_D005".into()], observations: vec![], errors: vec![] }],
+                deviations: vec!["Abstraction.Fare.dev_D005".into()], observations: vec![], necessity: vec![], errors: vec![] }],
             ..Default::default()
         };
         let gaps = vec![d1.clone(), d13, d5, d3];

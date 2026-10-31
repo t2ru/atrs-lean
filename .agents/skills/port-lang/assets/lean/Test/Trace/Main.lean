@@ -1,7 +1,9 @@
 import Trace.Dump
 import Trace.Obligation
 import Trace.Gap
+import Trace.Layout
 import Test.Trace
+import Test.Trace.LayoutFixture
 
 /-!
 # Test.Trace.Main
@@ -230,8 +232,25 @@ def obligationTests (env : Environment) : IO Unit := do
     ((r.gaps.getArr?.toOption.map (·.size)) == some 19)
   check "env_pre listed" (r.envPres.map (·.1) == #[`Test.Trace.ObFix.Spec.envNoNeed, `Test.Trace.ObFix.Spec.envOk])
 
+/-- `layout-check` の判定を、フィクスチャ `Test.Trace.LayoutFixture` と assets の実際の定数で確かめる。 -/
+def layoutTests (env : Environment) : IO Unit := do
+  IO.println "layout-check (Test.Trace.LayoutFixture)"
+  let r := Trace.Layout.check env [`Test.Trace.LayoutFixture]
+  let vs := r.violations.map (·.name)
+  check "NS-1: declarations under the module pass" (!vs.contains `Test.Trace.LayoutFixture.ok &&
+    !vs.contains `Test.Trace.LayoutFixture.Box && !vs.contains `Test.Trace.LayoutFixture.Box.get)
+  check "NS-1: a declaration in the parent namespace is a violation" (vs.contains `Test.Trace.layoutStray)
+  check "NS-1: a declaration at the root is a violation" (vs.contains `layoutRootStray)
+  check "E3: @[ns_exception] is listed as an exception, not a violation"
+    (!vs.contains `Test.Trace.layoutExempt && r.exceptions.any (·.name == `Test.Trace.layoutExempt))
+  check "violations: exactly 2" (vs.size == 2)
+  check "E2: main at the root passes" (Trace.Layout.placedOk env `Test.Trace.LayoutFixture `main)
+  check "NS-1: a name outside the module fails" (!Trace.Layout.placedOk env `Test.Trace.LayoutFixture `Test.Trace.x)
+
 unsafe def main : IO UInt32 := do
   merkleTests
+  let env ← loadEnv #[`Test.Trace.LayoutFixture]
+  layoutTests env
   let env ← loadEnv #[`Test.Trace.Fixture]
   fixtureTests env
   let env ← loadEnv #[`Test.Trace.ObligationFixture]

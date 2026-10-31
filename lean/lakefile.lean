@@ -50,6 +50,11 @@ require langSemantics from "../.agents/skills/port-lang/assets/lean"
   root := `Tools.ObligationCheck
   supportInterpreter := true
 
+/-- 全宣言がモジュール名の下にあることの検査（port-lang の `Trace.Layout`）。 -/
+@[default_target] lean_exe «layout-check» where
+  root := `Tools.LayoutCheck
+  supportInterpreter := true
+
 /-- `lake test` のドライバ。 -/
 @[default_target] lean_exe tests where
   root := `Tests.Main
