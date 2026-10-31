@@ -18,6 +18,34 @@ generated:
 [Source]（`SourceModel`）と [Spec]（`Spec`）の関係を定める。関係は B メソッドのリファインメントである。具体機械 `SourceModel` が、抽象機械 `Spec` をリファインする（[ADR c336](../decision/c336-foundational-principles.md), [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)）。
 Lean では、名前空間 `Abstraction` に、課題 ID を `@[obligation]` に持つ定理として証明する。
 
+## トップレベルの主定理
+
+`lean/Abstraction.lean` のトップレベルに、実装済みの範囲の [Source] と [Spec] の関係を置く（[ADR a41d](../decision/a41d-top-level-refines-adequate-and-source-side-gate.md)）。
+
+```lean
+theorem Abstraction.refines :
+    Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue
+theorem Abstraction.adequate :
+    Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+```
+
+- `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。
+- `dev`・`devC`・`glue`・`env` は、R 課題ごとの前提型の差異・貼り合わせ・環境の前提を並置したもの。
+- `Machine.Adequate` は、`Refines` と空虚化を防ぐ義務の束である。
+  - 義務: `Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`、環境の前提を置かないかその必要性。
+  - 系: 初期状態からの複数歩の模倣（`run_init`）、[Source] の正常終了が実在すること（`exists_ok`）。
+- 主定理は、R 課題ごとの束（下の表）を並置して示す。機能を取り込んだら、その R 課題の束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
+
+| R 課題 | 機能 | 束（`Machine.Adequate`。同じ課題 ID の `@[obligation]`） | 環境の前提 |
+| --- | --- | --- | --- |
+| ABS-026 | マスタ・設定・コードリストの読み込み | `Abstraction.MasterData.queryAdequate` | `envMQ`: `masterConfigOk` と問い合わせの値域 |
+| ABS-001 | 基本運賃 | `Abstraction.Fare.basicFareAdequate` | `envBF`: `masterConfigOk`、`routeBasicFare + extraCharge` の値域、`dev_D001` |
+| ABS-002 | 運賃 | `Abstraction.Fare.fareAdequate` | `envF`: 基本運賃と割引率の値域、`dev_D002` |
+| ABS-004 | 合計金額 | `Abstraction.Fare.totalFareAdequate` | `envTF`: `masterConfigOk`、入力の値域、`dev_D001T`・`dev_D002T`・`dev_D012` |
+
+あわせて、R 課題ごとの 1 歩の可換式（`queryCommutes`・`basicFareCommutes`・`fareCommutes`・`totalFareCommutes`）を示す。
+内容は、環境の前提の下で [Source] のどの結果も正常終了で、出力の像が [Spec] の出力に等しい、というものである。
+
 ## リファインメントの形
 
 機能ごとに、次を与える。
@@ -42,6 +70,8 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
                 (SourceModel.<機能>.machine.restrict dev_DMMM …)
                 (Machine.Glue.ofStd β Ic aᵢ aₒ obs_J obs_O)
 ```
+
+R 課題ごとに、主定理と同じ機械・貼り合わせについて義務の束 `Machine.Adequate` を、同じ課題 ID の `@[obligation]` で示す（obligation-check の GA、`check_obligations.py` の OB-A）。
 
 主定理が前提として持ってよいのは、次の 3 つだけである（TR-D・TR-G で検査する）。前提型の差異の述語は、∀ の仮定ではなく `restrict` で機械の中に置く。
 
@@ -217,7 +247,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 種類は次の 4 つである（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
-- R: リファインメントの主定理と、その付帯の義務（`InitSurj`、基底が `Machine.ofChoice` なら `Pinned`、出力のみの差異の `StateSafe`）。付帯の義務は同じ課題 ID に含める
+- R: リファインメントの主定理と、その付帯の義務（`InitSurj`、基底が `Machine.ofChoice` なら `Pinned`、出力のみの差異の `StateSafe`）、義務の束（`Machine.Adequate`）。付帯の義務と束は同じ課題 ID に含める
 - W: 差異の証拠（両向きの例と、差異の必要性）
 - C: 差異の特徴付け
 - L: 補題

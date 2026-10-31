@@ -50,6 +50,7 @@ generated:
 | c27d | [ギャップの証明の状態を Lean で表す](c27d-gap-evidence-states.md) | done | [38fb](38fb-move-generic-elements-to-skill.md) |
 | 38fb | [アプリに依存しない道具・Lean のライブラリ・方法をスキルへ移す](38fb-move-generic-elements-to-skill.md) | done | [114a](114a-gap-attributes-and-trace-in-skill.md) |
 | 114a | [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](114a-gap-attributes-and-trace-in-skill.md) | done | [ffdc](ffdc-trace-tooling.md), [ae04](ae04-component-necessity-witness.md) |
+| 76a6 | [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](76a6-source-side-adequacy-gate.md) | done | [25f7](25f7-fare-calculation-both-models.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 
 ## 推奨する着手順
 
@@ -58,7 +59,7 @@ generated:
 455f → ffdc ┐
 be49 ┬ a8be, c7e8 ─────────┐
      ├ 1ae4*（Machine）─ f7b7 ─ ae04 ┤
-     ├ 591d ─ 25f7 ─ bbcc  ├─ a8ef ─ eff6 ─ ddb4（Rust）
+     ├ 591d ─ 25f7 ─ bbcc ─ 76a6 ├─ a8ef ─ eff6 ─ ddb4（Rust）
      ├ a936* ─ d77c（生成器）┘
      └ ddbd（← a49c*）
 fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可

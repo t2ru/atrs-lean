@@ -29,4 +29,28 @@ import Spec.EnvPre
 | `Spec.CodeList` | コードリスト |
 | `Spec.MasterQuery` | マスタ・設定・コードリストの参照の抽象機械（SPEC 課題、ABS-026 の抽象側） |
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
+
+トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`）である。
+`Abstraction` の主定理 `Abstraction.refines`・`Abstraction.adequate` の抽象側になる。入口の機械（HTTP の画面・API、
+レポート要求の受信）ができたら、それを並置に加える。
 -/
+
+namespace Spec
+
+/-- トップレベルの抽象機械の状態（各機能の状態の積）。 -/
+abbrev State := Unit × Unit × Unit × Unit
+
+/-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額。 -/
+abbrev Input := (Config × MasterData × MasterData.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput
+
+/-- トップレベルの抽象機械の出力。 -/
+abbrev Output := MasterData.Answer ⊕ Nat ⊕ Nat ⊕ Nat
+
+/-- トップレベルの抽象機械: 実装済みの範囲の機能の機械を並置したもの。 -/
+def machine : Machine.Machine State Input Output :=
+  MasterData.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum Fare.totalFareMachine))
+
+/-- 初期状態（fixture の 1 点）。 -/
+def init : State := ((), (), (), ())
+
+end Spec

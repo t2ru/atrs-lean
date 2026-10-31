@@ -33,6 +33,9 @@ def date (d : PgDate) : JRef JLocalDate := some (JLocalDate.ofEpochDay d.val)
 def str {n : Nat} (s : Varchar n) : JRef String := some s.val
 
 /-- `Enum.valueOf(BoardingClassCd.class, s)`。 -/
+@[source "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()@3855e45998af62f8",
+  "java:jp.co.ntt.atrs.domain.model.BoardingClassCd.N@8ce86a6ae65d3692",
+  "java:jp.co.ntt.atrs.domain.model.BoardingClassCd.S@8de0b3c47f112c59"]
 def boardingClassCd (s : String) : JResult Spec.BoardingClassCd :=
   match s with
   | "N" => pure .N
@@ -40,6 +43,17 @@ def boardingClassCd (s : String) : JResult Spec.BoardingClassCd :=
   | _ => throw (.illegalArgument s!"No enum constant BoardingClassCd.{s}")
 
 /-- `Enum.valueOf(FareTypeCd.class, s)`。 -/
+@[source "java:jp.co.ntt.atrs.domain.model.FareTypeCd#getCode()@3855e45998af62f8",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.ED@4ef203daf77cede7",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.GD@884d5bff79c10dff",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.LD@ab31ea4ae5075371",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.OW@7e4b60f4d2ee743b",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.RD1@1cfb19d902ca71fd",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.RD7@5003a843107c47b7",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.RT@3165be96f5833ae0",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SOW@7b105823acf590f2",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRD@b111f3efc4632267",
+  "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRT@8a21220051bcc7d6"]
 def fareTypeCd (s : String) : JResult Spec.FareTypeCd :=
   match s with
   | "OW" => pure .OW | "RT" => pure .RT | "RD1" => pure .RD1 | "RD7" => pure .RD7 | "ED" => pure .ED
@@ -47,6 +61,8 @@ def fareTypeCd (s : String) : JResult Spec.FareTypeCd :=
   | _ => throw (.illegalArgument s!"No enum constant FareTypeCd.{s}")
 
 /-- `route-map`。`departureAirport.code` などの点つきの属性は、空港を作って値を入れる。 -/
+@[source "java:jp.co.ntt.atrs.config.app.mybatis.MybatisConfig#configuration()@81014029228aac4a",
+  "java:jp.co.ntt.atrs.config.app.AtrsInfraConfig#sqlSessionFactory(DataSource)@b1ab3854afd9d9e6"]
 def route (r : RouteResult) : Route :=
   { routeNo := int r.routeNo, basicFare := int r.basicFare,
     departureAirport := some { code := str r.depAirportCd, name := str r.depAirportName },

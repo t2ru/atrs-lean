@@ -4,7 +4,7 @@
 //! trace inventory source [--check]
 //! trace inventory target [--check]
 //! trace manifest --dump <trace-dump.json> --obligations <obligation-check.json> [--check]
-//! trace check --dump <trace-dump.json> --obligations <obligation-check.json>
+//! trace check --dump <trace-dump.json> --obligations <obligation-check.json> [--verbose [--feature <機能>] [--rule <TR-…>]]
 //! trace rehash --dump <trace-dump.json> [--dry-run]
 //! trace diff --old <file|git:REV> [--side source|target] [--json]
 //! trace impact --dump <trace-dump.json> --obligations <obligation-check.json> [--diff <file|git:REV>] [--json] [<起点>…]
@@ -394,6 +394,12 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     if !args.iter().any(|a| a == "--no-obligation-script") {
         findings.extend(obligation_script(repo, &obl_path)?);
     }
+    // --verbose の絞り込み（機能・規則。機能の取り込みで、未対応の一覧を機能ごとに見る）
+    let opt = |k: &str| args.iter().position(|a| a == k).and_then(|i| args.get(i + 1)).cloned();
+    let (only_feature, only_rule) = (opt("--feature"), opt("--rule"));
+    let shown = |f: &check::Finding| {
+        only_feature.as_ref().is_none_or(|x| &f.feature == x) && only_rule.as_ref().is_none_or(|x| f.rule == x)
+    };
     let errors: Vec<&check::Finding> = findings.iter().filter(|f| f.error).collect();
     for f in &errors {
         let feat = if f.feature.is_empty() { String::new() } else { format!("[{}] ", f.feature) };
@@ -402,7 +408,7 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     let mut groups: std::collections::BTreeMap<(&str, &str), usize> = std::collections::BTreeMap::new();
     for f in findings.iter().filter(|f| !f.error) {
         *groups.entry((f.rule, f.feature.as_str())).or_default() += 1;
-        if verbose {
+        if verbose && shown(f) {
             eprintln!("warning: {}: [{}] {}", f.rule, f.feature, f.msg);
         }
     }

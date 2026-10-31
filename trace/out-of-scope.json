@@ -20,6 +20,11 @@
       "path": "atrs-web/src/main/webapp/**",
       "reason": "Thymeleaf テンプレートの HTML 構造・CSS・JavaScript と静的資源。観測可能な振る舞いに影響する式は除く（tmpl: で追跡）",
       "decision": "docs/decision/84bf-porting-scope.md#decision-outcome（Thymeleaf テンプレートの HTML 構造・CSS・JavaScript）"
+    },
+    {
+      "path": "atrs-web/src/main/resources/commons-logging.properties",
+      "reason": "ログの実装の選択（commons-logging の LogFactory）",
+      "decision": "docs/decision/84bf-porting-scope.md#decision-outcome（ログ出力の文言・形式、アクセスログ、MDC）"
     }
   ]
 }

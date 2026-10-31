@@ -2,6 +2,11 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR ab9e](decision/ab9e-adequate-bundle-sum-and-side-staging.md) で、義務の束・機械の並置・側ごとの段階導入を決めた。スキルの版を 0.12 にした。
+  * `assets/lean/Machine/Adequacy.lean`: 義務の束 `Machine.Adequate` と系 `run_init`・`exists_ok`、`Refines.complete_fun`。`assets/lean/Machine/Sum.lean`（新設）: `Machine.sum`・`Concrete.sum`・`Glue.sum`・`sumPred`、`Refines.sum`・`Adequate.sum`・`Adequate.congrPre`。
+  * obligation-check（`assets/lean/Trace/Obligation.lean`）の GA と、G3' の並置。`scripts/ci/check_obligations.py` の OB-A（フィクスチャ `r-without-adequate`）。`scripts/trace` の側ごとの段階導入、TR-P の束の閉包、`check --verbose` の `--feature`・`--rule`。`scripts/docs/ids.py` の側ごとの作業項目。
+  * [architecture.md](spec/architecture.md#空虚化を防ぐ義務)（義務の束・トップレベルの主定理）、[traceability.md](spec/traceability.md#検査)（TR-P・TR-G・段階導入・`features.json`）を改めた。
+  * 来歴: ATRS の ADR a41d・backlog 76a6。
 * **Update**: 文書を性格ごとのディレクトリに分けた（[ADR 748c](decision/748c-skill-docs-category-directories.md)、[backlog 97a7](backlog/97a7-skill-docs-category-directories.md)）。スキルの版を 0.11 にした。
   * 方法の文書を `spec/`（[architecture.md](spec/architecture.md)・[portability.md](spec/portability.md)・[traceability.md](spec/traceability.md)・[conformance.md](spec/conformance.md)・[verification.md](spec/verification.md)。`type: Specification`）、`rules/`（[spec-documents.md](rules/spec-documents.md)・[maintenance.md](rules/maintenance.md)。`Guideline`）、`guide/`（[process.md](guide/process.md)・[workflow.md](guide/workflow.md)・[upgrade.md](guide/upgrade.md)・[adding-a-language.md](guide/adding-a-language.md)。`type: Guide`）に移した。
   * 言語パック `java/`・`sql/`・`rust/`・`lean/` を `lang/` の下に移した。ファイル名と中の構成は変えていない。

@@ -520,4 +520,51 @@ theorem obsNaN_needed : ¬ Refines half halfNaN (glueNum aoPartial) :=
 theorem specStrong_not_always : ¬ specStrong.TotalUnder always :=
   Machine.TotalUnder.not_always (A := specStrong) (s := 5) (i := 100) trivial (show ¬ (100 < 10) by decide)
 
+/-! ## 正例: 義務の束 `Machine.Adequate`（出力が関数で決まる機械） -/
+
+/-- 100 未満を半分にする（PRE は自明でない）。 -/
+def halfSmall : Machine.Machine Unit Nat Nat := Machine.pure (· < 100) (· / 2)
+
+/-- 正しい具体機械。 -/
+def halfC : Concrete Unit Nat Num Unit := Concrete.pure fun n => .ok (.num (n / 2))
+
+theorem halfC_refines : Refines halfSmall halfC (glueNum aoPartial) where
+  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+  input_total n _ := ⟨n, rfl⟩
+  applicable _ _ _ _ _ _ _ _ _ := ⟨⟨_, rfl⟩, fun _ h => by cases h⟩
+  correct _ _ n ia _ oc _ _ ha _ _ hs := by
+    simp only [glueNum, Glue.ofStd, Option.some.injEq] at ha; subst ha
+    simp only [halfC, Concrete.pure, Concrete.ofFun_step, Except.map, Except.ok.injEq, Prod.mk.injEq] at hs
+    obtain ⟨-, rfl⟩ := hs
+    exact ⟨(), n / 2, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl rfl⟩
+
+theorem halfC_adequate : Machine.Adequate halfSmall halfC (glueNum aoPartial) () (· < 100) where
+  refines := halfC_refines
+  sound := Machine.Machine.sound_pure _ _
+  initIs _ := ⟨fun _ => rfl, fun _ => trivial⟩
+  initSurj _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+  total _ _ _ h := h
+  envWitness := ⟨4, 4, trivial, rfl, by decide⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (A := halfSmall) (s := ()) (i := 100) trivial (show ¬ (100 < 100) by decide)
+
+/-- 束から得る非空虚性: 環境の前提を満たす入力で、具体側は正常終了し、抽象側の歩みで模倣される。 -/
+example : ∃ t ic ia t' oc s' oa, halfC.Init t ∧ halfC.Dom ic ∧ (glueNum aoPartial).αi ic ia ∧ ia < 100 ∧
+    halfC.step t ic (.ok (t', oc)) ∧ halfSmall.step () ia s' oa ∧ (glueNum aoPartial).J s' t' ∧
+    (glueNum aoPartial).αo oc oa :=
+  halfC_adequate.exists_ok
+
+/-- 出力の等式（`complete_fun`）: PRE の下で、具体側の結果はどれも正常終了で、出力の像は `n / 2`。 -/
+example (n : Nat) (h : n < 100) : ∀ r, halfC.step () n r → ∃ t' oc, r = .ok (t', oc) ∧
+    (∃ s', (glueNum aoPartial).J s' t') ∧ (glueNum aoPartial).αo oc (n / 2) :=
+  (halfC_refines.complete_fun (fun _ _ _ _ h => h) trivial (Or.inl ⟨rfl, trivial⟩) rfl h trivial).2
+
+/-- 初期状態からの複数歩の模倣（`run_init`）。 -/
+example {ics : List Nat} {ocs : List Num} (hr : halfC.Run () ics () ocs) (hin : ∀ n ∈ ics, n < 100) :
+    ∃ ias s' oas, Forall₂ (glueNum aoPartial).αi ics ias ∧ halfSmall.Run () ias s' oas ∧
+      Forall₂ (glueNum aoPartial).αo ocs oas :=
+  let ⟨ias, s', oas, hi, hr', _, _, ho⟩ := halfC_adequate.run_init trivial hr fun n hn =>
+    ⟨trivial, fun ia ha => by
+      simp only [glueNum, Glue.ofStd, Option.some.injEq] at ha; exact ha ▸ hin n hn⟩
+  ⟨ias, s', oas, hi, hr', ho⟩
+
 end Test.Machine.Adequacy

@@ -21,13 +21,38 @@ import Abstraction.Fare.Load
 import Abstraction.Fare.TotalAlpha
 import Abstraction.Fare.Loop
 import Abstraction.Fare.TotalFareRefines
+import Abstraction.Adequacy
 
 /-!
 # Abstraction
 
 抽象化証明課題（ABS-NNN）。`SourceModel` が `Spec` を B メソッドの意味でリファインすることを証明する。
 依存してよいもの: `SourceModel`, `Spec`, `LangSemantics.Core`, `LangSemantics.Java`, `LangSemantics.Sql`, `Machine`, `Trace`。
-汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.undefOrEq`）は、スキルの assets にある。
+汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.undefOrEq`・機械の並置 `Machine.Sum`）は、
+スキルの assets にある。
+
+## トップレベルの主定理（本ファイル）
+
+| 定理 | 内容 |
+| --- | --- |
+| `Abstraction.refines` | `Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue` |
+| `Abstraction.adequate` | `Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env` |
+
+- `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。
+- `dev`・`devC`・`glue`・`env` は、各機能の R 課題の前提型の差異・貼り合わせ・環境の前提を並置したもの。
+- 主定理は、R 課題ごとの義務の束（`Abstraction.Adequacy`）を `Machine.Adequate.sum` で並べて示す。
+  機能を取り込んだら、その R 課題の束を並置に加える。主定理が `lake build` で通り続けることが、取り込みの条件である。
+
+## R 課題（下の名前空間）
+
+| ID | 機能 | 主定理（`Machine.Refines`） | 義務の束（`Machine.Adequate`） |
+| --- | --- | --- | --- |
+| ABS-026 | マスタ・設定・コードリストの読み込み | `Abstraction.MasterData.queryRefines` | `Abstraction.MasterData.queryAdequate` |
+| ABS-001 | 基本運賃 | `Abstraction.Fare.basicFareRefines` | `Abstraction.Fare.basicFareAdequate` |
+| ABS-002 | 運賃 | `Abstraction.Fare.fareRefines` | `Abstraction.Fare.fareAdequate` |
+| ABS-004 | 合計金額 | `Abstraction.Fare.totalFareRefines` | `Abstraction.Fare.totalFareAdequate` |
+
+## モジュール
 
 | モジュール | 内容 |
 | --- | --- |
@@ -50,7 +75,42 @@ import Abstraction.Fare.TotalFareRefines
 | `Abstraction.Fare.Loop` | `for` 文（`forIn`）の和・計数、値域内の `int` の演算、`calculateBasicFare`・`calculateFare` の補題 |
 | `Abstraction.Fare.TotalFareRefines` | R 課題 ABS-004 `totalFareRefines`、L 課題 ABS-005 `runTotalFare_eq`、W 課題 ABS-112 `need_D012` |
 | `Abstraction.Fare.BasicFareRefines` | R 課題 ABS-001 `basicFareRefines`、L 課題 ABS-007 `runBasicFare_spec`、W 課題 ABS-101 `need_D001` |
+| `Abstraction.Adequacy` | R 課題ごとの義務の束 `Machine.Adequate`（`queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate`。同じ課題 ID の `@[obligation]`）、環境の前提 `env*`、1 歩の可換式 `*Commutes` |
 -/
 
 namespace Abstraction
+
+open Machine Abstraction.MasterData Abstraction.Fare
+
+/-- 抽象側の前提型の差異（各 R 課題の `restrict` の述語を並置したもの）。 -/
+def dev : Spec.Input → Prop :=
+  sumPred (fun _ => True) (sumPred dev_D001 (sumPred dev_D002 fun i => dev_D001T i ∧ dev_D002T i ∧ dev_D012 i))
+
+/-- 具体側の前提型の差異（D-027。各 R 課題の `Concrete.restrict` の述語を並置したもの）。 -/
+def devC : SourceModel.Input → Prop :=
+  sumPred dev_D027 (sumPred dev_D027BF (sumPred dev_D027F dev_D027TF))
+
+/-- 貼り合わせ（各 R 課題の標準の貼り合わせを並置したもの）。 -/
+def glue := glueMQ.sum (glueBF.sum (glueF.sum glueTF))
+
+/-- 環境の前提（各 R 課題の環境の前提を並置したもの）。 -/
+def env : Spec.Input → Prop := sumPred envMQ (sumPred envBF (sumPred envF envTF))
+
+/-- トップレベルの義務の束: 実装済みの範囲の [Source] は、差異の前提の下で [Spec] をリファインし、
+空虚化を防ぐ義務（`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提の必要性）を満たす。 -/
+theorem adequate :
+    Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env :=
+  (queryAdequate.sum (basicFareAdequate.sum (fareAdequate.sum totalFareAdequate))).congrPre rfl rfl rfl
+    (fun _ i => by
+      rcases i with i | i | i | i
+      · exact ⟨And.left, fun h => ⟨h, trivial⟩⟩
+      · exact Iff.rfl
+      · exact Iff.rfl
+      · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩)
+    rfl rfl (fun i => by rcases i with i | i | i | i <;> exact Iff.rfl)
+
+/-- トップレベルの主定理: 実装済みの範囲の [Source] は、差異の前提の下で [Spec] をリファインする。 -/
+theorem refines : Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue :=
+  adequate.refines
+
 end Abstraction

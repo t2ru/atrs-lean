@@ -33,6 +33,16 @@
         { "cwd": ".agents/skills/port-lang/assets/lean", "argv": ["lake", "build", "+Test.LangSemantics"] }
       ],
       "covers": { "names": ["LangSemantics.Sql.*"] }
+    },
+    {
+      "id": "seed-lean",
+      "description": "上流のシードから [Spec] のシードの値への変換（master_fixture.py・seed_lean.py の再生成との一致と、lake test のシードと PostgreSQL の照合）",
+      "steps": [
+        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/master_fixture.py", "--check"] },
+        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/seed_lean.py", "--check"] },
+        { "cwd": "lean", "argv": ["lake", "test"] }
+      ],
+      "covers": { "names": ["Spec.Seed.*"] }
     }
   ]
 }

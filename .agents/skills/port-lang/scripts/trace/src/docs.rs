@@ -110,11 +110,58 @@ pub fn backlog_states(repo: &Path) -> BTreeMap<String, String> {
     out
 }
 
+/// 層の側（段階導入の判定に使う。references/docs/spec/traceability.md#検査）。
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Side {
+    /// 移植元側（`SourceModel`・`Abstraction`、`source-inventory`、D-NNN）
+    Source,
+    /// 移植先側（`TargetModel`・`Refinement`、`target-inventory`、T-NNN）
+    Target,
+    /// 両側（入口からの到達 TR-PE など、機能の全体で判定する指摘）
+    Both,
+}
+
+/// 機能の作業項目。側ごとに分けて書く（`{"source": [...], "target": [...]}`）。リストだけなら両側に共通とする。
+#[derive(Deserialize, Clone, Debug)]
+#[serde(untagged)]
+pub enum Backlog {
+    Sides {
+        #[serde(default)]
+        source: Vec<String>,
+        #[serde(default)]
+        target: Vec<String>,
+    },
+    Common(Vec<String>),
+}
+
+impl Default for Backlog {
+    fn default() -> Self {
+        Backlog::Common(vec![])
+    }
+}
+
+impl Backlog {
+    /// 側の作業項目。
+    pub fn of(&self, side: Side) -> Vec<&String> {
+        match (self, side) {
+            (Backlog::Common(v), _) => v.iter().collect(),
+            (Backlog::Sides { source, .. }, Side::Source) => source.iter().collect(),
+            (Backlog::Sides { target, .. }, Side::Target) => target.iter().collect(),
+            (Backlog::Sides { source, target }, Side::Both) => source.iter().chain(target.iter()).collect(),
+        }
+    }
+
+    /// すべての作業項目。
+    pub fn all(&self) -> Vec<&String> {
+        self.of(Side::Both)
+    }
+}
+
 /// `trace/features.json` の 1 機能。
 #[derive(Deserialize, Clone, Debug)]
 pub struct Feature {
     pub name: String,
-    pub backlog: Vec<String>,
+    pub backlog: Backlog,
     #[serde(default)]
     pub lean: Vec<String>,
     #[serde(default)]
@@ -193,9 +240,10 @@ impl Features {
         self.list.iter().find(|f| f.tasks.iter().any(|t| t == id))
     }
 
-    /// 機能の backlog がすべて `done` か（そうなら指摘は誤り、でなければ警告）。
-    pub fn done(&self, f: &Feature) -> bool {
-        f.backlog.iter().all(|b| self.states.get(b).map(|s| s == "done").unwrap_or(false))
+    /// 機能の、ある側の backlog がすべて `done` か。側の項目が無ければ、完了していない（警告）とする。
+    pub fn done_side(&self, f: &Feature, side: Side) -> bool {
+        let bs = f.backlog.of(side);
+        !bs.is_empty() && bs.iter().all(|b| self.backlog_done(b))
     }
 
     /// backlog 項目が `done` か。
