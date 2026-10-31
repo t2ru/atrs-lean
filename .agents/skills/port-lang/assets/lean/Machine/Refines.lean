@@ -14,7 +14,7 @@ import Machine.Concrete
 
 - 抽象側の非決定性は、具体側で減らしてよい（`correct` は抽象側の結果を 1 つ示せばよい）。
 - 具体側の非決定性は、そのすべての分岐が `correct` で模倣されなければならない。具体側が抽象側より
-  大きな非決定性を持つと、`Refines` は成り立たない（`MachineTest.Nondet` の反例）。
+  大きな非決定性を持つと、`Refines` は成り立たない（`Test.Machine.Nondet` の反例）。
 - 差異は、前提型なら `Machine.restrict`・`Machine.restrictState`（抽象側の PRE を強める）と
   `Concrete.restrict`（具体側の入力を制限する）の述語として、観測型なら `Glue` の `J`・`αo` の
   名前付きの成分として現れる。述語・成分に `@[deviation]` を付けるのは利用側（`Abstraction`・`Refinement`）である。

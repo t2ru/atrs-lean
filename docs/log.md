@@ -2,6 +2,7 @@
 
 ## 2026-10-31
 
+* **Update**: [スキルの ADR c08b](../.agents/skills/port-lang/references/docs/decision/c08b-test-namespace-for-skill-asset-tests.md) で、スキルの assets の検査の名前空間を `XxxTest` から `Test.Xxx`（`Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`）に改めたのにあわせ、[spec/assurance.md](spec/assurance.md) のパス、`trace/checks.json` の検査の手順（`lake build +Test.LangSemantics`）、`tools/ci/lean.sh` の表示を改めた。ATRS の `Tests` は変えていない。スキルの版は 0.10。
 * **Creation**: [ADR 920d](decision/920d-docs-bundle-check-in-ci.md) で、`docs/` とスキルのバンドルを、スキルの道具 `okf_check.py`（[スキルの ADR 330e](../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)、[スキルの backlog a49c](../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md)）で検査し、`tools/ci/lean.sh` から実行するようにした。[backlog ddbd](backlog/ddbd-okf-bundle-lint.md) を完了した（`done`）。
   * ATRS の規則を `trace/project.json` の `okf` に置いた。スキルの版は 0.9。
   * 導入で見つかった違反を直した: [rules/README.md](rules/README.md) の `type` を `Overview` に、[index.md](index.md) の ADR f4e1・c108 の説明を frontmatter に合わせた。[backlog 0d1a](backlog/0d1a-mutation-testing-of-named-components.md)・[backlog c27d](backlog/c27d-gap-evidence-states.md) に `対象外` の節を補った。

@@ -3,7 +3,7 @@
 //   java JavaTable.java > ../JavaJvm.lean
 //
 // 固定の入力表について JVM で値を計算し、Lean の `#guard` 行として標準出力に書く。
-// 出力（LangSemanticsTest/JavaJvm.lean）はコミットし、CI で再生成して差分が無いことを確かめる。
+// 出力（Test/LangSemantics/JavaJvm.lean）はコミットし、CI で再生成して差分が無いことを確かめる。
 // 出力に JDK の版は含めない（対象の演算の結果は Java 17 以降で変わらない）。
 
 import java.io.PrintStream;
@@ -188,10 +188,10 @@ public class JavaTable {
         line("import LangSemantics.Java");
         line("");
         line("/-!");
-        line("# LangSemanticsTest.JavaJvm");
+        line("# Test.LangSemantics.JavaJvm");
         line("");
-        line("**生成物（手で編集しない）。** `LangSemanticsTest/jvm/JavaTable.java` が JVM で計算した値と、");
-        line("`LangSemantics.Java` の結果を突き合わせる。再生成: `java LangSemanticsTest/jvm/JavaTable.java > LangSemanticsTest/JavaJvm.lean`");
+        line("**生成物（手で編集しない）。** `Test/LangSemantics/jvm/JavaTable.java` が JVM で計算した値と、");
+        line("`LangSemantics.Java` の結果を突き合わせる。再生成: `java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean`");
         line("-/");
         line("");
         line("open LangSemantics.Java");

@@ -2,6 +2,9 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR c08b](decision/c08b-test-namespace-for-skill-asset-tests.md) で、`assets/lean` の検査 `LangSemanticsTest`・`MachineTest`・`ConformanceKitTest`・`TraceTest` を `Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`（ディレクトリ `assets/lean/Test/`）に改めた。Lake のライブラリを `Test` の 1 つにし、`scripts/ci/check_lean.py` が `Test` を `Tests` の層として扱うようにした。スキルの版を 0.10 にした。
+  * [lean/rules.md](lean/rules.md)・[architecture.md](architecture.md#層)・`SKILL.md`・`scripts/README.md`・言語パックの文書の名前とパスを改めた。
+  * 来歴: 適用先 ATRS のオーナーの依頼。
 * **Creation**: [ADR 330e](decision/330e-okf-bundle-check-tool.md) で、OKF のバンドルとリンクの検査の道具 `scripts/docs/okf_check.py` を置いた（[backlog a49c](backlog/a49c-okf-bundle-check-tool.md)）。スキルの版を 0.9 にした。
   * このバンドルの規則を `scripts/docs/profiles/port-lang.json` にした。違反例を `scripts/ci/fixtures/okf/` に置いた。
   * [maintenance.md](maintenance.md#バンドルの検査)（検査と YAML の部分集合）・[traceability.md](traceability.md#プロジェクトの設定)（設定の `okf`）・`scripts/README.md` を改めた。

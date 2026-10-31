@@ -1,13 +1,13 @@
 import Trace
 
 /-!
-# TraceTest.Fixture
+# Test.Trace.Fixture
 
-trace-dump のフィクスチャ。`TraceTest.Fixture.<層>` の下に、各層を模したダミー定義と全種類の追跡属性を置く。
-テストは、接頭辞 `TraceTest.Fixture` を除いた名前で層を決める。
+trace-dump のフィクスチャ。`Test.Trace.Fixture.<層>` の下に、各層を模したダミー定義と全種類の追跡属性を置く。
+テストは、接頭辞 `Test.Trace.Fixture` を除いた名前で層を決める。
 -/
 
-namespace TraceTest.Fixture
+namespace Test.Trace.Fixture
 
 namespace LangSemantics.Rust
 /-- 移植先の言語意味論を模す。 -/
@@ -71,4 +71,4 @@ def gT998 : Trace.Gap :=
     evidence := .excludedBy [] }
 end Refinement
 
-end TraceTest.Fixture
+end Test.Trace.Fixture
