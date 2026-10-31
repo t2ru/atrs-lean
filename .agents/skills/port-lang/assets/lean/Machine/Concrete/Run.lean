@@ -1,9 +1,9 @@
 import Machine.Concrete
 
 /-!
-# Machine.Concrete.Adequacy
+# Machine.Concrete.Run
 
-具体機械の正常終了の列 `Concrete.Run`（`Refines.run` が使う。references/docs/spec/architecture.md#空虚化を防ぐ義務）。
+具体機械の正常終了の列 `Concrete.Run`（複数歩の模倣 `Machine.Abstracts.run` が使う。references/docs/spec/architecture.md#空虚化を防ぐ義務）。
 -/
 
 namespace Machine

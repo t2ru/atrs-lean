@@ -1,21 +1,22 @@
 import Trace
 import Machine
-import Test.Machine.Adequacy
+import Test.Machine.Preserves
 
 /-!
 # Test.Trace.ObligationFixture
 
 `obligation-check`（`Trace.Obligation`）のフィクスチャ。`Test.Trace.ObligationFixture.<層>` の下に、規則をすべて満たす R 課題と、
 規則ごとの違反例を置く（テストは接頭辞 `Test.Trace.ObligationFixture` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
-作られた迂回（references/docs/spec/architecture.md#空虚化を防ぐ義務 の「実装後の敵対的レビュー」）を含める。証明は `Test.Machine.Adequacy` の定理を定義の展開で使い回す。
+作られた迂回（references/docs/spec/architecture.md#空虚化を防ぐ義務 の「実装後の敵対的レビュー」）を含める。証明は `Test.Machine.Preserves` の定理を定義の展開で使い回す。
 
 期待する判定は `Test/Trace/Main.lean` の `obligationTests` に書く。
 -/
 
 open Machine
-open Test.Machine.Adequacy (Out Req Num)
+open Test.Machine.Preserves (Out Req Num)
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -25,14 +26,14 @@ namespace Test.Trace.ObligationFixture.Spec
 /-- 結果の全体（自由な選択として吸収に使う。誤り）。 -/
 @[nondet "N-902"] abbrev AnyResult : Type := Nat × Out
 
-/-- 結果（`Test.Machine.Adequacy.fRes` と同じ）。 -/
-def fRes (s n : Nat) (c : Conflict × Unit) : Nat × Out := Test.Machine.Adequacy.fRes s n c
+/-- 結果（`Test.Machine.Preserves.fRes` と同じ）。 -/
+def fRes (s n : Nat) (c : Conflict × Unit) : Nat × Out := Test.Machine.Preserves.fRes s n c
 
 /-- 抽象機械。 -/
 def spec : Machine.Machine Nat Nat Out :=
   Machine.ofChoice (fun _ => True) (· = 5) (fun _ _ => True) fRes false ()
 
-theorem spec_sound : spec.Sound := Test.Machine.Adequacy.spec_sound
+theorem spec_sound : spec.Sound := Test.Machine.Preserves.spec_sound
 theorem spec_initIs : spec.InitIs 5 := fun _ => Iff.rfl
 
 /-- 環境の前提。 -/
@@ -44,7 +45,7 @@ theorem envOk_nontrivial : Nontrivial envOk :=
 theorem spec_total : spec.TotalUnder always := fun _ _ _ _ => trivial
 
 /-- 選択の型に `@[nondet]` の無い抽象機械。 -/
-def specBool : Machine.Machine Nat Nat Out := Test.Machine.Adequacy.spec
+def specBool : Machine.Machine Nat Nat Out := Test.Machine.Preserves.spec
 
 /-- 選択の像でない（関係で与えた）抽象機械。 -/
 def specRel : Machine.Machine Nat Nat Out where
@@ -62,7 +63,7 @@ def specInvF : Machine.Machine Nat Nat Out :=
 theorem specInvF_initIs : specInvF.InitIs 5 := fun _ => Iff.rfl
 
 /-- 自由な選択が結果そのものである抽象機械。 -/
-def fFree (s n : Nat) (c : Conflict × AnyResult) : Nat × Out := Test.Machine.Adequacy.fFree s n c
+def fFree (s n : Nat) (c : Conflict × AnyResult) : Nat × Out := Test.Machine.Preserves.fFree s n c
 
 def specFree : Machine.Machine Nat Nat Out :=
   Machine.ofChoice (fun _ => True) (· = 5) (fun _ _ => True) fFree false (5, .ok)
@@ -86,29 +87,30 @@ theorem envNoNeed_nontrivial : Nontrivial envNoNeed :=
 theorem specFree_total : specFree.TotalUnder envNoNeed := fun _ _ _ _ => trivial
 
 /-- 純粋な計算の抽象機械（観測型の差異の必要性の正例）。 -/
-def half : Machine.Machine Unit Nat Nat := Test.Machine.Adequacy.half
+def half : Machine.Machine Unit Nat Nat := Test.Machine.Preserves.half
 
 theorem half_sound : half.Sound := Machine.sound_pure (fun _ => True) (· / 2)
 theorem half_initIs : half.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
 end Test.Trace.ObligationFixture.Spec
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open Test.Trace.ObligationFixture.Spec
 
 namespace Test.Trace.ObligationFixture.SourceModel
 
 /-- 具体機械。 -/
-def good : Concrete Nat Req Out Unit := Test.Machine.Adequacy.good
+def good : Concrete Nat Req Out Unit := Test.Machine.Preserves.good
 
 /-- 付帯の定理の無い具体機械。 -/
-def good2 : Concrete Nat Req Out Unit := Test.Machine.Adequacy.good
+def good2 : Concrete Nat Req Out Unit := Test.Machine.Preserves.good
 
 /-- 不具合を持つ具体機械。 -/
-def buggy : Concrete Nat Req Out Unit := Test.Machine.Adequacy.buggy
+def buggy : Concrete Nat Req Out Unit := Test.Machine.Preserves.buggy
 
 /-- 状態を壊す具体機械。 -/
-def junk : Concrete Nat Req Out Unit := Test.Machine.Adequacy.junk
+def junk : Concrete Nat Req Out Unit := Test.Machine.Preserves.junk
 
 /-- `Dom` を設定した具体機械。 -/
 def domSet : Concrete Nat Req Out Unit where
@@ -120,13 +122,13 @@ def domSet : Concrete Nat Req Out Unit where
 def taut : Concrete Nat Nat Out Unit := Concrete.ofMachine spec
 
 /-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
-def langErr : Concrete Nat Req Out Unit := Test.Machine.Adequacy.langErr
+def langErr : Concrete Nat Req Out Unit := Test.Machine.Preserves.langErr
 
 /-- `langErr` と同じ具体機械（別の基底の違反例のため）。 -/
-def langErr2 : Concrete Nat Req Out Unit := Test.Machine.Adequacy.langErr
+def langErr2 : Concrete Nat Req Out Unit := Test.Machine.Preserves.langErr
 
 /-- 0 で NaN を返す具体機械（必要な観測型の差異の正例）。 -/
-def halfNaN : Concrete Unit Nat Num Unit := Test.Machine.Adequacy.halfNaN
+def halfNaN : Concrete Unit Nat Num Unit := Test.Machine.Preserves.halfNaN
 
 /-- `Spec` の関数を使う具体機械。 -/
 def usesSpec : Concrete Nat Req Out Unit :=
@@ -134,7 +136,8 @@ def usesSpec : Concrete Nat Req Out Unit :=
 
 end Test.Trace.ObligationFixture.SourceModel
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open Test.Trace.ObligationFixture.Spec Test.Trace.ObligationFixture.SourceModel
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -157,7 +160,7 @@ theorem aoS_kernel : KernelIs aoS Eq := fun x y => by simp [aoS]
 /-- 前提型の差異の述語。 -/
 @[deviation "D-901"] def devLang (r : Req) : Prop := r.lang = false
 
-theorem devLang_nontrivial : Nontrivial devLang := Test.Machine.Adequacy.devLang_nontrivial
+theorem devLang_nontrivial : Nontrivial devLang := Test.Machine.Preserves.devLang_nontrivial
 
 /-- 標準の貼り合わせ。 -/
 abbrev glue : Glue Nat Nat Nat Req Out Out := Glue.ofStd betaS (fun _ => True) aiS aoS
@@ -166,14 +169,14 @@ abbrev glue : Glue Nat Nat Nat Req Out Out := Glue.ofStd betaS (fun _ => True) a
 
 @[obligation "ABS-901"]
 theorem good_refines : Refines spec (good.restrict devLang) (Glue.ofStd betaS (fun _ => True) aiS aoS) :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
 theorem good_initSurj : Refines.InitSurj spec (good.restrict devLang) glue :=
-  Test.Machine.Adequacy.good_initSurj
+  Test.Machine.Preserves.good_initSurj
 
 theorem good_pinned : Refines.Pinned spec (good.restrict devLang) glue fRes ceS :=
   fun s t ic ia t' oc hi hJ ha hp hd hs =>
-    Test.Machine.Adequacy.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
+    Test.Machine.Preserves.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
 
 theorem good_noFault : Refines.NoFaultReachable (good.restrict devLang) glue ceS false :=
   fun r _ hd ha => ⟨{ r with env := false }, ⟨trivial, hd.2⟩, ha, rfl⟩
@@ -184,44 +187,88 @@ theorem good_envWitness : Refines.EnvWitness (good.restrict devLang) glue always
 theorem good_stateSafe : Refines.StateSafeConcrete spec good glue devLang :=
   fun s t ic ia t' oc hi hJ ha hp _ hd hs => by
     obtain ⟨s', o, hst, hJ', _⟩ :=
-      Test.Machine.Adequacy.good_refines.correct s t ic ia t' oc hi hJ ha hp hd hs
+      Test.Machine.Preserves.good_refines.correct s t ic ia t' oc hi hJ ha hp hd hs
     exact ⟨s', o, hst, hJ'⟩
+
+/-- 選択の像の材料（`spec` の `f`・`e₀`、`@[std_abs]` の `ceS`）。自由な選択は無いので、枠の射影は恒等でよい。 -/
+def choiceS : Machine.Preserves.Choice Nat Nat Out Req := ⟨Conflict, Unit, Nat × Out, fRes, ceS, false, fun r => r⟩
+
+theorem fRes_frame : Machine.FreeFrame fRes (fun r : Nat × Out => r) :=
+  fun _ _ _ x y => by cases x; cases y; rfl
+
+/-- 正例（G6・GP）: R 課題 `good_refines`（ABS-901）の束。基底が `ofChoice` なので `ch = some choiceS`、
+「出力のみ」の差異 `devLang` の層を `outsC` に置く。 -/
+@[obligation "ABS-901"]
+theorem good_preserves :
+    Machine.Preserves spec (good.restrict devLang) glue 5 always (some choiceS) [] [⟨good, devLang⟩] where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj := good_initSurj
+  total := spec_total
+  envWitness := good_envWitness
+  envNeeded := .inl rfl
+  pinned _ h := by cases h; exact good_pinned
+  noFault _ h := by cases h; exact good_noFault
+  freeFrame _ h := by cases h; exact fRes_frame
+  stateSafeC _ h := by simp only [List.mem_singleton] at h; subst h; exact good_stateSafe
 
 /-- 貼り合わせを `abbrev` で書いた正例（付帯の定理は展開形で照合される）。 -/
 @[obligation "ABS-902"]
 theorem good_abbrev : Refines spec (good.restrict devLang) glue := good_refines
+
+@[obligation "ABS-902"]
+theorem good_abbrev_preserves :
+    Machine.Preserves spec (good.restrict devLang) glue 5 always (some choiceS) [] [⟨good, devLang⟩] :=
+  good_preserves
 
 /-! ## 違反例 -/
 
 @[obligation "ABS-911"]
 theorem v1_forall (_ : True) : Refines spec (good.restrict devLang) glue := good_refines
 
+@[obligation "ABS-911"]
+theorem v1_preserves :
+    Machine.Preserves spec (good.restrict devLang) glue 5 always (some choiceS) [] [⟨good, devLang⟩] :=
+  good_preserves
+
 /-- `@[deviation]` の無い述語。 -/
 def plainLang (r : Req) : Prop := r.lang = false
 
 @[obligation "ABS-912"]
 theorem v2_plainRestrict : Refines spec (good.restrict plainLang) glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
 theorem v2_initSurj : Refines.InitSurj spec (good.restrict plainLang) glue :=
-  Test.Machine.Adequacy.good_initSurj
+  Test.Machine.Preserves.good_initSurj
 
 theorem v2_pinned : Refines.Pinned spec (good.restrict plainLang) glue fRes ceS :=
   fun s t ic ia t' oc hi hJ ha hp hd hs =>
-    Test.Machine.Adequacy.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
+    Test.Machine.Preserves.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
 
 theorem v2_noFault : Refines.NoFaultReachable (good.restrict plainLang) glue ceS false :=
   fun r _ hd ha => ⟨{ r with env := false }, ⟨trivial, hd.2⟩, ha, rfl⟩
+
+@[obligation "ABS-912"]
+theorem v2_preserves : Machine.Preserves spec (good.restrict plainLang) glue 5 always (some choiceS) where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj := v2_initSurj
+  total := spec_total
+  envWitness := ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, trivial⟩
+  envNeeded := .inl rfl
+  pinned _ h := by cases h; exact v2_pinned
+  noFault _ h := by cases h; exact v2_noFault
+  freeFrame _ h := by cases h; exact fRes_frame
 
 /-- 引数を取る差異の述語（引数で `False` にできる）。 -/
 @[deviation "D-903"] def devK (k : Nat) (r : Req) : Prop := r.n < k
 
 @[obligation "ABS-913"]
 theorem v2_paramDev : Refines spec (good.restrict (devK 0)) glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
 @[obligation "ABS-914"]
-theorem v3_choiceNoNondet : Refines specBool good glue := Test.Machine.Adequacy.good_refines
+theorem v3_choiceNoNondet : Refines specBool good glue := Test.Machine.Preserves.good_refines
 
 @[obligation "ABS-915"]
 theorem v3_relSpec : Refines specRel good glue where
@@ -231,11 +278,11 @@ theorem v3_relSpec : Refines specRel good glue where
   correct _ _ _ _ t' oc _ _ _ _ _ _ := ⟨t', oc, trivial, Or.inl ⟨rfl, trivial⟩, Or.inl rfl⟩
 
 @[obligation "ABS-916"]
-theorem v3_free : Refines specFree junk glue := Test.Machine.Adequacy.junk_refines_specFree
+theorem v3_free : Refines specFree junk glue := Test.Machine.Preserves.junk_refines_specFree
 
 @[obligation "ABS-917"]
 theorem v4_domSet : Refines spec domSet glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines fun r => r.n < 100
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines fun r => r.n < 100
 
 /-- `Nat` の入力をそのまま写す標準の抽象化（同語反復の例のため）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def aiNat (n : Nat) : Option Nat := some n
@@ -257,40 +304,40 @@ theorem v4_taut : Refines spec taut (Glue.ofStd betaS (fun _ => True) aiNat aoS)
     · show some oc = some oa; rw [show oc = oa from ho]
 
 @[obligation "ABS-919"]
-theorem v4_usesSpec : Refines spec usesSpec glue := Test.Machine.Adequacy.good_refines
+theorem v4_usesSpec : Refines spec usesSpec glue := Test.Machine.Preserves.good_refines
 
 /-- 補助定義（`@[reducible]` でない）で包んだ貼り合わせ。 -/
 def myGlue : Glue Nat Nat Nat Req Out Out := Glue.ofStd betaS (fun _ => True) aiS aoS
 
 @[obligation "ABS-920"]
-theorem v5_helperGlue : Refines spec good myGlue := Test.Machine.Adequacy.good_refines
+theorem v5_helperGlue : Refines spec good myGlue := Test.Machine.Preserves.good_refines
 
 /-- `@[deviation]` の無い観測の成分。 -/
 def obsPlain (_ _ : Out) : Prop := False
 
 @[obligation "ABS-921"]
 theorem v5_plainObs : Refines spec good (Glue.ofStd betaS (fun _ => True) aiS aoS never obsPlain) :=
-  Test.Machine.Adequacy.good_refines
+  Test.Machine.Preserves.good_refines
 
 /-- `@[std_abs]` の無い入力の写像。 -/
 def aiPlain (r : Req) : Option Nat := some r.n
 
 @[obligation "ABS-922"]
 theorem v5_plainAi : Refines spec good (Glue.ofStd betaS (fun _ => True) aiPlain aoS) :=
-  Test.Machine.Adequacy.good_refines
+  Test.Machine.Preserves.good_refines
 
 /-- 核の定理の無い出力の写像（合成）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def aoComp (o : Out) : Option Out := Option.some o
 
 @[obligation "ABS-923"]
 theorem v5_aoNoKernel : Refines spec good (Glue.ofStd betaS (fun _ => True) aiS aoComp) :=
-  Test.Machine.Adequacy.good_refines
+  Test.Machine.Preserves.good_refines
 
 @[obligation "ABS-924"]
-theorem v6_noCompanions : Refines spec good2 glue := Test.Machine.Adequacy.good_refines
+theorem v6_noCompanions : Refines spec good2 glue := Test.Machine.Preserves.good_refines
 
 @[obligation "ABS-925"]
-theorem v6_invFalse : Refines specInvF junk glue := Test.Machine.Adequacy.junk_refines_invFalse
+theorem v6_invFalse : Refines specInvF junk glue := Test.Machine.Preserves.junk_refines_invFalse
 
 theorem v6_invFalse_initSurj : Refines.InitSurj specInvF junk glue := fun s hs => ⟨s, hs, Or.inl ⟨hs ▸ rfl, trivial⟩⟩
 
@@ -300,14 +347,14 @@ theorem v6_invFalse_noFault : Refines.NoFaultReachable junk glue ceS false :=
   fun r _ _ ha => ⟨{ r with env := false }, trivial, ha, rfl⟩
 
 /-- `n = 3` を衝突の環境とみなす `ce`（誤り）。 -/
-@[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def ceCheat (r : Req) : Bool := Test.Machine.Adequacy.ceCheat r
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def ceCheat (r : Req) : Bool := Test.Machine.Preserves.ceCheat r
 
 @[obligation "ABS-926"]
-theorem v6_ceCheat : Refines spec buggy glue := Test.Machine.Adequacy.buggy_refines
+theorem v6_ceCheat : Refines spec buggy glue := Test.Machine.Preserves.buggy_refines
 
 theorem v6_ceCheat_initSurj : Refines.InitSurj spec buggy glue := fun s hs => ⟨s, hs, Or.inl ⟨rfl, trivial⟩⟩
 
-theorem v6_ceCheat_pinned : Refines.Pinned spec buggy glue fRes ceCheat := Test.Machine.Adequacy.buggy_pinned_ceCheat
+theorem v6_ceCheat_pinned : Refines.Pinned spec buggy glue fRes ceCheat := Test.Machine.Preserves.buggy_pinned_ceCheat
 
 /-- 分岐を含む合成の標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -359,49 +406,61 @@ theorem v0_notRefines : Refines spec (good.restrict devLang) glue ∧ True := �
 
 /-- 正例: 前提型の差異 `devLang` が必要な R 課題。 -/
 @[obligation "ABS-950"]
-theorem need_refines : Refines spec (langErr.restrict devLang) glue := Test.Machine.Adequacy.langErr_refines
+theorem need_refines : Refines spec (langErr.restrict devLang) glue := Test.Machine.Preserves.langErr_refines
 
 theorem need_initSurj : Refines.InitSurj spec (langErr.restrict devLang) glue :=
-  Test.Machine.Adequacy.langErr_initSurj
+  Test.Machine.Preserves.langErr_initSurj
 
 theorem need_pinned : Refines.Pinned spec (langErr.restrict devLang) glue fRes ceS :=
-  Test.Machine.Adequacy.langErr_pinned
+  Test.Machine.Preserves.langErr_pinned
 
 theorem need_noFault : Refines.NoFaultReachable (langErr.restrict devLang) glue ceS false :=
-  Test.Machine.Adequacy.langErr_noFaultReachable
+  Test.Machine.Preserves.langErr_noFaultReachable
+
+@[obligation "ABS-950"]
+theorem need_preserves : Machine.Preserves spec (langErr.restrict devLang) glue 5 always (some choiceS) where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj := need_initSurj
+  total := spec_total
+  envWitness := ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, trivial⟩
+  envNeeded := .inl rfl
+  pinned _ h := by cases h; exact need_pinned
+  noFault _ h := by cases h; exact need_noFault
+  freeFrame _ h := by cases h; exact fRes_frame
 
 /-- `devLang` の必要性。W 課題の形で `@[obligation]` を付けても、G0 の誤りにならない。 -/
 @[obligation "ABS-951", gap "D-901"]
 theorem need_devLang : ¬ (Refines spec langErr glue ∧ Refines.Pinned spec langErr glue fRes ceS) :=
-  Test.Machine.Adequacy.devLang_needed_for_langErr
+  Test.Machine.Preserves.devLang_needed_for_langErr
 
 /-- 正例（観測型・基底が `pure`）の標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def betaU (t : Unit) : Option Unit := some t
 
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def aoNum (o : Num) : Option Nat :=
-  Test.Machine.Adequacy.aoPartial o
+  Test.Machine.Preserves.aoPartial o
 
-theorem aoNum_kernel : KernelIs aoNum Eq := Test.Machine.Adequacy.aoPartial_injective
+theorem aoNum_kernel : KernelIs aoNum Eq := Test.Machine.Preserves.aoPartial_injective
 
 /-- 観測型の差異の成分。 -/
-@[deviation "D-907"] def obsNaN (c : Num) (a : Nat) : Prop := Test.Machine.Adequacy.obsNaN c a
+@[deviation "D-907"] def obsNaN (c : Num) (a : Nat) : Prop := Test.Machine.Preserves.obsNaN c a
 
-theorem obsNaN_nontrivial : Nontrivial₂ obsNaN := Test.Machine.Adequacy.obsNaN_nontrivial
+theorem obsNaN_nontrivial : Nontrivial₂ obsNaN := Test.Machine.Preserves.obsNaN_nontrivial
 
 /-- 正例: 観測型の差異 `obsNaN` が必要な R 課題。 -/
 @[obligation "ABS-954"]
 theorem obs_refines : Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) :=
-  Test.Machine.Adequacy.halfNaN_refines_obs
+  Test.Machine.Preserves.halfNaN_refines_obs
 
 theorem obs_initSurj :
     Refines.InitSurj half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) :=
   fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
 
-/-- 正例（GA）: R 課題 `obs_refines`（ABS-954）の義務の束。PRE が全域なので、環境の前提を置かない。 -/
+/-- 正例（GP）: R 課題 `obs_refines`（ABS-954）の束。基底が `pure` なので `ch = none`（既定値）。PRE が全域なので、
+環境の前提を置かない。 -/
 @[obligation "ABS-954"]
-theorem obs_adequate :
-    Machine.Adequate half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always where
-  refines := obs_refines
+theorem obs_preserves :
+    Machine.Preserves half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always where
   sound := half_sound
   initIs := half_initIs
   initSurj := obs_initSurj
@@ -409,47 +468,59 @@ theorem obs_adequate :
   envWitness := ⟨0, 0, trivial, rfl, trivial⟩
   envNeeded := .inl rfl
 
-/-- 違反（GA）: 同じ ID の R 課題（`obs_refines`）と、束ねる機械・貼り合わせが違う。 -/
+/-- 違反（GP）: 同じ ID の R 課題（`obs_refines`）と、束ねる機械・貼り合わせが違う。 -/
 @[obligation "ABS-954"]
-theorem ga_mismatch :
-    Machine.Adequate Test.Machine.Adequacy.halfSmall Test.Machine.Adequacy.halfC
-      (Test.Machine.Adequacy.glueNum Test.Machine.Adequacy.aoPartial) () (· < 100) :=
-  Test.Machine.Adequacy.halfC_adequate
+theorem gp_mismatch :
+    Machine.Preserves Test.Machine.Preserves.halfSmall Test.Machine.Preserves.halfC
+      (Test.Machine.Preserves.glueNum Test.Machine.Preserves.aoPartial) () (· < 100) :=
+  Test.Machine.Preserves.halfC_preserves
 
-/-- 違反（GA）: 同じ ID の R 課題が無い束。 -/
+/-- 違反（GP）: 同じ ID の R 課題が無い束。 -/
 @[obligation "ABS-998"]
-theorem ga_noR :
-    Machine.Adequate half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always :=
-  obs_adequate
+theorem gp_noR :
+    Machine.Preserves half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always :=
+  obs_preserves
 
 @[gap "D-907"] theorem obs_needed : ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never never) :=
-  Test.Machine.Adequacy.obsNaN_needed
+  Test.Machine.Preserves.obsNaN_needed
 
 /-- 違反例: 外しても成り立つ差異（必要性の定理が無い）。 -/
 @[deviation "D-905"] def devUnneeded (r : Req) : Prop := r.lang = false
 
-theorem devUnneeded_nontrivial : Nontrivial devUnneeded := Test.Machine.Adequacy.devLang_nontrivial
+theorem devUnneeded_nontrivial : Nontrivial devUnneeded := Test.Machine.Preserves.devLang_nontrivial
 
 @[obligation "ABS-952"]
 theorem v9_unneeded : Refines spec (good.restrict devUnneeded) glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
 /-- 正例: 基底が `ofChoice` でも、必要性を（より強い）`¬ Refines` で示してよい。 -/
 @[deviation "D-906"] def devLang2 (r : Req) : Prop := r.lang = false
 
-theorem devLang2_nontrivial : Nontrivial devLang2 := Test.Machine.Adequacy.devLang_nontrivial
+theorem devLang2_nontrivial : Nontrivial devLang2 := Test.Machine.Preserves.devLang_nontrivial
 
 @[obligation "ABS-953"]
-theorem v9_noPinned : Refines spec (langErr2.restrict devLang2) glue := Test.Machine.Adequacy.langErr_refines
+theorem v9_noPinned : Refines spec (langErr2.restrict devLang2) glue := Test.Machine.Preserves.langErr_refines
 
 theorem v9_noPinned_initSurj : Refines.InitSurj spec (langErr2.restrict devLang2) glue :=
-  Test.Machine.Adequacy.langErr_initSurj
+  Test.Machine.Preserves.langErr_initSurj
 
 theorem v9_noPinned_pinned : Refines.Pinned spec (langErr2.restrict devLang2) glue fRes ceS :=
-  Test.Machine.Adequacy.langErr_pinned
+  Test.Machine.Preserves.langErr_pinned
 
 theorem v9_noPinned_noFault : Refines.NoFaultReachable (langErr2.restrict devLang2) glue ceS false :=
-  Test.Machine.Adequacy.langErr_noFaultReachable
+  Test.Machine.Preserves.langErr_noFaultReachable
+
+@[obligation "ABS-953"]
+theorem v9_noPinned_preserves : Machine.Preserves spec (langErr2.restrict devLang2) glue 5 always (some choiceS) where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj := v9_noPinned_initSurj
+  total := spec_total
+  envWitness := ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, trivial⟩
+  envNeeded := .inl rfl
+  pinned _ h := by cases h; exact v9_noPinned_pinned
+  noFault _ h := by cases h; exact v9_noPinned_noFault
+  freeFrame _ h := by cases h; exact fRes_frame
 
 @[gap "D-906"] theorem v9_noPinned_nec : ¬ Refines spec langErr2 glue :=
   Refines.not_of_error (A := spec) (C := langErr2) (g := glue) (s := 5) (t := 5)
@@ -462,16 +533,16 @@ theorem need_arrow : Refines spec langErr2 glue → False := v9_noPinned_nec
 /-- 同じ差異 ID の別の定数（差異 ID ごとに必要性を数えるので、G9 の誤りにならない）。 -/
 @[deviation "D-901"] def devLangB (r : Req) : Prop := r.lang = false
 
-theorem devLangB_nontrivial : Nontrivial devLangB := Test.Machine.Adequacy.devLang_nontrivial
+theorem devLangB_nontrivial : Nontrivial devLangB := Test.Machine.Preserves.devLang_nontrivial
 
 @[obligation "ABS-956"]
 theorem v9_sameId : Refines spec (good.restrict devLangB) glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.good_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
 /-- 違反例: 2 つの差異 ID を 1 つの定数に束ねる。 -/
 @[deviation "D-908", "D-909"] def devTwo (r : Req) : Prop := r.lang = false
 
-theorem devTwo_nontrivial : Nontrivial devTwo := Test.Machine.Adequacy.devLang_nontrivial
+theorem devTwo_nontrivial : Nontrivial devTwo := Test.Machine.Preserves.devLang_nontrivial
 
 /-- 正例: 必要な `devLang` に覆われる差異（被覆）。 -/
 @[deviation "D-910"] def devWeak (r : Req) : Prop := r.lang = false ∨ 50 < r.n
@@ -483,20 +554,20 @@ theorem devWeak_nontrivial : Nontrivial devWeak :=
 
 @[obligation "ABS-957"]
 theorem cover_refines : Refines spec ((langErr.restrict devLang).restrict devWeak) glue :=
-  Refines.restrictConcrete Test.Machine.Adequacy.langErr_refines _
+  Refines.restrictConcrete Test.Machine.Preserves.langErr_refines _
 
 /-- 違反例: 互いに覆い合うだけで、どちらも必要でない差異（被覆の循環）。 -/
 @[deviation "D-911"] def devC1 (r : Req) : Prop := r.lang = false
 @[deviation "D-912"] def devC2 (r : Req) : Prop := r.lang = false
 
-theorem devC1_nontrivial : Nontrivial devC1 := Test.Machine.Adequacy.devLang_nontrivial
-theorem devC2_nontrivial : Nontrivial devC2 := Test.Machine.Adequacy.devLang_nontrivial
+theorem devC1_nontrivial : Nontrivial devC1 := Test.Machine.Preserves.devLang_nontrivial
+theorem devC2_nontrivial : Nontrivial devC2 := Test.Machine.Preserves.devLang_nontrivial
 @[gap "D-912"] theorem devC1_covers : Covers devC1 devC2 := fun _ h => h
 @[gap "D-911"] theorem devC2_covers : Covers devC2 devC1 := fun _ h => h
 
 @[obligation "ABS-958"]
 theorem v9_circular : Refines spec ((good.restrict devC1).restrict devC2) glue :=
-  Refines.restrictConcrete (Refines.restrictConcrete Test.Machine.Adequacy.good_refines _) _
+  Refines.restrictConcrete (Refines.restrictConcrete Test.Machine.Preserves.good_refines _) _
 
 /-- 同じ出力に重なる 2 つ目の観測型の差異（`anyOf` で並べる。必要性が無いので違反例）。 -/
 @[deviation "D-913"] def obsZero (c : Num) (a : Nat) : Prop := c = .num 0 ∧ a = 1
@@ -521,29 +592,40 @@ theorem obs2_initSurj :
     Refines.InitSurj half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf obsNaN obsZero)) :=
   fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
 
+@[obligation "ABS-959"]
+theorem obs2_preserves :
+    Machine.Preserves half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf obsNaN obsZero)) () always where
+  sound := half_sound
+  initIs := half_initIs
+  initSurj := obs2_initSurj
+  total _ _ _ _ := trivial
+  envWitness := ⟨0, 0, trivial, rfl, trivial⟩
+  envNeeded := .inl rfl
+
 /-- `anyOf` の葉 `obsNaN` だけを `never` に替えた必要性。 -/
 theorem obs2_needed :
     ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf never obsZero)) :=
   Refines.not_of_mismatch (s := ()) (t := ()) (ic := 0) (ia := 0) (t' := ()) (oc := .nan) trivial
     (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
     (fun _ _ _ _ ho => by
-      simp [Glue.ofStd, aoNum, Test.Machine.Adequacy.aoPartial, never, anyOf, obsZero] at ho)
+      simp [Glue.ofStd, aoNum, Test.Machine.Preserves.aoPartial, never, anyOf, obsZero] at ho)
 
 /-- 正例: PRE が全域でない基底での環境の前提（`specPre_needs_env` があるので G9 の誤りにならない）。 -/
 @[obligation "ABS-960"]
 theorem pre_refines : Refines specPre good glue where
-  init := Test.Machine.Adequacy.good_refines.init
-  input_total := Test.Machine.Adequacy.good_refines.input_total
-  applicable s t ic ia hi hJ ha _ hd := Test.Machine.Adequacy.good_refines.applicable s t ic ia hi hJ ha trivial hd
+  init := Test.Machine.Preserves.good_refines.init
+  input_total := Test.Machine.Preserves.good_refines.input_total
+  applicable s t ic ia hi hJ ha _ hd := Test.Machine.Preserves.good_refines.applicable s t ic ia hi hJ ha trivial hd
   correct s t ic ia t' oc hi hJ ha _ hd hs :=
-    Test.Machine.Adequacy.good_refines.correct s t ic ia t' oc hi hJ ha trivial hd hs
+    Test.Machine.Preserves.good_refines.correct s t ic ia t' oc hi hJ ha trivial hd hs
 
 end Test.Trace.ObligationFixture.Abstraction
 
 /-- モデルの層の外に置いた差異の述語。 -/
 @[deviation "D-904"] def Test.Trace.ObligationFixture.Helpers.devFalse (_ : Req) : Prop := False
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -562,7 +644,8 @@ end Test.Trace.ObligationFixture.Spec
 
 `@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open _root_.Trace
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -645,7 +728,8 @@ theorem usesClaim (h : claim920) : claim920 := h
 end Test.Trace.ObligationFixture.Abstraction
 
 
-open Machine.Adequacy Trace.Gap
+open Trace.Gap
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Abstraction
 

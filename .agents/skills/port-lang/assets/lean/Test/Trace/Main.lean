@@ -182,7 +182,7 @@ def obligationTests (env : Environment) : IO Unit := do
          ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
          ri.envLeaves == #[`Test.Trace.ObligationFixture.Spec.Conflict] && ri.freeLeaves.isEmpty &&
          ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
-         ri.totalUnder == #[(`Machine.Adequacy.always, true)] && ri.stateSafe == #[ab "devLang"]
+         ri.totalUnder == #[(`Machine.Preserves.always, true)] && ri.stateSafe == #[ab "devLang"]
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
     | some ri => ri.freeLeaves == #[`Test.Trace.ObligationFixture.Spec.AnyResult] | none => false)
@@ -204,7 +204,7 @@ def obligationTests (env : Environment) : IO Unit := do
     "GK: D-911: the covered chain is cyclic", "GK: D-912: the covered chain is cyclic",
     "GK: D-921: the claim Test.Trace.ObligationFixture.Abstraction.claim921 must be an opaque Prop",
     "GK: Test.Trace.ObligationFixture.Abstraction.usesClaim refers to Test.Trace.ObligationFixture.Abstraction.claim920",
-    "GA: Test.Trace.ObligationFixture.Abstraction.ga_mismatch", "GA: Test.Trace.ObligationFixture.Abstraction.ga_noR"]
+    "GP: Test.Trace.ObligationFixture.Abstraction.gp_mismatch", "GP: Test.Trace.ObligationFixture.Abstraction.gp_noR"]
   check s!"global errors: exactly {expectedGlobal.length}"
     (r.errors.size == expectedGlobal.length &&
       expectedGlobal.all fun p => r.errors.any (·.startsWith p))
@@ -228,9 +228,10 @@ def obligationTests (env : Environment) : IO Unit := do
       (gapOf "D-906").getObjValD "w_task" == Json.null)
   check "gaps: resolution of an unformalized undetermined gap"
     ((gapOf "D-921").getObjValD "resolution" == "オラクルで確かめる")
-  check "adequate: obs_adequate, ga_mismatch and ga_noR listed as Machine.Adequate bundles"
-    (r.adequate == #[ab "ga_mismatch", ab "ga_noR", ab "obs_adequate"] ||
-      (r.adequate.size == 3 && [ab "obs_adequate", ab "ga_mismatch", ab "ga_noR"].all r.adequate.contains))
+  check "preserves: the Machine.Preserves bundles are listed (obs_preserves, gp_mismatch, gp_noR, good_preserves, …)"
+    (r.preserves.size == 10 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
+      ab "good_abbrev_preserves", ab "v1_preserves", ab "v2_preserves", ab "need_preserves", ab "v9_noPinned_preserves",
+      ab "obs2_preserves"].all r.preserves.contains)
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
   check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.AnyResult, `Test.Trace.ObligationFixture.Spec.Conflict])

@@ -1,4 +1,4 @@
-import Machine.Adequacy
+import Machine.Preserves.Pred
 
 /-!
 # Machine.Kernel
@@ -14,7 +14,7 @@ import Machine.Adequacy
 -/
 
 namespace Machine.Kernel
-open Machine.Adequacy
+open Machine.Preserves (KernelIs)
 
 /-- 部分写像 `f` の汎用の核: どちらも定義されないか、等しい。 -/
 def undefOrEq {α β : Type} (f : α → Option β) (x y : α) : Prop := (f x = none ∧ f y = none) ∨ x = y

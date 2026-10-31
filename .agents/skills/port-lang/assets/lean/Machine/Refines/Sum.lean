@@ -6,7 +6,7 @@ import Machine.Glue.Sum
 /-!
 # Machine.Refines.Sum
 
-並置はリファインメントを保つ（`Refines.sum`。`Machine.Sum` の表）。
+並置はリファインメントを保つ（`Refines.sum`）。PRE と定義域を各点で同値なものに替えても保たれる（`Refines.congrPre`。`Machine.Sum` の表）。
 -/
 
 namespace Machine
@@ -52,6 +52,24 @@ theorem sum (h₁ : Refines A₁ C₁ g₁) (h₂ : Refines A₂ C₂ g₂) : Re
     | .inr c, .inr a, .inr o, ha, ⟨hs, he⟩ =>
       obtain ⟨s₂', oa, hst, hJ', ho⟩ := h₂.correct s.2 t.2 c a t'.2 o hi.2 hJ.2 ha hp hd hs
       exact ⟨(s.1, s₂'), .inr oa, ⟨hst, rfl⟩, ⟨he ▸ hJ.1, hJ'⟩, ho⟩
+
+/-- PRE と具体側の定義域を、各点で同値なものに替えても、リファインメントは保たれる。INV・初期状態・歩みは同じものとする。
+並置した機械の制限（`(A₁.sum A₂).restrict (sumPred P₁ P₂)`）と、制限した機械の並置を結ぶのに使う。 -/
+theorem congrPre {σ τ ιa ιc οa οc : Type} {A A' : Machine σ ιa οa} {C C' : Concrete τ ιc οc ε}
+    {g : Glue σ τ ιa ιc οa οc} (h : Refines A C g)
+    (hInv : A'.Inv = A.Inv) (hInit : A'.Init = A.Init) (hstep : A'.step = A.step)
+    (hPre : ∀ s i, A'.Pre s i ↔ A.Pre s i) (hCInit : C'.Init = C.Init) (hCstep : C'.step = C.step)
+    (hDom : ∀ i, C'.Dom i ↔ C.Dom i) : Refines A' C' g where
+  init t ht := by
+    obtain ⟨s, hs, hJ⟩ := h.init t (hCInit ▸ ht)
+    exact ⟨s, hInit ▸ hs, hJ⟩
+  input_total ic hd := h.input_total ic ((hDom ic).1 hd)
+  applicable s t ic ia hi hJ ha hp hd := by
+    rw [hCstep]
+    exact h.applicable s t ic ia (hInv ▸ hi) hJ ha ((hPre s ia).1 hp) ((hDom ic).1 hd)
+  correct s t ic ia t' oc hi hJ ha hp hd hs := by
+    rw [hstep]
+    exact h.correct s t ic ia t' oc (hInv ▸ hi) hJ ha ((hPre s ia).1 hp) ((hDom ic).1 hd) (hCstep ▸ hs)
 
 end Refines
 

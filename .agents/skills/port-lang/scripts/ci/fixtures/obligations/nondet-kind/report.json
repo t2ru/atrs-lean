@@ -45,12 +45,12 @@
    "refines": true
   },
   {
-   "name": "Abstraction.X.refines_adequate",
+   "name": "Abstraction.X.refines_preserves",
    "ids": [
     "ABS-901"
    ],
    "refines": false,
-   "adequate": true
+   "preserves": true
   }
  ],
  "nondet": [

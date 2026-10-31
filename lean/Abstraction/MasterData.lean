@@ -1,4 +1,4 @@
-import Abstraction.MasterData.Adequacy
+import Abstraction.MasterData.Preserves
 import Abstraction.MasterData.QueryRun
 
 /-!
@@ -9,7 +9,7 @@ import Abstraction.MasterData.QueryRun
 -/
 
 namespace Abstraction.MasterData
-open Abstraction.MasterData.Adequacy
+open Abstraction.MasterData.Preserves
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun SourceModel.MasterQuery Spec Spec.EnvPre
 
@@ -50,11 +50,10 @@ theorem need_D027 : ¬ Refines Spec.MasterQuery.queryMachine queryConcrete glueM
   rw [show glueMQ.αi ic_unknownBoardingClass ia = (aiMQ ic_unknownBoardingClass = some ia) from rfl, this] at hia
   cases hia
 
-/-- ABS-026 の義務の束。 -/
+/-- ABS-026 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-026"]
-theorem queryAdequate :
-    Machine.Adequate Spec.MasterQuery.queryMachine (queryConcrete.restrict dev_D027) glueMQ () envMQ where
-  refines := queryRefines
+theorem queryPreserves :
+    Machine.Preserves Spec.MasterQuery.queryMachine (queryConcrete.restrict dev_D027) glueMQ () envMQ where
   sound := Spec.MasterQuery.queryMachine_sound
   initIs := Spec.MasterQuery.queryMachine_initIs
   initSurj := queryRefines_initSurj

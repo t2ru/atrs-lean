@@ -8,7 +8,7 @@ import Trace.Gap
 備えているかを、環境を走査して判定する（TR-G。references/docs/spec/architecture.md#空虚化を防ぐ義務）。`Machine` の定数は名前で照合し、import しない。
 
 R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理である。各 R 課題について次を判定する。
-付帯の定理は、`@[reducible]` を展開した式が一致するもので探す（先頭の定数だけでは照合しない）。
+束と付帯の定理は、`@[reducible]` を展開した式が一致するもので探す（先頭の定数だけでは照合しない）。
 
 | 規則 | 内容 |
 | --- | --- |
@@ -17,9 +17,9 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G2 | 抽象機械・具体機械は、名前付きの基底に `.restrict p`・`.restrictState p` を連ねた形で、`p` は `@[deviation]` の定数そのもの |
 | G3 | 抽象側の基底は `Machine.ofChoice` か `Machine.pure`。選択の型の葉は `@[nondet]` か `Unit`。自由な選択があれば `FreeFrame` がある |
 | G4 | 具体側の基底は `Concrete.ofFun`・`Concrete.pure`、または `Dom` を既定（全体）にした構造体で、`Concrete.ofMachine` と `Spec` の関数を参照しない |
-| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.Adequacy.anyOf` で並べてよい） |
-| G6 | 付帯の定理: `InitSurj`、基底の `Sound`・`InitIs`、基底が `ofChoice` なら `Pinned`（同じ `f`、`ce` は `@[std_abs]`）と `NoFaultReachable`（同じ `ce`・`e₀`） |
-| GA | 義務の束: 結論が `Machine.Adequate A C g s₀ Env` の `@[obligation]` 定理は、同じ課題 ID の R 課題と同じ `A`・`C`・`g` を束ねる。束の有無の判定（R 課題ごとに 1 つ）は `scripts/ci/check_obligations.py` が行う（OB-A） |
+| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.Preserves.anyOf` で並べてよい） |
+| G6 | 束: 同じ課題 ID・同じ `A`・`C`・`g` の `@[obligation]` の `Machine.Preserves A C g s₀ Env ch outs outsC` がある（`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・`envNeeded` を含む）。`ch` は、基底が `ofChoice` のときに限り `some (Choice.mk E F P f ce e₀ m)` で、`f`・`e₀` は基底のもの、`ce` は `@[std_abs]` の定数そのもの（自由な選択があれば `m` は `KernelIs` の定理を持つ定数そのもの）。`outs`・`outsC` の層の述語は R 課題の制限の述語で、層の `base` は、その層を外した機械か基底。束の有無の判定（R 課題ごとに 1 つ）は `scripts/ci/check_obligations.py` も行う（OB-P） |
+| GP | 束の向きの照合: 結論が `Machine.Preserves` の `@[obligation]` 定理は、同じ課題 ID の R 課題と同じ `A`・`C`・`g` を束ねる |
 
 あわせて、環境全体について次を判定する。
 
@@ -33,11 +33,11 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 
 G9 の内容は次のとおりである。
 
-- `@[deviation]` の定数は ID を 1 つだけ持つ（複数の差異を 1 つの定数に束ねない。観測型は `Machine.Adequacy.anyOf` で並べる）。
+- `@[deviation]` の定数は ID を 1 つだけ持つ（複数の差異を 1 つの定数に束ねない。観測型は `Machine.Preserves.anyOf` で並べる）。
 - R 課題で使う各差異 ID について、その ID のどれかの定数が、少なくとも 1 つの R 課題で次のどちらかを満たす。
   - 必要性: 差異を外した R 課題の命題の否定の閉じた定理（`¬ P` か `P → False`。`@[obligation]` の W 課題でもよい）がある
     - 前提型の差異 `d`: R 課題の機械から `.restrict d`・`.restrictState d`・`Concrete.restrict d` の層を 1 つ外す
-    - 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO（`anyOf` の葉）のうち `d` を `Machine.Adequacy.never` に替える
+    - 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO（`anyOf` の葉）のうち `d` を `Machine.Preserves.never` に替える
     - 否定する命題: `¬ Refines A C g`。抽象側の基底が `ofChoice` なら `¬ (Refines A C g ∧ Pinned A C g f ce)` でもよい
       （`f` は基底の `f`、`ce` は R 課題の `Pinned` の `ce`）
   - 被覆: 必要性か被覆を満たす差異 `M` と同じ R 課題の制限に現れ、`Covers M d`・`Covers₂ M d` の定理がある
@@ -61,7 +61,7 @@ GK の内容は次のとおりである。
 
 G9・GK の誤りのうち、`pending` の差異の G9 だけは `warnings` に出す。
 
-入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
+入口の全域性（束の `total`・`envWitness`、または別の定理の `TotalUnder`・`EnvWitness`）と、出力のみの差異の `StateSafe`（束の `outs`・`outsC` の層）は、R 課題ごとに事実として出力し、
 文書（入口の R 課題、前提型の差異の影響）との突き合わせは `scripts/ci/check_obligations.py` が行う（TR-N）。
 -/
 
@@ -74,7 +74,10 @@ open Lean
 -- `Machine` の定数の名前。
 namespace N
 def refines : Name := `Machine.Refines
-def adequate : Name := `Machine.Adequate
+def preserves : Name := `Machine.Preserves
+def choiceMk : Name := `Machine.Preserves.Choice.mk
+def outLayerMk : Name := `Machine.Preserves.OutLayer.mk
+def outLayerCMk : Name := `Machine.Preserves.OutLayerC.mk
 def sum : Name := `Machine.Machine.sum
 def restrict : Name := `Machine.Machine.restrict
 def restrictState : Name := `Machine.Machine.restrictState
@@ -87,7 +90,7 @@ def cPure : Name := `Machine.Concrete.pure
 def cMk : Name := `Machine.Concrete.mk
 def machine : Name := `Machine.Machine
 def ofStd : Name := `Machine.Glue.ofStd
-def never : Name := `Machine.Adequacy.never
+def never : Name := `Machine.Preserves.never
 def initSurj : Name := `Machine.Refines.InitSurj
 def pinned : Name := `Machine.Refines.Pinned
 def noFault : Name := `Machine.Refines.NoFaultReachable
@@ -98,14 +101,14 @@ def totalUnder : Name := `Machine.Machine.TotalUnder
 def sound : Name := `Machine.Machine.Sound
 def initIs : Name := `Machine.Machine.InitIs
 def freeFrame : Name := `Machine.Machine.FreeFrame
-def nontrivial : Name := `Machine.Adequacy.Nontrivial
-def nontrivial₂ : Name := `Machine.Adequacy.Nontrivial₂
-def kernelIs : Name := `Machine.Adequacy.KernelIs
+def nontrivial : Name := `Machine.Preserves.Nontrivial
+def nontrivial₂ : Name := `Machine.Preserves.Nontrivial₂
+def kernelIs : Name := `Machine.Preserves.KernelIs
 def undefOrEq : Name := `Machine.Kernel.undefOrEq
-def always : Name := `Machine.Adequacy.always
-def anyOf : Name := `Machine.Adequacy.anyOf
-def covers : Name := `Machine.Adequacy.Covers
-def covers₂ : Name := `Machine.Adequacy.Covers₂
+def always : Name := `Machine.Preserves.always
+def anyOf : Name := `Machine.Preserves.anyOf
+def covers : Name := `Machine.Preserves.Covers
+def covers₂ : Name := `Machine.Preserves.Covers₂
 end N
 
 /-- 合成の標準の抽象化が参照してよい関数（構成子・射影・インスタンス・型を除く）。分岐（`ite`・`match`）は含めない。 -/
@@ -253,7 +256,7 @@ structure RInfo where
   hasFreeFrame : Bool := false
   /-- 抽象側の基底についての `TotalUnder` の環境の前提と、その `EnvWitness` の有無 -/
   totalUnder : Array (Name × Bool) := #[]
-  /-- `StateSafe`・`StateSafeConcrete` の定理がある差異の述語 -/
+  /-- 束の `outs`・`outsC` に層がある差異の述語（`StateSafe`・`StateSafeConcrete`） -/
   stateSafe : Array Name := #[]
   /-- 必要性の定理（G9）がある差異 -/
   necessity : Array Name := #[]
@@ -265,24 +268,10 @@ structure RInfo where
 
 /-- 付帯の定理の一覧（引数は正規形）。 -/
 structure Companions where
-  /-- `InitSurj A C g` の (A, C, g) -/
-  initSurj : Array (Expr × Expr × Expr) := #[]
-  /-- `Pinned A C g f ce` の (A, C, g, f, ce) -/
-  pinned : Array (Expr × Expr × Expr × Expr × Expr) := #[]
-  /-- `NoFaultReachable C g ce e₀` の (C, g, ce, e₀) -/
-  noFault : Array (Expr × Expr × Expr × Expr) := #[]
   /-- `EnvWitness C g Env` の (C, g, Env) -/
   envWitness : Array (Expr × Expr × Expr) := #[]
   /-- `TotalUnder A Env` の (A, Env) -/
   totalUnder : Array (Expr × Expr) := #[]
-  /-- `StateSafe`・`StateSafeConcrete A C g P` の (A, C, g, P) -/
-  stateSafe : Array (Expr × Expr × Expr × Expr) := #[]
-  /-- `Sound A` の A -/
-  sound : Array Expr := #[]
-  /-- `InitIs A s₀` の A -/
-  initIs : Array Expr := #[]
-  /-- `FreeFrame f m` の (f, m) -/
-  freeFrame : Array (Expr × Expr) := #[]
   /-- `Nontrivial`・`Nontrivial₂` の述語の定数 -/
   nontrivial : Array Name := #[]
   /-- `KernelIs f K` の f の定数で、K が `Eq` か `@[kernel]` の定数であるもの -/
@@ -294,12 +283,26 @@ structure Companions where
   /-- `Covers M d`・`Covers₂ M d` の (定理, M, d) -/
   covers : Array (Name × Name × Name) := #[]
 
+/-- 束 `Machine.Preserves`（`@[obligation]`）の読み取り結果（引数は正規形）。 -/
+structure Bundle where
+  name : Name
+  ids : Array String
+  a : Expr
+  c : Expr
+  g : Expr
+  env : Expr
+  /-- `ch`: `none` は `none`、`some (f, ce, e₀, m)` は `some (Choice.mk … f ce e₀ m)`。読めなければ `.error` -/
+  ch : Except String (Option (Expr × Expr × Expr × Expr))
+  /-- `outs`・`outsC` の層の (base, P)。読めなければ `.error` -/
+  outs : Except String (Array (Expr × Expr))
+  outsC : Except String (Array (Expr × Expr))
+
 /-- 走査全体の結果。 -/
 structure Report where
   rs : Array RInfo
   obligations : Array (Name × Array String × Bool)
-  /-- 結論が `Machine.Adequate` の `@[obligation]` 定理（GA） -/
-  adequate : Array Name := #[]
+  /-- 結論が `Machine.Preserves` の `@[obligation]` 定理（GP） -/
+  preserves : Array Name := #[]
   nondets : Array (Name × Array String)
   deviations : Array (Name × Array String)
   stdAbs : Array (Name × Array String)
@@ -402,6 +405,47 @@ partial def prodLeaves (e : Expr) : Array Expr :=
   if e.isAppOfArity ``Prod 2 then prodLeaves e.appFn!.appArg! ++ prodLeaves e.appArg!
   else #[e]
 
+/-- 束の `ch`（`Option (Choice …)`）を読む。 -/
+def readChoice (env : Environment) (e : Expr) : Except String (Option (Expr × Expr × Expr × Expr)) :=
+  let nz := normalize env
+  match unfoldTo env [``Option.none, ``Option.some] e with
+  | some v =>
+    if v.isAppOfArity ``Option.none 1 then .ok none
+    else match unfoldTo env [N.choiceMk] v.appArg! with
+      | some c =>
+        let xs := c.getAppArgs
+        if xs.size == 11 then .ok (some (nz xs[7]!, nz xs[8]!, nz xs[9]!, nz xs[10]!))
+        else .error "ch is not Machine.Preserves.Choice.mk with all fields"
+      | none => .error "ch is not some (Machine.Preserves.Choice.mk …)"
+  | none => .error "ch is not none or some _"
+
+/-- 束の `outs`・`outsC`（層の列）を読む。`mk` は層の構成子、`nTy` はその型引数の数。 -/
+partial def readLayers (env : Environment) (mk : Name) (nTy : Nat) (e : Expr) :
+    Except String (Array (Expr × Expr)) :=
+  let nz := normalize env
+  match unfoldTo env [``List.nil, ``List.cons] e with
+  | some v =>
+    if v.isAppOfArity ``List.nil 1 then .ok #[]
+    else if v.isAppOfArity ``List.cons 3 then
+      let xs := v.getAppArgs
+      match unfoldTo env [mk] xs[1]! with
+      | some l =>
+        let ls := l.getAppArgs
+        if ls.size == nTy + 2 then
+          (readLayers env mk nTy xs[2]!).map fun rest => #[(nz ls[nTy]!, ls[nTy + 1]!)] ++ rest
+        else .error s!"a layer is not {mk} with all fields"
+      | none => .error s!"a layer is not {mk} …"
+    else .error "the layers are not a list literal"
+  | none => .error "the layers are not a list literal"
+
+/-- 結論が `Machine.Preserves` の型を読む（GP・G6）。 -/
+def readBundle (env : Environment) (name : Name) (ids : Array String) (concl : Expr) : Bundle :=
+  let nz := normalize env
+  let xs := concl.getAppArgs
+  { name, ids, a := nz (unfoldReducible env xs[7]!), c := nz (unfoldReducible env xs[8]!),
+    g := nz (unfoldReducible env xs[9]!), env := xs[11]!, ch := readChoice env xs[12]!,
+    outs := readLayers env N.outLayerMk 3 xs[13]!, outsC := readLayers env N.outLayerCMk 4 xs[14]! }
+
 /-- 付帯の定理を集める。 -/
 def collectCompanions (env : Environment) : Companions := Id.run do
   let mut cs : Companions := {}
@@ -418,24 +462,10 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     unless nForall == 0 do continue
     let some h := concl.getAppFn.constName? | continue
     let a := concl.getAppArgs
-    if h == N.initSurj && a.size == 10 then
-      cs := { cs with initSurj := cs.initSurj.push (nz a[7]!, nz a[8]!, nz a[9]!) }
-    else if h == N.pinned && a.size == 14 then
-      cs := { cs with pinned := cs.pinned.push (nz a[9]!, nz a[10]!, nz a[11]!, nz a[12]!, nz a[13]!) }
-    else if h == N.noFault && a.size == 12 then
-      cs := { cs with noFault := cs.noFault.push (nz a[8]!, nz a[9]!, nz a[10]!, nz a[11]!) }
-    else if h == N.envWitness && a.size == 10 then
+    if h == N.envWitness && a.size == 10 then
       cs := { cs with envWitness := cs.envWitness.push (nz a[7]!, nz a[8]!, nz a[9]!) }
     else if h == N.totalUnder && a.size == 5 then
       cs := { cs with totalUnder := cs.totalUnder.push (nz a[3]!, nz a[4]!) }
-    else if (h == N.stateSafe || h == N.stateSafeC) && a.size == 11 then
-      cs := { cs with stateSafe := cs.stateSafe.push (nz a[7]!, nz a[8]!, nz a[9]!, nz a[10]!) }
-    else if h == N.sound && a.size == 4 then
-      cs := { cs with sound := cs.sound.push (nz a[3]!) }
-    else if h == N.initIs && a.size == 5 then
-      cs := { cs with initIs := cs.initIs.push (nz a[3]!) }
-    else if h == N.freeFrame && a.size == 8 then
-      cs := { cs with freeFrame := cs.freeFrame.push (nz a[6]!, nz a[7]!) }
     else if h == N.nontrivial && a.size == 2 then
       if let some pc := bareConst? a[1]! then cs := { cs with nontrivial := cs.nontrivial.push pc }
     else if h == N.nontrivial₂ && a.size == 3 then
@@ -457,8 +487,8 @@ def collectCompanions (env : Environment) : Companions := Id.run do
   return cs
 
 /-- 1 つの R 課題を判定する。 -/
-def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids : Array String)
-    (ty : Expr) : RInfo := Id.run do
+def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array Bundle) (name : Name)
+    (ids : Array String) (ty : Expr) : RInfo := Id.run do
   let mut r : RInfo := { name, ids }
   let nz := normalize env
   let (concl, nForall) := conclusion ty
@@ -545,43 +575,62 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
         match bareConst? leaf with
         | some oc =>
           if hasAttr deviationAttr env oc then r := { r with obs := r.obs.push oc }
-          else r := { r with errors := r.errors.push s!"G5: {label} = {oc} is neither Machine.Adequacy.never nor @[deviation]" }
-        | none => r := { r with errors := r.errors.push s!"G5: {label} is not Machine.Adequacy.never or Machine.Adequacy.anyOf of bare @[deviation] constants" }
+          else r := { r with errors := r.errors.push s!"G5: {label} = {oc} is neither Machine.Preserves.never nor @[deviation]" }
+        | none => r := { r with errors := r.errors.push s!"G5: {label} is not Machine.Preserves.never or Machine.Preserves.anyOf of bare @[deviation] constants" }
   else
     r := { r with errors := r.errors.push "G5: glue is not Machine.Glue.ofStd" }
-  -- G6: 付帯の定理
-  let hasInit := cs.initSurj.any fun (a', c', g') => a' == a && c' == c && g' == g
-  let hasSound := cs.sound.any (· == aBase)
-  let hasInitIs := cs.initIs.any (· == aBase)
-  r := { r with hasInitSurj := hasInit, hasSound, hasInitIs }
-  unless hasInit do r := { r with errors := r.errors.push "G6: no Refines.InitSurj theorem for this machine pair and glue" }
-  unless hasSound do r := { r with errors := r.errors.push "G6: no Machine.Sound theorem for the abstract base" }
-  unless hasInitIs do r := { r with errors := r.errors.push "G6: no Machine.InitIs theorem for the abstract base" }
-  if let some (f, e₀) := choice then
-    let ps := cs.pinned.filter fun (a', c', g', f', _) => a' == a && c' == c && g' == g && f' == f
-    let mut pinnedOk := false
-    let mut noFaultOk := false
-    for (_, _, _, _, ce) in ps do
-      match bareConst? ce with
-      | some cc =>
-        if hasAttr stdAbsAttr env cc then
-          pinnedOk := true
-          pinCes := pinCes.push ce
-          if cs.noFault.any (fun (c', g', ce', e') => c' == c && g' == g && ce' == ce && e' == e₀) then
-            noFaultOk := true
-        else r := { r with errors := r.errors.push s!"G6: ce = {cc} of Refines.Pinned has no @[std_abs]" }
-      | none => r := { r with errors := r.errors.push "G6: ce of Refines.Pinned is not a bare @[std_abs] constant" }
-    r := { r with hasPinned := pinnedOk, hasNoFault := noFaultOk }
-    unless pinnedOk do
-      r := { r with errors := r.errors.push "G6: no Refines.Pinned theorem with the f of Machine.ofChoice" }
-    if pinnedOk && !noFaultOk then
-      r := { r with errors := r.errors.push "G6: no Refines.NoFaultReachable theorem with the ce of Refines.Pinned and e₀" }
-    unless r.freeLeaves.isEmpty do
-      let fr := cs.freeFrame.filter fun (f', _) => f' == f
-      let ok := fr.any fun (_, m) => (bareConst? m).any fun mc => cs.kernel.contains mc
-      r := { r with hasFreeFrame := ok }
-      unless ok do
-        r := { r with errors := r.errors.push "G3: free choices without a FreeFrame theorem whose projection has KernelIs" }
+  -- G6: 束 `Preserves`（同じ課題 ID・同じ A・C・g の `@[obligation]`）と、その `ch`・`outs` が R 課題の構造に合うこと
+  let bs := bundles.filter fun b => b.ids.any ids.contains && b.a == a && b.c == c && b.g == g
+  if bs.isEmpty then
+    r := { r with errors := r.errors.push "G6: no Machine.Preserves bundle (@[obligation] with the same ID, A, C and g) for this R obligation" }
+  else
+    r := { r with hasInitSurj := true, hasSound := true, hasInitIs := true }
+  for b in bs do
+    -- 選択の像の材料
+    match b.ch, choice with
+    | .error e, _ => r := { r with errors := r.errors.push s!"G6: {b.name}: {e}" }
+    | .ok none, none => pure ()
+    | .ok (some _), none =>
+      r := { r with errors := r.errors.push s!"G6: {b.name}: ch must be none for a Machine.pure base" }
+    | .ok none, some _ =>
+      r := { r with errors := r.errors.push s!"G6: {b.name}: ch must be some (Choice.mk …) with the f and e₀ of Machine.ofChoice" }
+    | .ok (some (f', ce, e₀', m)), some (f, e₀) =>
+      if f' != f then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.f is not the f of Machine.ofChoice" }
+      else if e₀' != e₀ then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.e₀ is not the e₀ of Machine.ofChoice" }
+      else match bareConst? ce with
+        | some cc =>
+          if hasAttr stdAbsAttr env cc then
+            pinCes := pinCes.push ce
+            r := { r with hasPinned := true, hasNoFault := true }
+          else r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce = {cc} has no @[std_abs]" }
+        | none => r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce is not a bare @[std_abs] constant" }
+      if !r.freeLeaves.isEmpty && (bareConst? m).any fun mc => cs.kernel.contains mc then
+        r := { r with hasFreeFrame := true }
+    -- 「出力のみ」の差異の層（base は、その層を外した機械か基底）
+    for (label, ls, whole, base, names) in
+        [("outs", b.outs, a, aBase, [N.restrict, N.restrictState]), ("outsC", b.outsC, c, cBase, [N.cRestrict])] do
+      match ls with
+      | .error e => r := { r with errors := r.errors.push s!"G6: {b.name}: {label}: {e}" }
+      | .ok xs =>
+        for (lb, lp) in xs do
+          match bareConst? lp with
+          | some pc =>
+            let dropped := (dropRestrict env names (mkConst pc) whole).map (normalize env)
+            if !r.devs.contains pc then
+              r := { r with errors := r.errors.push s!"G6: {b.name}: {label} has the layer {pc}, which is not a restrict predicate of the R obligation" }
+            else if lb == base || dropped == some lb then
+              unless r.stateSafe.contains pc do r := { r with stateSafe := r.stateSafe.push pc }
+            else
+              r := { r with errors := r.errors.push s!"G6: {b.name}: {label}: the base of the layer {pc} is neither the base nor the machine without the layer" }
+          | none => r := { r with errors := r.errors.push s!"G6: {b.name}: {label}: a layer predicate is not a bare @[deviation] constant" }
+    -- 入口の全域性（束の `total`・`envWitness`）
+    if headConst? b.env == some N.always && (clean b.env).getAppNumArgs == 1 then
+      r := { r with totalUnder := r.totalUnder.push (N.always, true) }
+    else if let some ec := bareConst? b.env then
+      if hasAttr envPreAttr env ec then r := { r with totalUnder := r.totalUnder.push (ec, true) }
+  if choice.isSome && !r.freeLeaves.isEmpty && !r.hasFreeFrame then
+    let msg := "G3: free choices, but no bundle whose Choice.m is a bare constant with a KernelIs theorem (FreeFrame)"
+    r := { r with errors := r.errors.push msg }
   -- G9: 成分の必要性（どの R 課題にも無い成分の誤りは、全体の判定で出す）
   let pinOk (pin : Option (Expr × Expr)) : Bool :=
     match choice, pin with
@@ -611,21 +660,19 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
             let slot := gs[k]!.replace fun sub => if bareConst? sub == some oc then some nev else none
             let g' := mkAppN g.getAppFn (gs.set! k slot)
             r := record r oc (found a c g')
-  -- 入口の全域性と状態の安全性（事実として出す）
+  -- 入口の全域性（別の定理の `TotalUnder`・`EnvWitness`。事実として出す）
   r := { r with envNecessary := cs.envNecessity.contains aBase }
   for (a', env') in cs.totalUnder do
     if a' == aBase then
       let w := cs.envWitness.any fun (c', g', e') => c' == c && g' == g && e' == env'
+      let add (r : RInfo) (e : Name) : RInfo :=
+        if r.totalUnder.any (·.1 == e) then r else { r with totalUnder := r.totalUnder.push (e, w) }
       if headConst? env' == some N.always && (clean env').getAppNumArgs == 1 then
-        r := { r with totalUnder := r.totalUnder.push (N.always, w) }
+        r := add r N.always
       else match bareConst? env' with
         | some ec =>
-          if hasAttr envPreAttr env ec then r := { r with totalUnder := r.totalUnder.push (ec, w) }
+          if hasAttr envPreAttr env ec then r := add r ec
         | none => pure ()
-  for (a', c', g', p) in cs.stateSafe do
-    if a' == aBase && c' == cBase && g' == g then
-      if let some pc := bareConst? p then
-        if r.devs.contains pc then r := { r with stateSafe := r.stateSafe.push pc }
   return r
 
 /-- 合成の標準の抽象化（G7）の参照が許可した構成に収まるか。収まらない参照を返す。 -/
@@ -758,16 +805,22 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let cs := collectCompanions env
   let mut rs := #[]
   let mut obligations := #[]
-  let mut adequate : Array Name := #[]
-  -- R 課題と束の (定理, ID, A, C, g)（GA の照合）
+  let mut preserves : Array Name := #[]
+  -- R 課題の (ID, A, C, g)（GP の照合）
   let mut rArgs : Array (Array String × Array Expr) := #[]
-  let mut aArgs : Array (Name × Array String × Array Expr) := #[]
   let mut nondets := #[]
   let mut devs := #[]
   let mut stds := #[]
   let mut envPres := #[]
   let mut errors := #[]
   let consts := env.constants.toList.toArray.qsort fun a b => a.1.toString < b.1.toString
+  -- 1 回目: 束 `Preserves` を集める（G6 が R 課題ごとに引く）
+  let mut bundles : Array Bundle := #[]
+  for (n, ci) in consts do
+    if let some ids := obligationAttr.getParam? env n then
+      if let .thmInfo _ := ci then
+        let concl := unfoldReducible env (conclusion ci.type).1
+        if concl.isAppOfArity N.preserves 15 then bundles := bundles.push (readBundle env n ids concl)
   for (n, ci) in consts do
     let attrs := [("nondet", nondetAttr), ("deviation", deviationAttr), ("std_abs", stdAbsAttr),
       ("kernel", kernelAttr), ("env_pre", envPreAttr), ("obligation", obligationAttr)]
@@ -780,7 +833,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
       devs := devs.push (n, ids)
       if ids.size > 1 then
         errors := errors.push
-          s!"G9: {n} (@[deviation]) has {ids.size} IDs {ids.toList}; give each deviation its own constant (Machine.Adequacy.anyOf for observational components)"
+          s!"G9: {n} (@[deviation]) has {ids.size} IDs {ids.toList}; give each deviation its own constant (Machine.Preserves.anyOf for observational components)"
       unless cs.nontrivial.contains n do
         errors := errors.push s!"G8: {n} (@[deviation]) has no Nontrivial/Nontrivial₂ theorem"
     if let some ids := envPreAttr.getParam? env n then
@@ -808,23 +861,21 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
         let (concl, _) := conclusion ci.type
         let concl := unfoldReducible env concl
         let isR := concl.isAppOfArity N.refines 10
-        let isA := concl.isAppOfArity N.adequate 12
+        let isP := concl.isAppOfArity N.preserves 15
         obligations := obligations.push (n, ids, isR)
         let acg (e : Expr) (i : Nat) : Array Expr :=
           (e.getAppArgs.extract i (i + 3)).map fun x => normalize env (unfoldReducible env x)
-        if isA then
-          adequate := adequate.push n
-          aArgs := aArgs.push (n, ids, acg concl 7)
+        if isP then preserves := preserves.push n
         if isR then
-          rs := rs.push (checkR env sc cs n ids ci.type)
+          rs := rs.push (checkR env sc cs bundles n ids ci.type)
           rArgs := rArgs.push (ids, acg concl 7)
         else if (normalize env ci.type).getUsedConstants.contains N.refines &&
             (necessityForm? env ci.type).isNone then
           errors := errors.push s!"G0: {n} mentions Machine.Refines but its conclusion is not Refines"
-  -- GA: 束は、同じ課題 ID の R 課題と同じ A・C・g を束ねる
-  for (n, ids, xs) in aArgs do
-    unless rArgs.any (fun (rids, ys) => ids.any rids.contains && xs == ys) do
-      errors := errors.push s!"GA: {n} (Machine.Adequate) does not bundle an R obligation with the same ID {ids.toList} (A, C and g must match)"
+  -- GP: 束は、同じ課題 ID の R 課題と同じ A・C・g を束ねる
+  for b in bundles do
+    unless rArgs.any (fun (rids, ys) => b.ids.any rids.contains && #[b.a, b.c, b.g] == ys) do
+      errors := errors.push s!"GP: {b.name} (Machine.Preserves) does not bundle an R obligation with the same ID {b.ids.toList} (A, C and g must match)"
   -- G9: 成分の必要性（差異 ID ごとに、少なくとも 1 つの R 課題について。被覆は必要な差異から広げる）
   let used := (rs.foldl (fun acc ri => acc ++ ri.devs ++ ri.obs) #[]).toList.eraseDups
   let mut needed := rs.foldl (fun acc ri => acc ++ ri.necessity) #[]
@@ -852,7 +903,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
           s!"G9: {e} (@[env_pre]) is used for the abstract base {b} of an R obligation without a ¬ TotalUnder (base) always theorem (if PRE is total, state TotalUnder (base) always instead)"
   errors := errors ++ checkGaps env sc rs cs
   let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
-  return { rs, obligations, adequate, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
+  return { rs, obligations, preserves, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
            gaps := Trace.Gap.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
@@ -880,7 +931,7 @@ def Report.toJson (r : Report) : Json :=
       ("errors", Lean.toJson ri.errors)])),
     ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
       ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR),
-      ("adequate", Lean.toJson (r.adequate.contains n))])),
+      ("preserves", Lean.toJson (r.preserves.contains n))])),
     ("nondet", attrd r.nondets), ("deviation", attrd r.deviations), ("std_abs", attrd r.stdAbs),
     ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors),
     ("warnings", Lean.toJson r.warnings), ("gaps", r.gaps)]

@@ -1,15 +1,15 @@
 import Machine.Glue
-import Machine.Adequacy
+import Machine.Preserves.Pred
 
 /-!
-# Machine.Glue.Adequacy
+# Machine.Glue.Preserves
 
-標準の貼り合わせ `Glue.ofStd` と、各点で同値な貼り合わせ `Glue.Equiv`（references/docs/spec/architecture.md#空虚化を防ぐ義務）。
+標準の貼り合わせ `Glue.ofStd`（references/docs/spec/architecture.md#空虚化を防ぐ義務）。
 -/
 
 namespace Machine
 
-open Machine.Adequacy
+open Machine.Preserves (never)
 
 variable {σ τ ιa ιc οa οc ε E F : Type}
 
@@ -28,11 +28,6 @@ def ofStd (β : τ → Option σ) (Ic : τ → Prop) (ai : ιc → Option ιa) (
   αi c a := ai c = some a
   αo c a := ao c = some a ∨ OO c a
 
-/-- 各点で同値な貼り合わせ。 -/
-structure Equiv (g g' : Glue σ τ ιa ιc οa οc) : Prop where
-  J : ∀ s t, g.J s t ↔ g'.J s t
-  αi : ∀ c a, g.αi c a ↔ g'.αi c a
-  αo : ∀ c a, g.αo c a ↔ g'.αo c a
 
 end Glue
 

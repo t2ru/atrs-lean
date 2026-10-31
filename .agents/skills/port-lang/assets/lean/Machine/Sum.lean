@@ -1,4 +1,4 @@
-import Machine.Adequacy
+import Machine.Preserves.Pred
 
 
 /-!
@@ -8,7 +8,7 @@ import Machine.Adequacy
 
 各機能の機械を並べて、トップレベルの機械を作る。入力は和型で、どちらかの機能を 1 歩動かす。状態は積で、
 動かさない側の状態は変わらない。抽象機械・具体機械・貼り合わせをそれぞれ並べると、リファインメントと
-義務の束 `Machine.Adequate` は保たれる（`Refines.sum`・`Adequate.sum`）。
+義務の束 `Machine.Preserves` は保たれる（`Refines.sum`・`Adequate.sum`）。
 
 | 定義・定理 | モジュール | 内容 |
 | --- | --- | --- |
@@ -17,7 +17,7 @@ import Machine.Adequacy
 | `Concrete.sum` | `Machine.Concrete.Sum` | 具体機械の並置 |
 | `Glue.sum` | `Machine.Glue.Sum` | 貼り合わせの並置 |
 | `Refines.sum` | `Machine.Refines.Sum` | 並置はリファインメントを保つ |
-| `Adequate.sum`・`Adequate.congrPre` | `Machine.Adequate.Sum` | 並置は義務の束を保つ。PRE と具体側の定義域を、各点で同値なものに替えても束は保たれる（並置した制限と、制限の並置を結ぶ） |
+| `Adequate.sum`・`Adequate.congrPre` | `Machine.Preserves.Sum` | 並置は義務の束を保つ。PRE と具体側の定義域を、各点で同値なものに替えても束は保たれる（並置した制限と、制限の並置を結ぶ） |
 
 ドット記法（`A₁.sum A₂`・`h₁.sum h₂`）のため、型ごとの定義はその型の名前空間に置き、型のモジュールの下位モジュールに分ける（port-lang の `lang/lean/rules.md#モジュールと名前空間` の E1）。
 
@@ -25,7 +25,7 @@ import Machine.Adequacy
 
 ```lean
 theorem refines : Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue
-theorem adequate : Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue s₀ env
+theorem adequate : Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue s₀ env
 ```
 -/
 

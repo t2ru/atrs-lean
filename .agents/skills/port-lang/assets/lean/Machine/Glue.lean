@@ -1,7 +1,7 @@
 /-!
 # Machine.Glue
 
-貼り合わせ `Glue`（抽象側と具体側の状態の関係 `J`、入力の対応 `αi`、出力の対応 `αo`）と、恒等・純粋・合成の貼り合わせ
+貼り合わせ `Glue`（抽象側と具体側の状態の関係 `J`、入力の対応 `αi`、出力の対応 `αo`）と、恒等・純粋・合成の貼り合わせ、各点で同値な貼り合わせ `Glue.Equiv`
 （references/docs/spec/architecture.md#リファインメントb-メソッド）。リファインメント `Machine.Refines` が使う。
 -/
 
@@ -38,6 +38,12 @@ def comp {σ μ τ ιa ιb ιc οa οb οc : Type} (g₁ : Glue σ μ ιa ιb ο
   J s t := ∃ m, g₁.J s m ∧ g₂.J m t ∧ invM m
   αi ic ia := ∃ ib, g₂.αi ic ib ∧ g₁.αi ib ia
   αo oc oa := ∃ ob, g₂.αo oc ob ∧ g₁.αo ob oa
+
+/-- 各点で同値な貼り合わせ。 -/
+structure Equiv {σ τ ιa ιc οa οc : Type} (g g' : Glue σ τ ιa ιc οa οc) : Prop where
+  J : ∀ s t, g.J s t ↔ g'.J s t
+  αi : ∀ c a, g.αi c a ↔ g'.αi c a
+  αo : ∀ c a, g.αo c a ↔ g'.αo c a
 
 end Glue
 

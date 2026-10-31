@@ -17,7 +17,8 @@ import SourceModel.FareQuery
 namespace Abstraction.Fare.Alpha
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Spec.CodeList
-open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Adequacy
+open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 open Machine LangSemantics.Core SourceModel.FareQuery
 

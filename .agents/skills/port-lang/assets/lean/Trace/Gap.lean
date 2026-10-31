@@ -16,7 +16,7 @@ import Trace.Attr
 - **証明の状態**（`Evidence`）: ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で
   仮定せず（ギャップが実在すれば矛盾する）、状態を裏付ける Lean の宣言で示す。裏付けの宣言には `@[gap "<ID>"]` を付ける。
   - `refuted`: 差異を外した R 課題の否定の定理（偽を証明済み。W 課題の必要性）
-  - `covered`: 必要な差異がこの差異を覆う定理（`Machine.Adequacy.Covers`）
+  - `covered`: 必要な差異がこの差異を覆う定理（`Machine.Preserves.Covers`）
   - `pending`: 前提で制限して証明したが、偽も真もまだ示していない（制限は仮定を強めるだけなので、安全に証明できる）
   - `unformalized`: Lean の命題として書けない主張。証明も公理も持たない `opaque` な命題（どの定理からも参照しない）
   - `excludedBy`: 差異ではない（`Spec` の PRE・INV の外。その前提の述語）
@@ -115,7 +115,7 @@ structure DocRef where
 inductive Evidence where
   /-- 偽を証明済み: 差異を外した R 課題の否定の定理（`¬ Refines …`。W 課題の必要性。obligation-check の G9 の形） -/
   | refuted (necessity : List Name)
-  /-- 被覆: 必要な差異の述語 `coverer` が、この差異を覆う定理（`Machine.Adequacy.Covers coverer d`・`Covers₂`） -/
+  /-- 被覆: 必要な差異の述語 `coverer` が、この差異を覆う定理（`Machine.Preserves.Covers coverer d`・`Covers₂`） -/
   | covered (coverer : Name) (covers : List Name)
   /-- 未確定: 前提で制限して証明したが、必要性（偽）も一致（真）もまだ示していない。理由と、予定の W 課題 -/
   | pending (reason : String) (wTask : Option String)
