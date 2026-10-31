@@ -1,7 +1,7 @@
 import Machine
 
 /-!
-# MachineTest.Counter
+# Test.Machine.Counter
 
 状態を持つ機械の例。抽象側は上限の無いカウンタ、具体側は 255 で溢れを誤りとするカウンタ
 （溢れを誤りとする言語の固定長整数の模擬。`LangSemantics` には依存しない）。
@@ -12,7 +12,7 @@ import Machine
 - `Refines.refl`・`Refines.trans` の使用例
 -/
 
-namespace MachineTest.Counter
+namespace Test.Machine.Counter
 
 open Machine
 
@@ -66,4 +66,4 @@ theorem counter8_refines_trans :
       ((Glue.id Nat Unit Nat).comp glue (counter.restrictState devNoOverflow).Inv) :=
   Refines.trans (counter_sound.restrictState _) (Refines.refl _) counter8_refines
 
-end MachineTest.Counter
+end Test.Machine.Counter

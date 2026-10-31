@@ -1,7 +1,7 @@
 import Machine
 
 /-!
-# MachineTest.Adequacy
+# Test.Machine.Adequacy
 
 `Machine.Adequacy` の義務の例と反例（references/docs/architecture.md#空虚化を防ぐ義務）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
 成り立たないことを証明する。あわせて、すべての義務を満たす正例を示す。
@@ -27,7 +27,7 @@ import Machine
 `specStrong_not_always`（環境の前提・`TotalUnder.not_always`）である。
 -/
 
-namespace MachineTest.Adequacy
+namespace Test.Machine.Adequacy
 
 open Machine
 
@@ -520,4 +520,4 @@ theorem obsNaN_needed : ¬ Refines half halfNaN (glueNum aoPartial) :=
 theorem specStrong_not_always : ¬ specStrong.TotalUnder always :=
   Machine.TotalUnder.not_always (A := specStrong) (s := 5) (i := 100) trivial (show ¬ (100 < 10) by decide)
 
-end MachineTest.Adequacy
+end Test.Machine.Adequacy

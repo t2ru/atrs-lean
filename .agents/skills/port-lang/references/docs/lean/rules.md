@@ -61,7 +61,7 @@ require <project> from "./lean"
 - 確認: ルートで `lake setup-file <各パッケージのファイル>` が成功すること（LSP はこれを呼ぶ）。
 
 - ファイルパスと名前空間を一致させる（`Spec.Fare` は `Spec/Fare.lean`）。
-- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`ConformanceKit`・`Tests`・`Tools` は例外として認められている。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する（`scripts/ci/check_lean.py`）。
+- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`ConformanceKit`・`Tests`・`Tools` は例外として認められている。スキルの assets の検査は `Test.<ライブラリ>`（`assets/lean/Test/`）に置き、`Tests` と同じ層として扱う（[ADR c08b](../decision/c08b-test-namespace-for-skill-asset-tests.md)）。適用先は `Test` を使わない。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する（`scripts/ci/check_lean.py`）。
 - アプリに依存しない補題・道具は、プロジェクトに置かず、スキルの assets に足す。置き場所は次のとおり。
   - 特定の言語の意味論の補題 → `LangSemantics.<lang>`
   - どの言語にも依存しない列・`Option`・文字列の補題 → `LangSemantics.Core`

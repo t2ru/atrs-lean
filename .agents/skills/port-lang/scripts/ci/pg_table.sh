@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# assets/lean/LangSemanticsTest/PostgresqlDb.lean が、PostgreSQL での生成器の出力と一致することを確かめる
+# assets/lean/Test/LangSemantics/PostgresqlDb.lean が、PostgreSQL での生成器の出力と一致することを確かめる
 # （port-lang の道具。scripts/README.md）。PostgreSQL の版は、作業ディレクトリ（リポジトリのルート）の
 # trace/upstream.json の languages.postgresql.version と照合する。
 # PostgreSQL が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
@@ -15,6 +15,6 @@ if ! { [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/p
 fi
 pgt="$(mktemp)"
 trap 'rm -f "$pgt"' EXIT
-"$here/with_postgres.sh" python3 -I "$assets/LangSemanticsTest/pg/pg_table.py" --expect-version "$pgver" > "$pgt"
-diff -u "$assets/LangSemanticsTest/PostgresqlDb.lean" "$pgt"
+"$here/with_postgres.sh" python3 -I "$assets/Test/LangSemantics/pg/pg_table.py" --expect-version "$pgver" > "$pgt"
+diff -u "$assets/Test/LangSemantics/PostgresqlDb.lean" "$pgt"
 echo "PostgresqlDb.lean: up to date (PostgreSQL $pgver)"

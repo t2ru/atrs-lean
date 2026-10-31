@@ -26,7 +26,7 @@ generated:
 モデルと証明は、すべて Lean に置く。Lean のトップレベル名前空間は、次の 6 つだけとする。例外は 4 つある。
 - `Machine`: 抽象機械とリファインメントの枠組み。アプリに依存しない
 - `Trace`: 追跡属性の基盤
-- `Tests`・`Tools`: 実行ファイル用
+- `Tests`・`Tools`: 実行ファイル用。スキルの assets の検査は `Test.<ライブラリ>` に置き、`Tests` と同じ層として扱う（[ADR c08b](decision/c08b-test-namespace-for-skill-asset-tests.md)）
 
 | 名前空間 | 日本語名 | 内容 | 文書上の記号 |
 | --- | --- | --- | --- |

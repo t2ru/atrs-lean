@@ -3,7 +3,7 @@ name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/docs/<lang>/ に記載。
 metadata:
-  version: "0.9"
+  version: "0.10"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -174,7 +174,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
 
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets/lean"` とする（[lean/rules.md](references/docs/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
-- 検査: `assets/lean/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`ConformanceKitTest/` では実行器をメモリ上のベクタで確かめる。`TraceTest/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`MachineTest/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`MachineTest/Adequacy.lean`）である。`LangSemanticsTest/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java LangSemanticsTest/jvm/JavaTable.java > LangSemanticsTest/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `LangSemanticsTest/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I LangSemanticsTest/pg/pg_table.py > LangSemanticsTest/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/docs/sql/dialects/postgresql/harness.md)）。
+- 検査: `assets/lean/` で `lake build` を実行すると、`Test/LangSemantics/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`Test/ConformanceKit/` では実行器をメモリ上のベクタで確かめる。`Test/Trace/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`Test/Machine/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`Test/Machine/Adequacy.lean`）である。`Test/LangSemantics/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `Test/LangSemantics/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/docs/sql/dialects/postgresql/harness.md)）。
 
 ### 道具（scripts）
 

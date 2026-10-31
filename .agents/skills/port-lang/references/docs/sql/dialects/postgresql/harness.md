@@ -21,7 +21,7 @@ generated:
 
 ## 方言の突き合わせ表
 
-`assets/lean/LangSemanticsTest/pg/pg_table.py` は、固定の入力を PostgreSQL で評価し、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` と照合する `#guard` を生成する（生成物 `LangSemanticsTest/PostgresqlDb.lean`）。
+`assets/lean/Test/LangSemantics/pg/pg_table.py` は、固定の入力を PostgreSQL で評価し、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` と照合する `#guard` を生成する（生成物 `Test/LangSemantics/PostgresqlDb.lean`）。
 
 - データを伴う照会は、同じデータを処理系と Lean の両方で評価する。順序が未規定なら、処理系の結果が `isAllowedOrder` を満たすことを照合する。
 - 移植元の文ごとの差分実行も、同じ形で作る。原典の SQL を処理系で実行した結果と、写した式（`SourceModel.Repository.*`）を同じデータで評価した結果を照合する `#guard`（またはテスト）を生成する。

@@ -1,13 +1,13 @@
 import Trace
 
 /-!
-# TraceTest.GapErrors
+# Test.Trace.GapErrors
 
 `@[gap_entry]` の値の誤り（種類ごとの必須の欄・禁じる欄、種類と証明の状態の組み合わせ、読めない値）が、
 付けた時点でエラーになることを確かめる。
 -/
 
-namespace TraceTest.GapErrors
+namespace Test.Trace.GapErrors
 
 open Trace
 
@@ -75,8 +75,8 @@ def nameSuffix : String := "x"
   { id := "D-009", kind := .outsidePre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
     evidence := .excludedBy [Lean.Name.str .anonymous ("a" ++ nameSuffix)] }
 
-/-- error: @[gap_entry]: TraceTest.GapErrors.notGap must have type Trace.Gap -/
+/-- error: @[gap_entry]: Test.Trace.GapErrors.notGap must have type Trace.Gap -/
 #guard_msgs in
 @[gap_entry] def notGap : Nat := 0
 
-end TraceTest.GapErrors
+end Test.Trace.GapErrors

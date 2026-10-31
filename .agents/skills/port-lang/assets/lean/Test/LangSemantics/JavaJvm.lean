@@ -1,10 +1,10 @@
 import LangSemantics.Java
 
 /-!
-# LangSemanticsTest.JavaJvm
+# Test.LangSemantics.JavaJvm
 
-**生成物（手で編集しない）。** `LangSemanticsTest/jvm/JavaTable.java` が JVM で計算した値と、
-`LangSemantics.Java` の結果を突き合わせる。再生成: `java LangSemanticsTest/jvm/JavaTable.java > LangSemanticsTest/JavaJvm.lean`
+**生成物（手で編集しない）。** `Test/LangSemantics/jvm/JavaTable.java` が JVM で計算した値と、
+`LangSemantics.Java` の結果を突き合わせる。再生成: `java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean`
 -/
 
 open LangSemantics.Java

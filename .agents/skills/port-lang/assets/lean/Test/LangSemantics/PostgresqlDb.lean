@@ -1,14 +1,14 @@
 import LangSemantics.Sql.Postgresql
 
 /-!
-# LangSemanticsTest.PostgresqlDb
+# Test.LangSemantics.PostgresqlDb
 
-**生成物（手で編集しない）。** `LangSemanticsTest/pg/pg_table.py` が PostgreSQL（照合順序 C・UTF8・UTC）で
+**生成物（手で編集しない）。** `Test/LangSemantics/pg/pg_table.py` が PostgreSQL（照合順序 C・UTF8・UTC）で
 計算した値と、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` の結果を突き合わせる。
-再生成: `python3 -I LangSemanticsTest/pg/pg_table.py > LangSemanticsTest/PostgresqlDb.lean`
+再生成: `python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`
 -/
 
-namespace LangSemanticsTest.PostgresqlDb
+namespace Test.LangSemantics.PostgresqlDb
 
 open LangSemantics.Sql LangSemantics.Sql.Postgresql
 
@@ -438,4 +438,4 @@ def byId (ids : List Nat) : List (Nat × SqlValue × SqlValue) := ids.filterMap 
 def urows : List (Nat × SqlValue × SqlValue) := [(1, .int 1, .int 2), (2, .int 3, .null), (3, .int 5, .int 6)]
 #guard (updateWhere (fun r => SqlValue.lt coll (.int 1) r.2.2) (fun r => (r.1, r.2.2, r.2.1)) urows).1 == [(1, (.int 2), (.int 1)), (2, (.int 3), .null), (3, (.int 6), (.int 5))]
 
-end LangSemanticsTest.PostgresqlDb
+end Test.LangSemantics.PostgresqlDb
