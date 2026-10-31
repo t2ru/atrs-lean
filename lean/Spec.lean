@@ -7,6 +7,7 @@ import Spec.MasterData
 import Spec.CodeList
 import Spec.MasterQuery
 import Spec.Fare
+import Spec.Nondet
 
 /-!
 # Spec
@@ -18,6 +19,7 @@ import Spec.Fare
 | --- | --- |
 | `Spec.Prim` | 基本演算・暦日・時刻・書式・文字クラス |
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
+| `Spec.Nondet` | 非決定性 N-001〜N-005 の選択の型（`@[nondet]`）と標準の値 |
 | `Spec.Config` | 設定値と不変条件 |
 | `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |
 | `Spec.CodeList` | コードリスト |
