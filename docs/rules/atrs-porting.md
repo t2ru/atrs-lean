@@ -125,7 +125,7 @@ generated:
 | 項目 | ATRS での扱い |
 | --- | --- |
 | 評価 | 済み。範囲は [ADR 0002](../decision/0002-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
-| 人が判断する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
+| 判断を記録する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、スキルの既定の例に加えて、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
 | 検査ゲート | `tools/ci/lean.sh` と CI。追跡は `tools/trace check`、ハッシュの更新は `tools/trace rehash` |
 | 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
 | 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） |
