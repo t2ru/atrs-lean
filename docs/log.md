@@ -2,6 +2,14 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) を完了した（`done`）。第 3 段で、R 課題 ABS-004（`Abstraction.Fare.totalFareRefines`）・L 課題 ABS-005（`runTotalFare_eq`）・W 課題 ABS-112（`need_D012`。D-012 の必要性）を証明した。`Spec.Fare.totalFare` をフライトのキーと搭乗者の年齢の関数 `totalFareOfKeys` で書き直し、合計金額の抽象機械と SPEC 課題を置いた。`SourceModel.Ticket`（`TicketHelper.toFlightList`）を足し、`Tests.TicketChecks` の検査を `trace/checks.json` の `lake-test` に登録した。
+* **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 3 段の決定（合計金額の [Spec] と具体側の入力、D-001・D-002・D-012 の前提、証人の文字列）を加えた。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（ABS-004・005・112 の定理名、α の表）、`lean/Abstraction/Gap.lean`（D-001・D-002・D-012・D-027 の前提と R 課題。表は生成）
+  * [spec/fare-calculation.md](spec/fare-calculation.md)（合計金額の抽象機械）
+  * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
+  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/java/semantics.md)（`int` の補題）
+
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 2 段を終えた（`doing`）。R 課題 ABS-001（`Abstraction.Fare.basicFareRefines`）・ABS-002（`fareRefines`）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102（D-001・D-002 の必要性）を証明した。基本運賃・運賃の抽象機械と SPEC 課題を `Spec.Fare` に置いた。
 * **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 2 段の決定（抽象機械の置き場所、具体側の入力、D-027 の定数、差異の前提の形）を加えた。
 * **Update**: 次の文書を改めた。

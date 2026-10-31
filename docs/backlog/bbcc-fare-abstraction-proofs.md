@@ -1,14 +1,14 @@
 ---
 type: Backlog Item
 title: "運賃計算の抽象化証明"
-description: "運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、第 1 段で double の誤差を定理で確定し、第 2 段で基本運賃・運賃の R 課題を証明した。"
+description: "運賃計算の抽象化証明課題（ABS-001〜005・007、W 課題 ABS-101・102・112）を Abstraction.Fare で証明する。3 段に分け、double の誤差を定理で確定し、基本運賃・運賃・合計金額の R 課題を証明した。"
 tags: [backlog, abstraction, proof, fare]
 id: "bbcce088-c475-4378-9cc6-e3d821acc0f5"
-state: doing
+state: done
 depends_on: ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:42:19+09:00
+  at: 2026-10-31T17:49:17+09:00
 ---
 
 # 運賃計算の抽象化証明
@@ -42,9 +42,9 @@ generated:
 - [x] D-001・D-002 の前提を、差異が起きない十分条件の定理で書き、[abstraction.md](../spec/abstraction.md) を更新した（第 1 段）
 - [x] 基本運賃・運賃の R 課題（ABS-001・002）と ABS-003・007・101・102 の定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する（第 2 段）
 - [x] 基本運賃・運賃の機械の SPEC-001〜003・007 を証明した（第 2 段）
-- [ ] 合計金額の課題（ABS-004・005・112）の定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する
-- [ ] 合計金額の機械の SPEC-001 を証明した
-- [ ] D-012 の前提を証明結果で更新し、TR-D が通る
+- [x] 合計金額の課題（ABS-004・005・112）の定理が `sorry`・`native_decide`・`bv_decide` 無しで存在する（第 3 段）
+- [x] 合計金額の機械の SPEC-001〜003・007 を証明した（第 3 段）
+- [x] D-012 の前提を証明結果で更新し、TR-D が通る（第 3 段）
 
 ## 第 1 段の結果
 
@@ -73,6 +73,18 @@ generated:
 | `Abstraction.Fare.need_D001`（ABS-101）・`need_D002`（ABS-102） | 差異の必要性（G9） |
 
 第 3 段に残るもの: 合計金額の抽象機械・具体機械と ABS-004・005・112、D-012。
+
+## 第 3 段の結果
+
+| 定理・定義 | 内容 |
+| --- | --- |
+| `Spec.Fare.totalFareOfKeys`・`totalFareMachine` | 合計金額をキーと年齢で書いた関数（`totalFare_eq`）と抽象機械、SPEC-001〜003・007 |
+| `SourceModel.Ticket.toFlightList`・`SourceModel.FareQuery.totalFareConcrete` | 選択フライト情報からのフライト情報の組み立てと、合計金額の具体機械 |
+| `Abstraction.Fare.aiTF`・`dev_D001T`・`dev_D002T`・`dev_D012`・`dev_D027TF` | α と差異の述語 |
+| `Abstraction.MasterData.flightMaster_fare`・`load_correct'` | 便マスタのキャッシュの区間の運賃、読み込みの性質 |
+| `Abstraction.Fare.forIn_sum_eq`・`forIn_count_eq` | `for` 文の和・計数 |
+| `Abstraction.Fare.runTotalFare_eq`（ABS-005）・`totalFareRefines`（ABS-004） | 合計金額の正しさ（溢れなし）と R 課題・`InitSurj` |
+| `Abstraction.Fare.need_D012`（ABS-112） | D-012 の必要性（基本運賃 1 億円・小児 1 名で 17,050,400 円と 60,000,000 円） |
 
 ## 参照
 
