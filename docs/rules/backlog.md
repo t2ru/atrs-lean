@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T12:55:53+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # バックログ規約
@@ -17,7 +17,7 @@ generated:
 docs/backlog/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- 命名規則は ADR と同じ（ID は UUID v4、ファイル名の先頭は ID の先頭 4 文字、英小文字スラッグ、改名・削除しない。[decision-records.md](decision-records.md#ファイル名)）。`python3 -I tools/docs/ids.py new backlog <slug>` が ID とファイル名を出す。
+- 命名規則は ADR と同じ（ID は UUID v4、ファイル名の先頭は ID の先頭 4 文字、英小文字スラッグ、改名・削除しない。[decision-records.md](decision-records.md#ファイル名)）。`python3 -I .agents/skills/port-lang/scripts/docs/ids.py new backlog <slug>` が ID とファイル名を出す。
 - `id`・`depends_on` と、`trace/features.json`・登録簿の backlog の列には ID 全体を、本文の参照には先頭 4 文字を書く（[documentation.md](documentation.md#リンク)）。
 - 索引 [docs/backlog/README.md](../backlog/README.md) の表（ID の列は先頭 4 文字）と [docs/index.md](../index.md) を常に最新に保つ。
 
@@ -78,7 +78,7 @@ generated:
 - Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
 - 基本原則（[ADR c336](../decision/c336-foundational-principles.md)）を満たす。項目が扱う機能について、次をすべて満たす。
   - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。R 課題は付帯の義務（`InitSurj`・`Pinned`・出力のみの差異の `StateSafe`）を、W 課題は両向きの例を含む（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。
-  - `lake exe obligation-check` と `tools/ci/check_obligations.py` が、その機能について警告なしで通る（TR-G・TR-N）。
+  - `lake exe obligation-check` と port-lang の `scripts/ci/check_obligations.py` が、その機能について警告なしで通る（TR-G・TR-N）。
   - 両端の決定論的な手段がすべて通る（`source-model/` ベクタと Java オラクルの照合、SQL の差分実行、`target-model/` ベクタ、写しの再生成、Verus・Kani）。
   - 追跡の検査 TR-*（TR-D を含む）が失敗扱いで通る。
   - 決定論的な手段の届かない部分が [assurance.md](../spec/assurance.md) に載っている。

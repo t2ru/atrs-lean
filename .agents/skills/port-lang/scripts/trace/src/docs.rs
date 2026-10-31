@@ -1,5 +1,5 @@
 //! 文書の読み込み: 入口の R 課題と証明課題の表、backlog の状態、`trace/features.json`。
-//! 既知差異（D/T）の登録簿は Lean にある（`trace-dump` の `gaps`。ADR cc24）。
+//! 既知差異（D/T）の登録簿は Lean にある（`trace-dump` の `gaps`。references/lean/trace-attributes.md#ギャップの登録簿）。
 
 use globset::{Glob, GlobMatcher};
 use serde::Deserialize;
@@ -91,7 +91,7 @@ pub fn citations(md: &str) -> Vec<(usize, String)> {
     out
 }
 
-/// `docs/backlog/*.md` の `state`（frontmatter の `id` ごと。ADR f57e）。
+/// `docs/backlog/*.md` の `state`（frontmatter の `id` ごと。scripts/README.md）。
 pub fn backlog_states(repo: &Path) -> BTreeMap<String, String> {
     let mut out = BTreeMap::new();
     if let Ok(rd) = std::fs::read_dir(repo.join(&crate::project::get().docs.backlog)) {
@@ -130,7 +130,7 @@ pub struct FeaturesFile {
 
 const LAYERS: &[&str] = &["SourceModel", "Abstraction", "TargetModel", "Refinement"];
 
-/// 機能の対応表（ADR 0eea）。
+/// 機能の対応表（references/traceability.md#道具）。
 pub struct Features {
     pub list: Vec<Feature>,
     globs: Vec<Vec<GlobMatcher>>,

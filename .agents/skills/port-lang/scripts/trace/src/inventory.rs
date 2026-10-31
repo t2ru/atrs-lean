@@ -1,4 +1,4 @@
-//! `inventory source|target`: インベントリの生成（ADR e2a4・0eea）。
+//! `inventory source|target`: インベントリの生成（references/traceability.md#検査済みハッシュ・0eea）。
 
 use crate::item::Item;
 use crate::rust::ModelTag;

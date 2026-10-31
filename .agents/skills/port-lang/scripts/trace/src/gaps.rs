@@ -1,4 +1,4 @@
-//! ギャップの表: `docs/spec/abstraction.md`・`refinement.md` の生成区画（ADR cc24）。
+//! ギャップの表: `docs/spec/abstraction.md`・`refinement.md` の生成区画（references/lean/trace-attributes.md#ギャップの登録簿）。
 //!
 //! 登録簿の正は Lean の `@[gap_entry]`（`trace-dump` の `gaps`）である。表は `trace manifest` が書き、
 //! `--check` で最新であることを確かめる。
@@ -172,7 +172,7 @@ mod tests {
             kind: kind.into(),
             kind_label: label.into(),
             sites: vec![
-                Site { label: "運賃".into(), path: "docs/spec/fare.md#運賃".into(), note: String::new() },
+                Site { label: "価格".into(), path: "docs/spec/pricing.md#価格".into(), note: String::new() },
                 Site { label: "ADR x".into(), path: "docs/decision/x.md".into(), note: "（規範節）".into() },
             ],
             doc: "差 | 異".into(),
@@ -205,11 +205,11 @@ mod tests {
         let gaps = vec![d2, d1, d3, t1];
         let out = render_doc(doc, "docs/spec/abstraction.md", &gaps, "D-", "[Source]",
             &["gaps-known", "gaps-impact", "gaps-outside-pre"]).unwrap();
-        assert!(out.contains("| D-001 | 前提型 | [運賃](fare.md#運賃)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | ABS-001, ABS-004 | ABS-101 |\n| D-013 | モデル外 |"), "{out}");
-        assert!(out.contains("| D-013 | モデル外 | [運賃](fare.md#運賃)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | — | — |"));
+        assert!(out.contains("| D-001 | 前提型 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | ABS-001, ABS-004 | ABS-101 |\n| D-013 | モデル外 |"), "{out}");
+        assert!(out.contains("| D-013 | モデル外 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | — | — |"));
         assert!(out.contains("| D-001 | 中断 | 理由 | b1 |"));
         assert!(out.contains("| ID | 箇所 | [Source] の振る舞い | [Spec] の前提 |"));
-        assert!(out.contains("| D-003 | [運賃](fare.md#運賃)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | PRE MD-7 |"));
+        assert!(out.contains("| D-003 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | PRE MD-7 |"));
         assert!(!out.contains("T-001") && !out.contains("old"));
         // 区画が無い
         assert!(render_doc("# x\n", "docs/spec/a.md", &gaps, "D-", "[Source]", &["gaps-known"]).is_err());

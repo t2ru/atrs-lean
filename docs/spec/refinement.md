@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, target]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:30:00+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
@@ -123,8 +123,8 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 | SRC-004 | `verus!` の外のコード（`Mutex` の層・変換・JSON・HTTP の接続）に、パニック・未定義動作が無い | Kani（`rust/kani/`） | ハーネスに書いた境界の内に限る |
 | SRC-005 | 次の 2 つを確かめる。<br>- DB・ファイル・時計のアダプタが `TargetModel.Adapter.*` と一致する<br>- 状態変更の原子性・直列化可能性（[ports.md](ports.md#トランザクション) の規範節）を満たす | 次の 3 つで確認する。<br>- インメモリ: 操作を `Mutex` の下で 1 つずつ実行する（状態遷移は SRC-003、`Mutex` の層は SRC-004）<br>- DB: SERIALIZABLE を指定し、直列化の失敗は再試行し、吸収できなければ `Conflict` を返す。照会は `READ ONLY DEFERRABLE` で実行する<br>- 固定の実行順と固定フィクスチャの結合テスト | テストしていない実行順。PostgreSQL の分離レベルの実装と、Rust 標準の `Mutex` を信頼する |
 | SRC-006 | HTTP 契約（[http-contract.md](http-contract.md)）のステータス・遷移先・JSON の形・規範節（セッション・Cookie・CSRF） | HTTP レベルのベクタによる結合テスト | ベクタの入力の外 |
-| SRC-007 | 追跡の検査 TR-T1・TR-T2・TR-P・TR-D・TR-X が通る | `tools/trace check` | — |
-| SRC-008 | Rust の公開項目が `@[target]` で覆われ、検査済みハッシュが現在の本文と一致する | `tools/trace check`、`tools/trace rehash` | — |
+| SRC-007 | 追跡の検査 TR-T1・TR-T2・TR-P・TR-D・TR-X が通る | `trace check` | — |
+| SRC-008 | Rust の公開項目が `@[target]` で覆われ、検査済みハッシュが現在の本文と一致する | `trace check`、`trace rehash` | — |
 | SRC-009 | 業務機能が `std::time`・浮動小数点型などの暗黙の副作用・禁止 API を使わない | `clippy.toml` の `disallowed-methods` / `disallowed-types`（CI） | 一覧に載せた API に限る |
 | SRC-010 | DB アダプタの SQL が、`TargetModel.Adapter` の `LangSemantics.Sql` の式と一致する | SQL の差分実行（PostgreSQL） | 照合したデータの外 |
 

@@ -1,4 +1,4 @@
-//! 決定論的な検査の登録 `trace/checks.json`（ADR e2a4・9cd9）。
+//! 決定論的な検査の登録 `trace/checks.json`（references/traceability.md#検査済みハッシュ・9cd9）。
 //!
 //! 各検査は `steps`（作業ディレクトリと argv）を順に実行し、すべて終了コード 0 なら合格とする。
 //! 覆う定義（`covers`）は、Lean の名前の glob（`names`）と、適合テストベクタのファイルの glob
@@ -101,7 +101,7 @@ fn walk(dir: &Path, out: &mut Vec<std::path::PathBuf>) {
     }
 }
 
-/// ベクタの `modelDef`。文字列か、モデルごとの名前の配列（`shared/`。ADR 8f18）。
+/// ベクタの `modelDef`。文字列か、モデルごとの名前の配列（`shared/`。references/conformance.md）。
 pub fn model_defs_of(v: &serde_json::Value) -> Vec<String> {
     match &v["modelDef"] {
         serde_json::Value::String(s) => vec![s.clone()],

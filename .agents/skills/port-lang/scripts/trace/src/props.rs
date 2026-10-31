@@ -1,4 +1,4 @@
-//! `.properties` のインベントリ（`prop:`・`msg:`）。ハッシュは値の前後の空白を除いた値（ADR 0eea）。
+//! `.properties` のインベントリ（`prop:`・`msg:`）。ハッシュは値の前後の空白を除いた値（references/traceability.md#道具）。
 
 use crate::item::Item;
 

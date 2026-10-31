@@ -94,7 +94,7 @@ def fixtureTests (env : Environment) : IO Unit := do
     (attrsOf? es "SourceModel.base" ==
       [("source", ["java:com.example.Fare#base(int)@0123456789abcdef", "lang:java#JLS-15.17.1@java-17"])])
   check "attributes: target"
-    (attrsOf? es "TargetModel.double" == [("target", ["rust:atrs::fare::double@0123456789abcdef"])])
+    (attrsOf? es "TargetModel.double" == [("target", ["rust:app::fare::double@0123456789abcdef"])])
   check "attributes: spec_doc and no_source on one decl"
     (attrsOf? es "Spec.base" ==
       [("spec_doc", ["docs/spec/example.md#base"]), ("no_source", ["フィクスチャ"])])

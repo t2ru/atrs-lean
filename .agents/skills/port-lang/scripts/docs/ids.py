@@ -311,7 +311,7 @@ def cmd_migrate(write_map):
                 leftovers.append(f"{rel}:{n}: {line.strip()[:160]}")
     add_adr_ids(legacy)
     if write_map:
-        data = {"note": note or "旧番号の stem → ID（ADR f57e）。port-lang の scripts/docs/ids.py migrate が使う。", **legacy}
+        data = {"note": note or "旧番号の stem → ID（scripts/README.md）。port-lang の scripts/docs/ids.py migrate が使う。", **legacy}
         MAP.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"migrate: renamed {len(renames)} file(s), rewrote {changed} file(s)")
     if leftovers:

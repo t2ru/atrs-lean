@@ -52,16 +52,16 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 説明（表の「差異」「振る舞い」「状況」の列）は宣言の docstring に Markdown で書く。文書の表は、道具が `trace-dump` の `gaps` から生成する（手で編集しない）。
 
 ```lean
-/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)` -/
+/-- [Source] は税込み価格を `price * 1.1` の double で計算して切り捨てる。[Spec] は `floorDiv(price * 110, 100)` -/
 @[gap_entry]
 def D001 : Trace.Gap where
   id := "D-001"
   kind := .pre
-  sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
-  premise := "`dev_D001`: `x` が 0〜200,000"
-  rTasks := ["ABS-001", "ABS-004"]
+  sites := [⟨"税込み価格", "docs/spec/pricing.md#税込み価格", ""⟩]
+  premise := "`dev_D001`: `price` が 0〜100,000"
+  rTasks := ["ABS-001"]
   wTask := some "ABS-101"
-  impact := some (.abort, "差のある運賃が保存される")
+  impact := some (.abort, "差のある価格が注文に保存される")
   backlog := ["<Lean 側を完了させる作業項目の ID>"]
 ```
 

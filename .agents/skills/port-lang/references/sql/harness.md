@@ -13,6 +13,29 @@ SQL は単独では実行されず、呼び出し側の言語のハーネスの�
 
 - 採番の初期値は `world` で指定する。
 
+## 差分実行の結果
+
+`LangSemantics.Sql` の写しと DBMS の実行結果を同じデータで照合するには、DBMS で実行した結果を JSON に保存し、
+Lean のテストで写しの評価結果と比べる（再生成して差分が無いことを CI で確かめる）。形は次のとおりである。
+
+```json
+{
+  "upstream": { "release": "…", "commit": "…" },
+  "postgresql": "16.15",
+  "loadTimestamp": "2026-01-01T00:00:00",
+  "tables": { "<表>": { "columns": ["<列>", …], "rows": [["値" | null, …], …] } },
+  "statements": [
+    { "id": "<文の ID>", "locator": "sql:<…>", "sql": "<実行した文>", "ordered": false,
+      "columns": ["<列>", …], "rows": [["値" | null, …], …] }
+  ]
+}
+```
+
+- 値は、DBMS の文字列表現（`null` は SQL の NULL）とする。数値・日付も文字列のまま保存し、読み取り側で型の範囲を検査する。
+- `ordered` が `false` の文の結果はバッグとして比べる。`true` の文（`ORDER BY` の同順位が無いもの）は列として比べる。同順位がありうる文は、許される順列（`isAllowedOrder`）の中にあることを比べる。
+- `tables` は投入したデータで、共有入力（`conformance/fixtures/`）と一致することも確かめる。
+- Lean での読み取りには、スキルの `ConformanceKit.SqlTable`（`table`・`col`・`vcol`・`icol`）を使う。
+
 ## 移植元として
 
 - 呼び出し側（例: Java のハーネス）が原典の SQL をそのまま実行する。`ORDER BY` の同順位のように非決定的な結果は、ベクタの `{"oneOf": […]}` で受ける。

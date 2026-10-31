@@ -15,7 +15,8 @@ lean/
   lean-toolchain
   lakefile.lean
   LangSemantics/<Lang>/   -- 言語意味論（アプリ非依存。スキルの assets/lean/LangSemantics/ を写すか Lake 依存にする）
-  Machine/                -- 抽象機械とリファインメントの枠組み（アプリ非依存。スキルの assets/lean/Machine/ を Lake 依存にする）
+  LangSemantics/Core/     -- 言語に依存しない列・Option の補題（アプリ非依存。スキルの assets）
+  Machine/                -- 抽象機械とリファインメントの枠組み、汎用の核 Machine.undefOrEq（アプリ非依存。スキルの assets/lean/Machine/ を Lake 依存にする）
   SourceModel/            -- 移植元モデル [Source]
   Spec/                   -- 抽象モデル [Spec]（正規仕様）
     Prim/                 --   基本演算（floorDiv, ceilTo, 暦日, 文字クラス）
@@ -24,9 +25,10 @@ lean/
   Abstraction/            -- SourceModel が Spec をリファインする（ABS-NNN）
   TargetModel/            -- 移植先モデル [Target]
   Refinement/             -- TargetModel が Spec をリファインする（REF-NNN）
-  Trace/                  -- 追跡属性と trace-dump（trace-attributes.md）
-  Tests/                  -- テストドライバ（lake test）
-  Tools/                  -- 実行ファイル（ベクタ生成、trace-dump、移植先の写しの生成器）
+  Trace/                  -- 追跡属性と trace-dump・obligation-check の本体（アプリ非依存。スキルの assets/lean/Trace/。trace-attributes.md）
+  ConformanceKit/         -- 適合テストベクタの実行器（アプリ非依存。スキルの assets/lean/ConformanceKit/。conformance.md）
+  Tests/                  -- テストドライバ（lake test。操作の割当はプロジェクトが書き、実行は ConformanceKit を使う）
+  Tools/                  -- 実行ファイル（ベクタ生成、trace-dump・obligation-check の入口、移植先の写しの生成器）
 ```
 
 ### ルートのワークスペース（LSP 用）
@@ -48,7 +50,14 @@ require <project> from "./lean"
 - 確認: ルートで `lake setup-file <各パッケージのファイル>` が成功すること（LSP はこれを呼ぶ）。
 
 - ファイルパスと名前空間を一致させる（`Spec.Fare` は `Spec/Fare.lean`）。
-- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`Tests`・`Tools` は例外として認められている。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する。
+- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`ConformanceKit`・`Tests`・`Tools` は例外として認められている。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する（`scripts/ci/check_lean.py`）。
+- アプリに依存しない補題・道具は、プロジェクトに置かず、スキルの assets に足す。置き場所は次のとおり。
+  - 特定の言語の意味論の補題 → `LangSemantics.<lang>`
+  - どの言語にも依存しない列・`Option`・文字列の補題 → `LangSemantics.Core`
+  - 標準の抽象化の汎用の核（部分写像の `undefOrEq` など）→ `Machine`
+  - 適合テストの実行の道具 → `ConformanceKit`
+
+  プロジェクトの業務の型（`Spec` の型・`SourceModel` のモデル）を参照するものは、プロジェクトに置く。
 
 ## 書き方
 

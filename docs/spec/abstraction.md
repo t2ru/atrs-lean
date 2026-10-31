@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:58:00+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -85,7 +85,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ## 抽象化関数 α
 
-`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。定義域の上で単射な部分写像の核は、汎用の核 `Abstraction.Prim.undefOrEq`（どちらも定義されないか、等しい）をその葉に適用して書く（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。核に当たる値の違いは、リファインメントでは観測されない。
+`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.undefOrEq`（スキルの `Machine.Kernel`）（どちらも定義されないか、等しい）をその葉に適用して書く（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。核に当たる値の違いは、リファインメントでは観測されない。
 
 | [Source] の値 | α | 同一視するもの（核） | 備考 |
 | --- | --- | --- | --- |
@@ -108,7 +108,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 [Spec] と [Source] が一致しない点である。種類は [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#差異) による。
 
-登録簿の正は Lean の `Abstraction.Gap`（ID ごとの `@[gap_entry]` の宣言。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）である。本節と次の 3 つの小節の表は、`tools/trace manifest` がそこから生成する。行を足す・直すときは、`lean/Abstraction/Gap.lean` を書き換えて表を再生成する。ギャップが生じる `Spec`・`SourceModel` の定義には、箇所の印 `@[gap "D-NNN"]` を付ける（検査 TR-K。上流の版上げでは、印の付いた定義の変化から見直すギャップを `tools/trace impact` が出す）。
+登録簿の正は Lean の `Abstraction.Gap`（ID ごとの `@[gap_entry]` の宣言。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）である。本節と次の 3 つの小節の表は、`trace manifest` がそこから生成する。行を足す・直すときは、`lean/Abstraction/Gap.lean` を書き換えて表を再生成する。ギャップが生じる `Spec`・`SourceModel` の定義には、箇所の印 `@[gap "D-NNN"]` を付ける（検査 TR-K。上流の版上げでは、印の付いた定義の変化から見直すギャップを `trace impact` が出す）。
 
 - **前提型**: 主定理の名前付きの仮定（Lean 名は `Abstraction.<機能>.dev_DNNN`）
 - **観測型**: `J`/`αₒ` の名前付きの成分（Lean 名は `Abstraction.<機能>.obs_DNNN`）。前提型・観測型には、R 課題と W 課題（`ABS-1NN` が `D-0NN` の証拠）が必須である
