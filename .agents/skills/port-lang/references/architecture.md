@@ -35,12 +35,14 @@
 | --- | --- |
 | `Trace` | なし |
 | `Machine` | なし |
-| `LangSemantics.<lang>` | 同じ `<lang>`、`Trace` |
+| `LangSemantics.Core` | なし（core だけ） |
+| `LangSemantics.<lang>` | 同じ `<lang>`、`LangSemantics.Core`、`Trace` |
 | `Spec` | `Spec`、`Machine`、`Trace` |
-| `SourceModel` | `LangSemantics.<移植元>`、`Spec`（型の再利用）、`Machine`、`Trace` |
-| `Abstraction` | `SourceModel`、`Spec`、`LangSemantics.<移植元>`、`Machine`、`Trace` |
-| `TargetModel` | `LangSemantics.<移植先>`、`Spec`（型の再利用）、`Machine`、`Trace` |
-| `Refinement` | `TargetModel`、`Spec`、`LangSemantics.<移植先>`、`Machine`、`Trace` |
+| `SourceModel` | `LangSemantics.<移植元>`、`LangSemantics.Core`、`Spec`（型の再利用）、`Machine`、`Trace` |
+| `Abstraction` | `SourceModel`、`Spec`、`LangSemantics.<移植元>`、`LangSemantics.Core`、`Machine`、`Trace` |
+| `TargetModel` | `LangSemantics.<移植先>`、`LangSemantics.Core`、`Spec`（型の再利用）、`Machine`、`Trace` |
+| `Refinement` | `TargetModel`、`Spec`、`LangSemantics.<移植先>`、`LangSemantics.Core`、`Machine`、`Trace` |
+| `ConformanceKit`（メタ層） | `LangSemantics`（どの言語も） |
 
 **移植元側（`SourceModel`, `Abstraction`, 移植元の `LangSemantics`）と移植先側（`TargetModel`, `Refinement`, 移植先の `LangSemantics`）は、互いに依存してはならない。** CI で検査する。
 
@@ -77,6 +79,19 @@
 - `Spec` 自身の証明義務は次の 2 つである。
   - 初期化が INV を満たす。
   - PRE の下の操作が INV を保つ。
+- 抽象化の課題一覧には、`Spec` 自身の証明課題（`SPEC-NNN`）として、少なくとも次を載せる。R 課題が INV を仮定してよいのは、これらが証明されているからである。
+
+  | 課題 | 内容 |
+  | --- | --- |
+  | 標準の選択 | 各操作で、PRE の下の標準の選択 `run` の結果が、関係 `step` に含まれる |
+  | 初期化 | 初期化（fixture の投入後の状態）が INV を満たす |
+  | INV の保存 | PRE の下の各操作（環境の非決定性に固有の結果を含む）が INV を保つ |
+  | 選択の像 | 各機能の基底の機械は `Machine.ofChoice` か `Machine.pure` で作り、選択の型の葉は登録した `@[nondet]` の型だけとする。自由な選択には `FreeFrame` を示す（TR-G で検査する） |
+  | 入口の全域性 | 入口の R 課題の機械は、INV と環境の前提（`@[env_pre]`）の下で PRE が成り立つ（`TotalUnder`）。環境の前提には両向きの例と、外すと PRE が成り立たない入力があることを示す |
+  | 初期状態 | 各機能の初期状態は 1 点である（`Machine.InitIs`） |
+  | 標準の環境 | 標準の環境の下では、`f` が環境の非決定性に固有の結果を返さない |
+
+  アプリ固有の性質（例: 衝突の結果で採番以外の状態が変わらない）は、プロジェクトが足す。
 - 移植先の固定長整数に収まるよう値域を定める場合は、値域を PRE に含める。
 
 ### 具体機械とリファインメント
@@ -120,7 +135,7 @@
 | 環境の固定 | 具体側も、環境（障害・衝突・配備の設定）とマスタ・設定を入力の成分として受ける。具体側の正常終了は、E を具体側の入力の環境 `ce i_c` に固定した `f` の結果で模倣される。`ce` は `@[std_abs]` の標準の抽象化とする | `Refines.Pinned` |
 | 障害の無い環境での実現 | 抽象側の各入力は、`ce` が標準の環境を返す具体側の入力でも実現される。障害の無い環境では、環境の非決定性を選べない | `Refines.NoFaultReachable` |
 | 貼り合わせの形 | `J`・`αᵢ`・`αₒ` は、標準の抽象化の **部分写像** β・aᵢ・aₒ（`Option` を返す。`none` は α/β の未定義）、具体側の不変条件 `Ic`、観測型の差異の成分 OJ・OO だけから作る。β・aᵢ・aₒ・OJ・OO には、属性を付けた定数そのものを渡す。補助定義で包まない | `Glue.ofStd` |
-| 標準の抽象化 | 1 引数の関数とする。葉（α・β の表の行）には核（同一視するもの。等号か `@[kernel]` の関係）を定理で示す。定義域の上で単射な部分写像の核は、汎用の `@[kernel]` の関係（例: 「どちらも定義されないか、等しい」）をその葉自身に適用して書いてよい。合成は、葉・構成子・射影・インスタンス・`Option.map/bind`・`List.map/mapM`・`Prod.map`・`Function.comp`・`id` だけで作り、分岐を含めない。aₒ と `FreeFrame` の射影には核の定理を課す | `KernelIs`、`@[std_abs]`、`@[kernel]` |
+| 標準の抽象化 | 1 引数の関数とする。葉（α・β の表の行）には核（同一視するもの。等号か `@[kernel]` の関係）を定理で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.undefOrEq`（「どちらも定義されないか、等しい」。assets の `Machine.Kernel`）か汎用の `@[kernel]` の関係を、その葉自身に適用して書いてよい（`KernelIs f (Machine.undefOrEq f)`。`kernelIs_undefOrEq` で示せる）。合成は、葉・構成子・射影・インスタンス・`Option.map/bind`・`List.map/mapM`・`Prod.map`・`Function.comp`・`id` だけで作り、分岐を含めない。aₒ と `FreeFrame` の射影には核の定理を課す | `KernelIs`、`Machine.undefOrEq`、`@[std_abs]`、`@[kernel]` |
 | 入口の全域性 | 外部からの入力を受ける入口の機械（画面・API・キューの受信など）では、INV と環境の前提（マスタ・設定の妥当性と入力の値域。入力の成分だけで書いた `@[env_pre]` の定数）の下で PRE が成り立つ。環境の前提を満たす像を持つ具体側の入力がある | `Machine.TotalUnder`・`Refines.EnvWitness` |
 | 初期化 | 抽象側の初期状態に、対応する具体側の初期状態がある | `Refines.InitSurj` |
 | 名前付きの成分 | 差異の述語・成分と環境の前提は、成り立つ例と成り立たない例を持つ（W 課題を両向きにする） | `Nontrivial`・`Nontrivial₂` |

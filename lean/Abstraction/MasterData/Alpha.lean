@@ -17,15 +17,9 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 
 namespace Abstraction.MasterData
 
-open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Abstraction.Prim
+open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
 
-/-- 核から、定義域の上の単射性を取り出す。 -/
-theorem inj_of_kernel {α β : Type} {f : α → Option β} (hk : KernelIs f (undefOrEq f)) {x y : α} {b : β}
-    (hx : f x = some b) (hy : f y = some b) : x = y := by
-  rcases (hk x y).mp (hx.trans hy.symm) with ⟨h, _⟩ | h
-  · rw [hx] at h; cases h
-  · exact h
 
 /-! ## DB の行（葉） -/
 

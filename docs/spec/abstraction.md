@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:24:54+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -85,7 +85,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ## 抽象化関数 α
 
-`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。定義域の上で単射な部分写像の核は、汎用の核 `Abstraction.Prim.undefOrEq`（どちらも定義されないか、等しい）をその葉に適用して書く（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。核に当たる値の違いは、リファインメントでは観測されない。
+`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.undefOrEq`（スキルの `Machine.Kernel`）（どちらも定義されないか、等しい）をその葉に適用して書く（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。核に当たる値の違いは、リファインメントでは観測されない。
 
 | [Source] の値 | α | 同一視するもの（核） | 備考 |
 | --- | --- | --- | --- |
@@ -108,7 +108,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 [Spec] と [Source] が一致しない点である。種類は [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#差異) による。
 
-登録簿の正は Lean の `Abstraction.Gap`（ID ごとの `@[gap_entry]` の宣言。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）である。本節と次の 3 つの小節の表は、`tools/trace manifest` がそこから生成する。行を足す・直すときは、`lean/Abstraction/Gap.lean` を書き換えて表を再生成する。ギャップが生じる `Spec`・`SourceModel` の定義には、箇所の印 `@[gap "D-NNN"]` を付ける（検査 TR-K。上流の版上げでは、印の付いた定義の変化から見直すギャップを `tools/trace impact` が出す）。
+登録簿の正は Lean の `Abstraction.Gap`（ID ごとの `@[gap_entry]` の宣言。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）である。本節と次の 3 つの小節の表は、`trace manifest` がそこから生成する。行を足す・直すときは、`lean/Abstraction/Gap.lean` を書き換えて表を再生成する。ギャップが生じる `Spec`・`SourceModel` の定義には、箇所の印 `@[gap "D-NNN"]` を付ける（検査 TR-K。上流の版上げでは、印の付いた定義の変化から見直すギャップを `trace impact` が出す）。
 
 - **前提型**: 主定理の名前付きの仮定（Lean 名は `Abstraction.<機能>.dev_DNNN`）
 - **観測型**: `J`/`αₒ` の名前付きの成分（Lean 名は `Abstraction.<機能>.obs_DNNN`）。前提型・観測型には、R 課題と W 課題（`ABS-1NN` が `D-0NN` の証拠）が必須である
@@ -120,7 +120,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 - **モデル外**: Lean のどのモデルにも現れない差異。[Spec] の外の規範節と原典の違いがこれに当たる。証明には現れないので、[assurance.md](assurance.md) に限界として載せる
 
 <!-- BEGIN GENERATED: gaps-known -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -156,7 +156,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。
 
 <!-- BEGIN GENERATED: gaps-impact -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 影響 | 理由 | backlog |
 | --- | --- | --- | --- |
@@ -182,7 +182,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 次は、[Spec] の PRE・INV の外での [Source] の振る舞いである。B メソッドのリファインメントでは、PRE の外の振る舞いに義務は無い。したがって差異ではない（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#リファインメント具体機械が抽象機械をリファインする)）。ID は過去に既知差異として付けたものを保つ。ID の無かった行には D-029・D-030 を割り当てた（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。主定理は、これらに差異の仮定を置かない。登録簿では種類「PRE の外」とし、箇所の印を付ける。
 
 <!-- BEGIN GENERATED: gaps-outside-pre -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 箇所 | [Source] の振る舞い | [Spec] の前提 |
 | --- | --- | --- | --- |
@@ -200,7 +200,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 ### 未確定の差異
 
 <!-- BEGIN GENERATED: gaps-undetermined -->
-`tools/trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
+`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。
 
 | ID | 対象 | 状況 | 確定させる作業 |
 | --- | --- | --- | --- |

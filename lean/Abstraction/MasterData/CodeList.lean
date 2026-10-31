@@ -7,7 +7,7 @@ import Spec.CodeList
 空港コードリスト（`AirportCodeList.retrieveMap`）と [Spec] の `CodeList.insertNop` の一致。
 空港コードが一意で、区切り行のコード `NOP` を使わなければ、`LinkedHashMap` の `put` は行を末尾に足すだけなので、
 原典の値は、`displayOrder ≥ 100` の最初の行の前に区切り行を入れた列になる。行の並びは問わない
-（並びを [Spec] の整列に合わせるのは `Abstraction.Prim.Order`）。
+（並びを [Spec] の整列に合わせるのは、スキルの `LangSemantics.Sql.QueryLemmas`）。
 -/
 
 namespace Abstraction.MasterData

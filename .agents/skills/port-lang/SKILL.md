@@ -3,7 +3,7 @@ name: port-lang
 description: "Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/<lang>/ に記載。
 metadata:
-  version: "0.5"
+  version: "0.6"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -157,22 +157,29 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | Rust | 移植先として整備済み。移植元は一部未整備 | [semantics](references/rust/semantics.md) · [locators](references/rust/locators.md) · [frameworks](references/rust/frameworks.md) · [harness](references/rust/harness.md) · [verification](references/rust/verification.md) · [layout](references/rust/layout.md) |
 
 形式化言語の Lean 4 は全プロジェクト共通である: [lean/rules.md](references/lean/rules.md), [lean/trace-attributes.md](references/lean/trace-attributes.md)。
-### Lean の言語意味論モデルと Machine（assets）
+### Lean の言語意味論モデルと Machine・Trace（assets）
 
 `assets/lean/` は、言語パックの `semantics.md` を Lean で実装した **そのまま使えるモデル** で、core だけに依存する Lake パッケージである。`assets/` の下は資産の種類ごとに分け、Lean 以外の資産（例: `assets/verus/`）は `assets/lean/` の外に置く。
 
 | モジュール | ファイル |
 | --- | --- |
-| `LangSemantics.Java`（int/long、double のソフトモデル、BigDecimal、String、LocalDate、例外） | `assets/lean/LangSemantics/Java/` |
-| `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新） | `assets/lean/LangSemantics/Sql/` |
+| `LangSemantics.Core`（言語に依存しない列・`mapM`・文字列の補題。どの言語パック・層からも使える） | `assets/lean/LangSemantics/Core/` |
+| `LangSemantics.Java`（int/long、double のソフトモデルと百分率の因子の比較、値域内の int の演算と `for` 文の補題、BigDecimal、String、LocalDate、例外と `JResult` の補題、HashMap） | `assets/lean/LangSemantics/Java/` |
+| `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新、結合と許される順列の補題） | `assets/lean/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/lean/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/lean/LangSemantics/Rust/` |
-| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務 `Machine.Adequacy`） | `assets/lean/Machine/` |
+| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務 `Machine.Adequacy`、標準の抽象化の汎用の核 `Machine.undefOrEq`） | `assets/lean/Machine/` |
 | `Trace`（追跡属性、ギャップの登録簿 `Trace.Gap`、`trace-dump`・`obligation-check` の本体。道具の入口 `main` はプロジェクトの側に置く。[lean/trace-attributes.md](references/lean/trace-attributes.md)） | `assets/lean/Trace/` |
+| `ConformanceKit`（適合テストベクタの実行器と、SQL の差分実行の結果の表の読み取り。メタ層。[conformance.md](references/conformance.md)） | `assets/lean/ConformanceKit/` |
 | Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
 
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets/lean"` とする（[lean/rules.md](references/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
-- 検査: `assets/lean/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`TraceTest/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`MachineTest/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`MachineTest/Adequacy.lean`）である。`LangSemanticsTest/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java LangSemanticsTest/jvm/JavaTable.java > LangSemanticsTest/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `LangSemanticsTest/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I LangSemanticsTest/pg/pg_table.py > LangSemanticsTest/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/sql/dialects/postgresql/harness.md)）。
+- 検査: `assets/lean/` で `lake build` を実行すると、`LangSemanticsTest/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`ConformanceKitTest/` では実行器をメモリ上のベクタで確かめる。`TraceTest/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`MachineTest/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`MachineTest/Adequacy.lean`）である。`LangSemanticsTest/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java LangSemanticsTest/jvm/JavaTable.java > LangSemanticsTest/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `LangSemanticsTest/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`python3 -I LangSemanticsTest/pg/pg_table.py > LangSemanticsTest/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/sql/dialects/postgresql/harness.md)）。
+
+### 道具（scripts）
+
+`scripts/` は、追跡と検査の **そのまま使える道具** である（[scripts/README.md](scripts/README.md)）。追跡の CLI `scripts/trace`（Rust）、Lean の静的検査 `scripts/ci/check_lean.py`、課題一覧との突き合わせ `scripts/ci/check_obligations.py`、上流の版の検査、PostgreSQL・JVM の突き合わせ表の検査、意思決定記録・作業項目の ID の道具（任意）を持つ。
+道具はアプリに依存せず、プロジェクト固有の値（移植元・移植先の配置、crate 名、文書のパス、言語の組、Lean のルート）を、プロジェクトの `trace/project.json` から読む（[traceability.md](references/traceability.md#プロジェクトの設定)）。プロジェクトの CI は、これらを一括検査のスクリプトから呼ぶ。
 
 処理系ごとに意味が異なる言語（例: SQL）は、`references/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。
 新しい言語・方言を追加するときは [adding-a-language.md](references/adding-a-language.md) に従う。

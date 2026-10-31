@@ -1,0 +1,77 @@
+{
+  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/traceability.md#プロジェクトの設定）",
+  "skill": ".agents/skills/port-lang",
+  "lean": {
+    "roots": [
+      "lean",
+      ".agents/skills/port-lang/assets/lean"
+    ]
+  },
+  "languages": {
+    "source": [
+      "java",
+      "sql"
+    ],
+    "target": [
+      "rust"
+    ]
+  },
+  "source": {
+    "root": "upstream/atrs/JavaConfig-Thymeleaf/atrs",
+    "sql_dirs": [
+      "atrs-initdb"
+    ]
+  },
+  "target": {
+    "root": "rust",
+    "src": "rust/src",
+    "crate": "atrs",
+    "generated": "model"
+  },
+  "docs": {
+    "spec": "docs/spec",
+    "abstraction": "docs/spec/abstraction.md",
+    "refinement": "docs/spec/refinement.md",
+    "traceability": "docs/spec/traceability.md",
+    "decision": "docs/decision",
+    "backlog": "docs/backlog"
+  },
+  "conformance": "conformance",
+  "ids": {
+    "kinds": {
+      "adr": "docs/decision",
+      "backlog": "docs/backlog"
+    },
+    "registers": [
+      "docs/spec/abstraction.md",
+      "docs/spec/refinement.md"
+    ],
+    "check_roots": [
+      "AGENTS.md",
+      "docs/",
+      "trace/",
+      "lean/",
+      "tools/",
+      ".agents/",
+      "conformance/"
+    ],
+    "uuid_roots": [
+      "AGENTS.md",
+      "docs/",
+      "trace/"
+    ],
+    "check_skip": [
+      ".agents/skills/port-lang/scripts/ci/fixtures/",
+      "tools/docs/legacy-ids.json",
+      "trace/source-inventory.json",
+      "trace/target-inventory.json",
+      "trace/manifest.json"
+    ],
+    "legacy": "tools/docs/legacy-ids.json",
+    "features": "trace/features.json",
+    "backlog_index": "docs/backlog/README.md",
+    "exclude": [
+      "upstream/"
+    ]
+  }
+}

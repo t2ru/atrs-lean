@@ -5,7 +5,7 @@ import Trace.Gap
 # Trace.Obligation
 
 `lake exe obligation-check` の本体。リファインメントの主定理（R 課題）が、空虚化を防ぐ形と付帯の義務を
-備えているかを、環境を走査して判定する（TR-G。ADR 70eb）。`Machine` の定数は名前で照合し、import しない。
+備えているかを、環境を走査して判定する（TR-G。references/architecture.md#空虚化を防ぐ義務）。`Machine` の定数は名前で照合し、import しない。
 
 R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理である。各 R 課題について次を判定する。
 付帯の定理は、`@[reducible]` を展開した式が一致するもので探す（先頭の定数だけでは照合しない）。
@@ -25,9 +25,9 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | 規則 | 内容 |
 | --- | --- |
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
-| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
+| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
-| G9 | 成分の必要性（ADR 9ac6）。下の 3 つ |
+| G9 | 成分の必要性（references/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
 | GK | ギャップの登録簿（`Trace.Gap`）。下の 5 つ |
 
 G9 の内容は次のとおりである。
@@ -52,7 +52,7 @@ GK の内容は次のとおりである。
 - 印・差異の定数と種類が矛盾しない（モデル外は印も `@[deviation]` も持たない。PRE の外・未確定は `@[deviation]` を持たない）
 
 入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
-文書（入口の R 課題、前提型の差異の影響）との突き合わせは `tools/ci/check_obligations.py` が行う（TR-N）。
+文書（入口の R 課題、前提型の差異の影響）との突き合わせは `scripts/ci/check_obligations.py` が行う（TR-N）。
 -/
 
 namespace Trace.Obligation
@@ -87,6 +87,7 @@ def freeFrame : Name := `Machine.Machine.FreeFrame
 def nontrivial : Name := `Machine.Nontrivial
 def nontrivial₂ : Name := `Machine.Nontrivial₂
 def kernelIs : Name := `Machine.KernelIs
+def undefOrEq : Name := `Machine.undefOrEq
 def always : Name := `Machine.always
 def anyOf : Name := `Machine.anyOf
 def covers : Name := `Machine.Covers
@@ -415,10 +416,11 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     else if h == N.kernelIs && a.size == 4 then
       if let some fc := bareConst? a[2]! then
         let k := clean a[3]!
-        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数をその葉自身に適用したもの
-        -- （部分写像の汎用の核。例: 「どちらも定義されないか、等しい」）
+        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数か汎用の核 `Machine.undefOrEq`
+        -- （部分写像が「どちらも定義されないか、等しい」。Machine.Kernel）をその葉自身に適用したもの
         let kf := k.getAppFn
-        let applied := k.isApp && kf.isConst && hasAttr kernelAttr env kf.constName! &&
+        let applied := k.isApp && kf.isConst &&
+          (hasAttr kernelAttr env kf.constName! || kf.constName! == N.undefOrEq) &&
           bareConst? k.appArg! == some fc
         let ok := k.isAppOfArity ``Eq 1 || (k.constName?.any (hasAttr kernelAttr env ·)) || applied
         if ok then cs := { cs with kernel := cs.kernel.push fc }

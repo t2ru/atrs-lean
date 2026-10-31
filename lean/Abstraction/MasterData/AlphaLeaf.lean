@@ -1,4 +1,4 @@
-import Abstraction.Prim.Kernel
+import Machine.Kernel
 import LangSemantics.Java
 import LangSemantics.Sql.Postgresql
 import SourceModel.Repository.Schema
@@ -22,7 +22,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 
 namespace Abstraction.MasterData
 
-open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Spec.Prim.HourMinute Abstraction.Prim
+open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Spec.Prim.HourMinute LangSemantics.Core
 
 /-! ## 数 -/
 

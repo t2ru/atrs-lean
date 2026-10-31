@@ -10,7 +10,7 @@ D-002 の必要性（W 課題 ABS-102）を示す。
 
 namespace Abstraction.Fare
 
-open Machine LangSemantics.Java Spec Abstraction.Prim Abstraction.MasterData SourceModel.FareQuery
+open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
 
 /-- 入力の像があり PRE を満たすとき、`calculateFare` は例外を投げず、double の式の値を返す。 -/
 theorem calculateFare_eq {ic : FareInput} {i : Spec.Fare.FareInput} (h : aiF ic = some i) (hp : i.Pre) :

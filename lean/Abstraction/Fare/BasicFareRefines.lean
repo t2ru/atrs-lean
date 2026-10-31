@@ -11,7 +11,7 @@ R 課題 ABS-001（基本運賃）: `SourceModel.FareQuery.basicFareConcrete`（
 
 namespace Abstraction.Fare
 
-open Machine LangSemantics.Java Spec Abstraction.Prim Abstraction.MasterData SourceModel.MasterData
+open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
   SourceModel.MasterQuery SourceModel.FareQuery
 
 /-- 積算比率は値域内（MD-8）。 -/

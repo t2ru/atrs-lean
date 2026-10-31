@@ -40,6 +40,8 @@ locator = kind ":" body
 | `trace/renames.json` | 版上げ時の、ハッシュで判別できない改名の対応（手書き） |
 | `trace/checks.json` | `rehash` が実行する決定論的な検査と、それが覆うモデルの定義（手書き。検査を足すたびに登録する） |
 | `trace/out-of-scope.json` | 追跡の対象外とするロケータと、根拠の意思決定記録（移植の範囲外としたもの。手書き） |
+| `trace/features.json` | 機能ごとの作業項目・ロケータの glob・モデルの名前空間・R 課題の対応表（段階導入の「機能」。手書き） |
+| `trace/project.json` | スキルの道具が読む、プロジェクト固有の設定（[プロジェクトの設定](#プロジェクトの設定)。手書き） |
 
 - インベントリの取り方（パーサ・正規化の規則）は言語パックの `locators.md` が定める。
 - `dep`・`lang` の項目は、本文ハッシュの代わりに版文字列を持つ。
@@ -116,17 +118,48 @@ locator = kind ":" body
 
 ## 道具
 
-専用の CLI（例: `tools/trace/`）に次の機能を持たせる。言語ごとの部分（パーサ）は言語パックの `locators.md` に従う。
+スキルは、追跡と検査の道具を `scripts/` に持つ（使い方は [scripts/README.md](../scripts/README.md)）。道具はアプリに依存せず、
+プロジェクト固有の値はすべて `trace/project.json` から読む。リポジトリのルートは、作業ディレクトリから上にたどって
+`trace/project.json` があるところとする（`--repo <dir>` でも指定できる）。
+
+追跡の CLI `scripts/trace`（Rust）は次のサブコマンドを持つ。言語ごとの部分（パーサ）は言語パックの `locators.md` に従う。
 
 | サブコマンド | 機能 |
 | --- | --- |
-| `inventory source` / `inventory target` | インベントリの生成 |
-| `ingest-lean` | `lake exe trace-dump` の出力の取り込み（`manifest`・`check` の入力として渡してもよい） |
-| `manifest` | manifest と、仕様文書の生成区画（① と ② の 2 本の表）の生成 |
-| `check` | TR 検査 |
-| `rehash` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
-| `diff` | 新旧インベントリの分類（[upgrade.md](upgrade.md)） |
-| `impact` | 証明グラフに沿った影響一覧 |
+| `inventory source` / `inventory target` `[--check]` | インベントリの生成 |
+| `manifest --dump <trace-dump.json> --obligations <obligation-check.json> [--check]` | manifest と、仕様文書の生成区画（① と ② の 2 本の表、ギャップの表）の生成。`lake exe trace-dump` の出力を取り込む |
+| `check --dump … --obligations … [--verbose]` | TR 検査（`scripts/ci/check_obligations.py` の結果を TR-G・TR-N として取り込む） |
+| `rehash --dump … [--dry-run]` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
+| `diff --old <file\|git:REV> [--side source\|target] [--json]` | 新旧インベントリの分類（[upgrade.md](upgrade.md)） |
+| `impact --dump … --obligations … [--diff <file\|git:REV>] [--json] [<起点>…]` | 証明グラフに沿った影響一覧と、見直すギャップ |
+
+### プロジェクトの設定
+
+`trace/project.json` は、道具が読むプロジェクト固有の値を集める。言語ごとのロケータの種類と `LangSemantics` の層は、
+言語パックの既定から引く（例: `java` → `java`・`prop`・`msg`・`http`・`xml`・`tmpl` と `LangSemantics.Java`）。
+
+| キー | 内容 |
+| --- | --- |
+| `skill` | スキルの置き場所（`scripts/`・`assets/` の親） |
+| `lean.roots` | Lean のモジュールを探すルート（プロジェクトの Lean パッケージと、スキルの `assets/lean`） |
+| `languages.source` / `languages.target` | 移植元・移植先の言語パックの名前（例 `["java", "sql"]`・`["rust"]`） |
+| `source.root` / `source.sql_dirs` | 移植元ソースの走査のルート（`out-of-scope.json` の glob もここからの相対）と、DDL・シードの SQL を置くディレクトリ |
+| `target.root` / `target.src` / `target.crate` / `target.generated` | 移植先のプロジェクトのルート（TR-X の範囲）、ソースのルート、crate 名、生成した写しのディレクトリ（`src` からの相対） |
+| `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
+| `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
+| `conformance` | 適合テストベクタのディレクトリ |
+| `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`） |
+
+### 手書きのファイルの形
+
+| ファイル | 形 |
+| --- | --- |
+| `trace/upstream.json` | `{repo, submodule, variant, release, commit, languages: {<名前>: {version, from}}, dependencies: [{coordinate, version, from}]}`。`dep:<coordinate>#…@<version>`・`lang:<名前>#…@<名前>-<version>` の照合に使う |
+| `trace/target.json` | `upstream.json` と同じ形の `languages`・`dependencies`（移植先のツールチェーン・検証器・依存） |
+| `trace/out-of-scope.json` | `{items: [{path, reason, decision}]}`。`path` は `source.root` からの相対 glob、`decision` は根拠の意思決定記録 |
+| `trace/renames.json` | `{renames: [{old, new}]}`（[upgrade.md](upgrade.md)） |
+| `trace/features.json` | `{features: [{name, backlog: [ID], lean: [名前空間], tasks: [R 課題], locators: [glob]}]}`。ロケータは最初に当たった機能に属する。層を書かない名前空間は 4 つの層（`SourceModel`・`Abstraction`・`TargetModel`・`Refinement`）に広げる |
+| `trace/checks.json` | `{checks: [{id, description, steps: [{cwd, argv}], covers: {names: [glob], vectors: [glob]}}]}`。各 step の終了コードがすべて 0 なら合格 |
 
 既定の細部（プロジェクトの ADR で変えてよい）:
 
@@ -139,4 +172,4 @@ locator = kind ":" body
 - 仕様文書の「出典:」に書いたロケータは、インベントリになければ失敗とする。private のメソッドはインベントリの単位ではないので、呼び出し元の公開メソッドで書く。
 - 「R 課題に現れる」（TR-P・TR-PE）は、R 課題の定理から参照をたどって届く定義の集合に含まれることとする。
 
-生成区画は `<!-- BEGIN GENERATED: source-trace -->` / `<!-- END GENERATED: source-trace -->`（② は `target-trace`）で区切る。区画の中を手で編集してはならない。
+生成区画は `<!-- BEGIN GENERATED: source-trace -->` / `<!-- END GENERATED: source-trace -->`（② は `target-trace`）で区切る。ギャップの表は `gaps-known`・`gaps-impact`・`gaps-outside-pre`・`gaps-undetermined`（具体化の課題一覧は前の 2 つ）で区切る。区画の中を手で編集してはならない。

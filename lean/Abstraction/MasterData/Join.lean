@@ -1,4 +1,4 @@
-import Abstraction.Prim.List
+import LangSemantics.Sql.QueryLemmas
 import SourceModel.Repository.MasterData
 
 /-!
@@ -11,7 +11,7 @@ Mapper の結合の文（`routeFindAll`・`flightMasterFindAll`）の形。空�
 namespace Abstraction.MasterData
 
 open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
-  SourceModel.Repository.MasterData Abstraction.Prim
+  SourceModel.Repository.MasterData LangSemantics.Core
 
 theorem eqText_holds {m n : Nat} (a : Varchar m) (b : Varchar n) : (eqText a b).holds = (a.val == b.val) :=
   SqlValue.eq_text_holds a.val b.val

@@ -1,4 +1,4 @@
-import Abstraction.Fare.Double
+import LangSemantics.Java
 import Spec.Fare
 
 /-!
@@ -10,6 +10,7 @@ import Spec.Fare
 - 運賃の因子 `fareFactor r = 1 − (double) r * 0.01`（`r` は割引率、0〜100）
 
 どの因子も、正確な値（`c/100`・`(100−r)/100`）の相対誤差 `2^-48` 以内にある（`Close`。カーネルの評価で確かめる）。
+因子の式の比較（`Close`・`Safe`・`FactorOk`・`jd2i_factor` など）は、スキルの `LangSemantics.Java.DoubleCompare` にある。
 `X·c` が 100 で割り切れないとき、[Source] の `(int)(X * F)` は [Spec] の `⌊X·c/100⌋` に等しい。
 割り切れるとき、[Source] は等しいか 1 小さい。因子が安全（`Safe`）なら等しい。
 -/
@@ -25,42 +26,6 @@ def basicFactor (c : Nat) : JDouble := jdmul (jd (c : Int)) (jdLit "0.01")
 
 /-- 運賃の因子 `1 − discountRate * 0.01`（`calculateFare`）。 -/
 def fareFactor (r : Nat) : JDouble := jdsub (jd 1) (jdmul (jd (r : Int)) (jdLit "0.01"))
-
-/-- 因子が正の有限値 `fm·2^(−fs)`（`fs ≤ 1000`）で、正確な値 `c/100` に近い。 -/
-def FactorOk (F : JDouble) (c : Nat) : Prop :=
-  ∃ fm fs : Nat, F = .finite false fm (-(fs : Int)) ∧ fs ≤ 1000 ∧ Close c fm fs
-
-/-- 因子が安全（`Safe`）。 -/
-def FactorSafe (F : JDouble) (c : Nat) : Prop :=
-  ∃ fm fs : Nat, F = .finite false fm (-(fs : Int)) ∧ Safe c fm fs
-
-/-- 判定（カーネルの評価用）。 -/
-def factorOk? (F : JDouble) (c : Nat) : Bool :=
-  match F with
-  | .finite false fm e => decide (e < 0) && decide ((-e).toNat ≤ 1000) && decide (Close c fm (-e).toNat)
-  | _ => false
-
-def factorSafe? (F : JDouble) (c : Nat) : Bool :=
-  match F with
-  | .finite false fm e => decide (e < 0) && decide (Safe c fm (-e).toNat)
-  | _ => false
-
-theorem factorOk_of {F : JDouble} {c : Nat} (h : factorOk? F c = true) : FactorOk F c := by
-  unfold factorOk? at h
-  split at h
-  · rename_i fm e
-    simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    obtain ⟨⟨he, hfs⟩, hc⟩ := h
-    exact ⟨fm, (-e).toNat, by congr 1; omega, hfs, hc⟩
-  · cases h
-
-theorem factorSafe_of {F : JDouble} {c : Nat} (h : factorSafe? F c = true) : FactorSafe F c := by
-  unfold factorSafe? at h
-  split at h
-  · rename_i fm e
-    simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    exact ⟨fm, (-e).toNat, by congr 1; omega, h.2⟩
-  · cases h
 
 set_option maxRecDepth 100000 in
 /-- 積算比率 1〜1000 の基本運賃の因子は、どれも正確な値に近い。 -/
@@ -79,71 +44,6 @@ theorem basicFactor_ok {c : Nat} (h0 : c ≠ 0) (h : c ≤ 1000) : FactorOk (bas
 
 theorem fareFactor_ok {r : Nat} (h : r < 100) : FactorOk (fareFactor r) (100 - r) :=
   factorOk_of (List.all_eq_true.mp fareFactor_ok_all r (List.mem_range.mpr h))
-
-/-! ## 式の比較 -/
-
-theorem mul_zero_right' (s : Bool) (m : Nat) (e : Int) :
-    JDouble.mul (.finite s m e) (.finite false 0 0) = .finite (s != false) 0 0 := by
-  simp [JDouble.mul, toRat?, ofRat]
-
-theorem mul_zero_left' (t : Bool) (m : Nat) (e : Int) :
-    JDouble.mul (.finite false 0 0) (.finite t m e) = .finite (false != t) 0 0 := by
-  simp [JDouble.mul, toRat?, ofRat]
-
-theorem toJ32_zero (s : Bool) : (toJ32 (.finite s 0 0)).val = 0 := by cases s <;> decide
-
-/-- `X < 2^53` の `(double) X` は正の有限値（`X = 0` なら `+0`）。 -/
-theorem jd_nat_finite {X : Nat} (h : X < 2 ^ 53) : ∃ m e, jd (X : Int) = .finite false m e := by
-  by_cases h0 : X = 0
-  · subst h0; exact ⟨0, 0, by decide⟩
-  · exact ⟨_, _, ofInt_nat h0 h⟩
-
-/-- 因子 `F`（`c/100` に近い）について、[Source] の `(int)(X * F)` は [Spec] の `⌊X·c/100⌋` に等しいか、
-`X·c` が 100 で割り切れ、因子が安全でなく、1 小さい。 -/
-theorem jd2i_factor {X c : Nat} {F : JDouble} (hF : FactorOk F c) (hX : X ≠ 0) (hc : c ≠ 0)
-    (hr : X * c < 100 * 2 ^ 28) :
-    (jd2i (jdmul (jd (X : Int)) F)).val = ((X * c / 100 : Nat) : Int) ∨
-    (X * c % 100 = 0 ∧ 0 < X * c ∧ ¬ FactorSafe F c ∧ (jd2i (jdmul (jd (X : Int)) F)).val + 1 = ((X * c / 100 : Nat) : Int)) := by
-  obtain ⟨fm, fs, rfl, hfs, hcl⟩ := hF
-  obtain ⟨hfm, hlo, hhi⟩ := close_range hX hc hfs hr hcl
-  have hX53 : X < 2 ^ 53 := by
-    have : X ≤ X * c := Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hc)
-    omega
-  have hhi' : X * fm < 2 ^ fs * 2 ^ 31 :=
-    Nat.lt_of_lt_of_le hhi (Nat.mul_le_mul_left _ (Nat.pow_le_pow_right (by decide) (by decide)))
-  rw [jd2i_mul_nat hX hX53 hfm hlo hhi']
-  obtain ⟨r1, r2, r3⟩ := rneTrunc_factor hX hc hfs hr hcl
-  have hk : X * c / 100 < 2 ^ 28 := by omega
-  have hmax : J32.maxValue = 2147483647 := rfl
-  rw [hmax]
-  by_cases hj : X * c % 100 = 0
-  · by_cases hs : FactorSafe (.finite false fm (-(fs : Int))) c
-    · obtain ⟨fm', fs', he, hs'⟩ := hs
-      simp only [JDouble.finite.injEq, true_and] at he
-      obtain ⟨rfl, he⟩ := he
-      have : fs = fs' := by omega
-      subst this
-      have := r3 hj hs'
-      left; rw [this]; omega
-    · rcases r2 hj with h | h
-      · left; rw [h]; omega
-      · right; refine ⟨hj, Nat.mul_pos (Nat.pos_of_ne_zero hX) (Nat.pos_of_ne_zero hc), hs, ?_⟩; omega
-  · left; rw [r1 hj]; omega
-
-/-- `c = 0`・`X = 0` を含めた形（因子 `F` は `c = 0` なら `+0`）。 -/
-theorem jd2i_factor' {X c : Nat} {F : JDouble} (hX53 : X < 2 ^ 53) (h0 : c = 0 → F = .finite false 0 0)
-    (hF : c ≠ 0 → FactorOk F c) (hr : X * c < 100 * 2 ^ 28) :
-    (jd2i (jdmul (jd (X : Int)) F)).val = ((X * c / 100 : Nat) : Int) ∨
-    (X * c % 100 = 0 ∧ 0 < X * c ∧ ¬ FactorSafe F c ∧ (jd2i (jdmul (jd (X : Int)) F)).val + 1 = ((X * c / 100 : Nat) : Int)) := by
-  by_cases hc : c = 0
-  · subst hc; rw [h0 rfl]
-    obtain ⟨m, e, he⟩ := jd_nat_finite hX53
-    left; rw [he]; simp [jdmul, jd2i, mul_zero_right', toJ32_zero]
-  by_cases hX : X = 0
-  · subst hX
-    obtain ⟨fm, fs, rfl, -, -⟩ := hF hc
-    left; simp [jd, ofInt, ofRat, jdmul, jd2i, mul_zero_left', toJ32_zero]
-  exact jd2i_factor (hF hc) hX hc hr
 
 /-- 積算比率 0〜1000 の因子。 -/
 theorem basicFactor_ok' {c : Nat} (h : c ≤ 1000) :

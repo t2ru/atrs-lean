@@ -10,7 +10,7 @@ date: 2026-10-31
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T17:49:17+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く
@@ -103,5 +103,6 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 
 ## More Information
 
+* 補足（2026-10-31）: 本 ADR で「比較の定理（ATRS）」とした層（`Abstraction.Fare.Double` と `Factors` の因子の判定・`jd2i_factor`）は、アプリに依存しないので、スキルの `LangSemantics.Java.DoubleCompare` に移した（[ADR edc8](edc8-skill-scripts-and-generic-lean-libraries.md)）。決定は変わらない。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件・証拠が残る。
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)、[ADR e41d](e41d-exact-integer-arithmetic-in-abstract-model.md)
 * [abstraction.md](../spec/abstraction.md#既知差異)（D-001・D-002）、[fare-calculation.md](../spec/fare-calculation.md)

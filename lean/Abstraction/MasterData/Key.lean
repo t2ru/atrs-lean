@@ -1,4 +1,5 @@
 import SourceModel.MasterData
+import LangSemantics.Core.List
 
 /-!
 # Abstraction.MasterData.Key
@@ -9,23 +10,8 @@ import SourceModel.MasterData
 
 namespace Abstraction.MasterData
 
-open SourceModel.MasterData
+open SourceModel.MasterData LangSemantics.Core
 
-theorem append_sep_inj {c : Char} : ∀ {a a' b b' : List Char}, c ∉ a → c ∉ a' →
-    a ++ c :: b = a' ++ c :: b' → a = a' ∧ b = b'
-  | [], [], _, _, _, _, h => by simpa using h
-  | [], x :: a', _, _, _, h', h => by
-    simp only [List.nil_append, List.cons_append, List.cons.injEq] at h
-    exact absurd (h.1 ▸ List.mem_cons_self ..) h'
-  | x :: a, [], _, _, h, _, h' => by
-    simp only [List.nil_append, List.cons_append, List.cons.injEq] at h'
-    exact absurd (h'.1 ▸ List.mem_cons_self ..) h
-  | x :: a, y :: a', _, _, h, h', e => by
-    simp only [List.cons_append, List.cons.injEq] at e
-    obtain ⟨rfl, e⟩ := e
-    obtain ⟨rfl, rfl⟩ := append_sep_inj (fun m => h (List.mem_cons_of_mem _ m))
-      (fun m => h' (List.mem_cons_of_mem _ m)) e
-    exact ⟨rfl, rfl⟩
 
 /-- 出発の空港コードがどちらも `-` を含まなければ、キーが等しい区間は、出発・到着の空港コードが等しい。 -/
 theorem makeCacheKey_inj {dep arr dep' arr' : String} (h : '-' ∉ dep.toList) (h' : '-' ∉ dep'.toList)

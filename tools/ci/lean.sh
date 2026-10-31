@@ -1,47 +1,50 @@
 #!/usr/bin/env bash
 # Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7・114a）。
+# 汎用の道具はスキル port-lang の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+skill=.agents/skills/port-lang
+scripts="$skill/scripts"
 
 step() { printf '\n== %s\n' "$*"; }
 
 step "upstream: submodule の commit と trace/upstream.json の一致"
-python3 -I tools/ci/check_upstream.py
+python3 -I "$scripts/ci/check_upstream.py"
 
 step "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
-python3 -I tools/docs/ids.py check
+python3 -I "$scripts/docs/ids.py" check
 
 step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check
 python3 -I tools/conformance/seed_lean.py --check
 
 step "static: 静的検査の自己テスト（違反例を検出できること）"
-python3 -I tools/ci/check_lean.py --self-test
+python3 -I "$scripts/ci/check_lean.py" --self-test
 
 step "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
-python3 -I tools/ci/check_lean.py
+python3 -I "$scripts/ci/check_lean.py"
 
 step "static: 証明義務と文書の突き合わせの自己テスト（違反例を検出できること）"
-python3 -I tools/ci/check_obligations.py --self-test
+python3 -I "$scripts/ci/check_obligations.py" --self-test
 
 # 終了コード 2 は「処理系が無いので飛ばした」（ローカルだけ。CI では 1 になる）。
 skippable() { local rc=0; "$@" || rc=$?; [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ] || exit "$rc"; }
 
 step "assets/lean: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
-skippable tools/ci/jvm_table.sh
+skippable "$scripts/ci/jvm_table.sh"
 
 step "assets/lean: PostgreSQL との突き合わせ表（LangSemanticsTest/PostgresqlDb.lean）が生成器の出力と一致する"
-skippable tools/ci/pg_table.sh
+skippable "$scripts/ci/pg_table.sh"
 
 step "conformance: マスタの Mapper の文・コードリストの SQL の PostgreSQL での結果（conformance/sql/master-data.json）が最新である"
 skippable tools/ci/master_sql.sh
 
 step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 LangSemanticsTest・MachineTest・TraceTest）"
-(cd .agents/skills/port-lang/assets/lean && lake build)
+(cd "$skill/assets/lean" && lake build)
 
 step "assets/lean: trace-test（trace-dump・obligation-check の処理をフィクスチャにかける）"
-(cd .agents/skills/port-lang/assets/lean && lake exe trace-test)
+(cd "$skill/assets/lean" && lake exe trace-test)
 
 step "lean: lake build"
 (cd lean && lake build)
@@ -58,7 +61,7 @@ trap 'rm -f "$out" "$ob"' EXIT
 
 step "lean: obligation-check（R 課題の形と付帯の義務。TR-G）と文書の突き合わせ（TR-N）"
 (cd lean && lake exe obligation-check > "$ob")
-python3 -I tools/ci/check_obligations.py "$ob"
+python3 -I "$scripts/ci/check_obligations.py" "$ob"
 
 step "lean: trace-dump"
 (cd lean && lake exe trace-dump > "$out")
@@ -66,10 +69,10 @@ python3 -I -c 'import json, sys
 d = json.load(open(sys.argv[1]))
 print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_version"]))' "$out"
 
-step "trace: tools/trace の自己テスト（違反例を検出できること）"
-(cd tools/trace && cargo test --release --quiet)
-(cd tools/trace && cargo build --release --quiet)
-trace=tools/trace/target/release/trace
+step "trace: scripts/trace の自己テスト（違反例を検出できること）"
+(cd "$scripts/trace" && cargo test --release --quiet)
+(cd "$scripts/trace" && cargo build --release --quiet)
+trace="$scripts/trace/target/release/trace"
 
 step "trace: インベントリ・manifest・traceability.md の生成区画が最新である"
 "$trace" inventory source --check

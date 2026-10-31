@@ -1,54 +1,6 @@
 {
   "nodes": [
     {
-      "name": "Abstraction.Fare.Close",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.FactorOk",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.FactorSafe",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.below",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.below.cons",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.below.nil",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.brecOn",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.cons",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Forall₂.nil",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.J32.ofInt_val",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Safe",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.ageOfPassenger",
       "layer": "Abstraction"
     },
@@ -153,10 +105,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.close_range",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.configOf_fields",
       "layer": "Abstraction"
     },
@@ -241,22 +189,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.factorOk?",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.factorOk_of",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.factorSafe?",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.factorSafe_of",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.fareFactor",
       "layer": "Abstraction"
     },
@@ -329,22 +261,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.forIn_count_eq",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.forIn_sum_eq",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.forall₂_of_mapM",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.forall₂_of_mapM_id",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.glueBF",
       "layer": "Abstraction"
     },
@@ -405,10 +321,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.instDecidableClose",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.instDecidablePredBasicFareInputDev_D001",
       "layer": "Abstraction"
     },
@@ -429,42 +341,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.instDecidableSafe",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.j32add_nat",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.j32add_ofInt",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.j32mul_nat",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.j32sub_nat",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.jd2i_factor",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.jd2i_factor'",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.jd_nat_finite",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.jdiv32_nat",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.keyBasic",
       "layer": "Abstraction"
     },
@@ -478,22 +354,6 @@
     },
     {
       "name": "Abstraction.Fare.keyOfForm_eq",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.le_rneTrunc",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.le_rneTrunc_safe",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.mapM_eq_map_getD",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.mapM_length",
       "layer": "Abstraction"
     },
     {
@@ -513,14 +373,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.mul_zero_left'",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.mul_zero_right'",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.need_D001",
       "layer": "Abstraction"
     },
@@ -533,23 +385,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.ofInt_nat",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.pred_le_rneTrunc",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.ratioOn_le",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.rneTrunc_factor",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.rneTrunc_le",
       "layer": "Abstraction"
     },
     {
@@ -573,15 +409,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.sum_map_le",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.toFlight_ok",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.toJ32_zero",
       "layer": "Abstraction"
     },
     {
@@ -849,10 +677,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.allowed_perm",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.MasterData.answerKer",
       "layer": "Abstraction"
     },
@@ -902,10 +726,6 @@
     },
     {
       "name": "Abstraction.MasterData.apOf_at",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.append_sep_inj",
       "layer": "Abstraction"
     },
     {
@@ -1153,10 +973,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.forIn_ok",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.MasterData.ftCdOf",
       "layer": "Abstraction"
     },
@@ -1181,10 +997,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.get_ofList_perm",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.MasterData.glueMQ",
       "layer": "Abstraction"
     },
@@ -1202,10 +1014,6 @@
     },
     {
       "name": "Abstraction.MasterData.ic_unknownBoardingClass",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.inj_of_kernel",
       "layer": "Abstraction"
     },
     {
@@ -1250,14 +1058,6 @@
     },
     {
       "name": "Abstraction.MasterData.mapM_airportOfRow",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.mapM_ok",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.mapM_some_getD",
       "layer": "Abstraction"
     },
     {
@@ -1322,10 +1122,6 @@
     },
     {
       "name": "Abstraction.MasterData.ofYmd?_eq_some",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.ok_bind",
       "layer": "Abstraction"
     },
     {
@@ -1461,31 +1257,11 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.string_any_toList",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.MasterData.toEntry",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.MasterData.unknownBoardingClass_throws",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.adjacent_of_pairwise",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.allowed_int_sorted",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.allowed_map_eq_mergeSort",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.allowed_mergeSort_self",
       "layer": "Abstraction"
     },
     {
@@ -1497,39 +1273,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Prim.eq_mergeSort_of_sorted",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Prim.era_sum",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.filter_cross",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.filter_key_eq_singleton",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.find?_congr",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.find?_mapM",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.find?_perm",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.inj_of_nodup_map",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.kernelIs_undefOrEq",
       "layer": "Abstraction"
     },
     {
@@ -1537,39 +1281,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Prim.mapM_some_cons",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.mapM_some_length",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.mapM_some_map",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.mapM_some_mem",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.mapM_some_mem'",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.mem_cross",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.nodup_map_of_imp",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Prim.toEpochDay_eq_epochDay",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Prim.undefOrEq",
       "layer": "Abstraction"
     },
     {
@@ -5373,11 +5085,6 @@
     {
       "type": "kernel",
       "from": "Abstraction.MasterData.routeRowKer",
-      "to": "docs/spec/abstraction.md#抽象化関数-α"
-    },
-    {
-      "type": "kernel",
-      "from": "Abstraction.Prim.undefOrEq",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {

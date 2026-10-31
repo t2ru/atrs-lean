@@ -16,7 +16,7 @@ import SourceModel.FareQuery
 
 namespace Abstraction.Fare
 
-open Machine LangSemantics.Java Spec Abstraction.Prim Abstraction.MasterData SourceModel.FareQuery
+open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
 
 /-! ## 入力（合成） -/
 
