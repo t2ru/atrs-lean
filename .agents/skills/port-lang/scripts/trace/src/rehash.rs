@@ -1,4 +1,4 @@
-//! `rehash`: 決定論的な検査を実行し、合格した組だけ注釈のハッシュを更新して記録する（references/docs/traceability.md#検査済みハッシュ・9cd9）。
+//! `rehash`: 決定論的な検査を実行し、合格した組だけ注釈のハッシュを更新して記録する（references/docs/spec/traceability.md#検査済みハッシュ・9cd9）。
 //!
 //! 1. 対象: `@[source]`・`@[target]` の（定義, ロケータ）のうち、ハッシュ・版がインベントリ・宣言と違う、
 //!    合格の記録（本文ハッシュと Merkle の組）が無い、または `trace/renames.json` の `old` に当たるもの。

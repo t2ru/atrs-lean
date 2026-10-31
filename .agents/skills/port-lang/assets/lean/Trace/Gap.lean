@@ -5,7 +5,7 @@ import Trace.Attr
 
 `Spec` と移植元・移植先のモデルのギャップ（既知差異 `D-NNN` / `T-NNN` と、それに準じて明示するもの）の登録簿。
 登録簿の正は Lean である。文書の表は、`trace-dump` の `gaps` から道具が生成する
-（port-lang の `lean/trace-attributes.md`、`traceability.md`）。
+（port-lang の `lang/lean/trace-attributes.md`、`spec/traceability.md`）。
 
 - **登録の宣言**: ギャップごとに、型 `Trace.Gap` の定数を 1 つ置き、`@[gap_entry]` を付ける。
   説明（文書の表の「差異」「振る舞い」「状況」の列）は、その定数の docstring に Markdown で書く。
@@ -29,7 +29,7 @@ namespace Trace
 
 open Lean
 
-/-- ギャップの種類（references/docs/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
+/-- ギャップの種類（references/docs/spec/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
 inductive GapKind where
   /-- 前提型（抽象側の入力・状態の述語。抽象側の PRE を強める） -/
   | pre
@@ -79,7 +79,7 @@ def GapKind.label : GapKind → String
   | .outsidePre => "PRE の外"
   | .undetermined => "未確定"
 
-/-- 前提型の差異の影響（前提を破る 1 歩の後で、状態が貼り合わせを保つか。references/docs/architecture.md#空虚化を防ぐ義務）。 -/
+/-- 前提型の差異の影響（前提を破る 1 歩の後で、状態が貼り合わせを保つか。references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
 inductive Impact where
   /-- 前提を破っても、変わるのは出力だけ（R 課題に `StateSafe` を課す） -/
   | outputOnly

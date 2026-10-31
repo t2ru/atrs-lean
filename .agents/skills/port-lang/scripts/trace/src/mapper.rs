@@ -1,4 +1,4 @@
-//! MyBatis の Mapper XML のインベントリ（`sql:`）。sql/locators.md と references/docs/traceability.md#道具 による。
+//! MyBatis の Mapper XML のインベントリ（`sql:`）。lang/sql/locators.md と references/docs/spec/traceability.md#道具 による。
 //!
 //! - 単位: `<select|insert|update|delete id=…>`（`<selectKey>`・`<foreach>` などの動的要素を含む）。
 //! - 本文: 要素を、タグ（属性を含む）と SQL のトークンの列にしたもの。`<include refid>` は参照する

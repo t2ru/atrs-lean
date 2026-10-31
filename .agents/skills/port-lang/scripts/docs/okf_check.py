@@ -2,7 +2,7 @@
 """OKF v0.2 の Knowledge Bundle と Markdown のリンクの検査（port-lang の道具。scripts/README.md）。
 
 検査するバンドルと規則は、リポジトリの `trace/project.json` の `okf` から読む（形は
-references/docs/maintenance.md#バンドルの検査）。リポジトリのルートは、作業ディレクトリから上にたどって探す
+references/docs/rules/maintenance.md#バンドルの検査）。リポジトリのルートは、作業ディレクトリから上にたどって探す
 （`--repo` でも指定できる）。Python の標準ライブラリだけで動く。frontmatter は YAML の部分集合として読む
 （下の「YAML の部分集合」）。部分集合の外の書き方は、YAML として正しくても違反とする。
 

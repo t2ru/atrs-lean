@@ -152,7 +152,7 @@ R 課題で使う差異の ID ごとに、**その差異を外した R 課題の
 
 * 形は `#guard` か定理とする。
 * 許す例（Usefulness・Provability）に加えて、拒む例（Correctness。`¬ step s i s' o`、PRE の外）も書く。
-* 方法はスキルの [conformance.md](../../.agents/skills/port-lang/references/docs/conformance.md) と [spec-documents.md](../../.agents/skills/port-lang/references/docs/spec-documents.md) に置き、各機能の `Spec` を作る backlog 項目で適用する。
+* 方法はスキルの [conformance.md](../../.agents/skills/port-lang/references/docs/spec/conformance.md) と [spec-documents.md](../../.agents/skills/port-lang/references/docs/rules/spec-documents.md) に置き、各機能の `Spec` を作る backlog 項目で適用する。
 
 ### 保証の限界の変更（[spec/assurance.md](../spec/assurance.md)）
 

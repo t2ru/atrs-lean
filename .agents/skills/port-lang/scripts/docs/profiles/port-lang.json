@@ -1,5 +1,5 @@
 {
-  "note": "スキル port-lang の文書のバンドル（references/docs）の規則（references/docs/maintenance.md）。scripts/docs/okf_check.py が読む",
+  "note": "スキル port-lang の文書のバンドル（references/docs）の規則（references/docs/rules/maintenance.md）。scripts/docs/okf_check.py が読む",
   "okf_version": true,
   "index_complete": true,
   "common": {
@@ -59,11 +59,19 @@
       ]
     },
     {
-      "match": "*.md",
+      "match": "spec/*.md",
+      "type": "Specification"
+    },
+    {
+      "match": "rules/*.md",
       "type": "Guideline"
     },
     {
-      "match": "**",
+      "match": "guide/*.md",
+      "type": "Guide"
+    },
+    {
+      "match": "lang/**",
       "type": "Reference"
     }
   ]

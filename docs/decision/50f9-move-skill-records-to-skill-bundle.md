@@ -90,4 +90,4 @@ Chosen option: "純粋にスキルの記録だけを `git mv` で移す。ATRS �
 
 * [スキルの ADR 87b9](../../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)（スキル側の決定）、[スキルの backlog de90](../../.agents/skills/port-lang/references/docs/backlog/de90-skill-docs-okf-bundle-and-records.md)（作業）
 * [ADR f4e1](f4e1-extract-porting-method-as-agent-skill.md)（スキルへの切り出し）、[ADR a0f1](a0f1-documentation-format-okf-v0-2.md)（OKF）、[ADR f57e](f57e-uuid-ids-for-decisions-and-backlog.md)（UUID の ID）
-* スキルの保守の規則: [maintenance.md](../../.agents/skills/port-lang/references/docs/maintenance.md)
+* スキルの保守の規則: [maintenance.md](../../.agents/skills/port-lang/references/docs/rules/maintenance.md)

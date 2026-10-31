@@ -63,7 +63,7 @@ Chosen option: "部分集合のパーサ、プロファイルと種類、`script
 | F1・F2 | frontmatter が部分集合の YAML として読めること、空でない文字列の `type` | OKF §11-1・§11-2 |
 | R1・R2 | `index.md`（frontmatter はバンドルのルートの `okf_version` だけ、本文は `#` 見出しと `* [題名](パス) - 説明` だけ）・`log.md`（frontmatter 無し、`## YYYY-MM-DD` が新しい順で重複しない） | OKF §8・§9・§11-3・§12 |
 | K1〜K4・H1・S1 | プロファイルの規則: `type`、必須キー、値（`status`・`generated`・`verified`・`sources`・`tags` の形と、規則の `enum`）、ダブルクォート、`#` 見出しが 1 つで `title` と一致、必須の節の有無と順序 | OKF §5・§7、プロファイル |
-| A1・B1 | 種類 `adr`: `decision_status` と `status` の対応、`superseded_by`、選択肢 2 つ以上、採択を示す行。種類 `backlog`: `state` の値、`status` を持たない、`done` の項目に未完了の完了条件が無い | [maintenance.md](../maintenance.md) |
+| A1・B1 | 種類 `adr`: `decision_status` と `status` の対応、`superseded_by`、選択肢 2 つ以上、採択を示す行。種類 `backlog`: `state` の値、`status` を持たない、`done` の項目に未完了の完了条件が無い | [maintenance.md](../rules/maintenance.md) |
 | I1・I2 | バンドルのルートの `index.md` がすべての文書を列挙し、項目の題名・説明が文書の `title`・`description` と一致する | プロファイル |
 | L1〜L3 | 相対リンクの指す先がある、見出しアンカーが指す Markdown にある、`/` で始まるリンクを書かない（設定） | 設定 |
 
@@ -84,7 +84,7 @@ frontmatter は次の部分集合で書く。部分集合の外の書き方は�
 
 ### 設定
 
-`trace/project.json` の `okf` に書く（[traceability.md](../traceability.md#プロジェクトの設定)、[maintenance.md](../maintenance.md#バンドルの検査)）。
+`trace/project.json` の `okf` に書く（[traceability.md](../spec/traceability.md#プロジェクトの設定)、[maintenance.md](../rules/maintenance.md#バンドルの検査)）。
 
 * `bundles`: `[{root, profile}]`。`profile` はプロファイルそのものか、プロファイルの JSON のパス。
 * プロファイル: `okf_version`（ルートの索引に `okf_version` を要求する）、`index_complete`、`common`（`required`・`quoted`・`title_heading`・`enum`）、`rules`（`[{match, type, kind, required, enum, quoted, sections, outcome_markers}]`。最初に当たった規則を使う。どの規則にも当たらない文書は K1）。
@@ -128,7 +128,7 @@ frontmatter は次の部分集合で書く。部分集合の外の書き方は�
 ## More Information
 
 * 作業: [backlog a49c](../backlog/a49c-okf-bundle-check-tool.md)
-* 規則: [maintenance.md](../maintenance.md#バンドルの検査)、道具: [scripts/README.md](../../../scripts/README.md)
+* 規則: [maintenance.md](../rules/maintenance.md#バンドルの検査)、道具: [scripts/README.md](../../../scripts/README.md)
 * 来歴: ATRS の backlog ddbd（ATRS の `docs/` の検査）、ATRS の ADR a0f1（ATRS の `docs/` の OKF）。ATRS の側の決定は ATRS の ADR 920d にある。
 
 [^okf-spec]: Open Knowledge Format (OKF) Specification v0.2 — §6.1 Links, §8 Index, §9 Log, §11 Conformance, §12 Versioning.

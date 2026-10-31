@@ -4,7 +4,7 @@ import LangSemantics.Sql.Postgresql
 /-!
 # ConformanceKit.SqlTable
 
-SQL の差分実行の結果（スキルの `references/docs/sql/harness.md#差分実行の結果`）の表を読む道具。
+SQL の差分実行の結果（スキルの `references/docs/lang/sql/harness.md#差分実行の結果`）の表を読む道具。
 表は `{"columns": [...], "rows": [[...]]}` の形で、値は文字列か `null`。
 列の値は、`LangSemantics.Sql.Postgresql` の型（`Varchar n`・`Int4`）に、型の範囲を検査して読む。
 -/

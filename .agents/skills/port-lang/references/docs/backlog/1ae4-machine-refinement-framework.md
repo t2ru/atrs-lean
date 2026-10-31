@@ -60,4 +60,4 @@ generated:
 ## 参照
 
 - ATRS の ADR 01d4, ATRS の ADR 0bd3
-- [port-lang/architecture.md](../architecture.md#リファインメントb-メソッド)
+- [port-lang/architecture.md](../spec/architecture.md#リファインメントb-メソッド)

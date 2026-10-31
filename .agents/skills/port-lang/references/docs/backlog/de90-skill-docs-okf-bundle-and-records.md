@@ -42,4 +42,4 @@ generated:
 
 ## 参照
 
-- [ADR 87b9](../decision/87b9-skill-docs-as-okf-bundle.md)、[maintenance.md](../maintenance.md)
+- [ADR 87b9](../decision/87b9-skill-docs-as-okf-bundle.md)、[maintenance.md](../rules/maintenance.md)

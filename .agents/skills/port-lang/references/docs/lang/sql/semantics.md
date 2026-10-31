@@ -37,7 +37,7 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 
 ## 方言（LangSemantics.Sql.<Dbms>）
 
-次の項目は DBMS ごとに異なるため、方言パック `references/docs/sql/dialects/<dbms>/` に定義する。
+次の項目は DBMS ごとに異なるため、方言パック `references/docs/lang/sql/dialects/<dbms>/` に定義する。
 
 | 項目 | 例 |
 | --- | --- |
@@ -55,7 +55,7 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 | --- | --- | --- |
 | PostgreSQL | [dialects/postgresql/semantics.md](dialects/postgresql/semantics.md), [engine.md](dialects/postgresql/engine.md), [harness.md](dialects/postgresql/harness.md) | `LangSemantics.Sql.Postgresql` |
 
-方言を追加する手順は [adding-a-language.md](../adding-a-language.md#方言サブパック) にある。
+方言を追加する手順は [adding-a-language.md](../../guide/adding-a-language.md#方言サブパック) にある。
 
 ## 抽象化（α）での写し方
 

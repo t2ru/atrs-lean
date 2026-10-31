@@ -11,7 +11,7 @@ generated:
 
 # Lean プロジェクトの規約
 
-Lean 4 は、すべてのモデルと証明を置く形式化言語である（[architecture.md](../architecture.md)）。
+Lean 4 は、すべてのモデルと証明を置く形式化言語である（[architecture.md](../../spec/architecture.md)）。
 
 ## ツールチェーンと依存
 
@@ -37,7 +37,7 @@ lean/
   TargetModel/            -- 移植先モデル [Target]
   Refinement/             -- TargetModel が Spec をリファインする（REF-NNN）
   Trace/                  -- 追跡属性と trace-dump・obligation-check の本体（アプリ非依存。スキルの assets/lean/Trace/。trace-attributes.md）
-  ConformanceKit/         -- 適合テストベクタの実行器（アプリ非依存。スキルの assets/lean/ConformanceKit/。conformance.md）
+  ConformanceKit/         -- 適合テストベクタの実行器（アプリ非依存。スキルの assets/lean/ConformanceKit/。spec/conformance.md）
   Tests/                  -- テストドライバ（lake test。操作の割当はプロジェクトが書き、実行は ConformanceKit を使う）
   Tools/                  -- 実行ファイル（ベクタ生成、trace-dump・obligation-check の入口、移植先の写しの生成器）
 ```
@@ -61,7 +61,7 @@ require <project> from "./lean"
 - 確認: ルートで `lake setup-file <各パッケージのファイル>` が成功すること（LSP はこれを呼ぶ）。
 
 - ファイルパスと名前空間を一致させる（`Spec.Fare` は `Spec/Fare.lean`）。
-- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`ConformanceKit`・`Tests`・`Tools` は例外として認められている。依存の向きは [architecture.md](../architecture.md#依存の向き) に従い、CI で検査する（`scripts/ci/check_lean.py`）。
+- トップレベル名前空間は上記だけとする。`Machine`・`Trace`・`ConformanceKit`・`Tests`・`Tools` は例外として認められている。依存の向きは [architecture.md](../../spec/architecture.md#依存の向き) に従い、CI で検査する（`scripts/ci/check_lean.py`）。
 - アプリに依存しない補題・道具は、プロジェクトに置かず、スキルの assets に足す。置き場所は次のとおり。
   - 特定の言語の意味論の補題 → `LangSemantics.<lang>`
   - どの言語にも依存しない列・`Option`・文字列の補題 → `LangSemantics.Core`
@@ -116,7 +116,7 @@ require <project> from "./lean"
 ## 証明
 
 - 使ってよい自動化: `simp`, `omega`, `decide`, `grind`（利用可能なら。`#print axioms` で公理を確認する）。`native_decide`・`bv_decide` は証明に使ってはならない（`Tests` の確認だけに使う）。
-- 主定理には `@[obligation "ABS-NNN"]` / `@[obligation "REF-NNN"]` を付ける。R 課題の主定理は `Machine.Refines` の形とし、仮定は PRE・INV・`@[deviation]` 付きの述語だけとする（[architecture.md](../architecture.md#リファインメントb-メソッド)）。W 課題の必要性の定理は、R 課題の命題から差異を外したものの否定（`¬ Refines …`。基底が `ofChoice` なら `¬ (Refines … ∧ Refines.Pinned …)` でもよい）の形で、両向きの例とは別の閉じた定理とする。他の差異に覆われる差異は `Machine.Covers` を示す（[architecture.md](../architecture.md#空虚化を防ぐ義務)）。
+- 主定理には `@[obligation "ABS-NNN"]` / `@[obligation "REF-NNN"]` を付ける。R 課題の主定理は `Machine.Refines` の形とし、仮定は PRE・INV・`@[deviation]` 付きの述語だけとする（[architecture.md](../../spec/architecture.md#リファインメントb-メソッド)）。W 課題の必要性の定理は、R 課題の命題から差異を外したものの否定（`¬ Refines …`。基底が `ofChoice` なら `¬ (Refines … ∧ Refines.Pinned …)` でもよい）の形で、両向きの例とは別の閉じた定理とする。他の差異に覆われる差異は `Machine.Covers` を示す（[architecture.md](../../spec/architecture.md#空虚化を防ぐ義務)）。
   - 形: `Machine.Refines (A.restrict dev_D001) (C.restrict dev_D019) glue`。`A : Machine.Machine σ ι ο` は `Spec` の抽象機械、`C : Machine.Concrete τ ι' ο' ε` はモデルの具体機械、`glue : Machine.Glue …` は `J`・`αi`・`αo` である。
   - 前提型の差異は、抽象側なら `Machine.Machine.restrict`（入力の述語）・`restrictState`（状態と入力の述語）、具体側だけにある入力なら `Machine.Concrete.restrict` で表す。観測型の差異は、`glue` の `J`・`αo` の名前付きの成分にする。
   - `Spec` 自身の課題は `Machine.Machine.Sound`（INIT ⇒ INV、INV の保存）で表す。標準の選択が関係に含まれることは、`Machine.Machine` の成分 `run_step` である。

@@ -1,4 +1,4 @@
-//! `trace`: 両端の追跡の道具（port-lang の `references/docs/traceability.md#道具`）。
+//! `trace`: 両端の追跡の道具（port-lang の `references/docs/spec/traceability.md#道具`）。
 //!
 //! ```text
 //! trace inventory source [--check]

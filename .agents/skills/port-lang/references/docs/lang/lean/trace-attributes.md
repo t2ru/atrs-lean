@@ -11,7 +11,7 @@ generated:
 
 # Lean の追跡属性と trace-dump
 
-追跡の考え方は [traceability.md](../traceability.md)。ここでは Lean 側の実装を定める。
+追跡の考え方は [traceability.md](../../spec/traceability.md)。ここでは Lean 側の実装を定める。
 実装はスキルの `assets/lean/Trace/` にあり、プロジェクトは Lake の依存（`require langSemantics`）として取り込む。
 
 | モジュール | 内容 |
@@ -52,13 +52,13 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 
 - 属性の付け忘れは検査 TR-S1 / TR-T1 で、ロケータの誤りは TR-R で、差異の付け忘れ・余分は TR-D で検出される。
 - `@[nondet]` の付け忘れ・余分と、`@[std_abs]`・`@[kernel]`・`@[env_pre]` の付け忘れは、TR-N・TR-G で検出される。追跡属性はモデルの層の定数にだけ付ける（TR-G の G0）。
-- `@[source]` / `@[target]` のハッシュは、決定論的な検査が合格したときに道具（`rehash`）が書き込む。手で書き換えてはならない（[traceability.md](../traceability.md#検査済みハッシュ)）。
+- `@[source]` / `@[target]` のハッシュは、決定論的な検査が合格したときに道具（`rehash`）が書き込む。手で書き換えてはならない（[traceability.md](../../spec/traceability.md#検査済みハッシュ)）。
 - 移植元側の層に `@[target]` を、移植先側の層に `@[source]` を付けてはならない（TR-X）。
 - `@[gap]` の不足・誤りは TR-K と obligation-check の GK で検出される。属性は `merkle` に含まれないので、印を足しても `@[source]` の再検査は要らない。
 
 ## ギャップの登録簿
 
-`Spec` とモデルのギャップは、差異（前提型・観測型・モデル外。[architecture.md](../architecture.md#差異)）と、それに準じて明示するもの（`Spec` の PRE の外での振る舞い・種類が未確定のもの）である。
+`Spec` とモデルのギャップは、差異（前提型・観測型・モデル外。[architecture.md](../../spec/architecture.md#差異)）と、それに準じて明示するもの（`Spec` の PRE の外での振る舞い・種類が未確定のもの）である。
 登録簿の正は Lean とし、ID ごとに型 `Trace.Gap` の宣言を 1 つ置いて `@[gap_entry]` を付ける。`D-NNN` は `Abstraction` の層（例: `Abstraction.Gap`）、`T-NNN` は `Refinement` の層（例: `Refinement.Gap`）に置く。
 説明（表の「差異」「振る舞い」「状況」の列）は宣言の docstring に Markdown で書く。文書の表は、道具が `trace-dump` の `gaps` から生成する（手で編集しない）。
 

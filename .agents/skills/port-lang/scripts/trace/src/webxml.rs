@@ -1,4 +1,4 @@
-//! `web.xml` のインベントリ（`xml:`）。references/docs/traceability.md#道具 による。
+//! `web.xml` のインベントリ（`xml:`）。references/docs/spec/traceability.md#道具 による。
 //!
 //! - 単位: `<web-app>` 直下の要素。ロケータは `xml:web.xml#<要素>[<識別子の子要素>=<値>]`。
 //!   識別子が無い要素、同じものが複数ある要素は `[n]` を付ける。

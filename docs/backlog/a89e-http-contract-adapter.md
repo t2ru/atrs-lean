@@ -46,4 +46,4 @@ generated:
 
 - [http-contract.md](../spec/http-contract.md)
 - [ADR 1b00](../decision/1b00-http-contract-specification.md)
-- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)
+- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/lang/rust/layout.md)

@@ -18,6 +18,9 @@ python3 -I "$scripts/docs/ids.py" check
 step "docs: OKF バンドルとリンクの検査の自己テスト（違反例を検出できること）"
 python3 -I "$scripts/docs/okf_check.py" --self-test
 
+step "docs: 文書の移動とリンクの張り直しの道具の自己テスト"
+python3 -I "$scripts/docs/docmv.py" --self-test
+
 step "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
 python3 -I "$scripts/docs/okf_check.py"
 

@@ -11,7 +11,7 @@ generated:
 
 # スキルの作業項目
 
-書き方は [maintenance.md](../maintenance.md#作業項目backlog)。状態は各項目の frontmatter の `state` が正である。
+書き方は [maintenance.md](../rules/maintenance.md#作業項目backlog)。状態は各項目の frontmatter の `state` が正である。
 依存の列には、このバンドルの項目だけを書く。適用先の項目がスキルの項目に依存するのはよいが、その逆は書かない。
 
 | ID | 項目 | state | 依存 |
@@ -20,3 +20,4 @@ generated:
 | a936 | [LangSemantics.Rust: Rust の意味論](a936-lang-semantics-rust.md) | todo | — |
 | de90 | [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](de90-skill-docs-okf-bundle-and-records.md) | done | — |
 | a49c | [OKF バンドルとリンクの検査の道具](a49c-okf-bundle-check-tool.md) | done | [de90](de90-skill-docs-okf-bundle-and-records.md) |
+| 97a7 | [スキルの文書を spec/・rules/・guide/・lang/ に分ける](97a7-skill-docs-category-directories.md) | done | [a49c](a49c-okf-bundle-check-tool.md) |

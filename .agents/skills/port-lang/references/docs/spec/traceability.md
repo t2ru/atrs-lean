@@ -1,5 +1,5 @@
 ---
-type: Guideline
+type: Specification
 title: "両端の追跡（トレーサビリティ）"
 description: "移植元ソース⇔SourceModel と TargetModel⇔移植先ソースの両端の追跡: ロケータ・注釈・検査済みハッシュ・インベントリ・manifest・TR 検査・道具とプロジェクトの設定。"
 tags: [traceability]
@@ -71,7 +71,7 @@ locator = kind ":" body
 | `Spec` | `@[spec_doc "<仕様文書#アンカー>"]`、`@[no_source "<理由>"]` | 文書 |
 | ベクタ | `modelDef`, `upstream`（[conformance.md](conformance.md)） | テスト |
 
-属性の定義と `trace-dump` は [lean/trace-attributes.md](lean/trace-attributes.md)。
+属性の定義と `trace-dump` は [lean/trace-attributes.md](../lang/lean/trace-attributes.md)。
 
 ### 検査済みハッシュ
 
@@ -129,7 +129,7 @@ locator = kind ":" body
 
 ## 道具
 
-スキルは、追跡と検査の道具を `scripts/` に持つ（使い方は [scripts/README.md](../../scripts/README.md)）。道具はアプリに依存せず、
+スキルは、追跡と検査の道具を `scripts/` に持つ（使い方は [scripts/README.md](../../../scripts/README.md)）。道具はアプリに依存せず、
 プロジェクト固有の値はすべて `trace/project.json` から読む。リポジトリのルートは、作業ディレクトリから上にたどって
 `trace/project.json` があるところとする（`--repo <dir>` でも指定できる）。
 
@@ -141,7 +141,7 @@ locator = kind ":" body
 | `manifest --dump <trace-dump.json> --obligations <obligation-check.json> [--check]` | manifest と、仕様文書の生成区画（① と ② の 2 本の表、ギャップの表）の生成。`lake exe trace-dump` の出力を取り込む |
 | `check --dump … --obligations … [--verbose]` | TR 検査（`scripts/ci/check_obligations.py` の結果を TR-G・TR-N として取り込む） |
 | `rehash --dump … [--dry-run]` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
-| `diff --old <file\|git:REV> [--side source\|target] [--json]` | 新旧インベントリの分類（[upgrade.md](upgrade.md)） |
+| `diff --old <file\|git:REV> [--side source\|target] [--json]` | 新旧インベントリの分類（[upgrade.md](../guide/upgrade.md)） |
 | `impact --dump … --obligations … [--diff <file\|git:REV>] [--json] [<起点>…]` | 証明グラフに沿った影響一覧と、見直すギャップ |
 
 ### プロジェクトの設定
@@ -159,8 +159,8 @@ locator = kind ":" body
 | `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
 | `conformance` | 適合テストベクタのディレクトリ |
-| `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`isolated`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`）。`kinds` は種類（`adr`・`backlog`）ごとの置き場所で、文字列か配列。スキルの記録を一緒に検査するときは、スキルの `references/docs/decision`・`references/docs/backlog` を加える。`isolated` は持ち出すバンドルの列 `[{"bundle": <dir>, "root": <リンクが出てはならない範囲>}]` で、スキルでは `{"bundle": "<skill>/references/docs", "root": "<skill>"}`（[maintenance.md](maintenance.md#持ち出せること)） |
-| `okf` | 任意。`scripts/docs/okf_check.py`（OKF のバンドルとリンクの検査）の設定。`bundles` は `[{root, profile}]` で、`profile` はプロファイル（`okf_version`・`index_complete`・`common`・`rules`）か、その JSON のパス。スキルのバンドルは `<skill>/scripts/docs/profiles/port-lang.json` を指す。`links` は `{roots, skip, absolute}`（検査する Markdown の範囲・除外・`/` で始まるリンクを許すか）、`skip` は全体の除外（[maintenance.md](maintenance.md#バンドルの検査)） |
+| `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`isolated`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`）。`kinds` は種類（`adr`・`backlog`）ごとの置き場所で、文字列か配列。スキルの記録を一緒に検査するときは、スキルの `references/docs/decision`・`references/docs/backlog` を加える。`isolated` は持ち出すバンドルの列 `[{"bundle": <dir>, "root": <リンクが出てはならない範囲>}]` で、スキルでは `{"bundle": "<skill>/references/docs", "root": "<skill>"}`（[maintenance.md](../rules/maintenance.md#持ち出せること)） |
+| `okf` | 任意。`scripts/docs/okf_check.py`（OKF のバンドルとリンクの検査）の設定。`bundles` は `[{root, profile}]` で、`profile` はプロファイル（`okf_version`・`index_complete`・`common`・`rules`）か、その JSON のパス。スキルのバンドルは `<skill>/scripts/docs/profiles/port-lang.json` を指す。`links` は `{roots, skip, absolute}`（検査する Markdown の範囲・除外・`/` で始まるリンクを許すか）、`skip` は全体の除外（[maintenance.md](../rules/maintenance.md#バンドルの検査)） |
 
 ### 手書きのファイルの形
 
@@ -169,7 +169,7 @@ locator = kind ":" body
 | `trace/upstream.json` | `{repo, submodule, variant, release, commit, languages: {<名前>: {version, from}}, dependencies: [{coordinate, version, from}]}`。`dep:<coordinate>#…@<version>`・`lang:<名前>#…@<名前>-<version>` の照合に使う |
 | `trace/target.json` | `upstream.json` と同じ形の `languages`・`dependencies`（移植先のツールチェーン・検証器・依存） |
 | `trace/out-of-scope.json` | `{items: [{path, reason, decision}]}`。`path` は `source.root` からの相対 glob、`decision` は根拠の意思決定記録 |
-| `trace/renames.json` | `{renames: [{old, new}]}`（[upgrade.md](upgrade.md)） |
+| `trace/renames.json` | `{renames: [{old, new}]}`（[upgrade.md](../guide/upgrade.md)） |
 | `trace/features.json` | `{features: [{name, backlog: [ID], lean: [名前空間], tasks: [R 課題], locators: [glob]}]}`。ロケータは最初に当たった機能に属する。層を書かない名前空間は 4 つの層（`SourceModel`・`Abstraction`・`TargetModel`・`Refinement`）に広げる |
 | `trace/checks.json` | `{checks: [{id, description, steps: [{cwd, argv}], covers: {names: [glob], vectors: [glob]}}]}`。各 step の終了コードがすべて 0 なら合格 |
 
