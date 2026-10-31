@@ -81,7 +81,7 @@ theorem fare_diff {ic : FareInput} {i : Spec.Fare.FareInput} (h : aiF ic = some 
 
 /-- W 課題 ABS-102（D-002 の必要性。G9）: 前提を外すと、ABS-002 は成り立たない。基本運賃 1430 円・割引率 30% で、
 [Source] は 1000 円、[Spec] は 1100 円。 -/
-@[obligation "ABS-102"]
+@[obligation "ABS-102", gap "D-002"]
 theorem need_D002 : ¬ Refines Spec.Fare.fareMachine (fareConcrete.restrict dev_D027F) glueF := fun h => by
   have hα : aiF icF1430 = some ⟨1430, 30⟩ := rfl
   have hpre : Spec.Fare.FareInput.Pre ⟨1430, 30⟩ := by decide

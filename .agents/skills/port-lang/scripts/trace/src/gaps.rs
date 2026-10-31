@@ -62,6 +62,29 @@ fn sites(doc_dir: &Path, g: &Gap) -> String {
     cell(&g.sites.iter().map(|s| site_link(doc_dir, s)).collect::<Vec<_>>().join("・"))
 }
 
+/// Lean 名の最後の成分。
+fn short(n: &str) -> String {
+    format!("`{}`", n.rsplit('.').next().unwrap_or(n))
+}
+
+/// 証明の状態の欄: 名前と、裏付けの宣言（`covered` は覆う差異と定理、`pending` は理由）。
+fn evidence(g: &Gap) -> String {
+    let e = &g.evidence;
+    if e.state.is_empty() {
+        return "—".into();
+    }
+    let ws: Vec<String> = e.witnesses.iter().map(|w| short(w)).collect();
+    let detail = match e.state.as_str() {
+        "covered" => {
+            let by = e.coverer.as_deref().map(short).unwrap_or_default();
+            format!("{by} が覆う。{}", ws.join("・"))
+        }
+        "pending" => e.reason.clone(),
+        _ => ws.join("・"),
+    };
+    if detail.is_empty() { e.label.clone() } else { cell(&format!("{}（{detail}）", e.label)) }
+}
+
 fn dash_or(v: &[String]) -> String {
     if v.is_empty() {
         "—".into()
@@ -86,7 +109,7 @@ pub fn region(name: &str, doc_dir: &Path, gaps: &[&Gap], side: &str) -> Result<S
     let note = "`trace manifest` が Lean の登録簿（`@[gap_entry]`）から生成する（手で編集しない）。\n\n";
     let body = match name {
         "gaps-known" => table(
-            &["ID", "種類", "箇所", "差異", "前提（前提型）／成分（観測型）", "R 課題", "W 課題"],
+            &["ID", "種類", "箇所", "差異", "前提（前提型）／成分（観測型）", "R 課題", "W 課題", "証明の状態"],
             gaps.iter()
                 .filter(|g| g.is_typed() || g.kind == "out_of_model")
                 .map(|g| {
@@ -98,6 +121,7 @@ pub fn region(name: &str, doc_dir: &Path, gaps: &[&Gap], side: &str) -> Result<S
                         cell(&g.premise),
                         dash_or(&g.r_tasks),
                         g.w_task.clone().unwrap_or_else(|| "—".into()),
+                        evidence(g),
                     ]
                 })
                 .collect(),
@@ -117,10 +141,10 @@ pub fn region(name: &str, doc_dir: &Path, gaps: &[&Gap], side: &str) -> Result<S
                 .collect(),
         ),
         "gaps-undetermined" => table(
-            &["ID", "対象", "状況", "確定させる作業"],
+            &["ID", "対象", "状況", "確定させる作業", "証明の状態"],
             gaps.iter()
                 .filter(|g| g.kind == "undetermined")
-                .map(|g| vec![g.id.clone(), sites(doc_dir, g), cell(&g.doc), cell(&g.resolution)])
+                .map(|g| vec![g.id.clone(), sites(doc_dir, g), cell(&g.doc), cell(&g.resolution), evidence(g)])
                 .collect(),
         ),
         _ => return Err(format!("unknown generated region {name:?}")),
@@ -193,9 +217,13 @@ mod tests {
         let mut d1 = gap("D-001", "pre", "前提型");
         d1.r_tasks = vec!["ABS-001".into(), "ABS-004".into()];
         d1.w_task = Some("ABS-101".into());
+        d1.evidence = crate::lean::Evidence { state: "refuted".into(), label: "偽を証明済み".into(),
+            witnesses: vec!["Abstraction.Fare.need_D001".into()], ..Default::default() };
         d1.impact = Some(Impact { kind: "abort".into(), label: "中断".into(), reason: "理由".into() });
         d1.backlog = vec!["b1".into()];
-        let d2 = gap("D-013", "out_of_model", "モデル外");
+        let mut d2 = gap("D-013", "out_of_model", "モデル外");
+        d2.evidence = crate::lean::Evidence { state: "unformalized".into(), label: "形式化していない".into(),
+            witnesses: vec!["Abstraction.Gap.claim_D013".into()], ..Default::default() };
         let mut d3 = gap("D-003", "outside_pre", "PRE の外");
         d3.premise = "PRE MD-7".into();
         let t1 = gap("T-001", "observational", "観測型");
@@ -205,8 +233,8 @@ mod tests {
         let gaps = vec![d2, d1, d3, t1];
         let out = render_doc(doc, "docs/spec/abstraction.md", &gaps, "D-", "[Source]",
             &["gaps-known", "gaps-impact", "gaps-outside-pre"]).unwrap();
-        assert!(out.contains("| D-001 | 前提型 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | ABS-001, ABS-004 | ABS-101 |\n| D-013 | モデル外 |"), "{out}");
-        assert!(out.contains("| D-013 | モデル外 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | — | — |"));
+        assert!(out.contains("| D-001 | 前提型 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | ABS-001, ABS-004 | ABS-101 | 偽を証明済み（`need_D001`） |\n| D-013 | モデル外 |"), "{out}");
+        assert!(out.contains("| D-013 | モデル外 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | `dev_D001`: p | — | — | 形式化していない（`claim_D013`） |"));
         assert!(out.contains("| D-001 | 中断 | 理由 | b1 |"));
         assert!(out.contains("| ID | 箇所 | [Source] の振る舞い | [Spec] の前提 |"));
         assert!(out.contains("| D-003 | [価格](pricing.md#価格)・[ADR x](../decision/x.md)（規範節） | 差 \\| 異 | PRE MD-7 |"));
