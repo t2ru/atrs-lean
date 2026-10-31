@@ -50,7 +50,7 @@ generated:
 
 ## 結果
 
-- `assets/lean/Machine/`: `Basic`（`Machine.Machine`・`Sound`・`restrict`・`restrictState`・`pure`）、`Concrete`（`Machine.Concrete`・`ofFun`・`pure`・`restrict`・`Machine.toConcrete`）、`Refines`（`Glue`・`Refines`・制限の補題・`refl`・`trans`・`of_pure`）。
+- `assets/lean/Machine/`: `Machine`（旧 `Basic`。`Machine.Machine`・`Sound`・`restrict`・`restrictState`・`pure`）、`Concrete`（`Machine.Concrete`・`ofFun`・`pure`・`restrict`・`Concrete.ofMachine`（旧 `Machine.toConcrete`））、`Glue`（旧 `Refines` の一部）・`Refines`（`Refines`・制限の補題・`refl`・`trans`・`of_pure`）。
   - `ADR 01d4` の名前 `Machine.restrict`・`Machine.restrictConcrete` は、dot 記法（`A.restrict P`・`C.restrict P`）で書けるように `Machine.Machine.restrict`・`Machine.Concrete.restrict` とした。ADR の記述も直した。
   - 具体側の定義域 `Dom` は入力だけの述語とし、具体側だけにある環境は入力の成分として表す（推移性で中間の状態を必要としないため）。
   - α/β の未定義は、`J`・`αo` に像が無いこととして正しさの義務が排除する。

@@ -27,7 +27,7 @@ generated:
   - `Machine.Kernel`
   - `LangSemantics.Core`（新設）
   - `LangSemantics.Sql.QueryLemmas`
-  - `LangSemantics.Java`（`ResultLemmas`・`HashMapLemmas`・`DoubleCompare`・`IntLemmas`）
+  - `LangSemantics.Java`（`ResultLemmas`・`HashMap.Lemmas`・`JDouble.Compare`・`IntLemmas`）
   - `ConformanceKit`（新設）と `ConformanceKitTest`
   - obligation-check の G7 の拡張
 - 文書
@@ -48,7 +48,7 @@ generated:
   - `obligation-check` の R 課題の判定
   - `lake test` の検査の一覧
 - [x] merkle が変わった定義が、移した補題を参照する `Abstraction` の定義だけである（`@[source]` の再検査が要らない）
-- [x] `ConformanceKitTest`・`TraceTest`（`Machine.undefOrEq` の正例・違反例）・`check_lean.py --self-test`（`LangSemantics.Core` の依存）が通る
+- [x] `ConformanceKitTest`・`TraceTest`（`Machine.Kernel.undefOrEq` の正例・違反例）・`check_lean.py --self-test`（`LangSemantics.Core` の依存）が通る
 - [x] スキルの中に ATRS 固有の語（`atrs`・`ATRS`・ATRS の ADR の ID）が残っていない
 
 ## 参照

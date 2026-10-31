@@ -69,6 +69,7 @@ okf_version: "0.2"
 * [スキルの文書を references/docs/ の OKF バンドルにし、スキルの決定と作業項目をスキルで持つ](decision/87b9-skill-docs-as-okf-bundle.md) - スキル port-lang の references を references/docs/ に移して OKF v0.2 の Knowledge Bundle とし、スキル自身の意思決定記録と作業項目を references/docs/{decision,backlog} で管理する。適用先のプロジェクトとは ID の空間を共有し、外の項目は来歴としてだけ挙げる。
 * [OKF バンドルとリンクの検査の道具 okf_check.py を置き、規則を設定のプロファイルで与える](decision/330e-okf-bundle-check-tool.md) - OKF v0.2 の適合条件（frontmatter・type・index.md・log.md）、バンドルの規則（種類ごとの type・必須キー・必須の節・意思決定記録と作業項目の形）、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具を scripts/docs/okf_check.py に置く。標準ライブラリだけで動かすため、frontmatter は YAML の部分集合として読む。規則は trace/project.json の okf にバンドルごとのプロファイルとして書く。
 * [スキルの assets の Lean の検査を名前空間 Test.<ライブラリ> にまとめる](decision/c08b-test-namespace-for-skill-asset-tests.md) - assets/lean の検査（LangSemanticsTest・MachineTest・ConformanceKitTest・TraceTest）を、トップレベルの Test の下の Test.LangSemantics・Test.Machine・Test.ConformanceKit・Test.Trace に移し、ディレクトリも Test/ にまとめる。Lake のライブラリは Test の 1 つにし、静的検査は Test を Tests の層として扱う。
+* [Lean の宣言をモジュール名の下に置き、機能の証明課題を機能のモジュールに置く](decision/1a30-lean-module-namespace-layout.md) - Lean の宣言の完全名をモジュール名そのものかその下に限り（NS-1）、技術的な必要がある 4 つの例外（型の名前空間・main・明示した例外・型名のモジュールのインスタンス）だけを認める。R・W・C 課題と付帯の義務は機能の名前空間のモジュールに、補題は下位のモジュールに置く（TR-L）。検査の道具 layout-check と改名の道具 rename.py を置く。
 * [スキルの文書を spec/・rules/・guide/・lang/ に分け、移動の道具 docmv.py を置く](decision/748c-skill-docs-category-directories.md) - references/docs の方法の文書（平置きの 11 本）を、規範の spec/、書き方の規約の rules/、手順と進め方の guide/ に分け、言語パックを lang/<lang>/ に移す。type は spec を Specification、rules を Guideline、guide を Guide、lang を Reference とする。移動とリンクの張り直しには、新しい道具 scripts/docs/docmv.py を使う。
 
 # Backlog
@@ -78,4 +79,5 @@ okf_version: "0.2"
 * [LangSemantics.Rust: Rust の意味論](backlog/a936-lang-semantics-rust.md) - 固定長整数（検査付き・折り返し）、char、UTF-8 String、Vec、Result、パニックを、アプリ非依存の検証可能なモデルとして Lean に定義する。
 * [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](backlog/de90-skill-docs-okf-bundle-and-records.md) - references を references/docs/ の OKF v0.2 のバンドルにし、decision/・backlog/ を設けて、適用先にあったスキルの記録を移す。ID の道具を複数の置き場所と持ち出せることの検査に対応させる。
 * [OKF バンドルとリンクの検査の道具](backlog/a49c-okf-bundle-check-tool.md) - OKF v0.2 の適合条件、バンドルのプロファイルの規則、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具 scripts/docs/okf_check.py を作り、このバンドルの規則をプロファイルにする。
+* [Lean の宣言をモジュール名の下に置く規則と検査](backlog/ce23-lean-module-namespace-layout.md) - 宣言の完全名をモジュール名の下に限る規則（NS-1）と証明課題の配置（TR-L）を定め、検査の道具 layout-check・TR-L・改名の道具 rename.py を作り、スキルの assets の宣言を書き換える。
 * [スキルの文書を spec/・rules/・guide/・lang/ に分ける](backlog/97a7-skill-docs-category-directories.md) - references/docs の方法の文書を spec/・rules/・guide/ に、言語パックを lang/<lang>/ に移し、type・プロファイル・索引を改める。移動とリンクの張り直しの道具 scripts/docs/docmv.py を作る。

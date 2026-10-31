@@ -38,6 +38,7 @@ generated:
 | `Refinement` | 具体化証明課題 | `TargetModel` が `Spec` をリファインする定理 | `REF-NNN` |
 
 - 下位の名前空間は、層をまたいで同じ機能名を使う（`SourceModel.Fare` / `Spec.Fare` / `Abstraction.Fare` / `TargetModel.Fare` / `Refinement.Fare`）。
+- 宣言はモジュール名の下に置き、機能の証明課題は機能のモジュールに、補題は下位のモジュールに置く（[lean/rules.md](../lang/lean/rules.md#モジュールと名前空間)、[ADR 1a30](../decision/1a30-lean-module-namespace-layout.md)）。
 - 移植先言語が複数ある場合は、`TargetModel.<lang>` / `Refinement.<lang>` と言語で分ける。移植元が複数ある場合も同様に分ける。
 
 ## 依存の向き
@@ -146,13 +147,13 @@ generated:
 | 環境の固定 | 具体側も、環境（障害・衝突・配備の設定）とマスタ・設定を入力の成分として受ける。具体側の正常終了は、E を具体側の入力の環境 `ce i_c` に固定した `f` の結果で模倣される。`ce` は `@[std_abs]` の標準の抽象化とする | `Refines.Pinned` |
 | 障害の無い環境での実現 | 抽象側の各入力は、`ce` が標準の環境を返す具体側の入力でも実現される。障害の無い環境では、環境の非決定性を選べない | `Refines.NoFaultReachable` |
 | 貼り合わせの形 | `J`・`αᵢ`・`αₒ` は、標準の抽象化の **部分写像** β・aᵢ・aₒ（`Option` を返す。`none` は α/β の未定義）、具体側の不変条件 `Ic`、観測型の差異の成分 OJ・OO だけから作る。β・aᵢ・aₒ・OJ・OO には、属性を付けた定数そのものを渡す。補助定義で包まない | `Glue.ofStd` |
-| 標準の抽象化 | 1 引数の関数とする。葉（α・β の表の行）には核（同一視するもの。等号か `@[kernel]` の関係）を定理で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.undefOrEq`（「どちらも定義されないか、等しい」。assets の `Machine.Kernel`）か汎用の `@[kernel]` の関係を、その葉自身に適用して書いてよい（`KernelIs f (Machine.undefOrEq f)`。`kernelIs_undefOrEq` で示せる）。合成は、葉・構成子・射影・インスタンス・`Option.map/bind`・`List.map/mapM`・`Prod.map`・`Function.comp`・`id` だけで作り、分岐を含めない。aₒ と `FreeFrame` の射影には核の定理を課す | `KernelIs`、`Machine.undefOrEq`、`@[std_abs]`、`@[kernel]` |
+| 標準の抽象化 | 1 引数の関数とする。葉（α・β の表の行）には核（同一視するもの。等号か `@[kernel]` の関係）を定理で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.Kernel.undefOrEq`（「どちらも定義されないか、等しい」。assets の `Machine.Kernel`）か汎用の `@[kernel]` の関係を、その葉自身に適用して書いてよい（`KernelIs f (Machine.Kernel.undefOrEq f)`。`kernelIs_undefOrEq` で示せる）。合成は、葉・構成子・射影・インスタンス・`Option.map/bind`・`List.map/mapM`・`Prod.map`・`Function.comp`・`id` だけで作り、分岐を含めない。aₒ と `FreeFrame` の射影には核の定理を課す | `KernelIs`、`Machine.Kernel.undefOrEq`、`@[std_abs]`、`@[kernel]` |
 | 入口の全域性 | 外部からの入力を受ける入口の機械（画面・API・キューの受信など）では、INV と環境の前提（マスタ・設定の妥当性と入力の値域。入力の成分だけで書いた `@[env_pre]` の定数）の下で PRE が成り立つ。環境の前提を満たす像を持つ具体側の入力がある | `Machine.TotalUnder`・`Refines.EnvWitness` |
 | 初期化 | 抽象側の初期状態に、対応する具体側の初期状態がある | `Refines.InitSurj` |
 | 名前付きの成分 | 差異の述語・成分と環境の前提は、成り立つ例と成り立たない例を持つ（W 課題を両向きにする） | `Nontrivial`・`Nontrivial₂` |
 | 成分の必要性 | R 課題で使う差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（W 課題に含める）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `ofChoice` なら `Refines ∧ Pinned` でもよい（`Refines` だけでは、環境の非決定性が不具合を模倣して偽にならないことがある）<br>少なくとも 1 つの R 課題について示す。他の必要な差異 M に覆われる差異は、同じ R 課題で `Covers M d` を示す。差異の定数には ID を 1 つだけ付ける。環境の前提には、前提なしでは PRE が成り立たないこと（`¬ TotalUnder A always`）を示す。PRE が全域な機械は、環境の前提を置かず `TotalUnder A always` を示す | `always`・`anyOf`・`Covers`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always` |
 | 差異の前提の外の 1 歩 | 前提型の差異を「出力のみ」と「中断」に分けて登録する。出力のみの差異では、前提を破る 1 歩の後も状態は `J` を保つ。中断の差異では、前提を破った後の軌跡に保証が無く、保証の限界の文書に載せる | `Refines.StateSafe`・`StateSafeConcrete` |
-| 同語反復の禁止 | 具体機械は `toConcrete` と `Spec` の関数（型・構成子・射影・インスタンス以外）を参照しない | — |
+| 同語反復の禁止 | 具体機械は `Concrete.ofMachine` と `Spec` の関数（型・構成子・射影・インスタンス以外）を参照しない | — |
 
 - 具体側の状態の述語を前提とする差異は、`J` で対応する抽象側の状態の述語に書き直して `restrictState` で置く。
 - 具体側の不変条件 `Ic` は仮定ではない。初期化で成り立ち、正しさの義務で `J` とともに保たれることを示すので、到達可能な状態についての証明済みの不変条件である。

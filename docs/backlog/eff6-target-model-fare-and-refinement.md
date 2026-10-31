@@ -19,7 +19,7 @@ generated:
 
 ## 範囲
 
-- `TargetModel.Fare`（`LangSemantics.Rust.U64` で書く。値域は `Spec` の PRE として受け取る。`@[target]` は Rust 実装後に付ける。写しの生成器の部分集合で書く）
+- `TargetModel.Fare`（`LangSemantics.Rust.Int.U64` で書く。値域は `Spec` の PRE として受け取る。`@[target]` は Rust 実装後に付ける。写しの生成器の部分集合で書く）
 - `Refinement.Fare`: R 課題 REF-004（`Machine.Refines` の形）と L 課題 REF-003（PRE の下でオーバーフローしない）
 - `conformance/target-model/fare/` を `TargetModel` から生成
 

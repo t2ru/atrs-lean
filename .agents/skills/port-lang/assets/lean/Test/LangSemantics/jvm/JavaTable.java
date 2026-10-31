@@ -195,6 +195,8 @@ public class JavaTable {
         line("-/");
         line("");
         line("open LangSemantics.Java");
+        line("open LangSemantics.Java.BigDecimal LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String");
+        line("open LangSemantics.Java.DoubleOps");
         bigDecimal();
         string();
         localDate();

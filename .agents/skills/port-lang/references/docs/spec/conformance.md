@@ -107,6 +107,6 @@ conformance/
 
 ## 実行器
 
-Lean の実行器はスキルの `assets/lean/ConformanceKit` にある（`ConformanceKit.runDoc`・`runDir`・`runDirFx`・`selectModelDef`・`loadFixtures`）。
-プロジェクトは、操作の割当（`operation` → モデルの関数。`List (String × ConformanceKit.Op)`）と、`Spec` の値の表現の読み取り（暦日・時刻など）を書き、`lake test` のドライバから実行器を呼ぶ。
+Lean の実行器はスキルの `assets/lean/ConformanceKit` にある（`ConformanceKit.Runner.runDoc`・`runDir`・`runDirFx`・`selectModelDef`・`loadFixtures`）。
+プロジェクトは、操作の割当（`operation` → モデルの関数。`List (String × ConformanceKit.Runner.Op)`）と、`Spec` の値の表現の読み取り（暦日・時刻など）を書き、`lake test` のドライバから実行器を呼ぶ。
 SQL の差分実行の結果（[sql/harness.md](../lang/sql/harness.md#差分実行の結果)）の表は、`ConformanceKit.SqlTable` で読む。

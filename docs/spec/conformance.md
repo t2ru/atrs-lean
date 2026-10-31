@@ -26,7 +26,7 @@ generated:
 | 操作 | 仕様 |
 | --- | --- |
 | `fare.basicFare`, `fare.fare`, `fare.totalFare` | [fare-calculation.md](fare-calculation.md) |
-| `master.routeOf`, `master.flightMasterOf`, `master.fareTypeOf`, `master.boardingClassOf`, `master.peakTimeOn`, `master.multiplicationRatioOn`, `master.config`, `master.codeList` | [master-data.md](master-data.md#参照関数)（R 課題 ABS-026 の両側。`Spec.MasterData.queryMachine` と `SourceModel.MasterQuery.queryConcrete`） |
+| `master.routeOf`, `master.flightMasterOf`, `master.fareTypeOf`, `master.boardingClassOf`, `master.peakTimeOn`, `master.multiplicationRatioOn`, `master.config`, `master.codeList` | [master-data.md](master-data.md#参照関数)（R 課題 ABS-026 の両側。`Spec.MasterQuery.queryMachine` と `SourceModel.MasterQuery.queryConcrete`） |
 | `flightSearch.validateDepartureDate`, `flightSearch.isAvailableFareType`, `flightSearch.searchFlight` | [flight-search.md](flight-search.md) |
 | `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.reserveConfirm`, `reservation.reserve` | [reservation.md](reservation.md) |
 | `member.toMember`, `member.toMemberUpdateInput`, `member.register`, `member.update` | [member.md](member.md) |

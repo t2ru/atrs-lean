@@ -3,9 +3,9 @@ import Abstraction.MasterData.Query
 /-!
 # Abstraction.MasterData.QueryRun
 
-R 課題 ABS-026: マスタ・設定・コードリストの読み込み（`SourceModel.MasterQuery.queryConcrete`）は、既知差異 D-027 の
-前提（`dev_D027`）の下で、[Spec] の `Spec.MasterQuery.queryMachine` をリファインする。Mapper の結果のどの許される
-並びでも成り立つ。あわせて、付帯の義務（`InitSurj`）と、D-027 の必要性（W 課題 ABS-127）を示す。
+R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と W 課題 ABS-127（`Abstraction.MasterData.need_D027`）の補題。
+マスタ・設定・コードリストの読み込み（`SourceModel.MasterQuery.queryConcrete`）の貼り合わせ `glueMQ`、読み込みと実行の
+正しさ（`load_correct`・`run_correct`）、Mapper の結果の並び `mergeOrder` を示す。
 -/
 
 namespace Abstraction.MasterData.QueryRun

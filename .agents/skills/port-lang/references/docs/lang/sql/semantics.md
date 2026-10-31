@@ -61,13 +61,13 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 
 - 照会結果（許される順列の集合）は、順列ごとに `Spec` の列へ写す関係とする。リファインメントの正しさの義務は、許されるすべての順列について示す。整列キーが単射なら順列は 1 つになり、義務は簡単になる。順列によって観測が変わる場合は、観測型の差異として明示する。
 - `NULL` は `Option` の `none` に写す。三値論理の `UNKNOWN` は、`WHERE` では偽として扱う。
-- 列の値（`INT`・`DATE`・`VARCHAR` など）の葉は、方言の型の範囲で写し、`Spec` の型で表せない値（負の数・範囲外の日付・未知のコード・`NULL` の必須列）には定義しない。核は、定義域の上で単射なら `Machine.undefOrEq` で示す。表せない値を具体側の入力から除くのは、前提型の差異（具体側の入力）である。
+- 列の値（`INT`・`DATE`・`VARCHAR` など）の葉は、方言の型の範囲で写し、`Spec` の型で表せない値（負の数・範囲外の日付・未知のコード・`NULL` の必須列）には定義しない。核は、定義域の上で単射なら `Machine.Kernel.undefOrEq` で示す。表せない値を具体側の入力から除くのは、前提型の差異（具体側の入力）である。
 - 照会結果の写しの核は「なし（各順列を単射に写す）」とする。
 
 | SQL の値 | `Spec` | 同一視するもの（核） |
 | --- | --- | --- |
 | 照会結果（バッグ・許される順列の集合） | 列（順列ごとに写す関係） | なし（各順列を単射に写す） |
-| 列の値（方言の型） | 対応する `Spec` の値（表せない値には定義しない） | 定義域の上で単射なら `Machine.undefOrEq` |
+| 列の値（方言の型） | 対応する `Spec` の値（表せない値には定義しない） | 定義域の上で単射なら `Machine.Kernel.undefOrEq` |
 | `NULL` | `Option.none` | なし |
 
 基本補題は assets の `LangSemantics.Sql.QueryLemmas`（結合 `filter_cross`、許される順列と `List.mergeSort` の一致 `allowed_map_eq_mergeSort`・`allowed_mergeSort_self`）にある。

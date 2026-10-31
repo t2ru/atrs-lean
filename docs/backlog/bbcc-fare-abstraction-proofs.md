@@ -52,24 +52,24 @@ generated:
 | --- | --- |
 | `LangSemantics.Java.JDouble.jd2i_mul_nat` | `(int)((double) X * F)`（`F = fm·2^(−fs)`）の閉じた形 `min J32.maxValue (rneTrunc (X·fm) (2^fs))` |
 | `LangSemantics.Java.JDouble.rneTrunc_spec` | `rneTrunc` の不等式の形（丸めた仮数と、最近接・偶数の条件） |
-| `LangSemantics.Java.bdCeilHundredUp_val` | 非負の値の 100 円単位の切上げ |
+| `LangSemantics.Java.BigDecimal.bdCeilHundredUp_val` | 非負の値の 100 円単位の切上げ |
 | `Abstraction.Fare.rneTrunc_factor` | `rneTrunc` と `⌊X·c/100⌋` の比較（`Close` な因子。割り切れなければ一致、割り切れれば一致か 1 小さい、`Safe` なら一致） |
-| `Abstraction.Fare.basicFactor_ok_all`・`fareFactor_ok_all` | 積算比率 1〜1000・割引率 0〜99 の因子は `Close`（`decide +kernel`） |
-| `Abstraction.Fare.basicFactor_unsafe`・`fareFactor_unsafe` | 安全でない因子の一覧（積算比率 49 個・割引率 33 個） |
-| `Abstraction.Fare.basicFare_src`・`basicFare_src_eq` | 基本運賃の [Source] と [Spec] の関係と、D-001 の前提の下での一致 |
-| `Abstraction.Fare.fare_src`・`fare_src_eq` | 運賃の [Source] と [Spec] の関係（差は 0 か 100 円）と、D-002 の前提の下での一致 |
-| `Abstraction.Fare.basicFare_witness`・`fare_witness` | 差異の証拠（100 円・29% で 28 と 29、1430 円・30% で 1000 と 1100） |
+| `Abstraction.Fare.Factors.basicFactor_ok_all`・`fareFactor_ok_all` | 積算比率 1〜1000・割引率 0〜99 の因子は `Close`（`decide +kernel`） |
+| `Abstraction.Fare.Factors.basicFactor_unsafe`・`fareFactor_unsafe` | 安全でない因子の一覧（積算比率 49 個・割引率 33 個） |
+| `Abstraction.Fare.Factors.basicFare_src`・`basicFare_src_eq` | 基本運賃の [Source] と [Spec] の関係と、D-001 の前提の下での一致 |
+| `Abstraction.Fare.Factors.fare_src`・`fare_src_eq` | 運賃の [Source] と [Spec] の関係（差は 0 か 100 円）と、D-002 の前提の下での一致 |
+| `Abstraction.Fare.Factors.basicFare_witness`・`fare_witness` | 差異の証拠（100 円・29% で 28 と 29、1430 円・30% で 1000 と 1100） |
 
 ## 第 2 段の結果
 
 | 定理・定義 | 内容 |
 | --- | --- |
 | `Spec.Fare.basicFareMachine`・`fareMachine` | 基本運賃・運賃の抽象機械（`Machine.pure`）と SPEC-001〜003・007 |
-| `SourceModel.MasterQuery.load` | 起動時の読み込み（`run` から切り出した）。`Abstraction.MasterData.load_correct` |
+| `SourceModel.MasterQuery.load` | 起動時の読み込み（`run` から切り出した）。`Abstraction.MasterData.QueryRun.load_correct` |
 | `SourceModel.FareQuery.basicFareConcrete`・`fareConcrete` | 基本運賃（DB のマスタ・設定・引数）・運賃（引数）の具体機械 |
-| `Abstraction.Fare.aiBF`・`aiF`・`dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` | α と差異の述語（一覧 `unsafeBasicRatios`・`unsafeDiscountRates`） |
+| `Abstraction.Fare.Alpha.aiBF`・`aiF`・`dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` | α と差異の述語（一覧 `unsafeBasicRatios`・`unsafeDiscountRates`） |
 | `Abstraction.Fare.basicFareRefines`（ABS-001）・`fareRefines`（ABS-002） | R 課題と `InitSurj` |
-| `Abstraction.Fare.runBasicFare_spec`（ABS-007）・`fare_diff`（ABS-003） | 前提によらない差の範囲 |
+| `Abstraction.Fare.BasicFareRun.runBasicFare_spec`（ABS-007）・`fare_diff`（ABS-003） | 前提によらない差の範囲 |
 | `Abstraction.Fare.need_D001`（ABS-101）・`need_D002`（ABS-102） | 差異の必要性（G9） |
 
 第 3 段に残るもの: 合計金額の抽象機械・具体機械と ABS-004・005・112、D-012。
@@ -80,10 +80,10 @@ generated:
 | --- | --- |
 | `Spec.Fare.totalFareOfKeys`・`totalFareMachine` | 合計金額をキーと年齢で書いた関数（`totalFare_eq`）と抽象機械、SPEC-001〜003・007 |
 | `SourceModel.Ticket.toFlightList`・`SourceModel.FareQuery.totalFareConcrete` | 選択フライト情報からのフライト情報の組み立てと、合計金額の具体機械 |
-| `Abstraction.Fare.aiTF`・`dev_D001T`・`dev_D002T`・`dev_D012`・`dev_D027TF` | α と差異の述語 |
-| `Abstraction.MasterData.flightMaster_fare`・`load_correct'` | 便マスタのキャッシュの区間の運賃、読み込みの性質 |
+| `Abstraction.Fare.TotalAlpha.aiTF`・`dev_D001T`・`dev_D002T`・`dev_D012`・`dev_D027TF` | α と差異の述語 |
+| `Abstraction.Fare.Load.flightMaster_fare`・`load_correct'` | 便マスタのキャッシュの区間の運賃、読み込みの性質 |
 | `Abstraction.Fare.forIn_sum_eq`・`forIn_count_eq` | `for` 文の和・計数 |
-| `Abstraction.Fare.runTotalFare_eq`（ABS-005）・`totalFareRefines`（ABS-004） | 合計金額の正しさ（溢れなし）と R 課題・`InitSurj` |
+| `Abstraction.Fare.TotalFareRun.runTotalFare_eq`（ABS-005）・`totalFareRefines`（ABS-004） | 合計金額の正しさ（溢れなし）と R 課題・`InitSurj` |
 | `Abstraction.Fare.need_D012`（ABS-112） | D-012 の必要性（基本運賃 1 億円・小児 1 名で 17,050,400 円と 60,000,000 円） |
 
 ## 参照

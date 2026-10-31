@@ -31,8 +31,8 @@ generated:
 ## 完了条件
 
 - [x] N-001〜N-005 の選択の型に `@[nondet]` を付け、`check_obligations.py` の OB-N2 の警告が消えた（`Spec.Nondet`）
-- [x] 環境の前提に `@[env_pre]` と `Nontrivial` があり、`obligation-check` が通る（`Spec.masterConfigOk`・`masterConfigOk_nontrivial`）
-- [x] シードのマスタ・設定が環境の前提を満たすことを示した（`Spec.seed_env`。生成した `Spec.Seed` と検査関数 `EnvPre.validB`・`validB_sound`）
+- [x] 環境の前提に `@[env_pre]` と `Nontrivial` があり、`obligation-check` が通る（`Spec.EnvPre.masterConfigOk`・`masterConfigOk_nontrivial`）
+- [x] シードのマスタ・設定が環境の前提を満たすことを示した（`Spec.EnvPre.seed_env`。生成した `Spec.Seed` と検査関数 `EnvPre.validB`・`validB_sound`）
 
 ## 参照
 

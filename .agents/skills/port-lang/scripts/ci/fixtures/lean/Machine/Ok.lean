@@ -1,4 +1,4 @@
 -- expect:
-import Machine.Basic
+import Machine.Machine
 
 def m : Nat := 0

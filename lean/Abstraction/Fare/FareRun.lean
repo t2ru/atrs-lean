@@ -3,9 +3,8 @@ import Abstraction.Fare.Alpha
 /-!
 # Abstraction.Fare.FareRun
 
-R 課題 ABS-002（運賃）: `SourceModel.FareQuery.fareConcrete`（`calculateFare`）は、既知差異 D-002・D-027 の前提の下で、
-[Spec] の `Spec.Fare.fareMachine` をリファインする。あわせて、C 課題 ABS-003（差は 0〜100 円）と、
-D-002 の必要性（W 課題 ABS-102）を示す。
+R 課題 ABS-002（運賃。`Abstraction.Fare.fareRefines`）・C 課題 ABS-003・W 課題 ABS-102 の補題。
+`SourceModel.FareQuery.fareConcrete`（`calculateFare`）の値（`calculateFare_eq`）と、[Spec] の運賃の値域（`fare_range`）を示す。
 -/
 
 namespace Abstraction.Fare.FareRun

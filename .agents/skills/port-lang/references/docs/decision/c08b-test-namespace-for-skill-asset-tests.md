@@ -42,7 +42,7 @@ generated:
 
 Chosen option: "トップレベルの `Test` の下に置き、Lake のライブラリは `Test` の 1 つにする", because 一覧が本体と `Test/` に分かれ、パスと名前空間の一致も保てるため。ディレクトリだけ移すと、パスと名前空間がずれる。Lake のライブラリを 4 つ残しても、名前（`Test.X` のライブラリ名）が増えるだけで、モジュールの指定で同じことができる。
 
-* モジュールと名前空間の `XxxTest` を `Test.Xxx` に改める。名前の比較（`trace-test` のフィクスチャの接頭辞 `Test.Trace.Fixture`・`Test.Trace.ObFix`、`#guard_msgs` の期待するメッセージ、`#print axioms` の名前）もあわせて改める。
+* モジュールと名前空間の `XxxTest` を `Test.Xxx` に改める。名前の比較（`trace-test` のフィクスチャの接頭辞 `Test.Trace.Fixture`・`Test.Trace.ObligationFixture`、`#guard_msgs` の期待するメッセージ、`#print axioms` の名前）もあわせて改める。
 * `Test.lean` が 4 つの集約（`Test.LangSemantics` など）を取り込む。`trace-test` の入口は `Test.Trace.Main` とし、ライブラリには含めない。
 * 生成器（`Test/LangSemantics/jvm/JavaTable.java`・`Test/LangSemantics/pg/pg_table.py`）の出力の見出しと名前空間も改め、生成物と一致させる。
 * `scripts/ci/check_lean.py` は、トップレベルの `Test` を `Tests` の層として扱う（`native_decide`・`Float` を許す）。違反例の置き場所も `scripts/ci/fixtures/lean/Test/Machine/` に改める。

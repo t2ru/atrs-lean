@@ -117,7 +117,7 @@ pub fn basic_fare(...) -> (r: u64)
 | TR-T1 | `TargetModel.Fare.basicFare` は `@[target]` を持つ。Rust の `atrs::fare::basic_fare` は覆われる。`atrs::model::fare::basic_fare`（写し）は TR-T2 で扱う |
 | TR-T2 | `<h3>` が `target-inventory` と、`<m1>` が `TargetModel.Fare.basicFare` の Merkle ハッシュと一致すれば合格。Rust の本文を変えると `<h3>` がずれ、Lean を変えると `<m1>` がずれる |
 | TR-P | `SourceModel.Fare.calculateBasicFare` は、R 課題 ABS-001 の具体機械 `SourceModel.Fare.basicFareMachine` の操作（定義が参照する定数の閉包）に含まれる。`TargetModel.Fare.basicFare` も同様に REF-004 の具体機械に含まれるので合格 |
-| TR-D | D-001 の `Abstraction.Fare.dev_D001` が `@[deviation "D-001"]` を持ち、ABS-001 の型に現れ、W 課題 ABS-101 があれば合格 |
+| TR-D | D-001 の `Abstraction.Fare.Alpha.dev_D001` が `@[deviation "D-001"]` を持ち、ABS-001 の型に現れ、W 課題 ABS-101 があれば合格 |
 | TR-K | D-001 の登録 `Abstraction.Gap.D001`（`@[gap_entry]`）に対し、`Spec.Fare.basicFare` と `SourceModel.Fare.calculateBasicFare` が `@[gap "D-001"]` を持てば合格 |
 | TR-X | Lean の移植元側に `rust:` が無く、Rust と `TargetModel` に `java:` が無いので合格 |
 | TR-R | 参照先がすべて存在すれば合格 |

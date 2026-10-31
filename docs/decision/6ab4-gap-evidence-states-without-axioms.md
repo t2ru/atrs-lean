@@ -56,7 +56,7 @@ generated:
 
 * `evidence : Evidence` を足す。
   * `.refuted [thm, …]`: 偽を証明済み。差異を外した R 課題の否定の定理
-  * `.covered M [thm, …]`: 被覆。必要な差異の述語 `M` がこの差異を覆う定理（`Machine.Covers M d`）
+  * `.covered M [thm, …]`: 被覆。必要な差異の述語 `M` がこの差異を覆う定理（`Machine.Adequacy.Covers M d`）
   * `.pending 理由 (some W)`: 未証明。制限して証明したが、偽も真もまだ示していない
   * `.unformalized claim 作業`: 形式化していない。証明も公理も持たない `opaque claim : Prop`
   * `.excludedBy [pre, …]`: 差異ではない。`Spec` の PRE・INV の外（前提の述語）

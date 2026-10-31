@@ -2,6 +2,12 @@
 
 ## 2026-10-31
 
+* **Update**: [スキルの ADR 1a30](../.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md) の規則（宣言をモジュール名の下に置く NS-1、証明課題を機能のモジュールに置く TR-L）を ATRS の `lean/` に適用した（[backlog 9ed8](backlog/9ed8-atrs-module-namespace-layout.md)。スキルの側は [スキルの backlog ce23](../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md)）。スキルの版は 0.12。
+  * `lake exe layout-check`（`lean/Tools/LayoutCheck.lean`）を足し、`tools/ci/lean.sh` から実行する。
+  * 名前を改めた。例: `Spec.FlightType` → `Spec.Model.FlightType`、`Spec.Airport` → `Spec.MasterData.Airport`、`Spec.MasterData.queryMachine` → `Spec.MasterQuery.queryMachine`、`Spec.Prim.floorDiv` → `Spec.Prim.Int.floorDiv`。R・W・C 課題を `lean/Abstraction/Fare.lean`・`lean/Abstraction/MasterData.lean` に集め、補題のモジュールを `*Run` にした（旧 `*Refines`）。
+  * スキルの道具 `rename.py` で、`docs/`（ADR はリンクの修正として）・`conformance/` のベクタ・`trace/` を書き換えた。この変更履歴の旧い名前は記録として残した。改名の対応表は `tools/docs/lean-renames.json` にある。`trace rehash` で合格の記録を取り直した。
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（機能の名前空間、スキルの版 0.12）、[AGENTS.md](../AGENTS.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
+
 * **Update**: スキル port-lang の文書を、性格ごとのディレクトリ `spec/`・`rules/`・`guide/`・`lang/<lang>/` に分けた（[スキルの ADR 748c](../.agents/skills/port-lang/references/docs/decision/748c-skill-docs-category-directories.md)、[スキルの backlog 97a7](../.agents/skills/port-lang/references/docs/backlog/97a7-skill-docs-category-directories.md)）。スキルの版は 0.11。
   * スキルの道具 `docmv.py` で、ATRS の文書・`lean/`・`trace/project.json`・`.github/workflows/` のリンクとパスの言及を張り直した。ADR とこのファイルの本文に書いたリンクでないパスは記録として残し、リンクだけ直した。
   * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.11）、[AGENTS.md](../AGENTS.md)（言語パックの置き場所）。`tools/ci/lean.sh` に `docmv.py --self-test` を足した。

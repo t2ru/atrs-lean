@@ -55,7 +55,7 @@ generated:
   - `SourceModel.Model`: 原典の domain model
   - `SourceModel.MasterData`: `BoardingClassProvider`・`PeakTimeProvider` のキャッシュと参照
   - `SourceModel.Fare`: `calculateBasicFare`・`calculateFare`・`ceilFare`・`calculateTotalFare`
-  - `LangSemantics.Java.JHashMap` を追加した。
+  - `LangSemantics.Java.HashMap.JHashMap` を追加した。
 - 1430 円・30% の例: 定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Fare.calculateFare_1430_30`（1000）
 - ベクタ（`lake test` で実行）
   - `shared/fare/`（13 件）は、`Spec` と `SourceModel` の両方で実行する。
@@ -73,7 +73,7 @@ generated:
 ## 第 2 段 a の結果
 
 - [Spec] の修正（プロジェクトオーナーの決定を含む）
-  - `Spec.Route.flightTime` を削除した（原典のどの処理も読まない）。
+  - `Spec.MasterData.Route.flightTime` を削除した（原典のどの処理も読まない）。
   - MD-8 に「空港コードは英大文字 3 文字」を足した。
   - 参照の機械を `Spec.MasterQuery` に移し、次の変更を加えた。
     - 設定・コードリストの問い合わせを足した。
@@ -119,8 +119,8 @@ generated:
 
 | モジュール | 補題 | 内容 |
 | --- | --- | --- |
-| スキル `LangSemantics.Java.LocalDateLemmas` | `toEpochDay_ofEpochDay` | すべての整数 `z` で `toEpochDay (ofEpochDay z) = z`。周期の中の範囲は `decide +kernel` で確かめる |
-| スキル `LangSemantics.Java.HashMapLemmas` | `ofList_entries`・`get_ofList` | キーが重複しない列の `ofList` は列そのもので、`get` は列の `find?` |
+| スキル `LangSemantics.Java.JLocalDate.Lemmas` | `toEpochDay_ofEpochDay` | すべての整数 `z` で `toEpochDay (ofEpochDay z) = z`。周期の中の範囲は `decide +kernel` で確かめる |
+| スキル `LangSemantics.Java.HashMap.Lemmas` | `ofList_entries`・`get_ofList` | キーが重複しない列の `ofList` は列そのもので、`get` は列の `find?` |
 | スキル `LangSemantics.Java.Int` | `J32.val_ofInt_of_inRange` | 値域内の整数は `int` にしても変わらない |
 | スキル `LangSemantics.Sql.Core` | `Truth.holds_and`・`SqlValue.eq_text_holds`・`eq_int_holds` | `AND` と等号の採否 |
 | `Abstraction.Prim.Date` | `toEpochDay_eq_epochDay` | [Spec] の暦日の通算日数と `LocalDate.toEpochDay` の一致 |

@@ -3,10 +3,9 @@ import Abstraction.Fare.Alpha
 /-!
 # Abstraction.Fare.BasicFareRun
 
-R 課題 ABS-001（基本運賃）: `SourceModel.FareQuery.basicFareConcrete`（起動時の読み込みと `calculateBasicFare`）は、
-既知差異 D-001・D-027 の前提の下で、[Spec] の `Spec.Fare.basicFareMachine` をリファインする。Mapper の結果のどの
-許される並びでも成り立つ。あわせて、L 課題 ABS-007（[Source] は [Spec] に等しいか 1 小さい）と、D-001 の必要性
-（W 課題 ABS-101）を示す。
+R 課題 ABS-001（基本運賃。`Abstraction.Fare.basicFareRefines`）と W 課題 ABS-101（`Abstraction.Fare.need_D001`）の補題。
+`SourceModel.FareQuery.basicFareConcrete`（起動時の読み込みと `calculateBasicFare`）の実行と、L 課題 ABS-007
+（[Source] は [Spec] に等しいか 1 小さい。`runBasicFare_spec`）、D-001 の必要性の証人の実行（`runBasicFare_icBF29`）を示す。
 -/
 
 namespace Abstraction.Fare.BasicFareRun

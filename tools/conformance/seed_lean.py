@@ -84,7 +84,6 @@ def render() -> str:
         "",
         "namespace Spec.Seed",
         "",
-        "open Spec.Prim",
         "open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType)",
         "",
     ]

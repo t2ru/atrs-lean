@@ -3,9 +3,9 @@ import Abstraction.Fare.Loop
 /-!
 # Abstraction.Fare.TotalFareRun
 
-R 課題 ABS-004（合計金額）: `SourceModel.FareQuery.totalFareConcrete`（起動時の読み込み・`toFlightList`・
-`calculateTotalFare`）は、既知差異 D-001・D-002・D-012・D-027 の前提の下で、[Spec] の `Spec.Fare.totalFareMachine` を
-リファインする。あわせて、L 課題 ABS-005（int32 の溢れが無いこと）と、D-012 の必要性（W 課題 ABS-112）を示す。
+R 課題 ABS-004（合計金額。`Abstraction.Fare.totalFareRefines`）と W 課題 ABS-112（`Abstraction.Fare.need_D012`）の補題。
+`SourceModel.FareQuery.totalFareConcrete`（起動時の読み込み・`toFlightList`・`calculateTotalFare`）の実行と、L 課題 ABS-005
+（int32 の溢れが無いこと。`runTotalFare_eq`）、D-012 の必要性の証人の実行（`runTotalFare_icTF012`）を示す。
 -/
 
 namespace Abstraction.Fare.TotalFareRun
