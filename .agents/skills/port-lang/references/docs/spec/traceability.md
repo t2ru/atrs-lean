@@ -51,7 +51,7 @@ locator = kind ":" body
 | `trace/renames.json` | 版上げ時の、ハッシュで判別できない改名の対応（手書き） |
 | `trace/checks.json` | `rehash` が実行する決定論的な検査と、それが覆うモデルの定義（手書き。検査を足すたびに登録する） |
 | `trace/out-of-scope.json` | 追跡の対象外とするロケータと、根拠の意思決定記録（移植の範囲外としたもの。手書き） |
-| `trace/features.json` | 機能ごとの作業項目・ロケータの glob・モデルの名前空間・R 課題の対応表（段階導入の「機能」。手書き） |
+| `trace/features.json` | 機能ごとの作業項目（側ごと: `{"source": […], "target": […]}`。配列だけなら両側に共通）・ロケータの glob・モデルの名前空間・R 課題の対応表（段階導入の「機能」。手書き） |
 | `trace/project.json` | スキルの道具が読む、プロジェクト固有の設定（[プロジェクトの設定](#プロジェクトの設定)。手書き） |
 
 - インベントリの取り方（パーサ・正規化の規則）は言語パックの `locators.md` が定める。
@@ -111,10 +111,10 @@ locator = kind ":" body
 | TR-S2 | `@[source]` のハッシュが `source-inventory` と一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている（モデル側だけを直した場合も再検査を求める） |
 | TR-T1 | `TargetModel` の公開定義に `@[target]` が無い。または `target-inventory` の公開項目が覆われず、対象外でもない。生成した写しは対象外とする（再生成と TR-T2 で確かめる） |
 | TR-T2 | `@[target]` のハッシュが `target-inventory` と、写しのハッシュが Lean の Merkle ハッシュと一致しない。または、定義の Merkle ハッシュが最後に検査が合格したときから変わっている |
-| TR-P | `SourceModel` の公開操作が、どの R 課題（`Abstraction`）の定理にも現れない。または、`TargetModel` の公開操作が、どの R 課題（`Refinement`）の定理にも現れない。例外は無い |
+| TR-P | `SourceModel` の公開操作が、どの R 課題（`Abstraction`）の定理にも、その義務の束（`Machine.Adequate`）にも現れない。または、`TargetModel` の公開操作が、どの R 課題（`Refinement`）の定理にも、その束にも現れない。例外は無い |
 | TR-PE | `SourceModel`・`TargetModel` の公開操作が、どの **入口の** R 課題の具体機械（定義の参照の閉包）にも含まれない。入口でない R 課題（ポート実装・内部の計算）だけに現れる操作は、入口からの到達が示されていない |
 | TR-D | 次のどれかに当たる。<br>- 登録簿（`@[gap_entry]`）の前提型・観測型の差異（`D-NNN` / `T-NNN`）と `@[deviation]` が 1 対 1 でない<br>- `@[deviation]` が、どの R 課題の定理の型にも現れない<br>- 差異に W 課題が無い<br>- R 課題の定理に、`@[deviation]`・PRE・INV 以外の仮定がある |
-| TR-G | R 課題（型の結論が `Machine.Refines` の `@[obligation]` 定理）が、空虚化を防ぐ形と付帯の義務（[architecture.md](architecture.md#空虚化を防ぐ義務)）を備えていない。判定する規則は次の 10 個である。<br>- G0: 追跡属性を付けた定数がモデルの層にある。`Refines` を含む課題の結論が `Refines` か、必要性の形（G9）である<br>- G1: 型が閉じている<br>- G2: 制限の述語が `@[deviation]` の定数そのもので、基底が名前付きの定数<br>- G3: 抽象側の基底（と `Spec` のすべての機械）が `ofChoice`/`pure` で、選択の型の葉が `@[nondet]`。自由な選択には `FreeFrame`<br>- G4: 具体側の基底が `Dom` を設定せず、`Concrete.ofMachine` と `Spec` の関数を参照しない<br>- G5: 貼り合わせが `Glue.ofStd` の形で、β・aᵢ・aₒ が `@[std_abs]` の定数そのもの、OJ・OO が `never` か `@[deviation]` の定数そのもの<br>- G6: `InitSurj`・基底の `Sound`・`InitIs`、`ofChoice` なら `Pinned`（`ce` は `@[std_abs]`）と `NoFaultReachable` がある（式全体で照合する）<br>- G7: `@[std_abs]` が 1 引数の関数で、核の定理（K は等号か `@[kernel]`）のある葉か、許可した構成の合成である。aₒ と `FreeFrame` の射影は核の定理を持つ<br>- G8: `@[deviation]`・`@[env_pre]` に `Nontrivial` がある<br>- G9: `@[deviation]` の定数は ID を 1 つだけ持つ。R 課題で使う差異の ID ごとに、それを外した R 課題の命題の否定（`¬ Refines`。基底が `ofChoice` なら `¬ (Refines ∧ Pinned)` でもよい）か、必要な差異からの被覆（`Covers`）が、少なくとも 1 つの R 課題についてある。R 課題の基底の `TotalUnder` で使う `@[env_pre]` に、その基底の `¬ TotalUnder A always` がある<br>あわせて、文書と次を照合する。<br>- 環境・自由の種類<br>- 種類 R の課題の形<br>- 入口の R 課題の `TotalUnder`（`@[env_pre]`）と `EnvWitness`<br>- 「出力のみ」の差異の `StateSafe`<br>- 前提型の差異の影響の登録<br>- `@[deviation]` の登録 |
+| TR-G | R 課題（型の結論が `Machine.Refines` の `@[obligation]` 定理）が、空虚化を防ぐ形と付帯の義務（[architecture.md](architecture.md#空虚化を防ぐ義務)）を備えていない。判定する規則は次の 11 個である。<br>- G0: 追跡属性を付けた定数がモデルの層にある。`Refines` を含む課題の結論が `Refines` か、必要性の形（G9）である<br>- G1: 型が閉じている<br>- G2: 制限の述語が `@[deviation]` の定数そのもので、基底が名前付きの定数<br>- G3: 抽象側の基底（と `Spec` のすべての機械。機能の機械の並置 `Machine.sum` も可）が `ofChoice`/`pure` で、選択の型の葉が `@[nondet]`。自由な選択には `FreeFrame`<br>- G4: 具体側の基底が `Dom` を設定せず、`Concrete.ofMachine` と `Spec` の関数を参照しない<br>- G5: 貼り合わせが `Glue.ofStd` の形で、β・aᵢ・aₒ が `@[std_abs]` の定数そのもの、OJ・OO が `never` か `@[deviation]` の定数そのもの<br>- G6: `InitSurj`・基底の `Sound`・`InitIs`、`ofChoice` なら `Pinned`（`ce` は `@[std_abs]`）と `NoFaultReachable` がある（式全体で照合する）<br>- G7: `@[std_abs]` が 1 引数の関数で、核の定理（K は等号か `@[kernel]`）のある葉か、許可した構成の合成である。aₒ と `FreeFrame` の射影は核の定理を持つ<br>- G8: `@[deviation]`・`@[env_pre]` に `Nontrivial` がある<br>- G9: `@[deviation]` の定数は ID を 1 つだけ持つ。R 課題で使う差異の ID ごとに、それを外した R 課題の命題の否定（`¬ Refines`。基底が `ofChoice` なら `¬ (Refines ∧ Pinned)` でもよい）か、必要な差異からの被覆（`Covers`）が、少なくとも 1 つの R 課題についてある。R 課題の基底の `TotalUnder` で使う `@[env_pre]` に、その基底の `¬ TotalUnder A always` がある<br>- GA: 結論が `Machine.Adequate` の `@[obligation]` は、同じ課題 ID の R 課題と同じ機械・貼り合わせを束ねる<br>あわせて、文書と次を照合する。<br>- 環境・自由の種類<br>- 種類 R の課題の形<br>- R 課題ごとの義務の束（OB-A）<br>- 入口の R 課題の `TotalUnder`（`@[env_pre]`）と `EnvWitness`<br>- 「出力のみ」の差異の `StateSafe`<br>- 前提型の差異の影響の登録<br>- `@[deviation]` の登録 |
 | TR-K | 次のどれかに当たる。<br>- 前提型・観測型・PRE の外の登録に、`Spec` の定義の `@[gap]` と、具体側（`D-NNN` は `SourceModel`、`T-NNN` は `TargetModel`）の定義の `@[gap]` が無い<br>- モデル外の登録に `@[gap]` か `@[deviation]` がある<br>- PRE の外・未確定の登録に `@[deviation]` がある<br>- `@[deviation]` を使う R 課題が、登録の R 課題に無い<br>あわせて、登録の値と層・docstring・ID の重複を obligation-check（GK）が検査する |
 | TR-N | 登録簿の `Spec` の非決定性（`N-NNN`）と `@[nondet]` が 1 対 1 でない |
 | TR-V | 適合テストベクタのうち、次のどれかを満たさないものに、外に落ちる理由のラベルが無い。または、ラベルがあるのに外に落ちない。<br>- 具体側の定義域<br>- 具体側の不変条件<br>- 基底の PRE<br>- 制限した PRE（差異の前提）<br>ラベルは差異 ID か `PRE`・`INV` で、付け方は [conformance.md](conformance.md) による |
@@ -127,7 +127,15 @@ locator = kind ":" body
 
 段階導入（TR-K）: 印の不足は、登録の `backlog` の作業項目がすべて完了していれば失敗、そうでなければ警告にする。
 
-段階導入: TR-S1・TR-T1・TR-P・TR-D を警告にしてよいのは、該当する機能の作業項目が完了していない間だけである。完了を宣言する時点で、その機能について全検査が失敗扱いで通っていなければならない。他の検査は最初から失敗とする。
+段階導入（側ごと）: TR-S1・TR-T1・TR-P・TR-PE・TR-D を警告にしてよいのは、該当する機能の、指摘の側の作業項目が完了していない間だけである（[ADR ab9e](../decision/ab9e-adequate-bundle-sum-and-side-staging.md)）。
+
+- 機能の作業項目は、移植元側（`source`）と移植先側（`target`）に分けて書く。
+- 移植元側の作業項目で判定する: TR-S1、`SourceModel` の操作の TR-P、`Abstraction` 層と `D-NNN` の TR-D・TR-K。
+- 移植先側の作業項目で判定する: TR-T1、`TargetModel` の操作の TR-P、`Refinement` 層と `T-NNN` の TR-D・TR-K。
+- 両側の作業項目で判定する: TR-PE（入口からの到達は、入口の機能に依存する）。
+- 側の作業項目が無い機能では、その側の指摘は警告にとどまる。
+- 移植元側を終えた機能は、移植先側を待たずに、移植元側の指摘が失敗になる。以後の機能の取り込みで、実装済みの移植元側の範囲が壊れれば CI が失敗する。
+- 側の完了を宣言する時点で、その機能の、その側の全検査が失敗扱いで通っていなければならない。他の検査は最初から失敗とする。
 
 ## 道具
 
@@ -141,7 +149,7 @@ locator = kind ":" body
 | --- | --- |
 | `inventory source` / `inventory target` `[--check]` | インベントリの生成 |
 | `manifest --dump <trace-dump.json> --obligations <obligation-check.json> [--check]` | manifest と、仕様文書の生成区画（① と ② の 2 本の表、ギャップの表）の生成。`lake exe trace-dump` の出力を取り込む |
-| `check --dump … --obligations … [--verbose]` | TR 検査（`scripts/ci/check_obligations.py` の結果を TR-G・TR-N として取り込む） |
+| `check --dump … --obligations … [--verbose [--feature <機能>] [--rule <TR-…>]]` | TR 検査（`scripts/ci/check_obligations.py` の結果を TR-G・TR-N として取り込む）。`--verbose` は警告を 1 件ずつ出し、機能・規則で絞り込める |
 | `rehash --dump … [--dry-run]` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
 | `diff --old <file\|git:REV> [--side source\|target] [--json]` | 新旧インベントリの分類（[upgrade.md](../guide/upgrade.md)） |
 | `impact --dump … --obligations … [--diff <file\|git:REV>] [--json] [<起点>…]` | 証明グラフに沿った影響一覧と、見直すギャップ |
@@ -184,6 +192,7 @@ locator = kind ":" body
 - 検査の登録（`checks.json`）は、検査ごとに実行するコマンドと、覆う定義（名前の glob と、ベクタの `modelDef` から参照をたどって届く定義）を持つ。終了コードが 0 なら合格とする。処理系が無くて飛ばした場合は不合格とする。
 - `rehash` は、定義のモジュールのファイルの中で、注釈の文字列 `"<ロケータ>@<旧>"` を置き換える（`trace-dump` が定義のモジュールを出力する）。同じ文字列を注釈に持つ定義が同じモジュールに複数あれば、すべてが合格したときだけ置き換える。合格した組は manifest に記録する。
 - 仕様文書の「出典:」に書いたロケータは、インベントリになければ失敗とする。private のメソッドはインベントリの単位ではないので、呼び出し元の公開メソッドで書く。
-- 「R 課題に現れる」（TR-P・TR-PE）は、R 課題の定理から参照をたどって届く定義の集合に含まれることとする。
+- 「R 課題に現れる」（TR-P・TR-PE）は、R 課題の定理（TR-P では、同じ課題 ID の義務の束も）から参照をたどって届く定義の集合に含まれることとする。
+- 機能を取り込むときは、`trace check --verbose --feature <機能> [--rule <TR-…>]` で、その機能の未対応の一覧を出す。
 
 生成区画は `<!-- BEGIN GENERATED: source-trace -->` / `<!-- END GENERATED: source-trace -->`（② は `target-trace`）で区切る。ギャップの表は `gaps-known`・`gaps-impact`・`gaps-outside-pre`・`gaps-undetermined`（具体化の課題一覧は前の 2 つ）で区切る。区画の中を手で編集してはならない。

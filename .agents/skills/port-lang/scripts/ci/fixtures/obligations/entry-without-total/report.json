@@ -37,6 +37,14 @@
     "ABS-901"
    ],
    "refines": true
+  },
+  {
+   "name": "Abstraction.X.refines_adequate",
+   "ids": [
+    "ABS-901"
+   ],
+   "refines": false,
+   "adequate": true
   }
  ],
  "nondet": [

@@ -2,12 +2,17 @@
 
 ## 2026-10-31
 
-* **Creation**: [ADR 1a30](decision/1a30-lean-module-namespace-layout.md) で、Lean の宣言をモジュール名の下に置く規則（NS-1。例外 E1〜E4）と、機能の証明課題を機能のモジュールに置く規則（TR-L1・TR-L2）を定めた（[backlog ce23](backlog/ce23-lean-module-namespace-layout.md)）。スキルの版を 0.12 にした。
+* **Creation**: [ADR 1a30](decision/1a30-lean-module-namespace-layout.md) で、Lean の宣言をモジュール名の下に置く規則（NS-1。例外 E1〜E4）と、機能の証明課題を機能のモジュールに置く規則（TR-L1・TR-L2）を定めた（[backlog ce23](backlog/ce23-lean-module-namespace-layout.md)）。スキルの版を 0.13 にした。
   * [lean/rules.md](lang/lean/rules.md#モジュールと名前空間)・[architecture.md](spec/architecture.md#層)・[traceability.md](spec/traceability.md#検査)・[trace-attributes.md](lang/lean/trace-attributes.md)・`scripts/README.md` を改めた。
   * 道具: `Trace.Layout` と `lake exe layout-check`、属性 `@[ns_exception]`、`trace check` の TR-L、改名の道具 `scripts/lean/rename.py`。
-  * assets の宣言を書き換えた。型名のモジュール（`LangSemantics.Java.JDouble`・`JLocalDate`・`Machine.Machine`・`Machine.Glue`・`Trace.Gap`）、`Machine.Adequacy` の型ごとの分割、`LangSemantics.Java.DoubleOps`、`Machine.Concrete.ofMachine`（旧 `Machine.toConcrete`）。
+  * assets の宣言を書き換えた。型名のモジュール（`LangSemantics.Java.JDouble`・`JLocalDate`・`Machine.Machine`・`Machine.Glue`・`Trace.Gap`）、`Machine.Adequacy`・`Machine.Sum` の型ごとの分割、`Machine.Adequate`、`Machine.Sum.sumPred`、`LangSemantics.Java.DoubleOps`、`Machine.Concrete.ofMachine`（旧 `Machine.toConcrete`）。
   * 来歴: 適用先 ATRS のオーナーの依頼。ATRS の側の書き換えは ATRS の backlog 9ed8 にある。
 
+* **Creation**: [ADR ab9e](decision/ab9e-adequate-bundle-sum-and-side-staging.md) で、義務の束・機械の並置・側ごとの段階導入を決めた。スキルの版を 0.12 にした。
+  * `assets/lean/Machine/Adequacy.lean`: 義務の束 `Machine.Adequate` と系 `run_init`・`exists_ok`、`Refines.complete_fun`。`assets/lean/Machine/Sum.lean`（新設）: `Machine.sum`・`Concrete.sum`・`Glue.sum`・`sumPred`、`Refines.sum`・`Adequate.sum`・`Adequate.congrPre`。
+  * obligation-check（`assets/lean/Trace/Obligation.lean`）の GA と、G3' の並置。`scripts/ci/check_obligations.py` の OB-A（フィクスチャ `r-without-adequate`）。`scripts/trace` の側ごとの段階導入、TR-P の束の閉包、`check --verbose` の `--feature`・`--rule`。`scripts/docs/ids.py` の側ごとの作業項目。
+  * [architecture.md](spec/architecture.md#空虚化を防ぐ義務)（義務の束・トップレベルの主定理）、[traceability.md](spec/traceability.md#検査)（TR-P・TR-G・段階導入・`features.json`）を改めた。
+  * 来歴: ATRS の ADR a41d・backlog 76a6。
 * **Update**: 文書を性格ごとのディレクトリに分けた（[ADR 748c](decision/748c-skill-docs-category-directories.md)、[backlog 97a7](backlog/97a7-skill-docs-category-directories.md)）。スキルの版を 0.11 にした。
   * 方法の文書を `spec/`（[architecture.md](spec/architecture.md)・[portability.md](spec/portability.md)・[traceability.md](spec/traceability.md)・[conformance.md](spec/conformance.md)・[verification.md](spec/verification.md)。`type: Specification`）、`rules/`（[spec-documents.md](rules/spec-documents.md)・[maintenance.md](rules/maintenance.md)。`Guideline`）、`guide/`（[process.md](guide/process.md)・[workflow.md](guide/workflow.md)・[upgrade.md](guide/upgrade.md)・[adding-a-language.md](guide/adding-a-language.md)。`type: Guide`）に移した。
   * 言語パック `java/`・`sql/`・`rust/`・`lean/` を `lang/` の下に移した。ファイル名と中の構成は変えていない。

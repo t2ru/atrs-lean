@@ -23,7 +23,8 @@ open LangSemantics.Java SourceModel.Repository.Schema
 abbrev Entries := List (String × String)
 
 /-- `JdbcCodeList.retrieveMap`: 各行の（値の列, 表示の列）。どちらかが `null` なら飛ばす。 -/
-@[source "dep:org.terasoluna.gfw:terasoluna-gfw-common#JdbcCodeList.retrieveMap@terasoluna-gfw-common-5.11.0.RELEASE"]
+@[source "java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#jdbcTemplateForCodeList()@7719b7cc8cb21bb3",
+  "dep:org.terasoluna.gfw:terasoluna-gfw-common#JdbcCodeList.retrieveMap@terasoluna-gfw-common-5.11.0.RELEASE"]
 def jdbcCodeList (rows : List (Option String × Option String)) : Entries :=
   (rows.foldl (fun (m : JLinkedHashMap String String) r =>
     match r with
@@ -37,7 +38,17 @@ structure AirportNop where
   airportNopInsertOrder : J32 := J32.ofInt 100
 
 /-- `AirportCodeList.retrieveMap`: 行は（コード, 名前, 表示順）。 -/
-@[source "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()@ee05610976981369", gap "D-029"]
+@[source "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#afterPropertiesSet()@b418d81d146f85b8",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setAirportNopInsertOrder(int)@4315f7151eeddd11",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setAirportNopName(String)@43f9d2d05dbfb456",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setAirportNopValue(String)@c833910b855ec69d",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setDataSource(DataSource)@be6d1fb6e225aecc",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setJdbcTemplate(JdbcTemplate)@6e673815724a50bf",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setLabelColumn(String)@a20c04fdbe9c4744",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setOrderColumn(String)@79c49c88225297cd",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setQuerySql(String)@35a9be27051026b5",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#setValueColumn(String)@3ce171d35383e4f7",
+  "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()@ee05610976981369", gap "D-029"]
 def airportCodeList (cfg : AirportNop) (rows : List (Option String × Option String × Option J32)) : Entries :=
   let step (acc : JLinkedHashMap String String × Bool) (r : Option String × Option String × Option J32) :=
     match r with

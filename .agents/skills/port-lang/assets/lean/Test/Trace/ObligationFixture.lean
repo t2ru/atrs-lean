@@ -397,6 +397,31 @@ theorem obs_initSurj :
     Refines.InitSurj half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) :=
   fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
 
+/-- 正例（GA）: R 課題 `obs_refines`（ABS-954）の義務の束。PRE が全域なので、環境の前提を置かない。 -/
+@[obligation "ABS-954"]
+theorem obs_adequate :
+    Machine.Adequate half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always where
+  refines := obs_refines
+  sound := half_sound
+  initIs := half_initIs
+  initSurj := obs_initSurj
+  total _ _ _ _ := trivial
+  envWitness := ⟨0, 0, trivial, rfl, trivial⟩
+  envNeeded := .inl rfl
+
+/-- 違反（GA）: 同じ ID の R 課題（`obs_refines`）と、束ねる機械・貼り合わせが違う。 -/
+@[obligation "ABS-954"]
+theorem ga_mismatch :
+    Machine.Adequate Test.Machine.Adequacy.halfSmall Test.Machine.Adequacy.halfC
+      (Test.Machine.Adequacy.glueNum Test.Machine.Adequacy.aoPartial) () (· < 100) :=
+  Test.Machine.Adequacy.halfC_adequate
+
+/-- 違反（GA）: 同じ ID の R 課題が無い束。 -/
+@[obligation "ABS-998"]
+theorem ga_noR :
+    Machine.Adequate half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never obsNaN) () always :=
+  obs_adequate
+
 @[gap "D-907"] theorem obs_needed : ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never never) :=
   Test.Machine.Adequacy.obsNaN_needed
 

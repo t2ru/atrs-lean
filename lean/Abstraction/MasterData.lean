@@ -1,3 +1,4 @@
+import Abstraction.MasterData.Adequacy
 import Abstraction.MasterData.QueryRun
 
 /-!
@@ -8,8 +9,9 @@ import Abstraction.MasterData.QueryRun
 -/
 
 namespace Abstraction.MasterData
+open Abstraction.MasterData.Adequacy
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun SourceModel.MasterQuery
+open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun SourceModel.MasterQuery Spec Spec.EnvPre
 
 /-- R 課題 ABS-026。 -/
 @[obligation "ABS-026"]
@@ -47,5 +49,33 @@ theorem need_D027 : ¬ Refines Spec.MasterQuery.queryMachine queryConcrete glueM
   have : aiMQ ic_unknownBoardingClass = none := by decide
   rw [show glueMQ.αi ic_unknownBoardingClass ia = (aiMQ ic_unknownBoardingClass = some ia) from rfl, this] at hia
   cases hia
+
+/-- ABS-026 の義務の束。 -/
+@[obligation "ABS-026"]
+theorem queryAdequate :
+    Machine.Adequate Spec.MasterQuery.queryMachine (queryConcrete.restrict dev_D027) glueMQ () envMQ where
+  refines := queryRefines
+  sound := Spec.MasterQuery.queryMachine_sound
+  initIs := Spec.MasterQuery.queryMachine_initIs
+  initSurj := queryRefines_initSurj
+  total _ _ _ h := ⟨h.1.1, h.1.2, h.2⟩
+  envWitness := by
+    obtain ⟨ia, hα, he⟩ := envMQ_icMQ
+    exact ⟨icMQ, ia, ⟨trivial, by unfold dev_D027; rw [hα]; rfl⟩, hα, he⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := (Seed.config, badMasterData, .config)) trivial
+    fun h => badMasterData_not_env ⟨h.1, h.2.1⟩
+
+/-- ABS-026 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、答えの像は [Spec] の答え。 -/
+theorem queryRefines_commutes {ic : SrcInput} {cfg : Config} {md : Spec.MasterData} {q : Spec.MasterQuery.Query}
+    (hα : aiMQ ic = some (cfg, md, q)) (hv : envMQ (cfg, md, q)) :
+    ∀ r, queryConcrete.step () ic r → ∃ a, r = .ok ((), a) ∧ answerOf? a = some (Spec.MasterQuery.answer cfg md q) := by
+  intro r hr
+  obtain ⟨-, h⟩ := queryRefines.complete_fun (f := fun i => Spec.MasterQuery.answer i.1 i.2.1 i.2.2)
+    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα ⟨hv.1.1, hv.1.2, hv.2⟩
+    ⟨trivial, by unfold dev_D027; rw [hα]; rfl⟩
+  obtain ⟨_, a, rfl, -, ho⟩ := h r hr
+  rcases ho with ho | ho
+  · exact ⟨a, rfl, ho⟩
+  · exact ho.elim
 
 end Abstraction.MasterData

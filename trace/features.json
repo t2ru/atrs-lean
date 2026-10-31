@@ -1,107 +1,224 @@
 {
-  "note": "機能と backlog の対応表（ADR 0eea）。TR-S1・TR-T1・TR-P・TR-PE・TR-D の指摘は、該当する機能の backlog がすべて done なら誤り、そうでなければ警告になる。locators はロケータの glob（最初に当たった機能に属する）、lean は名前空間（層を書かなければ SourceModel・Abstraction・TargetModel・Refinement の 4 層）、tasks は R 課題の ID。機能名は rules/atrs-porting.md による",
+  "note": "機能と backlog の対応表（ADR 0eea・ADR a41d）。backlog は側ごとに分ける（source: 移植元側 SourceModel・Abstraction・source-inventory・D-NNN、target: 移植先側 TargetModel・Refinement・target-inventory・T-NNN）。TR-S1・TR-T1・TR-P・TR-D・TR-K の指摘は、指摘の側の backlog がすべて done なら誤り、そうでなければ警告になる。TR-PE（入口からの到達）は両側の完了で判定する。locators はロケータの glob（最初に当たった機能に属する）、lean は名前空間（層を書かなければ SourceModel・Abstraction・TargetModel・Refinement の 4 層）、tasks は R 課題の ID。機能名は rules/atrs-porting.md による",
   "features": [
     {
       "name": "Fare",
-      "backlog": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "ddb4cafe-4bc3-4235-8efa-7f6eb7ff0ea8", "eff6bfce-0ef0-49a1-8c6e-e2b7235fd113"],
+      "backlog": {
+        "source": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "76a63816-6065-4ee7-97a0-c0a0c60e79a0"],
+        "target": ["ddb4cafe-4bc3-4235-8efa-7f6eb7ff0ea8", "eff6bfce-0ef0-49a1-8c6e-e2b7235fd113"]
+      },
       "lean": ["Fare", "FareQuery"],
       "tasks": ["ABS-001", "ABS-002", "ABS-004", "REF-001", "REF-004"],
-      "locators": ["java:jp.co.ntt.atrs.domain.service.b0.*", "rust:atrs::fare::*"]
+      "locators": [
+        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#calculate*",
+        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl.MULTIPLICATION_RATIO_IN_NORMAL_TIME",
+        "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare*",
+        "java:jp.co.ntt.atrs.domain.common.util.FareUtil*",
+        "rust:atrs::fare::*"
+      ]
     },
     {
       "name": "FlightSearch",
-      "backlog": ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["0be7c5d4-01d9-43f4-a50d-227f174830f0"],
+        "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["FlightSearch"],
       "tasks": ["ABS-011"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.b1.*", "java:jp.co.ntt.atrs.app.b1.*", "java:jp.co.ntt.atrs.api.flight.*",
-        "java:jp.co.ntt.atrs.domain.repository.flight.*", "sql:jp.co.ntt.atrs.domain.repository.flight.*",
+        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{isAvailableFareType,getSearchLimitDate}*",
+        "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil*",
+        "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil*",
+        "java:jp.co.ntt.atrs.domain.model.FlightType*",
+        "ddl:00100_create_all_tables.sql#{FLIGHT,PK_FLIGHT,FK_FLIGHT_1,FK_FLIGHT_2,FK_FLIGHT_3}",
+        "seed:00250_insert_flight.sql#*",
+        "java:jp.co.ntt.atrs.domain.service.b1.*",
+        "java:jp.co.ntt.atrs.app.b1.*",
+        "java:jp.co.ntt.atrs.api.flight.*",
+        "java:jp.co.ntt.atrs.domain.repository.flight.*",
+        "sql:jp.co.ntt.atrs.domain.repository.flight.*",
         "rust:atrs::flight_search::*"
       ]
     },
     {
       "name": "Reserve",
-      "backlog": ["aedfeffc-3e82-46b1-b497-3d8b7808d068", "4b0e2070-e086-4966-95f8-9e366f4324a0", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["aedfeffc-3e82-46b1-b497-3d8b7808d068"],
+        "target": ["4b0e2070-e086-4966-95f8-9e366f4324a0", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["Ticket", "UseCase.Reserve", "Repository"],
       "tasks": ["ABS-021", "ABS-023", "ABS-041", "REF-002", "REF-008"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.b2.*", "java:jp.co.ntt.atrs.app.b0.*", "java:jp.co.ntt.atrs.app.b2.*",
-        "java:jp.co.ntt.atrs.api.ticket.*", "java:jp.co.ntt.atrs.domain.repository.reservation.*",
-        "sql:jp.co.ntt.atrs.domain.repository.reservation.*", "rust:atrs::reservation::*"
+        "java:jp.co.ntt.atrs.domain.service.b0.*",
+        "java:jp.co.ntt.atrs.domain.model.{Reservation,ReserveFlight,Passenger}*",
+        "ddl:00100_create_all_tables.sql#{RESERVATION,RESERVE_FLIGHT,PASSENGER,PK_RESERVATION,PK_RESERVE_FLIGHT,PK_PASSENGER,FK_RESERVATION_1,FK_RESERVE_FLIGHT_1,FK_RESERVE_FLIGHT_2,FK_PASSENGER_1,FK_PASSENGER_2,SQ_RESERVATION_1,SQ_RESERVE_FLIGHT_1,SQ_PASSENGER_1}",
+        "java:jp.co.ntt.atrs.config.app.AtrsDomainConfig#annotationDrivenTransactionManager()",
+        "java:jp.co.ntt.atrs.config.app.AtrsInfraConfig#jdbcClient(DataSource)",
+        "java:jp.co.ntt.atrs.domain.service.b2.*",
+        "java:jp.co.ntt.atrs.app.b0.*",
+        "java:jp.co.ntt.atrs.app.b2.*",
+        "java:jp.co.ntt.atrs.api.ticket.*",
+        "java:jp.co.ntt.atrs.domain.repository.reservation.*",
+        "sql:jp.co.ntt.atrs.domain.repository.reservation.*",
+        "rust:atrs::reservation::*"
       ]
     },
     {
       "name": "Member",
-      "backlog": ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2"],
+        "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["UseCase.Member"],
       "tasks": ["ABS-024", "ABS-034", "ABS-042"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.c*", "java:jp.co.ntt.atrs.app.c*", "java:jp.co.ntt.atrs.domain.repository.member.*",
-        "sql:jp.co.ntt.atrs.domain.repository.member.*", "rust:atrs::member::*"
+        "java:jp.co.ntt.atrs.domain.model.{Member,MemberLogin,Gender,CreditType}*",
+        "ddl:00100_create_all_tables.sql#{MEMBER,MEMBER_LOGIN,PK_MEMBER,PK_MEMBER_LOGIN,FK_MEMBER_1,FK_MEMBER_LOGIN_1,SQ_MEMBER_1}",
+        "seed:00230_insert_member.sql#*",
+        "java:jp.co.ntt.atrs.config.app.ApplicationContextConfig#{bCryptPasswordEncoder,passwordEncoder,pbkdf2PasswordEncoder}()",
+        "java:jp.co.ntt.atrs.domain.service.c*",
+        "java:jp.co.ntt.atrs.app.c*",
+        "java:jp.co.ntt.atrs.domain.repository.member.*",
+        "sql:jp.co.ntt.atrs.domain.repository.member.*",
+        "rust:atrs::member::*"
       ]
     },
     {
       "name": "Auth",
-      "backlog": ["44f89eb1-e59a-4573-8129-7b0c1d4699bb", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["44f89eb1-e59a-4573-8129-7b0c1d4699bb"],
+        "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["UseCase.Auth"],
       "tasks": ["ABS-043"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.a*", "java:jp.co.ntt.atrs.app.a1.*", "java:jp.co.ntt.atrs.app.common.security.*",
-        "java:jp.co.ntt.atrs.domain.common.security.*", "rust:atrs::auth::*"
+        "java:jp.co.ntt.atrs.domain.service.a*",
+        "java:jp.co.ntt.atrs.app.a1.*",
+        "java:jp.co.ntt.atrs.app.common.security.*",
+        "java:jp.co.ntt.atrs.domain.common.security.*",
+        "rust:atrs::auth::*"
       ]
     },
     {
       "name": "Report",
-      "backlog": ["ac713033-9b94-4e5a-bfc4-d27bdee7ee2e", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["ac713033-9b94-4e5a-bfc4-d27bdee7ee2e"],
+        "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["UseCase.Report"],
       "tasks": ["ABS-025", "ABS-044", "REF-011"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.d1.*", "java:jp.co.ntt.atrs.app.d1.*", "java:jp.co.ntt.atrs.listener.*",
+        "java:jp.co.ntt.atrs.config.app.ApplicationContextConfig#jmsListenerContainerFactory*",
+        "java:jp.co.ntt.atrs.config.app.AtrsInfraConfig#jms*",
+        "java:jp.co.ntt.atrs.domain.service.d1.*",
+        "java:jp.co.ntt.atrs.app.d1.*",
+        "java:jp.co.ntt.atrs.listener.*",
         "rust:atrs::report::*"
       ]
     },
     {
       "name": "Validation",
-      "backlog": ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2"],
+      "backlog": {
+        "source": ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2"],
+        "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["Validation"],
       "tasks": ["ABS-046"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.common.validate.*", "msg:ValidationMessages.properties#*",
-        "msg:atrs-fields_ja.properties#*", "rust:atrs::validation::*"
+        "java:jp.co.ntt.atrs.domain.common.validate.*",
+        "msg:ValidationMessages.properties#*",
+        "msg:atrs-fields_ja.properties#*",
+        "rust:atrs::validation::*"
       ]
     },
     {
       "name": "Adapter",
-      "backlog": ["9c0448f7-eb9f-43ec-8364-d8b6dd1ec01f"],
+      "backlog": {
+        "source": [],
+        "target": ["9c0448f7-eb9f-43ec-8364-d8b6dd1ec01f"]
+      },
       "lean": ["Adapter"],
       "tasks": ["REF-009"],
       "locators": ["rust:atrs::adapter::db::*", "rust:atrs::adapter::file::*", "rust:atrs::adapter::clock::*"]
     },
     {
       "name": "Http",
-      "backlog": ["a89ec8f0-4d15-46a6-86fa-a640e4df0b44", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"],
+      "backlog": {
+        "source": ["a89ec8f0-4d15-46a6-86fa-a640e4df0b44"],
+        "target": ["a89ec8f0-4d15-46a6-86fa-a640e4df0b44", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
+      },
       "lean": ["Http", "Error", "Message"],
       "tasks": ["ABS-031", "ABS-045", "REF-007"],
       "locators": [
-        "java:jp.co.ntt.atrs.app.a0.*", "java:jp.co.ntt.atrs.app.common.*", "java:jp.co.ntt.atrs.api.common.*",
-        "java:jp.co.ntt.atrs.config.web.*", "java:jp.co.ntt.atrs.domain.common.exception.*",
-        "java:jp.co.ntt.atrs.domain.common.message.*", "java:jp.co.ntt.atrs.domain.common.logging.*",
-        "http:*", "xml:*", "tmpl:*", "msg:atrs-messages_ja.properties#*", "rust:atrs::adapter::*", "rust:atrs::error::*"
+        "java:jp.co.ntt.atrs.config.app.ApplicationContextConfig#{exceptionCodeResolver,exceptionLogger,exceptionLoggingFilter,messageSource}()",
+        "java:jp.co.ntt.atrs.config.app.AtrsDomainConfig#resultMessagesLogging*",
+        "java:jp.co.ntt.atrs.app.a0.*",
+        "java:jp.co.ntt.atrs.app.common.*",
+        "java:jp.co.ntt.atrs.api.common.*",
+        "java:jp.co.ntt.atrs.config.web.*",
+        "java:jp.co.ntt.atrs.domain.common.exception.*",
+        "java:jp.co.ntt.atrs.domain.common.message.*",
+        "java:jp.co.ntt.atrs.domain.common.logging.*",
+        "http:*",
+        "xml:*",
+        "tmpl:*",
+        "msg:atrs-messages_ja.properties#*",
+        "rust:atrs::adapter::*",
+        "rust:atrs::error::*"
       ]
     },
     {
       "name": "MasterData",
-      "backlog": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "4b0e2070-e086-4966-95f8-9e366f4324a0"],
-      "lean": ["Model", "MasterData", "MasterQuery", "CodeList", "Config", "Prim", "Repository.Schema", "Repository.MasterData", "Repository.Mapping"],
+      "backlog": {
+        "source": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "76a63816-6065-4ee7-97a0-c0a0c60e79a0"],
+        "target": ["4b0e2070-e086-4966-95f8-9e366f4324a0"]
+      },
+      "lean": [
+        "Model",
+        "MasterData",
+        "MasterQuery",
+        "CodeList",
+        "Config",
+        "Prim",
+        "Repository.Schema",
+        "Repository.MasterData",
+        "Repository.Mapping"
+      ],
       "tasks": ["ABS-026", "REF-010"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.model.*", "java:jp.co.ntt.atrs.domain.common.codelist.*",
-        "java:jp.co.ntt.atrs.domain.common.masterdata.*", "java:jp.co.ntt.atrs.domain.common.util.*",
+        "java:jp.co.ntt.atrs.domain.model.*",
+        "java:jp.co.ntt.atrs.domain.common.codelist.*",
+        "java:jp.co.ntt.atrs.domain.common.masterdata.*",
+        "java:jp.co.ntt.atrs.domain.common.util.*",
         "java:jp.co.ntt.atrs.domain.repository.{route,boardingclass,faretype,peaktime}.*",
         "sql:jp.co.ntt.atrs.domain.repository.{route,boardingclass,faretype,peaktime}.*",
-        "java:jp.co.ntt.atrs.config.app.*", "prop:*", "ddl:*", "seed:*", "rust:atrs::model_types::*",
+        "java:jp.co.ntt.atrs.config.app.*",
+        "prop:*",
+        "ddl:*",
+        "seed:*",
+        "rust:atrs::model_types::*",
         "rust:atrs::master_data::*"
       ]
+    },
+    {
+      "name": "Top",
+      "backlog": {
+        "source": ["76a63816-6065-4ee7-97a0-c0a0c60e79a0"],
+        "target": []
+      },
+      "lean": [
+        "SourceModel.Input",
+        "SourceModel.Output",
+        "SourceModel.machine",
+        "Abstraction.dev",
+        "Abstraction.devC",
+        "Abstraction.glue",
+        "Abstraction.env",
+        "Abstraction.refines",
+        "Abstraction.adequate"
+      ],
+      "tasks": [],
+      "locators": []
     }
   ]
 }

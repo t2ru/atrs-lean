@@ -32,7 +32,23 @@ import SourceModel.FareQuery
 | `SourceModel.Fare` | 運賃計算 |
 | `SourceModel.Ticket` | 選択フライト情報からフライト情報を組み立てる部分（`TicketHelper.toFlightList`） |
 | `SourceModel.FareQuery` | 運賃計算の具体機械（ABS-001・ABS-002・ABS-004 の具体側） |
+
+トップレベルの具体機械 `SourceModel.machine` は、`Spec.machine` と同じ並びで、各機能の具体機械を並置したもの
+（`Machine.Concrete.sum`）である。`Abstraction` の主定理の具体側になる。
 -/
 
 namespace SourceModel
+open LangSemantics.Java.Int LangSemantics.Java.Exception
+
+
+/-- トップレベルの具体機械の入力（`Spec.Input` と同じ並び）。 -/
+abbrev Input := MasterQuery.SrcInput ⊕ FareQuery.BasicFareInput ⊕ FareQuery.FareInput ⊕ FareQuery.TotalFareInput
+
+/-- トップレベルの具体機械の出力。 -/
+abbrev Output := MasterQuery.SrcAnswer ⊕ J32 ⊕ J32 ⊕ J32
+
+/-- トップレベルの具体機械: 実装済みの範囲の機能の具体機械を並置したもの。 -/
+def machine : Machine.Concrete (Unit × Unit × Unit × Unit) Input Output JThrow :=
+  MasterQuery.queryConcrete.sum (FareQuery.basicFareConcrete.sum (FareQuery.fareConcrete.sum FareQuery.totalFareConcrete))
+
 end SourceModel

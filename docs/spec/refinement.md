@@ -49,6 +49,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 
 各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、核を L 課題 REF-012 の `KernelIs` で示す。
 
+- トップレベルの主定理 `Refinement.refines`・`Refinement.adequate`（`Machine.Refines`・`Machine.Adequate`。`Spec.machine` と `TargetModel.machine` について）を `lean/Refinement.lean` のトップレベルに置き、R 課題ごとの義務の束（`Machine.Adequate`。同じ課題 ID）を並置して示す（[abstraction.md](abstraction.md#トップレベルの主定理) と同じ形。[ADR a41d](../decision/a41d-top-level-refines-adequate-and-source-side-gate.md)）。`TargetModel` ができるまでは置かない。
 - 主定理は閉じた命題とし、前提として持ってよいのは PRE（値域とマスタ・設定の制約を含む）・INV・`T-NNN` の述語だけとする。`T-NNN` の述語は `restrict` で機械の中に置く。ポートの契約は、ポート実装の R 課題（REF-008・REF-009）で証明する。値域は [Spec] の PRE である（[domain-model.md](domain-model.md#値域)）。そのため「値域内」は差異ではない。
 - [Spec] の非決定的な結果 `Conflict`（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)）は、`TargetModel` で選んでも選ばなくてもよい。ただし、選べるのは入力の環境が衝突を示すときだけである（`Pinned`・`NoFaultReachable`。[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の N-001）。I/O の失敗（N-002）も同じである。
 

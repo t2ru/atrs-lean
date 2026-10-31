@@ -14,7 +14,8 @@ references/docs/rules/spec-documents.md#道具が読む見出しと値 が定め
 | OB-N1  | `@[nondet]` の ID が「Spec の非決定性」の表に無い。または同じ ID の `@[nondet]` が 2 つ以上ある |
 | OB-N3  | 環境の選択に 自由 の行の型が、自由な選択に 環境 の行の型が使われている |
 | OB-N2  | 表の N-NNN に対応する `@[nondet]` が無い（段階導入） |
-| OB-R   | 文書で種類 R の課題 ID を持つ `@[obligation]` 定理が、`Refines` を結論に持たない |
+| OB-R   | 文書で種類 R の課題 ID を持つ `@[obligation]` 定理が、`Refines` も義務の束 `Machine.Adequate` も結論に持たない |
+| OB-A   | Lean にある R 課題（結論が `Refines`）に、同じ課題 ID の義務の束（結論が `Machine.Adequate`）が無い |
 | OB-E1  | 「入口の R 課題」の R 課題に、環境の前提の `EnvWitness` を伴う `TotalUnder` が無い |
 | OB-E2  | 「入口の R 課題」の R 課題が Lean に無い（段階導入） |
 | OB-D1  | 前提型の差異に影響（「出力のみ」「中断」）が無い、または影響を持つ差異が前提型でない |
@@ -154,8 +155,14 @@ def check(report: dict, docs: dict):
     # R 課題の形
     for ob in report.get("obligations", []):
         for i in ob["ids"]:
-            if i in docs["r_tasks"] and not ob["refines"]:
+            if i in docs["r_tasks"] and not ob["refines"] and not ob.get("adequate"):
                 found.append(("error", "OB-R", f"{i} ({ob['name']}) is an R task but its conclusion is not Refines"))
+    # 義務の束（R 課題ごとに、同じ ID の Machine.Adequate）
+    bundled = {i for ob in report.get("obligations", []) if ob.get("adequate") for i in ob["ids"]}
+    for ob in refinements:
+        for i in ob["ids"]:
+            if i not in bundled:
+                found.append(("error", "OB-A", f"{i} ({ob['name']}) has no Machine.Adequate bundle with the same ID"))
     # 入口の全域性
     seen = set()
     for ob in refinements:

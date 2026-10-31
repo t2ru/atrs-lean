@@ -226,7 +226,8 @@ def cmd_check():
                     errs.append(f"{rel}: {key} {tgt['stem']} is outside the bundle {b['bundle']}")
     feats = json.loads((REPO / CFG.get("features", "trace/features.json")).read_text(encoding="utf-8"))
     for f in feats["features"]:
-        for b in f.get("backlog", []):
+        bl = f.get("backlog", [])
+        for b in (bl if isinstance(bl, list) else [x for side in bl.values() for x in side]):
             if b not in all_ids["backlog"]:
                 errs.append(f"trace/features.json: {f['name']}: backlog {b!r} is not a backlog id")
     every = all_ids["adr"] | all_ids["backlog"]
@@ -416,7 +417,7 @@ def rewrite(rel, text, num, stems, short, new_stem, all_ids):
     text = pat.sub(words, text)
     # 道具が読む ID
     if rel == "trace/features.json":
-        text = re.sub(r'("backlog": \[)([^\]]*)(\])',
+        text = re.sub(r'("(?:backlog|source|target)": \[)([^\]]*)(\])',
                       lambda m: m.group(1) + re.sub(r'"(\d{4})"', lambda n: f'"{num["backlog"].get(n.group(1), n.group(1))}"',
                                                     m.group(2)) + m.group(3), text)
     if rel in REGISTERS:

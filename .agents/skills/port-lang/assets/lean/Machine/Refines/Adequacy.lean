@@ -151,6 +151,20 @@ theorem run (hS : A.Sound) (h : Refines A C g) {Env : ιa → Prop} (hT : A.Tota
       ih hi₁ hJ₁ fun ic' hm => hin ic' (List.Mem.tail _ hm)
     exact ⟨ia :: ias, s', oa :: oas, .cons ha hai, .cons hpre hst hrun, hJ', hi', .cons ho hao⟩
 
+/-- 出力が関数で決まる抽象機械（`Machine.pure` とその制限）の 1 歩の可換式: PRE の下で、具体側は必ず結果を持ち、
+どの結果も正常終了で、出力は `αo` で `f ia` に対応する。`Pinned` を持たない（環境の選択の無い）機械の完全性である。 -/
+theorem complete_fun {f : ιa → οa} (h : Refines A C g) (hf : ∀ s i s' o, A.step s i s' o → o = f i) {s : σ}
+    {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia)
+    (hd : C.Dom ic) :
+    (∃ r, C.step t ic r) ∧ ∀ r, C.step t ic r → ∃ t' oc, r = .ok (t', oc) ∧ (∃ s', g.J s' t') ∧ g.αo oc (f ia) := by
+  obtain ⟨hex, hne⟩ := h.applicable s t ic ia hi hJ ha hpre hd
+  refine ⟨hex, fun r hr => ?_⟩
+  match r, hr with
+  | .error e, hr => exact absurd hr (hne e)
+  | .ok (t', oc), hr =>
+    obtain ⟨s', oa, hst, hJ', ho⟩ := h.correct s t ic ia t' oc hi hJ ha hpre hd hr
+    exact ⟨t', oc, rfl, ⟨s', hJ'⟩, hf s ia s' oa hst ▸ ho⟩
+
 end Refines
 
 end Machine

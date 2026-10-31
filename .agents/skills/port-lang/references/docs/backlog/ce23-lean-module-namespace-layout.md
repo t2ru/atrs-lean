@@ -23,7 +23,7 @@ generated:
 - 道具: `Trace.Layout`（`layout-check` の本体）、属性 `@[ns_exception]`、assets の入口 `Test/Trace/LayoutCheck.lean`、フィクスチャ `Test/Trace/LayoutFixture.lean` と `trace-test` の検査
 - `trace check` の TR-L1・TR-L2（[traceability.md](../spec/traceability.md#検査)）と `cargo test` の違反例
 - 改名の道具 `scripts/lean/rename.py`（`--self-test`・`check`）。`scripts/README.md`
-- assets の書き換え: `LangSemantics`・`Machine`・`Trace`・`ConformanceKit`・`Test` の全宣言をモジュール名の下に置く（型名のモジュール `JDouble`・`JLocalDate`・`Machine.Machine`・`Machine.Glue`・`Trace.Gap`、`Machine.Adequacy` の型ごとの分割、`LangSemantics.Java.DoubleOps`、`Machine.Concrete.ofMachine`）
+- assets の書き換え: `LangSemantics`・`Machine`・`Trace`・`ConformanceKit`・`Test` の全宣言をモジュール名の下に置く（型名のモジュール `JDouble`・`JLocalDate`・`Machine.Machine`・`Machine.Glue`・`Trace.Gap`、`Machine.Adequacy` の型ごとの分割、`Machine.Adequate`、`Machine.*.Sum` と `Machine.Sum.sumPred`、`LangSemantics.Java.DoubleOps`、`Machine.Concrete.ofMachine`）
 
 ## 対象外
 

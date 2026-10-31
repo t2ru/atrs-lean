@@ -19,7 +19,8 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `Refines.StateSafe`・`StateSafeConcrete` | 出力のみの差異の前提が破れても、状態は `J` を保つ | 差異の前提の外の 1 歩による状態の破壊 |
 | `Nontrivial`・`Nontrivial₂` | 名前付きの述語・関係は、成り立つ値と成り立たない値を持つ | `True`・`False` の成分 |
 | `KernelIs` | 標準の抽象化の葉が同一視するもの（核） | 標準の抽象化に隠れた同一視 |
-| `Refines.complete`・`Refines.run` | 1 歩の可換式と、複数歩の模倣 | — |
+| `Refines.complete`・`Refines.complete_fun`・`Refines.run` | 1 歩の可換式（`ofChoice` の機械と、出力が関数で決まる機械）と、複数歩の模倣 | — |
+| `Machine.Adequate` | リファインメントと付帯の義務（`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提を置かないか、その必要性）の束。系として、初期状態からの複数歩の模倣（`run_init`）と、具体側の正常終了が実在すること（`exists_ok`） | 義務の一部だけを示して、R 課題を完了とすること |
 | `Refines.congr` | 各点で同値な貼り合わせへの付け替え | — |
 | `always`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
 | `Covers`・`Covers₂` | 被覆: 必要な差異 M の下では差異 d が常に成り立つ（d は M に覆われ、必要性の代わりにこれを示す） | 他の差異に覆われた実在の差異が、必要性を示せないこと |
@@ -46,7 +47,8 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `Machine.Machine.Adequacy` | 抽象機械: `Machine.ofChoice`・`FreeFrame`・`InitIs`・`TotalUnder` |
 | `Machine.Concrete.Adequacy` | 具体機械の正常終了の列 `Concrete.Run` |
 | `Machine.Glue.Adequacy` | 標準の貼り合わせ `Glue.ofStd`・`Glue.Equiv` |
-| `Machine.Refines.Adequacy` | リファインメントの付帯の義務: `Refines.InitSurj`・`Pinned`・`NoFaultReachable`・`EnvWitness`・`StateSafe`、`Refines.complete`・`Refines.run` |
+| `Machine.Refines.Adequacy` | リファインメントの付帯の義務: `Refines.InitSurj`・`Pinned`・`NoFaultReachable`・`EnvWitness`・`StateSafe`、1 歩の可換式 `Refines.complete`・`Refines.complete_fun`、`Refines.run` |
+| `Machine.Adequate` | リファインメントと付帯の義務の束 `Machine.Adequate`、系 `run_init`・`exists_ok` |
 -/
 
 namespace Machine.Adequacy

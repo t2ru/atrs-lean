@@ -5,6 +5,9 @@ backlog 0fdf: シードのマスタ・設定が入口の環境の前提（MD-1�
 示すために使う。行の順は JSON（シードの順）のまま。`outsideSpec` の行（到着時刻 2415 など。[Spec] の値域の外）は、
 `Tests.ConformanceFare` の読み込みと同じく除く（ADR 8f18、master-data.md の TODO(spec)。backlog 0be7 で [Spec] を改める）。
 
+各表の定義には、上流のシードの文のロケータ（`seed:`。ハッシュは `trace/source-inventory.json` の値）を `@[source]` で
+付ける（backlog 76a6・ADR a41d）。シードから [Spec] の値への変換は本生成器の決定論的な変換で、`--check` が一致を確かめる。
+
 使い方:
   python3 -I tools/conformance/seed_lean.py           # lean/Spec/Seed.lean を書く
   python3 -I tools/conformance/seed_lean.py --check   # 生成物が最新であることを確かめる（CI）
@@ -17,6 +20,24 @@ REPO = pathlib.Path(__file__).resolve().parents[2]
 FIX = REPO / "conformance" / "fixtures"
 OUT = REPO / "lean" / "Spec" / "Seed.lean"
 CHUNK = 100
+INVENTORY = REPO / "trace" / "source-inventory.json"
+
+# 表 → 上流のシードの文（`seed:` ロケータ）
+SEED = {
+    "airports": "seed:00200_insert_fixed_value.sql#AIRPORT",
+    "routes": "seed:00210_insert_route.sql#ROUTE",
+    "flightMasters": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
+    "boardingClasses": "seed:00200_insert_fixed_value.sql#BOARDING_CLASS",
+    "fareTypes": "seed:00200_insert_fixed_value.sql#FARE_TYPE",
+    "peakTimes": "seed:00240_insert_peak_time.sql#PEAK_TIME",
+    "planes": "seed:00200_insert_fixed_value.sql#PLANE",
+    "creditTypes": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
+}
+
+
+def seed_hashes() -> dict:
+    items = json.loads(INVENTORY.read_text(encoding="utf-8"))["items"]
+    return {it["locator"]: it["hash"] for it in items if it["locator"].startswith("seed:")}
 
 
 def s(v: str) -> str:
@@ -49,7 +70,7 @@ ROWS = {
 }
 
 
-def table(name: str, ty: str, rows: list, fmt) -> list[str]:
+def table(name: str, ty: str, rows: list, fmt, source: str) -> list[str]:
     """100 行ずつの部分の列を `++` でつなぐ（長いリストのリテラルの展開の深さを抑える）。"""
     out = []
     parts = [rows[i:i + CHUNK] for i in range(0, len(rows), CHUNK)] or [[]]
@@ -59,6 +80,7 @@ def table(name: str, ty: str, rows: list, fmt) -> list[str]:
         out.append("]")
         out.append("")
     out.append(f"/-- `{name}`（{len(rows)} 行）。 -/")
+    out.append(f"@[source {s(source)}]")
     out.append(f"def {name} : List {ty} := " + " ++ ".join(f"{name}{k}" for k in range(len(parts))))
     out.append("")
     return out
@@ -70,6 +92,7 @@ def render() -> str:
     lines = [
         "import Spec.MasterData",
         "import Spec.Config",
+        "import Trace",
         "",
         "/-!",
         "# Spec.Seed",
@@ -78,6 +101,7 @@ def render() -> str:
         "`tools/conformance/seed_lean.py` が生成する。手で編集しない。",
         f"上流: {md['upstream']['release']} / {md['upstream']['commit']}。行の順はシードの順。",
         "`outsideSpec` の行（到着時刻 2415 の便マスタ 2 行。[Spec] の値域の外）は除く（ADR 8f18。backlog 0be7 で [Spec] を改める）。",
+        "各表の `@[source]` は上流のシードの文（この変換の入力の出所）を指す。",
         "-/",
         "",
         "set_option maxRecDepth 4096",
@@ -87,9 +111,10 @@ def render() -> str:
         "open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType)",
         "",
     ]
+    hashes = seed_hashes()
     for key, (ty, fmt) in ROWS.items():
         rows = [r for r in md[key] if "outsideSpec" not in r]
-        lines += table(key, ty, rows, fmt)
+        lines += table(key, ty, rows, fmt, f"{SEED[key]}@{hashes[SEED[key]]}")
     lines += [
         "/-- シードのマスタ。 -/",
         "def masterData : MasterData :=",

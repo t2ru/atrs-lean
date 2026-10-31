@@ -1,3 +1,4 @@
+import Abstraction.Fare.Adequacy
 import Abstraction.Fare.BasicFareRun
 import Abstraction.Fare.FareRun
 import Abstraction.Fare.TotalFareRun
@@ -10,8 +11,9 @@ import Abstraction.Fare.TotalFareRun
 -/
 
 namespace Abstraction.Fare
+open Abstraction.Fare.Adequacy
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Spec Spec.EnvPre Spec.Model
 
 /-- R 課題 ABS-001。 -/
 @[obligation "ABS-001"]
@@ -177,5 +179,100 @@ theorem need_D012 :
   rcases ho with ho | ho
   · exact absurd ho (by decide)
   · exact ho
+
+/-- ABS-001 の義務の束。 -/
+@[obligation "ABS-001"]
+theorem basicFareAdequate :
+    Machine.Adequate (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF ()
+      envBF where
+  refines := basicFareRefines
+  sound := Spec.Fare.basicFareMachine_sound.restrictState _
+  initIs := Spec.Fare.basicFareMachine_initIs
+  initSurj := basicFareRefines_initSurj
+  total _ _ _ h := ⟨⟨h.1.1, h.1.2, h.2.1⟩, h.2.2⟩
+  envWitness := by
+    obtain ⟨ia, hα, he⟩ := envBF_icBF101
+    exact ⟨icBF101, ia, ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩, hα, he⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaBFbad) trivial
+    fun h => badMasterData_not_env ⟨h.1.1, h.1.2.1⟩
+
+/-- ABS-001 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、出力の像は [Spec] の基本運賃。 -/
+theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} (hα : aiBF ic = some ia)
+    (hv : envBF ia) :
+    ∀ r, basicFareConcrete.step () ic r → ∃ oc, r = .ok ((), oc) ∧
+      natOfJ32 oc = some ((Spec.Fare.basicFare ia.md ia.routeBasicFare ia.boardingClassCd ia.depDate).getD 0) := by
+  intro r hr
+  obtain ⟨-, h⟩ := basicFareRefines.complete_fun
+    (f := fun i => (Spec.Fare.basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).getD 0)
+    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα
+    ⟨⟨hv.1.1, hv.1.2, hv.2.1⟩, hv.2.2⟩ ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩
+  obtain ⟨_, oc, rfl, -, ho⟩ := h r hr
+  rcases ho with ho | ho
+  · exact ⟨oc, rfl, ho⟩
+  · exact ho.elim
+
+/-! ### ABS-002: 運賃 -/
+
+/-- ABS-002 の義務の束。 -/
+@[obligation "ABS-002"]
+theorem fareAdequate :
+    Machine.Adequate (Spec.Fare.fareMachine.restrict dev_D002) (fareConcrete.restrict dev_D027F) glueF () envF where
+  refines := fareRefines
+  sound := Spec.Fare.fareMachine_sound.restrictState _
+  initIs := Spec.Fare.fareMachine_initIs
+  initSurj := fareRefines_initSurj
+  total _ _ _ h := h
+  envWitness := by
+    obtain ⟨ia, hα, he⟩ := envF_icF1000
+    exact ⟨icF1000, ia, ⟨trivial, by unfold dev_D027F; rw [hα]; rfl⟩, hα, he⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := ⟨Range.maxBasicFare + 1, 0⟩) trivial
+    fun h => absurd h.1.1 (by decide)
+
+/-- ABS-002 の 1 歩の可換式。 -/
+theorem fareRefines_commutes {ic : FareInput} {ia : Spec.Fare.FareInput} (hα : aiF ic = some ia) (hv : envF ia) :
+    ∀ r, fareConcrete.step () ic r → ∃ oc, r = .ok ((), oc) ∧
+      natOfJ32 oc = some (Spec.Fare.fare ia.basicFare ia.discountRate) := by
+  intro r hr
+  obtain ⟨-, h⟩ := fareRefines.complete_fun (f := fun i => Spec.Fare.fare i.basicFare i.discountRate)
+    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα hv
+    ⟨trivial, by unfold dev_D027F; rw [hα]; rfl⟩
+  obtain ⟨_, oc, rfl, -, ho⟩ := h r hr
+  rcases ho with ho | ho
+  · exact ⟨oc, rfl, ho⟩
+  · exact ho.elim
+
+/-! ### ABS-004: 合計金額 -/
+
+/-- ABS-004 の義務の束。 -/
+@[obligation "ABS-004"]
+theorem totalFareAdequate :
+    Machine.Adequate (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
+      (totalFareConcrete.restrict dev_D027TF) glueTF () envTF where
+  refines := totalFareRefines
+  sound := ((Spec.Fare.totalFareMachine_sound.restrictState _).restrictState _).restrictState _
+  initIs := Spec.Fare.totalFareMachine_initIs
+  initSurj := totalFareRefines_initSurj
+  total _ _ _ h :=
+    ⟨⟨⟨⟨h.1.1, h.1.2, h.2.1.1, h.2.1.2.1, h.2.1.2.2.1, h.2.1.2.2.2.1, h.2.1.2.2.2.2.1, h.2.1.2.2.2.2.2.1,
+      h.2.1.2.2.2.2.2.2⟩, h.2.2.1⟩, h.2.2.2.1⟩, h.2.2.2.2⟩
+  envWitness :=
+    ⟨icTF100, iaTF100, ⟨trivial, by unfold dev_D027TF; rw [aiTF_icTF100]; rfl⟩, aiTF_icTF100, envTF_iaTF100⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaTFbad) trivial
+    fun h => badMasterData_not_env ⟨h.1.1.1.1, h.1.1.1.2.1⟩
+
+/-- ABS-004 の 1 歩の可換式。 -/
+theorem totalFareRefines_commutes {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = some ia)
+    (hv : envTF ia) :
+    ∀ r, totalFareConcrete.step () ic r → ∃ oc, r = .ok ((), oc) ∧
+      natOfJ32 oc = some ((Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0) := by
+  intro r hr
+  obtain ⟨-, h⟩ := totalFareRefines.complete_fun
+    (f := fun i => (Spec.Fare.totalFareOfKeys i.cfg i.md i.flights i.ages).getD 0)
+    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα
+    (totalFareAdequate.total () ia trivial hv) ⟨trivial, by unfold dev_D027TF; rw [hα]; rfl⟩
+  obtain ⟨_, oc, rfl, -, ho⟩ := h r hr
+  rcases ho with ho | ho
+  · exact ⟨oc, rfl, ho⟩
+  · exact ho.elim
 
 end Abstraction.Fare

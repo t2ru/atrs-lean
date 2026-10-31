@@ -95,7 +95,8 @@ Chosen option: "NS-1 を規則にする。複数の型はモジュール名の�
 ### 既存の宣言の書き換え
 
 * assets: `LangSemantics.Java.Double` を `JDouble` に、`LocalDate` を `JLocalDate` に、`Machine.Basic` を `Machine.Machine` に改名した。`Machine.Glue` は `Machine.Refines` から分けた。
-* `Machine.Adequacy` は、型に属さない述語（`never`・`always`・`Covers`・`Nontrivial`・`KernelIs` など）だけにした。型ごとの定義は `Machine.{Machine,Concrete,Glue,Refines}.Adequacy` に分けた（E1）。
+* `Machine.Adequacy` は、型に属さない述語（`never`・`always`・`Covers`・`Nontrivial`・`KernelIs` など）だけにした。型ごとの定義は `Machine.{Machine,Concrete,Glue,Refines}.Adequacy` に分けた（E1）。義務の束 `Machine.Adequate`（[ADR ab9e](ab9e-adequate-bundle-sum-and-side-staging.md)）は型名のモジュール `Machine.Adequate` に置いた。
+* 機械の並置（[ADR ab9e](ab9e-adequate-bundle-sum-and-side-staging.md)）は、型ごとに `Machine.{Machine,Concrete,Glue,Refines,Adequate}.Sum` に分けた（E1。`A₁.sum A₂`・`h₁.sum h₂` のドット記法のため）。型に属さない `sumPred` は `Machine.Sum.sumPred` にした。
 * double の演算子の写し（`jd`・`jdmul` など）は `LangSemantics.Java.DoubleOps` に分けた。`Machine.toConcrete` は `Machine.Concrete.ofMachine` に改名した（ドット記法は技術的な必要ではないため、E3 にしない）。
 * 適用先の書き換えは、適用先の作業項目に記録する（ATRS の backlog 9ed8）。
 

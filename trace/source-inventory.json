@@ -13210,7 +13210,8 @@
         2,
         2
       ],
-      "hash": "ceb487c263f73097"
+      "hash": "ceb487c263f73097",
+      "out_of_scope": true
     },
     {
       "locator": "seed:00200_insert_fixed_value.sql#AIRPORT",

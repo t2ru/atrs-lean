@@ -41,7 +41,8 @@ structure AtrsConfig where
 
 /-- 上流の `atrs.properties` の値（配備の既定。`conformance/fixtures/config.json` はこれと同じ値を持つ。
 `lake test` が突き合わせる）。 -/
-@[source "prop:atrs.properties#atrs.limitDay@69f59c273b6e669a",
+@[source "java:jp.co.ntt.atrs.config.app.ApplicationContextConfig#propertySourcesPlaceholderConfigurer(Resource...)@135db67a97375a9c",
+  "prop:atrs.properties#atrs.limitDay@69f59c273b6e669a",
   "prop:atrs.properties#atrs.reserveIntervalTime@2abaca4911e68fa9",
   "prop:atrs.properties#atrs.representativeMinAge@4ec9599fc203d176",
   "prop:atrs.properties#atrs.adultPassengerMinAge@6b51d431df5d7f14",
