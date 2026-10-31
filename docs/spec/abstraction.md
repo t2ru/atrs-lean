@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T11:02:17+09:00
+  at: 2026-10-31T14:40:17+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -85,7 +85,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ## 抽象化関数 α
 
-`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。核に当たる値の違いは、リファインメントでは観測されない。
+`J`・`αᵢ`・`αₒ` は、次の表の標準の抽象化と、観測型の差異の名前付き成分だけで組み立てる。各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、「同一視するもの（核）」を L 課題 `KernelIs` で示す。定義域の上で単射な部分写像の核は、汎用の核 `Abstraction.Prim.undefOrEq`（どちらも定義されないか、等しい）をその葉に適用して書く（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。核に当たる値の違いは、リファインメントでは観測されない。
 
 | [Source] の値 | α | 同一視するもの（核） | 備考 |
 | --- | --- | --- | --- |
@@ -99,6 +99,9 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | 要求（HTTP の要求文字列・JSON） | `Spec.Http` の要求 | [Spec] の要求が持たない部分（ヘッダの順序・名前の大小など） | 全域。不対サロゲートのエスケープを含む JSON は、D-026 の前提で除外する |
 | 環境（衝突が起きるか・どのポート操作が I/O で失敗するか・配備の設定） | [Spec] の環境の選択（N-001〜N-003）。`ce` として書く | なし（単射） | 障害の無い環境は、標準の環境に写す |
 | 応答（HTTP の状態・遷移先・画面の値・JSON） | `Spec.Http` の応答 | [http-contract.md](http-contract.md) が定めない部分（HTML の構造など。[ADR 84bf](../decision/84bf-porting-scope.md) で範囲外） | 画面の値は、[http-contract.md](http-contract.md) が定める項目だけを写す |
+| マスタの表の行（`INT`・`DATE`・`VARCHAR`。ABS-026） | `Spec.MasterData` の各要素（`Abstraction.MasterData.airportOfRow` ほか。値の葉は `natOfInt4`・`dateOfPg`・`hmOfStr`・`bcCdOf`・`ftCdOf`） | 区間の `FLIGHT_TIME`（`routeRowKer`）。ほかは定義域の上で単射（`undefOrEq`） | 負の数、1〜9999 年の外の日付、`HHmm` でない時刻、未知のコード、`NULL` の搭乗クラス名には定義しない（D-027） |
+| 注入された設定（`AtrsConfig`） | `Spec.Config`（`configOf`。生年月日の下限は `dateOfSlash`） | なし（定義域の上で単射） | 負の数・`yyyy/MM/dd` でない日付には定義しない（D-027） |
+| マスタの参照の問い合わせ・答え（ABS-026） | `Spec.MasterData.Query`・`Answer`（`queryOf?`・`answerOf?`） | 問い合わせはなし（`undefOrEq`）。答えは、区間の空港名・空港の表示順、便マスタの区間の運賃・空港、機材の座席数（`answerKer`。[Spec] が観測しない成分） | 範囲外の `LocalDate` には定義しない（D-027） |
 
 ## 既知差異
 
@@ -136,7 +139,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（α が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） | ABS-026 | ABS-127 |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） | ABS-026 | ABS-127 |
 
 ### 前提型の差異の影響
 

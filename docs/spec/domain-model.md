@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T11:02:17+09:00
+  at: 2026-10-31T14:27:47+09:00
 ---
 
 # ドメインモデル
@@ -93,7 +93,7 @@ generated:
 | 型 | 形式 | 例 |
 | --- | --- | --- |
 | `AirportCd` | 英大文字 3 文字（マスタに存在するもの）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` とは限らない。区間の検索で見つからなければ業務エラーになる（[master-data.md](master-data.md#空港コードリスト画面用)） | `HND` |
-| `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（[Spec] の前提。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無い） | `NTT001` |
+| `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（[Spec] の前提。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無い）。マスタの参照の問い合わせでは、空白でない（`hasText`）ことも課す | `NTT001` |
 | `MembershipNumber` | 数字 10 文字 | `0000000001` |
 | `ReserveNo` | 数字 10 文字 | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの） | `VIS` |

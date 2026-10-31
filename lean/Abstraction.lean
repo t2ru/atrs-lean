@@ -8,6 +8,9 @@ import Abstraction.MasterData.Join
 import Abstraction.MasterData.Key
 import Abstraction.MasterData.Load
 import Abstraction.MasterData.CodeList
+import Abstraction.Prim.Kernel
+import Abstraction.MasterData.AlphaLeaf
+import Abstraction.MasterData.Alpha
 
 /-!
 # Abstraction
@@ -23,6 +26,9 @@ import Abstraction.MasterData.CodeList
 | `Abstraction.MasterData.Join` | `routeFindAll`・`flightMasterFindAll` の形 |
 | `Abstraction.MasterData.Key` | `RouteProvider` のキャッシュのキーの単射性 |
 | `Abstraction.MasterData.Load` | Provider の `load()` の形（例外を投げない条件と、キャッシュの表） |
+| `Abstraction.Prim.Kernel` | 部分写像の汎用の核 `undefOrEq` |
+| `Abstraction.MasterData.AlphaLeaf` | ABS-026 の標準の抽象化 α の値の葉（数・暦日・時刻・コード）と核 |
+| `Abstraction.MasterData.Alpha` | ABS-026 の α（DB の行・設定・問い合わせ・答え）、出力の核 `answerKer`、`dev_D027`（D-027） |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
 -/
 

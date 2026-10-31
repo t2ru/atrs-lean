@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-10-31T14:27:47+09:00
 ---
 
 # 入力検証
@@ -52,6 +52,7 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 | `HalfKana` | U+FF61–U+FF9F |
 | `Katakana` | U+30A0–U+30FF（`゠`, `・`, `ー`, `ヽ`, `ヾ`, `ヿ` を含む） |
 | `Digit` | U+0030–U+0039 |
+| `Blank` | U+0009–U+000D、U+001C–U+0020、U+1680、U+2000–U+2006、U+2008–U+200A、U+2028–U+2029、U+205F、U+3000（Java の `Character.isWhitespace` と同じ集合。改行を禁止する空白 U+00A0・U+2007・U+202F は含まない）。`Blank` 以外の文字を含む文字列を「空白でない」という（`hasText`） |
 
 | 制約 | 合格条件（未入力は合格） | コード |
 | --- | --- | --- |

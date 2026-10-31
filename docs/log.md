@@ -2,6 +2,20 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) の第 2 段 b-2a を終えた（`doing`）。ABS-026 の標準の抽象化 α（葉 19 個と核の定理、ABS-048）と `dev_D027`（D-027）を `Abstraction.MasterData` に置いた。
+* **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 4 点の決定を加えた。
+  * 参照の答えの射影（表示順を除く）
+  * 空白の便名（`Query.Valid` に `hasText`）
+  * α の葉と合成の分け方
+  * 部分写像の汎用の核 `undefOrEq`（obligation-check の G7 を広げた）
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（α の表に 3 行、D-027 の成分の名前）
+  * [spec/master-data.md](spec/master-data.md)（参照関数）
+  * [spec/domain-model.md](spec/domain-model.md)（便名）
+  * [spec/input-validation.md](spec/input-validation.md)（文字クラス `Blank`）
+  * スキル port-lang の `architecture.md`（部分写像の汎用の核）
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) の第 2 段 b-1 を終えた（`doing`）。R 課題 ABS-026 の補題を、`Abstraction.Prim`・`Abstraction.MasterData` と、スキル port-lang の `LangSemantics` に置いた（暦、`HashMap`、一意な検索、整列、結合、キャッシュのキー、`load()`、コードリスト）。
 * **Creation**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) で、次の 4 点を決めた。作成時は旧番号 0046 だったが、main の [ADR f57e](decision/f57e-uuid-ids-for-decisions-and-backlog.md) に合わせて UUID の ID を振った。
   * 空港コード `NOP` を MD-8 で禁じる
