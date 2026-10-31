@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T22:21:07+09:00
+  at: 2026-10-31T09:18:59+09:00
 ---
 
 # 保証の限界
@@ -26,7 +26,7 @@ generated:
 
 | 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
 | --- | --- | --- | --- |
-| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力 | JVM（`trace/upstream.json` の版） |
+| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。0013 ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
 | フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog 0013](../backlog/0013-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
 | リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog 0016](../backlog/0016-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
 | 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 0002](../decision/0002-porting-scope.md) で範囲外） | Thymeleaf |

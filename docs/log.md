@@ -2,6 +2,29 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog 0004](backlog/0004-fare-calculation-both-models.md) の第 1 段を終えた（`doing`）。
+  * Lean `Spec.Fare` と `SourceModel.Fare`（`SourceModel.Model`・`SourceModel.MasterData`）を作った。
+  * 運賃計算の全例をベクタにし、両モデルで実行するようにした（`conformance/{spec,source-model,shared}/fare/`）。
+  * 共有入力 `conformance/fixtures/master-data.json`・`config.json` を、上流のシードから生成するようにした。生成器は `tools/conformance/master_fixture.py`。
+  * `@[source]` 9 件を `tools/trace rehash` で記録した。
+* **Creation**: [ADR 0042](decision/0042-fare-source-model-and-shared-vectors.md) で、次のことを決めた。
+  * マスタの表し方（Provider のキャッシュ）
+  * 列挙型
+  * `HashMap`
+  * 共有ベクタの `modelDef` の配列
+  * 共有入力の生成
+  * `source-model/` の暫定の期待値
+  * 翌日着の便の暫定の扱い
+* **Update**: 次の文書に、ADR 0042 による変更を反映した。
+  * [spec/fare-calculation.md](spec/fare-calculation.md): 要約（informative）に改め、Lean へのリンクを付けた
+  * [spec/conformance.md](spec/conformance.md)
+  * [spec/assurance.md](spec/assurance.md)
+  * [spec/master-data.md](spec/master-data.md): 到着時刻 `2415` の TODO
+  * [backlog 0006](backlog/0006-flight-search-usecase.md): 翌日着の便
+  * [ADR 0013](decision/0013-conformance-test-vectors.md)
+  * スキル port-lang の conformance・lean/trace-attributes
+  * [AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
   * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。
   * `rehash` は、検査の登録 `trace/checks.json` を使う。

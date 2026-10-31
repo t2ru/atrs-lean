@@ -74,3 +74,8 @@ def softMatchesNative (x r : Nat) : Bool :=
     let b ← JLocalDate.ofYMD? 2001 2 28
     let c ← JLocalDate.ofYMD? 2001 3 1
     pure (a.yearsBetween b, a.yearsBetween c)) == some (0, 1)
+
+-- HashMap: put は後勝ちで置き換え、get は無ければ null
+#guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).get "a") == some 3
+#guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).size) == 2
+#guard ((JHashMap.ofList [("a", 1)] : JHashMap String Nat).get "z") == none

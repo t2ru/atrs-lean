@@ -1,0 +1,70 @@
+{
+  "operation": "fare.basicFare",
+  "modelDef": [
+    "Spec.Fare.basicFare",
+    "SourceModel.Fare.calculateBasicFare"
+  ],
+  "specRef": "docs/spec/fare-calculation.md#基本運賃",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "basicFare-1",
+      "description": "路線基本運賃 20600・搭乗クラス N・積算比率 100（2026-11-01）",
+      "input": {
+        "routeBasicFare": 20600,
+        "boardingClassCd": "N",
+        "depDate": "2026-11-01"
+      },
+      "expected": {
+        "ok": 20600
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "basicFare-2",
+      "description": "路線基本運賃 20600・搭乗クラス N・積算比率 140（2027-01-02）",
+      "input": {
+        "routeBasicFare": 20600,
+        "boardingClassCd": "N",
+        "depDate": "2027-01-02"
+      },
+      "expected": {
+        "ok": 28840
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "basicFare-3",
+      "description": "路線基本運賃 20600・搭乗クラス S・積算比率 125（2026-12-20）",
+      "input": {
+        "routeBasicFare": 20600,
+        "boardingClassCd": "S",
+        "depDate": "2026-12-20"
+      },
+      "expected": {
+        "ok": 32000
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "basicFare-4",
+      "description": "路線基本運賃 37900・搭乗クラス S・積算比率 140（2027-01-02）",
+      "input": {
+        "routeBasicFare": 37900,
+        "boardingClassCd": "S",
+        "depDate": "2027-01-02"
+      },
+      "expected": {
+        "ok": 60060
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

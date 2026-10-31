@@ -1,0 +1,78 @@
+{
+  "operation": "fare.fare",
+  "modelDef": [
+    "Spec.Fare.fare",
+    "SourceModel.Fare.calculateFare"
+  ],
+  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "fare-1",
+      "description": "基本運賃 20600・割引率 0%",
+      "input": {
+        "basicFare": 20600,
+        "discountRate": 0
+      },
+      "expected": {
+        "ok": 20600
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fare-2",
+      "description": "基本運賃 20600・割引率 5%",
+      "input": {
+        "basicFare": 20600,
+        "discountRate": 5
+      },
+      "expected": {
+        "ok": 19600
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fare-3",
+      "description": "基本運賃 28840・割引率 30%",
+      "input": {
+        "basicFare": 28840,
+        "discountRate": 30
+      },
+      "expected": {
+        "ok": 20200
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fare-4",
+      "description": "基本運賃 32000・割引率 10%",
+      "input": {
+        "basicFare": 32000,
+        "discountRate": 10
+      },
+      "expected": {
+        "ok": 28800
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "fare-5",
+      "description": "基本運賃 0・割引率 30%",
+      "input": {
+        "basicFare": 0,
+        "discountRate": 30
+      },
+      "expected": {
+        "ok": 0
+      },
+      "source": "lean-spec"
+    }
+  ]
+}
