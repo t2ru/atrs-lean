@@ -9,6 +9,8 @@ Mapper の結合の文（`routeFindAll`・`flightMasterFindAll`）の形。空�
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
   SourceModel.Repository.MasterData LangSemantics.Core

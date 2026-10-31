@@ -1,5 +1,5 @@
 /-!
-# LangSemantics.Java.LocalDate
+# LangSemantics.Java.JLocalDate
 
 `java.time.LocalDate`（先発グレゴリオ暦、タイムゾーン無し）の暦日と演算。
 通算日数（1970-01-01 を 0）を介して演算する。
@@ -8,6 +8,8 @@ lang: `dep:java.base#java.time.LocalDate`, `dep:java.base#java.time.temporal.Chr
 -/
 
 namespace LangSemantics.Java
+
+namespace JLocalDate
 
 /-- 閏年か（先発グレゴリオ暦）。 -/
 def isLeapYear (y : Int) : Bool := (y % 4 == 0 && y % 100 != 0) || y % 400 == 0
@@ -19,6 +21,8 @@ def daysInMonth (y : Int) (m : Nat) : Nat :=
   | 4 | 6 | 9 | 11 => 30
   | 2 => if isLeapYear y then 29 else 28
   | _ => 0
+
+end JLocalDate
 
 /-- 暦日。`ofYMD?` で作ると妥当性が保証される。 -/
 structure JLocalDate where

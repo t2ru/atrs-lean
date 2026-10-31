@@ -10,7 +10,7 @@ import Spec.Fare
 - 運賃の因子 `fareFactor r = 1 − (double) r * 0.01`（`r` は割引率、0〜100）
 
 どの因子も、正確な値（`c/100`・`(100−r)/100`）の相対誤差 `2^-48` 以内にある（`Close`。カーネルの評価で確かめる）。
-因子の式の比較（`Close`・`Safe`・`FactorOk`・`jd2i_factor` など）は、スキルの `LangSemantics.Java.DoubleCompare` にある。
+因子の式の比較（`Close`・`Safe`・`FactorOk`・`jd2i_factor` など）は、スキルの `LangSemantics.Java.JDouble.Compare` にある。
 `X·c` が 100 で割り切れないとき、[Source] の `(int)(X * F)` は [Spec] の `⌊X·c/100⌋` に等しい。
 割り切れるとき、[Source] は等しいか 1 小さい。因子が安全（`Safe`）なら等しい。
 -/
@@ -18,6 +18,8 @@ import Spec.Fare
 set_option exponentiation.threshold 2048
 
 namespace Abstraction.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Java.JDouble
 

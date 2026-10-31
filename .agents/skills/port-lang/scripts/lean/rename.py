@@ -42,7 +42,8 @@ def load_map(path):
 
 def pattern(names):
     alts = "|".join(re.escape(n) for n in sorted(names, key=len, reverse=True))
-    return re.compile(rf"(?<!{ID_CH})(?<!\.)({alts})(?!{ID_CH})")
+    # 直前: 識別子の文字（英数字・_）か `.` なら一致しない（`'`・`!`・`?` の後は名前の始まりでありうる）
+    return re.compile(rf"(?<![\w.])({alts})(?!{ID_CH})")
 
 
 def rewrite(text, m, rx):

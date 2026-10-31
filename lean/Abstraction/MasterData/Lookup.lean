@@ -8,6 +8,7 @@ DB の行を写した列の並べ替えである。キーが重複しなけれ�
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Core
 

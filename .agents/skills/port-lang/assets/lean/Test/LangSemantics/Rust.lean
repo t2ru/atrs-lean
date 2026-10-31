@@ -2,7 +2,10 @@ import LangSemantics.Rust
 
 /-! LangSemantics.Rust の検査。 -/
 
+open LangSemantics.Rust.Int LangSemantics.Rust.Panic LangSemantics.Rust.Text
 open LangSemantics.Rust
+
+namespace Test.LangSemantics.Rust
 
 def u64 (n : Nat) : U64 := BitVec.ofNat 64 n
 def i32 (n : Int) : I32 := BitVec.ofInt 32 n
@@ -29,3 +32,5 @@ def i32 (n : Int) : I32 := BitVec.ofInt 32 n
 #guard splitChar "" '-' == [""]
 #guard (index [1, 2, 3] 3) matches .error _
 #guard get [1, 2, 3] 1 == some 2
+
+end Test.LangSemantics.Rust

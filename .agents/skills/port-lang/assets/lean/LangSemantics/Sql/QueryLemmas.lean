@@ -14,7 +14,8 @@ import LangSemantics.Core.List
 - `allowed_perm`: 許される順列は元の行の並べ替え。
 -/
 
-namespace LangSemantics.Sql
+namespace LangSemantics.Sql.QueryLemmas
+open LangSemantics.Core.List LangSemantics.Sql.Core LangSemantics.Sql.Query
 
 open LangSemantics.Core
 
@@ -108,4 +109,4 @@ theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {dirs : Lis
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
   exact h.1.symm
 
-end LangSemantics.Sql
+end LangSemantics.Sql.QueryLemmas

@@ -13,7 +13,7 @@ import Lean.Data.Json
 
 open Lean
 
-namespace ConformanceKit
+namespace ConformanceKit.Runner
 
 /-- 操作: 入力 → 結果（`expected.ok` と比べる値）。 -/
 abbrev Op := Json → Except String Json
@@ -145,4 +145,4 @@ def runDirFx (mkOps : Fixtures → Except String (List (String × Op))) (layer :
         | .ok ops => out := out.push (runDoc ops hasDef p doc (some layer))
   return out
 
-end ConformanceKit
+end ConformanceKit.Runner

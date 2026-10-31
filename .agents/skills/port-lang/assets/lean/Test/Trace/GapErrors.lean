@@ -7,9 +7,9 @@ import Trace
 付けた時点でエラーになることを確かめる。
 -/
 
-namespace Test.Trace.GapErrors
-
 open _root_.Trace
+
+namespace Test.Trace.GapErrors
 
 /-- error: @[gap_entry] D-001: impact is required for pre; backlog is required for pre (the impact table) -/
 #guard_msgs in

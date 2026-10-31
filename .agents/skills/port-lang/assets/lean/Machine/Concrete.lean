@@ -1,4 +1,4 @@
-import Machine.Basic
+import Machine.Machine
 
 /-!
 # Machine.Concrete
@@ -52,7 +52,7 @@ end Concrete
 
 /-- 抽象機械を具体機械とみなす。PRE の外は前提違反（`.error ()`）の結果とする。
 `Refines.trans` で、中間の抽象機械を具体側に置くために使う。 -/
-def Machine.toConcrete {σ ι ο : Type} (A : Machine σ ι ο) : Concrete σ ι ο Unit where
+def Concrete.ofMachine {σ ι ο : Type} (A : Machine σ ι ο) : Concrete σ ι ο Unit where
   Init := A.Init
   step s i r :=
     (A.Pre s i ∧ ∃ s' o, r = .ok (s', o) ∧ A.step s i s' o) ∨ (¬ A.Pre s i ∧ r = .error ())

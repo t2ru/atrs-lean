@@ -7,7 +7,7 @@ SQL の DBMS に依存しない共通部分: 値と NULL、三値論理、比較
 lang: `lang:sql#ISO-9075-2`
 -/
 
-namespace LangSemantics.Sql
+namespace LangSemantics.Sql.Core
 
 /-- SQL の値。`date` は 1970-01-01 を 0 とする通算日数。 -/
 inductive SqlValue where
@@ -120,4 +120,4 @@ inductive SqlError where
 
 abbrev SqlResult (α : Type) := Except SqlError α
 
-end LangSemantics.Sql
+end LangSemantics.Sql.Core

@@ -7,7 +7,7 @@ Java の例外を値として表す。`SourceModel` / `TargetModel` は `JResult
 lang: `lang:java#JLS-11`
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.Exception
 
 /-- Java の例外（モデルに必要な分類だけを持つ）。 -/
 inductive JThrow where
@@ -37,4 +37,4 @@ def JRef.deref {α : Type} (r : JRef α) (what : String := "") : JResult α :=
 def jAssert (cond : Bool) (message : String) : JResult Unit :=
   if cond then .ok () else .error (.illegalArgument message)
 
-end LangSemantics.Java
+end LangSemantics.Java.Exception

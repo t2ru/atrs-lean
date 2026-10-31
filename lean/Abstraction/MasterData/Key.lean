@@ -9,6 +9,7 @@ import LangSemantics.Core.List
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List
 
 open SourceModel.MasterData LangSemantics.Core
 

@@ -6,7 +6,8 @@ import LangSemantics.Java.Exception
 例外を投げうる計算 `JResult` の補題（`Except.ok` の `bind`・`mapM`・`for`）。
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.ResultLemmas
+open LangSemantics.Java.Exception
 
 /-- `Except.ok` の `bind` は関数の適用。 -/
 theorem ok_bind {β γ : Type} (x : β) (f : β → JResult γ) : (Except.ok x >>= f) = f x := rfl
@@ -30,4 +31,4 @@ theorem forIn_ok {β γ : Type} (l : List β) (f : β → γ → JResult (ForInS
     rw [List.forIn_cons, h x (List.mem_cons_self ..)]
     exact ih (fun y hy => h y (List.mem_cons_of_mem _ hy)) _
 
-end LangSemantics.Java
+end LangSemantics.Java.ResultLemmas

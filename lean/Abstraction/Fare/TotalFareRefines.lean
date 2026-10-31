@@ -9,6 +9,8 @@ R 課題 ABS-004（合計金額）: `SourceModel.FareQuery.totalFareConcrete`（
 -/
 
 namespace Abstraction.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
   SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
@@ -133,7 +135,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     Range.maxAge] at hcv hv hf1 hf2 hp1 hp2 hpa hpt hsome
   obtain ⟨p, hl, hptp, hbq, hfq, hmf⟩ := load_correct' hm hv ho
   have htf : toFlightList p.ticketHelper ic.flights = .ok (ic.flights.map fun f => some (mkFlight p f)) := by
-    apply LangSemantics.Java.mapM_ok
+    apply LangSemantics.Java.ResultLemmas.mapM_ok
     intro f hf
     obtain ⟨k, hk, hfk⟩ := mapM_some_mem hks hf
     exact toFlight_ok p hfk (hpt k hk)

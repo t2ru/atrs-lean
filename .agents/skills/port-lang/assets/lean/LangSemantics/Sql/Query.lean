@@ -9,7 +9,8 @@ import LangSemantics.Sql.Core
 lang: `lang:sql#ISO-9075-2-7.12`（query specification）, `lang:sql#ISO-9075-2-10.10`（sort specification）
 -/
 
-namespace LangSemantics.Sql
+namespace LangSemantics.Sql.Query
+open LangSemantics.Sql.Core
 
 /-- 行の集まり（バッグ）。リストの順序に意味は無い。 -/
 abbrev Bag (α : Type) := List α
@@ -209,4 +210,4 @@ def insertUnique {α κ : Type} [BEq κ] (pk : α → κ) (constraintName : Stri
     SqlResult (List α) :=
   if rows.any (fun r => pk r == pk row) then .error (.uniqueViolation constraintName) else .ok (rows ++ [row])
 
-end LangSemantics.Sql
+end LangSemantics.Sql.Query

@@ -10,6 +10,7 @@ DB の行と [Source] の対応（MyBatis の対応・`Assert.hasText`）につ�
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config

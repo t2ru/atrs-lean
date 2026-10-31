@@ -7,9 +7,10 @@ import SourceModel
 期待値は原典のコードを読んで手で書いた（オラクルとの照合は backlog f18c）。
 -/
 
-namespace Tests.TicketChecks
-
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 open LangSemantics.Java SourceModel.Model SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
+
+namespace Tests.TicketChecks
 
 /-- 空港 2 つ・区間 1 つ（運賃 20,600 円）・便 NTT001・搭乗クラス N（加算料金 0）・運賃種別 OW（割引率 0）の DB。 -/
 def db : SourceModel.Repository.Schema.MasterDb :=

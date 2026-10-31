@@ -1,7 +1,7 @@
-import LangSemantics.Java.LocalDate
+import LangSemantics.Java.JLocalDate
 
 /-!
-# LangSemantics.Java.LocalDateLemmas
+# LangSemantics.Java.JLocalDate.Lemmas
 
 `LocalDate` の通算日数の変換（`toEpochDay`・`ofEpochDay`）の性質。
 

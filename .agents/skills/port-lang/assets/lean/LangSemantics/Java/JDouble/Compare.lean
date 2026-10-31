@@ -1,7 +1,7 @@
-import LangSemantics.Java.DoubleLemmas
+import LangSemantics.Java.JDouble.Lemmas
 
 /-!
-# LangSemantics.Java.DoubleCompare
+# LangSemantics.Java.JDouble.Compare
 
 double の式 `(int)(X * F)` と、整数の式 `⌊X·c/100⌋` の比較（百分率の因子を掛けて切り捨てる式）。
 `F = fm·2^(−fs)` は `c/100` を double に丸めた因子である（`JDouble.jd2i_mul_nat` で
@@ -17,6 +17,8 @@ double の式 `(int)(X * F)` と、整数の式 `⌊X·c/100⌋` の比較（百
 set_option exponentiation.threshold 2048
 
 namespace LangSemantics.Java.JDouble
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.Exception LangSemantics.Java.Int
 
 /-- 上からの評価: `X·F ≤ (k + 99/100)·(1 + 2^-48)` なら `rneTrunc ≤ k`。 -/
 theorem rneTrunc_le {N D k : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 29)

@@ -9,6 +9,8 @@ D-002 の必要性（W 課題 ABS-102）を示す。
 -/
 
 namespace Abstraction.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java Spec LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
 

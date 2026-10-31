@@ -27,7 +27,7 @@ import Abstraction.Fare.TotalFareRefines
 
 抽象化証明課題（ABS-NNN）。`SourceModel` が `Spec` を B メソッドの意味でリファインすることを証明する。
 依存してよいもの: `SourceModel`, `Spec`, `LangSemantics.Core`, `LangSemantics.Java`, `LangSemantics.Sql`, `Machine`, `Trace`。
-汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.undefOrEq`）は、スキルの assets にある。
+汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.Kernel.undefOrEq`）は、スキルの assets にある。
 
 | モジュール | 内容 |
 | --- | --- |

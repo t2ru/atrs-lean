@@ -9,6 +9,7 @@ R 課題 ABS-026: マスタ・設定・コードリストの読み込み（`Sour
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery

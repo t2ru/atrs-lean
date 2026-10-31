@@ -6,7 +6,7 @@ Rust のパニックを値として表す（Lean の `panic!` は使わない）
 lang: `lang:rust#panic`
 -/
 
-namespace LangSemantics.Rust
+namespace LangSemantics.Rust.Panic
 
 /-- パニック（メッセージ付き）。 -/
 structure RPanic where
@@ -26,4 +26,4 @@ inductive Profile where
   | wrapping
   deriving Repr, BEq, DecidableEq
 
-end LangSemantics.Rust
+end LangSemantics.Rust.Panic

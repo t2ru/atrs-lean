@@ -16,9 +16,9 @@ import Tests.Conformance
 
 open Lean Spec Spec.Prim ConformanceKit Tests.Conformance
 
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+
 namespace Tests.ConformanceFare
-
-
 
 def boardingClassCd (s : String) : Except String BoardingClassCd := need (BoardingClassCd.ofCode? s) s!"boarding class: {s}"
 def fareTypeCd (s : String) : Except String FareTypeCd := need (FareTypeCd.ofCode? s) s!"fare type: {s}"

@@ -16,7 +16,7 @@ import Trace.Attr
 - **証明の状態**（`Evidence`）: ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で
   仮定せず（ギャップが実在すれば矛盾する）、状態を裏付ける Lean の宣言で示す。裏付けの宣言には `@[gap "<ID>"]` を付ける。
   - `refuted`: 差異を外した R 課題の否定の定理（偽を証明済み。W 課題の必要性）
-  - `covered`: 必要な差異がこの差異を覆う定理（`Machine.Covers`）
+  - `covered`: 必要な差異がこの差異を覆う定理（`Machine.Adequacy.Covers`）
   - `pending`: 前提で制限して証明したが、偽も真もまだ示していない（制限は仮定を強めるだけなので、安全に証明できる）
   - `unformalized`: Lean の命題として書けない主張。証明も公理も持たない `opaque` な命題（どの定理からも参照しない）
   - `excludedBy`: 差異ではない（`Spec` の PRE・INV の外。その前提の述語）
@@ -26,8 +26,11 @@ docstring の有無・層・ID の重複、差異の定数と裏付けの宣言�
 -/
 
 namespace Trace
+open Trace.Attr
 
 open Lean
+
+namespace Gap
 
 /-- ギャップの種類（references/docs/spec/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
 inductive GapKind where
@@ -112,7 +115,7 @@ structure DocRef where
 inductive Evidence where
   /-- 偽を証明済み: 差異を外した R 課題の否定の定理（`¬ Refines …`。W 課題の必要性。obligation-check の G9 の形） -/
   | refuted (necessity : List Name)
-  /-- 被覆: 必要な差異の述語 `coverer` が、この差異を覆う定理（`Machine.Covers coverer d`・`Covers₂`） -/
+  /-- 被覆: 必要な差異の述語 `coverer` が、この差異を覆う定理（`Machine.Adequacy.Covers coverer d`・`Covers₂`） -/
   | covered (coverer : Name) (covers : List Name)
   /-- 未確定: 前提で制限して証明したが、必要性（偽）も一致（真）もまだ示していない。理由と、予定の W 課題 -/
   | pending (reason : String) (wTask : Option String)
@@ -146,6 +149,9 @@ def Evidence.witnesses : Evidence → List Name
   | .excludedBy ns => ns
   | .pending .. => []
 
+end Gap
+
+open Gap in
 /-- ギャップの登録の値。 -/
 structure Gap where
   /-- `D-NNN`（`Abstraction`）/ `T-NNN`（`Refinement`） -/
@@ -235,6 +241,8 @@ def Gap.resolution (g : Gap) : String :=
 構築子・文字列リテラル・名前（``` ``x`` ```）・`List`・`Option`・`Prod` の組み合わせだけを受け付ける。
 頭部が構築子でない定数（構造体の既定値など）は、定義を展開して読む。
 -/
+
+namespace Gap
 
 namespace GapExpr
 
@@ -341,7 +349,7 @@ def gap (env : Environment) (e : Expr) : Except String Gap :=
 end GapExpr
 
 /-- 定数の値を `Gap` として読む。 -/
-def Gap.ofConst? (env : Environment) (n : Name) : Except String Gap :=
+def ofConst? (env : Environment) (n : Name) : Except String Gap :=
   match env.find? n with
   | some (.defnInfo d) =>
     if d.type.consumeMData.isConstOf ``Gap then GapExpr.gap env d.value
@@ -423,5 +431,7 @@ def gapsJson (env : Environment) (moduleOf : Name → String) : Json := Id.run d
       ("resolution", Lean.toJson g.resolution), ("backlog", Lean.toJson g.backlog),
       ("markers", withId markers), ("deviations", withId devs)]
   return Json.arr out
+
+end Gap
 
 end Trace

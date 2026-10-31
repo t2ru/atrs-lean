@@ -24,7 +24,7 @@ import Lean
 ギャップの登録の宣言 `@[gap_entry]`（引数なし。値は型 `Trace.Gap`）は `Trace.Gap` にある。
 -/
 
-namespace Trace
+namespace Trace.Attr
 
 open Lean
 
@@ -83,30 +83,30 @@ def registerTraceAttr (attrName : Name) (descr : String) (ref : Name) :
   }
 
 initialize sourceAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `source "移植元ロケータと検査済みハッシュ" `Trace.sourceAttr
+  registerTraceAttr `source "移植元ロケータと検査済みハッシュ" `Trace.Attr.sourceAttr
 initialize targetAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `target "移植先ロケータと検査済みハッシュ" `Trace.targetAttr
+  registerTraceAttr `target "移植先ロケータと検査済みハッシュ" `Trace.Attr.targetAttr
 initialize obligationAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.obligationAttr
+  registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.Attr.obligationAttr
 initialize deviationAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `deviation "既知差異の ID（D-NNN / T-NNN）" `Trace.deviationAttr
+  registerTraceAttr `deviation "既知差異の ID（D-NNN / T-NNN）" `Trace.Attr.deviationAttr
 initialize gapAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `gap "ギャップが生じる定義の印（D-NNN / T-NNN）" `Trace.gapAttr
+  registerTraceAttr `gap "ギャップが生じる定義の印（D-NNN / T-NNN）" `Trace.Attr.gapAttr
 initialize nondetAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `nondet "Spec の非決定性の ID（N-NNN）" `Trace.nondetAttr
+  registerTraceAttr `nondet "Spec の非決定性の ID（N-NNN）" `Trace.Attr.nondetAttr
 initialize stdAbsAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `std_abs "標準の抽象化の表の節（<path>#<anchor>）" `Trace.stdAbsAttr
+  registerTraceAttr `std_abs "標準の抽象化の表の節（<path>#<anchor>）" `Trace.Attr.stdAbsAttr
 initialize kernelAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `kernel "標準の抽象化の核の表の節（<path>#<anchor>）" `Trace.kernelAttr
+  registerTraceAttr `kernel "標準の抽象化の核の表の節（<path>#<anchor>）" `Trace.Attr.kernelAttr
 initialize envPreAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `env_pre "入口の環境の前提の ID（MD-N など）" `Trace.envPreAttr
+  registerTraceAttr `env_pre "入口の環境の前提の ID（MD-N など）" `Trace.Attr.envPreAttr
 initialize specDocAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.specDocAttr
+  registerTraceAttr `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.Attr.specDocAttr
 initialize noSourceAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `no_source "移植元に対応が無い理由" `Trace.noSourceAttr
+  registerTraceAttr `no_source "移植元に対応が無い理由" `Trace.Attr.noSourceAttr
 /-- `layout-check` の例外（E3）。`trace-dump` の属性には含めない（追跡の対象ではないため）。 -/
 initialize nsExceptionAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `ns_exception "モジュール名の下に置けない理由" `Trace.nsExceptionAttr
+  registerTraceAttr `ns_exception "モジュール名の下に置けない理由" `Trace.Attr.nsExceptionAttr
 
 /-- 追跡属性の一覧（JSON のキー名と属性）。キー名は属性名と同じ。 -/
 def traceAttrs : List (String × ParametricAttribute (Array String)) :=
@@ -119,4 +119,4 @@ def traceAttrs : List (String × ParametricAttribute (Array String)) :=
 def attrsOf (env : Environment) (decl : Name) : List (String × Array String) :=
   traceAttrs.filterMap fun (key, attr) => (attr.getParam? env decl).map (key, ·)
 
-end Trace
+end Trace.Attr

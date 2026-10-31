@@ -9,7 +9,8 @@ import LangSemantics.Sql.Core
 lang: `lang:sql#ISO-9075-2-11.72`
 -/
 
-namespace LangSemantics.Sql
+namespace LangSemantics.Sql.Sequence
+open LangSemantics.Sql.Core
 
 /-- シーケンスの定義。 -/
 structure SequenceDef where
@@ -37,4 +38,4 @@ def nextval (s : SequenceDef) (st : SequenceState) : SqlResult (Int × SequenceS
       else .error (.sequenceExhausted s.name)
     else .ok (n, some n)
 
-end LangSemantics.Sql
+end LangSemantics.Sql.Sequence

@@ -27,9 +27,9 @@ import Machine
 `specStrong_not_always`（環境の前提・`TotalUnder.not_always`）である。
 -/
 
-namespace Test.Machine.Adequacy
+open _root_.Machine _root_.Machine.Adequacy
 
-open _root_.Machine
+namespace Test.Machine.Adequacy
 
 /-! ## 正例: 衝突を環境の選択とする予約 -/
 

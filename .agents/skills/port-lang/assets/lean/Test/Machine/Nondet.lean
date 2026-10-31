@@ -13,9 +13,10 @@ import Machine
   `Concrete.restrict`（前提型の差異の模擬）で成り立つ。
 -/
 
-namespace Test.Machine.Nondet
+open Machine.Adequacy
+open _root_.Machine _root_.Machine.Adequacy
 
-open _root_.Machine
+namespace Test.Machine.Nondet
 
 /-- 恒等の入出力の対応。 -/
 def eqGlue (ι ο : Type) : Glue Unit Unit ι ι ο ο := Glue.pure (· = ·) (· = ·)

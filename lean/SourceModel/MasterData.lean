@@ -12,6 +12,7 @@ import SourceModel.Repository.Mapping
 -/
 
 namespace SourceModel.MasterData
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java SourceModel.Model SourceModel.Repository.MasterData
 

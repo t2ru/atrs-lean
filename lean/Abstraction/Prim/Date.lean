@@ -12,6 +12,7 @@ import Spec.Prim.Date
 -/
 
 namespace Abstraction.Prim
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java Spec.Prim
 

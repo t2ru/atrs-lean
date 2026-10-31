@@ -20,6 +20,9 @@ import LangSemantics.Java
 
 open LangSemantics.Java
 
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+
 namespace Tests.JavaDouble
 
 /-- 0.01 に最も近い binary64。 -/

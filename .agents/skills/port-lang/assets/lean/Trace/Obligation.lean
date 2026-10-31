@@ -16,8 +16,8 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G1 | 型が閉じている（∀ の仮定が無い。差異は `restrict` の述語として型の中に置く） |
 | G2 | 抽象機械・具体機械は、名前付きの基底に `.restrict p`・`.restrictState p` を連ねた形で、`p` は `@[deviation]` の定数そのもの |
 | G3 | 抽象側の基底は `Machine.ofChoice` か `Machine.pure`。選択の型の葉は `@[nondet]` か `Unit`。自由な選択があれば `FreeFrame` がある |
-| G4 | 具体側の基底は `Concrete.ofFun`・`Concrete.pure`、または `Dom` を既定（全体）にした構造体で、`toConcrete` と `Spec` の関数を参照しない |
-| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.anyOf` で並べてよい） |
+| G4 | 具体側の基底は `Concrete.ofFun`・`Concrete.pure`、または `Dom` を既定（全体）にした構造体で、`Concrete.ofMachine` と `Spec` の関数を参照しない |
+| G5 | 貼り合わせは `Glue.ofStd`。β・ai・ao は `@[std_abs]` の定数そのもの、OJ・OO は `never` か、`@[deviation]` の定数そのもの（`Machine.Adequacy.anyOf` で並べてよい） |
 | G6 | 付帯の定理: `InitSurj`、基底の `Sound`・`InitIs`、基底が `ofChoice` なら `Pinned`（同じ `f`、`ce` は `@[std_abs]`）と `NoFaultReachable`（同じ `ce`・`e₀`） |
 
 あわせて、環境全体について次を判定する。
@@ -25,18 +25,18 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | 規則 | 内容 |
 | --- | --- |
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
-| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
+| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.Kernel.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
 | GK | ギャップの登録簿（`Trace.Gap`）と証明の状態の裏付け。下のとおり |
 
 G9 の内容は次のとおりである。
 
-- `@[deviation]` の定数は ID を 1 つだけ持つ（複数の差異を 1 つの定数に束ねない。観測型は `Machine.anyOf` で並べる）。
+- `@[deviation]` の定数は ID を 1 つだけ持つ（複数の差異を 1 つの定数に束ねない。観測型は `Machine.Adequacy.anyOf` で並べる）。
 - R 課題で使う各差異 ID について、その ID のどれかの定数が、少なくとも 1 つの R 課題で次のどちらかを満たす。
   - 必要性: 差異を外した R 課題の命題の否定の閉じた定理（`¬ P` か `P → False`。`@[obligation]` の W 課題でもよい）がある
     - 前提型の差異 `d`: R 課題の機械から `.restrict d`・`.restrictState d`・`Concrete.restrict d` の層を 1 つ外す
-    - 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO（`anyOf` の葉）のうち `d` を `Machine.never` に替える
+    - 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO（`anyOf` の葉）のうち `d` を `Machine.Adequacy.never` に替える
     - 否定する命題: `¬ Refines A C g`。抽象側の基底が `ofChoice` なら `¬ (Refines A C g ∧ Pinned A C g f ce)` でもよい
       （`f` は基底の `f`、`ce` は R 課題の `Pinned` の `ce`）
   - 被覆: 必要性か被覆を満たす差異 `M` と同じ R 課題の制限に現れ、`Covers M d`・`Covers₂ M d` の定理がある
@@ -51,7 +51,7 @@ GK の内容は次のとおりである。
 - `@[deviation]` の ID に、前提型・観測型の宣言がある
 - 印・差異の定数と種類が矛盾しない（モデル外は、裏付けの宣言のほかに印を持たない。前提型・観測型のほかは `@[deviation]` を持たない）
 - 前提型・観測型の宣言の `deviations` は、その ID の `@[deviation]` の定数のすべてである
-- 証明の状態（`Trace.Evidence`）の裏付け。裏付けの宣言は `@[gap "<ID>"]` を持ち、証明の層（`Abstraction`・`Refinement`）にも置いてよい
+- 証明の状態（`Trace.Gap.Evidence`）の裏付け。裏付けの宣言は `@[gap "<ID>"]` を持ち、証明の層（`Abstraction`・`Refinement`）にも置いてよい
   - `refuted`: 各定理が、どれかの R 課題について、`deviations` のどれかの必要性の定理（G9 の形）である
   - `covered`: 各定理が `Covers coverer d`（d は `deviations` のどれか）であり、`coverer` の差異から被覆をたどると、循環せずに `refuted` の差異に着く
   - `pending`: 必要性の定理が無い（あれば `refuted` にする）。G9 の誤りは警告に下げる（段階導入は `trace check` が作業項目の状態で判定する）
@@ -65,6 +65,8 @@ G9・GK の誤りのうち、`pending` の差異の G9 だけは `warnings` に�
 -/
 
 namespace Trace.Obligation
+open Trace.Gap
+open Trace.Attr
 
 open Lean
 
@@ -76,13 +78,13 @@ def restrictState : Name := `Machine.Machine.restrictState
 def cRestrict : Name := `Machine.Concrete.restrict
 def ofChoice : Name := `Machine.Machine.ofChoice
 def pure : Name := `Machine.Machine.pure
-def toConcrete : Name := `Machine.Machine.toConcrete
+def ofMachine : Name := `Machine.Concrete.ofMachine
 def cOfFun : Name := `Machine.Concrete.ofFun
 def cPure : Name := `Machine.Concrete.pure
 def cMk : Name := `Machine.Concrete.mk
 def machine : Name := `Machine.Machine
 def ofStd : Name := `Machine.Glue.ofStd
-def never : Name := `Machine.never
+def never : Name := `Machine.Adequacy.never
 def initSurj : Name := `Machine.Refines.InitSurj
 def pinned : Name := `Machine.Refines.Pinned
 def noFault : Name := `Machine.Refines.NoFaultReachable
@@ -93,14 +95,14 @@ def totalUnder : Name := `Machine.Machine.TotalUnder
 def sound : Name := `Machine.Machine.Sound
 def initIs : Name := `Machine.Machine.InitIs
 def freeFrame : Name := `Machine.Machine.FreeFrame
-def nontrivial : Name := `Machine.Nontrivial
-def nontrivial₂ : Name := `Machine.Nontrivial₂
-def kernelIs : Name := `Machine.KernelIs
-def undefOrEq : Name := `Machine.undefOrEq
-def always : Name := `Machine.always
-def anyOf : Name := `Machine.anyOf
-def covers : Name := `Machine.Covers
-def covers₂ : Name := `Machine.Covers₂
+def nontrivial : Name := `Machine.Adequacy.Nontrivial
+def nontrivial₂ : Name := `Machine.Adequacy.Nontrivial₂
+def kernelIs : Name := `Machine.Adequacy.KernelIs
+def undefOrEq : Name := `Machine.Kernel.undefOrEq
+def always : Name := `Machine.Adequacy.always
+def anyOf : Name := `Machine.Adequacy.anyOf
+def covers : Name := `Machine.Adequacy.Covers
+def covers₂ : Name := `Machine.Adequacy.Covers₂
 end N
 
 /-- 合成の標準の抽象化が参照してよい関数（構成子・射影・インスタンス・型を除く）。分岐（`ite`・`match`）は含めない。 -/
@@ -300,7 +302,7 @@ structure Report where
   errors : Array String
   /-- 警告（証明の状態が `pending` の差異の G9。段階導入の判定は道具が作業項目の状態で行う） -/
   warnings : Array String := #[]
-  /-- ギャップの登録簿（`Trace.gapsJson`） -/
+  /-- ギャップの登録簿（`Trace.Gap.gapsJson`） -/
   gaps : Json := Json.arr #[]
 
 /-- `.restrict p`・`.restrictState p` の連鎖をはがし、基底と述語を返す。 -/
@@ -429,7 +431,7 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     else if h == N.kernelIs && a.size == 4 then
       if let some fc := bareConst? a[2]! then
         let k := clean a[3]!
-        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数か汎用の核 `Machine.undefOrEq`
+        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数か汎用の核 `Machine.Kernel.undefOrEq`
         -- （部分写像が「どちらも定義されないか、等しい」。Machine.Kernel）をその葉自身に適用したもの
         let kf := k.getAppFn
         let applied := k.isApp && kf.isConst &&
@@ -504,8 +506,8 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
     r := { r with errors := r.errors.push "G4: concrete base is not built with Concrete.ofFun, Concrete.pure or a structure" }
   if let some cb := headConst? cBase then
     for n in closure env cb do
-      if n == N.toConcrete then
-        r := { r with errors := r.errors.push "G4: concrete base uses Machine.toConcrete" }
+      if n == N.ofMachine then
+        r := { r with errors := r.errors.push "G4: concrete base uses Machine.Concrete.ofMachine" }
       else if sc.layerOf n == some "Spec" then
         if let some ci := env.find? n then
           unless isStructural env n ci do
@@ -528,8 +530,8 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
         match bareConst? leaf with
         | some oc =>
           if hasAttr deviationAttr env oc then r := { r with obs := r.obs.push oc }
-          else r := { r with errors := r.errors.push s!"G5: {label} = {oc} is neither Machine.never nor @[deviation]" }
-        | none => r := { r with errors := r.errors.push s!"G5: {label} is not Machine.never or Machine.anyOf of bare @[deviation] constants" }
+          else r := { r with errors := r.errors.push s!"G5: {label} = {oc} is neither Machine.Adequacy.never nor @[deviation]" }
+        | none => r := { r with errors := r.errors.push s!"G5: {label} is not Machine.Adequacy.never or Machine.Adequacy.anyOf of bare @[deviation] constants" }
   else
     r := { r with errors := r.errors.push "G5: glue is not Machine.Glue.ofStd" }
   -- G6: 付帯の定理
@@ -759,7 +761,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
       devs := devs.push (n, ids)
       if ids.size > 1 then
         errors := errors.push
-          s!"G9: {n} (@[deviation]) has {ids.size} IDs {ids.toList}; give each deviation its own constant (Machine.anyOf for observational components)"
+          s!"G9: {n} (@[deviation]) has {ids.size} IDs {ids.toList}; give each deviation its own constant (Machine.Adequacy.anyOf for observational components)"
       unless cs.nontrivial.contains n do
         errors := errors.push s!"G8: {n} (@[deviation]) has no Nontrivial/Nontrivial₂ theorem"
     if let some ids := envPreAttr.getParam? env n then
@@ -820,7 +822,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   errors := errors ++ checkGaps env sc rs cs
   let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
   return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
-           gaps := Trace.gapsJson env moduleOf }
+           gaps := Trace.Gap.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
 def Report.errorCount (r : Report) : Nat :=

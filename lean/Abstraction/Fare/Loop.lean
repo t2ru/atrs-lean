@@ -10,12 +10,16 @@ import Abstraction.Fare.BasicFareRefines
 -/
 
 namespace Abstraction.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData
 
 end Abstraction.Fare
 
 namespace Abstraction.Fare
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
   SourceModel.MasterQuery

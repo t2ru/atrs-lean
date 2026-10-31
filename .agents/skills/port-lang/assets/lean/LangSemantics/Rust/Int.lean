@@ -10,7 +10,8 @@ Rust の固定長整数（`u8`〜`u64`, `i8`〜`i64`）。値は `BitVec n`、�
 lang: `lang:rust#integer-overflow`, `lang:rust#arithmetic-and-logical-binary-operators`
 -/
 
-namespace LangSemantics.Rust
+namespace LangSemantics.Rust.Int
+open LangSemantics.Rust.Panic
 
 abbrev U8 := BitVec 8
 abbrev U16 := BitVec 16
@@ -111,4 +112,4 @@ theorem u64_add_toNat_of_lt (a b : U64) (h : a.toNat + b.toNat < 2 ^ 64) :
   unfold wrappingAdd
   rw [BitVec.toNat_add, Nat.mod_eq_of_lt h]
 
-end LangSemantics.Rust
+end LangSemantics.Rust.Int

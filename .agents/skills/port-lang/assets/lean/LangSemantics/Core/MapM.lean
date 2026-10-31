@@ -7,7 +7,8 @@ import LangSemantics.Core.List
 要素は 1 対 1 に対応し、キーの列・`find?` の結果も対応する。
 -/
 
-namespace LangSemantics.Core
+namespace LangSemantics.Core.MapM
+open LangSemantics.Core.List
 
 variable {α β : Type}
 
@@ -113,4 +114,4 @@ theorem mapM_length {α β : Type} {g : α → Option β} : ∀ {xs : List α} {
     obtain ⟨y, -, ys', hys, rfl⟩ := h
     simp only [List.length_cons, mapM_length hys]
 
-end LangSemantics.Core
+end LangSemantics.Core.MapM

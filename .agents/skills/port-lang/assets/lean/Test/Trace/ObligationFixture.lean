@@ -5,8 +5,8 @@ import Test.Machine.Adequacy
 /-!
 # Test.Trace.ObligationFixture
 
-`obligation-check`（`Trace.Obligation`）のフィクスチャ。`Test.Trace.ObFix.<層>` の下に、規則をすべて満たす R 課題と、
-規則ごとの違反例を置く（テストは接頭辞 `Test.Trace.ObFix` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
+`obligation-check`（`Trace.Obligation`）のフィクスチャ。`Test.Trace.ObligationFixture.<層>` の下に、規則をすべて満たす R 課題と、
+規則ごとの違反例を置く（テストは接頭辞 `Test.Trace.ObligationFixture` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
 作られた迂回（references/docs/spec/architecture.md#空虚化を防ぐ義務 の「実装後の敵対的レビュー」）を含める。証明は `Test.Machine.Adequacy` の定理を定義の展開で使い回す。
 
 期待する判定は `Test/Trace/Main.lean` の `obligationTests` に書く。
@@ -15,7 +15,9 @@ import Test.Machine.Adequacy
 open Machine
 open Test.Machine.Adequacy (Out Req Num)
 
-namespace Test.Trace.ObFix.Spec
+open Machine.Adequacy Machine.Kernel Trace.Gap
+
+namespace Test.Trace.ObligationFixture.Spec
 
 /-- 衝突の選択（環境）。 -/
 @[nondet "N-901"] abbrev Conflict : Type := Bool
@@ -89,11 +91,12 @@ def half : Machine.Machine Unit Nat Nat := Test.Machine.Adequacy.half
 theorem half_sound : half.Sound := Machine.sound_pure (fun _ => True) (· / 2)
 theorem half_initIs : half.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
-end Test.Trace.ObFix.Spec
+end Test.Trace.ObligationFixture.Spec
 
-namespace Test.Trace.ObFix.SourceModel
+open Machine.Adequacy Machine.Kernel Trace.Gap
+open Test.Trace.ObligationFixture.Spec
 
-open Test.Trace.ObFix.Spec
+namespace Test.Trace.ObligationFixture.SourceModel
 
 /-- 具体機械。 -/
 def good : Concrete Nat Req Out Unit := Test.Machine.Adequacy.good
@@ -114,7 +117,7 @@ def domSet : Concrete Nat Req Out Unit where
   step := good.step
 
 /-- 抽象機械そのものを具体機械とする（同語反復）。 -/
-def taut : Concrete Nat Nat Out Unit := spec.toConcrete
+def taut : Concrete Nat Nat Out Unit := Concrete.ofMachine spec
 
 /-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
 def langErr : Concrete Nat Req Out Unit := Test.Machine.Adequacy.langErr
@@ -129,11 +132,12 @@ def halfNaN : Concrete Unit Nat Num Unit := Test.Machine.Adequacy.halfNaN
 def usesSpec : Concrete Nat Req Out Unit :=
   Concrete.ofFun (· = 5) fun t r => .ok (Spec.fRes t r.n (r.env, ()))
 
-end Test.Trace.ObFix.SourceModel
+end Test.Trace.ObligationFixture.SourceModel
 
-namespace Test.Trace.ObFix.Abstraction
+open Machine.Adequacy Machine.Kernel Trace.Gap
+open Test.Trace.ObligationFixture.Spec Test.Trace.ObligationFixture.SourceModel
 
-open Test.Trace.ObFix.Spec Test.Trace.ObFix.SourceModel
+namespace Test.Trace.ObligationFixture.Abstraction
 
 /-- 標準の抽象化（葉）: 状態。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def betaS (t : Nat) : Option Nat := some t
@@ -327,19 +331,19 @@ def aoPart2 (o : Out) : Option Out := if o = .full then none else some o
 theorem aoPart2_kernel : KernelIs aoPart2 (undefOrEqF aoPart) := by
   intro x y; cases x <;> cases y <;> simp [aoPart2, aoPart, undefOrEqF]
 
-/-- 部分単射の葉。核はスキルの汎用の核 `Machine.undefOrEq` をこの葉に適用したもの（受ける）。 -/
+/-- 部分単射の葉。核はスキルの汎用の核 `Machine.Kernel.undefOrEq` をこの葉に適用したもの（受ける）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def aoPart3 (o : Out) : Option Out := if o = .full then none else some o
 
-theorem aoPart3_kernel : KernelIs aoPart3 (Machine.undefOrEq aoPart3) := by
-  intro x y; cases x <;> cases y <;> simp [aoPart3, Machine.undefOrEq]
+theorem aoPart3_kernel : KernelIs aoPart3 (Machine.Kernel.undefOrEq aoPart3) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart3, Machine.Kernel.undefOrEq]
 
-/-- 同じ形の葉だが、`Machine.undefOrEq` を別の葉に適用している（受けない）。 -/
+/-- 同じ形の葉だが、`Machine.Kernel.undefOrEq` を別の葉に適用している（受けない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def aoPart4 (o : Out) : Option Out := if o = .full then none else some o
 
-theorem aoPart4_kernel : KernelIs aoPart4 (Machine.undefOrEq aoPart) := by
-  intro x y; cases x <;> cases y <;> simp [aoPart4, aoPart, Machine.undefOrEq]
+theorem aoPart4_kernel : KernelIs aoPart4 (Machine.Kernel.undefOrEq aoPart) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart4, aoPart, Machine.Kernel.undefOrEq]
 
 /-- 関数を引数に取る標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def via (h : Out → Option Out) (o : Out) : Option Out := h o
@@ -509,12 +513,14 @@ theorem pre_refines : Refines specPre good glue where
   correct s t ic ia t' oc hi hJ ha _ hd hs :=
     Test.Machine.Adequacy.good_refines.correct s t ic ia t' oc hi hJ ha trivial hd hs
 
-end Test.Trace.ObFix.Abstraction
+end Test.Trace.ObligationFixture.Abstraction
 
 /-- モデルの層の外に置いた差異の述語。 -/
-@[deviation "D-904"] def Test.Trace.ObFixHelpers.devFalse (_ : Req) : Prop := False
+@[deviation "D-904"] def Test.Trace.ObligationFixture.Helpers.devFalse (_ : Req) : Prop := False
 
-namespace Test.Trace.ObFix.Spec
+open Machine.Adequacy Machine.Kernel Trace.Gap
+
+namespace Test.Trace.ObligationFixture.Spec
 
 /-- 箇所の印（正例）。 -/
 @[gap "D-922"] def markedSpec (n : Nat) : Nat := n
@@ -525,15 +531,16 @@ namespace Test.Trace.ObFix.Spec
 /-- 違反: 宣言の無い ID の印（GK）。 -/
 @[gap "D-999"] def markedUnknown (n : Nat) : Nat := n
 
-end Test.Trace.ObFix.Spec
+end Test.Trace.ObligationFixture.Spec
 
 /-! ## ギャップの登録簿（GK）
 
 `@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
 
-namespace Test.Trace.ObFix.Abstraction
-
+open Machine.Adequacy Machine.Kernel Trace.Gap
 open _root_.Trace
+
+namespace Test.Trace.ObligationFixture.Abstraction
 
 /-- 前提型の宣言を作る補助（値は展開して読まれる）。 -/
 def preGap (id : String) (devs : List Lean.Name) (ev : Evidence) : Gap :=
@@ -552,7 +559,7 @@ def noW : Evidence := .pending "必要性の定理がまだ無い" (some "ABS-99
 @[gap_entry] def gD901 : Gap := preGap "D-901" [``devLang] (.refuted [``need_devLang])
 /-- D-902 -/ @[gap_entry] def gD902 : Gap := preGap "D-902" [``devNoW] noW
 /-- D-903 -/ @[gap_entry] def gD903 : Gap := preGap "D-903" [``devK] noW
-/-- D-904 -/ @[gap_entry] def gD904 : Gap := preGap "D-904" [``Test.Trace.ObFixHelpers.devFalse] noW
+/-- D-904 -/ @[gap_entry] def gD904 : Gap := preGap "D-904" [``Test.Trace.ObligationFixture.Helpers.devFalse] noW
 /-- 違反: 別の差異の必要性の定理を、偽の証明に挙げる（GK）。 -/
 @[gap_entry] def gD905 : Gap := preGap "D-905" [``devUnneeded] (.refuted [``need_arrow])
 /-- 偽を証明済み（`¬ Refines`）。 -/
@@ -592,7 +599,7 @@ theorem usesClaim (h : claim920) : claim920 := h
 /-- PRE の外の振る舞いの宣言（前提の述語には印がある）。 -/
 @[gap_entry] def gD922 : Gap :=
   { id := "D-922", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1",
-    evidence := .excludedBy [``Test.Trace.ObFix.Spec.markedSpec] }
+    evidence := .excludedBy [``Test.Trace.ObligationFixture.Spec.markedSpec] }
 
 -- 違反: docstring が無い（GK）
 @[gap_entry] def gD923 : Gap :=
@@ -603,19 +610,21 @@ theorem usesClaim (h : claim920) : claim920 := h
 @[gap_entry] def gD922dup : Gap := gD922
 
 /-- 違反: `D-NNN` の宣言が `Refinement` の層にある（下の名前空間。GK）。 -/
-@[gap_entry] def _root_.Test.Trace.ObFix.Refinement.gD924 : Gap :=
+@[gap_entry] def _root_.Test.Trace.ObligationFixture.Refinement.gD924 : Gap :=
   { id := "D-924", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", ""⟩], premise := "PRE MD-1",
     evidence := .excludedBy [] }
 
 /-- 違反: 未確定の差異に `@[deviation]` がある（GK）。 -/
 @[deviation "D-921"] def devUndetermined (r : Req) : Prop := r.lang = false
 
-end Test.Trace.ObFix.Abstraction
+end Test.Trace.ObligationFixture.Abstraction
 
 
-namespace Test.Trace.ObFix.Abstraction
+open Machine.Adequacy Machine.Kernel Trace.Gap
+
+namespace Test.Trace.ObligationFixture.Abstraction
 
 /-- 違反: 印を `Abstraction` の層に付ける（GK）。 -/
 @[gap "D-922"] def markedAbstraction (n : Nat) : Nat := n
 
-end Test.Trace.ObFix.Abstraction
+end Test.Trace.ObligationFixture.Abstraction

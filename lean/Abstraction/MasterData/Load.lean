@@ -8,6 +8,7 @@ Provider の `load()` の形。各行の対応（`Enum.valueOf` など）が例�
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Repository.MasterData SourceModel.Repository
   SourceModel.Repository.Schema

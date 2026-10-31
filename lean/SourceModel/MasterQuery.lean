@@ -21,6 +21,7 @@ Mapper の文の結果は順序が未規定で、`ORDER BY` の文は許され�
 -/
 
 namespace SourceModel.MasterQuery
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 open LangSemantics.Java LangSemantics.Sql SourceModel.Model SourceModel.Repository.Schema
   SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.Config

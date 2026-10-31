@@ -22,7 +22,7 @@ namespace Test.Trace.AttrErrors
 
 end Test.Trace.AttrErrors
 
-namespace Test.Trace.AttrKeywords
+namespace Test.Trace.AttrErrors
 
 /-- 属性名（`source`, `target` など）が予約語にならず、識別子として使えることを確かめる。 -/
 def useNames (source target obligation deviation nondet std_abs kernel env_pre spec_doc no_source gap gap_entry : Nat) :
@@ -31,4 +31,4 @@ def useNames (source target obligation deviation nondet std_abs kernel env_pre s
 
 #guard useNames 1 2 3 4 5 6 7 8 9 10 11 12 = 78
 
-end Test.Trace.AttrKeywords
+end Test.Trace.AttrErrors

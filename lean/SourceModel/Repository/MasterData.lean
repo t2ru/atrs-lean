@@ -13,6 +13,7 @@ import SourceModel.Repository.Schema
 -/
 
 namespace SourceModel.Repository.MasterData
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 open LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
 

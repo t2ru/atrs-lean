@@ -9,7 +9,8 @@ Java の `int`（32 ビット）と `long`（64 ビット）。2 の補数で、
 lang: `lang:java#JLS-4.2.2`, `lang:java#JLS-15.17`, `lang:java#JLS-15.18`
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.Int
+open LangSemantics.Java.Exception
 
 /-- Java の `int`。 -/
 abbrev J32 := BitVec 32
@@ -107,4 +108,4 @@ theorem jdiv32_val_of_nonneg (a b : J32) (ha : 0 ≤ a.val) (hb : 0 < b.val) :
   simp only [Nat.reducePow] at *
   split <;> omega
 
-end LangSemantics.Java
+end LangSemantics.Java.Int

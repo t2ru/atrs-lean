@@ -1,14 +1,15 @@
 import LangSemantics.Java.Exception
 import LangSemantics.Java.Int
-import LangSemantics.Java.Double
+import LangSemantics.Java.JDouble
+import LangSemantics.Java.DoubleOps
 import LangSemantics.Java.BigDecimal
 import LangSemantics.Java.String
-import LangSemantics.Java.LocalDate
+import LangSemantics.Java.JLocalDate
 import LangSemantics.Java.HashMap
-import LangSemantics.Java.LocalDateLemmas
-import LangSemantics.Java.HashMapLemmas
-import LangSemantics.Java.DoubleLemmas
-import LangSemantics.Java.DoubleCompare
+import LangSemantics.Java.JLocalDate.Lemmas
+import LangSemantics.Java.HashMap.Lemmas
+import LangSemantics.Java.JDouble.Lemmas
+import LangSemantics.Java.JDouble.Compare
 import LangSemantics.Java.ResultLemmas
 import LangSemantics.Java.IntLemmas
 

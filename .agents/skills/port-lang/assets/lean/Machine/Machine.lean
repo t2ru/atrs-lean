@@ -1,5 +1,5 @@
 /-!
-# Machine.Basic
+# Machine.Machine
 
 抽象機械（B メソッドの abstract machine）。`Spec` の各機能をこの形で与える（references/docs/spec/architecture.md#リファインメントb-メソッド の「抽象機械」）。
 

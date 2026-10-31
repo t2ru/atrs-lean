@@ -1,7 +1,7 @@
 import LangSemantics.Java.Int
 
 /-!
-# LangSemantics.Java.Double
+# LangSemantics.Java.JDouble
 
 Java の `double`（IEEE 754 binary64）の **検証可能なソフトモデル**。
 Lean 標準の `Float` は不透明で性質を証明できないため使わない。値の意味は有理数で与え、
@@ -14,6 +14,7 @@ lang: `lang:java#JLS-4.2.3`, `lang:java#JLS-4.2.4`, `lang:java#JLS-5.1.3`, `lang
 -/
 
 namespace LangSemantics.Java
+open LangSemantics.Java.Exception LangSemantics.Java.Int
 
 /-- binary64 の値。有限値は `(-1)^sign * mant * 2^exp`。
 正規化数は `2^52 ≤ mant < 2^53` かつ `-1074 ≤ exp ≤ 971`、
@@ -206,26 +207,7 @@ def toBits : JDouble → BitVec 64
       let biased := (e + 1075).toNat
       BitVec.ofNat 64 (signBit + biased * 2 ^ 52 + (m - 2 ^ 52))
 
+
 end JDouble
-
-/-- `(double) n`。 -/
-def jd (n : Int) : JDouble := JDouble.ofInt n
-/-- double リテラル。不正な表記は NaN（モデルの記述誤りを検査で見つけるため）。 -/
-def jdLit (s : String) : JDouble := (JDouble.ofDecimal? s).getD .nan
-def jdadd (a b : JDouble) : JDouble := JDouble.add a b
-def jdsub (a b : JDouble) : JDouble := JDouble.sub a b
-def jdmul (a b : JDouble) : JDouble := JDouble.mul a b
-def jddiv (a b : JDouble) : JDouble := JDouble.div a b
-/-- `(int) d`。 -/
-def jd2i (d : JDouble) : J32 := JDouble.toJ32 d
-/-- `(long) d`。 -/
-def jd2l (d : JDouble) : J64 := JDouble.toJ64 d
-
-/-- リテラル `0.01` は、0.01 に最も近い binary64（`0x3F847AE147AE147B`）である。 -/
-theorem jdLit_0_01_bits : (jdLit "0.01").toBits = 0x3F847AE147AE147B#64 := by decide
-
-/-- 例: `(int) (1430 * (1 - 30 * 0.01))` は 1000 である（厳密計算では 1001）。 -/
-theorem jd2i_1430_30 : (jd2i (jdmul (jd 1430) (jdsub (jd 1) (jdmul (jd 30) (jdLit "0.01"))))).val = 1000 := by
-  decide
 
 end LangSemantics.Java

@@ -2,7 +2,10 @@ import LangSemantics.Sql.Postgresql
 
 /-! LangSemantics.Sql と PostgreSQL 方言の検査。 -/
 
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 open LangSemantics.Sql LangSemantics.Sql.Postgresql
+
+namespace Test.LangSemantics.Sql
 
 def coll := collationC
 
@@ -63,9 +66,9 @@ def sq : SequenceDef := { name := "sq", maxValue := 3, cycle := true }
 #guard varchar "c" 2 "abc" matches .error (.stringTooLong _)
 
 -- ORDER BY の許される順列の一意性（キーが単射のとき）の公理
-/-- info: 'LangSemantics.Sql.isAllowedOrder_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
+/-- info: 'LangSemantics.Sql.Query.isAllowedOrder_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
-#print axioms LangSemantics.Sql.isAllowedOrder_unique
+#print axioms LangSemantics.Sql.Query.isAllowedOrder_unique
 
 -- 列の型: 範囲の内だけを作る
 #guard (Int4.ofInt 2147483647).toOption.map (·.val) == some 2147483647
@@ -74,3 +77,5 @@ def sq : SequenceDef := { name := "sq", maxValue := 3, cycle := true }
 #guard date (dateMax + 1) matches .error .dateOutOfRange
 #guard (Varchar.ofString "c" 2 "ab ").toOption.map (·.val) == some "ab"
 #guard Varchar.ofString "c" 2 "abc" matches .error (.stringTooLong _)
+
+end Test.LangSemantics.Sql

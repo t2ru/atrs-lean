@@ -12,7 +12,7 @@
 - `Forall₂`: 2 つの列の要素ごとの関係（core に無いので置く）。`sum_map_le`: 和の上限。
 -/
 
-namespace LangSemantics.Core
+namespace LangSemantics.Core.List
 
 /-- 述語を満たす要素が高々 1 つなら、`find?` の結果は並べ替えで変わらない。 -/
 theorem find?_perm {α : Type} {p : α → Bool} {l l' : List α} (hp : l.Perm l')
@@ -106,4 +106,4 @@ theorem sum_map_le {α : Type} {V : α → Nat} {M : Nat} : ∀ (xs : List α), 
     simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.succ_mul]
     omega
 
-end LangSemantics.Core
+end LangSemantics.Core.List

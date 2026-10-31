@@ -14,12 +14,13 @@ import Trace.Dump
 - **E2 実行ファイルの入口**: ルートの `main`。
 - **E3 明示した例外**: `n` 自身か、その接頭辞の定数に `@[ns_exception "<理由>"]` が付いている。
 - **E4 型名のモジュールのインスタンス**: `M` 自身が `M` で定義された型（型名のモジュール）で、`n` が `M` の親の名前空間に
-  直接置かれたインスタンスである（`deriving` などが、型の外の名前空間に `instReprT` と名付けるため）。
+  直接置かれたインスタンスか、その下の補助の定数である（`deriving` などが、型の外の名前空間に `instReprT` と名付けるため）。
 
 自動生成の補助定数（`Trace.Dump.isHidden`）は対象にしない。`private` の名前も対象にしない。
 -/
 
 namespace Trace.Layout
+open Trace.Attr
 
 open Lean
 
@@ -67,7 +68,8 @@ def placedOk (env : Environment) (m n : Name) : Bool :=
   -- E1: 型 T の下で、T のモジュールが M の真の祖先
   (ancestors n).any (fun t => isType env t && (moduleOf? env t).any (isStrictPrefix · m)) ||
   -- E4: 型名のモジュールの、親の名前空間のインスタンス
-  (isType env m && moduleOf? env m == some m && n.getPrefix == m.getPrefix && Meta.isInstanceCore env n)
+  (isType env m && moduleOf? env m == some m &&
+    (n :: ancestors n).any fun c => c.getPrefix == m.getPrefix && Meta.isInstanceCore env c)
 
 /-- `roots` を根とするモジュールの、`exclude` 以外の全定数を判定する（名前順）。 -/
 def check (env : Environment) (roots : List Name) (exclude : List Name := []) : Result := Id.run do

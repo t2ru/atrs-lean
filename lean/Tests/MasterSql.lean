@@ -19,6 +19,8 @@ import Tests.ConformanceMaster
 open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
   ConformanceKit Tests.Conformance
 
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence ConformanceKit.SqlTable ConformanceKit.Runner
+
 namespace Tests.MasterSql
 
 def dcol (t : Table) (r : Row) (c : String) : Except String PgDate := do

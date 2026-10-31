@@ -10,7 +10,8 @@ Lean の `String` は Unicode スカラ値の列であり、Rust の `String`（
 lang: `lang:rust#textual-types`, `dep:alloc#String::len`, `dep:core#str::chars`, `dep:core#slice::get`
 -/
 
-namespace LangSemantics.Rust
+namespace LangSemantics.Rust.Text
+open LangSemantics.Rust.Panic
 
 /-- Rust の `char`。 -/
 abbrev RChar := Char
@@ -55,4 +56,4 @@ def get {α : Type} (v : RVec α) (i : Nat) : Option α := v[i]?
 /-- ASCII だけからなる文字列では、バイト数とスカラ値数が等しい。 -/
 theorem charsCount_eq_strLen_ascii_example : charsCount "abc" = strLen "abc" := by decide
 
-end LangSemantics.Rust
+end LangSemantics.Rust.Text

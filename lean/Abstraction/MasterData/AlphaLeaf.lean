@@ -21,6 +21,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 -/
 
 namespace Abstraction.MasterData
+open LangSemantics.Core.List LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String Machine.Adequacy Machine.Kernel
 
 open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Spec.Prim.HourMinute LangSemantics.Core
 

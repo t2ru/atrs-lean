@@ -11,7 +11,8 @@ import LangSemantics.Core.List
 - `forIn_count_eq`: 各要素の本体が条件を満たせば累積に 1 を足す `for` 文は、条件を満たす要素の数を返す。
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.IntLemmas
+open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int
 
 open LangSemantics.Core
 
@@ -89,4 +90,4 @@ theorem forIn_count_eq {α ε : Type} {f : α → J32 → Except ε (ForInStep J
       simp only [List.filter_cons, hP, ite_true, List.length_cons]
       congr 2; omega
 
-end LangSemantics.Java
+end LangSemantics.Java.IntLemmas

@@ -1,7 +1,7 @@
-import LangSemantics.Java.Double
+import LangSemantics.Java.DoubleOps
 
 /-!
-# LangSemantics.Java.DoubleLemmas
+# LangSemantics.Java.JDouble.Lemmas
 
 double の演算の閉じた形。非負の整数 `X` と有限の正の double `F = fm · 2^(-fs)` について、
 `(int)(X * F)`（`jd2i (jdmul (jd X) F)`）は、正確な値 `X·fm / 2^fs` を 53 ビットの格子で
@@ -11,6 +11,8 @@ round-to-nearest-even し、0 方向に切り捨てた値 `rneTrunc (X·fm) (2^f
 set_option exponentiation.threshold 2048
 
 namespace LangSemantics.Java
+open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.Exception LangSemantics.Java.Int
 
 namespace JDouble
 

@@ -13,6 +13,8 @@ import Spec
 
 open Lean Spec Spec.Prim ConformanceKit
 
+open ConformanceKit.Runner ConformanceKit.SqlTable
+
 namespace Tests.Conformance
 
 /-! ## 値の表現（`spec/conformance.md#値の表現`） -/

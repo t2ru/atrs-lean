@@ -2,13 +2,14 @@ import LangSemantics.Java.HashMap
 import LangSemantics.Core.List
 
 /-!
-# LangSemantics.Java.HashMapLemmas
+# LangSemantics.Java.HashMap.Lemmas
 
 `JHashMap` の性質。キーが重複しない列を順に `put` した表は、その列そのものであり（`ofList_entries`）、
 `get` は列の `find?` に一致する（`get_ofList`）。`LinkedHashMap` の反復の順は、`put` した順である。
 -/
 
-namespace LangSemantics.Java
+namespace LangSemantics.Java.HashMap
+open LangSemantics.Core.List
 
 namespace JHashMap
 
@@ -78,4 +79,4 @@ theorem get_ofList_perm {ρ σ κ υ : Type} [DecidableEq κ] {rows : List ρ} {
 
 end JHashMap
 
-end LangSemantics.Java
+end LangSemantics.Java.HashMap

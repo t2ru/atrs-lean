@@ -11,7 +11,8 @@ SQL の差分実行の結果（スキルの `references/docs/lang/sql/harness.md
 
 open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql
 
-namespace ConformanceKit
+namespace ConformanceKit.SqlTable
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 /-- 表の行（列の値は文字列か `null`）。 -/
 abbrev Row := List (Option String)
@@ -57,4 +58,4 @@ def icol (t : Table) (r : Row) (c : String) : Except String Int4 := do
   let some v := s.toInt? | throw s!"{c}: not an integer: {s}"
   liftSql (Int4.ofInt v) c
 
-end ConformanceKit
+end ConformanceKit.SqlTable

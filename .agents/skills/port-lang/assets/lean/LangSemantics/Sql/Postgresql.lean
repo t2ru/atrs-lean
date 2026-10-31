@@ -11,6 +11,7 @@ lang: `lang:postgresql#datatype-numeric`, `lang:postgresql#datatype-character`, 
 -/
 
 namespace LangSemantics.Sql.Postgresql
+open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Sql.Sequence
 
 open LangSemantics.Sql
 

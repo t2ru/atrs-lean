@@ -18,6 +18,8 @@ import Tests.ConformanceFare
 
 open Lean Spec Spec.Prim ConformanceKit Tests.Conformance Tests.ConformanceFare
 
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas LangSemantics.Java.String
+
 namespace Tests.ConformanceMaster
 
 /-! ## 共通の JSON -/

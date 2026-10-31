@@ -127,7 +127,7 @@ theorem badMasterData_not_env : ¬ masterConfigOk (Seed.config, badMasterData) :
   exact h.1 (by decide)
 
 /-- G8: 環境の前提は自明でない。 -/
-theorem masterConfigOk_nontrivial : Machine.Nontrivial masterConfigOk :=
+theorem masterConfigOk_nontrivial : Machine.Adequacy.Nontrivial masterConfigOk :=
   ⟨⟨_, seed_env⟩, ⟨_, badMasterData_not_env⟩⟩
 
 end Spec
