@@ -64,6 +64,7 @@ okf_version: "0.2"
 * [追跡属性の仕組み（Trace）をスキル port-lang の assets に移す](decision/7fe4-move-trace-attributes-to-skill.md) - lean/Trace（追跡属性・trace-dump・obligation-check の本体）はアプリに依存しないので、スキル port-lang の assets/lean/Trace に移し、Lake の依存として取り込む。道具の入口（main）は ATRS の lean/Tools に残す。
 * [Spec とモデルのギャップの登録簿を Lean の属性に置き、文書の表を生成する](decision/cc24-gap-registry-as-lean-attributes.md) - 既知差異（前提型・観測型・モデル外）、Spec の PRE の外での振る舞い、未確定の差異を、ID ごとの Lean の宣言（@[gap_entry]、型 Trace.Gap）として登録し、これを正とする。差異の生じる Spec・SourceModel・TargetModel の定義に箇所の印 @[gap] を付ける。文書の表は trace-dump から生成し、検査は Markdown の解析をやめて JSON から行う。
 * [アプリに依存しない道具と Lean のライブラリをスキル port-lang へ移し、ATRS 固有の値を trace/project.json に集める](decision/edc8-skill-scripts-and-generic-lean-libraries.md) - tools/ の汎用の道具をスキルの scripts/ へ移し、ATRS 固有の値を trace/project.json から読ませる。Abstraction・Tests に混ざっていた汎用の Lean コードを、スキルの assets（Machine.Kernel・LangSemantics.Core・LangSemantics.Java/Sql・ConformanceKit）へ移す。汎用の方法を文書でもスキルへ移し、スキルに紛れた ATRS 固有の記述を外す。
+* [[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める](decision/cd33-spec-nondet-types-and-env-pre.md) - backlog 0fdf として、非決定性 N-001〜N-005 の選択の型（@[nondet]）の形、各機能の機械での組み合わせ方、入口の環境の前提（@[env_pre]）をマスタ・設定の妥当性に限ること、シードのマスタ・設定が前提を満たすことを生成したリテラルと真偽値の検査関数の定理で示すことを決める。
 
 # Specification
 
@@ -121,7 +122,7 @@ okf_version: "0.2"
 * [Lean TargetModel から Verus の写しを生成する道具](backlog/d77c-verus-mirror-generator.md) - lake exe gen-verus で、Lean TargetModel の公開定義から rust/src/model/ の Verus spec 関数と追跡タグを決定論的に生成し、CI で再生成の差分が無いことを確認する。
 * [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](backlog/9c04-rust-external-adapters.md) - DB・ファイル・時計のアダプタを Rust で実装し、その振る舞いを TargetModel.Adapter（DB は LangSemantics.Sql の式）に写して REF-009 を証明し、SQL の差分実行（SRC-010）と結合テスト（SRC-005）で一致を確かめる。
 * [リファインメントの空虚化を防ぐ義務と検査](backlog/f7b7-refinement-non-vacuity.md) - Machine.Adequacy（ofChoice・FreeFrame・InitIs・Pinned・NoFaultReachable・Glue.ofStd・TotalUnder・EnvWitness・InitSurj・StateSafe・Nontrivial・KernelIs・complete・run）、その反例、追跡属性 @[nondet]・@[std_abs]・@[kernel]・@[env_pre]、検査 obligation-check と check_obligations.py、文書の登録簿を整える。
-* [Spec の非決定性の選択の型と入口の環境の前提](backlog/0fdf-spec-nondet-and-entry-env.md) - Spec の非決定性 N-001〜N-005 の選択の型（@[nondet]）と、入口の環境の前提（マスタ・設定の妥当性と入力の値域。@[env_pre]）を Lean に定義し、両向きの例とシードの妥当性を示す。
+* [Spec の非決定性の選択の型と入口の環境の前提](backlog/0fdf-spec-nondet-and-entry-env.md) - Spec の非決定性 N-001〜N-005 の選択の型（@[nondet]）と、入口の環境の前提（マスタ・設定の妥当性。@[env_pre]）を Lean に定義し、両向きの例とシードの妥当性を示す。入力の値域の前提は各機能の backlog で置く。
 * [名前付きの成分の必要性の義務と検査（G9）](backlog/ae04-component-necessity-witness.md) - ADR 9ac6 の成分の必要性（成分を外した R 課題の命題が偽であること）を、Machine.Adequacy の補題（always・not_of_error・not_of_mismatch・Pinned.not_of_mismatch・TotalUnder.not_always）、反例、obligation-check の G9、文書の W 課題・SPEC-006・保証の限界に反映する。
 * [名前付きの成分の変異テスト](backlog/0d1a-mutation-testing-of-named-components.md) - ADR 9ac6 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。
 * [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](backlog/114a-gap-attributes-and-trace-in-skill.md) - lean/Trace をスキル port-lang の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。

@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+* **Add**: [ADR cd33](decision/cd33-spec-nondet-types-and-env-pre.md)（[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める）。
+* **Update**: [backlog 0fdf](backlog/0fdf-spec-nondet-and-entry-env.md) を完了した（`done`）。`Spec.Nondet`（N-001〜N-005 の `@[nondet]`）、`Spec.EnvPre`（`masterConfigOk` の `@[env_pre]`・検査関数 `validB`）、生成した `Spec.Seed` とシードの妥当性 `seed_env` を置いた。入力の値域の前提は [backlog a89e](backlog/a89e-http-contract-adapter.md)・[ac71](backlog/ac71-reservation-history-report.md) の範囲に移した。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（Spec の非決定性の表の Lean 名）
+  * [spec/master-data.md](spec/master-data.md)（シードの妥当性）、[spec/assurance.md](spec/assurance.md)（シードの検査の限界）
+  * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
+
 * **Creation**: [backlog 38fb](backlog/38fb-move-generic-elements-to-skill.md) を作り、完了した（`done`）。
 * **Creation**: [ADR edc8](decision/edc8-skill-scripts-and-generic-lean-libraries.md) で、アプリに依存しない要素をスキル port-lang へ移した。
   * 道具（`tools/trace`・`check_lean.py`・`check_obligations.py`・`check_upstream.py`・`with_postgres.sh`・`jvm_table.sh`・`pg_table.sh`・`ids.py`）をスキルの `scripts/` へ移した。ATRS 固有の値は `trace/project.json` に集めた。

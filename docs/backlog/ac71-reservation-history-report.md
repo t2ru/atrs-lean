@@ -8,7 +8,7 @@ state: todo
 depends_on: ["aedfeffc-3e82-46b1-b497-3d8b7808d068", "4e0e3dd1-d282-46e2-aa98-719853bc9fd2", "f18c3c0f-4007-42c1-ba25-102fb385a16c", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T18:24:54+09:00
 ---
 
 # 予約履歴レポート（D1）
@@ -24,6 +24,7 @@ generated:
 - 同一秒の再生成の扱い
 - R 課題 ABS-044（予約履歴レポート）、ABS-025（ReportStore・ReportQueue）
 - SPEC 課題: レポートの SPEC-001〜SPEC-004
+- 入口の環境の前提: レポート要求の受信の入力の値域の述語を書き、`Spec.masterConfigOk` と組み合わせて `@[env_pre]` を付ける。配信の選択は `Spec.Nondet.ReportDeliveryChoice`（N-003）を使う（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 
 ## 対象外
 

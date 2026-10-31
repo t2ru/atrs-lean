@@ -4409,6 +4409,26 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Nondet.ConflictChoice",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Nondet.InvalidRequestDetail",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Nondet.IoFailureChoice",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Nondet.PasswordHashChoice",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Nondet.ReportDeliveryChoice",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Passenger",
       "layer": "Spec"
     },
@@ -4649,6 +4669,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.masterConfigOk",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.oneWayFareTypes",
       "layer": "Spec"
     },
@@ -4702,6 +4726,51 @@
       "type": "deviation",
       "from": "Abstraction.MasterData.dev_D027",
       "to": "D-027"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "CFG"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-1"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-2"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-3"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-4"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-5"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-6"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-7"
+    },
+    {
+      "type": "env_pre",
+      "from": "Spec.masterConfigOk",
+      "to": "MD-8"
     },
     {
       "type": "gap",
@@ -5017,6 +5086,31 @@
       "type": "kernel",
       "from": "Abstraction.MasterData.routeRowKer",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "nondet",
+      "from": "Spec.Nondet.ConflictChoice",
+      "to": "N-001"
+    },
+    {
+      "type": "nondet",
+      "from": "Spec.Nondet.InvalidRequestDetail",
+      "to": "N-004"
+    },
+    {
+      "type": "nondet",
+      "from": "Spec.Nondet.IoFailureChoice",
+      "to": "N-002"
+    },
+    {
+      "type": "nondet",
+      "from": "Spec.Nondet.PasswordHashChoice",
+      "to": "N-005"
+    },
+    {
+      "type": "nondet",
+      "from": "Spec.Nondet.ReportDeliveryChoice",
+      "to": "N-003"
     },
     {
       "type": "obligation",
@@ -5963,6 +6057,31 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Nondet.ConflictChoice",
+      "to": "docs/spec/ports.md#トランザクション"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Nondet.InvalidRequestDetail",
+      "to": "docs/spec/http-contract.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Nondet.IoFailureChoice",
+      "to": "docs/spec/ports.md#トランザクション"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Nondet.PasswordHashChoice",
+      "to": "docs/spec/ports.md#passwordhasher"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Nondet.ReportDeliveryChoice",
+      "to": "docs/spec/ports.md#reportqueue"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Passenger",
       "to": "docs/spec/domain-model.md#passenger"
     },
@@ -6260,6 +6379,11 @@
       "type": "spec_doc",
       "from": "Spec.fareTypesFor",
       "to": "docs/spec/domain-model.md#列挙"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.masterConfigOk",
+      "to": "docs/spec/master-data.md#不変条件spec"
     },
     {
       "type": "spec_doc",

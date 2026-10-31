@@ -7,6 +7,9 @@ import Spec.MasterData
 import Spec.CodeList
 import Spec.MasterQuery
 import Spec.Fare
+import Spec.Nondet
+import Spec.Seed
+import Spec.EnvPre
 
 /-!
 # Spec
@@ -18,6 +21,9 @@ import Spec.Fare
 | --- | --- |
 | `Spec.Prim` | 基本演算・暦日・時刻・書式・文字クラス |
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
+| `Spec.Seed` | シードのマスタ・設定（`tools/conformance/seed_lean.py` が生成） |
+| `Spec.EnvPre` | 入口の環境の前提 `masterConfigOk`（`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
+| `Spec.Nondet` | 非決定性 N-001〜N-005 の選択の型（`@[nondet]`）と標準の値 |
 | `Spec.Config` | 設定値と不変条件 |
 | `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |
 | `Spec.CodeList` | コードリスト |
