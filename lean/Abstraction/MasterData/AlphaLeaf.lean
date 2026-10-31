@@ -14,7 +14,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | --- | --- | --- |
 | `natOfInt4`・`natOfJ32` | `INT`・`int` | 負 |
 | `dateOfPg` | `DATE` | 1〜9999 年の外 |
-| `dateOfJ` | `LocalDate` | 妥当でない年月日・1〜9999 年の外 |
+| `dateOfJ` | `LocalDate` | 正規でない値（月が 13 など）・1〜9999 年の外。通算日数で写す |
 | `hmOfStr` | `HHmm` の文字列 | 4 桁の数字でない・時分の範囲外（例: `2415`） |
 | `dateOfSlash` | `yyyy/MM/dd` の文字列 | その形でない・妥当でない年月日 |
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
@@ -61,10 +61,11 @@ theorem dateOfPg_kernel : KernelIs dateOfPg (undefOrEq dateOfPg) :=
   kernelIs_undefOrEq fun x y _ hx hy => Subtype.ext (by
     rw [← Date.epochDay_ofEpochDay? hx, ← Date.epochDay_ofEpochDay? hy])
 
-/-- `LocalDate` の値。 -/
+/-- `LocalDate` の値: 通算日数が同じ [Spec] の暦日。`LocalDate` として正規な値（通算日数から作り直して同じ値）
+だけに定義する（月が 13 などの値には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def dateOfJ (d : JLocalDate) : Option Date :=
-  if 0 < d.year then Date.ofYmd? d.year.toNat d.month d.day else none
+  if JLocalDate.ofEpochDay d.toEpochDay = d then Date.ofEpochDay? d.toEpochDay else none
 
 theorem ofYmd?_eq_some {y m d : Nat} {D : Date} (h : Date.ofYmd? y m d = some D) :
     D.year = y ∧ D.month = m ∧ D.day = d := by
@@ -74,18 +75,21 @@ theorem ofYmd?_eq_some {y m d : Nat} {D : Date} (h : Date.ofYmd? y m d = some D)
   · cases h
 
 theorem dateOfJ_eq_some {d : JLocalDate} {D : Date} (h : dateOfJ d = some D) :
-    d = ⟨D.year, D.month, D.day⟩ := by
+    d = JLocalDate.ofEpochDay D.epochDay ∧ d.toEpochDay = D.epochDay := by
   unfold dateOfJ at h
   split at h
-  · obtain ⟨h1, h2, h3⟩ := ofYmd?_eq_some h
-    cases d
-    simp only [JLocalDate.mk.injEq] at *
-    omega
+  · rename_i hc
+    have e := Date.epochDay_ofEpochDay? h
+    exact ⟨by rw [e, hc], e.symm⟩
   · cases h
+
+/-- 通算日数から作った `LocalDate` の写しは、同じ通算日数の [Spec] の暦日。 -/
+theorem dateOfJ_ofEpochDay (z : Int) : dateOfJ (JLocalDate.ofEpochDay z) = Date.ofEpochDay? z := by
+  simp only [dateOfJ, JLocalDate.toEpochDay_ofEpochDay, if_true]
 
 @[obligation "ABS-048"]
 theorem dateOfJ_kernel : KernelIs dateOfJ (undefOrEq dateOfJ) :=
-  kernelIs_undefOrEq fun _ _ _ hx hy => (dateOfJ_eq_some hx).trans (dateOfJ_eq_some hy).symm
+  kernelIs_undefOrEq fun _ _ _ hx hy => (dateOfJ_eq_some hx).1.trans (dateOfJ_eq_some hy).1.symm
 
 /-! ## 数字の文字列 -/
 

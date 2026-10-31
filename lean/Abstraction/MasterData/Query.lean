@@ -1,6 +1,7 @@
 import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Join
 import Abstraction.MasterData.Key
+import SourceModel.Fare
 
 /-!
 # Abstraction.MasterData.Query
@@ -245,5 +246,221 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
     obtain ⟨x, _, hx⟩ := mapM_some_mem hrt hr
     simp only [Option.map_some, Option.bind_some, hx, Function.comp, answerOf?, Answer.opt,
       answer_route hx (hat r hr).1 (hat r hr).2]
+
+/-! ## 便マスタ -/
+
+/-- 既定の区間の行（使われない）。 -/
+def dummyRoute : RouteRow := ⟨⟨0, by decide⟩, ⟨"", by decide⟩, ⟨"", by decide⟩, ⟨"", by decide⟩, ⟨0, by decide⟩⟩
+
+/-- 区間番号で引いた区間の行。 -/
+def rtOf (db : MasterDb) (n : Int) : RouteRow := (db.route.find? fun r => r.routeNo.val == n).getD dummyRoute
+
+theorem rtOf_at {db : MasterDb} {n : Int} (h : ∃ r ∈ db.route, r.routeNo.val = n) : RouteAt db (rtOf db) n := by
+  obtain ⟨r, hr, hn⟩ := h
+  cases hf : db.route.find? (fun r => r.routeNo.val == n) with
+  | none =>
+    rw [List.find?_eq_none] at hf
+    exact absurd (by simpa using hn) (hf r hr)
+  | some r' =>
+    have := List.find?_some hf
+    simp only [beq_iff_eq] at this
+    exact ⟨by simp only [rtOf, hf, Option.getD_some]; exact List.mem_of_find?_eq_some hf,
+      by simp only [rtOf, hf, Option.getD_some, this]⟩
+
+theorem routeOfRow_no {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.routeNo : Int) = r.routeNo.val := by
+  simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨no, hno, _, _, rfl⟩ := h
+  exact (natOfInt4_eq_some.mp hno).symm
+
+theorem flightMasterOfRow_fields {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
+    (x.routeNo : Int) = f.routeNo.val ∧ x.flightName = ⟨f.flightName.val⟩ := by
+  simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨no, hno, _, _, _, _, rfl⟩ := h
+  exact ⟨(natOfInt4_eq_some.mp hno).symm, rfl⟩
+
+/-- MD-1: 区間番号は DB の表の中で重複しない。 -/
+theorem routeNos_nodup {db : MasterDb} {rs : List Route} (hr : db.route.mapM routeOfRow = some rs)
+    (hnd : (rs.map (·.routeNo)).Nodup) : (db.route.map (·.routeNo.val)).Nodup := by
+  have e : rs.map (fun x => (x.routeNo : Int)) = db.route.map (·.routeNo.val) :=
+    mapM_some_map hr fun _ _ h => routeOfRow_no h
+  rw [← e]
+  exact nodup_map_of_imp hnd fun _ _ _ _ e => by omega
+
+/-- MD-3: 便マスタの区間は DB の区間の表にある。 -/
+theorem flightMaster_route {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h3 : md.MD3)
+    {f : FlightMasterRow} (hf : f ∈ db.flightMaster) : ∃ r ∈ db.route, r.routeNo.val = f.routeNo.val := by
+  obtain ⟨_, hrt, hfm, -⟩ := masterDataOf_eq_some.mp hm
+  obtain ⟨x, hx, hxf⟩ := mapM_some_mem hfm hf
+  obtain ⟨y, hy, hyx⟩ := h3.2 x hx
+  obtain ⟨rr, hrr, hre⟩ := mapM_some_mem' hrt hy
+  exact ⟨rr, hrr, by rw [← routeOfRow_no hre, hyx, (flightMasterOfRow_fields hxf).1]⟩
+
+theorem answer_flightMaster {db : MasterDb} {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x)
+    (hrt : RouteAt db (rtOf db) f.routeNo.val) :
+    Answer.flightMaster (SourceModel.Repository.Mapping.flightMasterRow (flightMasterResultOf f (rtOf db f.routeNo.val)
+      (apOf db (rtOf db f.routeNo.val).depAirportCd.val) (apOf db (rtOf db f.routeNo.val).arrAirportCd.val))) =
+      some x := by
+  have hno : (rtOf db f.routeNo.val).routeNo = f.routeNo := Subtype.ext hrt.2
+  simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨no, hn, dt, hdt, ar, har, rfl⟩ := h
+  simp only [Answer.flightMaster, SourceModel.Repository.Mapping.flightMasterRow, SourceModel.Repository.Mapping.route,
+    flightMasterResultOf, routeResultOf, SourceModel.Repository.Mapping.str, hno, natOfJ32_int, hn, hdt, har,
+    Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+
+theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
+    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db))
+    {name : FlightName} (hname : hasText name.val = true) :
+    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∃ ans, getFlightMaster fmp name.val = .ok ans ∧
+      answerOf? (.flightMaster ans) = some (.flightMaster (md.flightMasterOf name)) := by
+  obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
+  have hapnd := airportCodes_nodup ha h1.1
+  have hrnd := routeNos_nodup hrts h1.2.1
+  have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
+    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+  have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
+    fun f hf => rtOf_at (flightMaster_route hm h3 hf)
+  rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
+  -- 便名は重複しない（MD-1）
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
+    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
+      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
+    have := h1.2.2.1
+    rw [e] at this
+    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnd : (o.map (·.flightName.val)).Nodup :=
+    (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
+  refine ⟨_, flightMasterLoad_eq hnd, (JHashMap.ofList (o.map fun f =>
+    (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val, ?_, ?_⟩
+  · simp only [getFlightMaster, assertHasText_ok hname]; rfl
+  rw [get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
+  rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
+      (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
+      == name.val) = (fun f => f.flightName.val == name.val) from rfl]
+  have hspec : md.flightMasterOf name =
+      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
+    unfold MasterData.flightMasterOf
+    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
+      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
+  rw [hspec]
+  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with
+  | none => simp only [Option.map_none, Option.bind_none, answerOf?, Answer.opt, Option.map_some]
+  | some f =>
+    have hfr := List.mem_of_find?_eq_some hf
+    obtain ⟨x, _, hx⟩ := mapM_some_mem hfm hfr
+    simp only [Option.map_some, Option.bind_some, hx, Function.comp, answerOf?, Answer.opt,
+      answer_flightMaster hx (hrt f hfr)]
+
+/-! ## ピーク時期・積算比率 -/
+
+theorem Date.le_iff_epochDay_le (a b : Date) : a ≤ b ↔ a.epochDay ≤ b.epochDay := by
+  show a.ordinal ≤ b.ordinal ↔ _
+  unfold Date.epochDay; omega
+
+/-- `getPeakTime` の判定（`depLocalDate` が期間に両端を含めて入る）を、DB の行で書いたもの。 -/
+def peakPred (d : JLocalDate) (r : PeakTimeRow) : Bool :=
+  !(d.isBefore (JLocalDate.ofEpochDay r.peakStartDate.val) || d.isAfter (JLocalDate.ofEpochDay r.peakEndDate.val))
+
+theorem getPeakTime_go (d : JLocalDate) : ∀ l : List PeakTimeRow,
+    getPeakTime.go d (l.map SourceModel.Repository.Mapping.peakTime) =
+      .ok ((l.find? (peakPred d)).map SourceModel.Repository.Mapping.peakTime)
+  | [] => rfl
+  | r :: l => by
+    simp only [List.map_cons, getPeakTime.go, SourceModel.Repository.Mapping.peakTime,
+      SourceModel.Repository.Mapping.date, JRef.deref, ok_bind, List.find?_cons]
+    unfold peakPred
+    cases (!(d.isBefore (JLocalDate.ofEpochDay r.peakStartDate.val) ||
+      d.isAfter (JLocalDate.ofEpochDay r.peakEndDate.val)))
+    · exact getPeakTime_go d l
+    · rfl
+
+theorem peakTimeOfRow_dates {r : PeakTimeRow} {x : PeakTime} (h : peakTimeOfRow r = some x) :
+    x.peakStartDate.epochDay = r.peakStartDate.val ∧ x.peakEndDate.epochDay = r.peakEndDate.val := by
+  simp only [peakTimeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨s, hs, e, he, _, _, rfl⟩ := h
+  exact ⟨Date.epochDay_ofEpochDay? hs, Date.epochDay_ofEpochDay? he⟩
+
+theorem peakPred_eq {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) {r : PeakTimeRow} {x : PeakTime}
+    (h : peakTimeOfRow r = some x) :
+    peakPred d r = decide (x.peakStartDate ≤ D ∧ D ≤ x.peakEndDate) := by
+  obtain ⟨hs, he⟩ := peakTimeOfRow_dates h
+  have hD := (dateOfJ_eq_some hd).2
+  simp only [peakPred, JLocalDate.isBefore, JLocalDate.isAfter, JLocalDate.toEpochDay_ofEpochDay, hD,
+    Date.le_iff_epochDay_le, hs, he]
+  rw [Bool.eq_iff_iff]
+  simp only [Bool.not_eq_true', Bool.or_eq_false_iff, decide_eq_false_iff_not, decide_eq_true_eq]
+  omega
+
+theorem answer_peakTime {r : PeakTimeRow} {x : PeakTime} (h : peakTimeOfRow r = some x) :
+    Answer.peakTime (SourceModel.Repository.Mapping.peakTime r) = some x := by
+  simp only [peakTimeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨s, hs, e, he, m, hmr, rfl⟩ := h
+  simp only [Answer.peakTime, SourceModel.Repository.Mapping.peakTime, SourceModel.Repository.Mapping.str,
+    SourceModel.Repository.Mapping.date, Option.bind_some, dateOfJ_ofEpochDay, natOfJ32_int, hmr,
+    Option.bind_eq_bind, Option.pure_def]
+  simp only [dateOfPg] at hs he
+  simp only [hs, he, Option.bind_some]
+
+/-- ピーク時期の参照は、Mapper の結果のどの並びでも、DB の行で `peakPred` を満たす行の写し（MD-4 で高々 1 つ）。 -/
+theorem getPeakTime_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
+    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
+    getPeakTime (PeakTimeProvider.load o) (some d) =
+      .ok ((db.peakTime.find? (peakPred d)).map SourceModel.Repository.Mapping.peakTime) ∧
+    md.peakTimeOn D = (db.peakTime.find? (peakPred d)).bind peakTimeOfRow := by
+  obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
+  have hp' : o.Perm db.peakTime := hp
+  constructor
+  · simp only [getPeakTime, PeakTimeProvider.load, pure_bind]
+    rw [getPeakTime_go, find?_perm hp']
+    intro a ha b hb ea eb
+    obtain ⟨x, hx, hxa⟩ := mapM_some_mem hpt (hp'.mem_iff.mp ha)
+    obtain ⟨y, hy, hyb⟩ := mapM_some_mem hpt (hp'.mem_iff.mp hb)
+    rw [peakPred_eq hd hxa, decide_eq_true_eq] at ea
+    rw [peakPred_eq hd hyb, decide_eq_true_eq] at eb
+    have ex := (MasterData.peakTimeOn_eq_some_iff h4).mpr ⟨hx, ea⟩
+    have ey := (MasterData.peakTimeOn_eq_some_iff h4).mpr ⟨hy, eb⟩
+    have exy : x = y := Option.some.inj (ex.symm.trans ey)
+    subst exy
+    exact inj_of_kernel peakTimeOfRow_kernel hxa hyb
+  · unfold MasterData.peakTimeOn
+    exact find?_mapM hpt fun _ _ h => (peakPred_eq hd h).symm
+
+theorem peakTime_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
+    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
+    ∃ ans, getPeakTime (PeakTimeProvider.load o) (some d) = .ok ans ∧
+      answerOf? (.peakTime ans) = some (.peakTime (md.peakTimeOn D)) := by
+  obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
+  obtain ⟨e1, e2⟩ := getPeakTime_eq hm h4 hp hd
+  refine ⟨_, e1, ?_⟩
+  rw [e2]
+  cases hf : db.peakTime.find? (peakPred d) with
+  | none => simp only [Option.map_none, Option.bind_none, answerOf?, Answer.opt, Option.map_some]
+  | some r =>
+    obtain ⟨x, _, hx⟩ := mapM_some_mem hpt (List.mem_of_find?_eq_some hf)
+    simp only [Option.map_some, Option.bind_some, hx, answerOf?, Answer.opt, answer_peakTime hx]
+
+theorem ratio_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
+    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D)
+    (bcp : BoardingClassProvider) :
+    ∃ n, SourceModel.Fare.getMultiplicationRatio
+        { boardingClassProvider := bcp, peakTimeProvider := PeakTimeProvider.load o } (some d) = .ok n ∧
+      answerOf? (.ratio n) = some (.ratio (md.multiplicationRatioOn D)) := by
+  obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
+  obtain ⟨e1, e2⟩ := getPeakTime_eq hm h4 hp hd
+  simp only [SourceModel.Fare.getMultiplicationRatio, e1, ok_bind, MasterData.multiplicationRatioOn, e2]
+  cases hf : db.peakTime.find? (peakPred d) with
+  | none =>
+    refine ⟨_, rfl, ?_⟩
+    simp only [Option.bind_none, answerOf?, SourceModel.Fare.multiplicationRatioInNormalTime]
+    rfl
+  | some r =>
+    obtain ⟨x, _, hx⟩ := mapM_some_mem hpt (List.mem_of_find?_eq_some hf)
+    have hr : natOfInt4 r.multiplicationRatio = some x.multiplicationRatio := by
+      simp only [peakTimeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hx
+      obtain ⟨_, _, _, _, m, hmr, rfl⟩ := hx
+      exact hmr
+    refine ⟨_, rfl, ?_⟩
+    simp only [Option.bind_some, hx, answerOf?, Option.map_eq_some_iff]
+    refine ⟨x.multiplicationRatio, ?_, rfl⟩
+    rw [← hr, ← natOfJ32_int]; rfl
 
 end Abstraction.MasterData
