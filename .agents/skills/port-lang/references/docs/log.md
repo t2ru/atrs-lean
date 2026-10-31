@@ -2,11 +2,14 @@
 
 ## 2026-10-31
 
-* **Update**: 文書を性格ごとのディレクトリに分けた（[ADR 748c](decision/748c-skill-docs-category-directories.md)、[backlog 97a7](backlog/97a7-skill-docs-category-directories.md)）。スキルの版を 0.10 にした。
+* **Update**: 文書を性格ごとのディレクトリに分けた（[ADR 748c](decision/748c-skill-docs-category-directories.md)、[backlog 97a7](backlog/97a7-skill-docs-category-directories.md)）。スキルの版を 0.11 にした。
   * 方法の文書を `spec/`（[architecture.md](spec/architecture.md)・[portability.md](spec/portability.md)・[traceability.md](spec/traceability.md)・[conformance.md](spec/conformance.md)・[verification.md](spec/verification.md)。`type: Specification`）、`rules/`（[spec-documents.md](rules/spec-documents.md)・[maintenance.md](rules/maintenance.md)。`Guideline`）、`guide/`（[process.md](guide/process.md)・[workflow.md](guide/workflow.md)・[upgrade.md](guide/upgrade.md)・[adding-a-language.md](guide/adding-a-language.md)。`type: Guide`）に移した。
   * 言語パック `java/`・`sql/`・`rust/`・`lean/` を `lang/` の下に移した。ファイル名と中の構成は変えていない。
   * [index.md](index.md) の節、[maintenance.md](rules/maintenance.md#バンドルの構成) の表、プロファイル `scripts/docs/profiles/port-lang.json` の規則を改めた。
   * 移動とリンクの張り直しの道具 `scripts/docs/docmv.py` を足した（`scripts/README.md`）。スキル・適用先の文書のリンクと、コード・設定の中のパスの言及を、これで張り直した。
+* **Creation**: [ADR c08b](decision/c08b-test-namespace-for-skill-asset-tests.md) で、`assets/lean` の検査 `LangSemanticsTest`・`MachineTest`・`ConformanceKitTest`・`TraceTest` を `Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`（ディレクトリ `assets/lean/Test/`）に改めた。Lake のライブラリを `Test` の 1 つにし、`scripts/ci/check_lean.py` が `Test` を `Tests` の層として扱うようにした。スキルの版を 0.10 にした。
+  * [lean/rules.md](lang/lean/rules.md)・[architecture.md](spec/architecture.md#層)・`SKILL.md`・`scripts/README.md`・言語パックの文書の名前とパスを改めた。
+  * 来歴: 適用先 ATRS のオーナーの依頼。
 * **Creation**: [ADR 330e](decision/330e-okf-bundle-check-tool.md) で、OKF のバンドルとリンクの検査の道具 `scripts/docs/okf_check.py` を置いた（[backlog a49c](backlog/a49c-okf-bundle-check-tool.md)）。スキルの版を 0.9 にした。
   * このバンドルの規則を `scripts/docs/profiles/port-lang.json` にした。違反例を `scripts/ci/fixtures/okf/` に置いた。
   * [maintenance.md](rules/maintenance.md#バンドルの検査)（検査と YAML の部分集合）・[traceability.md](spec/traceability.md#プロジェクトの設定)（設定の `okf`）・`scripts/README.md` を改めた。

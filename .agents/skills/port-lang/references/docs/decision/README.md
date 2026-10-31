@@ -23,4 +23,5 @@ generated:
 | edc8 | [アプリに依存しない道具と Lean のライブラリをスキル port-lang へ移し、ATRS 固有の値を trace/project.json に集める](edc8-skill-scripts-and-generic-lean-libraries.md) | accepted | 2026-10-31 |
 | 87b9 | [スキルの文書を references/docs/ の OKF バンドルにし、スキルの決定と作業項目をスキルで持つ](87b9-skill-docs-as-okf-bundle.md) | accepted | 2026-10-31 |
 | 330e | [OKF バンドルとリンクの検査の道具 okf_check.py を置き、規則を設定のプロファイルで与える](330e-okf-bundle-check-tool.md) | accepted | 2026-10-31 |
+| c08b | [スキルの assets の Lean の検査を名前空間 Test.<ライブラリ> にまとめる](c08b-test-namespace-for-skill-asset-tests.md) | accepted | 2026-10-31 |
 | 748c | [スキルの文書を spec/・rules/・guide/・lang/ に分け、移動の道具 docmv.py を置く](748c-skill-docs-category-directories.md) | accepted | 2026-10-31 |

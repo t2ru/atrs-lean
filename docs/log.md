@@ -2,10 +2,11 @@
 
 ## 2026-10-31
 
-* **Update**: スキル port-lang の文書を、性格ごとのディレクトリ `spec/`・`rules/`・`guide/`・`lang/<lang>/` に分けた（[スキルの ADR 748c](../.agents/skills/port-lang/references/docs/decision/748c-skill-docs-category-directories.md)、[スキルの backlog 97a7](../.agents/skills/port-lang/references/docs/backlog/97a7-skill-docs-category-directories.md)）。スキルの版は 0.10。
+* **Update**: スキル port-lang の文書を、性格ごとのディレクトリ `spec/`・`rules/`・`guide/`・`lang/<lang>/` に分けた（[スキルの ADR 748c](../.agents/skills/port-lang/references/docs/decision/748c-skill-docs-category-directories.md)、[スキルの backlog 97a7](../.agents/skills/port-lang/references/docs/backlog/97a7-skill-docs-category-directories.md)）。スキルの版は 0.11。
   * スキルの道具 `docmv.py` で、ATRS の文書・`lean/`・`trace/project.json`・`.github/workflows/` のリンクとパスの言及を張り直した。ADR とこのファイルの本文に書いたリンクでないパスは記録として残し、リンクだけ直した。
-  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.10）、[AGENTS.md](../AGENTS.md)（言語パックの置き場所）。`tools/ci/lean.sh` に `docmv.py --self-test` を足した。
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.11）、[AGENTS.md](../AGENTS.md)（言語パックの置き場所）。`tools/ci/lean.sh` に `docmv.py --self-test` を足した。
 
+* **Update**: [スキルの ADR c08b](../.agents/skills/port-lang/references/docs/decision/c08b-test-namespace-for-skill-asset-tests.md) で、スキルの assets の検査の名前空間を `XxxTest` から `Test.Xxx`（`Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`）に改めたのにあわせ、[spec/assurance.md](spec/assurance.md) のパス、`trace/checks.json` の検査の手順（`lake build +Test.LangSemantics`）、`tools/ci/lean.sh` の表示を改めた。ATRS の `Tests` は変えていない。スキルの版は 0.10。
 * **Creation**: [ADR 920d](decision/920d-docs-bundle-check-in-ci.md) で、`docs/` とスキルのバンドルを、スキルの道具 `okf_check.py`（[スキルの ADR 330e](../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)、[スキルの backlog a49c](../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md)）で検査し、`tools/ci/lean.sh` から実行するようにした。[backlog ddbd](backlog/ddbd-okf-bundle-lint.md) を完了した（`done`）。
   * ATRS の規則を `trace/project.json` の `okf` に置いた。スキルの版は 0.9。
   * 導入で見つかった違反を直した: [rules/README.md](rules/README.md) の `type` を `Overview` に、[index.md](index.md) の ADR f4e1・c108 の説明を frontmatter に合わせた。[backlog 0d1a](backlog/0d1a-mutation-testing-of-named-components.md)・[backlog c27d](backlog/c27d-gap-evidence-states.md) に `対象外` の節を補った。

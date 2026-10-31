@@ -40,16 +40,16 @@ python3 -I "$scripts/ci/check_obligations.py" --self-test
 # 終了コード 2 は「処理系が無いので飛ばした」（ローカルだけ。CI では 1 になる）。
 skippable() { local rc=0; "$@" || rc=$?; [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ] || exit "$rc"; }
 
-step "assets/lean: JVM との突き合わせ表（LangSemanticsTest/JavaJvm.lean）が生成器の出力と一致する"
+step "assets/lean: JVM との突き合わせ表（Test/LangSemantics/JavaJvm.lean）が生成器の出力と一致する"
 skippable "$scripts/ci/jvm_table.sh"
 
-step "assets/lean: PostgreSQL との突き合わせ表（LangSemanticsTest/PostgresqlDb.lean）が生成器の出力と一致する"
+step "assets/lean: PostgreSQL との突き合わせ表（Test/LangSemantics/PostgresqlDb.lean）が生成器の出力と一致する"
 skippable "$scripts/ci/pg_table.sh"
 
 step "conformance: マスタの Mapper の文・コードリストの SQL の PostgreSQL での結果（conformance/sql/master-data.json）が最新である"
 skippable tools/ci/master_sql.sh
 
-step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 LangSemanticsTest・MachineTest・TraceTest）"
+step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 Test.LangSemantics・Test.Machine・Test.Trace）"
 (cd "$skill/assets/lean" && lake build)
 
 step "assets/lean: trace-test（trace-dump・obligation-check の処理をフィクスチャにかける）"

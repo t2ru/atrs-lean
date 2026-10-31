@@ -22,7 +22,7 @@ generated:
 | `Trace.Obligation` | `obligation-check` の本体（TR-G の Lean 側と GK） |
 
 道具の入口（`main`）は、モデルを import するプロジェクトの側に置く（例: `Tools/TraceDump.lean` が `Trace.Dump.loadEnv` と `Trace.Dump.dumpJson` を呼ぶ）。
-`assets/lean/` の `lake exe trace-test` は、`TraceTest/` のフィクスチャで `trace-dump`・`obligation-check` の処理を確かめる。
+`assets/lean/` の `lake exe trace-test` は、`Test/Trace/` のフィクスチャで `trace-dump`・`obligation-check` の処理を確かめる。
 
 ## 属性
 

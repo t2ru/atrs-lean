@@ -22,7 +22,7 @@ generated:
 - 道具 `scripts/docs/docmv.py`（標準ライブラリと `git`）と `--self-test`。`scripts/README.md`
 - 移動: 方法の文書 11 本を `spec/`・`rules/`・`guide/` へ、`java/`・`sql/`・`rust/`・`lean/` を `lang/` へ
 - 張り直し: スキル・適用先の文書のリンク、コード・設定の中のパスの言及
-- `type`（`Specification`・`Guide`）、プロファイル `scripts/docs/profiles/port-lang.json`、[index.md](../index.md) の節、[maintenance.md](../rules/maintenance.md#バンドルの構成) の表、SKILL.md の版（0.10）
+- `type`（`Specification`・`Guide`）、プロファイル `scripts/docs/profiles/port-lang.json`、[index.md](../index.md) の節、[maintenance.md](../rules/maintenance.md#バンドルの構成) の表、SKILL.md の版（0.11）
 
 ## 対象外
 

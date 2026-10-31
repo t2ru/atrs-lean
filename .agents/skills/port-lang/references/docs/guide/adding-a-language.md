@@ -33,7 +33,7 @@ generated:
 2. `SKILL.md` の「言語パック」表に行を追加し、6 ファイルへ直接リンクする。
 3. ロケータの `kind` が既存の言語と衝突しないことを確認する（[traceability.md](../spec/traceability.md)）。
 4. `LangSemantics.<Lang>` を Lean で `assets/lean/LangSemantics/<Lang>/` に実装し、`assets/lean/LangSemantics.lean` から import する（[lean/rules.md](../lang/lean/rules.md)）。アプリ固有の型を入れない。
-5. `assets/lean/LangSemanticsTest/<Lang>.lean` に `#guard` の検査を書き、`assets/lean/` で `lake build` が通ることを確認する。
+5. `assets/lean/Test/LangSemantics/<Lang>.lean` に `#guard` の検査を書き、`assets/lean/` で `lake build` が通ることを確認する。
 6. `LangSemantics.<Lang>` の忠実性を、実際の処理系の結果と決定論的に突き合わせる（固定した入力の表、または全探索）。突き合わせられない演算と、突き合わせた入力の範囲は、`verification.md` に限界として書く。
 7. 移植先として使う場合は、`TargetModel` から検証器向けの写しを生成する方法（生成器と対応表）を `layout.md` に書く。検証器が無い言語では、確認手段と限界を `verification.md` に書く。
 
@@ -52,7 +52,7 @@ generated:
 1. `references/docs/lang/<lang>/dialects/<name>/` に上記 3 ファイルを作る。`<name>` は処理系名の英小文字（例 `postgresql`, `mysql`, `oracle`, `sqlserver`）。
 2. 言語パックの `semantics.md`・`frameworks.md`・`harness.md` にある「方言の一覧」の表に行を追加する。
 3. `SKILL.md` の言語パック表の方言の行に追加し、3 ファイルへ直接リンクする。
-4. Lean に `LangSemantics.<Lang>.<Dialect>` を `assets/lean/LangSemantics/<Lang>/<Dialect>.lean` として実装し、検査を `assets/lean/LangSemanticsTest/` に足す。共通部分（`LangSemantics.<Lang>`）には依存してよいが、他の方言には依存しない。
+4. Lean に `LangSemantics.<Lang>.<Dialect>` を `assets/lean/LangSemantics/<Lang>/<Dialect>.lean` として実装し、検査を `assets/lean/Test/LangSemantics/` に足す。共通部分（`LangSemantics.<Lang>`）には依存してよいが、他の方言には依存しない。
 5. ロケータは言語パックのもの（例 `sql:`）を使い、処理系の仕様の節は `lang:<name>#<節>` で指す。
 
 ## 判断の目安

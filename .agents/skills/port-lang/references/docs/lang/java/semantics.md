@@ -15,7 +15,7 @@ Java の基本型の意味論を、**整数演算だけでエミュレートで�
 Lean 標準の `Float` は C の double に委譲される不透明な型で、性質を証明できないため使わない。
 移植元として使う場合（`SourceModel`）も、移植先として使う場合（`TargetModel`）も、同じ定義を使う。
 
-Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSemantics.Java`）。検査は `assets/lean/LangSemanticsTest/Java.lean`。
+Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSemantics.Java`）。検査は `assets/lean/Test/LangSemantics/Java.lean`。
 
 ## 演算（名前は仕様文書でも共通に使う）
 

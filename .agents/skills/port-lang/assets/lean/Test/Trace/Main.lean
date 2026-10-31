@@ -1,25 +1,25 @@
 import Trace.Dump
 import Trace.Obligation
 import Trace.Gap
-import TraceTest
+import Test.Trace
 
 /-!
-# TraceTest.Main
+# Test.Trace.Main
 
 追跡属性の道具の検査（実行ファイル `trace-test`。`lake exe trace-test`）。
 
-- `TraceTest.Fixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュ・ギャップの登録簿を確かめる。
-- `TraceTest.ObligationFixture` を `obligation-check` と同じ処理にかけ、正例を通し、違反例を規則ごとに検出することを確かめる。
+- `Test.Trace.Fixture` を `trace-dump` と同じ処理にかけ、属性・層・参照・Merkle ハッシュ・ギャップの登録簿を確かめる。
+- `Test.Trace.ObligationFixture` を `obligation-check` と同じ処理にかけ、正例を通し、違反例を規則ごとに検出することを確かめる。
 - Merkle の合成（伝播・範囲・強連結成分）は、合成した小さなグラフで確かめる。
   カーネルの定義は直接には再帰しないため、相互再帰の閉路は実際の定義からは作れない。
 -/
 
 open Lean Trace.Dump
 
-/-- フィクスチャの層: 接頭辞 `TraceTest.Fixture` を除いた名前で、既定の決め方を使う。 -/
+/-- フィクスチャの層: 接頭辞 `Test.Trace.Fixture` を除いた名前で、既定の決め方を使う。 -/
 def fixtureLayerOf (n : Name) : Option Layer :=
   match n.components with
-  | `TraceTest :: `Fixture :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
+  | `Test :: `Trace :: `Fixture :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
   | _ => none
 
 def fixtureConfig : Config := { layerOf := fixtureLayerOf, merkleScope := defaultMerkleScope }
@@ -33,7 +33,7 @@ def check (label : String) (ok : Bool) : IO Unit := do
     IO.eprintln s!"  FAIL {label}"
     failures.modify (· + 1)
 
-def fx (s : String) : Name := (`TraceTest.Fixture).append s.toName
+def fx (s : String) : Name := (`Test.Trace.Fixture).append s.toName
 
 def find? (es : Array Entry) (s : String) : Option Entry :=
   es.find? (·.name == fx s)
@@ -88,7 +88,7 @@ def merkleTests : IO Unit := do
 
 /-- フィクスチャを trace-dump の処理にかける。 -/
 def fixtureTests (env : Environment) : IO Unit := do
-  IO.println "trace-dump (TraceTest.Fixture)"
+  IO.println "trace-dump (Test.Trace.Fixture)"
   let es := dump env fixtureConfig
   check "attributes: source (2 args)"
     (attrsOf? es "SourceModel.base" ==
@@ -127,8 +127,8 @@ def fixtureTests (env : Environment) : IO Unit := do
   check "gaps: id, kind and label" (field "id" == "T-998" && field "kind" == "outside_pre" && field "kind_label" == "PRE の外")
   check "gaps: docstring" (field "doc" == "フィクスチャの **ギャップ** の説明。")
   check "gaps: sites" (field "sites" == Json.arr #[Json.mkObj [("label", "例"), ("path", "docs/spec/example.md#base"), ("note", "（注記）")]])
-  check "gaps: markers" (field "markers" == Json.arr #["TraceTest.Fixture.TargetModel.isEven"])
-  check "gaps: module" (field "module" == "TraceTest.Fixture")
+  check "gaps: markers" (field "markers" == Json.arr #["Test.Trace.Fixture.TargetModel.isEven"])
+  check "gaps: module" (field "module" == "Test.Trace.Fixture")
   check "dump: sorted by name"
     ((es.map (·.name.toString)).toList == ((es.map (·.name.toString)).qsort (· < ·)).toList)
 
@@ -136,18 +136,18 @@ def fixtureTests (env : Environment) : IO Unit := do
 def ruleCodes (errs : Array String) : List String :=
   (errs.toList.map fun e => (e.take 2).toString).eraseDups.mergeSort (· ≤ ·)
 
-/-- フィクスチャの対象: 接頭辞 `TraceTest.ObFix` を除いた名前で、既定の層の決め方を使う。 -/
+/-- フィクスチャの対象: 接頭辞 `Test.Trace.ObFix` を除いた名前で、既定の層の決め方を使う。 -/
 def obFixScope : Trace.Obligation.Scope :=
   { layerOf := fun n =>
       match n.components with
-      | `TraceTest :: `ObFix :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
+      | `Test :: `Trace :: `ObFix :: rest => defaultLayerOf [] (rest.foldl (· ++ ·) Name.anonymous)
       | _ => none }
 
 /-- フィクスチャを obligation-check の処理にかける。 -/
 def obligationTests (env : Environment) : IO Unit := do
-  IO.println "obligation-check (TraceTest.ObligationFixture)"
+  IO.println "obligation-check (Test.Trace.ObligationFixture)"
   let r := Trace.Obligation.check env obFixScope
-  let ab (s : String) : Name := (`TraceTest.ObFix.Abstraction).append s.toName
+  let ab (s : String) : Name := (`Test.Trace.ObFix.Abstraction).append s.toName
   let codesOf (s : String) : Option (List String) :=
     (r.rs.find? (·.name == ab s)).map (ruleCodes ·.errors)
   for (s, expected) in [("good_refines", ([] : List String)), ("good_abbrev", []), ("v1_forall", ["G1"]),
@@ -170,36 +170,36 @@ def obligationTests (env : Environment) : IO Unit := do
   check "necessity: anyOf leaf replaced by never" (necessityOf "obs2_refines" == some #[ab "obsNaN"])
   check "pre_refines: env_pre fact on a base with ¬ TotalUnder always"
     (match r.rs.find? (·.name == ab "pre_refines") with
-     | some ri => ri.envNecessary && ri.totalUnder == #[(`TraceTest.ObFix.Spec.envOk, false)]
+     | some ri => ri.envNecessary && ri.totalUnder == #[(`Test.Trace.ObFix.Spec.envOk, false)]
      | none => false)
   check "good_refines: kind, deviation, std_abs, choices, companions, entry and state safety facts"
     (match r.rs.find? (·.name == ab "good_refines") with
      | some ri => ri.absKind == "ofChoice" && ri.devs == #[ab "devLang"] &&
          ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
-         ri.envLeaves == #[`TraceTest.ObFix.Spec.Conflict] && ri.freeLeaves.isEmpty &&
+         ri.envLeaves == #[`Test.Trace.ObFix.Spec.Conflict] && ri.freeLeaves.isEmpty &&
          ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
          ri.totalUnder == #[(`Machine.always, true)] && ri.stateSafe == #[ab "devLang"]
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
-    | some ri => ri.freeLeaves == #[`TraceTest.ObFix.Spec.AnyResult] | none => false)
-  let expectedGlobal := ["G7: TraceTest.ObFix.Abstraction.aoIf", "G7: TraceTest.ObFix.Abstraction.aoPart2 ", "G7: TraceTest.ObFix.Abstraction.aoPart4 ", "G7: TraceTest.ObFix.Abstraction.ceCheat",
-    "G7: TraceTest.ObFix.Abstraction.via", "G8: TraceTest.ObFix.Abstraction.devK", "G8: TraceTest.ObFix.Abstraction.devNoW",
-    "G0: TraceTest.ObFix.Abstraction.v0_notRefines", "G3: TraceTest.ObFix.Spec.specRel",
-    "G0: TraceTest.ObFixHelpers.devFalse", "G8: TraceTest.ObFixHelpers.devFalse",
-    "G9: D-905", "G9: D-911", "G9: D-912", "G9: TraceTest.ObFix.Abstraction.devTwo",
-    "G9: TraceTest.ObFix.Spec.envNoNeed", "G8: TraceTest.ObFix.Abstraction.devUndetermined",
-    "GK: D-922 is declared by both", "GK: TraceTest.ObFix.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
-    "GK: TraceTest.ObFix.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
-    "GK: TraceTest.ObFix.Abstraction.markedAbstraction has @[gap \"D-922\"] but is not in",
-    "GK: TraceTest.ObFix.Spec.markedOutOfModel has @[gap \"D-920\"] but D-920 is out_of_model",
-    "GK: TraceTest.ObFix.Spec.markedUnknown has @[gap \"D-999\"] but D-999 has no @[gap_entry]",
-    "GK: TraceTest.ObFix.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined",
-    "GK: TraceTest.ObFix.Abstraction.devLangB has @[deviation \"D-901\"] but the @[gap_entry] of D-901 does not list it",
-    "GK: D-905: TraceTest.ObFix.Abstraction.need_arrow is not a necessity theorem",
-    "GK: D-907: TraceTest.ObFix.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
+    | some ri => ri.freeLeaves == #[`Test.Trace.ObFix.Spec.AnyResult] | none => false)
+  let expectedGlobal := ["G7: Test.Trace.ObFix.Abstraction.aoIf", "G7: Test.Trace.ObFix.Abstraction.aoPart2 ", "G7: Test.Trace.ObFix.Abstraction.aoPart4 ", "G7: Test.Trace.ObFix.Abstraction.ceCheat",
+    "G7: Test.Trace.ObFix.Abstraction.via", "G8: Test.Trace.ObFix.Abstraction.devK", "G8: Test.Trace.ObFix.Abstraction.devNoW",
+    "G0: Test.Trace.ObFix.Abstraction.v0_notRefines", "G3: Test.Trace.ObFix.Spec.specRel",
+    "G0: Test.Trace.ObFixHelpers.devFalse", "G8: Test.Trace.ObFixHelpers.devFalse",
+    "G9: D-905", "G9: D-911", "G9: D-912", "G9: Test.Trace.ObFix.Abstraction.devTwo",
+    "G9: Test.Trace.ObFix.Spec.envNoNeed", "G8: Test.Trace.ObFix.Abstraction.devUndetermined",
+    "GK: D-922 is declared by both", "GK: Test.Trace.ObFix.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
+    "GK: Test.Trace.ObFix.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
+    "GK: Test.Trace.ObFix.Abstraction.markedAbstraction has @[gap \"D-922\"] but is not in",
+    "GK: Test.Trace.ObFix.Spec.markedOutOfModel has @[gap \"D-920\"] but D-920 is out_of_model",
+    "GK: Test.Trace.ObFix.Spec.markedUnknown has @[gap \"D-999\"] but D-999 has no @[gap_entry]",
+    "GK: Test.Trace.ObFix.Abstraction.devUndetermined has @[deviation \"D-921\"] but D-921 is undetermined",
+    "GK: Test.Trace.ObFix.Abstraction.devLangB has @[deviation \"D-901\"] but the @[gap_entry] of D-901 does not list it",
+    "GK: D-905: Test.Trace.ObFix.Abstraction.need_arrow is not a necessity theorem",
+    "GK: D-907: Test.Trace.ObFix.Abstraction.obs2_needed (the evidence refuted) must have @[gap \"D-907\"]",
     "GK: D-911: the covered chain is cyclic", "GK: D-912: the covered chain is cyclic",
-    "GK: D-921: the claim TraceTest.ObFix.Abstraction.claim921 must be an opaque Prop",
-    "GK: TraceTest.ObFix.Abstraction.usesClaim refers to TraceTest.ObFix.Abstraction.claim920"]
+    "GK: D-921: the claim Test.Trace.ObFix.Abstraction.claim921 must be an opaque Prop",
+    "GK: Test.Trace.ObFix.Abstraction.usesClaim refers to Test.Trace.ObFix.Abstraction.claim920"]
   check s!"global errors: exactly {expectedGlobal.length}"
     (r.errors.size == expectedGlobal.length &&
       expectedGlobal.all fun p => r.errors.any (·.startsWith p))
@@ -215,9 +215,9 @@ def obligationTests (env : Environment) : IO Unit := do
       evOf "D-920" "state" == "unformalized" && evOf "D-922" "state" == "excluded_by" &&
       evOf "D-901" "label" == "偽を証明済み")
   check "gaps: witnesses, coverer and pre"
-    (evOf "D-901" "witnesses" == Json.arr #["TraceTest.ObFix.Abstraction.need_devLang"] &&
-      evOf "D-910" "coverer" == "TraceTest.ObFix.Abstraction.devLang" &&
-      evOf "D-922" "pre" == Json.arr #["TraceTest.ObFix.Spec.markedSpec"])
+    (evOf "D-901" "witnesses" == Json.arr #["Test.Trace.ObFix.Abstraction.need_devLang"] &&
+      evOf "D-910" "coverer" == "Test.Trace.ObFix.Abstraction.devLang" &&
+      evOf "D-922" "pre" == Json.arr #["Test.Trace.ObFix.Spec.markedSpec"])
   check "gaps: w_task from the @[obligation] of the refuting theorem, or the planned one"
     ((gapOf "D-901").getObjValD "w_task" == "ABS-951" && (gapOf "D-913").getObjValD "w_task" == "ABS-990" &&
       (gapOf "D-906").getObjValD "w_task" == Json.null)
@@ -225,16 +225,16 @@ def obligationTests (env : Environment) : IO Unit := do
     ((gapOf "D-921").getObjValD "resolution" == "オラクルで確かめる")
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
-  check "nondet listed" (r.nondets.map (·.1) == #[`TraceTest.ObFix.Spec.AnyResult, `TraceTest.ObFix.Spec.Conflict])
+  check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObFix.Spec.AnyResult, `Test.Trace.ObFix.Spec.Conflict])
   check "gaps: entries readable and listed in the report (D-901..D-913, D-920..D-924 and the duplicate)"
     ((r.gaps.getArr?.toOption.map (·.size)) == some 19)
-  check "env_pre listed" (r.envPres.map (·.1) == #[`TraceTest.ObFix.Spec.envNoNeed, `TraceTest.ObFix.Spec.envOk])
+  check "env_pre listed" (r.envPres.map (·.1) == #[`Test.Trace.ObFix.Spec.envNoNeed, `Test.Trace.ObFix.Spec.envOk])
 
 unsafe def main : IO UInt32 := do
   merkleTests
-  let env ← loadEnv #[`TraceTest.Fixture]
+  let env ← loadEnv #[`Test.Trace.Fixture]
   fixtureTests env
-  let env ← loadEnv #[`TraceTest.ObligationFixture]
+  let env ← loadEnv #[`Test.Trace.ObligationFixture]
   obligationTests env
   let n ← failures.get
   if n == 0 then

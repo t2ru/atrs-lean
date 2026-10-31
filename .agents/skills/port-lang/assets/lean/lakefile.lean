@@ -23,24 +23,18 @@ lean_lib Trace where
 @[default_target]
 lean_lib ConformanceKit where
 
-/-- `#guard` による検査。`lake build LangSemanticsTest` で実行される。 -/
-@[default_target]
-lean_lib LangSemanticsTest where
+/-- 上の 4 つのライブラリの検査（`Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`）。
+`lake build` で実行される。一部だけなら `lake build +Test.LangSemantics` のようにモジュールで指定する。
 
-/-- `Machine` の例・反例と公理の確認。`lake build MachineTest` で実行される。 -/
+- `Test.LangSemantics`: `#guard` による言語意味論の検査（JVM・PostgreSQL との突き合わせ表を含む）
+- `Test.Machine`: `Machine` の例・反例と公理の確認
+- `Test.ConformanceKit`: `ConformanceKit` の実行器の検査（`#guard`）
+- `Test.Trace`: `Trace` の属性の誤りの検査（`#guard_msgs`）とフィクスチャ -/
 @[default_target]
-lean_lib MachineTest where
-
-/-- `ConformanceKit` の実行器の検査（`#guard`）。`lake build ConformanceKitTest` で実行される。 -/
-@[default_target]
-lean_lib ConformanceKitTest where
-
-/-- `Trace` の属性の誤りの検査（`#guard_msgs`）とフィクスチャ。`lake build TraceTest` で実行される。 -/
-@[default_target]
-lean_lib TraceTest where
+lean_lib Test where
 
 /-- `Trace.Dump`・`Trace.Obligation` をフィクスチャにかける検査。`lake exe trace-test` で実行する。 -/
 @[default_target]
 lean_exe «trace-test» where
-  root := `TraceTest.Main
+  root := `Test.Trace.Main
   supportInterpreter := true

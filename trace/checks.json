@@ -18,19 +18,19 @@
     },
     {
       "id": "jvm-table",
-      "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と LangSemanticsTest の #guard）",
+      "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
         { "cwd": ".", "argv": [".agents/skills/port-lang/scripts/ci/jvm_table.sh"] },
-        { "cwd": ".agents/skills/port-lang/assets/lean", "argv": ["lake", "build", "LangSemanticsTest"] }
+        { "cwd": ".agents/skills/port-lang/assets/lean", "argv": ["lake", "build", "+Test.LangSemantics"] }
       ],
       "covers": { "names": ["LangSemantics.Java.*"] }
     },
     {
       "id": "pg-table",
-      "description": "SQL の言語意味論と PostgreSQL の突き合わせ（表の再生成と LangSemanticsTest の #guard）",
+      "description": "SQL の言語意味論と PostgreSQL の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
         { "cwd": ".", "argv": [".agents/skills/port-lang/scripts/ci/pg_table.sh"] },
-        { "cwd": ".agents/skills/port-lang/assets/lean", "argv": ["lake", "build", "LangSemanticsTest"] }
+        { "cwd": ".agents/skills/port-lang/assets/lean", "argv": ["lake", "build", "+Test.LangSemantics"] }
       ],
       "covers": { "names": ["LangSemantics.Sql.*"] }
     }

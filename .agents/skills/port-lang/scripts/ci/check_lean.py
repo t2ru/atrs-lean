@@ -107,7 +107,7 @@ def layer_of(module: str):
     root = parts[0]
     if root == "LangSemantics":
         return "LangSemantics" if len(parts) == 1 else f"LangSemantics.{parts[1]}"
-    if root in ("LangSemanticsTest", "MachineTest", "TraceTest", "ConformanceKitTest"):
+    if root == "Test":  # スキルの assets の検査（Test.LangSemantics・Test.Machine・Test.ConformanceKit・Test.Trace）
         return "Tests"
     if root in ALL_LAYERS:
         return root

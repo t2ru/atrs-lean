@@ -1,7 +1,7 @@
 import Machine
 
 /-!
-# MachineTest.Nondet
+# Test.Machine.Nondet
 
 状態を持たない機械で、非決定性の向きを確かめる。
 
@@ -13,9 +13,9 @@ import Machine
   `Concrete.restrict`（前提型の差異の模擬）で成り立つ。
 -/
 
-namespace MachineTest.Nondet
+namespace Test.Machine.Nondet
 
-open Machine
+open _root_.Machine
 
 /-- 恒等の入出力の対応。 -/
 def eqGlue (ι ο : Type) : Glue Unit Unit ι ι ο ο := Glue.pure (· = ·) (· = ·)
@@ -138,4 +138,4 @@ def succConcrete : Concrete Unit Nat Nat String := Concrete.pure fun n => .ok (n
 theorem succConcrete_refines : Refines succSpec succConcrete (eqGlue _ _) :=
   Refines.of_pure (fun ic => ⟨ic, rfl⟩) fun ic _ ha _ => ⟨ic + 1, rfl, by cases ha; rfl⟩
 
-end MachineTest.Nondet
+end Test.Machine.Nondet

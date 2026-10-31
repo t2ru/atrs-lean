@@ -79,8 +79,8 @@ generated:
 | `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
-| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、port-lang の `scripts/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/TraceTest/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
-| ギャップ（既知差異・PRE の外・未確定）の登録簿・箇所の印・証明の状態の裏付け（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)・[ADR 6ab4](../decision/6ab4-gap-evidence-states-without-axioms.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`trace check`、表の生成（`trace manifest --check`） | 検査器と生成器（`TraceTest/` のフィクスチャと port-lang の `scripts/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である。形式化していない主張（`opaque`）の中身は docstring にあり、Lean は何も主張しない |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、port-lang の `scripts/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/Test/Trace/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+| ギャップ（既知差異・PRE の外・未確定）の登録簿・箇所の印・証明の状態の裏付け（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)・[ADR 6ab4](../decision/6ab4-gap-evidence-states-without-axioms.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`trace check`、表の生成（`trace manifest --check`） | 検査器と生成器（`Test/Trace/` のフィクスチャと port-lang の `scripts/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である。形式化していない主張（`opaque`）の中身は docstring にあり、Lean は何も主張しない |
 
 ### モデル間の保証の限界
 
@@ -104,7 +104,7 @@ generated:
 | 入口でない R 課題の PRE | 入口の R 課題の証明で使われること | 入口から到達しない使われ方での振る舞い |
 | R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
 | 成分の必要性（G9）の範囲 | 差異の ID ごとに、少なくとも 1 つの R 課題についての必要性か被覆の定理 | 次のこと。<br>- 差異を引き継ぐ複合の R 課題（例: ABS-045 の D-001）で、その差異が冗長でないこと（変異テストの「除去」で報告する予定）<br>- 被覆された差異（例: D-012）が、覆う差異を取り消した後も要ること（取り消すときに必要性を示し直す）<br>- 必要性の証人の状態が到達可能であること（INV と `J` を満たせばよい）。αᵢ の未定義だけで必要性が成り立つ場合に、移植元が実際に違うこと<br>- 必要性を示した R 課題が、登録簿でその差異を挙げた R 課題であること<br>- 環境の前提の強さ（必要性は、基底の PRE が全域でないことしか示さない） |
-| 検査器 TR-G の構文の判定 | `obligation-check` の正例・違反例（スキルの `assets/lean/TraceTest/ObligationFixture.lean`） | 違反例に無い迂回（例: `@[reducible]` 以外の展開、未知の定数名の付け替え）。検査器は Lean の式の形を見るだけで、意味を見ない |
+| 検査器 TR-G の構文の判定 | `obligation-check` の正例・違反例（スキルの `assets/lean/Test/Trace/ObligationFixture.lean`） | 違反例に無い迂回（例: `@[reducible]` 以外の展開、未知の定数名の付け替え）。検査器は Lean の式の形を見るだけで、意味を見ない |
 | シードの妥当性（入口の環境の前提の証拠） | 定理 `Spec.seed_env`（生成した `Spec.Seed` に対する検査関数 `validB` のカーネルの評価と、その正しさ `validB_sound`）。生成物が fixture と一致することは CI の `seed_lean.py --check`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md) | fixture（`master_fixture.py` が上流のシードから生成）が DB に投入される値と一致すること。到着時刻 2415 の便マスタ 2 行は `Spec.Seed` に含まれない（backlog 0be7） |
 | 前提型の差異の前提が十分条件であること（D-001・D-002） | 差異が起きない十分条件の定理（`Abstraction.Fare.basicFare_src_eq`・`fare_src_eq`）と、安全でない因子の一覧（`basicFactor_unsafe`・`fareFactor_unsafe`。カーネルの評価）。[ADR e9bc](../decision/e9bc-fare-double-analysis.md) | 前提の外の入力で、差異が実際に起きること。安全でない因子でも差異が起きない入力（開発中の探索では、積算比率 447 と割引率 68・92 で差異が見つからなかった）は、R 課題の適用範囲の外になる |
 

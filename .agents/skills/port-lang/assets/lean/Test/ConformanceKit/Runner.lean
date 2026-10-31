@@ -1,14 +1,14 @@
 import ConformanceKit
 
 /-!
-# ConformanceKitTest.Runner
+# Test.ConformanceKit.Runner
 
-`ConformanceKit` の実行器を、メモリ上のベクタで確かめる（`lake build ConformanceKitTest`）。
+`ConformanceKit` の実行器を、メモリ上のベクタで確かめる（`lake build +Test.ConformanceKit`）。
 -/
 
 open Lean ConformanceKit
 
-namespace ConformanceKitTest
+namespace Test.ConformanceKit
 
 /-- 2 倍する操作。 -/
 def ops : List (String × Op) := [("ex.double", fun i => do return toJson (2 * (← getNat i "n")))]
@@ -36,4 +36,4 @@ def tbl : Json := Json.mkObj [("tables", Json.mkObj [("T", Json.mkObj [
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; return (← icol t r "A").val) |>.toOption) == some (1 : Int)
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; icol t r "B") |>.toOption).isNone
 
-end ConformanceKitTest
+end Test.ConformanceKit
