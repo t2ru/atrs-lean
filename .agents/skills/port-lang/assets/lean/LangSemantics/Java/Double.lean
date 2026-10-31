@@ -44,21 +44,21 @@ structure Rat' where
   deriving Repr
 
 /-- `2^k`（`k` は整数）を分子・分母で表す。 -/
-private def pow2 (k : Int) : Nat × Nat :=
+def pow2 (k : Int) : Nat × Nat :=
   if 0 ≤ k then (2 ^ k.toNat, 1) else (1, 2 ^ (-k).toNat)
 
 /-- `num/den ≥ 2^k` か。 -/
-private def geTwoPow (num den : Nat) (k : Int) : Bool :=
+def geTwoPow (num den : Nat) (k : Int) : Bool :=
   let (p, q) := pow2 k
   num * q ≥ den * p
 
 /-- `⌊log2 (num/den)⌋`（`num, den > 0`）。 -/
-private def floorLog2 (num den : Nat) : Int :=
+def floorLog2 (num den : Nat) : Int :=
   let k : Int := (Nat.log2 num : Int) - (Nat.log2 den : Int)
   if geTwoPow num den k then k else k - 1
 
 /-- 正の有理数 `num/den` を、指数 `e` の格子で round-to-nearest-even する。結果は `mant`。 -/
-private def roundAtExp (num den : Nat) (e : Int) : Nat :=
+def roundAtExp (num den : Nat) (e : Int) : Nat :=
   let (p, q) := pow2 e
   -- num/den / 2^e = (num * q) / (den * p)
   let n := num * q
@@ -169,7 +169,7 @@ def div (a b : JDouble) : JDouble :=
       | _, _ => .nan
 
 /-- 0 方向切捨ての整数値（有限値のみ）。 -/
-private def truncInt : JDouble → Option Int
+def truncInt : JDouble → Option Int
   | .finite s m e =>
     let (p, q) := pow2 e
     let t : Int := ((m * p) / q : Nat)

@@ -38,6 +38,23 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 - `jdmul` などのソフトモデルを、テストドライバでネイティブ `Float` と突き合わせる。原典の値域を覆う入力を使う。
 - 例: `jd2i(jdmul(jd(1430), jdsub(jd(1), jdmul(jd(30), jdLit("0.01")))))` は 1000 になる（厳密計算の 1001 と異なる）。
 
+## 補題（assets）
+
+リファインメントの証明に使う、アプリに依存しない補題である。
+
+| モジュール | 主な補題 |
+| --- | --- |
+| `LangSemantics.Java.DoubleLemmas` | `jd2i_mul_nat`: 正の整数 `X` と正の因子 `F = fm·2^(−fs)` について、`(int)((double) X * F)` を閉じた形 `min J32.maxValue (rneTrunc (X·fm) (2^fs))` に書き直す。`rneTrunc_spec` は、`rneTrunc N D`（`N/D` を binary64 に丸めて切り捨てた値）の不等式の形。`ofInt_nat`・`toJ32_ofRat` |
+| `LangSemantics.Java.BigDecimal` | `bdCeilHundredUp_val`: 非負の値の 100 単位の切上げ |
+| `LangSemantics.Java.LocalDateLemmas` | `toEpochDay_ofEpochDay` |
+| `LangSemantics.Java.HashMapLemmas` | `ofList_entries`・`get_ofList` |
+
+double の式と、[Spec] の厳密な整数の式との差は、次の手順で定理にする。
+
+1. 閉じた形（`jd2i_mul_nat`）で、double の式を整数の `rneTrunc` に書き直す。
+2. 因子（リテラルとの積など、入力に依存しない double）の正確な値を、カーネルの評価（`decide +kernel`）で表にする。
+3. 差異が起きない十分条件（例: 厳密値が整数でない、因子が厳密値以上か相対誤差が十分に小さい）を、`rneTrunc_spec` の不等式から示す。その条件を前提型の差異の前提にする。
+
 ## 抽象化（α）での写し方
 
 | Java | `Spec` |

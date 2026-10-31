@@ -16,25 +16,25 @@ namespace Abstraction.Gap
 
 open Trace
 
-/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。下の前提の範囲の全探索では差異が 0 件だが、値域全体で差異があるかは未確定である。証拠（ABS-101）が見つからず、値域全体での一致を証明できた場合（L 課題 ABS-007）は、本行を取り消す -/
+/-- [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`x·ratio` が 100 で割り切れ（厳密値が整数）、積算比率の因子 `fl(ratio × fl(0.01))` が `ratio/100` を `2^-54` 以上下回る（安全でない）ときに限る（`Abstraction.Fare.basicFare_src`）。安全でない積算比率は 1〜1000 のうち 49 個（29, 58, 116, 117, 141, 205, …。`basicFactor_unsafe`）で、シードの比率（100・110・120・125・130・140・150）は安全である。条件は十分条件で、安全でない比率でも差異が起きるとは限らない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
 @[gap_entry]
 def D001 : Gap where
   id := "D-001"
   kind := .pre
   sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
-  premise := "`dev_D001`: `x = routeBasicFare + extra` が 0〜200,000、かつ ratio ∈ {100, 110, 120, 125, 130, 140, 150}"
+  premise := "`dev_D001`: `x = routeBasicFare + extra` について、`x·ratio` が 100 で割り切れないか、積算比率の因子が安全（`basicFare_src_eq`）"
   rTasks := ["ABS-001", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   wTask := some "ABS-101"
   impact := some (.abort, "予約確定で、差のある運賃が合計金額として保存される")
   backlog := ["bbcce088-c475-4378-9cc6-e3d821acc0f5"]
 
-/-- [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k*100 + 1` 付近のとき 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100） -/
+/-- [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k` で `k ≡ 1 (mod 100)` のとき、切り捨てた値が `k − 1` になって 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100）。[Source] は [Spec] に等しいか 100 円少なく、少ないのは `b·(100−r) ≡ 100 (mod 10000)` で、割引率の因子 `fl(1 − fl(r × fl(0.01)))` が安全でないときに限る（`Abstraction.Fare.fare_src`）。安全でない割引率は 0〜99 のうち 33 個（6, 7, 30〜35, 53〜57, 65〜70, 77〜83, 89〜95。`fareFactor_unsafe`）で、シードの割引率 0・5・10・20 は安全、30 は安全でない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） -/
 @[gap_entry]
 def D002 : Gap where
   id := "D-002"
   kind := .pre
   sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
-  premise := "`dev_D002`: 次の 2 つを満たす。<br>- 基本運賃がシード由来（路線運賃が 100 円単位、比率 100/125/140、加算料金 0/5000）<br>- 割引率がシードの値（0/5/10/20/30）"
+  premise := "`dev_D002`: `b·(100−r) mod 10000 ≠ 100` か、割引率の因子が安全（`fare_src_eq`）"
   rTasks := ["ABS-002", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   wTask := some "ABS-102"
   impact := some (.abort, "同上")

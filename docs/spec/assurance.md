@@ -26,7 +26,7 @@ generated:
 
 | 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
 | --- | --- | --- | --- |
-| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。backlog f18c ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
+| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。backlog f18c ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)。`SourceModel` の double の式と [Spec] の関係は、値域全体で定理にした。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
 | フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog f18c](../backlog/f18c-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
 | リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
 | 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 84bf](../decision/84bf-porting-scope.md) で範囲外） | Thymeleaf |
@@ -105,6 +105,7 @@ generated:
 | R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
 | 成分の必要性（G9）の範囲 | 差異の ID ごとに、少なくとも 1 つの R 課題についての必要性か被覆の定理 | 次のこと。<br>- 差異を引き継ぐ複合の R 課題（例: ABS-045 の D-001）で、その差異が冗長でないこと（変異テストの「除去」で報告する予定）<br>- 被覆された差異（例: D-012）が、覆う差異を取り消した後も要ること（取り消すときに必要性を示し直す）<br>- 必要性の証人の状態が到達可能であること（INV と `J` を満たせばよい）。αᵢ の未定義だけで必要性が成り立つ場合に、移植元が実際に違うこと<br>- 必要性を示した R 課題が、登録簿でその差異を挙げた R 課題であること<br>- 環境の前提の強さ（必要性は、基底の PRE が全域でないことしか示さない） |
 | 検査器 TR-G の構文の判定 | `obligation-check` の正例・違反例（スキルの `assets/lean/TraceTest/ObligationFixture.lean`） | 違反例に無い迂回（例: `@[reducible]` 以外の展開、未知の定数名の付け替え）。検査器は Lean の式の形を見るだけで、意味を見ない |
+| 前提型の差異の前提が十分条件であること（D-001・D-002） | 差異が起きない十分条件の定理（`Abstraction.Fare.basicFare_src_eq`・`fare_src_eq`）と、安全でない因子の一覧（`basicFactor_unsafe`・`fareFactor_unsafe`。カーネルの評価）。[ADR e9bc](../decision/e9bc-fare-double-analysis.md) | 前提の外の入力で、差異が実際に起きること。安全でない因子でも差異が起きない入力（開発中の探索では、積算比率 447 と割引率 68・92 で差異が見つからなかった）は、R 課題の適用範囲の外になる |
 
 ## 追跡の道具
 
