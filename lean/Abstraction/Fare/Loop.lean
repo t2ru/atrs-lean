@@ -65,7 +65,7 @@ theorem forIn_count_eq {α ε : Type} {f : α → J32 → Except ε (ForInStep J
 
 /-- `mapM` で写した列と、各要素の関係。 -/
 theorem forall₂_of_mapM {α β γ : Type} {g : α → Option β} {R : γ → β → Prop} (mk : α → γ) :
-    ∀ (xs : List α) (ys : List β), xs.mapM g = some ys → (∀ x ∈ xs, ∀ y, g x = some y → R (mk x) y) →
+    ∀ (xs : List α) (ys : List β), xs.mapM g = some ys → (∀ x ∈ xs, ∀ y ∈ ys, g x = some y → R (mk x) y) →
       Forall₂ R (xs.map mk) ys
   | [], ys, h, _ => by
     simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; exact .nil
@@ -74,13 +74,33 @@ theorem forall₂_of_mapM {α β γ : Type} {g : α → Option β} {R : γ → �
       Option.some.injEq] at h
     obtain ⟨y, hy, ys', hys, hyy⟩ := h
     subst hyy
-    exact .cons (hR x (List.mem_cons_self ..) y hy)
-      (forall₂_of_mapM mk xs ys' hys fun x' hx' => hR x' (List.mem_cons_of_mem _ hx'))
+    exact .cons (hR x (List.mem_cons_self ..) y (List.mem_cons_self ..) hy)
+      (forall₂_of_mapM mk xs ys' hys fun x' hx' y' hy' => hR x' (List.mem_cons_of_mem _ hx') y'
+        (List.mem_cons_of_mem _ hy'))
 
 theorem forall₂_of_mapM_id {α β : Type} {g : α → Option β} {R : α → β → Prop} (xs : List α) (ys : List β)
-    (h : xs.mapM g = some ys) (hR : ∀ x ∈ xs, ∀ y, g x = some y → R x y) : Forall₂ R xs ys := by
+    (h : xs.mapM g = some ys) (hR : ∀ x ∈ xs, ∀ y ∈ ys, g x = some y → R x y) : Forall₂ R xs ys := by
   have := forall₂_of_mapM (R := R) id xs ys h hR
   rwa [List.map_id] at this
+
+/-- `mapM` の結果は、各要素の値の列。 -/
+theorem mapM_eq_map_getD {α β : Type} {g : α → Option β} (d : β) :
+    ∀ {xs : List α} {ys : List β}, xs.mapM g = some ys → ys = xs.map fun x => (g x).getD d
+  | [], ys, h => by simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; rfl
+  | x :: xs, ys, h => by
+    simp only [List.mapM_cons, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+      Option.some.injEq] at h
+    obtain ⟨y, hy, ys', hys, rfl⟩ := h
+    simp only [List.map_cons, hy, Option.getD_some, mapM_eq_map_getD d hys]
+
+theorem sum_map_le {α : Type} {V : α → Nat} {M : Nat} : ∀ (xs : List α), (∀ x ∈ xs, V x ≤ M) →
+    (xs.map V).sum ≤ xs.length * M
+  | [], _ => by simp
+  | x :: xs, h => by
+    have := sum_map_le xs fun y hy => h y (List.mem_cons_of_mem _ hy)
+    have hx := h x (List.mem_cons_self ..)
+    simp only [List.map_cons, List.sum_cons, List.length_cons, Nat.succ_mul]
+    omega
 
 end Abstraction.Fare
 
