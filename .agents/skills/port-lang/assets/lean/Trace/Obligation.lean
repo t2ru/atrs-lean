@@ -28,7 +28,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（references/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
-| GK | ギャップの登録簿（`Trace.Gap`）。下の 5 つ |
+| GK | ギャップの登録簿（`Trace.Gap`）と証明の状態の裏付け。下のとおり |
 
 G9 の内容は次のとおりである。
 
@@ -49,7 +49,16 @@ GK の内容は次のとおりである。
 - 同じ ID の宣言は 1 つだけ
 - `@[gap]` の印は、`D-NNN` なら `Spec`・`SourceModel`、`T-NNN` なら `Spec`・`TargetModel` の層の定数にだけ付き、ID の宣言がある
 - `@[deviation]` の ID に、前提型・観測型の宣言がある
-- 印・差異の定数と種類が矛盾しない（モデル外は印も `@[deviation]` も持たない。PRE の外・未確定は `@[deviation]` を持たない）
+- 印・差異の定数と種類が矛盾しない（モデル外は、裏付けの宣言のほかに印を持たない。前提型・観測型のほかは `@[deviation]` を持たない）
+- 前提型・観測型の宣言の `deviations` は、その ID の `@[deviation]` の定数のすべてである
+- 証明の状態（`Trace.Evidence`）の裏付け。裏付けの宣言は `@[gap "<ID>"]` を持ち、証明の層（`Abstraction`・`Refinement`）にも置いてよい
+  - `refuted`: 各定理が、どれかの R 課題について、`deviations` のどれかの必要性の定理（G9 の形）である
+  - `covered`: 各定理が `Covers coverer d`（d は `deviations` のどれか）であり、`coverer` の差異から被覆をたどると、循環せずに `refuted` の差異に着く
+  - `pending`: 必要性の定理が無い（あれば `refuted` にする）。G9 の誤りは警告に下げる（段階導入は `trace check` が作業項目の状態で判定する）
+  - `unformalized`: 主張は `opaque … : Prop` で、どの定数からも参照されない（公理を足さず、推論に持ち込まない）
+  - `excludedBy`: 前提の述語が `@[gap "<ID>"]` を持つ
+
+G9・GK の誤りのうち、`pending` の差異の G9 だけは `warnings` に出す。
 
 入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
 文書（入口の R 課題、前提型の差異の影響）との突き合わせは `scripts/ci/check_obligations.py` が行う（TR-N）。
@@ -243,6 +252,8 @@ structure RInfo where
   stateSafe : Array Name := #[]
   /-- 必要性の定理（G9）がある差異 -/
   necessity : Array Name := #[]
+  /-- 差異と、その必要性の定理（GK が `Evidence.refuted` と照合する） -/
+  necessityBy : Array (Name × Name) := #[]
   /-- 抽象側の基底に `¬ TotalUnder A always` があるか -/
   envNecessary : Bool := false
   errors : Array String := #[]
@@ -271,12 +282,12 @@ structure Companions where
   nontrivial : Array Name := #[]
   /-- `KernelIs f K` の f の定数で、K が `Eq` か `@[kernel]` の定数であるもの -/
   kernel : Array Name := #[]
-  /-- 必要性の定理（G9）の (A, C, g, `Pinned` の (f, ce)) -/
-  necessity : Array (Expr × Expr × Expr × Option (Expr × Expr)) := #[]
+  /-- 必要性の定理（G9）の (定理, A, C, g, `Pinned` の (f, ce)) -/
+  necessity : Array (Name × Expr × Expr × Expr × Option (Expr × Expr)) := #[]
   /-- `¬ TotalUnder A always` の A -/
   envNecessity : Array Expr := #[]
-  /-- `Covers M d`・`Covers₂ M d` の (M, d) -/
-  covers : Array (Name × Name) := #[]
+  /-- `Covers M d`・`Covers₂ M d` の (定理, M, d) -/
+  covers : Array (Name × Name × Name) := #[]
 
 /-- 走査全体の結果。 -/
 structure Report where
@@ -287,6 +298,8 @@ structure Report where
   stdAbs : Array (Name × Array String)
   envPres : Array (Name × Array String)
   errors : Array String
+  /-- 警告（証明の状態が `pending` の差異の G9。段階導入の判定は道具が作業項目の状態で行う） -/
+  warnings : Array String := #[]
   /-- ギャップの登録簿（`Trace.gapsJson`） -/
   gaps : Json := Json.arr #[]
 
@@ -376,10 +389,10 @@ partial def prodLeaves (e : Expr) : Array Expr :=
 def collectCompanions (env : Environment) : Companions := Id.run do
   let mut cs : Companions := {}
   let nz := normalize env
-  for (_, ci) in env.constants.toList do
+  for (n, ci) in env.constants.toList do
     let .thmInfo _ := ci | continue
-    if let some nf := necessityForm? env ci.type then
-      cs := { cs with necessity := cs.necessity.push nf }
+    if let some (a, c, g, pin) := necessityForm? env ci.type then
+      cs := { cs with necessity := cs.necessity.push (n, a, c, g, pin) }
       continue
     if let some a := envNecessityForm? env ci.type then
       cs := { cs with envNecessity := cs.envNecessity.push a }
@@ -412,7 +425,7 @@ def collectCompanions (env : Environment) : Companions := Id.run do
       if let some pc := bareConst? a[2]! then cs := { cs with nontrivial := cs.nontrivial.push pc }
     else if (h == N.covers && a.size == 3) || (h == N.covers₂ && a.size == 4) then
       if let (some m, some d) := (bareConst? a[a.size - 2]!, bareConst? a[a.size - 1]!) then
-        cs := { cs with covers := cs.covers.push (m, d) }
+        cs := { cs with covers := cs.covers.push (n, m, d) }
     else if h == N.kernelIs && a.size == 4 then
       if let some fc := bareConst? a[2]! then
         let k := clean a[3]!
@@ -559,14 +572,17 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
     | some _, none => true
     | none, none => r.absKind == "pure"
     | none, some _ => false
-  let found (a' c' g' : Expr) : Bool :=
-    cs.necessity.any fun (a'', c'', g'', pin) => a'' == a' && c'' == c' && g'' == g' && pinOk pin
+  let found (a' c' g' : Expr) : Array Name :=
+    (cs.necessity.filter fun (_, a'', c'', g'', pin) => a'' == a' && c'' == c' && g'' == g' && pinOk pin).map (·.1)
+  let record (r : RInfo) (d : Name) (ts : Array Name) : RInfo :=
+    if ts.isEmpty then r
+    else { r with necessity := r.necessity.push d, necessityBy := r.necessityBy ++ ts.map (d, ·) }
   for p in aPs ++ cPs do
     if let some pc := bareConst? p then
       if r.devs.contains pc && !r.necessity.contains pc then
         let a' := (dropRestrict env [N.restrict, N.restrictState] p a).getD a
         let c' := (dropRestrict env [N.cRestrict] p c).getD c
-        if found a' c' g then r := { r with necessity := r.necessity.push pc }
+        r := record r pc (found a' c' g)
   if g.isAppOfArity N.ofStd 12 then
     let gs := g.getAppArgs
     -- OJ : σ → τ → Prop、OO : οc → οa → Prop（`ofStd` の型引数は σ τ ιa ιc οa οc の順）
@@ -577,7 +593,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
             let nev := mkApp2 (mkConst N.never) ty₁ ty₂
             let slot := gs[k]!.replace fun sub => if bareConst? sub == some oc then some nev else none
             let g' := mkAppN g.getAppFn (gs.set! k slot)
-            if found a c g' then r := { r with necessity := r.necessity.push oc }
+            r := record r oc (found a c g')
   -- 入口の全域性と状態の安全性（事実として出す）
   r := { r with envNecessary := cs.envNecessity.contains aBase }
   for (a', env') in cs.totalUnder do
@@ -614,10 +630,11 @@ def isUnaryFun (ty : Expr) : Bool :=
       !b.consumeMData.isForall
   | _ => false
 
-/-- GK: ギャップの登録簿と、印・差異の定数の整合。 -/
-def checkGaps (env : Environment) (sc : Scope) : Array String := Id.run do
+/-- GK: ギャップの登録簿と、印・差異の定数・証明の状態の裏付けの整合。 -/
+def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companions) : Array String := Id.run do
   let mut errors := #[]
-  let mut byId : Std.HashMap String (Name × GapKind) := {}
+  let mut byId : Std.HashMap String (Name × Gap) := {}
+  let mut order : Array String := #[]
   for (n, r) in gapEntries env do
     match r with
     | .error e => errors := errors.push s!"GK: {n} (@[gap_entry]): {e}"
@@ -630,24 +647,93 @@ def checkGaps (env : Environment) (sc : Scope) : Array String := Id.run do
       for p in g.problems do errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}): {p}"
       match byId[g.id]? with
       | some (m, _) => errors := errors.push s!"GK: {g.id} is declared by both {m} and {n}"
-      | none => byId := byId.insert g.id (n, g.kind)
+      | none => byId := byId.insert g.id (n, g); order := order.push g.id
+  -- 裏付けの宣言（`@[gap]` を付け、証明の層に置いてよい）
+  let mut witnessOf : Std.HashMap Name (Array String) := {}
+  for i in order do
+    let some (_, g) := byId[i]? | continue
+    for w in g.evidence.witnesses do witnessOf := witnessOf.insert w ((witnessOf.getD w #[]).push i)
   for (n, ids) in gapMarkers env do
     for i in ids do
-      let allowed := if i.startsWith "T-" then ["Spec", "TargetModel"] else ["Spec", "SourceModel"]
+      let isWitness := (witnessOf.getD n #[]).contains i
+      let base := if i.startsWith "T-" then ["Spec", "TargetModel"] else ["Spec", "SourceModel"]
+      let proof := if i.startsWith "T-" then "Refinement" else "Abstraction"
+      let allowed := if isWitness then base ++ [proof] else base
       unless (sc.layerOf n).any allowed.contains do
-        errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but is not in the {allowed} layers"
+        errors := errors.push
+          s!"GK: {n} has @[gap \"{i}\"] but is not in the {allowed} layers (the {proof} layer is only for the evidence of {i})"
       match byId[i]? with
       | none => errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but {i} has no @[gap_entry]"
-      | some (_, .outOfModel) =>
-        errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but {i} is out_of_model (it appears in no model)"
-      | some _ => pure ()
+      | some (_, g) =>
+        if g.kind == .outOfModel && !isWitness then
+          errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but {i} is out_of_model (it appears in no model)"
   for (n, ids) in deviationConsts env do
     for i in ids do
       match byId[i]? with
       | none => errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but {i} has no @[gap_entry]"
-      | some (_, k) =>
-        unless k.isTyped do
-          errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but {i} is {k.code}, not pre / observational"
+      | some (_, g) =>
+        if !g.kind.isTyped then
+          errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but {i} is {g.kind.code}, not pre / observational"
+        else if !g.deviations.contains n then
+          errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but the @[gap_entry] of {i} does not list it in deviations"
+  -- 証明の状態ごとの裏付け
+  let idOfDev (d : Name) : Option String := (deviationAttr.getParam? env d).bind (·[0]?)
+  let mut claims : Array (Name × String) := #[]
+  for i in order do
+    let some (_, g) := byId[i]? | continue
+    let code := g.evidence.code
+    for d in g.deviations do
+      unless (deviationAttr.getParam? env d).any (·.contains i) do
+        errors := errors.push s!"GK: {i}: deviations lists {d}, which has no @[deviation \"{i}\"]"
+    for w in g.evidence.witnesses do
+      unless (gapAttr.getParam? env w).any (·.contains i) do
+        errors := errors.push s!"GK: {i}: {w} (the evidence {code}) must have @[gap \"{i}\"]"
+    match g.evidence with
+    | .refuted ts =>
+      for t in ts do
+        match env.find? t with
+        | some (.thmInfo _) =>
+          let ok := rs.any fun ri => ri.necessityBy.any fun (d, t') => t' == t && g.deviations.contains d
+          unless ok do
+            errors := errors.push
+              s!"GK: {i}: {t} is not a necessity theorem of {g.deviations} (¬ of an R obligation with one of them removed)"
+        | _ => errors := errors.push s!"GK: {i}: {t} (refuted) is not a theorem"
+    | .covered m ts =>
+      for t in ts do
+        unless cs.covers.any (fun (t', m', d) => t' == t && m' == m && g.deviations.contains d) do
+          errors := errors.push s!"GK: {i}: {t} is not a theorem Covers {m} d with d in {g.deviations}"
+      -- 被覆の連鎖は、偽を証明済みの差異で終わる（循環しない）
+      let mut cur := m
+      let mut seen : Array String := #[i]
+      for _ in [0:order.size + 1] do
+        let some j := idOfDev cur
+          | errors := errors.push s!"GK: {i}: the coverer {cur} has no @[deviation]"; break
+        if seen.contains j then
+          errors := errors.push s!"GK: {i}: the covered chain is cyclic ({seen.toList ++ [j]})"; break
+        let some (_, gj) := byId[j]? | break
+        match gj.evidence with
+        | .refuted _ => break
+        | .covered m' _ => seen := seen.push j; cur := m'
+        | e =>
+          errors := errors.push s!"GK: {i}: the coverer {cur} ({j}) is {e.code}, not refuted / covered"; break
+    | .unformalized c _ =>
+      match env.find? c with
+      | some (.opaqueInfo oi) =>
+        if oi.type.consumeMData == .sort .zero then claims := claims.push (c, i)
+        else errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop"
+      | _ => errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop (opaque {c} : Prop)"
+    | .pending .. =>
+      if g.deviations.any (fun d => rs.any fun ri => ri.necessity.contains d) then
+        errors := errors.push s!"GK: {i} is pending but has a necessity theorem; make it refuted"
+    | .excludedBy _ => pure ()
+  -- 形式化していない主張は、どの定数からも参照しない（仮定として推論に持ち込まない）
+  unless claims.isEmpty do
+    for (n, ci) in env.constants.toList do
+      if (moduleRoot? env n).any libraryRoots.contains then continue
+      let used := ci.type.getUsedConstants ++ ((ci.value?).map Expr.getUsedConstants |>.getD #[])
+      for (c, i) in claims do
+        if n != c && used.contains c then
+          errors := errors.push s!"GK: {n} refers to {c} (the unformalized claim of {i}); a claim must not be used"
   return errors
 
 /-- 環境を走査する。 -/
@@ -710,26 +796,30 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let used := (rs.foldl (fun acc ri => acc ++ ri.devs ++ ri.obs) #[]).toList.eraseDups
   let mut needed := rs.foldl (fun acc ri => acc ++ ri.necessity) #[]
   for _ in [0:cs.covers.size] do
-    for (m, d) in cs.covers do
+    for (_, m, d) in cs.covers do
       if needed.contains m && !needed.contains d &&
           rs.any (fun ri => ri.devs.contains m && ri.devs.contains d) then
         needed := needed.push d
   let idsOf (n : Name) : List String := ((deviationAttr.getParam? env n).getD #[]).toList
   let neededIds := needed.toList.flatMap idsOf
+  let pendingIds := (gapEntries env).toList.filterMap fun (_, r) =>
+    match r with | .ok g => (match g.evidence with | .pending .. => some g.id | _ => none) | .error _ => none
+  let mut warnings := #[]
   for i in (used.flatMap idsOf).eraseDups do
     unless neededIds.contains i do
       let consts := used.filter fun d => (idsOf d).contains i
-      errors := errors.push
-        s!"G9: {i} (@[deviation] {consts}) has neither a necessity theorem (¬ of an R obligation without it) nor Covers by a needed deviation in any R obligation"
+      let msg := s!"G9: {i} (@[deviation] {consts}) has neither a necessity theorem (¬ of an R obligation without it) nor Covers by a needed deviation in any R obligation"
+      if pendingIds.contains i then warnings := warnings.push (msg ++ s!" ({i} is pending)")
+      else errors := errors.push msg
   for (e, _) in envPres do
     let bases := (rs.filter fun ri => ri.totalUnder.any (·.1 == e)).toList.map fun ri => (ri.absBase, ri.envNecessary)
     for (b, ok) in bases.eraseDups do
       unless ok do
         errors := errors.push
           s!"G9: {e} (@[env_pre]) is used for the abstract base {b} of an R obligation without a ¬ TotalUnder (base) always theorem (if PRE is total, state TotalUnder (base) always instead)"
-  errors := errors ++ checkGaps env sc
+  errors := errors ++ checkGaps env sc rs cs
   let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
-  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors,
+  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
            gaps := Trace.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
@@ -758,6 +848,7 @@ def Report.toJson (r : Report) : Json :=
     ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
       ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR)])),
     ("nondet", attrd r.nondets), ("deviation", attrd r.deviations), ("std_abs", attrd r.stdAbs),
-    ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors), ("gaps", r.gaps)]
+    ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors),
+    ("warnings", Lean.toJson r.warnings), ("gaps", r.gaps)]
 
 end Trace.Obligation
