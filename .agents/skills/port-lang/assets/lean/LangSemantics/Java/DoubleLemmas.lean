@@ -170,6 +170,51 @@ theorem toJ32_ofRat {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2
     simp only [J32.minValue, J32.maxValue]
     omega
 
+/-- `rneTrunc` の性質（不等式の形）: 値 `N/D` を `[2^52, 2^53)` に移す 2 の冪 `Q` と、`N·Q/D` を
+最近接に丸めた整数 `M` があって、`rneTrunc N D = M / Q`。値が `[2^-1000, 2^29)` にあるとき、`Q ≥ 2^23`。 -/
+theorem rneTrunc_spec {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 29) :
+    ∃ Q M, rneTrunc N D = M / Q ∧ 2 ^ 23 ≤ Q ∧ D * 2 ^ 52 ≤ N * Q ∧ N * Q < D * 2 ^ 53 ∧
+      2 * (M * D) ≤ 2 * (N * Q) + D ∧ 2 * (N * Q) ≤ 2 * (M * D) + D := by
+  have hhi' : N < D * 2 ^ 31 := Nat.lt_of_lt_of_le hhi (Nat.mul_le_mul_left _ (by decide))
+  obtain ⟨r1, r2⟩ := floorLog2_range hN hD hlo hhi'
+  obtain ⟨f1, f2⟩ := floorLog2_spec hN hD
+  obtain ⟨g1, g2⟩ := roundAtExp_spec N D (floorLog2 N D - 52) hD
+  have hL29 : floorLog2 N D ≤ 28 := by
+    rcases Int.lt_or_le 28 (floorLog2 N D) with hc | hc
+    · exfalso
+      have e1 : (-(floorLog2 N D)).toNat = 0 := by omega
+      rw [e1, Nat.pow_zero, Nat.mul_one] at f1
+      have : D * 2 ^ 29 ≤ D * 2 ^ (floorLog2 N D).toNat :=
+        Nat.mul_le_mul_left _ (Nat.pow_le_pow_right (by decide) (by omega))
+      omega
+    · exact hc
+  generalize hL : floorLog2 N D = L at *
+  refine ⟨2 ^ (52 - L).toNat, roundAtExp N D (L - 52), ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [rneTrunc, hL, show (L - 52).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one,
+      show (-(L - 52)).toNat = (52 - L).toNat by omega]
+  · exact Nat.pow_le_pow_right (by decide) (by omega)
+  · rcases Int.lt_or_le L 0 with hl | hl
+    · rw [show L.toNat = 0 by omega, Nat.pow_zero, Nat.mul_one] at f1
+      calc D * 2 ^ 52 ≤ N * 2 ^ (-L).toNat * 2 ^ 52 := Nat.mul_le_mul_right _ f1
+        _ = N * 2 ^ (52 - L).toNat := by rw [Nat.mul_assoc, two_pow_mul_two_pow]; congr 2; omega
+    · rw [show (-L).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one] at f1
+      calc D * 2 ^ 52 = D * 2 ^ L.toNat * 2 ^ (52 - L).toNat := by
+            rw [Nat.mul_assoc, two_pow_mul_two_pow]; congr 2; omega
+        _ ≤ N * 2 ^ (52 - L).toNat := Nat.mul_le_mul_right _ f1
+  · rcases Int.lt_or_le L (-1) with hl | hl
+    · rw [show (L + 1).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one] at f2
+      calc N * 2 ^ (52 - L).toNat = N * 2 ^ (-(L + 1)).toNat * 2 ^ 53 := by
+            rw [Nat.mul_assoc, two_pow_mul_two_pow]; congr 2; omega
+        _ < D * 2 ^ 53 := Nat.mul_lt_mul_of_pos_right f2 (Nat.two_pow_pos _)
+    · rw [show (-(L + 1)).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one] at f2
+      calc N * 2 ^ (52 - L).toNat < D * 2 ^ (L + 1).toNat * 2 ^ (52 - L).toNat :=
+            Nat.mul_lt_mul_of_pos_right f2 (Nat.two_pow_pos _)
+        _ = D * 2 ^ 53 := by rw [Nat.mul_assoc, two_pow_mul_two_pow]; congr 2; omega
+  · simpa only [show (L - 52).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one,
+      show (-(L - 52)).toNat = (52 - L).toNat by omega] using g1
+  · simpa only [show (L - 52).toNat = 0 by omega, Nat.pow_zero, Nat.mul_one,
+      show (-(L - 52)).toNat = (52 - L).toNat by omega] using g2
+
 /-! ## 2 の冪の倍での不変性 -/
 
 theorem floorLog2_mul_pow2 {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (s : Nat) :
