@@ -8,7 +8,7 @@ state: todo
 depends_on: ["0002", "0003", "0016", "0027", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-31T09:40:00+09:00
 ---
 
 # 運賃計算（Spec と SourceModel）
@@ -33,6 +33,7 @@ generated:
 - [ ] [fare-calculation.md](../spec/fare-calculation.md) の全例がベクタ化され、両モデルで通る
 - [ ] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
 - [ ] 1430 円・30% の例で [Spec] 1100、[Source] 1000 になる
+- [ ] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 0042](../decision/0042-vacuity-literature-necessity-and-mutation.md)）
 
 ## 参照
 

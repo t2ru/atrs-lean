@@ -9,7 +9,7 @@ date: 2026-10-30
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-31T09:40:00+09:00
 sources:
   - id: abrial-bbook
     resource: https://doi.org/10.1017/CBO9780511624162
@@ -191,6 +191,7 @@ Chosen option: "選択の像としての `Spec`・環境の固定・標準の貼
 * 実装後に行った敵対的レビューの結果は、下の「実装後の敵対的レビュー」に記す。
 * 採番（`IdGenerator`）の値は非決定性として登録しない。[Spec] の状態 `World.sequences` が次の値を決め、適合テストは番号を厳密に比較する（[ports.md](../spec/ports.md#idgenerator)）。草案では自由な選択（N-006）としたが、実装後のレビューで ports.md・conformance.md と矛盾すると分かったので取り消した。
 * [ADR 0033](0033-foundational-principles.md), [ADR 0034](0034-b-method-refinement-and-explicit-deviations.md), [ADR 0036](0036-traceability-hash-as-deterministic-check-record.md), [ADR 0037](0037-conflict-as-spec-nondeterminism.md), [backlog 0030](../backlog/0030-refinement-non-vacuity.md)
+* 補足: [ADR 0042](0042-vacuity-literature-necessity-and-mutation.md) で、本 ADR の義務を既存の研究（Event-B の証明義務、vacuity detection、仕様の変異テストなど）と対応づけた。あわせて、成分の必要性（G9）を義務に加え、成分の広さには変異テストを、仕様の妥当性には意図から書く例を採った。本 ADR の決定は変えていない。
 
 ### 実装後の敵対的レビュー
 

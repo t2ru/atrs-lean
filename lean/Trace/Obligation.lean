@@ -11,7 +11,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 
 | 規則 | 内容 |
 | --- | --- |
-| G0 | 追跡属性を付けた定数はモデルの層にある。`Machine.Refines` を含む `@[obligation]` の型は、結論が `Refines` である |
+| G0 | 追跡属性を付けた定数はモデルの層にある。`Machine.Refines` を含む `@[obligation]` の型は、結論が `Refines` か、必要性の形（G9）である |
 | G1 | 型が閉じている（∀ の仮定が無い。差異は `restrict` の述語として型の中に置く） |
 | G2 | 抽象機械・具体機械は、名前付きの基底に `.restrict p`・`.restrictState p` を連ねた形で、`p` は `@[deviation]` の定数そのもの |
 | G3 | 抽象側の基底は `Machine.ofChoice` か `Machine.pure`。選択の型の葉は `@[nondet]` か `Unit`。自由な選択があれば `FreeFrame` がある |
@@ -26,6 +26,14 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
+| G9 | 成分の必要性（ADR 0042）: R 課題で使う各 `@[deviation]` に、それを外した R 課題の命題の否定の定理が、少なくとも 1 つの R 課題についてある。`TotalUnder` で使う各 `@[env_pre]` に、その機械の `¬ TotalUnder A always` がある |
+
+必要性の定理の形は次のとおりである（閉じた定理。`@[obligation]` の W 課題でもよい）。
+
+- 前提型の差異 `d`: R 課題の機械から `.restrict d`・`.restrictState d`・`Concrete.restrict d` の層を 1 つ外したもの
+- 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO のうち `d` の位置を `Machine.never` にしたもの
+- 否定する命題: 抽象側の基底が `ofChoice` なら `¬ (Refines A C g ∧ Pinned A C g f ce)`（`f` は基底の `f`、`ce` は R 課題の
+  `Pinned` の `ce`）、`pure` なら `¬ Refines A C g`
 
 入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
 文書（入口の R 課題、前提型の差異の影響）との突き合わせは `tools/ci/check_obligations.py` が行う（TR-N）。
@@ -63,6 +71,7 @@ def freeFrame : Name := `Machine.Machine.FreeFrame
 def nontrivial : Name := `Machine.Nontrivial
 def nontrivial₂ : Name := `Machine.Nontrivial₂
 def kernelIs : Name := `Machine.KernelIs
+def always : Name := `Machine.always
 end N
 
 /-- 合成の標準の抽象化が参照してよい関数（構成子・射影・インスタンス・型を除く）。分岐（`ite`・`match`）は含めない。 -/
@@ -200,6 +209,8 @@ structure RInfo where
   totalUnder : Array (Name × Bool) := #[]
   /-- `StateSafe`・`StateSafeConcrete` の定理がある差異の述語 -/
   stateSafe : Array Name := #[]
+  /-- 必要性の定理（G9）がある差異 -/
+  necessity : Array Name := #[]
   errors : Array String := #[]
 
 /-- 付帯の定理の一覧（引数は正規形）。 -/
@@ -226,6 +237,10 @@ structure Companions where
   nontrivial : Array Name := #[]
   /-- `KernelIs f K` の f の定数で、K が `Eq` か `@[kernel]` の定数であるもの -/
   kernel : Array Name := #[]
+  /-- 必要性の定理（G9）の (A, C, g, `Pinned` の (f, ce)) -/
+  necessity : Array (Expr × Expr × Expr × Option (Expr × Expr)) := #[]
+  /-- `¬ TotalUnder A always` の A -/
+  envNecessity : Array Expr := #[]
 
 /-- 走査全体の結果。 -/
 structure Report where
@@ -248,6 +263,49 @@ partial def peelRestrict (env : Environment) (names : List Name) (e : Expr) : Ex
       (b, ps.push args[args.size - 1]!)
     else (e, #[])
   | none => (e, #[])
+
+/-- `.restrict p`・`.restrictState p` の連鎖から、述語が `p` の層を 1 つ外した式を返す。 -/
+partial def dropRestrict (env : Environment) (names : List Name) (p : Expr) (e : Expr) : Option Expr :=
+  let e := unfoldReducible env e
+  match e.getAppFn.constName? with
+  | some c =>
+    if names.contains c then
+      let args := e.getAppArgs
+      let inner := args[args.size - 2]!
+      if args[args.size - 1]! == p then some inner
+      else (dropRestrict env names p inner).map fun i => mkAppN e.getAppFn (args.set! (args.size - 2) i)
+    else none
+  | none => none
+
+/-- 結論が必要性の形（`¬ Refines A C g` か `¬ (Refines A C g ∧ Pinned A C g f ce)`）なら、正規形の
+(A, C, g, (f, ce)) を返す（G9）。 -/
+def necessityForm? (env : Environment) (concl : Expr) : Option (Expr × Expr × Expr × Option (Expr × Expr)) := do
+  let concl := unfoldReducible env concl
+  guard (concl.isAppOfArity ``Not 1)
+  let x := unfoldReducible env concl.appArg!
+  let nz := normalize env
+  if x.isAppOfArity N.refines 10 then
+    let a := x.getAppArgs
+    return (nz a[7]!, nz a[8]!, nz a[9]!, none)
+  guard (x.isAppOfArity ``And 2)
+  let l := unfoldReducible env x.appFn!.appArg!
+  let r := unfoldReducible env x.appArg!
+  guard (l.isAppOfArity N.refines 10 && r.isAppOfArity N.pinned 14)
+  let la := l.getAppArgs
+  let ra := r.getAppArgs
+  let (a, c, g) := (nz la[7]!, nz la[8]!, nz la[9]!)
+  guard (nz ra[9]! == a && nz ra[10]! == c && nz ra[11]! == g)
+  return (a, c, g, some (nz ra[12]!, nz ra[13]!))
+
+/-- 結論が `¬ TotalUnder A always` なら、正規形の A を返す（G9）。 -/
+def envNecessityForm? (env : Environment) (concl : Expr) : Option Expr := do
+  let concl := unfoldReducible env concl
+  guard (concl.isAppOfArity ``Not 1)
+  let x := unfoldReducible env concl.appArg!
+  guard (x.isAppOfArity N.totalUnder 5)
+  let a := x.getAppArgs
+  guard (headConst? a[4]! == some N.always && (clean a[4]!).getAppNumArgs == 1)
+  return normalize env a[3]!
 
 /-- 利用側の定義を、頭部が `targets` のどれかになるまで展開する（最大 8 回）。 -/
 def unfoldTo (env : Environment) (targets : List Name) (e : Expr) : Option Expr := Id.run do
@@ -274,6 +332,12 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     let .thmInfo _ := ci | continue
     let (concl, nForall) := conclusion ci.type
     unless nForall == 0 do continue
+    if let some nf := necessityForm? env concl then
+      cs := { cs with necessity := cs.necessity.push nf }
+      continue
+    if let some a := envNecessityForm? env concl then
+      cs := { cs with envNecessity := cs.envNecessity.push a }
+      continue
     let some h := concl.getAppFn.constName? | continue
     let a := concl.getAppArgs
     if h == N.initSurj && a.size == 10 then
@@ -336,6 +400,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
     | none => r := { r with errors := r.errors.push s!"G2: {label} base is not a named constant" }
   -- G3: 抽象側の基底
   let mut choice : Option (Expr × Expr) := none
+  let mut pinCes : Array Expr := #[]
   match unfoldTo env [N.ofChoice, N.pure] aBase with
   | some v =>
     if v.getAppFn.constName? == some N.pure then r := { r with absKind := "pure" }
@@ -413,6 +478,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
       | some cc =>
         if hasAttr stdAbsAttr env cc then
           pinnedOk := true
+          pinCes := pinCes.push ce
           if cs.noFault.any (fun (c', g', ce', e') => c' == c && g' == g && ce' == ce && e' == e₀) then
             noFaultOk := true
         else r := { r with errors := r.errors.push s!"G6: ce = {cc} of Refines.Pinned has no @[std_abs]" }
@@ -428,6 +494,28 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (name : Name) (ids
       r := { r with hasFreeFrame := ok }
       unless ok do
         r := { r with errors := r.errors.push "G3: free choices without a FreeFrame theorem whose projection has KernelIs" }
+  -- G9: 成分の必要性（どの R 課題にも無い成分の誤りは、全体の判定で出す）
+  let pinOk (pin : Option (Expr × Expr)) : Bool :=
+    match choice, pin with
+    | some (f, _), some (f', ce') => f' == f && pinCes.contains ce'
+    | none, none => r.absKind == "pure"
+    | _, _ => false
+  let found (a' c' g' : Expr) : Bool :=
+    cs.necessity.any fun (a'', c'', g'', pin) => a'' == a' && c'' == c' && g'' == g' && pinOk pin
+  for p in aPs ++ cPs do
+    if let some pc := bareConst? p then
+      if r.devs.contains pc && !r.necessity.contains pc then
+        let a' := (dropRestrict env [N.restrict, N.restrictState] p a).getD a
+        let c' := (dropRestrict env [N.cRestrict] p c).getD c
+        if found a' c' g then r := { r with necessity := r.necessity.push pc }
+  if g.isAppOfArity N.ofStd 12 then
+    let gs := g.getAppArgs
+    -- OJ : σ → τ → Prop、OO : οc → οa → Prop（`ofStd` の型引数は σ τ ιa ιc οa οc の順）
+    for (k, ty₁, ty₂) in [(10, gs[0]!, gs[1]!), (11, gs[5]!, gs[4]!)] do
+      if let some oc := bareConst? gs[k]! then
+        if r.obs.contains oc && !r.necessity.contains oc then
+          let g' := mkAppN g.getAppFn (gs.set! k (mkApp2 (mkConst N.never) ty₁ ty₂))
+          if found a c g' then r := { r with necessity := r.necessity.push oc }
   -- 入口の全域性と状態の安全性（事実として出す）
   for (a', env') in cs.totalUnder do
     if a' == aBase then
@@ -511,8 +599,20 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
         let isR := concl.isAppOfArity N.refines 10
         obligations := obligations.push (n, ids, isR)
         if isR then rs := rs.push (checkR env sc cs n ids ci.type)
-        else if (normalize env ci.type).getUsedConstants.contains N.refines then
+        else if (normalize env ci.type).getUsedConstants.contains N.refines &&
+            (necessityForm? env ci.type).isNone then
           errors := errors.push s!"G0: {n} mentions Machine.Refines but its conclusion is not Refines"
+  -- G9: 成分の必要性（少なくとも 1 つの R 課題について）
+  let used := rs.foldl (fun acc ri => acc ++ ri.devs ++ ri.obs) #[]
+  let needed := rs.foldl (fun acc ri => acc ++ ri.necessity) #[]
+  for d in used.toList.eraseDups do
+    unless needed.contains d do
+      errors := errors.push
+        s!"G9: {d} (@[deviation]) has no necessity theorem (¬ of an R obligation without it) for any R obligation using it"
+  for (e, _) in envPres do
+    let users := cs.totalUnder.filter fun (_, env') => bareConst? env' == some e
+    unless users.isEmpty || users.any (fun (a, _) => cs.envNecessity.contains a) do
+      errors := errors.push s!"G9: {e} (@[env_pre]) has no ¬ TotalUnder A always theorem for a machine whose TotalUnder uses it"
   return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors }
 
 /-- 誤りの総数。 -/
@@ -536,7 +636,7 @@ def Report.toJson (r : Report) : Json :=
       ("no_fault", Lean.toJson ri.hasNoFault), ("free_frame", Lean.toJson ri.hasFreeFrame),
       ("total_under", Json.arr (ri.totalUnder.map fun (e, w) =>
         Json.mkObj [("env", Lean.toJson e.toString), ("witness", Lean.toJson w)])),
-      ("state_safe", names ri.stateSafe),
+      ("state_safe", names ri.stateSafe), ("necessity", names ri.necessity),
       ("errors", Lean.toJson ri.errors)])),
     ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
       ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR)])),

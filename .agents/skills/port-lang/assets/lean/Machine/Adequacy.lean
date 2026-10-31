@@ -23,6 +23,16 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `KernelIs` | 標準の抽象化の葉が同一視するもの（核） | 標準の抽象化に隠れた同一視 |
 | `Refines.complete`・`Refines.run` | 1 歩の可換式と、複数歩の模倣 | — |
 | `Refines.congr` | 各点で同値な貼り合わせへの付け替え | — |
+| `always`、`Refines.not_of_error`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（ADR 0042）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
+
+成分の必要性は、vacuity detection（Beer ら 2001、Kupferman–Vardi 2003）の「部分式を自明な値に替えると
+真理値が変わる」ことの証拠（interesting witness）に当たる。形は次のとおり（照合は `obligation-check` の G9）。
+
+- 前提型の差異 `d`（`restrict d`）: `restrict d` の層を外した機械について、R 課題の命題が偽
+- 観測型の差異 `d`（OJ・OO）: `d` を `never` にした貼り合わせについて、R 課題の命題が偽
+- R 課題の命題は、基底が `ofChoice` なら `Refines ∧ Pinned`（同じ `f`・`ce`）、`pure` なら `Refines`。
+  `Refines` だけでは、環境の選択（衝突・I/O 失敗）が具体側の不具合を模倣するため、差異が無くても成り立ちうる
+- 環境の前提: `¬ A.TotalUnder always`（前提が無ければ PRE が成り立たない入力がある）
 -/
 
 namespace Machine
@@ -31,6 +41,9 @@ variable {σ τ ιa ιc οa οc ε E F : Type}
 
 /-- 常に偽の関係。`Glue.ofStd` の OJ・OO の既定値（観測型の差異が無いこと）。 -/
 def never {α β : Type} (_ : α) (_ : β) : Prop := False
+
+/-- 常に真の述語。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（ADR 0042）。 -/
+def always {α : Type} (_ : α) : Prop := True
 
 /-- 述語が自明でない: 成り立つ値と、成り立たない値がある。名前付きの差異の述語に課す（W 課題）。 -/
 def Nontrivial {α : Type} (P : α → Prop) : Prop := (∃ x, P x) ∧ ∃ x, ¬ P x
@@ -90,6 +103,11 @@ theorem TotalUnder.restrictState {A : Machine σ ιa οa} {Env : ιa → Prop} (
 theorem TotalUnder.restrict {A : Machine σ ιa οa} {Env : ιa → Prop} (h : A.TotalUnder Env)
     (P : ιa → Prop) : (A.restrict P).TotalUnder fun i => Env i ∧ P i :=
   fun s i hi he => ⟨h s i hi he.1, he.2⟩
+
+/-- 環境の前提の必要性（ADR 0042）: INV を満たし PRE を破る証人があれば、前提なしの全域性は成り立たない。 -/
+theorem TotalUnder.not_always {A : Machine σ ιa οa} {s : σ} {i : ιa} (hi : A.Inv s) (hp : ¬ A.Pre s i) :
+    ¬ A.TotalUnder always :=
+  fun h => hp (h s i hi trivial)
 
 /-- 抽象機械の、PRE を満たす歩みの列。 -/
 inductive Run (A : Machine σ ιa οa) : σ → List ιa → σ → List οa → Prop
@@ -174,6 +192,33 @@ def Pinned (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε) (g : Glue σ τ
     (f : σ → ιa → E × F → σ × οa) (ce : ιc → E) : Prop :=
   ∀ s t ic ia t' oc, A.Inv s → g.J s t → g.αi ic ia → A.Pre s ia → C.Dom ic →
     C.step t ic (.ok (t', oc)) → ∃ x, g.J (f s ia (ce ic, x)).1 t' ∧ g.αo oc (f s ia (ce ic, x)).2
+
+/-! ### 成分の必要性の証人（ADR 0042） -/
+
+/-- PRE の下で具体側が正常終了しない証人があれば、リファインメントは成り立たない（適用可能性が破れる）。 -/
+theorem not_of_error {s : σ} {t : τ} {ic : ιc} {ia : ιa} {e : ε} (hi : A.Inv s) (hJ : g.J s t)
+    (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) (he : C.step t ic (.error e)) :
+    ¬ Refines A C g :=
+  fun h => (h.applicable s t ic ia hi hJ ha hpre hd).2 e he
+
+/-- 具体側の正常終了を、抽象側のどの歩みも `J`・`αo` で模倣できない証人があれば、リファインメントは
+成り立たない（正しさが破れる）。 -/
+theorem not_of_mismatch {s : σ} {t : τ} {ic : ιc} {ia : ιa} {t' : τ} {oc : οc} (hi : A.Inv s)
+    (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic)
+    (hs : C.step t ic (.ok (t', oc))) (hm : ∀ s' oa, A.step s ia s' oa → g.J s' t' → ¬ g.αo oc oa) :
+    ¬ Refines A C g := fun h => by
+  obtain ⟨s', oa, hst, hJ', ho⟩ := h.correct s t ic ia t' oc hi hJ ha hpre hd hs
+  exact hm s' oa hst hJ' ho
+
+/-- 具体側の正常終了を、環境を `ce ic` に固定したどの `f` の結果とも対応づけられない証人があれば、
+環境の固定は成り立たない。 -/
+theorem Pinned.not_of_mismatch {f : σ → ιa → E × F → σ × οa} {ce : ιc → E} {s : σ} {t : τ} {ic : ιc}
+    {ia : ιa} {t' : τ} {oc : οc} (hi : A.Inv s) (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia)
+    (hd : C.Dom ic) (hs : C.step t ic (.ok (t', oc)))
+    (hm : ∀ x, g.J (f s ia (ce ic, x)).1 t' → ¬ g.αo oc (f s ia (ce ic, x)).2) :
+    ¬ Pinned A C g f ce := fun h => by
+  obtain ⟨x, hJ', ho⟩ := h s t ic ia t' oc hi hJ ha hpre hd hs
+  exact hm x hJ' ho
 
 /-- `f` の結果が抽象側の `step` に含まれるなら、環境の固定は正しさの義務を含意する。 -/
 theorem Pinned.correct {f : σ → ιa → E × F → σ × οa} {ce : ιc → E} (hp : Pinned A C g f ce)

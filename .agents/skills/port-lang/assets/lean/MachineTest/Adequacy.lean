@@ -19,6 +19,12 @@ import Machine
 | 自由な選択が結果をすべて吸収する | `junk_refines_specFree`・`fFree_frame_forgets_all` |
 | 差異の前提の述語が `False` | `false_not_nontrivial` |
 | 環境の前提の外への入力の写し | `specStrong_total_lt10`・`glueBad_not_envWitness` |
+| 不要な差異（外しても成り立つ。ADR 0042） | `good_restrict_refines`・`devLang_unneeded_for_good` |
+| 環境の選択が不具合を吸収する（`Refines` だけでは必要性が示せない。ADR 0042） | `buggy_restrict_refines`・`buggy_refines`・`devNot3_needed_for_buggy` |
+
+成分の必要性（ADR 0042）の正例は、`devLang_needed_for_langErr`（前提型・`not_of_error`）、
+`devNot3_needed_for_buggy`（前提型・`Pinned.not_of_mismatch`）、`obsNaN_needed`（観測型・`not_of_mismatch`）、
+`specStrong_not_always`（環境の前提・`TotalUnder.not_always`）である。
 -/
 
 namespace MachineTest.Adequacy
@@ -403,5 +409,115 @@ theorem glueBad_not_envWitness : ¬ Refines.EnvWitness garbage glueBad fun n => 
   simp only [glueBad, Glue.ofStd, Option.some.injEq] at ha
   subst ha
   exact absurd he (by decide)
+
+/-! ## 反例 12: 不要な差異（ADR 0042） -/
+
+/-- `good` に `devLang` の制限を付けた R 課題は成り立つ。`devLang` は両向きの例を持つ（`devLang_nontrivial`）。 -/
+theorem good_restrict_refines : Refines spec (good.restrict devLang) glue :=
+  Refines.restrictConcrete good_refines _
+
+/-- しかし、制限を外しても `Refines` と `Pinned` が成り立つ。`devLang` の必要性は示せない（`good` は `lang` に
+依存しない）。 -/
+theorem devLang_unneeded_for_good : Refines spec good glue ∧ Refines.Pinned spec good glue fRes ce :=
+  ⟨good_refines, good_pinned⟩
+
+/-! ## 正例: 必要な前提型の差異（ADR 0042） -/
+
+/-- `lang` が真のとき正常終了しない具体機械（移植元の不具合による 500 の模擬）。 -/
+def langErr : Concrete Nat Req Out Unit :=
+  Concrete.ofFun (· = 5) fun t r => if r.lang then .error () else .ok (fRes t r.n (r.env, ()))
+
+theorem langErr_refines : Refines spec (langErr.restrict devLang) glue where
+  init t ht := ⟨t, ht, glue_J.2 rfl⟩
+  input_total r _ := ⟨r.n, glue_αi.2 rfl⟩
+  applicable _ _ r _ _ _ _ _ hd := by
+    have hl : r.lang = false := hd.2
+    refine ⟨⟨_, rfl⟩, fun _ h => ?_⟩
+    simp only [Concrete.restrict, langErr, Concrete.ofFun_step, hl] at h
+    cases h
+  correct s t r ia t' oc _ hJ ha _ hd hs := by
+    have hl : r.lang = false := hd.2
+    rw [glue_J] at hJ; rw [glue_αi] at ha; subst hJ; subst ha
+    simp only [Concrete.restrict, langErr, Concrete.ofFun_step, hl] at hs
+    exact ⟨t', oc, ⟨(r.env, ()), by simpa using hs.symm⟩, glue_J.2 rfl, glue_αo.2 rfl⟩
+
+theorem langErr_pinned : Refines.Pinned spec (langErr.restrict devLang) glue fRes ce := by
+  intro s t r ia t' oc _ hJ ha _ hd hs
+  have hl : r.lang = false := hd.2
+  rw [glue_J] at hJ; rw [glue_αi] at ha; subst hJ; subst ha
+  simp only [Concrete.restrict, langErr, Concrete.ofFun_step, hl] at hs
+  have hs' : fRes s r.n (r.env, ()) = (t', oc) := by simpa using hs.symm
+  simp only [ce]
+  exact ⟨(), by rw [hs']; exact glue_J.2 rfl, by rw [hs']; exact glue_αo.2 rfl⟩
+
+theorem langErr_initSurj : Refines.InitSurj spec (langErr.restrict devLang) glue :=
+  fun s hs => ⟨s, hs, glue_J.2 rfl⟩
+
+theorem langErr_noFaultReachable : Refines.NoFaultReachable (langErr.restrict devLang) glue ce false :=
+  fun r ia hd ha => ⟨{ r with env := false }, ⟨trivial, hd.2⟩, by rw [glue_αi] at ha ⊢; exact ha, rfl⟩
+
+/-- `devLang` の必要性: 制限を外すと、`lang` が真の入力で具体側が正常終了しない。 -/
+theorem devLang_needed_for_langErr :
+    ¬ (Refines spec langErr glue ∧ Refines.Pinned spec langErr glue fRes ce) := fun h =>
+  Refines.not_of_error (A := spec) (C := langErr) (g := glue) (s := 5) (t := 5)
+    (ic := ⟨0, false, true⟩) (ia := 0) (e := ()) trivial (glue_J.2 rfl) (glue_αi.2 rfl) trivial trivial
+    rfl h.1
+
+/-! ## 反例 13: 環境の選択が不具合を吸収する（ADR 0042） -/
+
+/-- 前提型の差異の述語の模擬: `buggy` の不具合の入力（`n = 3`）を除く。 -/
+def devNot3 (r : Req) : Prop := r.n ≠ 3
+
+theorem devNot3_nontrivial : Nontrivial devNot3 :=
+  ⟨⟨⟨0, false, false⟩, by simp [devNot3]⟩, ⟨⟨3, false, false⟩, by simp [devNot3]⟩⟩
+
+theorem buggy_restrict_refines : Refines spec (buggy.restrict devNot3) glue :=
+  Refines.restrictConcrete buggy_refines _
+
+/-- 制限を外しても `Refines` は成り立つ（`buggy_refines`）。必要性は、`Pinned` を含めた命題でだけ示せる。 -/
+theorem devNot3_needed_for_buggy :
+    ¬ (Refines spec buggy glue ∧ Refines.Pinned spec buggy glue fRes ce) := fun h =>
+  Refines.Pinned.not_of_mismatch (A := spec) (C := buggy) (g := glue) (f := fRes) (ce := ce) (s := 5)
+    (t := 5) (ic := ⟨3, false, false⟩) (ia := 3) (t' := 5) (oc := .conflict) trivial (glue_J.2 rfl)
+    (glue_αi.2 rfl) trivial trivial rfl
+    (fun x _ ho => by cases x; simp [glue_αo, fRes, ce] at ho) h.2
+
+/-! ## 正例: 必要な観測型の差異（ADR 0042） -/
+
+/-- 観測型の差異の成分の模擬: 具体側の NaN を抽象側の 0 に対応させる。 -/
+def obsNaN (c : Num) (a : Nat) : Prop := c = .nan ∧ a = 0
+
+theorem obsNaN_nontrivial : Nontrivial₂ obsNaN :=
+  ⟨⟨(.nan, 0), by simp [obsNaN]⟩, ⟨(.num 0, 0), by simp [obsNaN]⟩⟩
+
+/-- 部分写像の出力の抽象化に、観測型の成分 `obsNaN` を加えた貼り合わせ。 -/
+def glueObs : Glue Unit Unit Nat Nat Nat Num :=
+  Glue.ofStd (fun _ => some ()) (fun _ => True) some aoPartial never obsNaN
+
+theorem halfNaN_refines_obs : Refines half halfNaN glueObs where
+  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+  input_total n _ := ⟨n, rfl⟩
+  applicable _ _ _ _ _ _ _ _ _ := ⟨⟨_, rfl⟩, fun _ h => by cases h⟩
+  correct _ _ n ia _ oc _ _ ha _ _ hs := by
+    simp only [glueObs, Glue.ofStd, Option.some.injEq] at ha; subst ha
+    simp only [halfNaN, Concrete.pure, Concrete.ofFun_step, Except.map, Except.ok.injEq,
+      Prod.mk.injEq] at hs
+    obtain ⟨-, rfl⟩ := hs
+    refine ⟨(), n / 2, rfl, Or.inl ⟨rfl, trivial⟩, ?_⟩
+    by_cases h0 : n = 0
+    · subst h0; exact Or.inr (And.intro rfl rfl)
+    · exact Or.inl (by simp [h0, aoPartial])
+
+/-- `obsNaN` の必要性: `never` に替えると、NaN の出力を模倣できない。 -/
+theorem obsNaN_needed : ¬ Refines half halfNaN (glueNum aoPartial) :=
+  Refines.not_of_mismatch (A := half) (C := halfNaN) (g := glueNum aoPartial) (s := ()) (t := ())
+    (ic := 0) (ia := 0) (t' := ()) (oc := .nan) trivial (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
+    (fun _ _ _ _ ho => by simp [glueNum, Glue.ofStd, aoPartial, never] at ho)
+
+/-! ## 正例: 必要な環境の前提（ADR 0042） -/
+
+/-- `specStrong` の PRE（`n < 10`）は、環境の前提なしには成り立たない。 -/
+theorem specStrong_not_always : ¬ specStrong.TotalUnder always :=
+  Machine.TotalUnder.not_always (A := specStrong) (s := 5) (i := 100) trivial (show ¬ (100 < 10) by decide)
 
 end MachineTest.Adequacy

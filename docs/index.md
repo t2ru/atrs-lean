@@ -54,6 +54,7 @@ okf_version: "0.2"
 * [リファインメントが空虚・自明に成り立つことを防ぐ義務と検査を課す](decision/0039-refinement-non-vacuity-obligations.md) - Machine.Refines は具体⊆抽象しか保証せず、緩い Spec・空の INV・強すぎる PRE・粗い貼り合わせ・名前付きの成分の乱用・非決定性による不具合の吸収でも成り立つ。これを、選択の像としての Spec（ofChoice・FreeFrame）、Sound と 1 点の初期状態、環境の固定（Pinned・NoFaultReachable）、標準の貼り合わせ（Glue.ofStd）、入口の全域性（TotalUnder・EnvWitness）、初期化の全射性、状態の安全性、成分の両向きの例、核の明示と、検査 TR-G・TR-N・TR-V・TR-PE で塞ぐ。ADR 0034・0036・0037 に義務と検査を加える。
 * [追跡の道具の未確定事項（本文ハッシュ・正規化・ロケータの細部・機能と backlog の対応）を決める](decision/0040-trace-tooling-unresolved-details.md) - ADR 0036 と言語パックで未確定だった、本文ハッシュの方式、正規化での空白の扱い、private の呼び先の連結、ロケータとハッシュの区切り、seed:・tmpl:・xml:・http:・prop:/msg: の形、dep:/lang: の版の文字列、警告と誤りを決める機能と backlog の対応表（trace/features.json）、合格の記録が無い場合、TR-P の数え方を決める。
 * [rehash・diff・impact の細部（検査の登録・注釈の書き換え・改名・出典の検査）を決める](decision/0041-rehash-diff-impact-details.md) - ADR 0036 の rehash・diff・impact について、検査の登録（trace/checks.json）とそれが覆う定義、rehash の対象と手順、Lean の注釈の書き換え方、renames.json の検査、diff の分類と impact の伝播、文書の「出典:」のロケータの検査を決める。ADR 0040 を補う。
+* [空虚化を防ぐ義務を既存の研究に照らして補う（成分の必要性・変異テスト・意図から書く例）](decision/0042-vacuity-literature-necessity-and-mutation.md) - ADR 0039 の義務を、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies などの研究と対応づける。その上で、名前付きの成分を外すと R 課題の命題が偽になること（成分の必要性。G9）を義務に加える。成分の広さには仕様の変異テストを、仕様の妥当性には意図から書く例を採る。
 
 # Specification
 
@@ -112,6 +113,8 @@ okf_version: "0.2"
 * [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](backlog/0029-rust-external-adapters.md) - DB・ファイル・時計のアダプタを Rust で実装し、その振る舞いを TargetModel.Adapter（DB は LangSemantics.Sql の式）に写して REF-009 を証明し、SQL の差分実行（SRC-010）と結合テスト（SRC-005）で一致を確かめる。
 * [リファインメントの空虚化を防ぐ義務と検査](backlog/0030-refinement-non-vacuity.md) - Machine.Adequacy（ofChoice・FreeFrame・InitIs・Pinned・NoFaultReachable・Glue.ofStd・TotalUnder・EnvWitness・InitSurj・StateSafe・Nontrivial・KernelIs・complete・run）、その反例、追跡属性 @[nondet]・@[std_abs]・@[kernel]・@[env_pre]、検査 obligation-check と check_obligations.py、文書の登録簿を整える。
 * [Spec の非決定性の選択の型と入口の環境の前提](backlog/0031-spec-nondet-and-entry-env.md) - Spec の非決定性 N-001〜N-005 の選択の型（@[nondet]）と、入口の環境の前提（マスタ・設定の妥当性と入力の値域。@[env_pre]）を Lean に定義し、両向きの例とシードの妥当性を示す。
+* [名前付きの成分の必要性の義務と検査（G9）](backlog/0032-component-necessity-witness.md) - ADR 0042 の成分の必要性（成分を外した R 課題の命題が偽であること）を、Machine.Adequacy の補題（always・not_of_error・not_of_mismatch・Pinned.not_of_mismatch・TotalUnder.not_always）、反例、obligation-check の G9、文書の W 課題・SPEC-006・保証の限界に反映する。
+* [名前付きの成分の変異テスト](backlog/0033-mutation-testing-of-named-components.md) - ADR 0042 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。
 
 # Log
 

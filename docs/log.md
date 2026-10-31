@@ -2,6 +2,19 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR 0042](decision/0042-vacuity-literature-necessity-and-mutation.md) で、空虚化を防ぐ義務（ADR 0039）を既存の研究と対応づけた。対応づけた研究は、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies・CompCert である。
+  * 採用 A: 成分の必要性（成分を外すと R 課題の命題が偽になること。検査 G9）
+  * 採用 B: 仕様の変異テスト（[backlog 0033](backlog/0033-mutation-testing-of-named-components.md)）
+  * 採用 C: 意図から書く例（Spec-Testing Proofs）
+* **Creation**: [backlog 0032](backlog/0032-component-necessity-witness.md) を作った。スキル port-lang の `Machine.Adequacy` に必要性の補題を、`MachineTest/Adequacy.lean` に反例 12・13 と正例を加えた。`obligation-check` に G9 を加えた。
+* **Creation**: [backlog 0033](backlog/0033-mutation-testing-of-named-components.md) を作った（`todo`）。
+* **Update**: ADR 0042 を次の文書に反映した。
+  * [spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)（W 課題・SPEC-006・空虚化を防ぐ義務）
+  * [spec/assurance.md](spec/assurance.md)（W 課題を人が読む限界を削り、必要性の範囲の限界を加えた）
+  * [ADR 0039](decision/0039-refinement-non-vacuity-obligations.md) の More Information（補足の追記）
+  * [backlog 0004](backlog/0004-fare-calculation-both-models.md) の完了条件
+  * スキル port-lang の SKILL・architecture・traceability・verification・conformance・spec-documents・lean/rules
+  * [AGENTS.md](../AGENTS.md)
 * **Update**: [backlog 0024](backlog/0024-trace-tooling.md) を完了した（第 2 段）。
   * 追跡の道具 `tools/trace` に、`rehash`・`diff`・`impact` を加えた。
   * `rehash` は、検査の登録 `trace/checks.json` を使う。
