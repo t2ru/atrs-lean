@@ -31,6 +31,78 @@ pub struct Dump {
     #[allow(dead_code)]
     pub lean_version: String,
     pub definitions: Vec<Def>,
+    /// ギャップの登録簿（`@[gap_entry]`。ADR cc24）
+    #[serde(default)]
+    pub gaps: Vec<Gap>,
+}
+
+/// 文書の節への参照（`Trace.DocRef`）。
+#[derive(Deserialize, Clone, Debug, Default, PartialEq)]
+pub struct Site {
+    pub label: String,
+    /// リポジトリのルートからのパスと、任意のアンカー
+    pub path: String,
+    #[serde(default)]
+    pub note: String,
+}
+
+/// 前提型の差異の影響。
+#[derive(Deserialize, Clone, Debug, Default, PartialEq)]
+pub struct Impact {
+    /// `output_only` / `abort`
+    pub kind: String,
+    /// 「出力のみ」/「中断」
+    pub label: String,
+    pub reason: String,
+}
+
+/// ギャップの登録（`Trace.Gap` と、その宣言・印）。
+#[derive(Deserialize, Clone, Debug, Default)]
+pub struct Gap {
+    /// 宣言の Lean 名
+    pub name: String,
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub module: String,
+    pub id: String,
+    /// `pre` / `pre_concrete_*` / `observational` / `out_of_model` / `outside_pre` / `undetermined`
+    pub kind: String,
+    /// 文書の表に出す種類の名前
+    pub kind_label: String,
+    #[serde(default)]
+    pub sites: Vec<Site>,
+    /// 説明（docstring）
+    #[serde(default)]
+    pub doc: String,
+    #[serde(default)]
+    pub premise: String,
+    #[serde(default)]
+    pub r_tasks: Vec<String>,
+    #[serde(default)]
+    pub w_task: Option<String>,
+    #[serde(default)]
+    pub impact: Option<Impact>,
+    #[serde(default)]
+    pub resolution: String,
+    #[serde(default)]
+    pub backlog: Vec<String>,
+    /// `@[gap]` の印を付けた定義
+    #[serde(default)]
+    pub markers: Vec<String>,
+    /// `@[deviation]` を付けた定義（同じ ID）
+    #[serde(default)]
+    pub deviations: Vec<String>,
+}
+
+impl Gap {
+    /// 前提型（抽象側・具体側）か。
+    pub fn is_pre(&self) -> bool {
+        self.kind == "pre" || self.kind.starts_with("pre_concrete")
+    }
+    /// 名前付きの仮定・成分としてリファインメント定理に現れる種類（前提型・観測型）か。
+    pub fn is_typed(&self) -> bool {
+        self.is_pre() || self.kind == "observational"
+    }
 }
 
 #[derive(Deserialize, Clone, Debug, Default)]

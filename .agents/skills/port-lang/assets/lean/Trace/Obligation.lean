@@ -1,4 +1,5 @@
 import Trace.Dump
+import Trace.Gap
 
 /-!
 # Trace.Obligation
@@ -27,6 +28,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（ADR 9ac6）。下の 3 つ |
+| GK | ギャップの登録簿（`Trace.Gap`）。下の 5 つ |
 
 G9 の内容は次のとおりである。
 
@@ -40,6 +42,14 @@ G9 の内容は次のとおりである。
   - 被覆: 必要性か被覆を満たす差異 `M` と同じ R 課題の制限に現れ、`Covers M d`・`Covers₂ M d` の定理がある
 - R 課題の基底について `TotalUnder A Env` を示した各 `@[env_pre]` の `Env` について、その基底の `¬ TotalUnder A always` がある
   （PRE が全域なら、環境の前提を置かず `TotalUnder A always` を示す）
+
+GK の内容は次のとおりである。
+
+- `@[gap_entry]` の宣言の値が読める。宣言は `D-NNN` なら `Abstraction`、`T-NNN` なら `Refinement` の層にあり、docstring（説明）を持つ
+- 同じ ID の宣言は 1 つだけ
+- `@[gap]` の印は、`D-NNN` なら `Spec`・`SourceModel`、`T-NNN` なら `Spec`・`TargetModel` の層の定数にだけ付き、ID の宣言がある
+- `@[deviation]` の ID に、前提型・観測型の宣言がある
+- 印・差異の定数と種類が矛盾しない（モデル外は印も `@[deviation]` も持たない。PRE の外・未確定は `@[deviation]` を持たない）
 
 入口の全域性（`TotalUnder`・`EnvWitness`）と出力のみの差異の `StateSafe` は、R 課題ごとに事実として出力し、
 文書（入口の R 課題、前提型の差異の影響）との突き合わせは `tools/ci/check_obligations.py` が行う（TR-N）。
@@ -276,6 +286,8 @@ structure Report where
   stdAbs : Array (Name × Array String)
   envPres : Array (Name × Array String)
   errors : Array String
+  /-- ギャップの登録簿（`Trace.gapsJson`） -/
+  gaps : Json := Json.arr #[]
 
 /-- `.restrict p`・`.restrictState p` の連鎖をはがし、基底と述語を返す。 -/
 partial def peelRestrict (env : Environment) (names : List Name) (e : Expr) : Expr × Array Expr :=
@@ -600,6 +612,42 @@ def isUnaryFun (ty : Expr) : Bool :=
       !b.consumeMData.isForall
   | _ => false
 
+/-- GK: ギャップの登録簿と、印・差異の定数の整合。 -/
+def checkGaps (env : Environment) (sc : Scope) : Array String := Id.run do
+  let mut errors := #[]
+  let mut byId : Std.HashMap String (Name × GapKind) := {}
+  for (n, r) in gapEntries env do
+    match r with
+    | .error e => errors := errors.push s!"GK: {n} (@[gap_entry]): {e}"
+    | .ok g =>
+      let want := if g.id.startsWith "T-" then "Refinement" else "Abstraction"
+      if sc.layerOf n != some want then
+        errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}) must be in the {want} layer"
+      if ((gapDoc? env n).getD "").trimAscii.isEmpty then
+        errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}) has no docstring (the description)"
+      for p in g.problems do errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}): {p}"
+      match byId[g.id]? with
+      | some (m, _) => errors := errors.push s!"GK: {g.id} is declared by both {m} and {n}"
+      | none => byId := byId.insert g.id (n, g.kind)
+  for (n, ids) in gapMarkers env do
+    for i in ids do
+      let allowed := if i.startsWith "T-" then ["Spec", "TargetModel"] else ["Spec", "SourceModel"]
+      unless (sc.layerOf n).any allowed.contains do
+        errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but is not in the {allowed} layers"
+      match byId[i]? with
+      | none => errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but {i} has no @[gap_entry]"
+      | some (_, .outOfModel) =>
+        errors := errors.push s!"GK: {n} has @[gap \"{i}\"] but {i} is out_of_model (it appears in no model)"
+      | some _ => pure ()
+  for (n, ids) in deviationConsts env do
+    for i in ids do
+      match byId[i]? with
+      | none => errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but {i} has no @[gap_entry]"
+      | some (_, k) =>
+        unless k.isTyped do
+          errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but {i} is {k.code}, not pre / observational"
+  return errors
+
 /-- 環境を走査する。 -/
 def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let cs := collectCompanions env
@@ -614,9 +662,10 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   for (n, ci) in consts do
     let attrs := [("nondet", nondetAttr), ("deviation", deviationAttr), ("std_abs", stdAbsAttr),
       ("kernel", kernelAttr), ("env_pre", envPreAttr), ("obligation", obligationAttr)]
-    let mine := attrs.filter fun (_, attr) => hasAttr attr env n
+    let mine := (attrs.filter fun (_, attr) => hasAttr attr env n).map (·.1) ++
+      (if hasAttr gapAttr env n then ["gap"] else []) ++ (if gapEntryAttr.hasTag env n then ["gap_entry"] else [])
     if !mine.isEmpty && !sc.isModel n then
-      errors := errors.push s!"G0: {n} has @[{(mine.map (·.1))}] but is not in a model layer"
+      errors := errors.push s!"G0: {n} has @[{mine}] but is not in a model layer"
     if let some ids := nondetAttr.getParam? env n then nondets := nondets.push (n, ids)
     if let some ids := deviationAttr.getParam? env n then
       devs := devs.push (n, ids)
@@ -676,7 +725,10 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
       unless ok do
         errors := errors.push
           s!"G9: {e} (@[env_pre]) is used for the abstract base {b} of an R obligation without a ¬ TotalUnder (base) always theorem (if PRE is total, state TotalUnder (base) always instead)"
-  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors }
+  errors := errors ++ checkGaps env sc
+  let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
+  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors,
+           gaps := Trace.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
 def Report.errorCount (r : Report) : Nat :=
@@ -704,6 +756,6 @@ def Report.toJson (r : Report) : Json :=
     ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
       ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR)])),
     ("nondet", attrd r.nondets), ("deviation", attrd r.deviations), ("std_abs", attrd r.stdAbs),
-    ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors)]
+    ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors), ("gaps", r.gaps)]
 
 end Trace.Obligation

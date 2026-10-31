@@ -2,6 +2,16 @@
 
 ## 2026-10-31
 
+* **Creation**: [backlog 114a](backlog/114a-gap-attributes-and-trace-in-skill.md) を作り、完了した（`done`）。
+* **Creation**: [ADR 7fe4](decision/7fe4-move-trace-attributes-to-skill.md) で、`lean/Trace`（追跡属性・trace-dump・obligation-check の本体）をスキル port-lang の `assets/lean/Trace` に移した。テストは `assets/lean/TraceTest` と `lake exe trace-test` に移した。
+* **Creation**: [ADR cc24](decision/cc24-gap-registry-as-lean-attributes.md) で、ギャップの登録簿を Lean の `@[gap_entry]`（型 `Trace.Gap`）に置き、箇所の印 `@[gap]` を足した。`lean/Abstraction/Gap.lean` に D-001〜D-030 を移し、未確定の差異に D-028、PRE の外の ID の無かった 2 行に D-029・D-030 を割り当てた。検査 TR-K・GK を足した。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)（差異の表を生成区画にした）
+  * [spec/assurance.md](spec/assurance.md)（検査器の置き場所、ギャップの登録簿の行）
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.5、`Trace` の置き場所）
+  * [backlog/README.md](backlog/README.md)
+  * スキル port-lang の SKILL.md（版 0.5）・`architecture.md`・`traceability.md`（TR-K）・`lean/trace-attributes.md`（ギャップの登録簿）・`spec-documents.md`・`lean/rules.md`・`workflow.md`
+  * [AGENTS.md](../AGENTS.md)
 * **Add**: [ADR e9bc](decision/e9bc-fare-double-analysis.md)（運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く）。
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 1 段を終えた（`doing`）。3 段に分け、Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、`depends_on` から f18c を外した。double・BigDecimal の補題（スキルの `LangSemantics.Java.DoubleLemmas`・`bdCeilHundredUp_val`）と、基本運賃・運賃の差異の条件（`Abstraction.Fare`）を証明した。
 * **Update**: 次の文書を改めた。

@@ -6,7 +6,8 @@ ATRS の Lean プロジェクト（全モデルと証明）。
 
 - 依存は Batteries と、port-lang スキルの言語意味論モデル（`langSemantics`）だけとする（ADR 659f）。
   `LangSemantics` には ATRS に固有の定義を足さないため、`lean/` に写さず Lake 依存として取り込む。
-- `Machine`（抽象機械とリファインメントの枠組み）も同じ `langSemantics` パッケージから取り込む。
+- `Machine`（抽象機械とリファインメントの枠組み）と `Trace`（追跡属性・ギャップの登録簿と、trace-dump・obligation-check の本体）も、
+  同じ `langSemantics` パッケージから取り込む。道具の入口（`Tools`）だけをここに置く。
 - 名前空間の依存の向きは `tools/ci/check_lean.py` で検査する。
 -/
 package atrs where
@@ -15,9 +16,6 @@ package atrs where
 
 require batteries from git "https://github.com/leanprover-community/batteries" @ "v4.35.0"
 require langSemantics from "../.agents/skills/port-lang/assets/lean"
-
-/-- 追跡属性と trace-dump の基盤。どのモデルにも依存しない。 -/
-@[default_target] lean_lib Trace
 
 /-- 抽象モデル（正規仕様）。 -/
 @[default_target] lean_lib Spec

@@ -44,7 +44,7 @@ structure FlightMasterProvider where
 
 /-- `BoardingClassProvider.load()`: `findAll` の各行を、搭乗クラスコードをキーに `put` する（後勝ち）。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#load()@ea4f74c6c99e9b67",
-  "java:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll()@a75e2344e7b09314"]
+  "java:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll()@a75e2344e7b09314", gap "D-015"]
 def BoardingClassProvider.load (rows : List BoardingClassResult) : JResult BoardingClassProvider := do
   let list ← rows.mapM Repository.Mapping.boardingClass
   let mut m : JHashMap Spec.BoardingClassCd BoardingClass := {}
@@ -54,7 +54,7 @@ def BoardingClassProvider.load (rows : List BoardingClassResult) : JResult Board
 
 /-- `FareTypeProvider.load()`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#load()@accd51e500f0cb16",
-  "java:jp.co.ntt.atrs.domain.repository.faretype.FareTypeRepository#findAll()@c01904394de5db65"]
+  "java:jp.co.ntt.atrs.domain.repository.faretype.FareTypeRepository#findAll()@c01904394de5db65", gap "D-015"]
 def FareTypeProvider.load (rows : List FareTypeResult) : JResult FareTypeProvider := do
   let list ← rows.mapM Repository.Mapping.fareType
   let mut m : JHashMap Spec.FareTypeCd FareType := {}
@@ -74,7 +74,7 @@ def makeCacheKey (departureAirportCd arrivalAirportCd : String) : String :=
 
 /-- `RouteProvider.load()`: 出発・到着の空港コードのキーで `put` する（後勝ち）。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#load()@ce13818ba91368aa",
-  "java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()@3cd8d3e7f6409637"]
+  "java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()@3cd8d3e7f6409637", gap "D-015"]
 def RouteProvider.load (rows : List RouteResult) : JResult RouteProvider := do
   let mut m : JHashMap String Route := {}
   for r in rows.map Repository.Mapping.route do
@@ -85,7 +85,7 @@ def RouteProvider.load (rows : List RouteResult) : JResult RouteProvider := do
 
 /-- `FlightMasterProvider.load()`: 便名をキーに `put` する（後勝ち）。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#load()@42b24c5f9549b118",
-  "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster()@0563c719a0a21f51"]
+  "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster()@0563c719a0a21f51", gap "D-015"]
 def FlightMasterProvider.load (rows : List FlightMasterResult) : JResult FlightMasterProvider := do
   let mut m : JHashMap String FlightMaster := {}
   for f in Repository.Mapping.flightMasters rows do
@@ -103,7 +103,7 @@ def getBoardingClass (p : BoardingClassProvider) (cd : JRef Spec.BoardingClassCd
   return p.boardingClassCodeMap.get cd
 
 /-- `getPeakTime`: 取得順に走査し、`depLocalDate` を両端を含めて含む最初のピーク時期。無ければ `null`。 -/
-@[source "java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)@1b19d6cad612b687"]
+@[source "java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)@1b19d6cad612b687", gap "D-004"]
 def getPeakTime (p : PeakTimeProvider) (depLocalDate : JRef JLocalDate) : JResult (JRef PeakTime) := do
   let d ← match depLocalDate with
     | some d => pure d

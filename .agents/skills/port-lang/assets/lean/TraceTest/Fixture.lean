@@ -1,13 +1,13 @@
 import Trace
 
 /-!
-# Tests.TraceFixture
+# TraceTest.Fixture
 
-trace-dump のフィクスチャ。`Tests.Fixture.<層>` の下に、各層を模したダミー定義と全種類の追跡属性を置く。
-テストは、接頭辞 `Tests.Fixture` を除いた名前で層を決める。
+trace-dump のフィクスチャ。`TraceTest.Fixture.<層>` の下に、各層を模したダミー定義と全種類の追跡属性を置く。
+テストは、接頭辞 `TraceTest.Fixture` を除いた名前で層を決める。
 -/
 
-namespace Tests.Fixture
+namespace TraceTest.Fixture
 
 namespace LangSemantics.Rust
 /-- 移植先の言語意味論を模す。 -/
@@ -17,7 +17,7 @@ end LangSemantics.Rust
 
 namespace Spec
 /-- 仕様の定義を模す。 -/
-@[spec_doc "docs/spec/fare-calculation.md#基本運賃", no_source "フィクスチャ"]
+@[spec_doc "docs/spec/example.md#base", no_source "フィクスチャ"]
 def base (n : Nat) : Nat := n * 2
 
 /-- 既知差異の前提を模す。 -/
@@ -46,7 +46,8 @@ def useMatch (n : Nat) : Nat :=
   | k + 1 => double k
 
 mutual
-/-- 相互再帰。 -/
+/-- 相互再帰。ギャップの箇所の印を付ける。 -/
+@[gap "T-998"]
 def isEven : Nat → Bool
   | 0 => true
   | n + 1 => isOdd n
@@ -62,6 +63,11 @@ namespace Refinement
 @[obligation "REF-999"]
 theorem double_eq (n : Nat) (_h : Spec.smallInput n) :
     TargetModel.double n = TargetModel.double n := rfl
+
+/-- フィクスチャの **ギャップ** の説明。 -/
+@[gap_entry]
+def gT998 : Trace.Gap :=
+  { id := "T-998", kind := .outsidePre, sites := [⟨"例", "docs/spec/example.md#base", "（注記）"⟩], premise := "PRE X-1" }
 end Refinement
 
-end Tests.Fixture
+end TraceTest.Fixture

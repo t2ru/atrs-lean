@@ -67,5 +67,76 @@
    ]
   }
  ],
- "errors": []
+ "errors": [],
+ "gaps": [
+  {
+   "name": "Abstraction.Gap.D901",
+   "module": "Abstraction.Gap",
+   "id": "D-901",
+   "kind": "pre_concrete_input",
+   "kind_label": "前提型（具体側の入力）",
+   "sites": [],
+   "doc": "x",
+   "premise": "`dev_D901`",
+   "r_tasks": [
+    "ABS-901"
+   ],
+   "w_task": "ABS-191",
+   "impact": {
+    "kind": "output_only",
+    "label": "出力のみ",
+    "reason": "x"
+   },
+   "resolution": "",
+   "backlog": [
+    "00000000-0000-4000-8000-000000000001"
+   ],
+   "markers": [],
+   "deviations": []
+  },
+  {
+   "name": "Abstraction.Gap.D902",
+   "module": "Abstraction.Gap",
+   "id": "D-902",
+   "kind": "pre",
+   "kind_label": "前提型",
+   "sites": [],
+   "doc": "x",
+   "premise": "`dev_D902`",
+   "r_tasks": [
+    "ABS-901"
+   ],
+   "w_task": "ABS-192",
+   "impact": {
+    "kind": "abort",
+    "label": "中断",
+    "reason": "x"
+   },
+   "resolution": "",
+   "backlog": [
+    "00000000-0000-4000-8000-000000000001"
+   ],
+   "markers": [],
+   "deviations": []
+  },
+  {
+   "name": "Abstraction.Gap.D903",
+   "module": "Abstraction.Gap",
+   "id": "D-903",
+   "kind": "observational",
+   "kind_label": "観測型",
+   "sites": [],
+   "doc": "x",
+   "premise": "`obs_D903`",
+   "r_tasks": [
+    "ABS-901"
+   ],
+   "w_task": "ABS-193",
+   "impact": null,
+   "resolution": "",
+   "backlog": [],
+   "markers": [],
+   "deviations": []
+  }
+ ]
 }

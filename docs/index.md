@@ -61,6 +61,8 @@ okf_version: "0.2"
 * [ADR と backlog の ID を UUID にし、ファイル名を ID の先頭 4 文字と slug にする](decision/f57e-uuid-ids-for-decisions-and-backlog.md) - ADR・backlog の ID を 4 桁の連番から UUID v4（小文字 16 進）に改め、ファイル名を <ID の先頭 4 文字>-<slug>.md とする。道具が読む箇所は ID 全体を、本文は先頭 4 文字を書く。既存の 78 件を採番し直し、旧番号との対応表を残す。ADR d845 のファイル名の部分を置き換える。
 * [ABS-026 の証明の構成と、空港コード NOP の禁止・D-027 の範囲・LocalDate の通算日数の修正を決める](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) - R 課題 ABS-026 の証明に向けて、空港コード NOP を MD-8 で禁じること、D-027 の対象を具体側の入力全体に広げること、LangSemantics.Java の LocalDate の通算日数の変換を床除算で書き直すこと（負の年で JVM と食い違っていた）、補題の置き場所と、有限の範囲の検査にカーネルの評価（decide +kernel）を使うことを決める。
 * [運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く](decision/e9bc-fare-double-analysis.md) - backlog bbcc の第 1 段として、[Source] の運賃計算の double の式と [Spec] の整数の式の差を、因子の表（カーネルの評価）と閉じた形の補題で確定する。D-001 は値域内に差異があり（ABS-007 は否定的に解決）、D-001・D-002 の前提を「100 で割り切れない、または因子が安全」の形に改める。あわせて ABS-006 を ABS-026 に含めて取り消し、Java オラクルとの一致の完了条件を backlog f18c に移し、bbcc を 3 段に分ける。
+* [追跡属性の仕組み（Trace）をスキル port-lang の assets に移す](decision/7fe4-move-trace-attributes-to-skill.md) - lean/Trace（追跡属性・trace-dump・obligation-check の本体）はアプリに依存しないので、スキル port-lang の assets/lean/Trace に移し、Lake の依存として取り込む。道具の入口（main）は ATRS の lean/Tools に残す。
+* [Spec とモデルのギャップの登録簿を Lean の属性に置き、文書の表を生成する](decision/cc24-gap-registry-as-lean-attributes.md) - 既知差異（前提型・観測型・モデル外）、Spec の PRE の外での振る舞い、未確定の差異を、ID ごとの Lean の宣言（@[gap_entry]、型 Trace.Gap）として登録し、これを正とする。差異の生じる Spec・SourceModel・TargetModel の定義に箇所の印 @[gap] を付ける。文書の表は trace-dump から生成し、検査は Markdown の解析をやめて JSON から行う。
 
 # Specification
 
@@ -121,6 +123,7 @@ okf_version: "0.2"
 * [Spec の非決定性の選択の型と入口の環境の前提](backlog/0fdf-spec-nondet-and-entry-env.md) - Spec の非決定性 N-001〜N-005 の選択の型（@[nondet]）と、入口の環境の前提（マスタ・設定の妥当性と入力の値域。@[env_pre]）を Lean に定義し、両向きの例とシードの妥当性を示す。
 * [名前付きの成分の必要性の義務と検査（G9）](backlog/ae04-component-necessity-witness.md) - ADR 9ac6 の成分の必要性（成分を外した R 課題の命題が偽であること）を、Machine.Adequacy の補題（always・not_of_error・not_of_mismatch・Pinned.not_of_mismatch・TotalUnder.not_always）、反例、obligation-check の G9、文書の W 課題・SPEC-006・保証の限界に反映する。
 * [名前付きの成分の変異テスト](backlog/0d1a-mutation-testing-of-named-components.md) - ADR 9ac6 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。
+* [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](backlog/114a-gap-attributes-and-trace-in-skill.md) - lean/Trace をスキル port-lang の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。
 
 # Log
 

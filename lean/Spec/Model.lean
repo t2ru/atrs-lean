@@ -254,15 +254,15 @@ structure Member where
 namespace Range
 
 /-- `Route.basicFare + BoardingClass.extraCharge` の上限。 -/
-@[spec_doc "docs/spec/domain-model.md#値域"]
+@[spec_doc "docs/spec/domain-model.md#値域", gap "D-030"]
 def maxBasicFareWithCharge : Nat := 10000000
 
 /-- `PeakTime.multiplicationRatio` の上限。 -/
-@[spec_doc "docs/spec/domain-model.md#値域"]
+@[spec_doc "docs/spec/domain-model.md#値域", gap "D-030"]
 def maxMultiplicationRatio : Nat := 1000
 
 /-- `FareType.discountRate` の上限。 -/
-@[spec_doc "docs/spec/domain-model.md#値域"]
+@[spec_doc "docs/spec/domain-model.md#値域", gap "D-030"]
 def maxDiscountRate : Nat := 100
 
 /-- 搭乗者数の範囲。 -/
