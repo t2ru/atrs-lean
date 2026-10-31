@@ -8,6 +8,7 @@
   * 採用 C: 意図から書く例（Spec-Testing Proofs）
 * **Creation**: [backlog 0032](backlog/0032-component-necessity-witness.md) を作った。スキル port-lang の `Machine.Adequacy` に必要性の補題を、`MachineTest/Adequacy.lean` に反例 12・13 と正例を加えた。`obligation-check` に G9 を加えた。
 * **Creation**: [backlog 0033](backlog/0033-mutation-testing-of-named-components.md) を作った（`todo`）。
+* **Update**: 「強すぎる前提になっていないか」を主眼に敵対的レビューを行い、G9 を改めた（差異 ID ごとの集計、被覆 `Covers`、観測型の和 `anyOf`、ID は定数に 1 つ、`¬ Refines`・`→ False` の受理、PRE が全域な基底の `TotalUnder A always`、R 課題の基底に限った環境の前提）。指摘と対応は [ADR 0042](decision/0042-vacuity-literature-necessity-and-mutation.md) に記した。backlog 0032 を完了した。
 * **Update**: ADR 0042 を次の文書に反映した。
   * [spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)（W 課題・SPEC-006・空虚化を防ぐ義務）
   * [spec/assurance.md](spec/assurance.md)（W 課題を人が読む限界を削り、必要性の範囲の限界を加えた）

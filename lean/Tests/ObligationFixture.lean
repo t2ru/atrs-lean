@@ -38,7 +38,8 @@ theorem spec_initIs : spec.InitIs 5 := fun _ => Iff.rfl
 
 theorem envOk_nontrivial : Nontrivial envOk :=
   ⟨⟨0, show 0 < 1000 by decide⟩, ⟨1000, show ¬ 1000 < 1000 by decide⟩⟩
-theorem spec_total : spec.TotalUnder envOk := fun _ _ _ _ => trivial
+/-- `spec` の PRE は全域なので、環境の前提を置かずに全域性を示す（G9）。 -/
+theorem spec_total : spec.TotalUnder always := fun _ _ _ _ => trivial
 
 /-- 選択の型に `@[nondet]` の無い抽象機械。 -/
 def specBool : Machine.Machine Nat Nat Out := MachineTest.Adequacy.spec
@@ -173,8 +174,8 @@ theorem good_pinned : Refines.Pinned spec (good.restrict devLang) glue fRes ceS 
 theorem good_noFault : Refines.NoFaultReachable (good.restrict devLang) glue ceS false :=
   fun r _ hd ha => ⟨{ r with env := false }, ⟨trivial, hd.2⟩, ha, rfl⟩
 
-theorem good_envWitness : Refines.EnvWitness (good.restrict devLang) glue envOk :=
-  ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, show 0 < 1000 by decide⟩
+theorem good_envWitness : Refines.EnvWitness (good.restrict devLang) glue always :=
+  ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, trivial⟩
 
 theorem good_stateSafe : Refines.StateSafeConcrete spec good glue devLang :=
   fun s t ic ia t' oc hi hJ ha hp _ hd hs => by
@@ -372,7 +373,7 @@ theorem devUnneeded_nontrivial : Nontrivial devUnneeded := MachineTest.Adequacy.
 theorem v9_unneeded : Refines spec (good.restrict devUnneeded) glue :=
   Refines.restrictConcrete MachineTest.Adequacy.good_refines _
 
-/-- 違反例: 基底が `ofChoice` なのに、必要性を `Pinned` を伴わない `¬ Refines` で示す。 -/
+/-- 正例: 基底が `ofChoice` でも、必要性を（より強い）`¬ Refines` で示してよい。 -/
 @[deviation "D-906"] def devLang2 (r : Req) : Prop := r.lang = false
 
 theorem devLang2_nontrivial : Nontrivial devLang2 := MachineTest.Adequacy.devLang_nontrivial
@@ -392,6 +393,89 @@ theorem v9_noPinned_noFault : Refines.NoFaultReachable (langErr2.restrict devLan
 theorem v9_noPinned_nec : ¬ Refines spec langErr2 glue :=
   Refines.not_of_error (A := spec) (C := langErr2) (g := glue) (s := 5) (t := 5)
     (ic := ⟨0, false, true⟩) (ia := 0) (e := ()) trivial (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
+
+/-- 正例: 必要性を `→ False` の形で書いた W 課題（G0 の誤りにならない）。 -/
+@[obligation "ABS-955"]
+theorem need_arrow : Refines spec langErr2 glue → False := v9_noPinned_nec
+
+/-- 同じ差異 ID の別の定数（差異 ID ごとに必要性を数えるので、G9 の誤りにならない）。 -/
+@[deviation "D-901"] def devLangB (r : Req) : Prop := r.lang = false
+
+theorem devLangB_nontrivial : Nontrivial devLangB := MachineTest.Adequacy.devLang_nontrivial
+
+@[obligation "ABS-956"]
+theorem v9_sameId : Refines spec (good.restrict devLangB) glue :=
+  Refines.restrictConcrete MachineTest.Adequacy.good_refines _
+
+/-- 違反例: 2 つの差異 ID を 1 つの定数に束ねる。 -/
+@[deviation "D-908", "D-909"] def devTwo (r : Req) : Prop := r.lang = false
+
+theorem devTwo_nontrivial : Nontrivial devTwo := MachineTest.Adequacy.devLang_nontrivial
+
+/-- 正例: 必要な `devLang` に覆われる差異（被覆）。 -/
+@[deviation "D-910"] def devWeak (r : Req) : Prop := r.lang = false ∨ 50 < r.n
+
+theorem devWeak_nontrivial : Nontrivial devWeak :=
+  ⟨⟨⟨0, false, false⟩, Or.inl rfl⟩, ⟨⟨0, false, true⟩, by simp [devWeak]⟩⟩
+
+theorem devWeak_covered : Covers devLang devWeak := fun _ h => Or.inl h
+
+@[obligation "ABS-957"]
+theorem cover_refines : Refines spec ((langErr.restrict devLang).restrict devWeak) glue :=
+  Refines.restrictConcrete MachineTest.Adequacy.langErr_refines _
+
+/-- 違反例: 互いに覆い合うだけで、どちらも必要でない差異（被覆の循環）。 -/
+@[deviation "D-911"] def devC1 (r : Req) : Prop := r.lang = false
+@[deviation "D-912"] def devC2 (r : Req) : Prop := r.lang = false
+
+theorem devC1_nontrivial : Nontrivial devC1 := MachineTest.Adequacy.devLang_nontrivial
+theorem devC2_nontrivial : Nontrivial devC2 := MachineTest.Adequacy.devLang_nontrivial
+theorem devC1_covers : Covers devC1 devC2 := fun _ h => h
+theorem devC2_covers : Covers devC2 devC1 := fun _ h => h
+
+@[obligation "ABS-958"]
+theorem v9_circular : Refines spec ((good.restrict devC1).restrict devC2) glue :=
+  Refines.restrictConcrete (Refines.restrictConcrete MachineTest.Adequacy.good_refines _) _
+
+/-- 同じ出力に重なる 2 つ目の観測型の差異（`anyOf` で並べる。必要性が無いので違反例）。 -/
+@[deviation "D-913"] def obsZero (c : Num) (a : Nat) : Prop := c = .num 0 ∧ a = 1
+
+theorem obsZero_nontrivial : Nontrivial₂ obsZero :=
+  ⟨⟨(.num 0, 1), by simp [obsZero]⟩, ⟨(.nan, 0), by simp [obsZero]⟩⟩
+
+@[obligation "ABS-959"]
+theorem obs2_refines :
+    Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf obsNaN obsZero)) where
+  init _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+  input_total n _ := ⟨n, rfl⟩
+  applicable _ _ _ _ _ _ _ _ _ := ⟨⟨_, rfl⟩, fun _ h => by cases h⟩
+  correct s t n ia t' oc hi hJ ha hp hd hs := by
+    obtain ⟨s', oa, hst, hJ', ho⟩ := obs_refines.correct s t n ia t' oc hi hJ ha hp hd hs
+    refine ⟨s', oa, hst, hJ', ?_⟩
+    rcases ho with ho | ho
+    · exact Or.inl ho
+    · exact Or.inr (Or.inl ho)
+
+theorem obs2_initSurj :
+    Refines.InitSurj half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf obsNaN obsZero)) :=
+  fun _ _ => ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
+
+/-- `anyOf` の葉 `obsNaN` だけを `never` に替えた必要性。 -/
+theorem obs2_needed :
+    ¬ Refines half halfNaN (Glue.ofStd betaU (fun _ => True) aiNat aoNum never (anyOf never obsZero)) :=
+  Refines.not_of_mismatch (s := ()) (t := ()) (ic := 0) (ia := 0) (t' := ()) (oc := .nan) trivial
+    (Or.inl ⟨rfl, trivial⟩) rfl trivial trivial rfl
+    (fun _ _ _ _ ho => by
+      simp [Glue.ofStd, aoNum, MachineTest.Adequacy.aoPartial, never, anyOf, obsZero] at ho)
+
+/-- 正例: PRE が全域でない基底での環境の前提（`specPre_needs_env` があるので G9 の誤りにならない）。 -/
+@[obligation "ABS-960"]
+theorem pre_refines : Refines specPre good glue where
+  init := MachineTest.Adequacy.good_refines.init
+  input_total := MachineTest.Adequacy.good_refines.input_total
+  applicable s t ic ia hi hJ ha _ hd := MachineTest.Adequacy.good_refines.applicable s t ic ia hi hJ ha trivial hd
+  correct s t ic ia t' oc hi hJ ha _ hd hs :=
+    MachineTest.Adequacy.good_refines.correct s t ic ia t' oc hi hJ ha trivial hd hs
 
 end Tests.ObFix.Abstraction
 

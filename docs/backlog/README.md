@@ -46,7 +46,7 @@ generated:
 | 0029 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](0029-rust-external-adapters.md) | todo | 0011, 0016, 0024 |
 | 0030 | [リファインメントの空虚化を防ぐ義務と検査](0030-refinement-non-vacuity.md) | done | 0001, 0027 |
 | 0031 | [Spec の非決定性の選択の型と入口の環境の前提](0031-spec-nondet-and-entry-env.md) | todo | 0003, 0030 |
-| 0032 | [名前付きの成分の必要性の義務と検査（G9）](0032-component-necessity-witness.md) | doing | 0030 |
+| 0032 | [名前付きの成分の必要性の義務と検査（G9）](0032-component-necessity-witness.md) | done | 0030 |
 | 0033 | [名前付きの成分の変異テスト](0033-mutation-testing-of-named-components.md) | todo | 0005, 0032 |
 
 ## 推奨する着手順

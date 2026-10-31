@@ -23,7 +23,9 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `KernelIs` | 標準の抽象化の葉が同一視するもの（核） | 標準の抽象化に隠れた同一視 |
 | `Refines.complete`・`Refines.run` | 1 歩の可換式と、複数歩の模倣 | — |
 | `Refines.congr` | 各点で同値な貼り合わせへの付け替え | — |
-| `always`、`Refines.not_of_error`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（ADR 0042）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
+| `always`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（ADR 0042）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
+| `Covers`・`Covers₂` | 被覆: 必要な差異 M の下では差異 d が常に成り立つ（d は M に覆われ、必要性の代わりにこれを示す） | 他の差異に覆われた実在の差異が、必要性を示せないこと |
+| `anyOf` | 観測型の差異の成分の和。同じ出力に重なる差異を、差異ごとの定数に分けたまま OJ・OO に置く | 複数の差異を 1 つの定数に束ねること |
 
 成分の必要性は、vacuity detection（Beer ら 2001、Kupferman–Vardi 2003）の「部分式を自明な値に替えると
 真理値が変わる」ことの証拠（interesting witness）に当たる。形は次のとおり（照合は `obligation-check` の G9）。
@@ -32,7 +34,11 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 - 観測型の差異 `d`（OJ・OO）: `d` を `never` にした貼り合わせについて、R 課題の命題が偽
 - R 課題の命題は、基底が `ofChoice` なら `Refines ∧ Pinned`（同じ `f`・`ce`）、`pure` なら `Refines`。
   `Refines` だけでは、環境の選択（衝突・I/O 失敗）が具体側の不具合を模倣するため、差異が無くても成り立ちうる
-- 環境の前提: `¬ A.TotalUnder always`（前提が無ければ PRE が成り立たない入力がある）
+- 否定する命題は `¬ P` か `P → False` の形で書く。基底が `ofChoice` でも、`¬ Refines` はより強い証明として認める
+- 被覆: 他の必要な差異 M の下で常に成り立つ差異 d（例: 前提が M の前提に含まれる差異）は、外しても R 課題が
+  成り立つので必要性を示せない。そのときは、M と d を同じ R 課題で使い、`Covers M d` を示す
+- 環境の前提: `¬ A.TotalUnder always`（前提が無ければ PRE が成り立たない入力がある）。PRE が INV の下で
+  全域な機械は、環境の前提を置かず `A.TotalUnder always` を示す
 -/
 
 namespace Machine
@@ -44,6 +50,15 @@ def never {α β : Type} (_ : α) (_ : β) : Prop := False
 
 /-- 常に真の述語。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（ADR 0042）。 -/
 def always {α : Type} (_ : α) : Prop := True
+
+/-- 関係の和。観測型の差異の成分を、差異ごとの定数に分けたまま OJ・OO に置く（ADR 0042）。 -/
+def anyOf {α β : Type} (R S : α → β → Prop) (a : α) (b : β) : Prop := R a b ∨ S a b
+
+/-- 被覆: 差異の述語 `M` の下では、差異の述語 `d` が常に成り立つ（`d` は `M` に覆われる。ADR 0042）。 -/
+def Covers {α : Type} (M d : α → Prop) : Prop := ∀ x, M x → d x
+
+/-- 2 引数の述語（`restrictState` の述語）の被覆。 -/
+def Covers₂ {α β : Type} (M d : α → β → Prop) : Prop := ∀ x y, M x y → d x y
 
 /-- 述語が自明でない: 成り立つ値と、成り立たない値がある。名前付きの差異の述語に課す（W 課題）。 -/
 def Nontrivial {α : Type} (P : α → Prop) : Prop := (∃ x, P x) ∧ ∃ x, ¬ P x
@@ -200,6 +215,13 @@ theorem not_of_error {s : σ} {t : τ} {ic : ιc} {ia : ιa} {e : ε} (hi : A.In
     (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) (he : C.step t ic (.error e)) :
     ¬ Refines A C g :=
   fun h => (h.applicable s t ic ia hi hJ ha hpre hd).2 e he
+
+/-- PRE の下で具体側が結果を持たない（行き詰まる・停止しない）証人があれば、リファインメントは成り立たない。 -/
+theorem not_of_stuck {s : σ} {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t)
+    (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) (hn : ∀ r, ¬ C.step t ic r) :
+    ¬ Refines A C g := fun h => by
+  obtain ⟨r, hr⟩ := (h.applicable s t ic ia hi hJ ha hpre hd).1
+  exact hn r hr
 
 /-- 具体側の正常終了を、抽象側のどの歩みも `J`・`αo` で模倣できない証人があれば、リファインメントは
 成り立たない（正しさが破れる）。 -/

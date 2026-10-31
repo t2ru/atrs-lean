@@ -96,7 +96,7 @@ require <project> from "./lean"
 ## 証明
 
 - 使ってよい自動化: `simp`, `omega`, `decide`, `grind`（利用可能なら。`#print axioms` で公理を確認する）。`native_decide`・`bv_decide` は証明に使ってはならない（`Tests` の確認だけに使う）。
-- 主定理には `@[obligation "ABS-NNN"]` / `@[obligation "REF-NNN"]` を付ける。R 課題の主定理は `Machine.Refines` の形とし、仮定は PRE・INV・`@[deviation]` 付きの述語だけとする（[architecture.md](../architecture.md#リファインメントb-メソッド)）。W 課題の必要性の定理は、R 課題の命題から差異を外したものの否定（`¬ Refines …`、基底が `ofChoice` なら `¬ (Refines … ∧ Refines.Pinned …)`）の形で、閉じた定理とする（[architecture.md](../architecture.md#空虚化を防ぐ義務)）。
+- 主定理には `@[obligation "ABS-NNN"]` / `@[obligation "REF-NNN"]` を付ける。R 課題の主定理は `Machine.Refines` の形とし、仮定は PRE・INV・`@[deviation]` 付きの述語だけとする（[architecture.md](../architecture.md#リファインメントb-メソッド)）。W 課題の必要性の定理は、R 課題の命題から差異を外したものの否定（`¬ Refines …`。基底が `ofChoice` なら `¬ (Refines … ∧ Refines.Pinned …)` でもよい）の形で、両向きの例とは別の閉じた定理とする。他の差異に覆われる差異は `Machine.Covers` を示す（[architecture.md](../architecture.md#空虚化を防ぐ義務)）。
   - 形: `Machine.Refines (A.restrict dev_D001) (C.restrict dev_D019) glue`。`A : Machine.Machine σ ι ο` は `Spec` の抽象機械、`C : Machine.Concrete τ ι' ο' ε` はモデルの具体機械、`glue : Machine.Glue …` は `J`・`αi`・`αo` である。
   - 前提型の差異は、抽象側なら `Machine.Machine.restrict`（入力の述語）・`restrictState`（状態と入力の述語）、具体側だけにある入力なら `Machine.Concrete.restrict` で表す。観測型の差異は、`glue` の `J`・`αo` の名前付きの成分にする。
   - `Spec` 自身の課題は `Machine.Machine.Sound`（INIT ⇒ INV、INV の保存）で表す。標準の選択が関係に含まれることは、`Machine.Machine` の成分 `run_step` である。
