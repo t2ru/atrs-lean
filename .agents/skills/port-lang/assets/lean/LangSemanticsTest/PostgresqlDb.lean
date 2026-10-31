@@ -405,6 +405,14 @@ def byId (ids : List Nat) : List (Nat × SqlValue × SqlValue) := ids.filterMap 
 #guard int4 (2147483646 + 1) matches .ok _
 #guard int4 ((-2147483648) + (-1)) matches .error .numericOutOfRange
 
+/-! ## DATE の範囲（1970-01-01 を 0 とする通算日数） -/
+
+#guard dateMin == (-2440588) && dateMax == 2145042905
+#guard date (-2440588) matches .ok _
+#guard date 2145042905 matches .ok _
+#guard date (-2440589) matches .error .dateOutOfRange
+#guard date 2145042906 matches .error .dateOutOfRange
+
 /-! ## VARCHAR(n) への格納 -/
 
 #guard (varchar "c" 3 "abc").toOption == some "abc"

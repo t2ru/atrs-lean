@@ -6,7 +6,7 @@
 キーの等しさは `DecidableEq` とする。enum（同一性）と `String`（値の `equals`）の `equals` に一致する。
 `hashCode` と `equals` が整合しないキーは、対象外である。
 
-lang: `lang:java#java.util.HashMap`
+lang: `lang:java#java.util.HashMap`, `lang:java#java.util.LinkedHashMap`
 -/
 
 namespace LangSemantics.Java
@@ -44,5 +44,9 @@ def ofList (xs : List (κ × υ)) : JHashMap κ υ :=
   xs.foldl (fun m e => m.put e.1 e.2) empty
 
 end JHashMap
+
+/-- `java.util.LinkedHashMap`（挿入順）。`JHashMap` と同じ表し方で、反復の順序は `entries` の順と定める
+（同じキーの `put` は位置を保って値を置き換える。`LinkedHashMap` の既定の挿入順の動作に一致する）。 -/
+abbrev JLinkedHashMap (κ υ : Type) := JHashMap κ υ
 
 end LangSemantics.Java

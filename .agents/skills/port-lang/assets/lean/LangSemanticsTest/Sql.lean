@@ -66,3 +66,11 @@ def sq : SequenceDef := { name := "sq", maxValue := 3, cycle := true }
 /-- info: 'LangSemantics.Sql.isAllowedOrder_unique' depends on axioms: [propext, Classical.choice, Quot.sound] -/
 #guard_msgs in
 #print axioms LangSemantics.Sql.isAllowedOrder_unique
+
+-- 列の型: 範囲の内だけを作る
+#guard (Int4.ofInt 2147483647).toOption.map (·.val) == some 2147483647
+#guard Int4.ofInt (-2147483649) matches .error .numericOutOfRange
+#guard (date dateMin).toOption.map (·.val) == some (-2440588)
+#guard date (dateMax + 1) matches .error .dateOutOfRange
+#guard (Varchar.ofString "c" 2 "ab ").toOption.map (·.val) == some "ab"
+#guard Varchar.ofString "c" 2 "abc" matches .error (.stringTooLong _)

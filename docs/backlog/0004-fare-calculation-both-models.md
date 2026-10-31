@@ -8,7 +8,7 @@ state: doing
 depends_on: ["0002", "0003", "0016", "0027", "0024"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # 運賃計算（Spec と SourceModel）
@@ -40,11 +40,9 @@ generated:
 2 段に分ける（2026-10-31 の決定）。この項目は第 2 段で `done` にする。細部は [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md) で決めた。
 
 - **第 1 段（済み）**: 運賃計算の `Spec`・`SourceModel` と、両モデルで実行するベクタ
-- **第 2 段（残り）**
-  - マスタの Mapper の SQL（`findAll` など）を `LangSemantics.Sql` で写す（`SourceModel.Repository.*`）
-  - seed を入れた PostgreSQL で差分実行し、照合する
-  - Provider の `load`（`FareTypeProvider`・`RouteProvider`・`FlightMasterProvider` を含む）、`CodeList`・`Config` の読み込みを写す
-  - ABS-026 を証明する
+- **第 2 段**は、さらに a・b に分けた（2026-10-31 の決定）。細部は [ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md) で決めた。
+  - **2a（済み）**: [Spec] の修正、マスタ・設定・コードリストの読み込みの `SourceModel`、PostgreSQL での差分実行、差異 D-027 の登録
+  - **2b（残り）**: ABS-026 の証明と付帯の義務（`InitSurj`・`Sound`・`InitIs`、`dev_D027` の `@[deviation]` と `Nontrivial`、`std_abs` の α と核）、W 課題 ABS-127。この項目は 2b で `done` にする
 
 ## 第 1 段の結果
 
@@ -68,7 +66,46 @@ generated:
   - プロジェクトオーナーの決定で、[Spec] で翌日着を表せるように改める（[backlog 0006](0006-flight-search-usecase.md)）。
   - それまでは、fixture の `outsideSpec` で Spec の読み込みから除く（ADR 0042）。
 
+## 第 2 段 a の結果
+
+- [Spec] の修正（プロジェクトオーナーの決定を含む）
+  - `Spec.Route.flightTime` を削除した（原典のどの処理も読まない）。
+  - MD-8 に「空港コードは英大文字 3 文字」を足した。
+  - 参照の機械を `Spec.MasterQuery` に移し、次の変更を加えた。
+    - 設定・コードリストの問い合わせを足した。
+    - 問い合わせの引数の値域を PRE に足した。
+    - SPEC-007（`queryMachine_initIs`）を足した。
+- `LangSemantics.Sql.Postgresql` に、範囲を持つ列の型 `Int4`・`PgDate`・`Varchar n` を足した。
+  - 物理的なビット幅ではなく、範囲の制限を再現する（プロジェクトオーナーの指示）。
+  - 日付の範囲は PostgreSQL 16.15 と突き合わせた。
+- `LangSemantics.Java` に `JLinkedHashMap` を足した。
+- `SourceModel` に次を足した。
+
+  | 名前空間 | 内容 |
+  | --- | --- |
+  | `Repository.Schema` | 表 8 つ |
+  | `Repository.MasterData` | Mapper の文 5 つと、コードリストの SQL 4 つ |
+  | `Repository.Mapping` | MyBatis の対応 |
+  | `MasterData` | Provider 5 つの `load()` と参照 |
+  | `CodeList` | terasoluna の `JdbcCodeList` はソースで確かめた |
+  | `Config` | 注入される設定 |
+  | `MasterQuery.queryConcrete` | 具体機械。許される並びのどれかで読み込む |
+
+- ベクタ
+  - `shared/master-data/`（23 件）は、`Spec` と `SourceModel` の両方で実行する。
+  - `source-model/master-data/` は、到着時刻 `2415` の便。D-027 の前提の外である。
+- PostgreSQL での差分実行
+  - `tools/conformance/master_sql.py` が `conformance/sql/master-data.json` を生成する。
+  - `lake test` の `Tests.MasterSql` が、9 文を照合する。順序の無い文はバッグとして、`ORDER BY` は許される順列として照合する。
+  - あわせて、共有入力の表 8 つと設定の一致も確かめる。
+  - `trace/checks.json` に `pg-master-sql` を登録した。
+- 追跡
+  - `@[source]` を 45 件追加した。種類は `sql:`・`ddl:`・`prop:`・Provider・コードリスト・`dep:`。
+  - `rehash` で `lake-test`・`pg-master-sql` の合格を記録した。
+  - `trace/upstream.json` に `terasoluna-gfw-common`・`spring-core` を宣言した。
+- 差異: D-027（前提型・具体側の入力。DB の値が [Spec] の型で表せる）と W 課題 ABS-127 を登録した。Lean の `@[deviation]` は 2b で書く。
+
 ## 参照
 
 - [fare-calculation.md](../spec/fare-calculation.md)
-- [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)
+- [ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)、[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)

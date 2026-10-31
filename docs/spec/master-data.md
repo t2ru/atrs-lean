@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T11:02:17+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -41,7 +41,7 @@ sources:
 
 ### Route
 
-`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `flightTime: String`（`HHmm`、参考値）, `basicFare: Nat`（路線基本運賃）
+`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）
 
 ### FlightMaster
 
@@ -81,27 +81,35 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime` | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
-| MD-8 | [domain-model.md](domain-model.md#値域) の値域 | int32 の折り返し |
+| MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字） | int32 の折り返し。空港コードに `-` があると区間のキーが衝突しうる |
 
 マスタは不変の入力であり（[ports.md](ports.md#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005）は差異ではなく、参考として [abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 
 ## 参照関数
 
-**[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。SPEC 課題（SPEC-001〜003）は、参照関数をまとめた抽象機械 `queryMachine` について証明した。
+**[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。
+
+参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed`）である。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
+
+[Source] の具体機械は [`SourceModel.MasterQuery`](../../lean/SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
+- 起動時に、各 Provider の `load()` とコードリストの読み込みを行う。
+- Mapper の文の結果は順序が未規定なので、許される並びのどれでも答えが同じことを ABS-026 で示す（[backlog 0004](../backlog/0004-fare-calculation-both-models.md) の第 2 段 b）。
+- Mapper の SQL の写しは、PostgreSQL で差分実行して照合する（`conformance/sql/master-data.json`）。
+- DB の値が [Spec] の型で表せない場合は、既知差異 [D-027](abstraction.md#既知差異) である。
 
 - `routeOf(dep, arr) : Route?` — `(dep, arr)` に一致する区間。無ければ無し。
 - `flightMasterOf(name) : FlightMaster?`、`fareTypeOf(cd) : FareType?`、`boardingClassOf(cd) : BoardingClass?`
 - `peakTimeOn(d) : PeakTime?` — `peakStartDate ≤ d ≤ peakEndDate` を満たすピーク時期。[Source] では `peakTimes` を取得順に走査し最初に一致したもの。
 - `multiplicationRatioOn(d)` = `peakTimeOn(d)` があればその `multiplicationRatio`、無ければ `100`。
 
-出典: atrs-domain/.../common/masterdata/PeakTimeProvider.java `getPeakTime`, RouteProvider.java `getRouteByAirportCd`, atrs-domain/.../service/b0/TicketSharedServiceImpl.java `getMultiplicationRatio`
+出典: `java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)`, `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)`, `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`（private の `getMultiplicationRatio` を含む）
 
 ## 空港コードリスト（画面用）
 
 **[Spec=Source]** Lean: [`Spec.CodeList`](../../lean/Spec/CodeList.lean)。画面の空港選択肢（`CL_AIRPORT`）は、空港を `displayOrder` 昇順に並べ、`displayOrder ≥ 100` の最初の空港の直前に区切り行 `("NOP", "-----------")` を 1 つ挿入したものである。
 入力検証の「コードリストに存在する」（[input-validation.md](input-validation.md)）は **区切り行の `NOP` も存在するものとして扱う**。そのため `NOP` を指定した空席照会は入力検証を通過し、区間が見つからずに業務エラー `e.ar.b1.2002` となる。
 
-出典: atrs-domain/.../common/codelist/AirportCodeList.java `retrieveMap`, atrs-domain/.../config/app/AtrsCodeListConfig.java `CL_AIRPORT`
+出典: `java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()`, `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_AIRPORT()`
 
 その他のコードリスト:
 

@@ -57,6 +57,7 @@ okf_version: "0.2"
 * [運賃計算の SourceModel の表し方（マスタのキャッシュ・列挙型・HashMap）と、共有ベクタの modelDef・共有入力を決める](decision/0042-fare-source-model-and-shared-vectors.md) - 運賃計算の SourceModel で、マスタを Provider のキャッシュとして入力に受けること、Java の列挙型に Spec の型を使うこと、HashMap の最小のモデルを決める。共有ベクタの modelDef をモデルごとの配列にできること、共有入力 fixtures を上流のシードから生成すること、source-model の期待値を仕様の例の表から取ること、翌日着の便の暫定の扱いを決める。
 * [空虚化を防ぐ義務を既存の研究に照らして補う（成分の必要性・変異テスト・意図から書く例）](decision/0043-vacuity-literature-necessity-and-mutation.md) - ADR 0039 の義務を、Event-B の証明義務・vacuity detection・IronSpec・mCoq・Dafny の proof dependencies などの研究と対応づける。その上で、名前付きの成分を外すと R 課題の命題が偽になること（成分の必要性。G9）を義務に加える。成分の広さには仕様の変異テストを、仕様の妥当性には意図から書く例を採る。
 * [移植が成り立つ条件をスキルに明示し、進め方の既定（評価・判断点・ゲート・敵対的レビュー・記録）を補う](decision/0044-porting-conditions-and-workflow.md) - スキル port-lang に、移植が成り立つ条件（適用の前提 P1〜P6、成立の条件 S1〜S6、言えること・言えないこと）を明示し、AWS AIDM（AI Modernization Flow）のプロセス面を参考に、置き換えてよい既定の進め方を references/workflow.md に置く。
+* [マスタ・設定・コードリストの読み込みの SourceModel と、[Spec] の修正（所要時間・空港コードの値域・問い合わせ）を決める](decision/0045-master-data-source-model-and-spec-fixes.md) - マスタの読み込みの SourceModel の写し方（列の型は処理系の範囲で写す、Mapper の結果の順列を選ぶ具体機械、MyBatis の対応、コードリスト、設定）と、Spec.Route の所要時間の削除、MD-8 の空港コードの値域、問い合わせの機械の拡張、表せない値の差異 D-027、PostgreSQL での差分実行の形を決める。
 
 # Specification
 

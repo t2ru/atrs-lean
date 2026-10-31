@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # 適合テストベクタ（ATRS）
@@ -26,6 +26,7 @@ generated:
 | 操作 | 仕様 |
 | --- | --- |
 | `fare.basicFare`, `fare.fare`, `fare.totalFare` | [fare-calculation.md](fare-calculation.md) |
+| `master.routeOf`, `master.flightMasterOf`, `master.fareTypeOf`, `master.boardingClassOf`, `master.peakTimeOn`, `master.multiplicationRatioOn`, `master.config`, `master.codeList` | [master-data.md](master-data.md#参照関数)（R 課題 ABS-026 の両側。`Spec.MasterData.queryMachine` と `SourceModel.MasterQuery.queryConcrete`） |
 | `flightSearch.validateDepartureDate`, `flightSearch.isAvailableFareType`, `flightSearch.searchFlight` | [flight-search.md](flight-search.md) |
 | `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.reserveConfirm`, `reservation.reserve` | [reservation.md](reservation.md) |
 | `member.toMember`, `member.toMemberUpdateInput`, `member.register`, `member.update` | [member.md](member.md) |
@@ -43,6 +44,8 @@ generated:
 | `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[configuration.md](configuration.md) |
 
 `master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。到着時刻 `2415` の便マスタ 2 行には `outsideSpec` が付く（[master-data.md](master-data.md)）。
+
+マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
 
 `shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。`source-model/` の期待値は、[backlog 0013](../backlog/0013-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
 | `fixtures/world-*.json` | 状態を使う操作の初期状態（フライトの空席数、会員、予約、各シーケンスの次の値） |

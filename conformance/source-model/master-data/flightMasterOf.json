@@ -1,0 +1,35 @@
+{
+  "operation": "master.flightMasterOf",
+  "modelDef": "SourceModel.MasterQuery.queryConcrete",
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "differences": [
+    "D-027"
+  ],
+  "cases": [
+    {
+      "id": "flightMasterOf-2415",
+      "description": "到着時刻 2415（翌日着）の便マスタ。[Source] は文字列のまま読み込む（[Spec] の時刻で表せないので D-027 の前提の外。backlog 0006 で [Spec] を改める）",
+      "input": {
+        "name": "NTT523"
+      },
+      "expected": {
+        "ok": {
+          "flightName": "NTT523",
+          "routeNo": 12,
+          "departureTime": "2145",
+          "arrivalTime": "2415",
+          "craftType": "963"
+        }
+      },
+      "source": "lean-source-model"
+    }
+  ]
+}

@@ -92,7 +92,7 @@
     {
       "name": "MasterData",
       "backlog": ["0004", "0011"],
-      "lean": ["Model", "MasterData", "CodeList", "Config", "Prim"],
+      "lean": ["Model", "MasterData", "MasterQuery", "CodeList", "Config", "Prim", "Repository.Schema", "Repository.MasterData", "Repository.Mapping"],
       "tasks": ["ABS-006", "ABS-026", "REF-010"],
       "locators": [
         "java:jp.co.ntt.atrs.domain.model.*", "java:jp.co.ntt.atrs.domain.common.codelist.*",

@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:30:00+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # ドメインモデル
@@ -185,6 +185,7 @@ generated:
 
 | 量 | 範囲 |
 | --- | --- |
+| 空港コード（マスタの `Airport.code`） | 英大文字 3 文字（`AirportCd.WellFormed`） |
 | `Route.basicFare + BoardingClass.extraCharge` | `0 .. 10,000,000` |
 | `PeakTime.multiplicationRatio` | `0 .. 1,000` |
 | `FareType.discountRate` | `0 .. 100`（かつ `≤ childFareRate`） |

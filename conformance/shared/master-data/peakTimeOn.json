@@ -1,0 +1,61 @@
+{
+  "operation": "master.peakTimeOn",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "peakTimeOn-1",
+      "description": "2026-12-20 は PEAK2（12/19〜12/25）",
+      "input": {
+        "date": "2026-12-20"
+      },
+      "expected": {
+        "ok": {
+          "peakTimeCd": "PEAK2",
+          "peakStartDate": "2026-12-19",
+          "peakEndDate": "2026-12-25",
+          "multiplicationRatio": 125
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "peakTimeOn-2",
+      "description": "期間の初日（両端を含む）",
+      "input": {
+        "date": "2027-01-01"
+      },
+      "expected": {
+        "ok": {
+          "peakTimeCd": "PEAK1",
+          "peakStartDate": "2027-01-01",
+          "peakEndDate": "2027-01-05",
+          "multiplicationRatio": 140
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "peakTimeOn-3",
+      "description": "ピーク時期でない日",
+      "input": {
+        "date": "2026-11-01"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

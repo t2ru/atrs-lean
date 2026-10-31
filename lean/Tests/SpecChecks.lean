@@ -40,8 +40,8 @@ def dateExhaustive : Array Nat × Nat := Id.run do
 
 def hnd : Airport := ⟨⟨"HND"⟩, "東京（羽田）", 1⟩
 def itm : Airport := ⟨⟨"ITM"⟩, "大阪（伊丹）", 2⟩
-def route1 : Route := ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, "0110", 25000⟩
-def route2 : Route := ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, "0110", 25000⟩
+def route1 : Route := ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 25000⟩
+def route2 : Route := ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 25000⟩
 def hm (h m : Nat) (hv : h ≤ 23 ∧ m ≤ 59 := by decide) : HourMinute := ⟨h, m, hv⟩
 def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, hm 8 10, "B777"⟩
 def fm2 : FlightMaster := ⟨⟨"NTT002"⟩, 1, hm 9 0, hm 10 10, "B777"⟩
@@ -78,6 +78,8 @@ def sample : MasterData where
 #guard !decide ({ sample with fareTypes := [{ ow with discountRate := 61 }] }.MD7 Config.default)
 -- MD-8: 基本運賃と加算料金の合計が値域を超える
 #guard !decide ({ sample with routes := [{ route1 with basicFare := 9995001 }] }.MD8)
+-- MD-8: 空港コードが英大文字 3 文字でない
+#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"I-T"⟩ }] }.MD8)
 
 #guard sample.multiplicationRatioOn (ymd 2026 12 26) == 140
 #guard sample.multiplicationRatioOn (ymd 2026 12 25) == 125

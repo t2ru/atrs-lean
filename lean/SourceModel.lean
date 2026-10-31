@@ -5,6 +5,12 @@ import Trace
 import SourceModel.Model
 import SourceModel.MasterData
 import SourceModel.Fare
+import SourceModel.Repository.Schema
+import SourceModel.Repository.MasterData
+import SourceModel.Repository.Mapping
+import SourceModel.CodeList
+import SourceModel.Config
+import SourceModel.MasterQuery
 
 /-!
 # SourceModel
@@ -16,7 +22,11 @@ import SourceModel.Fare
 | モジュール | 内容 |
 | --- | --- |
 | `SourceModel.Model` | 原典の domain model |
-| `SourceModel.MasterData` | マスタの Provider のキャッシュと参照 |
+| `SourceModel.Repository.*` | マスタの表の行（`Schema`）、Mapper の文（`MasterData`）、MyBatis の対応（`Mapping`） |
+| `SourceModel.MasterData` | マスタの Provider（`load()` とキャッシュの参照） |
+| `SourceModel.CodeList` | コードリスト |
+| `SourceModel.Config` | 注入される設定 |
+| `SourceModel.MasterQuery` | マスタ・設定・コードリストの参照の具体機械（ABS-026 の具体側） |
 | `SourceModel.Fare` | 運賃計算 |
 -/
 

@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T09:18:59+09:00
+  at: 2026-10-31T11:02:17+09:00
 ---
 
 # 保証の限界
@@ -130,7 +130,7 @@ generated:
 
 | 対象 | 記入する内容 | 記入する backlog |
 | --- | --- | --- |
-| SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ | [0006](../backlog/0006-flight-search-usecase.md)、[0007](../backlog/0007-reservation-usecase.md)、[0008](../backlog/0008-member-usecases-and-input-validation.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0029](../backlog/0029-rust-external-adapters.md) |
+| SQL の差分実行（文ごと） | 文、照合したデータ（境界・NULL・同順位を含むか）、パラメータ。マスタの文（区間・便マスタ・搭乗クラス・運賃種別・ピーク時期の `findAll` と、コードリストの SQL 4 つ）は、シードの DB（投入日 2026-11-01）だけで照合した（パラメータ無し。NULL・同順位の行は含まない。`conformance/sql/master-data.json`） | [0004](../backlog/0004-fare-calculation-both-models.md)、[0006](../backlog/0006-flight-search-usecase.md)、[0007](../backlog/0007-reservation-usecase.md)、[0008](../backlog/0008-member-usecases-and-input-validation.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0029](../backlog/0029-rust-external-adapters.md) |
 | Kani のハーネス（ハーネスごと） | `kani::any()` の範囲、ループの展開数、保証しないこと | [0011](../backlog/0011-in-memory-adapters-and-seed-data.md)、[0014](../backlog/0014-http-contract-adapter.md) |
 | オラクルのハーネスの対象外 | 固定できない操作、差し替えた構成 | [0013](../backlog/0013-java-oracle-harness.md) |
 | 言語意味論の突き合わせ | 演算ごとの入力の範囲 | [0002](../backlog/0002-lang-semantics-java.md)、[0016](../backlog/0016-lang-semantics-sql.md)、[0021](../backlog/0021-lang-semantics-rust.md) |

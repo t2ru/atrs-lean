@@ -30,7 +30,7 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 
 | 項目 | 例 |
 | --- | --- |
-| 型の値域・精度・暗黙の型変換 | `INT` の幅、`DATE` → `TIMESTAMP` の変換 |
+| 型の値域・精度・暗黙の型変換 | `INT` の幅、`DATE` → `TIMESTAMP` の変換。列の型は、処理系が許す値の範囲を持つ型で写す（物理的なビット幅でなく、範囲の制限という意味を再現する。PostgreSQL では `Int4`・`PgDate`・`Varchar n`）。モデルの表の行はこの型で持ち、抽象側の型との違いは、リファインメントの前提型の差異（表せない値）として扱う |
 | 採番 | シーケンス（`NEXTVAL`, `CYCLE`）、自動採番列 |
 | 書式・文字列関数 | `TO_CHAR`、`LPAD`、連結演算子 |
 | 行ロック | `SELECT … FOR UPDATE` の有無と意味 |

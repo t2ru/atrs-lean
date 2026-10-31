@@ -95,6 +95,7 @@ inductive SqlError where
   | foreignKeyViolation (constraintName : String)
   | numericOutOfRange
   | stringTooLong (column : String)
+  | dateOutOfRange
   | sequenceExhausted (sequenceName : String)
   | other (message : String)
   deriving Repr, BEq, DecidableEq

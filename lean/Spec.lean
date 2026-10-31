@@ -5,6 +5,7 @@ import Spec.Model
 import Spec.Config
 import Spec.MasterData
 import Spec.CodeList
+import Spec.MasterQuery
 import Spec.Fare
 
 /-!
@@ -18,7 +19,8 @@ import Spec.Fare
 | `Spec.Prim` | 基本演算・暦日・時刻・書式・文字クラス |
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
 | `Spec.Config` | 設定値と不変条件 |
-| `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数、SPEC 課題 |
+| `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |
 | `Spec.CodeList` | コードリスト |
+| `Spec.MasterQuery` | マスタ・設定・コードリストの参照の抽象機械（SPEC 課題、ABS-026 の抽象側） |
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
 -/

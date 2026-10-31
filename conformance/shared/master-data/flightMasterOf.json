@@ -1,0 +1,46 @@
+{
+  "operation": "master.flightMasterOf",
+  "modelDef": [
+    "Spec.MasterData.queryMachine",
+    "SourceModel.MasterQuery.queryConcrete"
+  ],
+  "specRef": "docs/spec/master-data.md#参照関数",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "flightMasterOf-1",
+      "description": "便マスタ NTT001",
+      "input": {
+        "name": "NTT001"
+      },
+      "expected": {
+        "ok": {
+          "flightName": "NTT001",
+          "routeNo": 1,
+          "departureTime": "0900",
+          "arrivalTime": "1000",
+          "craftType": "101"
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "flightMasterOf-2",
+      "description": "無い便名",
+      "input": {
+        "name": "NTT999"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    }
+  ]
+}
