@@ -32,9 +32,9 @@ generated:
 
 - `docs/` を変更した場合: frontmatter・[docs/index.md](../index.md)・[docs/log.md](../log.md) を更新し、OKF とリンクの検査（[backlog ddbd](../backlog/ddbd-okf-bundle-lint.md)）を通す。
 - Lean を変更した場合: `tools/ci/lean.sh`（`lake build`, `lake test`, `axiom-check`, `trace-dump`, 静的検査 `check_lean.py`, ルートの `lake setup-file` を一括で実行する）。
-- Rust を変更した場合: Verus の検証、`cargo kani`、`cargo test`（[port-lang/rust/verification.md](../../.agents/skills/port-lang/references/rust/verification.md#品質)）。
+- Rust を変更した場合: Verus の検証、`cargo kani`、`cargo test`（[port-lang/rust/verification.md](../../.agents/skills/port-lang/references/docs/rust/verification.md#品質)）。
 - Lean・Rust・上流を変更した場合: 追跡の検査 `trace check`（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。インベントリ・manifest を再生成して一緒にコミットする。
-- 上流の版上げでは、旧版の最後のコミットに `upstream-<旧 release>` タグを付ける（[port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)）。
+- 上流の版上げでは、旧版の最後のコミットに `upstream-<旧 release>` タグを付ける（[port-lang/upgrade.md](../../.agents/skills/port-lang/references/docs/upgrade.md)）。
 - 機密情報（鍵・パスワード・個人情報）を含めない。
 
 ## メッセージ

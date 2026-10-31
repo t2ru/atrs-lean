@@ -5,7 +5,7 @@ import Trace.Gap
 # Trace
 
 追跡属性（`@[source]`, `@[target]`, `@[obligation]`, `@[deviation]`, `@[gap]`, `@[gap_entry]`, `@[nondet]`, `@[std_abs]`, `@[kernel]`, `@[env_pre]`, `@[spec_doc]`, `@[no_source]`）。
-どのモデルにも依存しない基盤である（port-lang の `references/lean/trace-attributes.md`）。
+どのモデルにも依存しない基盤である（port-lang の `references/docs/lean/trace-attributes.md`）。
 
 - `Trace.Attr`: 文字列引数の追跡属性
 - `Trace.Gap`: ギャップの登録簿（`@[gap_entry]` と `Trace.Gap`）

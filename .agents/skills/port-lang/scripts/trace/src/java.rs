@@ -1,4 +1,4 @@
-//! Java のインベントリ（`java:`・`http:`）。java/locators.md と references/traceability.md#道具 による。
+//! Java のインベントリ（`java:`・`http:`）。java/locators.md と references/docs/traceability.md#道具 による。
 //!
 //! - 単位: public・protected・package-private のメソッドとコンストラクタ、`static final` の定数、enum の定数。
 //!   private メソッドは単位にせず、同じクラスで呼ぶ側の本文の後に連結する（推移的。初出順、重複なし）。

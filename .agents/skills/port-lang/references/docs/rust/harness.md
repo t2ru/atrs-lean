@@ -1,0 +1,28 @@
+---
+type: Reference
+title: "Rust: ベクタの実行（照合／オラクル）"
+description: "Rust のコードに適合テストベクタを当てるテスト（照合／オラクル）の作り方。"
+tags: [rust, language-pack, conformance]
+status: stable
+generated:
+  by: claude-code/claude-opus-5-5
+  at: 2026-10-31T19:19:29+09:00
+---
+
+# Rust: ベクタの実行（照合／オラクル）
+
+## 移植先として: 照合
+
+- `tests/` に、`conformance/target-model/` と `conformance/shared/` の全ベクタを読み込んで実行するテストを置く（`cargo test`）。
+- ベクタの `operation` ごとに、業務機能の関数を呼ぶ割当表を書く。割当の漏れはテストの失敗にする。
+- 「今日」・マスタ・設定はベクタから組み立てて引数で渡す（業務機能は暗黙の時計を使わない）。
+- 状態を変える操作は、インメモリのアダプタに `world` を読み込み、実行後に `worldAfter` と比べる。
+
+## 移植元として: オラクル
+
+- 原典の Rust コードを同じ割当表で呼び、`source-model/` の期待値を採取する（`source: "rust-oracle"`）。
+- 差分オラクルでは、新旧 2 版のクレートを別々のパッケージ名でビルドして、同じ入力を流す。
+
+## 道具
+
+- `cargo test`。JSON は serde_json（ハーネスの設定は固定し、移植先ソースの serde 設定と分ける）。

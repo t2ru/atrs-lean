@@ -52,7 +52,7 @@ Chosen option: "`docs/spec` を正規とし、Lean は参照実装、Java はオ
 
 ### Confirmation
 
-* Lean の公開定義の docstring に対応する spec 節を書く（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/lean/rules.md)）。
+* Lean の公開定義の docstring に対応する spec 節を書く（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lean/rules.md)）。
 * Lean 実装が `conformance/` の全ベクタを通すことを CI で確認する。
 
 ## Pros and Cons of the Options

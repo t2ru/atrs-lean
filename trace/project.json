@@ -1,5 +1,5 @@
 {
-  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/traceability.md#プロジェクトの設定）",
+  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/docs/traceability.md#プロジェクトの設定）",
   "skill": ".agents/skills/port-lang",
   "lean": {
     "roots": [
@@ -39,9 +39,21 @@
   "conformance": "conformance",
   "ids": {
     "kinds": {
-      "adr": "docs/decision",
-      "backlog": "docs/backlog"
+      "adr": [
+        "docs/decision",
+        ".agents/skills/port-lang/references/docs/decision"
+      ],
+      "backlog": [
+        "docs/backlog",
+        ".agents/skills/port-lang/references/docs/backlog"
+      ]
     },
+    "isolated": [
+      {
+        "bundle": ".agents/skills/port-lang/references/docs",
+        "root": ".agents/skills/port-lang"
+      }
+    ],
     "registers": [
       "docs/spec/abstraction.md",
       "docs/spec/refinement.md"
@@ -58,7 +70,8 @@
     "uuid_roots": [
       "AGENTS.md",
       "docs/",
-      "trace/"
+      "trace/",
+      ".agents/skills/port-lang/references/docs/"
     ],
     "check_skip": [
       ".agents/skills/port-lang/scripts/ci/fixtures/",

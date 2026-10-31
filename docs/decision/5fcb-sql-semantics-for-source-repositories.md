@@ -97,4 +97,4 @@ Chosen option: "`LangSemantics.Sql`", because SQL 固有の意味（バッグ意
 
 * [ADR 935b](935b-java-primitive-semantics.md)（`LangSemantics.Java`）, [ADR 97f9](97f9-persistence-and-transaction-semantics.md), [ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md)
 * [backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)
-* （補足 2026-10-30）[ADR c336](c336-foundational-principles.md) により、SQL と `LangSemantics.Sql` での写しの一致は、決定論的な手段で確認する。手段は、同じデータについて、PostgreSQL での実際の実行結果と `LangSemantics.Sql` の評価結果を照合することである（SQL の差分実行。[port-lang/sql/verification.md](../../.agents/skills/port-lang/references/sql/verification.md)）。写しは手で翻訳するので、照合したデータの外での一致は保証の限界となる（[spec/assurance.md](../spec/assurance.md)）。上の Confirmation の「対応づけられていることを確認する」は網羅の確認であり、一致の根拠ではない。
+* （補足 2026-10-30）[ADR c336](c336-foundational-principles.md) により、SQL と `LangSemantics.Sql` での写しの一致は、決定論的な手段で確認する。手段は、同じデータについて、PostgreSQL での実際の実行結果と `LangSemantics.Sql` の評価結果を照合することである（SQL の差分実行。[port-lang/sql/verification.md](../../.agents/skills/port-lang/references/docs/sql/verification.md)）。写しは手で翻訳するので、照合したデータの外での一致は保証の限界となる（[spec/assurance.md](../spec/assurance.md)）。上の Confirmation の「対応づけられていることを確認する」は網羅の確認であり、一致の根拠ではない。

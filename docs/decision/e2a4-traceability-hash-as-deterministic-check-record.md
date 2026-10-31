@@ -48,11 +48,11 @@ Chosen option: "ADR 81ab の方式を引き継ぎ、ハッシュを決定論的�
 
 ### ロケータ
 
-ソース側の位置は、版に依存しない記号で指す。行番号は道具が版ごとに解決し、permalink を生成する。文法は [port-lang/traceability.md](../../.agents/skills/port-lang/references/traceability.md#ロケータ) に定義する。
+ソース側の位置は、版に依存しない記号で指す。行番号は道具が版ごとに解決し、permalink を生成する。文法は [port-lang/traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md#ロケータ) に定義する。
 
 | 側 | 種別 |
 | --- | --- |
-| 移植元 | `java:<FQCN>#<method>(<引数型>)`, `sql:<namespace>#<id>`, `ddl:<file>#<object>`, `seed:<file>#<table>`（[ADR 0eea](0eea-trace-tooling-unresolved-details.md) で行からテーブルに改めた）, `prop:<file>#<key>`, `msg:<file>#<key>`, `http:<METHOD> <path>?<param>`, `xml:<file>#<要素パス>`, `tmpl:<テンプレートのパス>#<要素の id または th: 式の位置>`（文法は言語パックの `locators.md`） |
+| 移植元 | `java:<FQCN>#<method>(<引数型>)`, `sql:<namespace>#<id>`, `ddl:<file>#<object>`, `seed:<file>#<table>`（[ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md) で行からテーブルに改めた）, `prop:<file>#<key>`, `msg:<file>#<key>`, `http:<METHOD> <path>?<param>`, `xml:<file>#<要素パス>`, `tmpl:<テンプレートのパス>#<要素の id または th: 式の位置>`（文法は言語パックの `locators.md`） |
 | 移植先 | `rust:<crate>::<path>` |
 | 両側 | `dep:<座標>#<シンボル>`（フレームワーク・クレート）、`lang:<言語>#<節>`（処理系） |
 
@@ -119,7 +119,7 @@ Chosen option: "ADR 81ab の方式を引き継ぎ、ハッシュを決定論的�
   * `ingest-lean`
   * `manifest`
   * `check`（TR 検査）
-  * `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する。検査の登録 `trace/checks.json` と注釈の書き換え方は [ADR 9cd9](9cd9-rehash-diff-impact-details.md)）
+  * `rehash`（決定論的な検査を実行し、合格した定義だけハッシュを更新する。検査の登録 `trace/checks.json` と注釈の書き換え方は [ADR 9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md)）
   * `diff`
   * `impact`
 

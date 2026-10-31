@@ -48,5 +48,5 @@ generated:
 
 ## 参照
 
-- [ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md), [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md), [port-lang/rust/verification.md](../../.agents/skills/port-lang/references/rust/verification.md)
+- [ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md), [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md), [port-lang/rust/verification.md](../../.agents/skills/port-lang/references/docs/rust/verification.md)
 - [refinement.md](../spec/refinement.md)（SRC-002）

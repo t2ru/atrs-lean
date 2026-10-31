@@ -5,7 +5,7 @@ import Trace.Gap
 # Trace.Obligation
 
 `lake exe obligation-check` の本体。リファインメントの主定理（R 課題）が、空虚化を防ぐ形と付帯の義務を
-備えているかを、環境を走査して判定する（TR-G。references/architecture.md#空虚化を防ぐ義務）。`Machine` の定数は名前で照合し、import しない。
+備えているかを、環境を走査して判定する（TR-G。references/docs/architecture.md#空虚化を防ぐ義務）。`Machine` の定数は名前で照合し、import しない。
 
 R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理である。各 R 課題について次を判定する。
 付帯の定理は、`@[reducible]` を展開した式が一致するもので探す（先頭の定数だけでは照合しない）。
@@ -27,7 +27,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
-| G9 | 成分の必要性（references/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
+| G9 | 成分の必要性（references/docs/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
 | GK | ギャップの登録簿（`Trace.Gap`）と証明の状態の裏付け。下のとおり |
 
 G9 の内容は次のとおりである。

@@ -4,7 +4,7 @@ import Machine.Adequacy
 # Machine.Kernel
 
 標準の抽象化（`@[std_abs]` の葉）の核の定理（`KernelIs`）に使う、汎用の核
-（スキルの `references/architecture.md#空虚化を防ぐ義務` の「標準の抽象化の核」）。
+（スキルの `references/docs/architecture.md#空虚化を防ぐ義務` の「標準の抽象化の核」）。
 
 - `undefOrEq f`: 部分写像 `f` の核が「どちらも定義されないか、等しい」であること（定義域の上で単射）。
   葉の核の定理は、この核をその葉自身に適用して書く（`KernelIs f (Machine.undefOrEq f)`）。

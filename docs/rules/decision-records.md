@@ -6,7 +6,7 @@ tags: [rules, adr]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:30:00+09:00
+  at: 2026-10-31T19:40:00+09:00
 ---
 
 # 意思決定記録（ADR）規約
@@ -25,6 +25,15 @@ docs/decision/<ID の先頭 4 文字>-<slug>.md
 - 一度採番したファイルは **改名・削除しない**。不要になった ADR は状態を変更する。
 - 本文での参照の書き方は [documentation.md](documentation.md#リンク)。ID 全体を書く箇所（`superseded_by` など）と先頭 4 文字を書く箇所を区別する。
 - 作成の順序はファイル名から分からない。`date` で追う。
+
+## スキルの ADR
+
+アプリに依存しない判断（移植の方法、スキルの道具・Lean のライブラリ・構成）は、ATRS の `docs/decision/` ではなく、スキル port-lang の [`references/docs/decision/`](../../.agents/skills/port-lang/references/docs/decision/README.md) に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。書き方はスキルの [maintenance.md](../../.agents/skills/port-lang/references/docs/maintenance.md) に従う。
+
+- 採番は `python3 -I .agents/skills/port-lang/scripts/docs/ids.py new adr <slug> --dir .agents/skills/port-lang/references/docs/decision`。ID の空間は ATRS と共通である。
+- スキルの ADR から ATRS の文書へはリンクを張らない。ATRS の記録は、来歴としてリンク無しで書く（「ATRS の ADR xxxx」）。
+- 判断が ATRS にも影響する場合は、ATRS 側にも ADR を書き、スキルの ADR へリンクする（[ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)）。
+- ATRS とスキルの両方にかかる既存の ADR を分けて移すときは、`ids.py move <stem> <dir>` でリンクを張り直す。
 
 ## 状態
 

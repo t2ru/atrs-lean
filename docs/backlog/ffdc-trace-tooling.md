@@ -55,8 +55,8 @@ generated:
   - Lean の出力の取り込み（`manifest`・`check` の `--dump`・`--obligations`）
   - `check`（TR-S1・TR-S2・TR-T1・TR-T2・TR-P・TR-PE・TR-D・TR-X・TR-R と、TR-G・TR-N の取り込み）
   - `manifest` と生成区画、CI、`trace/features.json`
-  - 未確定だった細部は [ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md) で決めた
-- **第 2 段（済み）**。細部は [ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md) で決めた
+  - 未確定だった細部は [ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md) で決めた
+- **第 2 段（済み）**。細部は [ADR 9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md) で決めた
   - `rehash`。決定論的な検査を実行し、合格した組（本文ハッシュと Merkle）だけを manifest に記録して注釈のハッシュを更新する。完了条件の最後の項目
   - `diff`・`impact`
   - `renames.json` の検査
@@ -121,5 +121,5 @@ generated:
 
 ## 参照
 
-- [ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)、[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)、[ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md)
+- [ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)、[ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)、[ADR 9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md)
 - [traceability.md](../spec/traceability.md)

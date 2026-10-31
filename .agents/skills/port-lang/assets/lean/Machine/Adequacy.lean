@@ -3,7 +3,7 @@ import Machine.Refines
 /-!
 # Machine.Adequacy
 
-リファインメントが空虚・自明に成り立つことを防ぐ義務（references/architecture.md#空虚化を防ぐ義務）。
+リファインメントが空虚・自明に成り立つことを防ぐ義務（references/docs/architecture.md#空虚化を防ぐ義務）。
 
 `Refines` は「具体側の振る舞いが抽象側の許す範囲に収まる」ことしか述べない。そのため、抽象機械が緩い、
 PRE が強すぎる、貼り合わせが粗い、といった場合にも成り立ってしまう。ここでは、それを塞ぐ定義を与える。
@@ -23,7 +23,7 @@ PRE が強すぎる、貼り合わせが粗い、といった場合にも成り�
 | `KernelIs` | 標準の抽象化の葉が同一視するもの（核） | 標準の抽象化に隠れた同一視 |
 | `Refines.complete`・`Refines.run` | 1 歩の可換式と、複数歩の模倣 | — |
 | `Refines.congr` | 各点で同値な貼り合わせへの付け替え | — |
-| `always`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（references/architecture.md#空虚化を防ぐ義務）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
+| `always`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`・`Machine.TotalUnder.not_always` | 成分の必要性（references/docs/architecture.md#空虚化を防ぐ義務）: 名前付きの成分を外した R 課題の命題が偽であることを、証人から示す | 不要な成分（外しても成り立つ差異・環境の前提） |
 | `Covers`・`Covers₂` | 被覆: 必要な差異 M の下では差異 d が常に成り立つ（d は M に覆われ、必要性の代わりにこれを示す） | 他の差異に覆われた実在の差異が、必要性を示せないこと |
 | `anyOf` | 観測型の差異の成分の和。同じ出力に重なる差異を、差異ごとの定数に分けたまま OJ・OO に置く | 複数の差異を 1 つの定数に束ねること |
 
@@ -48,13 +48,13 @@ variable {σ τ ιa ιc οa οc ε E F : Type}
 /-- 常に偽の関係。`Glue.ofStd` の OJ・OO の既定値（観測型の差異が無いこと）。 -/
 def never {α β : Type} (_ : α) (_ : β) : Prop := False
 
-/-- 常に真の述語。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（references/architecture.md#空虚化を防ぐ義務）。 -/
+/-- 常に真の述語。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（references/docs/architecture.md#空虚化を防ぐ義務）。 -/
 def always {α : Type} (_ : α) : Prop := True
 
-/-- 関係の和。観測型の差異の成分を、差異ごとの定数に分けたまま OJ・OO に置く（references/architecture.md#空虚化を防ぐ義務）。 -/
+/-- 関係の和。観測型の差異の成分を、差異ごとの定数に分けたまま OJ・OO に置く（references/docs/architecture.md#空虚化を防ぐ義務）。 -/
 def anyOf {α β : Type} (R S : α → β → Prop) (a : α) (b : β) : Prop := R a b ∨ S a b
 
-/-- 被覆: 差異の述語 `M` の下では、差異の述語 `d` が常に成り立つ（`d` は `M` に覆われる。references/architecture.md#空虚化を防ぐ義務）。 -/
+/-- 被覆: 差異の述語 `M` の下では、差異の述語 `d` が常に成り立つ（`d` は `M` に覆われる。references/docs/architecture.md#空虚化を防ぐ義務）。 -/
 def Covers {α : Type} (M d : α → Prop) : Prop := ∀ x, M x → d x
 
 /-- 2 引数の述語（`restrictState` の述語）の被覆。 -/
@@ -119,7 +119,7 @@ theorem TotalUnder.restrict {A : Machine σ ιa οa} {Env : ιa → Prop} (h : A
     (P : ιa → Prop) : (A.restrict P).TotalUnder fun i => Env i ∧ P i :=
   fun s i hi he => ⟨h s i hi he.1, he.2⟩
 
-/-- 環境の前提の必要性（references/architecture.md#空虚化を防ぐ義務）: INV を満たし PRE を破る証人があれば、前提なしの全域性は成り立たない。 -/
+/-- 環境の前提の必要性（references/docs/architecture.md#空虚化を防ぐ義務）: INV を満たし PRE を破る証人があれば、前提なしの全域性は成り立たない。 -/
 theorem TotalUnder.not_always {A : Machine σ ιa οa} {s : σ} {i : ιa} (hi : A.Inv s) (hp : ¬ A.Pre s i) :
     ¬ A.TotalUnder always :=
   fun h => hp (h s i hi trivial)
@@ -208,7 +208,7 @@ def Pinned (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε) (g : Glue σ τ
   ∀ s t ic ia t' oc, A.Inv s → g.J s t → g.αi ic ia → A.Pre s ia → C.Dom ic →
     C.step t ic (.ok (t', oc)) → ∃ x, g.J (f s ia (ce ic, x)).1 t' ∧ g.αo oc (f s ia (ce ic, x)).2
 
-/-! ### 成分の必要性の証人（references/architecture.md#空虚化を防ぐ義務） -/
+/-! ### 成分の必要性の証人（references/docs/architecture.md#空虚化を防ぐ義務） -/
 
 /-- PRE の下で具体側が正常終了しない証人があれば、リファインメントは成り立たない（適用可能性が破れる）。 -/
 theorem not_of_error {s : σ} {t : τ} {ic : ιc} {ia : ιa} {e : ε} (hi : A.Inv s) (hJ : g.J s t)

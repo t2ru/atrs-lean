@@ -1,4 +1,4 @@
-//! プロジェクトの設定 `trace/project.json`（port-lang の `references/traceability.md#プロジェクトの設定`）。
+//! プロジェクトの設定 `trace/project.json`（port-lang の `references/docs/traceability.md#プロジェクトの設定`）。
 //!
 //! 道具はアプリに依存しない。アプリ固有の値（移植元・移植先の配置、crate 名、文書のパス、言語の組、
 //! Lean のルート）は、すべてこのファイルから読む。言語ごとのロケータの種類と `LangSemantics` の層は、

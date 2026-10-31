@@ -46,7 +46,7 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 * 上流は `upstream/atrs` に **git submodule** として取り込み、commit を固定する。追従中の版は `trace/upstream.json` に 1 か所で宣言する（[ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md)）。
 * 依存フレームワーク・処理系の挙動に依存する `SourceModel`・`LangSemantics.Java/Sql` の定義は、`dep:`・`lang:` ロケータを **必ず** `@[source]` に含める。依存の版が変わると、影響する定義が自動で出る。
 * **差分オラクル**: Java オラクルハーネス（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）を拡張し、`conformance/source-model/` の全ベクタ入力を旧版と新版の両方で実行して出力を比べる（[backlog 773f](../backlog/773f-differential-oracle.md)）。
-* 手順は [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) に定める。要点は次のとおり。
+* 手順は [port-lang/upgrade.md](../../.agents/skills/port-lang/references/docs/upgrade.md) に定める。要点は次のとおり。
   1. 版上げの ADR を作る。
   2. submodule を上げる。
   3. インベントリ差分を取る（不変・本文変更・追加・削除・移動/改名）。
@@ -89,6 +89,6 @@ Chosen option: "最新版のみ ＋ インベントリ差分 ＋ 差分オラク
 
 ## More Information
 
-* [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)
+* [port-lang/upgrade.md](../../.agents/skills/port-lang/references/docs/upgrade.md)
 * [backlog 455f](../backlog/455f-upstream-submodule-and-inventory.md), [backlog 773f](../backlog/773f-differential-oracle.md)
 * （補足 2026-10-30）差分オラクルが比べるのはベクタの入力だけであり、その外での振る舞いの変化は検出できない。これは保証の限界として [spec/assurance.md](../spec/assurance.md) に記載する。`@[source]` のハッシュの更新は、[ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md) の `tools/trace rehash` が、決定論的な検査が合格したときに限って行う。

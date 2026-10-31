@@ -44,4 +44,4 @@ Rust の移植先ソースを動かせる状態にし、ポート契約（SRC-00
 - [ports.md](../spec/ports.md)
 - [master-data.md](../spec/master-data.md)
 - [refinement.md](../spec/refinement.md)
-- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/rust/layout.md)
+- [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/rust/layout.md)

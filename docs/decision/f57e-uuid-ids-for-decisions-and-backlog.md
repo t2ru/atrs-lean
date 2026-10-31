@@ -130,13 +130,13 @@ Chosen option: "ID を UUID とし、ファイル名と本文の参照には先�
 | 0035 | `0bd389b9-3285-4134-9408-200fb9c0a666` | [0bd3-generate-verus-mirror-from-target-model.md](../decision/0bd3-generate-verus-mirror-from-target-model.md) |
 | 0036 | `e2a45550-1535-4d77-b945-d3dcb49fd16b` | [e2a4-traceability-hash-as-deterministic-check-record.md](../decision/e2a4-traceability-hash-as-deterministic-check-record.md) |
 | 0037 | `e56eec10-e852-4b8b-ba4d-fef0ca37baf8` | [e56e-conflict-as-spec-nondeterminism.md](../decision/e56e-conflict-as-spec-nondeterminism.md) |
-| 0038 | `6edfa687-49f5-4f4e-a708-d4cc0c475ace` | [6edf-lean-package-under-skill-assets-lean.md](../decision/6edf-lean-package-under-skill-assets-lean.md) |
+| 0038 | `6edfa687-49f5-4f4e-a708-d4cc0c475ace` | [6edf-lean-package-under-skill-assets-lean.md](../../.agents/skills/port-lang/references/docs/decision/6edf-lean-package-under-skill-assets-lean.md) |
 | 0039 | `70ebaf6b-ec24-4790-bdc2-543d6734dda0` | [70eb-refinement-non-vacuity-obligations.md](../decision/70eb-refinement-non-vacuity-obligations.md) |
-| 0040 | `0eeac635-5514-4dbb-a7b1-47c6328eeddf` | [0eea-trace-tooling-unresolved-details.md](../decision/0eea-trace-tooling-unresolved-details.md) |
-| 0041 | `9cd93670-deeb-4878-bba4-aa51f977d6ae` | [9cd9-rehash-diff-impact-details.md](../decision/9cd9-rehash-diff-impact-details.md) |
+| 0040 | `0eeac635-5514-4dbb-a7b1-47c6328eeddf` | [0eea-trace-tooling-unresolved-details.md](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md) |
+| 0041 | `9cd93670-deeb-4878-bba4-aa51f977d6ae` | [9cd9-rehash-diff-impact-details.md](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md) |
 | 0042 | `8f184bed-5fb3-4da6-8ee1-e2d3a0ffdeb6` | [8f18-fare-source-model-and-shared-vectors.md](../decision/8f18-fare-source-model-and-shared-vectors.md) |
 | 0043 | `9ac6367a-6c10-4d55-a1fe-167d6ce59f17` | [9ac6-vacuity-literature-necessity-and-mutation.md](../decision/9ac6-vacuity-literature-necessity-and-mutation.md) |
-| 0044 | `0b83c75e-af18-453d-8384-f30da3c66bee` | [0b83-porting-conditions-and-workflow.md](../decision/0b83-porting-conditions-and-workflow.md) |
+| 0044 | `0b83c75e-af18-453d-8384-f30da3c66bee` | [0b83-porting-conditions-and-workflow.md](../../.agents/skills/port-lang/references/docs/decision/0b83-porting-conditions-and-workflow.md) |
 | 0045 | `c10895a2-8187-428d-8c87-f925e9c55a4e` | [c108-master-data-source-model-and-spec-fixes.md](../decision/c108-master-data-source-model-and-spec-fixes.md) |
 
 #### backlog
@@ -163,13 +163,13 @@ Chosen option: "ID を UUID とし、ファイル名と本文の参照には先�
 | 0018 | `fb50dcb4-2c24-46aa-ad02-cee5924cd095` | [fb50-rust-project-scaffold.md](../backlog/fb50-rust-project-scaffold.md) |
 | 0019 | `ddb4cafe-4bc3-4235-8efa-7f6eb7ff0ea8` | [ddb4-rust-spec-mirror-and-fare-core.md](../backlog/ddb4-rust-spec-mirror-and-fare-core.md) |
 | 0020 | `9c1b5a33-ee88-4bd7-87f3-05094c95b55b` | [9c1b-rust-usecases-core.md](../backlog/9c1b-rust-usecases-core.md) |
-| 0021 | `a936801c-476d-4b16-baed-ca3bab07cee3` | [a936-lang-semantics-rust.md](../backlog/a936-lang-semantics-rust.md) |
+| 0021 | `a936801c-476d-4b16-baed-ca3bab07cee3` | [a936-lang-semantics-rust.md](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) |
 | 0022 | `eff6bfce-0ef0-49a1-8c6e-e2b7235fd113` | [eff6-target-model-fare-and-refinement.md](../backlog/eff6-target-model-fare-and-refinement.md) |
 | 0023 | `26c57ac3-b6b7-440a-aca5-994943bd7ebd` | [26c5-target-model-usecases-and-refinement.md](../backlog/26c5-target-model-usecases-and-refinement.md) |
 | 0024 | `ffdc480d-eaf2-42a0-9818-0b128e9403d4` | [ffdc-trace-tooling.md](../backlog/ffdc-trace-tooling.md) |
 | 0025 | `455ffb21-3a0e-4833-b82c-2d972bfec450` | [455f-upstream-submodule-and-inventory.md](../backlog/455f-upstream-submodule-and-inventory.md) |
 | 0026 | `773f2c47-5a43-4da9-9c16-b9f36bfe5765` | [773f-differential-oracle.md](../backlog/773f-differential-oracle.md) |
-| 0027 | `1ae40815-ac5a-4602-99bc-1d9ad267dd0b` | [1ae4-machine-refinement-framework.md](../backlog/1ae4-machine-refinement-framework.md) |
+| 0027 | `1ae40815-ac5a-4602-99bc-1d9ad267dd0b` | [1ae4-machine-refinement-framework.md](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) |
 | 0028 | `d77caf9a-257d-4bcc-9be8-f34b6c03f2b6` | [d77c-verus-mirror-generator.md](../backlog/d77c-verus-mirror-generator.md) |
 | 0029 | `9c0448f7-eb9f-43ec-8364-d8b6dd1ec01f` | [9c04-rust-external-adapters.md](../backlog/9c04-rust-external-adapters.md) |
 | 0030 | `f7b791e2-3d95-4436-a2d9-0320ad16a4fa` | [f7b7-refinement-non-vacuity.md](../backlog/f7b7-refinement-non-vacuity.md) |

@@ -18,12 +18,12 @@ generated:
 
 | 役割 | 言語 | 言語パック | ATRS で使う主な対象 |
 | --- | --- | --- | --- |
-| 移植元 | Java | `references/java/` | Spring MVC、Spring Security、Bean Validation（Hibernate Validator）、Jackson、MyBatis |
-| 移植元 | SQL | `references/sql/`（方言 `references/sql/dialects/postgresql/`） | PostgreSQL、MyBatis の Mapper XML、`atrs-initdb` の DDL・シード |
-| 移植先 | Rust | `references/rust/` | Verus、Kani |
-| 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
+| 移植元 | Java | `references/docs/java/` | Spring MVC、Spring Security、Bean Validation（Hibernate Validator）、Jackson、MyBatis |
+| 移植元 | SQL | `references/docs/sql/`（方言 `references/docs/sql/dialects/postgresql/`） | PostgreSQL、MyBatis の Mapper XML、`atrs-initdb` の DDL・シード |
+| 移植先 | Rust | `references/docs/rust/` | Verus、Kani |
+| 形式化 | Lean 4 | `references/docs/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.7`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
+使うスキルの版: `metadata.version` = `0.8`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/port-lang/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -32,8 +32,8 @@ generated:
 | 保証の限界の文書 | [spec/assurance.md](../spec/assurance.md) |
 | 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md)。差異の表は `lean/Abstraction/Gap.lean`（ギャップの登録簿。正）から生成する（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)） |
 | 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md)。差異の表は `lean/Refinement/Gap.lean` から生成する |
-| 追跡属性・ギャップの登録簿の型・`trace-dump`・`obligation-check` の本体 `Trace` | スキルの `assets/lean/Trace/` を Lake 依存として取り込む。道具の入口は `lean/Tools/`（[ADR 7fe4](../decision/7fe4-move-trace-attributes-to-skill.md)） |
-| リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)。[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)） |
+| 追跡属性・ギャップの登録簿の型・`trace-dump`・`obligation-check` の本体 `Trace` | スキルの `assets/lean/Trace/` を Lake 依存として取り込む。道具の入口は `lean/Tools/`（[ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)） |
+| リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md)。[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)） |
 | 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog d77c](../backlog/d77c-verus-mirror-generator.md)） |
 
 ## リポジトリ配置
@@ -45,8 +45,8 @@ generated:
 | `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
-| `trace/` | 版の宣言・インベントリ・manifest。スキルの道具が読む ATRS の設定 `trace/project.json`（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ADR と backlog の置き場所。スキルの [traceability.md](../../.agents/skills/port-lang/references/traceability.md#プロジェクトの設定)） |
-| `.agents/skills/port-lang/scripts/` | スキルの道具（[ADR edc8](../decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の道具。Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
+| `trace/` | 版の宣言・インベントリ・manifest。スキルの道具が読む ATRS の設定 `trace/project.json`（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ADR と backlog の置き場所。スキルの [traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md#プロジェクトの設定)） |
+| `.agents/skills/port-lang/scripts/` | スキルの道具（[ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の道具。Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
 | `tools/` | ATRS 固有の道具。`ci/lean.sh`（Lean 側の一括検査。スキルの `scripts/` を呼ぶ。`.github/workflows/lean.yml` から呼ぶ）、`ci/master_sql.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表） |
 
 ## 追従中の上流
@@ -121,7 +121,7 @@ generated:
 
 ## 進め方の適用（ATRS）
 
-スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0b83](../decision/0b83-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
+スキルの [workflow.md](../../.agents/skills/port-lang/references/docs/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0b83](../../.agents/skills/port-lang/references/docs/decision/0b83-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
 
 | 項目 | ATRS での扱い |
 | --- | --- |
@@ -143,7 +143,7 @@ generated:
 
 ## 版上げの例（架空）
 
-スキルの [upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) を ATRS に当てはめた例。
+スキルの [upgrade.md](../../.agents/skills/port-lang/references/docs/upgrade.md) を ATRS に当てはめた例。
 Spring の版上げで `StringTrimmerEditor.setAsText` が `trim()` から `strip()` に変わった、と仮定する。
 
 1. インベントリ差分: `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` が「版の変化」になる。ATRS 本体のコードは不変。

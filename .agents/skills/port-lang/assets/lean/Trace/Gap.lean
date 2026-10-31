@@ -29,7 +29,7 @@ namespace Trace
 
 open Lean
 
-/-- ギャップの種類（references/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
+/-- ギャップの種類（references/docs/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
 inductive GapKind where
   /-- 前提型（抽象側の入力・状態の述語。抽象側の PRE を強める） -/
   | pre
@@ -79,7 +79,7 @@ def GapKind.label : GapKind → String
   | .outsidePre => "PRE の外"
   | .undetermined => "未確定"
 
-/-- 前提型の差異の影響（前提を破る 1 歩の後で、状態が貼り合わせを保つか。references/architecture.md#空虚化を防ぐ義務）。 -/
+/-- 前提型の差異の影響（前提を破る 1 歩の後で、状態が貼り合わせを保つか。references/docs/architecture.md#空虚化を防ぐ義務）。 -/
 inductive Impact where
   /-- 前提を破っても、変わるのは出力だけ（R 課題に `StateSafe` を課す） -/
   | outputOnly

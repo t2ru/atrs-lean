@@ -4,8 +4,8 @@
 `lake exe obligation-check` の JSON（Lean 側の判定と事実）と、抽象化・具体化の課題一覧（`trace/project.json` の
 `docs.abstraction`・`docs.refinement`）の
 登録簿、`docs/backlog/` の状態を突き合わせる。既知差異とその影響の登録簿は Lean の `@[gap_entry]` にあり、
-JSON の `gaps` から読む（references/lean/trace-attributes.md#ギャップの登録簿）。見出しの文字列は
-references/spec-documents.md#道具が読む見出しと値 が定める。
+JSON の `gaps` から読む（references/docs/lean/trace-attributes.md#ギャップの登録簿）。見出しの文字列は
+references/docs/spec-documents.md#道具が読む見出しと値 が定める。
 
 | 規則 | 失敗条件 |
 | --- | --- |

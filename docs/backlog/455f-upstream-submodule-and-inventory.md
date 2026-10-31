@@ -39,4 +39,4 @@ generated:
 ## 参照
 
 - [ADR 3f36](../decision/3f36-following-upstream-releases.md)
-- [port-lang/upgrade.md](../../.agents/skills/port-lang/references/upgrade.md)
+- [port-lang/upgrade.md](../../.agents/skills/port-lang/references/docs/upgrade.md)

@@ -124,5 +124,6 @@ Chosen option: "スキル `port-lang` に方法を切り出し、役割に依存
 ## More Information
 
 * [port-lang の SKILL.md](../../.agents/skills/port-lang/SKILL.md), [atrs-porting.md](../rules/atrs-porting.md)
+* 補足（2026-10-31）: スキルの `references/` は `references/docs/`（OKF v0.2 のバンドル）に移った。本文の `references/*.md`・`references/<lang>/` は、今は `references/docs/` の下にある。スキル自身の意思決定記録・作業項目もそこに置き、純粋にスキルの ADR・backlog は ATRS から移した（[ADR 50f9](50f9-move-skill-records-to-skill-bundle.md)、[スキルの ADR 87b9](../../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)）。スキルの記録に限り、ATRS の記録を来歴としてリンク無しで挙げてよい。
 
 [^agentskills]: Agent Skills Specification — `SKILL.md` の frontmatter（`name`, `description`, `compatibility`, `metadata`）、`references/` の段階的な読み込み、ファイル参照は 1 段まで。
