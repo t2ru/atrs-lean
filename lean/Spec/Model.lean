@@ -154,7 +154,7 @@ structure CreditTypeCd where
 /-- カード種別コードの形式: 3 文字。 -/
 def CreditTypeCd.WellFormed (c : CreditTypeCd) : Prop := c.val.length = 3
 
-/-- パスワードのハッシュ（不透明。ADR 0015）。 -/
+/-- パスワードのハッシュ（不透明。ADR 2d1f）。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
 structure PasswordHash where
   val : String

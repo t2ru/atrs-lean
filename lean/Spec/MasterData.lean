@@ -32,7 +32,7 @@ structure Route where
   routeNo : Nat
   depAirportCd : AirportCd
   arrAirportCd : AirportCd
-  /-- 路線基本運賃。所要時間（DB の `FLIGHT_TIME`）は、原典のどの処理も読まないので持たない（ADR 0045）。 -/
+  /-- 路線基本運賃。所要時間（DB の `FLIGHT_TIME`）は、原典のどの処理も読まないので持たない（ADR c108）。 -/
   basicFare : Nat
   deriving DecidableEq, Repr
 

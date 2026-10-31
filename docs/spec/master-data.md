@@ -17,9 +17,9 @@ sources:
 
 # マスタデータ
 
-> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.MasterData`](../../lean/Spec/MasterData.lean)、[`Spec.CodeList`](../../lean/Spec/CodeList.lean)。[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
+> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.MasterData`](../../lean/Spec/MasterData.lean)、[`Spec.CodeList`](../../lean/Spec/CodeList.lean)。[backlog 591d](../backlog/591d-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
 
-マスタは起動時に読み込まれ、実行中は変化しない不変の値 `MasterData` として純粋関数に渡す（[ADR 0007](../decision/0007-functional-core-with-ports.md)）。
+マスタは起動時に読み込まれ、実行中は変化しない不変の値 `MasterData` として純粋関数に渡す（[ADR f0e4](../decision/f0e4-functional-core-with-ports.md)）。
 原典では `*Provider` クラスがキャッシュしている（出典: atrs-domain/.../common/masterdata/*Provider.java）。
 
 ## MasterData
@@ -41,7 +41,7 @@ sources:
 
 ### Route
 
-`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）
+`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）
 
 ### FlightMaster
 
@@ -91,9 +91,9 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed`）である。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
 
-[Source] の具体機械は [`SourceModel.MasterQuery`](../../lean/SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR 0045](../decision/0045-master-data-source-model-and-spec-fixes.md)）。
+[Source] の具体機械は [`SourceModel.MasterQuery`](../../lean/SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。
 - 起動時に、各 Provider の `load()` とコードリストの読み込みを行う。
-- Mapper の文の結果は順序が未規定なので、許される並びのどれでも答えが同じことを ABS-026 で示す（[backlog 0004](../backlog/0004-fare-calculation-both-models.md) の第 2 段 b）。
+- Mapper の文の結果は順序が未規定なので、許される並びのどれでも答えが同じことを ABS-026 で示す（[backlog 25f7](../backlog/25f7-fare-calculation-both-models.md) の第 2 段 b）。
 - Mapper の SQL の写しは、PostgreSQL で差分実行して照合する（`conformance/sql/master-data.json`）。
 - DB の値が [Spec] の型で表せない場合は、既知差異 [D-027](abstraction.md#既知差異) である。
 
@@ -125,7 +125,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 ## シードデータ
 
-原典の初期データ[^seed-fixed]。適合テストの共有入力 `conformance/fixtures/master-data.json` の元になる（[backlog 0011](../backlog/0011-in-memory-adapters-and-seed-data.md)）。
+原典の初期データ[^seed-fixed]。適合テストの共有入力 `conformance/fixtures/master-data.json` の元になる（[backlog 4b0e](../backlog/4b0e-in-memory-adapters-and-seed-data.md)）。
 
 ### 搭乗クラス
 
@@ -167,7 +167,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 - 空港 51 件（主要空港 9 件は表示順 1〜9、その他 42 件は表示順 100〜141）。
 - 区間 20 件。路線基本運賃はすべて 100 円単位（20,100〜52,400 円）。
 - 便マスタ 126 件。
-- フライト: 投入日から 120 日後まで（両端を含む）の各日について、便ごとに搭乗クラス×運賃種別の行を作る。空席数は日ごとに 3 パターン（`i mod 3`）で変わる。fixture では投入日を 2026-11-01 とする（[ADR 0028](../decision/0028-clock-timezone-and-fixture-base-date.md)）。
+- フライト: 投入日から 120 日後まで（両端を含む）の各日について、便ごとに搭乗クラス×運賃種別の行を作る。空席数は日ごとに 3 パターン（`i mod 3`）で変わる。fixture では投入日を 2026-11-01 とする（[ADR 9ee4](../decision/9ee4-clock-timezone-and-fixture-base-date.md)）。
 
 ### 会員
 
@@ -177,11 +177,11 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 `VIS`（VISA）, `MTR`（MASTER）, `JCB`（JCB）, `DNS`（DNS）, `AMX`（American Express）
 
-シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。
+シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
 > **TODO(spec):** 便マスタ NTT523（HND→OKA）と NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`Spec.MasterData.FlightMaster.arrivalTime`（0:00〜23:59）では表せない。
 > - [Source] の `DateTimeFormatter("HHmm")` は `DateTimeParseException` を投げる（空席照会でこの便が結果に入るとき）。
-> - [Spec] で翌日着を表せるように改め、[Source] の例外を既知差異として登録する（[backlog 0006](../backlog/0006-flight-search-usecase.md)）。
-> - それまで fixture では、その 2 行に `outsideSpec` を付ける。`Spec` 用の読み込みは、その行を除く（ADR 0042）。
+> - [Spec] で翌日着を表せるように改め、[Source] の例外を既知差異として登録する（[backlog 0be7](../backlog/0be7-flight-search-usecase.md)）。
+> - それまで fixture では、その 2 行に `outsideSpec` を付ける。`Spec` 用の読み込みは、その行を除く（ADR 8f18）。
 
 [^seed-fixed]: atrs-initdb/src/sqls/integration-test-postgres/00200〜00250_*.sql

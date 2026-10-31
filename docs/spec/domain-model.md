@@ -13,7 +13,7 @@ generated:
 
 # ドメインモデル
 
-> **区分: 要約（informative）と草案（draft）の混在。** [Spec] の定義は Lean `Spec` に形式化した（[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。各節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。**[Source]** と書いた記述は、`SourceModel` に形式化するまでの草案（draft）である。
+> **区分: 要約（informative）と草案（draft）の混在。** [Spec] の定義は Lean `Spec` に形式化した（[backlog 591d](../backlog/591d-abstract-domain-types-and-master-data.md)）。各節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。**[Source]** と書いた記述は、`SourceModel` に形式化するまでの草案（draft）である。
 
 ## 基本演算（Spec.Prim）
 
@@ -26,12 +26,12 @@ generated:
 | `ceilTo(a, m)` | `a ≥ 0`, `m > 0` | `a` 以上の `m` の倍数のうち最小のもの（`ceilTo_le_of_dvd`） |
 | `pct(a, r)` | `a ≥ 0`, `r ≥ 0` | `a` の `r`% の切捨て |
 
-**[Source]**（draft）の基本演算（`j32add`, `jdiv32`, `jdmul`, `jd2i`, `bdCeilHundredUp`, `utf16Len` など）は [ADR 0005](../decision/0005-java-primitive-semantics.md) に定義する。
+**[Source]**（draft）の基本演算（`j32add`, `jdiv32`, `jdmul`, `jd2i`, `bdCeilHundredUp`, `utf16Len` など）は [ADR 935b](../decision/935b-java-primitive-semantics.md) に定義する。
 [Source] の Java 参照型（`Integer` 等）が `null` のまま演算された場合は、その操作の結果を `PreconditionViolation("NullPointerException")` とする。
 
 ## 暦日と時刻
 
-**[Spec=Source]**（[ADR 0009](../decision/0009-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`](../../lean/Spec/Prim/Date.lean)、[`Spec.Prim.Time`](../../lean/Spec/Prim/Time.lean)。
+**[Spec=Source]**（[ADR 6eb2](../decision/6eb2-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`](../../lean/Spec/Prim/Date.lean)、[`Spec.Prim.Time`](../../lean/Spec/Prim/Time.lean)。
 
 ### Date
 
@@ -97,7 +97,7 @@ generated:
 | `MembershipNumber` | 数字 10 文字 | `0000000001` |
 | `ReserveNo` | 数字 10 文字 | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの） | `VIS` |
-| `PasswordHash` | 不透明な文字列（[ADR 0015](../decision/0015-password-hashing-port.md)） | — |
+| `PasswordHash` | 不透明な文字列（[ADR 2d1f](../decision/2d1f-password-hashing-port.md)） | — |
 
 ## エンティティ
 
@@ -180,8 +180,8 @@ generated:
 
 ## 値域
 
-[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR 0006](../decision/0006-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](../../lean/Spec/Model.lean)）にある。マスタの値域は `MasterData.MD8`（[master-data.md](master-data.md#不変条件spec)）である。
-マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)、[abstraction.md](abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
+[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](../../lean/Spec/Model.lean)）にある。マスタの値域は `MasterData.MD8`（[master-data.md](master-data.md#不変条件spec)）である。
+マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)、[abstraction.md](abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |
 | --- | --- |

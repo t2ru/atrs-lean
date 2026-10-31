@@ -13,9 +13,9 @@ generated:
 
 # HTTP 契約
 
-> **区分: 草案と規範の混在。** 各画面・API の「リクエスト → 処理 → 結果」の表は **形式化前の草案（draft）** であり、Lean `Spec.Http` に形式化する。「共通」節（状態の受け渡し、二重送信防止トークン、CSRF、エラー画面の伝送、認証の伝送方式）と REST の伝送の約束事（HTTP Basic、セッション無し、日付の JSON 表現）は **規範（normative）** としてここで定義する（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 草案と規範の混在。** 各画面・API の「リクエスト → 処理 → 結果」の表は **形式化前の草案（draft）** であり、Lean `Spec.Http` に形式化する。「共通」節（状態の受け渡し、二重送信防止トークン、CSRF、エラー画面の伝送、認証の伝送方式）と REST の伝送の約束事（HTTP Basic、セッション無し、日付の JSON 表現）は **規範（normative）** としてここで定義する（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-記述方針は [ADR 0012](../decision/0012-http-contract-specification.md)。HTML の構造は定義しない。画面は「画面 ID ＋ 表示データ」として定義する。
+記述方針は [ADR 1b00](../decision/1b00-http-contract-specification.md)。HTML の構造は定義しない。画面は「画面 ID ＋ 表示データ」として定義する。
 リクエストは `(メソッド, パス, 判別パラメータ)` で識別する。判別パラメータは **名前の有無だけ** を見る（値は問わない。例 `?confirm`）。
 
 ## 共通
@@ -65,7 +65,7 @@ generated:
 | `InvalidRequest`・不正な入力（改竄） | 400 | `common/error/badRequest-error` | `e.ar.fw.0003` |
 | 権限不足 | 403 | `common/error/accessForbidden-error` | `e.ar.fw.0004` |
 | 該当 URL 無し | 404 | `common/error/notFound-error` | `e.ar.fw.0005` |
-| 画面で捕捉されない `Business`・`System`・`PreconditionViolation`、`Conflict`（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 500 | `common/error/system-error` | `e.ar.fw.9999` |
+| 画面で捕捉されない `Business`・`System`・`PreconditionViolation`、`Conflict`（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)） | 500 | `common/error/system-error` | `e.ar.fw.9999` |
 
 ### 認証と権限
 
@@ -172,7 +172,7 @@ generated:
 
 根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して JSON 変換に使う。原典は Jackson 3 と Jackson 2 の両方を依存に持ち、`ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印（配列・数値）として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
 
-> **TODO(spec):** 上の根拠はソースの読解による。Java オラクルで、`POST /api/v1/ticket` の要求・応答の日付が `"yyyy-MM-dd"` であることを確認する（[backlog 0013](../backlog/0013-java-oracle-harness.md)）。
+> **TODO(spec):** 上の根拠はソースの読解による。Java オラクルで、`POST /api/v1/ticket` の要求・応答の日付が `"yyyy-MM-dd"` であることを確認する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。
 
 ### GET /api/v1/flight
 
@@ -222,7 +222,7 @@ generated:
 | JSON 解析不能 | 400 | 原因に応じた `ApiError` |
 | `NotFound` | 404 | 下記「業務メッセージの変換」 |
 | `Business` | 409 | 同上（`validateFlightList` の `Business` を除く。上記） |
-| `Conflict`（排他制御の失敗。[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 409 | `code = "e.ar.fw.9999"` |
+| `Conflict`（排他制御の失敗。[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)） | 409 | `code = "e.ar.fw.9999"` |
 | `InvalidRequest` | 500 | `code = "e.ar.a0.L9001"`、`message = "不正リクエスト(パラメータ改竄) " ++ 詳細`。詳細は [Spec] の非決定的な選択（任意の文字列）であり、適合テストでは比較しない。[Source] は原因の例外のメッセージを使う。[Spec] がどの文字列も許すので、差異ではない |
 | `System(code, args)` | 500 | `code` は `System` のコード（例 `e.ar.a0.L9002`） |
 | `PreconditionViolation`・その他 | 500 | `code = "e.ar.fw.9999"` |

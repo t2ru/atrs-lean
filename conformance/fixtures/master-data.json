@@ -782,7 +782,7 @@
       "departureTime": "2145",
       "arrivalTime": "2415",
       "craftType": "963",
-      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0006 で Spec を改める。ADR 0042）"
+      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0be7 で Spec を改める。ADR 8f18）"
     },
     {
       "flightName": "NTT016",
@@ -1035,7 +1035,7 @@
       "departureTime": "2155",
       "arrivalTime": "2415",
       "craftType": "968",
-      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0006 で Spec を改める。ADR 0042）"
+      "outsideSpec": "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0be7 で Spec を改める。ADR 8f18）"
     },
     {
       "flightName": "NTT019",

@@ -3,7 +3,7 @@ import Spec.Prim.Date
 /-!
 # Spec.Prim.Time
 
-時刻と日時（`docs/spec/domain-model.md#hourminute`・`#datetime`、ADR 0009）。
+時刻と日時（`docs/spec/domain-model.md#hourminute`・`#datetime`、ADR 6eb2）。
 -/
 
 namespace Spec.Prim

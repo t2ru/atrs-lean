@@ -6,9 +6,9 @@ import Spec.MasterData
 /-!
 # Spec.Fare
 
-運賃計算（`docs/spec/fare-calculation.md`）。厳密整数で計算する（ADR 0006）。
+運賃計算（`docs/spec/fare-calculation.md`）。厳密整数で計算する（ADR e41d）。
 [Source] との差異は D-001・D-002・D-012（`docs/spec/abstraction.md#既知差異`）で、
-リファインメントの証明は backlog 0005 で行う。
+リファインメントの証明は backlog bbcc で行う。
 -/
 
 namespace Spec.Fare

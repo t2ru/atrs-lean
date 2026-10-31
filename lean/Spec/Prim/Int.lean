@@ -3,7 +3,7 @@ import Trace
 /-!
 # Spec.Prim.Int
 
-整数の基本演算（`docs/spec/domain-model.md#基本演算specprim`）。引数は数学的整数で、溢れは無い（ADR 0006）。
+整数の基本演算（`docs/spec/domain-model.md#基本演算specprim`）。引数は数学的整数で、溢れは無い（ADR e41d）。
 -/
 
 namespace Spec.Prim

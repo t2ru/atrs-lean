@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 0039）。
+"""obligation-check の結果を文書と突き合わせる（TR-N と、TR-G の文書側。ADR 70eb）。
 
 `lake exe obligation-check` の JSON（Lean 側の判定と事実）と、`docs/spec/abstraction.md`・`refinement.md` の
 登録簿、`docs/backlog/` の状態を突き合わせる。
@@ -20,7 +20,7 @@
 | OB-S2  | 「出力のみ」の差異に `@[deviation]` がまだ無い（段階導入） |
 
 段階導入（OB-N2・OB-E2・OB-S2）: 登録簿の各行の backlog の列にある項目が `done` でなければ警告、`done` なら失敗とする
-（スキル port-lang の traceability.md、ADR 0039）。
+（スキル port-lang の traceability.md、ADR 70eb）。
 
 使い方:
   python3 -I tools/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる
@@ -76,11 +76,12 @@ def backlog_states(backlog_dir: pathlib.Path):
     states = {}
     if not backlog_dir.is_dir():
         return states
-    for p in backlog_dir.glob("[0-9][0-9][0-9][0-9]-*.md"):
+    for p in backlog_dir.glob("*.md"):
         text = p.read_text(encoding="utf-8")
+        i = re.search(r'^id:\s*"?([0-9a-f-]+)"?\s*$', text, re.M)
         m = re.search(r"^state:\s*(\w+)", text, re.M)
-        if m:
-            states[p.name[:4]] = m.group(1)
+        if i and m:
+            states[i.group(1)] = m.group(1)
     return states
 
 

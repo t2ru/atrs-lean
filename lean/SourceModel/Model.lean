@@ -6,7 +6,7 @@ import Spec.Model
 
 原典の domain model（`jp.co.ntt.atrs.domain.model`）の写し。Java の参照・boxed な値は `JRef`（`null` は `none`）、
 `int`/`Integer` の値は `J32`、`LocalDate` は `JLocalDate` で表す。
-enum（`BoardingClassCd`・`FareTypeCd`・`Gender`）は、構築子が原典と 1 対 1 なので `Spec.Model` の型を使う（ADR 0042）。
+enum（`BoardingClassCd`・`FareTypeCd`・`Gender`）は、構築子が原典と 1 対 1 なので `Spec.Model` の型を使う（ADR 8f18）。
 getter・setter は欄の参照として写す。
 -/
 

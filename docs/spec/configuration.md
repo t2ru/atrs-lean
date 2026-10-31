@@ -13,7 +13,7 @@ generated:
 
 # 設定パラメータ
 
-> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Config`](../../lean/Spec/Config.lean)。[backlog 0003](../backlog/0003-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
+> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Config`](../../lean/Spec/Config.lean)。[backlog 591d](../backlog/591d-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
 
 **[Spec=Source]** 業務規則に影響する設定値は `Config` レコードにまとめ、純粋関数・ユースケースに明示的に渡す。
 既定値は原典の設定ファイルの値である。

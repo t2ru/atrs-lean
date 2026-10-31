@@ -1,4 +1,4 @@
-//! `check`: 追跡の検査 TR-*（ADR 0036・0039・0040）。
+//! `check`: 追跡の検査 TR-*（ADR e2a4・70eb・0eea）。
 //!
 //! | ID | 内容 |
 //! | --- | --- |
@@ -14,7 +14,7 @@
 //! | TR-G・TR-N | `obligation-check` と `check_obligations.py` の結果 |
 //!
 //! TR-S1・TR-T1・TR-P・TR-PE・TR-D は、該当する機能（`trace/features.json`）の backlog がすべて
-//! `done` なら誤り、そうでなければ警告とする（ADR 0040）。それ以外は常に誤り。
+//! `done` なら誤り、そうでなければ警告とする（ADR 0eea）。それ以外は常に誤り。
 
 use crate::docs::{Deviation, Feature, Features};
 use crate::inventory::Inventory;
@@ -92,7 +92,7 @@ pub fn is_version_kind(k: &str) -> bool {
     k == "dep" || k == "lang"
 }
 
-/// `lang:<言語>#…` / `dep:<座標>#…` の宣言された版の文字列（`<名前>-<版>`。ADR 0040）。
+/// `lang:<言語>#…` / `dep:<座標>#…` の宣言された版の文字列（`<名前>-<版>`。ADR 0eea）。
 pub fn declared_version(decl: &Value, loc: &str) -> Option<String> {
     let (kind, rest) = loc.split_once(':')?;
     let key = rest.split('#').next().unwrap_or(rest);
@@ -395,12 +395,12 @@ mod tests {
         Features::from(
             vec![Feature {
                 name: "Fare".into(),
-                backlog: vec!["0004".into()],
+                backlog: vec!["00000000-0000-4000-8000-000000000004".into()],
                 lean: vec!["SourceModel.Fare".into(), "Abstraction.Fare".into(), "TargetModel.Fare".into(), "Refinement.Fare".into()],
                 tasks: vec!["ABS-001".into(), "ABS-031".into()],
                 locators: vec!["java:a.Fare*".into()],
             }],
-            BTreeMap::from([("0004".to_string(), if done { "done" } else { "todo" }.to_string())]),
+            BTreeMap::from([("00000000-0000-4000-8000-000000000004".to_string(), if done { "done" } else { "todo" }.to_string())]),
         )
     }
 

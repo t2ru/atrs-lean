@@ -1,4 +1,4 @@
-//! `inventory source|target`: インベントリの生成（ADR 0036・0040）。
+//! `inventory source|target`: インベントリの生成（ADR e2a4・0eea）。
 
 use crate::item::Item;
 use crate::rust::ModelTag;

@@ -6,26 +6,29 @@ tags: [rules, adr]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T21:38:09+09:00
+  at: 2026-10-31T12:55:53+09:00
 ---
 
 # 意思決定記録（ADR）規約
 
-設計上の判断はすべて `docs/decision/` に **MADR 4.0 形式** の ADR として記録する（[ADR 0001](../decision/0001-record-architecture-decisions-with-madr.md)）。
+設計上の判断はすべて `docs/decision/` に **MADR 4.0 形式** の ADR として記録する（[ADR d845](../decision/d845-record-architecture-decisions-with-madr.md)）。
 
 ## ファイル名
 
 ```
-docs/decision/NNNN-<slug>.md
+docs/decision/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- `NNNN` は 4 桁ゼロ埋めの連番。欠番を作らない。既存の最大番号 + 1 を使う。
+- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`python3 -I tools/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
+- ファイル名の先頭は ID の先頭 4 文字。他の ADR と重なってもよい（slug で区別する）。
 - `<slug>` は英小文字・数字・ハイフンのみ。決定内容を表す短い句（例: `two-layer-model-java-faithful-and-abstract`）。
 - 一度採番したファイルは **改名・削除しない**。不要になった ADR は状態を変更する。
+- 本文での参照の書き方は [documentation.md](documentation.md#リンク)。ID 全体を書く箇所（`superseded_by` など）と先頭 4 文字を書く箇所を区別する。
+- 作成の順序はファイル名から分からない。`date` で追う。
 
 ## 状態
 
-MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `status` キーは文書のライフサイクルに予約されているため、MADR の値を書いてはならない（[ADR 0017](../decision/0017-documentation-format-okf-v0-2.md)）。
+MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `status` キーは文書のライフサイクルに予約されているため、MADR の値を書いてはならない（[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
 
 | `decision_status` | 意味 | 遷移先 | OKF `status` |
 | --- | --- | --- | --- |
@@ -33,11 +36,11 @@ MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `sta
 | `accepted` | 採択済み。規範的 | `deprecated`, `superseded` | `stable` |
 | `rejected` | 不採択。記録として残す | — | `deprecated` |
 | `deprecated` | 廃止。代替なし | — | `deprecated` |
-| `superseded` | 後継 ADR に置換された。`superseded_by: NNNN` を併記する | — | `deprecated` |
+| `superseded` | 後継 ADR に置換された。`superseded_by: "<後継の ID>"` を併記する | — | `deprecated` |
 
-- `accepted` の ADR の **決定内容** を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `decision_status: superseded` / `superseded_by: NNNN` / `status: deprecated` にし、新 ADR の「More Information」に旧 ADR へのリンクを書く。
+- `accepted` の ADR の **決定内容** を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `decision_status: superseded` / `superseded_by: "<新 ADR の ID>"` / `status: deprecated` にし、新 ADR の「More Information」に旧 ADR へのリンクを書く。
 - 誤字修正・リンク修正・補足情報の追記は書き換えてよい。
-- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新する。
+- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`python3 -I tools/docs/ids.py check` を通す。
 
 ## テンプレート
 
@@ -51,6 +54,7 @@ type: Architecture Decision Record
 title: "<決定を表す短い題名>"
 description: "<1 文の要約>"
 tags: [adr, <分野>]
+id: "<UUID v4>"
 status: draft
 decision_status: proposed
 date: YYYY-MM-DD

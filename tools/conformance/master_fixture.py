@@ -3,7 +3,7 @@
 
 - master-data.json: 上流のシードの SQL（atrs-initdb の integration-test-postgres）の INSERT を読み、
   Spec.MasterData の欄名で書き出す。ピーク時期は投入年 2026 から 2 年分に展開する
-  （docs/spec/conformance.md、ADR 0028）。行の順はシードの順のまま（Provider の読み込み順の既定）。
+  （docs/spec/conformance.md、ADR 9ee4）。行の順はシードの順のまま（Provider の読み込み順の既定）。
 - config.json: 上流の atrs.properties の値を Spec.Config の欄名で書き出す。
 
   python3 -I tools/conformance/master_fixture.py           # 書き出す
@@ -60,8 +60,8 @@ def values(s):
 
 
 # Spec.MasterData.FlightMaster の時刻（HourMinute: 0:00〜23:59）で表せない到着時刻（"2415" = 翌日 0:15）。
-# 行は上流どおり残し、Spec 用の読み込みだけが除く（ADR 0042。Spec の改訂は backlog 0006）。
-OUTSIDE_SPEC_ARRIVAL = "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0006 で Spec を改める。ADR 0042）"
+# 行は上流どおり残し、Spec 用の読み込みだけが除く（ADR 8f18。Spec の改訂は backlog 0be7）。
+OUTSIDE_SPEC_ARRIVAL = "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0be7 で Spec を改める。ADR 8f18）"
 
 
 def valid_hhmm(s):

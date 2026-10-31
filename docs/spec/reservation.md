@@ -13,7 +13,7 @@ generated:
 
 # 予約（B0/B2）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただし「予約確定」の原子性・排他の要件は [ports.md](ports.md#トランザクション) の規範節に従う。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。ただし「予約確定」の原子性・排他の要件は [ports.md](ports.md#トランザクション) の規範節に従う。
 
 予約は「フライト選択（B1 画面）→ 予約入力（B2）→ 確認 → 確定」の順に進む。画面遷移は [http-contract.md](http-contract.md)、入力検証は [input-validation.md](input-validation.md#予約入力b2) を参照。
 
@@ -104,7 +104,7 @@ generated:
 
 ## 予約確定（reserve）
 
-**[Spec=Source]** 1 つのトランザクションとして実行する（[ADR 0011](../decision/0011-persistence-and-transaction-semantics.md)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[ports.md](ports.md#idgenerator)）。
+**[Spec=Source]** 1 つのトランザクションとして実行する（[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[ports.md](ports.md#idgenerator)）。
 
 1. 予約内容を組み立てる。
 2. `validateReservation`。

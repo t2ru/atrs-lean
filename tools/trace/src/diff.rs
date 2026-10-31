@@ -1,4 +1,4 @@
-//! `diff`: 新旧のインベントリを分類する（port-lang の upgrade.md の手順 3。ADR 0041）。
+//! `diff`: 新旧のインベントリを分類する（port-lang の upgrade.md の手順 3。ADR 9cd9）。
 //!
 //! | 分類 | 判定 |
 //! | --- | --- |

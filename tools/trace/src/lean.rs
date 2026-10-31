@@ -71,7 +71,7 @@ pub fn load<T: for<'de> Deserialize<'de>>(path: &Path) -> Result<T, String> {
     serde_json::from_str(&s).map_err(|e| format!("{}: {e}", path.display()))
 }
 
-/// `"<locator>@<hash>"` を最後の `@` で分ける（ADR 0040）。
+/// `"<locator>@<hash>"` を最後の `@` で分ける（ADR 0eea）。
 pub fn split_hash(s: &str) -> (&str, &str) {
     match s.rfind('@') {
         Some(i) => (&s[..i], &s[i + 1..]),

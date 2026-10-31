@@ -1,11 +1,11 @@
-//! `manifest`: `trace/manifest.json` と、`docs/spec/traceability.md` の生成区画（ADR 0036・0040）。
+//! `manifest`: `trace/manifest.json` と、`docs/spec/traceability.md` の生成区画（ADR e2a4・0eea）。
 //!
 //! - ノード: 追跡属性を持つ Lean の定義と、`SourceModel`・`Abstraction`・`TargetModel`・`Refinement` の定義。
 //!   インベントリの項目はインベントリのファイルにあるので、ここには写さない。
 //! - リンク: 定義 → ロケータ（`source`・`target`）、定義 → ID（`obligation`・`deviation`・`nondet`）、
 //!   定義 → 文書（`spec_doc`）、移植先の写し → 定義（`model`）。型付き。
 //! - 合格した検査（`checks`）: `rehash` が書く。ここでは既存の記録を保ち、現在の注釈に無い
-//!   （定義, ロケータ）の記録だけを捨てる（ADR 0041）。
+//!   （定義, ロケータ）の記録だけを捨てる（ADR 9cd9）。
 //! - Merkle はノードに写さない（Lean の変更のたびに manifest が変わるのを避ける。合格の記録にだけ残す）。
 
 use crate::check::Passed;

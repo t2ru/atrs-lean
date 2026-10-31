@@ -3,7 +3,7 @@ import Spec
 /-!
 # Tests.SpecChecks
 
-`Spec` の土台（backlog 0003）の検査。
+`Spec` の土台（backlog 591d）の検査。
 
 - `dateExhaustive`: 0001-01-01〜9999-12-31 の全日について、`ofOrdinal?` が値を返し（取りこぼしが無い）、
   翌日が年月日の繰り上がりの規則どおりであることを確かめる（`Spec.Prim.Date` の冒頭を参照）。

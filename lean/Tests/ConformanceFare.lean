@@ -38,7 +38,7 @@ def decodeMaster (j : Json) : Except String MasterData := do
   let routes ← (← getArr j "routes").mapM fun r => do
     return ({ routeNo := ← getNat r "routeNo", depAirportCd := ⟨← getStr r "depAirportCd"⟩, arrAirportCd := ⟨← getStr r "arrAirportCd"⟩,
               basicFare := ← getNat r "basicFare" } : Spec.Route)
-  -- `outsideSpec` の行（到着時刻 2415 など。ADR 0042）は Spec の値域の外なので除く
+  -- `outsideSpec` の行（到着時刻 2415 など。ADR 8f18）は Spec の値域の外なので除く
   let fms := (← getArr j "flightMasters").filter fun f => (f.getObjVal? "outsideSpec").toOption.isNone
   let flightMasters ← fms.mapM fun f => do
     let dep ← getStr f "departureTime"

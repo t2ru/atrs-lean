@@ -13,9 +13,9 @@ generated:
 
 # 予約履歴レポート（D1）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [ports.md](ports.md) の規範節に従う。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [ports.md](ports.md) の規範節に従う。
 
-非同期処理の構成は [ADR 0016](../decision/0016-asynchronous-report-generation.md)、ポートは [ports.md](ports.md#reportqueue) を参照。
+非同期処理の構成は [ADR ff4d](../decision/ff4d-asynchronous-report-generation.md)、ポートは [ports.md](ports.md#reportqueue) を参照。
 すべての操作は権限 `MEMBER` を要し、対象はログイン中の会員自身のレポートに限る。
 
 ## 作成要求（requestReport）
@@ -30,7 +30,7 @@ generated:
 
 1. `msg` が文字列でなければ無視する（ログ `w.ar.d1.L0002`）。
 2. 文字列 `n` が無い、または長さが 10 でなければ無視する（ログ `w.ar.d1.L0003`）。
-3. `createReport(n)` を行う。失敗した場合は、要求を再配信する（[ports.md](ports.md#reportqueue) の配信保証。[ADR 0031](../decision/0031-report-queue-at-least-once-delivery.md)）。原典はトランザクション付きの JMS セッションで受信し、例外時はロールバックしてブローカーが再配信する。
+3. `createReport(n)` を行う。失敗した場合は、要求を再配信する（[ports.md](ports.md#reportqueue) の配信保証。[ADR 90f5](../decision/90f5-report-queue-at-least-once-delivery.md)）。原典はトランザクション付きの JMS セッションで受信し、例外時はロールバックしてブローカーが再配信する。
 
 長さ 10 の判定は、[Spec] ではスカラ値、[Source] では UTF-16 単位で数える（既知差異 [D-006](abstraction.md#既知差異)）。
 

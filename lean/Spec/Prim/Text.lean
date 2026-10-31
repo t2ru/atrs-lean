@@ -3,7 +3,7 @@ import Trace
 /-!
 # Spec.Prim.Text
 
-文字列長と文字クラス（`docs/spec/input-validation.md#文字クラス`、ADR 0010）。
+文字列長と文字クラス（`docs/spec/input-validation.md#文字クラス`、ADR 10a5）。
 
 - 文字列は Unicode スカラ値の列である。Lean の `Char` はスカラ値なので、長さは `String.length` である。
 - 文字クラスはコードポイントの閉区間で定める。

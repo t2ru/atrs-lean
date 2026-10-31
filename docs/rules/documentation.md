@@ -6,14 +6,14 @@ tags: [rules, documentation, okf]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T06:36:39+09:00
+  at: 2026-10-31T12:55:53+09:00
 ---
 
 # 文書規約
 
 ## 言語
 
-- 本文は **日本語** で書く（[ADR 0001](../decision/0001-record-architecture-decisions-with-madr.md)）。
+- 本文は **日本語** で書く（[ADR d845](../decision/d845-record-architecture-decisions-with-madr.md)）。
 - 型名・関数名・フィールド名・列挙値・エラーコード・ファイル名・URL は **英語（原典の綴り）** のまま書き、コード書式（`` ` ``）で囲む。
 - ATRS の業務用語は原典の日本語を使い、初出時に英語識別子を併記する。対応は [spec/glossary.md](../spec/glossary.md) に集約する。
   - 例: 運賃種別（`FareType`）、搭乗クラス（`BoardingClass`）
@@ -39,20 +39,21 @@ generated:
 出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`
 ```
 
-- 「出典:」の行のロケータは、移植元のインベントリになければならない（`tools/trace check` の TR-R。[ADR 0041](../decision/0041-rehash-diff-impact-details.md)）。private のメソッドはインベントリの単位ではないので、呼び出し元の公開メソッドで書き、「（private の `getMultiplicationRatio` を含む）」のように補う。
-- 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える。運賃計算・空席照会・予約は書き換え済み（[backlog 0024](../backlog/0024-trace-tooling.md)）。残りは、各機能の backlog で `SourceModel` を書くときに書き換える。
+- 「出典:」の行のロケータは、移植元のインベントリになければならない（`tools/trace check` の TR-R。[ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md)）。private のメソッドはインベントリの単位ではないので、呼び出し元の公開メソッドで書き、「（private の `getMultiplicationRatio` を含む）」のように補う。
+- 既存の草案にあるパス表記（`atrs-domain/.../service/b0/TicketSharedServiceImpl.java` 等。`...` は定型部分の省略）は、順次ロケータ表記に書き換える。運賃計算・空席照会・予約は書き換え済み（[backlog ffdc](../backlog/ffdc-trace-tooling.md)）。残りは、各機能の backlog で `SourceModel` を書くときに書き換える。
 - 追従中の上流の版は `trace/upstream.json` に宣言する。版を更新する場合はスキルの [upgrade.md](../../.agents/skills/port-lang/references/upgrade.md) の手順に従う。
 - 原典のコードを長く転載しない。式・条件は仕様の記法で書き直す。
 
 ## リンク
 
 - リポジトリ内のリンクは **相対パス** で書く（OKF は `/` 始まりのバンドル相対リンクも認めるが、GitHub 上で解決されないため使わない）。
-- ADR は `[ADR 0004](../decision/0004-....md)`、backlog は `[backlog 0005](../backlog/0005-....md)` の形で参照する。
+- ADR は `[ADR xxxx](../decision/xxxx-<slug>.md)`、backlog は `[backlog yyyy](../backlog/yyyy-<slug>.md)` の形で参照する。リンクの文字列は ID の先頭 4 文字とする。リンクを張れない箇所（コードのコメントなど）は `ADR xxxx`・`backlog yyyy` と書く。先頭 4 文字が同じ種類の他の項目と重なる項目は、リンクの無い参照では stem（`ADR xxxx-<slug>`）で書く（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
+- 道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）には ID 全体を書く。参照は `python3 -I tools/docs/ids.py check` で検査する。
 - 仕様節への参照はファイル名＋見出しアンカーで書く（例: `fare-calculation.md#基本運賃`）。
 
 ## OKF v0.2
 
-`docs/` は **Open Knowledge Format (OKF) v0.2** の Knowledge Bundle である（[ADR 0017](../decision/0017-documentation-format-okf-v0-2.md)）。
+`docs/` は **Open Knowledge Format (OKF) v0.2** の Knowledge Bundle である（[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
 バンドルのルートは `docs/` で、リポジトリ直下の `AGENTS.md`・`CLAUDE.md` はバンドル外である。
 
 ### 予約ファイル
@@ -83,7 +84,7 @@ generated:
 
 | ディレクトリ | `type` | 種別固有のキー |
 | --- | --- | --- |
-| `decision/` | `Architecture Decision Record` | `decision_status`, `superseded_by`, `date`, `decision-makers`, `consulted`, `informed`（[decision-records.md](decision-records.md)） |
+| `decision/` | `Architecture Decision Record` | `id`, `decision_status`, `superseded_by`, `date`, `decision-makers`, `consulted`, `informed`（[decision-records.md](decision-records.md)） |
 | `spec/` | `Specification` | `models`（その文書が扱うモデル: `spec`, `source`, `target`）、`spec_role`（`normative` / `meta` / `draft` / `informative`。[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/spec-documents.md#区分)） |
 | `rules/` | `Guideline` | — |
 | `backlog/` | `Backlog Item` | `id`, `state`, `depends_on`（[backlog.md](backlog.md)） |
