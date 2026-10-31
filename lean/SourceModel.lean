@@ -11,6 +11,7 @@ import SourceModel.Repository.Mapping
 import SourceModel.CodeList
 import SourceModel.Config
 import SourceModel.MasterQuery
+import SourceModel.Ticket
 import SourceModel.FareQuery
 
 /-!
@@ -29,7 +30,8 @@ import SourceModel.FareQuery
 | `SourceModel.Config` | 注入される設定 |
 | `SourceModel.MasterQuery` | マスタ・設定・コードリストの参照の具体機械（ABS-026 の具体側） |
 | `SourceModel.Fare` | 運賃計算 |
-| `SourceModel.FareQuery` | 運賃計算の具体機械（ABS-001・ABS-002 の具体側） |
+| `SourceModel.Ticket` | 選択フライト情報からフライト情報を組み立てる部分（`TicketHelper.toFlightList`） |
+| `SourceModel.FareQuery` | 運賃計算の具体機械（ABS-001・ABS-002・ABS-004 の具体側） |
 -/
 
 namespace SourceModel
