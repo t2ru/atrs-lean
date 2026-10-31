@@ -1,4 +1,4 @@
-import Machine.Machine.Adequacy
+import Machine.Machine.Preserves
 import Machine.Sum
 
 /-!

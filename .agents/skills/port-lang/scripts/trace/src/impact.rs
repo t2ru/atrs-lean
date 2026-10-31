@@ -189,7 +189,7 @@ mod tests {
         let obl = Obligations {
             obligations: ["Abstraction.Fare.r", "Refinement.Fare.r"]
                 .iter()
-                .map(|n| Obligation { name: n.to_string(), ids: vec![], refines: true, adequate: false })
+                .map(|n| Obligation { name: n.to_string(), ids: vec![], refines: true, preserves: false })
                 .collect(),
             ..Default::default()
         };

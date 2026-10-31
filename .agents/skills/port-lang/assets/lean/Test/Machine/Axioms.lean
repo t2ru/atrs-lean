@@ -1,6 +1,6 @@
 import Test.Machine.Nondet
 import Test.Machine.Counter
-import Test.Machine.Adequacy
+import Test.Machine.Preserves
 
 /-!
 # Test.Machine.Axioms
@@ -77,13 +77,13 @@ import Test.Machine.Adequacy
 #guard_msgs in
 #print axioms Test.Machine.Counter.counter8_refines_trans
 
-/-- info: 'Machine.Refines.run' does not depend on any axioms -/
+/-- info: 'Machine.Abstracts.run_of' does not depend on any axioms -/
 #guard_msgs in
-#print axioms Machine.Refines.run
+#print axioms Machine.Abstracts.run_of
 
-/-- info: 'Machine.Refines.complete' does not depend on any axioms -/
+/-- info: 'Machine.Abstracts.complete_of' does not depend on any axioms -/
 #guard_msgs in
-#print axioms Machine.Refines.complete
+#print axioms Machine.Abstracts.complete_of
 
 /-- info: 'Machine.Refines.congr' does not depend on any axioms -/
 #guard_msgs in
@@ -96,3 +96,39 @@ import Test.Machine.Adequacy
 /-- info: 'Machine.Glue.ofStd_input_total' depends on axioms: [propext] -/
 #guard_msgs in
 #print axioms Machine.Glue.ofStd_input_total
+
+/-- info: 'Machine.Preserves.sum' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Machine.Preserves.sum
+
+/-- info: 'Machine.Preserves.congrPre' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms Machine.Preserves.congrPre
+
+/-- info: 'Machine.Refines.congrPre' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Refines.congrPre
+
+/-- info: 'Machine.Abstracts.sum' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Machine.Abstracts.sum
+
+/-- info: 'Machine.Abstracts.exists_ok' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Abstracts.exists_ok
+
+/-- info: 'Machine.Abstracts.run_init' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Abstracts.run_init
+
+/-- info: 'Machine.Abstracts.complete' does not depend on any axioms -/
+#guard_msgs in
+#print axioms Machine.Abstracts.complete
+
+/-- info: 'Test.Machine.Preserves.halfC_preserves' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms Test.Machine.Preserves.halfC_preserves
+
+/-- info: 'Test.Machine.Preserves.goodLang_preserves' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Test.Machine.Preserves.goodLang_preserves

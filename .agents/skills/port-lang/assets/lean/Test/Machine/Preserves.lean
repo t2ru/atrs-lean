@@ -1,9 +1,9 @@
 import Machine
 
 /-!
-# Test.Machine.Adequacy
+# Test.Machine.Preserves
 
-`Machine.Adequacy` の義務の例と反例（references/docs/spec/architecture.md#空虚化を防ぐ義務）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
+`Machine.Preserves` の義務の例と反例（references/docs/spec/architecture.md#空虚化を防ぐ義務）。抜け道ごとに、`Refines` は成り立つが、新しい義務が
 成り立たないことを証明する。あわせて、すべての義務を満たす正例を示す。
 
 | 抜け道 | 反例 |
@@ -27,9 +27,11 @@ import Machine
 `specStrong_not_always`（環境の前提・`TotalUnder.not_always`）である。
 -/
 
-open _root_.Machine _root_.Machine.Adequacy
+open _root_.Machine
+open _root_.Machine.Preserves (never always Nontrivial Nontrivial₂ KernelIs Covers anyOf)
+open _root_.Machine.Abstracts (Forall₂)
 
-namespace Test.Machine.Adequacy
+namespace Test.Machine.Preserves
 
 /-! ## 正例: 衝突を環境の選択とする予約 -/
 
@@ -104,7 +106,7 @@ theorem good_initSurj : Refines.InitSurj spec good glue :=
 theorem good_run {ics : List Req} {t' : Nat} {ocs : List Out} (hr : good.Run 5 ics t' ocs) :
     ∃ ias s' oas, Forall₂ glue.αi ics ias ∧ spec.Run 5 ias s' oas ∧ glue.J s' t' ∧ spec.Inv s' ∧
       Forall₂ glue.αo ocs oas :=
-  good_refines.run spec_sound spec_total trivial (glue_J.2 rfl) hr fun _ _ => ⟨trivial, fun _ _ => trivial⟩
+  Abstracts.run_of spec_sound good_refines spec_total trivial (glue_J.2 rfl) hr fun _ _ => ⟨trivial, fun _ _ => trivial⟩
 
 theorem good_noFaultReachable : Refines.NoFaultReachable good glue ce false :=
   fun r ia _ ha => ⟨{ r with env := false }, trivial, by rw [glue_αi] at ha ⊢; exact ha, rfl⟩
@@ -520,7 +522,7 @@ theorem obsNaN_needed : ¬ Refines half halfNaN (glueNum aoPartial) :=
 theorem specStrong_not_always : ¬ specStrong.TotalUnder always :=
   Machine.TotalUnder.not_always (A := specStrong) (s := 5) (i := 100) trivial (show ¬ (100 < 10) by decide)
 
-/-! ## 正例: 義務の束 `Machine.Adequate`（出力が関数で決まる機械） -/
+/-! ## 正例: 束 `Machine.Preserves`・`Machine.Abstracts`（出力が関数で決まる機械） -/
 
 /-- 100 未満を半分にする（PRE は自明でない）。 -/
 def halfSmall : Machine.Machine Unit Nat Nat := Machine.pure (· < 100) (· / 2)
@@ -538,8 +540,7 @@ theorem halfC_refines : Refines halfSmall halfC (glueNum aoPartial) where
     obtain ⟨-, rfl⟩ := hs
     exact ⟨(), n / 2, rfl, Or.inl ⟨rfl, trivial⟩, Or.inl rfl⟩
 
-theorem halfC_adequate : Machine.Adequate halfSmall halfC (glueNum aoPartial) () (· < 100) where
-  refines := halfC_refines
+theorem halfC_preserves : Machine.Preserves halfSmall halfC (glueNum aoPartial) () (· < 100) where
   sound := Machine.Machine.sound_pure _ _
   initIs _ := ⟨fun _ => rfl, fun _ => trivial⟩
   initSurj _ _ := ⟨(), trivial, Or.inl ⟨rfl, trivial⟩⟩
@@ -547,11 +548,15 @@ theorem halfC_adequate : Machine.Adequate halfSmall halfC (glueNum aoPartial) ()
   envWitness := ⟨4, 4, trivial, rfl, by decide⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (A := halfSmall) (s := ()) (i := 100) trivial (show ¬ (100 < 100) by decide)
 
+/-- A abstracts B: 束 `Preserves`（`Refines` を使わずに示した）と `Refines` を合わせる。 -/
+theorem halfC_abstracts : Machine.Abstracts halfSmall halfC (glueNum aoPartial) () (· < 100) :=
+  ⟨halfC_preserves, halfC_refines⟩
+
 /-- 束から得る非空虚性: 環境の前提を満たす入力で、具体側は正常終了し、抽象側の歩みで模倣される。 -/
 example : ∃ t ic ia t' oc s' oa, halfC.Init t ∧ halfC.Dom ic ∧ (glueNum aoPartial).αi ic ia ∧ ia < 100 ∧
     halfC.step t ic (.ok (t', oc)) ∧ halfSmall.step () ia s' oa ∧ (glueNum aoPartial).J s' t' ∧
     (glueNum aoPartial).αo oc oa :=
-  halfC_adequate.exists_ok
+  halfC_abstracts.exists_ok
 
 /-- 出力の等式（`complete_fun`）: PRE の下で、具体側の結果はどれも正常終了で、出力の像は `n / 2`。 -/
 example (n : Nat) (h : n < 100) : ∀ r, halfC.step () n r → ∃ t' oc, r = .ok (t', oc) ∧
@@ -562,9 +567,60 @@ example (n : Nat) (h : n < 100) : ∀ r, halfC.step () n r → ∃ t' oc, r = .o
 example {ics : List Nat} {ocs : List Num} (hr : halfC.Run () ics () ocs) (hin : ∀ n ∈ ics, n < 100) :
     ∃ ias s' oas, Forall₂ (glueNum aoPartial).αi ics ias ∧ halfSmall.Run () ias s' oas ∧
       Forall₂ (glueNum aoPartial).αo ocs oas :=
-  let ⟨ias, s', oas, hi, hr', _, _, ho⟩ := halfC_adequate.run_init trivial hr fun n hn =>
+  let ⟨ias, s', oas, hi, hr', _, _, ho⟩ := halfC_abstracts.run_init trivial hr fun n hn =>
     ⟨trivial, fun ia ha => by
       simp only [glueNum, Glue.ofStd, Option.some.injEq] at ha; exact ha ▸ hin n hn⟩
   ⟨ias, s', oas, hi, hr', ho⟩
 
-end Test.Machine.Adequacy
+/-! ## 正例: 条件付きの成分を持つ束（基底が `ofChoice`、具体側の「出力のみ」の差異） -/
+
+/-- 選択の像の材料: 環境の選択は衝突（`Bool`）、自由な選択は無い（`Unit`）、自由な選択の枠の射影は恒等。 -/
+def choiceRes : Machine.Preserves.Choice Nat Nat Out Req := ⟨Bool, Unit, Nat × Out, fRes, ce, false, fun r => r⟩
+
+/-- `good` は `lang` に依存しないので、`devLang` を破る入力でも状態は `J` を保つ。 -/
+theorem good_stateSafe : Refines.StateSafeConcrete spec good glue devLang := by
+  intro s t r ia t' oc _ hJ ha _ _ _ hs
+  rw [glue_J] at hJ; rw [glue_αi] at ha; subst hJ; subst ha
+  simp only [good, Concrete.ofFun_step, Except.ok.injEq] at hs
+  exact ⟨t', oc, ⟨(r.env, ()), hs.symm⟩, glue_J.2 rfl⟩
+
+/-- すべての成分を備えた束: 基底が `ofChoice`（`ch = some choiceRes`）で、具体側の「出力のみ」の差異 `devLang` を持つ。 -/
+theorem goodLang_preserves :
+    Machine.Preserves spec (good.restrict devLang) glue 5 (fun _ => True) (some choiceRes) [] [⟨good, devLang⟩] where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj s hs := ⟨s, hs, glue_J.2 rfl⟩
+  total := spec_total
+  envWitness := ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, glue_αi.2 rfl, trivial⟩
+  envNeeded := .inl rfl
+  pinned c hc := by
+    cases hc
+    exact fun s t r ia t' oc hi hJ ha hp hd hs => good_pinned s t r ia t' oc hi hJ ha hp hd.1 hs
+  noFault c hc := by
+    cases hc
+    exact fun r ia _ ha => ⟨{ r with env := false, lang := false }, ⟨trivial, rfl⟩,
+      by rw [glue_αi] at ha ⊢; exact ha, rfl⟩
+  freeFrame c hc := by
+    cases hc
+    exact fRes_frame
+  stateSafeC l hl := by
+    simp only [List.mem_singleton] at hl
+    subst hl
+    exact good_stateSafe
+
+/-- A abstracts B（条件付きの成分を含む）。 -/
+theorem goodLang_abstracts :
+    Machine.Abstracts spec (good.restrict devLang) glue 5 (fun _ => True) (some choiceRes) [] [⟨good, devLang⟩] :=
+  ⟨goodLang_preserves, good_restrict_refines⟩
+
+/-- 束から得る 1 歩の可換式（`Abstracts.complete`）: 環境を `ce r` に固定した `fRes` の結果と対応する。 -/
+example (r : Req) (h : devLang r) : ∀ res, (good.restrict devLang).step 5 r res → ∃ t' oc, res = .ok (t', oc) ∧
+    ∃ x, glue.J (fRes 5 r.n (ce r, x)).1 t' ∧ glue.αo oc (fRes 5 r.n (ce r, x)).2 :=
+  (goodLang_abstracts.complete trivial (glue_J.2 rfl) (glue_αi.2 rfl) trivial ⟨trivial, h⟩).2
+
+/-- 反例 6 の具体機械は、「出力のみ」の差異 `devLang` の層を持つ束を満たさない（`stateSafeC` が破れる）。 -/
+theorem langC_not_preserves :
+    ¬ Machine.Preserves spec (langC.restrict devLang) glue 5 (fun _ => True) none [] [⟨langC, devLang⟩] :=
+  fun h => langC_not_stateSafe (h.stateSafeC ⟨langC, devLang⟩ (by simp))
+
+end Test.Machine.Preserves

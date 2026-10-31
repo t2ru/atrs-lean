@@ -236,8 +236,8 @@ pub fn run(inp: &Input) -> Vec<Finding> {
 
     // ---- TR-P・TR-PE ----
     let r_names = |pred: &dyn Fn(&crate::lean::Obligation) -> bool, layer: &str| -> Vec<String> {
-        // R 課題と、同じ課題 ID の義務の束（`Machine.Adequate`）
-        inp.obligations.obligations.iter().filter(|o| (o.refines || o.adequate) && o.name.starts_with(&format!("{layer}.")) && pred(o))
+        // R 課題と、同じ課題 ID の束（`Machine.Preserves`。A preserves B）
+        inp.obligations.obligations.iter().filter(|o| (o.refines || o.preserves) && o.name.starts_with(&format!("{layer}.")) && pred(o))
             .map(|o| o.name.clone()).collect()
     };
     for (ops, layer, side) in [(&src_ops, "Abstraction", Side::Source), (&tgt_ops, "Refinement", Side::Target)] {
@@ -723,16 +723,16 @@ mod tests {
     }
 
     #[test]
-    fn tr_p_follows_adequate_bundle() {
+    fn tr_p_follows_preserves_bundle() {
         let defs = vec![
             def("SourceModel.Fare.f", "SourceModel", &[("source", &["java:a.Fare#f()@aa"])], &[]),
             def("SourceModel.Fare.cfg", "SourceModel", &[("source", &["java:a.Fare#cfg()@cc"])], &[]),
             def("SourceModel.Fare.machine", "SourceModel", &[], &["SourceModel.Fare.f"]),
             def("Abstraction.Fare.r", "Abstraction", &[("obligation", &["ABS-001"])], &["SourceModel.Fare.machine"]),
-            def("Abstraction.Fare.adq", "Abstraction", &[("obligation", &["ABS-001"])], &["Abstraction.Fare.r", "SourceModel.Fare.cfg"]),
+            def("Abstraction.Fare.prs", "Abstraction", &[("obligation", &["ABS-001"])], &["SourceModel.Fare.cfg"]),
         ];
-        let ob = |n: &str, r: bool| crate::lean::Obligation { name: n.into(), ids: vec!["ABS-001".into()], refines: r, adequate: !r };
-        let obl = Obligations { obligations: vec![ob("Abstraction.Fare.r", true), ob("Abstraction.Fare.adq", false)], ..Default::default() };
+        let ob = |n: &str, r: bool| crate::lean::Obligation { name: n.into(), ids: vec!["ABS-001".into()], refines: r, preserves: !r };
+        let obl = Obligations { obligations: vec![ob("Abstraction.Fare.r", true), ob("Abstraction.Fare.prs", false)], ..Default::default() };
         let src = inv(&[("java:a.Fare#f()", "aa"), ("java:a.Fare#cfg()", "cc")]);
         let fs = run_with(defs, obl, src, &feats_sides(), vec![], &[]);
         // 束の証人（cfg）も R 課題の閉包に入る
@@ -747,7 +747,7 @@ mod tests {
             def("Abstraction.Fare.inner_refines", "Abstraction", &[("obligation", &["ABS-001"])], &["SourceModel.Fare.machine"]),
         ];
         let obl = Obligations {
-            obligations: vec![crate::lean::Obligation { name: "Abstraction.Fare.inner_refines".into(), ids: vec!["ABS-001".into()], refines: true, adequate: false }],
+            obligations: vec![crate::lean::Obligation { name: "Abstraction.Fare.inner_refines".into(), ids: vec!["ABS-001".into()], refines: true, preserves: false }],
             ..Default::default()
         };
         let fs = run_with(defs.clone(), obl.clone(), inv(&[("java:a.Fare#f()", "aa")]), &feats(true), vec![], &["ABS-031"]);

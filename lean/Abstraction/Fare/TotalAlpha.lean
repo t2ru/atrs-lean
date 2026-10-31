@@ -12,7 +12,8 @@ import Abstraction.Fare.Alpha
 
 namespace Abstraction.Fare.TotalAlpha
 open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Spec.CodeList Spec.Config Spec.Model Spec.Prim.Text
-open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Adequacy
+open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core SourceModel.FareQuery
 

@@ -3,14 +3,14 @@ import Abstraction.Fare.FareRun
 import Abstraction.Fare.TotalFareRun
 
 /-!
-# Abstraction.Fare.Adequacy
+# Abstraction.Fare.Preserves
 
-ABS-001・ABS-002・ABS-004（運賃計算）の義務の束（`Abstraction.Fare` の `*Adequate`）の部品: 環境の前提 `env*` と、その証人（前提を満たす [Source] の入力、前提を破る [Spec] の入力）。
+ABS-001・ABS-002・ABS-004（運賃計算）の束 `Machine.Preserves`（`Abstraction.Fare` の `*Preserves`）の部品: 環境の前提 `env*` と、その証人（前提を満たす [Source] の入力、前提を破る [Spec] の入力）。
 環境の前提は、マスタ・設定の妥当性（`Spec.EnvPre.masterConfigOk`）と、入力の値域、差異の前提の述語を、[Spec] の入力の成分だけで書いたものである。
 入口の R 課題ではないので `@[env_pre]` は付けない。
 -/
 
-namespace Abstraction.Fare.Adequacy
+namespace Abstraction.Fare.Preserves
 
 open Machine Spec LangSemantics.Core Spec.EnvPre Spec.Model Spec.Prim.Text LangSemantics.Core.List LangSemantics.Java.IntLemmas LangSemantics.Java.Int Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha
 open SourceModel.FareQuery
@@ -98,4 +98,4 @@ theorem envTF_iaTF100 : envTF iaTF100 := by
 /-- 環境の前提を破る [Spec] の入力: MD-1 を破るマスタ。 -/
 def iaTFbad : Spec.Fare.TotalFareInput := ⟨Seed.config, badMasterData, [], []⟩
 
-end Abstraction.Fare.Adequacy
+end Abstraction.Fare.Preserves

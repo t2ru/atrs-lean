@@ -1,70 +1,6 @@
 {
   "nodes": [
     {
-      "name": "Abstraction.Fare.Adequacy.aiTF_icTF100",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envBF",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envBF_icBF101",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envF",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envF_icF1000",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envTF",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.envTF_iaTF100",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.iaBFbad",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.iaTF100",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.iaTFbad",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.icBF101",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.icF1000",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.icTF100",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.instDecidablePredFareInputEnvF",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.mdTF100",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Fare.Adequacy.rangeTF",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Fare.Alpha.aiBF",
       "layer": "Abstraction"
     },
@@ -289,6 +225,70 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.Preserves.aiTF_icTF100",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envBF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envBF_icBF101",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envF_icF1000",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envTF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.envTF_iaTF100",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.iaBFbad",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.iaTF100",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.iaTFbad",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.icBF101",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.icF1000",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.icTF100",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.instDecidablePredFareInputEnvF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.mdTF100",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Fare.Preserves.rangeTF",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.TotalAlpha.ageOfPassenger",
       "layer": "Abstraction"
     },
@@ -477,7 +477,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.basicFareAdequate",
+      "name": "Abstraction.Fare.basicFarePreserves",
       "layer": "Abstraction"
     },
     {
@@ -493,7 +493,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.fareAdequate",
+      "name": "Abstraction.Fare.farePreserves",
       "layer": "Abstraction"
     },
     {
@@ -525,7 +525,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Fare.totalFareAdequate",
+      "name": "Abstraction.Fare.totalFarePreserves",
       "layer": "Abstraction"
     },
     {
@@ -682,18 +682,6 @@
     },
     {
       "name": "Abstraction.Gap.claim_D028",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.Adequacy.envMQ",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.Adequacy.envMQ_icMQ",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.Adequacy.icMQ",
       "layer": "Abstraction"
     },
     {
@@ -1165,6 +1153,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Preserves.envMQ",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Preserves.envMQ_icMQ",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Preserves.icMQ",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.Query.Date.le_iff_epochDay_le",
       "layer": "Abstraction"
     },
@@ -1381,7 +1381,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.queryAdequate",
+      "name": "Abstraction.MasterData.queryPreserves",
       "layer": "Abstraction"
     },
     {
@@ -1417,7 +1417,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.adequate",
+      "name": "Abstraction.abstracts",
       "layer": "Abstraction"
     },
     {
@@ -1434,6 +1434,10 @@
     },
     {
       "name": "Abstraction.glue",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.preserves",
       "layer": "Abstraction"
     },
     {
@@ -5379,7 +5383,7 @@
     },
     {
       "type": "obligation",
-      "from": "Abstraction.Fare.basicFareAdequate",
+      "from": "Abstraction.Fare.basicFarePreserves",
       "to": "ABS-001"
     },
     {
@@ -5389,7 +5393,7 @@
     },
     {
       "type": "obligation",
-      "from": "Abstraction.Fare.fareAdequate",
+      "from": "Abstraction.Fare.farePreserves",
       "to": "ABS-002"
     },
     {
@@ -5419,7 +5423,7 @@
     },
     {
       "type": "obligation",
-      "from": "Abstraction.Fare.totalFareAdequate",
+      "from": "Abstraction.Fare.totalFarePreserves",
       "to": "ABS-004"
     },
     {
@@ -5529,7 +5533,7 @@
     },
     {
       "type": "obligation",
-      "from": "Abstraction.MasterData.queryAdequate",
+      "from": "Abstraction.MasterData.queryPreserves",
       "to": "ABS-026"
     },
     {

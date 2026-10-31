@@ -31,7 +31,7 @@ import Spec.EnvPre
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
 
 トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`）である。
-`Abstraction` の主定理 `Abstraction.refines`・`Abstraction.adequate` の抽象側になる。入口の機械（HTTP の画面・API、
+`Abstraction` の主定理 `Abstraction.refines`・`Abstraction.preserves` の抽象側になる。入口の機械（HTTP の画面・API、
 レポート要求の受信）ができたら、それを並置に加える。
 -/
 

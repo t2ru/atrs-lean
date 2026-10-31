@@ -1,0 +1,30 @@
+{
+ "note": "Lean の宣言・モジュールの改名の対応（adequate の語彙の廃止と、Preserves・Abstracts への分割。スキルの ADR 4c1e・ATRS の ADR 7d2b・backlog 5e3a）。旧い名前は docs/log.md などの来歴に残る。スキルの scripts/lean/rename.py の対応表の形（renames）で、check に渡すと旧い名前の残りを列挙する",
+ "renames": {
+  "Machine.Adequacy.Forall₂": "Machine.Abstracts.Forall₂",
+  "Machine.Adequacy": "Machine.Preserves",
+  "Machine.Machine.Adequacy": "Machine.Machine.Preserves",
+  "Machine.Concrete.Adequacy": "Machine.Concrete.Run",
+  "Machine.Glue.Adequacy": "Machine.Glue.Preserves",
+  "Machine.Refines.Adequacy": "Machine.Refines.Preserves",
+  "Machine.Adequate.init_glue": "Machine.Abstracts.init_glue",
+  "Machine.Adequate.run_init": "Machine.Abstracts.run_init",
+  "Machine.Adequate.exists_ok": "Machine.Abstracts.exists_ok",
+  "Machine.Adequate.Sum": "Machine.Preserves.Sum",
+  "Machine.Adequate": "Machine.Preserves",
+  "Machine.Refines.run": "Machine.Abstracts.run_of",
+  "Machine.Refines.complete": "Machine.Abstracts.complete_of",
+  "Abstraction.Fare.Adequacy": "Abstraction.Fare.Preserves",
+  "Abstraction.MasterData.Adequacy": "Abstraction.MasterData.Preserves",
+  "Abstraction.Fare.basicFareAdequate": "Abstraction.Fare.basicFarePreserves",
+  "Abstraction.Fare.fareAdequate": "Abstraction.Fare.farePreserves",
+  "Abstraction.Fare.totalFareAdequate": "Abstraction.Fare.totalFarePreserves",
+  "Abstraction.MasterData.queryAdequate": "Abstraction.MasterData.queryPreserves",
+  "Abstraction.adequate": "Abstraction.preserves",
+  "Test.Machine.Adequacy.halfC_adequate": "Test.Machine.Preserves.halfC_preserves",
+  "Test.Machine.Adequacy": "Test.Machine.Preserves",
+  "Test.Trace.ObligationFixture.obs_adequate": "Test.Trace.ObligationFixture.obs_preserves",
+  "Test.Trace.ObligationFixture.ga_mismatch": "Test.Trace.ObligationFixture.gp_mismatch",
+  "Test.Trace.ObligationFixture.ga_noR": "Test.Trace.ObligationFixture.gp_noR"
+ }
+}

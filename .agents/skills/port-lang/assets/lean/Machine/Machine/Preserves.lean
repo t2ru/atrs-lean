@@ -1,16 +1,16 @@
 import Machine.Machine
-import Machine.Adequacy
+import Machine.Preserves.Pred
 
 /-!
-# Machine.Machine.Adequacy
+# Machine.Machine.Preserves
 
 抽象機械の空虚化を防ぐ定義（references/docs/spec/architecture.md#空虚化を防ぐ義務）: 選択の像としての抽象機械 `ofChoice`、自由な選択の枠 `FreeFrame`、初期状態 `InitIs`、入口の全域性 `TotalUnder`。
-ドット記法のため、型 `Machine.Machine` の名前空間に置く（`Machine.Adequacy` の表）。
+ドット記法のため、型 `Machine.Machine` の名前空間に置く（`Machine.Preserves` の表）。
 -/
 
 namespace Machine
 
-open Machine.Adequacy
+open Machine.Preserves (always)
 
 variable {σ τ ιa ιc οa οc ε E F : Type}
 
@@ -62,12 +62,6 @@ theorem TotalUnder.restrict {A : Machine σ ιa οa} {Env : ιa → Prop} (h : A
 theorem TotalUnder.not_always {A : Machine σ ιa οa} {s : σ} {i : ιa} (hi : A.Inv s) (hp : ¬ A.Pre s i) :
     ¬ A.TotalUnder always :=
   fun h => hp (h s i hi trivial)
-
-/-- 抽象機械の、PRE を満たす歩みの列。 -/
-inductive Run (A : Machine σ ιa οa) : σ → List ιa → σ → List οa → Prop
-  | nil (s : σ) : Run A s [] s []
-  | cons {s i s₁ o is s₂ os} : A.Pre s i → A.step s i s₁ o → Run A s₁ is s₂ os →
-      Run A s (i :: is) s₂ (o :: os)
 
 end Machine
 

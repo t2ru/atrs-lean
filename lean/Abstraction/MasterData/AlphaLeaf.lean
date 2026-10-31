@@ -22,7 +22,8 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 
 namespace Abstraction.MasterData.AlphaLeaf
 open Spec.Model Spec.Prim.Format Spec.Prim.Time
-open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Adequacy Machine.Kernel
+open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Kernel
+open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql Spec.Prim Spec.Prim.Time.HourMinute
 

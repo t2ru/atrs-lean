@@ -1,4 +1,4 @@
-import Abstraction.Fare.Adequacy
+import Abstraction.Fare.Preserves
 import Abstraction.Fare.BasicFareRun
 import Abstraction.Fare.FareRun
 import Abstraction.Fare.TotalFareRun
@@ -11,7 +11,7 @@ import Abstraction.Fare.TotalFareRun
 -/
 
 namespace Abstraction.Fare
-open Abstraction.Fare.Adequacy
+open Abstraction.Fare.Preserves
 open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Spec Spec.EnvPre Spec.Model
 
@@ -180,12 +180,11 @@ theorem need_D012 :
   · exact absurd ho (by decide)
   · exact ho
 
-/-- ABS-001 の義務の束。 -/
+/-- ABS-001 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-001"]
-theorem basicFareAdequate :
-    Machine.Adequate (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF ()
+theorem basicFarePreserves :
+    Machine.Preserves (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF ()
       envBF where
-  refines := basicFareRefines
   sound := Spec.Fare.basicFareMachine_sound.restrictState _
   initIs := Spec.Fare.basicFareMachine_initIs
   initSurj := basicFareRefines_initSurj
@@ -213,11 +212,10 @@ theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFar
 
 /-! ### ABS-002: 運賃 -/
 
-/-- ABS-002 の義務の束。 -/
+/-- ABS-002 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-002"]
-theorem fareAdequate :
-    Machine.Adequate (Spec.Fare.fareMachine.restrict dev_D002) (fareConcrete.restrict dev_D027F) glueF () envF where
-  refines := fareRefines
+theorem farePreserves :
+    Machine.Preserves (Spec.Fare.fareMachine.restrict dev_D002) (fareConcrete.restrict dev_D027F) glueF () envF where
   sound := Spec.Fare.fareMachine_sound.restrictState _
   initIs := Spec.Fare.fareMachine_initIs
   initSurj := fareRefines_initSurj
@@ -243,12 +241,11 @@ theorem fareRefines_commutes {ic : FareInput} {ia : Spec.Fare.FareInput} (hα : 
 
 /-! ### ABS-004: 合計金額 -/
 
-/-- ABS-004 の義務の束。 -/
+/-- ABS-004 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-004"]
-theorem totalFareAdequate :
-    Machine.Adequate (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
+theorem totalFarePreserves :
+    Machine.Preserves (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
       (totalFareConcrete.restrict dev_D027TF) glueTF () envTF where
-  refines := totalFareRefines
   sound := ((Spec.Fare.totalFareMachine_sound.restrictState _).restrictState _).restrictState _
   initIs := Spec.Fare.totalFareMachine_initIs
   initSurj := totalFareRefines_initSurj
@@ -269,7 +266,7 @@ theorem totalFareRefines_commutes {ic : TotalFareInput} {ia : Spec.Fare.TotalFar
   obtain ⟨-, h⟩ := totalFareRefines.complete_fun
     (f := fun i => (Spec.Fare.totalFareOfKeys i.cfg i.md i.flights i.ages).getD 0)
     (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα
-    (totalFareAdequate.total () ia trivial hv) ⟨trivial, by unfold dev_D027TF; rw [hα]; rfl⟩
+    (totalFarePreserves.total () ia trivial hv) ⟨trivial, by unfold dev_D027TF; rw [hα]; rfl⟩
   obtain ⟨_, oc, rfl, -, ho⟩ := h r hr
   rcases ho with ho | ho
   · exact ⟨oc, rfl, ho⟩

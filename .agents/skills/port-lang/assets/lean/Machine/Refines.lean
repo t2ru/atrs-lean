@@ -131,6 +131,69 @@ theorem of_pure {ιa ιc οa οc ε : Type} {Pre : ιa → Prop} {f : ιa → ο
     cases hs
     exact ⟨(), f ia, rfl, trivial, ho⟩
 
+/-! ## B のリファインメントの系と否定 -/
+
+section Consequences
+
+variable {A : Machine σ ιa οa} {C : Concrete τ ιc οc ε} {g : Glue σ τ ιa ιc οa οc}
+
+/-- 各点で同値な貼り合わせに付け替えても、リファインメントは保たれる。 -/
+theorem congr {g' : Glue σ τ ιa ιc οa οc} (h : Refines A C g) (e : g.Equiv g') : Refines A C g' where
+  init t ht := by
+    obtain ⟨s, hs, hJ⟩ := h.init t ht
+    exact ⟨s, hs, (e.J s t).1 hJ⟩
+  input_total ic hd := by
+    obtain ⟨ia, ha⟩ := h.input_total ic hd
+    exact ⟨ia, (e.αi ic ia).1 ha⟩
+  applicable s t ic ia hi hJ ha hp hd :=
+    h.applicable s t ic ia hi ((e.J s t).2 hJ) ((e.αi ic ia).2 ha) hp hd
+  correct s t ic ia t' oc hi hJ ha hp hd hs := by
+    obtain ⟨s', oa, hst, hJ', ho⟩ :=
+      h.correct s t ic ia t' oc hi ((e.J s t).2 hJ) ((e.αi ic ia).2 ha) hp hd hs
+    exact ⟨s', oa, hst, (e.J s' t').1 hJ', (e.αo oc oa).1 ho⟩
+
+/-- 出力が関数で決まる抽象機械（`Machine.pure` とその制限）の 1 歩の可換式: PRE の下で、具体側は必ず結果を持ち、
+どの結果も正常終了で、出力は `αo` で `f ia` に対応する。`Pinned` を持たない（環境の選択の無い）機械の完全性である。 -/
+theorem complete_fun {f : ιa → οa} (h : Refines A C g) (hf : ∀ s i s' o, A.step s i s' o → o = f i) {s : σ}
+    {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia)
+    (hd : C.Dom ic) :
+    (∃ r, C.step t ic r) ∧ ∀ r, C.step t ic r → ∃ t' oc, r = .ok (t', oc) ∧ (∃ s', g.J s' t') ∧ g.αo oc (f ia) := by
+  obtain ⟨hex, hne⟩ := h.applicable s t ic ia hi hJ ha hpre hd
+  refine ⟨hex, fun r hr => ?_⟩
+  match r, hr with
+  | .error e, hr => exact absurd hr (hne e)
+  | .ok (t', oc), hr =>
+    obtain ⟨s', oa, hst, hJ', ho⟩ := h.correct s t ic ia t' oc hi hJ ha hpre hd hr
+    exact ⟨t', oc, rfl, ⟨s', hJ'⟩, hf s ia s' oa hst ▸ ho⟩
+
+/-! ### 成分の必要性の証人（references/docs/spec/architecture.md#空虚化を防ぐ義務）
+
+名前付きの成分を外した R 課題の命題が偽であることを、証人から示す（W 課題。`Machine.Refines.Pinned.not_of_mismatch` も参照）。 -/
+
+/-- PRE の下で具体側が正常終了しない証人があれば、リファインメントは成り立たない（適用可能性が破れる）。 -/
+theorem not_of_error {s : σ} {t : τ} {ic : ιc} {ia : ιa} {e : ε} (hi : A.Inv s) (hJ : g.J s t)
+    (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) (he : C.step t ic (.error e)) :
+    ¬ Refines A C g :=
+  fun h => (h.applicable s t ic ia hi hJ ha hpre hd).2 e he
+
+/-- PRE の下で具体側が結果を持たない（行き詰まる・停止しない）証人があれば、リファインメントは成り立たない。 -/
+theorem not_of_stuck {s : σ} {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t)
+    (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) (hn : ∀ r, ¬ C.step t ic r) :
+    ¬ Refines A C g := fun h => by
+  obtain ⟨r, hr⟩ := (h.applicable s t ic ia hi hJ ha hpre hd).1
+  exact hn r hr
+
+/-- 具体側の正常終了を、抽象側のどの歩みも `J`・`αo` で模倣できない証人があれば、リファインメントは
+成り立たない（正しさが破れる）。 -/
+theorem not_of_mismatch {s : σ} {t : τ} {ic : ιc} {ia : ιa} {t' : τ} {oc : οc} (hi : A.Inv s)
+    (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic)
+    (hs : C.step t ic (.ok (t', oc))) (hm : ∀ s' oa, A.step s ia s' oa → g.J s' t' → ¬ g.αo oc oa) :
+    ¬ Refines A C g := fun h => by
+  obtain ⟨s', oa, hst, hJ', ho⟩ := h.correct s t ic ia t' oc hi hJ ha hpre hd hs
+  exact hm s' oa hst hJ' ho
+
+end Consequences
+
 end Refines
 
 end Machine
