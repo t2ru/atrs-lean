@@ -1,6 +1,6 @@
 import Abstraction.MasterData.Alpha
 import Abstraction.MasterData.Load
-import Abstraction.Prim.MapM
+import LangSemantics.Core.MapM
 
 /-!
 # Abstraction.MasterData.Pre
@@ -11,7 +11,7 @@ DB の行と [Source] の対応（MyBatis の対応・`Assert.hasText`）につ�
 
 namespace Abstraction.MasterData
 
-open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim Abstraction.Prim
+open Machine LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
 
 /-! ## α の分解 -/
@@ -42,7 +42,6 @@ theorem masterDataOf_eq_some {db : MasterDb} {md : MasterData} :
 
 /-! ## 文字 -/
 
-theorem string_any_toList (s : String) (p : Char → Bool) : s.any p = s.toList.any p := by simp [String.any]
 
 /-- [Spec] の空白（`Blank`）は、Java の `Character.isWhitespace` と同じ文字の集合。 -/
 theorem isBlank_eq_isJavaWhitespace (c : Char) : isBlank c = isJavaWhitespace c := by

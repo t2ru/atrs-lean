@@ -327,6 +327,20 @@ def aoPart2 (o : Out) : Option Out := if o = .full then none else some o
 theorem aoPart2_kernel : KernelIs aoPart2 (undefOrEqF aoPart) := by
   intro x y; cases x <;> cases y <;> simp [aoPart2, aoPart, undefOrEqF]
 
+/-- 部分単射の葉。核はスキルの汎用の核 `Machine.undefOrEq` をこの葉に適用したもの（受ける）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def aoPart3 (o : Out) : Option Out := if o = .full then none else some o
+
+theorem aoPart3_kernel : KernelIs aoPart3 (Machine.undefOrEq aoPart3) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart3, Machine.undefOrEq]
+
+/-- 同じ形の葉だが、`Machine.undefOrEq` を別の葉に適用している（受けない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def aoPart4 (o : Out) : Option Out := if o = .full then none else some o
+
+theorem aoPart4_kernel : KernelIs aoPart4 (Machine.undefOrEq aoPart) := by
+  intro x y; cases x <;> cases y <;> simp [aoPart4, aoPart, Machine.undefOrEq]
+
 /-- 関数を引数に取る標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"] def via (h : Out → Option Out) (o : Out) : Option Out := h o
 

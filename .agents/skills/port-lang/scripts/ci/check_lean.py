@@ -11,7 +11,7 @@ port-lang の lean/rules.md（全域性と安全性）と architecture.md（依�
 | LEAN-AXIOM  | `axiom` 宣言がある（全層。公理の確認は `lake exe axiom-check` でも行う） |
 | LEAN-DECIDE | `native_decide`・`bv_decide` が Tests の外にある |
 | LEAN-FLOAT  | `Float`・`Float32` が Tests の外にある |
-| LEAN-UNSAFE | `partial`・`unsafe`・`implemented_by`・`extern`・`panic!`・`get!`・`xs[i]!` が Trace/Tests/Tools の外にある |
+| LEAN-UNSAFE | `partial`・`unsafe`・`implemented_by`・`extern`・`panic!`・`get!`・`xs[i]!` が Trace/ConformanceKit/Tests/Tools の外にある |
 | LEAN-IMPORT | 名前空間の依存の向きに反する import がある（移植元側と移植先側の相互依存を含む） |
 
 使い方:
@@ -27,11 +27,13 @@ FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures" / "lean"
 
 # スキルの assets にある言語パックの LangSemantics の層（言語の組に関わらず、すべて検査の対象）
 KNOWN_LANGS = {"LangSemantics.Java", "LangSemantics.Sql", "LangSemantics.Rust"}
-ALL_LANGS = set(KNOWN_LANGS)
+# 言語に依存しない補題（どの言語パックからも、移植元側・移植先側のどの層からも使ってよい）
+CORE = "LangSemantics.Core"
+ALL_LANGS = KNOWN_LANGS | {CORE}
 
 EXTERNAL_FOR_MODELS = {"Init", "Std", "Batteries"}
 EXTERNAL_FOR_META = EXTERNAL_FOR_MODELS | {"Lean", "Lake"}
-META_LAYERS = {"Trace", "Tests", "Tools"}
+META_LAYERS = {"Trace", "ConformanceKit", "Tests", "Tools"}
 MODEL_LAYERS = {"Machine", "Spec", "SourceModel", "Abstraction", "TargetModel", "Refinement", "LangSemantics"} | ALL_LANGS
 ALL_LAYERS = MODEL_LAYERS | META_LAYERS
 
@@ -59,18 +61,20 @@ def configure(source: list, target: list) -> None:
     # 自分自身の層への依存は常に許す
     ALLOWED = {
         "Trace": set(),
+        "ConformanceKit": set(ALL_LANGS),  # 適合テストベクタの実行器（メタ層）
         "Machine": set(),
         "Spec": {"Machine", "Trace"},
-        "SourceModel": {"Spec", "Machine", "Trace"} | SOURCE_LANGS,
-        "Abstraction": {"SourceModel", "Spec", "Machine", "Trace"} | SOURCE_LANGS,
-        "TargetModel": {"Spec", "Machine", "Trace"} | TARGET_LANGS,
-        "Refinement": {"TargetModel", "Spec", "Machine", "Trace"} | TARGET_LANGS,
+        "SourceModel": {"Spec", "Machine", "Trace", CORE} | SOURCE_LANGS,
+        "Abstraction": {"SourceModel", "Spec", "Machine", "Trace", CORE} | SOURCE_LANGS,
+        "TargetModel": {"Spec", "Machine", "Trace", CORE} | TARGET_LANGS,
+        "Refinement": {"TargetModel", "Spec", "Machine", "Trace", CORE} | TARGET_LANGS,
         "LangSemantics": set(ALL_LANGS),  # 集約モジュール LangSemantics.lean
         "Tests": ALL_LAYERS,
         "Tools": ALL_LAYERS,
     }
-    for l in ALL_LANGS:
-        ALLOWED[l] = {"Trace"}
+    for l in KNOWN_LANGS:
+        ALLOWED[l] = {"Trace", CORE}
+    ALLOWED[CORE] = set()
     SOURCE_SIDE = {"SourceModel", "Abstraction"} | SOURCE_LANGS
     TARGET_SIDE = {"TargetModel", "Refinement"} | TARGET_LANGS
 
@@ -103,7 +107,7 @@ def layer_of(module: str):
     root = parts[0]
     if root == "LangSemantics":
         return "LangSemantics" if len(parts) == 1 else f"LangSemantics.{parts[1]}"
-    if root in ("LangSemanticsTest", "MachineTest", "TraceTest"):
+    if root in ("LangSemanticsTest", "MachineTest", "TraceTest", "ConformanceKitTest"):
         return "Tests"
     if root in ALL_LAYERS:
         return root

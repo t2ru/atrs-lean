@@ -1,18 +1,17 @@
-import LangSemantics.Sql
-
 /-!
-# Abstraction.Prim.List
+# LangSemantics.Core.List
 
-列とバッグの補題。
+列・文字列の汎用の補題（言語に依存しない。core だけに依存する）。
 
 - `find?_perm`: 述語を満たす要素が高々 1 つなら、`find?` は並べ替えで変わらない。
+- `inj_of_nodup_map`・`nodup_map_of_imp`: キーが一意な列の性質。
 - `filter_key_eq_singleton`: キーが一意な列でキーを探すと、その要素ただ 1 つが残る。
-- `filter_cross`: 直積の選択で、右の各行がただ 1 つに決まるなら、左の行ごとの 1 行になる（結合の補題）。
+- `find?_congr`: 要素の上で等しい述語の検索は等しい。
+- `append_sep_inj`: 区切り文字を含まない 2 つの列を区切りで連結したものは単射（キャッシュのキーなど）。
+- `string_any_toList`: `String.any` は文字の列の `any`。
 -/
 
-namespace Abstraction.Prim
-
-open LangSemantics.Sql
+namespace LangSemantics.Core
 
 /-- 述語を満たす要素が高々 1 つなら、`find?` の結果は並べ替えで変わらない。 -/
 theorem find?_perm {α : Type} {p : α → Bool} {l l' : List α} (hp : l.Perm l')
@@ -59,35 +58,6 @@ theorem filter_key_eq_singleton {α κ : Type} [DecidableEq κ] {f : α → κ} 
     · have hne : f a ≠ f x := fun e => hnd.1 ⟨x, hx, e.symm⟩
       rw [List.filter_cons_of_neg (by simpa using hne), ih hnd.2 hx]
 
-theorem mem_cross {α β : Type} {xs : List α} {bs : List β} {x : α × β} :
-    x ∈ Bag.cross xs bs ↔ x.1 ∈ xs ∧ x.2 ∈ bs := by
-  obtain ⟨a, b⟩ := x
-  simp [Bag.cross]
-
-/-- 結合の補題: 左の行 `x` が `c x` を満たすとき、右の行のうち `q x` を満たすものがただ 1 つ `g x` なら、
-直積を `c x ∧ q x b` で選んだ結果は、`c` を満たす左の行ごとに `(x, g x)` を並べたもの。 -/
-theorem filter_cross {α β : Type} {xs : List α} {bs : List β} {c : α → Bool} {q : α → β → Bool} {g : α → β}
-    (h : ∀ x ∈ xs, c x = true → bs.filter (q x) = [g x]) :
-    (Bag.cross xs bs).filter (fun p => c p.1 && q p.1 p.2) = (xs.filter c).map fun x => (x, g x) := by
-  induction xs with
-  | nil => rfl
-  | cons x xs ih =>
-    have ih := ih fun y hy => h y (List.mem_cons_of_mem _ hy)
-    simp only [Bag.cross, List.flatMap_cons, List.filter_append] at ih ⊢
-    rw [ih]
-    by_cases hc : c x = true
-    · have hx := h x (List.mem_cons_self ..) hc
-      rw [List.filter_cons_of_pos hc, List.map_cons, List.singleton_append.symm.trans (by rfl)]
-      congr 1
-      rw [List.filter_map]
-      simp only [Function.comp_def, hc, Bool.true_and]
-      have : (fun b => q x b) = q x := rfl
-      rw [this, hx]; rfl
-    · have hc' : c x = false := by simpa using hc
-      rw [List.filter_cons_of_neg hc]
-      rw [List.filter_map]
-      simp [Function.comp_def, hc']
-
 /-- 要素の上で等しい述語の検索は等しい。 -/
 theorem find?_congr {α : Type} {p q : α → Bool} : ∀ {l : List α}, (∀ a ∈ l, p a = q a) → l.find? p = l.find? q
   | [], _ => rfl
@@ -103,4 +73,22 @@ theorem nodup_map_of_imp {α β γ : Type} {l : List α} {f : α → β} {g : α
   rw [List.Nodup, List.pairwise_map] at hf ⊢
   exact (List.Pairwise.and_mem.mp hf).imp fun {a b} ⟨ha, hb, hne⟩ e => hne (h a ha b hb e)
 
-end Abstraction.Prim
+theorem append_sep_inj {c : Char} : ∀ {a a' b b' : List Char}, c ∉ a → c ∉ a' →
+    a ++ c :: b = a' ++ c :: b' → a = a' ∧ b = b'
+  | [], [], _, _, _, _, h => by simpa using h
+  | [], x :: a', _, _, _, h', h => by
+    simp only [List.nil_append, List.cons_append, List.cons.injEq] at h
+    exact absurd (h.1 ▸ List.mem_cons_self ..) h'
+  | x :: a, [], _, _, h, _, h' => by
+    simp only [List.nil_append, List.cons_append, List.cons.injEq] at h'
+    exact absurd (h'.1 ▸ List.mem_cons_self ..) h
+  | x :: a, y :: a', _, _, h, h', e => by
+    simp only [List.cons_append, List.cons.injEq] at e
+    obtain ⟨rfl, e⟩ := e
+    obtain ⟨rfl, rfl⟩ := append_sep_inj (fun m => h (List.mem_cons_of_mem _ m))
+      (fun m => h' (List.mem_cons_of_mem _ m)) e
+    exact ⟨rfl, rfl⟩
+
+theorem string_any_toList (s : String) (p : Char → Bool) : s.any p = s.toList.any p := by simp [String.any]
+
+end LangSemantics.Core

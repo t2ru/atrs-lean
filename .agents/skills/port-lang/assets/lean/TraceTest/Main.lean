@@ -182,7 +182,7 @@ def obligationTests (env : Environment) : IO Unit := do
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
     | some ri => ri.freeLeaves == #[`TraceTest.ObFix.Spec.AnyResult] | none => false)
-  let expectedGlobal := ["G7: TraceTest.ObFix.Abstraction.aoIf", "G7: TraceTest.ObFix.Abstraction.aoPart2 ", "G7: TraceTest.ObFix.Abstraction.ceCheat",
+  let expectedGlobal := ["G7: TraceTest.ObFix.Abstraction.aoIf", "G7: TraceTest.ObFix.Abstraction.aoPart2 ", "G7: TraceTest.ObFix.Abstraction.aoPart4 ", "G7: TraceTest.ObFix.Abstraction.ceCheat",
     "G7: TraceTest.ObFix.Abstraction.via", "G8: TraceTest.ObFix.Abstraction.devK", "G8: TraceTest.ObFix.Abstraction.devNoW",
     "G0: TraceTest.ObFix.Abstraction.v0_notRefines", "G3: TraceTest.ObFix.Spec.specRel",
     "G0: TraceTest.ObFixHelpers.devFalse", "G8: TraceTest.ObFixHelpers.devFalse",

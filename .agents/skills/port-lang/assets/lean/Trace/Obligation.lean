@@ -25,7 +25,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | 規則 | 内容 |
 | --- | --- |
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure` で作る（SPEC-005） |
-| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
+| G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（ADR 9ac6）。下の 3 つ |
 | GK | ギャップの登録簿（`Trace.Gap`）。下の 5 つ |
@@ -87,6 +87,7 @@ def freeFrame : Name := `Machine.Machine.FreeFrame
 def nontrivial : Name := `Machine.Nontrivial
 def nontrivial₂ : Name := `Machine.Nontrivial₂
 def kernelIs : Name := `Machine.KernelIs
+def undefOrEq : Name := `Machine.undefOrEq
 def always : Name := `Machine.always
 def anyOf : Name := `Machine.anyOf
 def covers : Name := `Machine.Covers
@@ -415,10 +416,11 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     else if h == N.kernelIs && a.size == 4 then
       if let some fc := bareConst? a[2]! then
         let k := clean a[3]!
-        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数をその葉自身に適用したもの
-        -- （部分写像の汎用の核。例: 「どちらも定義されないか、等しい」）
+        -- K は `Eq`、`@[kernel]` の定数、または `@[kernel]` の定数か汎用の核 `Machine.undefOrEq`
+        -- （部分写像が「どちらも定義されないか、等しい」。Machine.Kernel）をその葉自身に適用したもの
         let kf := k.getAppFn
-        let applied := k.isApp && kf.isConst && hasAttr kernelAttr env kf.constName! &&
+        let applied := k.isApp && kf.isConst &&
+          (hasAttr kernelAttr env kf.constName! || kf.constName! == N.undefOrEq) &&
           bareConst? k.appArg! == some fc
         let ok := k.isAppOfArity ``Eq 1 || (k.constName?.any (hasAttr kernelAttr env ·)) || applied
         if ok then cs := { cs with kernel := cs.kernel.push fc }

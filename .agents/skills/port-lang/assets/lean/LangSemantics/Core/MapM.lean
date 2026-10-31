@@ -1,13 +1,11 @@
-import Abstraction.Prim.List
-
 /-!
-# Abstraction.Prim.MapM
+# LangSemantics.Core.MapM
 
 `Option` の `List.mapM`（標準の抽象化 α で表を写すもの）の性質。写しが定義されれば、
 要素は 1 対 1 に対応し、キーの列・`find?` の結果も対応する。
 -/
 
-namespace Abstraction.Prim
+namespace LangSemantics.Core
 
 variable {α β : Type}
 
@@ -69,4 +67,9 @@ theorem mapM_some_length {f : α → Option β} {l : List α} {l' : List β} (h 
     l'.length = l.length := by
   simpa using mapM_some_map (g := fun _ => ()) (k := fun _ => ()) h (fun _ _ _ => rfl) |> congrArg List.length
 
-end Abstraction.Prim
+theorem mapM_some_getD {α β : Type} {f : α → Option β} {l : List α} {l' : List β} (h : l.mapM f = some l')
+    (d : β) : l.map (fun a => (f a).getD d) = l' := by
+  have := mapM_some_map h (g := fun a => (f a).getD d) (k := id) fun _ _ e => by simp [e]
+  simpa using this.symm
+
+end LangSemantics.Core

@@ -1,15 +1,51 @@
-import Abstraction.Prim.List
+import LangSemantics.Sql.Query
+import LangSemantics.Core.List
 
 /-!
-# Abstraction.Prim.Order
+# LangSemantics.Sql.QueryLemmas
 
-`ORDER BY` の許される順列（`isAllowedOrder`）と、[Spec] の整列（`List.mergeSort`）の一致。
-整列キーが行の上で一意なら、許される順列はただ 1 つで、[Spec] の安定整列の結果に一致する。
+照会の結果の補題。
+
+- `mem_cross`・`filter_cross`: 直積の選択で、右の各行がただ 1 つに決まるなら、左の行ごとの 1 行になる（結合の補題）。
+- `allowed_int_sorted`・`eq_mergeSort_of_sorted`・`allowed_map_eq_mergeSort`・`allowed_mergeSort_self`:
+  `ORDER BY` の許される順列（`isAllowedOrder`）と安定整列（`List.mergeSort`）の一致。整列キーが行の上で一意なら、
+  許される順列はただ 1 つで、安定整列の結果に一致する。
+- `adjacent_of_pairwise`: `pairwise_of_adjacent` の逆。
+- `allowed_perm`: 許される順列は元の行の並べ替え。
 -/
 
-namespace Abstraction.Prim
+namespace LangSemantics.Sql
 
-open LangSemantics.Sql
+open LangSemantics.Core
+
+theorem mem_cross {α β : Type} {xs : List α} {bs : List β} {x : α × β} :
+    x ∈ Bag.cross xs bs ↔ x.1 ∈ xs ∧ x.2 ∈ bs := by
+  obtain ⟨a, b⟩ := x
+  simp [Bag.cross]
+
+/-- 結合の補題: 左の行 `x` が `c x` を満たすとき、右の行のうち `q x` を満たすものがただ 1 つ `g x` なら、
+直積を `c x ∧ q x b` で選んだ結果は、`c` を満たす左の行ごとに `(x, g x)` を並べたもの。 -/
+theorem filter_cross {α β : Type} {xs : List α} {bs : List β} {c : α → Bool} {q : α → β → Bool} {g : α → β}
+    (h : ∀ x ∈ xs, c x = true → bs.filter (q x) = [g x]) :
+    (Bag.cross xs bs).filter (fun p => c p.1 && q p.1 p.2) = (xs.filter c).map fun x => (x, g x) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    have ih := ih fun y hy => h y (List.mem_cons_of_mem _ hy)
+    simp only [Bag.cross, List.flatMap_cons, List.filter_append] at ih ⊢
+    rw [ih]
+    by_cases hc : c x = true
+    · have hx := h x (List.mem_cons_self ..) hc
+      rw [List.filter_cons_of_pos hc, List.map_cons, List.singleton_append.symm.trans (by rfl)]
+      congr 1
+      rw [List.filter_map]
+      simp only [Function.comp_def, hc, Bool.true_and]
+      have : (fun b => q x b) = q x := rfl
+      rw [this, hx]; rfl
+    · have hc' : c x = false := by simpa using hc
+      rw [List.filter_cons_of_neg hc]
+      rw [List.filter_map]
+      simp [Function.comp_def, hc']
 
 /-- 非 NULL の整数 1 列を昇順で整列した結果は、行の並べ替えで、キーについて整列している。 -/
 theorem allowed_int_sorted {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {f : α → Int} {rows o : List α}
@@ -67,4 +103,9 @@ theorem allowed_mergeSort_self {α : Type} [BEq α] [LawfulBEq α] (cfg : SortCo
     (fun a b => by simp only [Bool.or_eq_true, decide_eq_true_eq]; omega) rows
   simpa using this
 
-end Abstraction.Prim
+theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {dirs : List SortDir} {rows o : List ρ}
+    {key : ρ → List SqlValue} (h : isAllowedOrder cfg dirs key rows o = true) : o.Perm rows := by
+  simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
+  exact h.1.symm
+
+end LangSemantics.Sql

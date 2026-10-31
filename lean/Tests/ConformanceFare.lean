@@ -14,16 +14,11 @@ import Tests.Conformance
   `fare.totalFare` の `Flight` は、便マスタ・区間・空港・搭乗クラス・運賃種別を引いて組み立てる（Mapper の結果の形）。
 -/
 
-open Lean Spec Spec.Prim Tests.Conformance
+open Lean Spec Spec.Prim ConformanceKit Tests.Conformance
 
 namespace Tests.ConformanceFare
 
-def getArr (j : Json) (k : String) : Except String (List Json) := (j.getObjValAs? (Array Json) k).map (·.toList)
 
-def need {α : Type} (o : Option α) (msg : String) : Except String α :=
-  match o with
-  | some a => .ok a
-  | none => .error msg
 
 def boardingClassCd (s : String) : Except String BoardingClassCd := need (BoardingClassCd.ofCode? s) s!"boarding class: {s}"
 def fareTypeCd (s : String) : Except String FareTypeCd := need (FareTypeCd.ofCode? s) s!"fare type: {s}"

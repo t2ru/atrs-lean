@@ -29,18 +29,18 @@ unsafe def conformanceTests : IO Unit := do
   IO.println "conformance (Spec: spec/*, shared/*; SourceModel: source-model/*, shared/*)"
   let env ← loadEnv #[`Spec, `SourceModel]
   let root : System.FilePath := "../conformance"
-  let report (label : String) (results : Array Tests.Conformance.FileResult) : IO Unit := do
+  let report (label : String) (results : Array ConformanceKit.FileResult) : IO Unit := do
     check s!"conformance: {label}: files found" (!results.isEmpty)
     for r in results do
       for f in r.failures do IO.eprintln s!"    {label}/{r.path.fileName.getD ""}: {f}"
       check s!"conformance: {label}/{r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
-  report "shared/format (Spec)" (← Tests.Conformance.runDir Tests.Conformance.formatOps env.contains (root / "shared/format"))
+  report "shared/format (Spec)" (← ConformanceKit.runDir Tests.Conformance.formatOps env.contains (root / "shared/format"))
   for (dir, layer, ops) in [("spec/fare", "Spec", Tests.ConformanceFare.specOps), ("shared/fare", "Spec", Tests.ConformanceFare.specOps),
       ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps),
       ("shared/master-data", "Spec", Tests.ConformanceMaster.specOps),
       ("source-model/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps),
       ("shared/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps)] do
-    report s!"{dir} ({layer})" (← Tests.Conformance.runDirFx ops layer env.contains root (root / dir))
+    report s!"{dir} ({layer})" (← ConformanceKit.runDirFx ops layer env.contains root (root / dir))
 
 /-- マスタの Mapper の文とコードリストの SQL の、PostgreSQL との差分実行（`conformance/sql/master-data.json`）。
 あわせて、共有入力の表と PostgreSQL に投入した表、共有入力の設定と上流の設定の一致を確かめる。 -/
