@@ -533,7 +533,7 @@ end Test.Trace.ObFix.Spec
 
 namespace Test.Trace.ObFix.Abstraction
 
-open Trace
+open _root_.Trace
 
 /-- 前提型の宣言を作る補助（値は展開して読まれる）。 -/
 def preGap (id : String) (devs : List Lean.Name) (ev : Evidence) : Gap :=

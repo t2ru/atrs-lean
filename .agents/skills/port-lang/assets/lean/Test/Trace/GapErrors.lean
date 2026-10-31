@@ -9,7 +9,7 @@ import Trace
 
 namespace Test.Trace.GapErrors
 
-open Trace
+open _root_.Trace
 
 /-- error: @[gap_entry] D-001: impact is required for pre; backlog is required for pre (the impact table) -/
 #guard_msgs in

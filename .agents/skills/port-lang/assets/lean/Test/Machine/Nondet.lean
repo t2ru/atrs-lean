@@ -15,7 +15,7 @@ import Machine
 
 namespace Test.Machine.Nondet
 
-open Machine
+open _root_.Machine
 
 /-- 恒等の入出力の対応。 -/
 def eqGlue (ι ο : Type) : Glue Unit Unit ι ι ο ο := Glue.pure (· = ·) (· = ·)
