@@ -8,7 +8,7 @@ state: todo
 depends_on: ["4b0e2070-e086-4966-95f8-9e366f4324a0", "f18c3c0f-4007-42c1-ba25-102fb385a16c", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-10-31T18:24:54+09:00
 ---
 
 # Rust: HTTP 契約アダプタ
@@ -27,6 +27,7 @@ generated:
 - `rust/src/adapter/http`（リクエスト → 業務機能 → 応答）
 - トランザクショントークン・CSRF（[http-contract.md](../spec/http-contract.md#共通) の規範節）
 - HTTP レベルの適合ベクタ（`conformance/*/http/`）と結合テスト
+- 入口の環境の前提: 入力の値域（[domain-model.md](../spec/domain-model.md#値域)。搭乗者数・予約フライト数・年齢など）の述語を入口の機械の入力の型で書き、`Spec.masterConfigOk` と組み合わせて `@[env_pre]` を付ける（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 
 ## 対象外
 

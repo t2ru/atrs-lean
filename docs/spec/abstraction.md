@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T17:49:17+09:00
+  at: 2026-10-31T18:24:54+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -308,10 +308,10 @@ Lean では、`Machine.ofChoice` の選択の型の葉に `@[nondet "N-NNN"]` �
 
 | ID | 種類 | 内容 | 標準の選択 | 出典 | backlog |
 | --- | --- | --- | --- | --- | --- |
-| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
-| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004） | 起きない | [ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
-| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序 | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 90f5](../decision/90f5-report-queue-at-least-once-delivery.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
-| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列）。変えうるのは詳細の文字列だけ | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
-| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値）。変えうるのは保存するハッシュ値だけ | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 2d1f](../decision/2d1f-password-hashing-port.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
+| N-001 | 環境 | 排他制御の失敗 `Conflict`。採番以外の状態を変えない（SPEC-004）。Lean: `Spec.Nondet.ConflictChoice` | 起きない | [ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
+| N-002 | 環境 | ポートの I/O の失敗 `System("e.ar.fw.9999")`。採番以外の状態を変えない（SPEC-004）。Lean: `Spec.Nondet.IoFailureChoice` | 起きない | [ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)、[ports.md](ports.md#トランザクション) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
+| N-003 | 環境 | レポート要求の再配信の上限（1 以上。配備の設定）、重複配信、配信の順序。Lean: `Spec.Nondet.ReportDeliveryChoice` | 上限は参考値の 10、重複なし、送信順 | [ports.md](ports.md#reportqueue)、[ADR 90f5](../decision/90f5-report-queue-at-least-once-delivery.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
+| N-004 | 自由 | `InvalidRequest` のメッセージの詳細（任意の文字列）。変えうるのは詳細の文字列だけ。Lean: `Spec.Nondet.InvalidRequestDetail` | `Spec` の定義で定める（適合テストでは比較しない） | [http-contract.md](http-contract.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
+| N-005 | 自由 | `PasswordHasher.hash` の値（`matches` の契約を満たす任意の値）。変えうるのは保存するハッシュ値だけ。Lean: `Spec.Nondet.PasswordHashChoice` | 参照の実装の符号化 | [ports.md](ports.md#passwordhasher)、[ADR 2d1f](../decision/2d1f-password-hashing-port.md) | 0fdf5090-3432-4a6e-9064-40f53e4231a9 |
 
 採番（`IdGenerator`）は非決定性ではない。[Spec] の状態 `World.sequences` が次の値を決める（[ports.md](ports.md#idgenerator)）。

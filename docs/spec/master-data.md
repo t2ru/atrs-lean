@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T14:27:47+09:00
+  at: 2026-10-31T18:24:54+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -180,6 +180,8 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 `VIS`（VISA）, `MTR`（MASTER）, `JCB`（JCB）, `DNS`（DNS）, `AMX`（American Express）
 
 シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
+
+シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除く）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.seed_env` で示した（入口の環境の前提 `Spec.masterConfigOk`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）。
 
 > **TODO(spec):** 便マスタ NTT523（HND→OKA）と NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`Spec.MasterData.FlightMaster.arrivalTime`（0:00〜23:59）では表せない。
 > - [Source] の `DateTimeFormatter("HHmm")` は `DateTimeParseException` を投げる（空席照会でこの便が結果に入るとき）。

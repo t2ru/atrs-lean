@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+* **Add**: [ADR cd33](decision/cd33-spec-nondet-types-and-env-pre.md)（[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める）。
+* **Update**: [backlog 0fdf](backlog/0fdf-spec-nondet-and-entry-env.md) を完了した（`done`）。`Spec.Nondet`（N-001〜N-005 の `@[nondet]`）、`Spec.EnvPre`（`masterConfigOk` の `@[env_pre]`・検査関数 `validB`）、生成した `Spec.Seed` とシードの妥当性 `seed_env` を置いた。入力の値域の前提は [backlog a89e](backlog/a89e-http-contract-adapter.md)・[ac71](backlog/ac71-reservation-history-report.md) の範囲に移した。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（Spec の非決定性の表の Lean 名）
+  * [spec/master-data.md](spec/master-data.md)（シードの妥当性）、[spec/assurance.md](spec/assurance.md)（シードの検査の限界）
+  * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
+
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) を完了した（`done`）。第 3 段で、R 課題 ABS-004（`Abstraction.Fare.totalFareRefines`）・L 課題 ABS-005（`runTotalFare_eq`）・W 課題 ABS-112（`need_D012`。D-012 の必要性）を証明した。`Spec.Fare.totalFare` をフライトのキーと搭乗者の年齢の関数 `totalFareOfKeys` で書き直し、合計金額の抽象機械と SPEC 課題を置いた。`SourceModel.Ticket`（`TicketHelper.toFlightList`）を足し、`Tests.TicketChecks` の検査を `trace/checks.json` の `lake-test` に登録した。
 * **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 3 段の決定（合計金額の [Spec] と具体側の入力、D-001・D-002・D-012 の前提、証人の文字列）を加えた。
 * **Update**: 次の文書を改めた。

@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T17:49:17+09:00
+  at: 2026-10-31T18:24:54+09:00
 ---
 
 # バックログ
@@ -45,7 +45,7 @@ generated:
 | d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](a936-lang-semantics-rust.md) |
 | 9c04 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](9c04-rust-external-adapters.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [c7e8](c7e8-lang-semantics-sql.md), [ffdc](ffdc-trace-tooling.md) |
 | f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](1ae4-machine-refinement-framework.md) |
-| 0fdf | [Spec の非決定性の選択の型と入口の環境の前提](0fdf-spec-nondet-and-entry-env.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [f7b7](f7b7-refinement-non-vacuity.md) |
+| 0fdf | [Spec の非決定性の選択の型と入口の環境の前提](0fdf-spec-nondet-and-entry-env.md) | done | [591d](591d-abstract-domain-types-and-master-data.md), [f7b7](f7b7-refinement-non-vacuity.md) |
 | ae04 | [名前付きの成分の必要性の義務と検査（G9）](ae04-component-necessity-witness.md) | done | [f7b7](f7b7-refinement-non-vacuity.md) |
 | 0d1a | [名前付きの成分の変異テスト](0d1a-mutation-testing-of-named-components.md) | todo | [bbcc](bbcc-fare-abstraction-proofs.md), [ae04](ae04-component-necessity-witness.md) |
 | 114a | [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](114a-gap-attributes-and-trace-in-skill.md) | done | [ffdc](ffdc-trace-tooling.md), [ae04](ae04-component-necessity-witness.md) |
