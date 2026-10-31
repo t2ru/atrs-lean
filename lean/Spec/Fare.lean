@@ -54,6 +54,81 @@ def totalFare (cfg : Config) (md : MasterData) (flights : List Flight) (passenge
   let parts ← flights.mapM (flightTotal cfg md passengers)
   return ceilTo parts.sum 100
 
+/-! ## 抽象機械（R 課題 ABS-001・ABS-002 の抽象側） -/
+
+/-- 基本運賃の入力。マスタ・設定は不変の入力である。 -/
+structure BasicFareInput where
+  cfg : Config
+  md : MasterData
+  routeBasicFare : Nat
+  boardingClassCd : BoardingClassCd
+  depDate : Date
+
+/-- 基本運賃の PRE: 設定とマスタの不変条件、搭乗クラスがマスタに在ること（MD-3）、
+`routeBasicFare + extraCharge` の値域（`docs/spec/domain-model.md#値域`）。 -/
+@[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
+def BasicFareInput.Pre (i : BasicFareInput) : Prop :=
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+    (i.md.boardingClassOf i.boardingClassCd).any (fun bc => decide (i.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) = true
+
+instance (i : BasicFareInput) : Decidable i.Pre := by unfold BasicFareInput.Pre; infer_instance
+
+/-- 基本運賃の抽象機械（状態を持たない）。PRE の下で、`basicFare` は値を持つ。 -/
+@[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
+def basicFareMachine : Machine.Machine Unit BasicFareInput Nat :=
+  Machine.Machine.pure BasicFareInput.Pre fun i => (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).getD 0
+
+/-- 運賃の入力。 -/
+structure FareInput where
+  basicFare : Nat
+  discountRate : Nat
+
+/-- 運賃の PRE: 基本運賃と割引率の値域。 -/
+@[spec_doc "docs/spec/fare-calculation.md#運賃"]
+def FareInput.Pre (i : FareInput) : Prop := i.basicFare ≤ Range.maxBasicFare ∧ i.discountRate ≤ Range.maxDiscountRate
+
+instance (i : FareInput) : Decidable i.Pre := by unfold FareInput.Pre; infer_instance
+
+/-- 運賃の抽象機械（状態を持たない）。 -/
+@[spec_doc "docs/spec/fare-calculation.md#運賃"]
+def fareMachine : Machine.Machine Unit FareInput Nat :=
+  Machine.Machine.pure FareInput.Pre fun i => fare i.basicFare i.discountRate
+
+/-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
+@[obligation "SPEC-001"]
+theorem basicFareMachine_run_step :
+    ∀ s i, basicFareMachine.Pre s i → basicFareMachine.step s i (basicFareMachine.run s i).1 (basicFareMachine.run s i).2 :=
+  basicFareMachine.run_step
+
+/-- SPEC-002・SPEC-003。 -/
+@[obligation "SPEC-002", "SPEC-003"]
+theorem basicFareMachine_sound : basicFareMachine.Sound := Machine.Machine.sound_pure _ _
+
+/-- SPEC-007。 -/
+@[obligation "SPEC-007"]
+theorem basicFareMachine_initIs : basicFareMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
+
+/-- SPEC-001。 -/
+@[obligation "SPEC-001"]
+theorem fareMachine_run_step :
+    ∀ s i, fareMachine.Pre s i → fareMachine.step s i (fareMachine.run s i).1 (fareMachine.run s i).2 :=
+  fareMachine.run_step
+
+/-- SPEC-002・SPEC-003。 -/
+@[obligation "SPEC-002", "SPEC-003"]
+theorem fareMachine_sound : fareMachine.Sound := Machine.Machine.sound_pure _ _
+
+/-- SPEC-007。 -/
+@[obligation "SPEC-007"]
+theorem fareMachine_initIs : fareMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
+
+/-- PRE の下で、基本運賃は値を持つ。 -/
+theorem basicFare_isSome {i : BasicFareInput} (h : i.Pre) :
+    (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).isSome = true := by
+  obtain ⟨-, -, h⟩ := h
+  unfold basicFare
+  cases hb : i.md.boardingClassOf i.boardingClassCd <;> simp_all
+
 /-- D-002 の例: 基本運賃 1430 円・割引率 30% で 1100 円（[Source] は 1000 円）。 -/
 theorem fare_1430_30 : fare 1430 30 = 1100 := by decide
 

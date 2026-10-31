@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 2 段を終えた（`doing`）。R 課題 ABS-001（`Abstraction.Fare.basicFareRefines`）・ABS-002（`fareRefines`）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102（D-001・D-002 の必要性）を証明した。基本運賃・運賃の抽象機械と SPEC 課題を `Spec.Fare` に置いた。
+* **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 2 段の決定（抽象機械の置き場所、具体側の入力、D-027 の定数、差異の前提の形）を加えた。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（ABS-001・002・003・007・101・102 の定理名、α の表）
+  * `lean/Abstraction/Gap.lean`（D-001・D-002・D-027 の前提と R 課題。表は生成）
+  * [spec/fare-calculation.md](spec/fare-calculation.md)（抽象機械）
+  * [index.md](index.md)、[AGENTS.md](../AGENTS.md)
 * **Creation**: [backlog 114a](backlog/114a-gap-attributes-and-trace-in-skill.md) を作り、完了した（`done`）。
 * **Creation**: [ADR 7fe4](decision/7fe4-move-trace-attributes-to-skill.md) で、`lean/Trace`（追跡属性・trace-dump・obligation-check の本体）をスキル port-lang の `assets/lean/Trace` に移した。テストは `assets/lean/TraceTest` と `lake exe trace-test` に移した。
 * **Creation**: [ADR cc24](decision/cc24-gap-registry-as-lean-attributes.md) で、ギャップの登録簿を Lean の `@[gap_entry]`（型 `Trace.Gap`）に置き、箇所の印 `@[gap]` を足した。`lean/Abstraction/Gap.lean` に D-001〜D-030 を移し、未確定の差異に D-028、PRE の外の ID の無かった 2 行に D-029・D-030 を割り当てた。検査 TR-K・GK を足した。

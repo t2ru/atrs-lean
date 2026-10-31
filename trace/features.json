@@ -4,7 +4,7 @@
     {
       "name": "Fare",
       "backlog": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "ddb4cafe-4bc3-4235-8efa-7f6eb7ff0ea8", "eff6bfce-0ef0-49a1-8c6e-e2b7235fd113"],
-      "lean": ["Fare"],
+      "lean": ["Fare", "FareQuery"],
       "tasks": ["ABS-001", "ABS-002", "ABS-004", "REF-001", "REF-004"],
       "locators": ["java:jp.co.ntt.atrs.domain.service.b0.*", "rust:atrs::fare::*"]
     },

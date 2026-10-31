@@ -138,4 +138,15 @@ def pax (age : Nat) : Passenger := ⟨"山田", "太郎", age, .M, none⟩
 #guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30, pax 28, pax 5] != some 53560
 #guard Fare.totalFare Config.default fareMd [flight "NTT999" .OW] [pax 30] == none
 
+-- 基本運賃・運賃の抽象機械（ABS-001・ABS-002 の抽象側）: PRE と出力
+def bfIn (rbf : Nat) (cd : BoardingClassCd) (d : Date) : Fare.BasicFareInput := ⟨Config.default, fareMd, rbf, cd, d⟩
+#guard decide (bfIn 20600 .N (ymd 2026 11 1)).Pre
+#guard (Fare.basicFareMachine.run () (bfIn 20600 .N (ymd 2026 11 1))).2 == 20600
+-- 拒む例: 区間の運賃と加算料金の和が値域（10,000,000）を超える入力は PRE の外
+#guard !decide (bfIn 10000000 .S (ymd 2026 11 1)).Pre
+#guard (Fare.fareMachine.run () ⟨1430, 30⟩).2 == 1100
+#guard decide (Fare.FareInput.Pre ⟨100000000, 100⟩)
+-- 拒む例: 割引率 101 は PRE の外
+#guard !decide (Fare.FareInput.Pre ⟨1430, 101⟩)
+
 end Tests.SpecChecks

@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:30:00+09:00
+  at: 2026-10-31T16:58:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）
@@ -102,6 +102,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | マスタの表の行（`INT`・`DATE`・`VARCHAR`。ABS-026） | `Spec.MasterData` の各要素（`Abstraction.MasterData.airportOfRow` ほか。値の葉は `natOfInt4`・`dateOfPg`・`hmOfStr`・`bcCdOf`・`ftCdOf`） | 区間の `FLIGHT_TIME`（`routeRowKer`）。ほかは定義域の上で単射（`undefOrEq`） | 負の数、1〜9999 年の外の日付、`HHmm` でない時刻、未知のコード、`NULL` の搭乗クラス名には定義しない（D-027） |
 | 注入された設定（`AtrsConfig`） | `Spec.Config`（`configOf`。生年月日の下限は `dateOfSlash`） | なし（定義域の上で単射） | 負の数・`yyyy/MM/dd` でない日付には定義しない（D-027） |
 | マスタの参照の問い合わせ・答え（ABS-026） | `Spec.MasterData.Query`・`Answer`（`queryOf?`・`answerOf?`） | 問い合わせはなし（`undefOrEq`）。答えは、区間の空港名・空港の表示順、便マスタの区間の運賃・空港、機材の座席数（`answerKer`。[Spec] が観測しない成分） | 範囲外の `LocalDate` には定義しない（D-027） |
+| 運賃計算の入力・出力（ABS-001・ABS-002） | `Spec.Fare.BasicFareInput`・`FareInput`、出力は `Nat`（`aiBF`・`aiF`・`natOfJ32`） | なし（`natOfJ32` は `undefOrEq`） | 引数の `null` と負の値には定義しない（D-027）。マスタ・設定は ABS-026 の `masterDataOf`・`configOf` で写す |
 
 ## 既知差異
 
@@ -123,8 +124,8 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 | ID | 種類 | 箇所 | 差異 | 前提（前提型）／成分（観測型） | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
-| D-001 | 前提型 | [基本運賃](fare-calculation.md#基本運賃) | [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`x·ratio` が 100 で割り切れ（厳密値が整数）、積算比率の因子 `fl(ratio × fl(0.01))` が `ratio/100` を `2^-54` 以上下回る（安全でない）ときに限る（`Abstraction.Fare.basicFare_src`）。安全でない積算比率は 1〜1000 のうち 49 個（29, 58, 116, 117, 141, 205, …。`basicFactor_unsafe`）で、シードの比率（100・110・120・125・130・140・150）は安全である。条件は十分条件で、安全でない比率でも差異が起きるとは限らない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | `dev_D001`: `x = routeBasicFare + extra` について、`x·ratio` が 100 で割り切れないか、積算比率の因子が安全（`basicFare_src_eq`） | ABS-001, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-101 |
-| D-002 | 前提型 | [運賃](fare-calculation.md#運賃) | [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k` で `k ≡ 1 (mod 100)` のとき、切り捨てた値が `k − 1` になって 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100）。[Source] は [Spec] に等しいか 100 円少なく、少ないのは `b·(100−r) ≡ 100 (mod 10000)` で、割引率の因子 `fl(1 − fl(r × fl(0.01)))` が安全でないときに限る（`Abstraction.Fare.fare_src`）。安全でない割引率は 0〜99 のうち 33 個（6, 7, 30〜35, 53〜57, 65〜70, 77〜83, 89〜95。`fareFactor_unsafe`）で、シードの割引率 0・5・10・20 は安全、30 は安全でない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | `dev_D002`: `b·(100−r) mod 10000 ≠ 100` か、割引率の因子が安全（`fare_src_eq`） | ABS-002, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-102 |
+| D-001 | 前提型 | [基本運賃](fare-calculation.md#基本運賃) | [Source] は `(ratio * 0.01)` を double で掛けて切り捨てる。[Spec] は `floorDiv(x * ratio, 100)`。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`x·ratio` が 100 で割り切れ（厳密値が整数）、積算比率の因子 `fl(ratio × fl(0.01))` が `ratio/100` を `2^-54` 以上下回る（安全でない）ときに限る（`Abstraction.Fare.basicFare_src`）。安全でない積算比率は 1〜1000 のうち 49 個（29, 58, 116, 117, 141, 205, …。`basicFactor_unsafe`）で、シードの比率（100・110・120・125・130・140・150）は安全である。条件は十分条件で、安全でない比率でも差異が起きるとは限らない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | `dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`） | ABS-001, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-101 |
+| D-002 | 前提型 | [運賃](fare-calculation.md#運賃) | [Source] は `1 - rate*0.01` の丸め誤差により、厳密値が整数 `k` で `k ≡ 1 (mod 100)` のとき、切り捨てた値が `k − 1` になって 100 円少なくなる（例: 1430 円・30% で [Source] 1000、[Spec] 1100）。[Source] は [Spec] に等しいか 100 円少なく、少ないのは `b·(100−r) ≡ 100 (mod 10000)` で、割引率の因子 `fl(1 − fl(r × fl(0.01)))` が安全でないときに限る（`Abstraction.Fare.fare_src`）。安全でない割引率は 0〜99 のうち 33 個（6, 7, 30〜35, 53〜57, 65〜70, 77〜83, 89〜95。`fareFactor_unsafe`）で、シードの割引率 0・5・10・20 は安全、30 は安全でない（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | `dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`） | ABS-002, ABS-004, ABS-011, ABS-031, ABS-041, ABS-045 | ABS-102 |
 | D-006 | 前提型 | [文字列長](input-validation.md#文字クラス)・[ログインの事前検査](authentication.md#ログインlogin)・[レポート要求の長さ](reservation-history-report.md#要求の受信onreportrequested) | [Source] は UTF-16 単位、[Spec] はスカラ値単位で長さを数える | `dev_D006`: 入力が補助文字（U+10000 以上）を含まない | ABS-031, ABS-034, ABS-042, ABS-043, ABS-044, ABS-045, ABS-046 | ABS-106 |
 | D-007 | 前提型 | [REST 予約 API](http-contract.md#post-apiv1ticket) | [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[input-validation.md](input-validation.md#予約入力b2)） | `dev_D007`: 入力が相関検証を満たし、搭乗者が 1〜6 名 | ABS-031 | ABS-107 |
 | D-008 | 観測型 | [表示名](errors-and-messages.md#項目の表示名) | [Source] の表示名「登場クラスコード」は誤記。[Spec] は「搭乗クラスコード」 | `obs_D008`: エラーメッセージの表示名の対応で、[Source] の「登場クラスコード」を [Spec] の「搭乗クラスコード」に対応させる | ABS-031, ABS-045, ABS-046 | ABS-108 |
@@ -144,7 +145,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） | ABS-026 | ABS-127 |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | ABS-001, ABS-002, ABS-026 | ABS-127 |
 <!-- END GENERATED: gaps-known -->
 
 ### 前提型の差異の影響
@@ -173,7 +174,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | D-020 | 出力のみ | 予約入力画面の表示（状態を変えない `GET`）の応答だけが異なる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
 | D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 4e0e3dd1-d282-46e2-aa98-719853bc9fd2 |
 | D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
-| D-027 | 中断 | [Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける | 25f7ef96-f77d-4ed8-973d-8cecc2a0f227 |
+| D-027 | 中断 | [Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける | 25f7ef96-f77d-4ed8-973d-8cecc2a0f227, bbcce088-c475-4378-9cc6-e3d821acc0f5 |
 <!-- END GENERATED: gaps-impact -->
 
 ### [Spec] の前提の外での [Source] の振る舞い（差異ではない）
@@ -217,13 +218,13 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 | ID | 種類 | 内容 | 差異 |
 | --- | --- | --- | --- |
-| ABS-001 | R | 基本運賃の計算: `SourceModel` が `Spec` をリファインする（`dev_D001` の下で） | D-001 |
-| ABS-002 | R | 運賃の計算: `dev_D002` の下でリファインする | D-002 |
-| ABS-003 | C | 値域内で `fare_Spec − 100 ≤ α(fare_Source) ≤ fare_Spec`（[Source] は [Spec] 以下で、差は高々 100 円） | D-002 |
+| ABS-001 | R | 基本運賃の計算: `dev_D001`・`dev_D027BF` の下で、[Source]（起動時の読み込みと `calculateBasicFare`。`SourceModel.FareQuery.basicFareConcrete`）が `Spec.Fare.basicFareMachine` をリファインする。Mapper の結果のどの許される並びでも成り立つ。Lean: `Abstraction.Fare.basicFareRefines` | D-001, D-027 |
+| ABS-002 | R | 運賃の計算: `dev_D002`・`dev_D027F` の下で、[Source]（`calculateFare`。`SourceModel.FareQuery.fareConcrete`）が `Spec.Fare.fareMachine` をリファインする。Lean: `Abstraction.Fare.fareRefines` | D-002, D-027 |
+| ABS-003 | C | 値域内で `fare_Spec − 100 ≤ α(fare_Source) ≤ fare_Spec`（[Source] は [Spec] に等しいか 100 円少ない）。Lean: `Abstraction.Fare.fare_diff` | D-002 |
 | ABS-004 | R | 合計金額の計算: `dev_D001`・`dev_D002`・`dev_D012` の下でリファインする | D-001, D-002, D-012 |
 | ABS-005 | L | 値域内で、`dev_D012` の下では、[Source] の運賃・合計金額の計算に int32 の溢れが起きない（ABS-004 の適用可能性に使う）。前提が破れる入力では、小児分の途中計算だけが折り返す | D-012 |
 | ABS-006 | — | 取り消し。ピーク時期の参照 `peakTimeOn` の一致は ABS-026 に含めた（ID は再利用しない。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | — |
-| ABS-007 | L | 値域内で、[Source] の基本運賃は [Spec] に等しいか 1 小さく、1 小さいのは `x·ratio` が 100 で割り切れ、積算比率の因子が安全でないときに限る。値域全体での一致は成り立たない（反例は ABS-101。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。中身は `Abstraction.Fare.basicFare_src` | D-001 |
+| ABS-007 | L | 値域内で、[Source] の基本運賃は [Spec] に等しいか 1 小さく、1 小さいのは `x·ratio` が 100 で割り切れ、積算比率の因子が安全でないときに限る。値域全体での一致は成り立たない（反例は ABS-101。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。Lean: `Abstraction.Fare.runBasicFare_spec`（`calculateBasicFare` について。中身は `basicFare_src`） | D-001 |
 | ABS-010 | L | `isAvailableFareType` と SQL 条件 `beforeDayNum BETWEEN end AND start` の同値 | — |
 | ABS-011 | R | 空席照会 `searchFlight`: PRE（MD-5）と、運賃計算から引き継ぐ `dev_D001`・`dev_D002` の下で、[Source]（`LangSemantics.Sql` の照会＋Java の集約）の許されるすべての結果についてリファインする | D-001, D-002 |
 | ABS-020 | L | [Source] の予約確定の前後で、全フライトの `vacantNum ≥ 0`。失敗時は `sequences` を除いて状態が変わらない（ABS-041 の正しさに使う） | — |
@@ -247,8 +248,8 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 | ABS-046 | R | 入力検証とエラーメッセージ: `dev_D006`・`dev_D011`・`dev_D018`・`dev_D021` の下で、`obs_D008`・`obs_D022` を含む `αₒ` でリファインする | D-006, D-008, D-011, D-018, D-021, D-022 |
 | ABS-047 | L | HTTP の要求（画面と REST）から到達できる [Source] の前提違反（`Assert`・`NullPointerException`）に、各 R 課題の差異の前提の下では到達しないこと（ABS-031 は `dev_D026` の下、ABS-045 は `dev_D020`・`dev_D026` の下。適用可能性に使う） | D-020, D-026 |
 | ABS-048 | L | 抽象化関数 α の表の各行（`@[std_abs]` の葉）について、核が表の「同一視するもの」と一致する（`KernelIs`） | — |
-| ABS-101 | W | D-001 の証拠: 基本運賃の元 100 円・積算比率 29% で、[Source] 28、[Spec] 29（`Abstraction.Fare.basicFare_witness`） | D-001 |
-| ABS-102 | W | D-002 の証拠: 基本運賃 1430 円・割引率 30% で、[Source] 1000、[Spec] 1100 | D-002 |
+| ABS-101 | W | D-001 の証拠と必要性: 区間の運賃 100 円・加算料金 0・積算比率 29% で、[Source] 28、[Spec] 29。`dev_D001` を外すと ABS-001 は成り立たない（`Abstraction.Fare.need_D001`。式は `basicFare_witness`） | D-001 |
+| ABS-102 | W | D-002 の証拠と必要性: 基本運賃 1430 円・割引率 30% で、[Source] 1000、[Spec] 1100。`dev_D002` を外すと ABS-002 は成り立たない（`Abstraction.Fare.need_D002`） | D-002 |
 | ABS-106 | W | D-006 の証拠: 補助文字を含み、UTF-16 長とスカラ値長で検証の結果が異なる入力 | D-006 |
 | ABS-107 | W | D-007 の証拠: 相関検証に違反する REST 予約の要求で、[Source] は受け付け、[Spec] は拒む | D-007 |
 | ABS-108 | W | D-008 の証拠: 搭乗クラスコードの検証エラーで、標準の抽象化では表示名が一致せず、`obs_D008` で対応する | D-008 |

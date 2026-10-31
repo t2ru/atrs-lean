@@ -16,6 +16,21 @@ open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim Abstraction.Pri
 /-- 標準の貼り合わせ。 -/
 abbrev glueMQ := Glue.ofStd betaMQ (fun _ => True) aiMQ answerOf?
 
+/-- 前提を満たす DB では、どの許される並びでも起動時の読み込み `load` は例外を投げない。搭乗クラスのキャッシュは
+[Spec] の搭乗クラスの参照に対応し、ピーク時期のキャッシュは並びの写しである（運賃計算の R 課題で使う）。 -/
+theorem load_correct {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDataOf db = some md)
+    (hv : md.Valid cfg) {o : Order} (ho : o.Allowed db) :
+    ∃ p, load o = .ok p ∧ p.peakTime = PeakTimeProvider.load o.peakTime ∧
+      ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
+        some (.boardingClass ((md.boardingClassOf cd).map (·.info))) := by
+  obtain ⟨-, -, -, hbcs, hfts, -⟩ := masterDataOf_eq_some.mp hm
+  obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
+  obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
+  obtain ⟨ftp, hfl, -⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
+  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
+  obtain ⟨fmp, hml, -⟩ := flightMaster_query hm hv.md1 hv.md3 hv.md8 hpf
+  refine ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd⟩
+
 /-- 前提を満たす入力では、どの許される並びでも `run` は例外を投げず、答えの写しは [Spec] の答え。 -/
 theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : MasterData.Query}
     (hα : aiMQ ic = some (cfg, md, q)) (hv : md.Valid cfg) (hq : q.Valid) {o : Order} (ho : o.Allowed ic.db) :
@@ -27,7 +42,7 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Master
   obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
   obtain ⟨rtp, hrl, hrq⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
   obtain ⟨fmp, hml, hmq⟩ := flightMaster_query hm hv.md1 hv.md3 hv.md8 hpf
-  simp only [run, hbl, hfl, hrl, hml, ok_bind]
+  simp only [run, load, hbl, hfl, hrl, hml, ok_bind, pure_bind, Providers.shared]
   generalize ic.query = sq at hqq ⊢
   cases sq with
   | routeOf dep arr =>
@@ -137,7 +152,7 @@ theorem unknownBoardingClass_throws {r : Except JThrow (Unit × SrcAnswer)}
   have hb : o.boardingClass = boardingClassFindAll ic_unknownBoardingClass.db :=
     List.perm_singleton.mp ho.2.2.1
   refine ⟨"No enum constant BoardingClassCd.X", ?_⟩
-  simp only [run, hb, BoardingClassProvider.load, ic_unknownBoardingClass, boardingClassFindAll, Bag.project,
+  simp only [run, load, hb, BoardingClassProvider.load, ic_unknownBoardingClass, boardingClassFindAll, Bag.project,
     List.map_cons, List.map_nil, List.mapM_cons, SourceModel.Repository.Mapping.boardingClass,
     SourceModel.Repository.Mapping.boardingClassCd]
   rfl
