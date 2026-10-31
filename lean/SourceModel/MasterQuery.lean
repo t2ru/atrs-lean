@@ -86,21 +86,37 @@ def Order.Allowed (db : MasterDb) (o : Order) : Prop :=
   isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o.fareTypeCl = true ∧
   isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o.creditTypeCl = true
 
-/-- 起動時の読み込みと、問い合わせへの答え（並び `o` を選んだとき）。 -/
-def run (ic : SrcInput) (o : Order) : JResult SrcAnswer := do
+/-- 起動時に読み込んだ Provider のキャッシュ。 -/
+structure Providers where
+  boardingClass : BoardingClassProvider
+  fareType : FareTypeProvider
+  peakTime : PeakTimeProvider
+  route : RouteProvider
+  flightMaster : FlightMasterProvider
+
+/-- 起動時の読み込み（並び `o` を選んだとき）。各 Provider の `load()` を、原典の Bean の初期化の順に呼ぶ。 -/
+def load (o : Order) : JResult Providers := do
   let bcp ← BoardingClassProvider.load o.boardingClass
   let ftp ← FareTypeProvider.load o.fareType
   let ptp := PeakTimeProvider.load o.peakTime
   let rtp ← RouteProvider.load o.route
   let fmp ← FlightMasterProvider.load o.flightMaster
-  let shared : SourceModel.Fare.TicketSharedService := { boardingClassProvider := bcp, peakTimeProvider := ptp }
+  return ⟨bcp, ftp, ptp, rtp, fmp⟩
+
+/-- `TicketSharedServiceImpl`（読み込んだ Provider を注入したもの）。 -/
+def Providers.shared (p : Providers) : SourceModel.Fare.TicketSharedService :=
+  { boardingClassProvider := p.boardingClass, peakTimeProvider := p.peakTime }
+
+/-- 起動時の読み込みと、問い合わせへの答え（並び `o` を選んだとき）。 -/
+def run (ic : SrcInput) (o : Order) : JResult SrcAnswer := do
+  let p ← load o
   match ic.query with
-  | .routeOf dep arr => return .route (← getRouteByAirportCd rtp dep arr)
-  | .flightMasterOf name => return .flightMaster (← getFlightMaster fmp name)
-  | .fareTypeOf cd => return .fareType (← getFareType ftp (some cd))
-  | .boardingClassOf cd => return .boardingClass (← getBoardingClass bcp (some cd))
-  | .peakTimeOn d => return .peakTime (← getPeakTime ptp (some d))
-  | .multiplicationRatioOn d => return .ratio (← SourceModel.Fare.getMultiplicationRatio shared (some d))
+  | .routeOf dep arr => return .route (← getRouteByAirportCd p.route dep arr)
+  | .flightMasterOf name => return .flightMaster (← getFlightMaster p.flightMaster name)
+  | .fareTypeOf cd => return .fareType (← getFareType p.fareType (some cd))
+  | .boardingClassOf cd => return .boardingClass (← getBoardingClass p.boardingClass (some cd))
+  | .peakTimeOn d => return .peakTime (← getPeakTime p.peakTime (some d))
+  | .multiplicationRatioOn d => return .ratio (← SourceModel.Fare.getMultiplicationRatio p.shared (some d))
   | .config => return .config ic.config
   | .codeList n => return .codeList (match n with
     | .airport => SourceModel.CodeList.airport o.airportCl
