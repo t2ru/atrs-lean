@@ -11,6 +11,11 @@ import Abstraction.MasterData.CodeList
 import Abstraction.Prim.Kernel
 import Abstraction.MasterData.AlphaLeaf
 import Abstraction.MasterData.Alpha
+import Abstraction.Prim.MapM
+import Abstraction.MasterData.Pre
+import Abstraction.MasterData.Lookup
+import Abstraction.MasterData.Query
+import Abstraction.MasterData.Refines
 
 /-!
 # Abstraction
@@ -29,6 +34,11 @@ import Abstraction.MasterData.Alpha
 | `Abstraction.Prim.Kernel` | 部分写像の汎用の核 `undefOrEq` |
 | `Abstraction.MasterData.AlphaLeaf` | ABS-026 の標準の抽象化 α の値の葉（数・暦日・時刻・コード）と核 |
 | `Abstraction.MasterData.Alpha` | ABS-026 の α（DB の行・設定・問い合わせ・答え）、出力の核 `answerKer`、`dev_D027`（D-027） |
+| `Abstraction.Prim.MapM` | `Option` の `List.mapM`（表の写し）の要素・キー・検索の対応 |
+| `Abstraction.MasterData.Pre` | ABS-026 の前提の取り出し（α の分解、空白、値とコードの対応） |
+| `Abstraction.MasterData.Lookup` | Provider のキャッシュの参照と、DB の行での検索の対応 |
+| `Abstraction.MasterData.Query` | ABS-026 の問い合わせごとの一致（参照・ピーク時期・積算比率・コードリスト） |
+| `Abstraction.MasterData.Refines` | R 課題 ABS-026 `queryRefines`、`InitSurj`、W 課題 ABS-127 `need_D027` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
 -/
 
