@@ -41,7 +41,7 @@ namespace JBigDecimal
 def ofInt (n : Int) : JBigDecimal := ⟨n, 0⟩
 
 /-- 正の整数 `n` を正の整数 `d` で割り、モードに従って丸めた商（符号 `neg` を考慮）。 -/
-private def roundDiv (neg : Bool) (n d : Nat) (mode : RoundingMode) : Nat :=
+def roundDiv (neg : Bool) (n d : Nat) (mode : RoundingMode) : Nat :=
   let q := n / d
   let r := n % d
   if r = 0 then q
@@ -80,5 +80,22 @@ end JBigDecimal
 /-- `new BigDecimal(n).setScale(-2, RoundingMode.UP).intValue()`（100 単位に 0 から遠ざかる方向へ丸める）。 -/
 def bdCeilHundredUp (n : J32) : J32 :=
   ((JBigDecimal.ofInt n.toInt).setScale (-2) .up).intValue
+
+/-- 非負の値の 100 円単位の切上げ（`setScale(-2, UP)`）は、`⌈n/100⌉·100`（int の範囲に収まるとき）。 -/
+theorem bdCeilHundredUp_val {n : J32} (h0 : 0 ≤ n.val) (h1 : (n.val.toNat + 99) / 100 * 100 ≤ 2147483647) :
+    (bdCeilHundredUp n).val = (((n.val.toNat + 99) / 100 * 100 : Nat) : Int) := by
+  have hv : n.toInt = n.val := rfl
+  unfold bdCeilHundredUp JBigDecimal.intValue JBigDecimal.toIntegerPart JBigDecimal.setScale JBigDecimal.ofInt
+  simp only [show ¬ ((-2 : Int) ≥ 0) by decide, ite_false, hv, show ¬ (n.val < 0) by omega, decide_false]
+  generalize hx : n.val.toNat = x at h1
+  have hnx : n.val.natAbs = x := by omega
+  simp only [hnx, show ((0 : Int) - -2).toNat = 2 by decide, JBigDecimal.roundDiv,
+    show (-(-2 : Int)).toNat = 2 by decide]
+  have e : (if x % 10 ^ 2 = 0 then x / 10 ^ 2 else x / 10 ^ 2 + 1) * 10 ^ 2 = (x + 99) / 100 * 100 := by
+    simp only [show (10 : Nat) ^ 2 = 100 by rfl]
+    split <;> omega
+  rw [show (((if x % 10 ^ 2 = 0 then x / 10 ^ 2 else x / 10 ^ 2 + 1 : Nat) : Int) * (10 : Int) ^ 2) =
+      (((if x % 10 ^ 2 = 0 then x / 10 ^ 2 else x / 10 ^ 2 + 1) * 10 ^ 2 : Nat) : Int) by push_cast; rfl, e]
+  exact J32.val_ofInt_of_inRange _ ⟨by simp only [J32.minValue]; omega, by simp only [J32.maxValue]; omega⟩
 
 end LangSemantics.Java

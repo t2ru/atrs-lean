@@ -2,6 +2,15 @@
 
 ## 2026-10-31
 
+* **Add**: [ADR e9bc](decision/e9bc-fare-double-analysis.md)（運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く）。
+* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 1 段を終えた（`doing`）。3 段に分け、Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、`depends_on` から f18c を外した。double・BigDecimal の補題（スキルの `LangSemantics.Java.DoubleLemmas`・`bdCeilHundredUp_val`）と、基本運賃・運賃の差異の条件（`Abstraction.Fare`）を証明した。
+* **Update**: 次の文書を改めた。
+  * [spec/abstraction.md](spec/abstraction.md)（D-001・D-002 の内容と前提、ABS-006 の取り消し、ABS-007・ABS-101）
+  * [spec/fare-calculation.md](spec/fare-calculation.md)（基本運賃・運賃の差異の条件）
+  * [spec/assurance.md](spec/assurance.md)（前提が十分条件であること）
+  * [backlog/README.md](backlog/README.md)、[AGENTS.md](../AGENTS.md)
+  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/java/semantics.md)（補題と、double の式の差の示し方）
+
 * **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) を完了した（`done`）。R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と、W 課題 ABS-127（`need_D027`）を証明した。fare-calculation.md の例を、意図から書く例として `Tests.SpecChecks` に置いた。
 * **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 2 点の決定を加えた。
   * `LocalDate` の写し `dateOfJ` を、通算日数で写す定義に改めた
