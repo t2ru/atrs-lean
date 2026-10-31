@@ -2,6 +2,13 @@
 
 ## 2026-10-31
 
+* **Creation**: [ADR 920d](decision/920d-docs-bundle-check-in-ci.md) で、`docs/` とスキルのバンドルを、スキルの道具 `okf_check.py`（[スキルの ADR 330e](../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)、[スキルの backlog a49c](../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md)）で検査し、`tools/ci/lean.sh` から実行するようにした。[backlog ddbd](backlog/ddbd-okf-bundle-lint.md) を完了した（`done`）。
+  * ATRS の規則を `trace/project.json` の `okf` に置いた。スキルの版は 0.9。
+  * 導入で見つかった違反を直した: [rules/README.md](rules/README.md) の `type` を `Overview` に、[index.md](index.md) の ADR f4e1・c108 の説明を frontmatter に合わせた。[backlog 0d1a](backlog/0d1a-mutation-testing-of-named-components.md)・[backlog c27d](backlog/c27d-gap-evidence-states.md) に `対象外` の節を補った。
+* **Update**: 次の文書を改めた。
+  * [rules/documentation.md](rules/documentation.md#検査)（YAML の部分集合、検査）、[rules/decision-records.md](rules/decision-records.md)（採択を示す行）、[rules/backlog.md](rules/backlog.md)（節の検査）、[rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.9）
+  * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
+
 * **Creation**: [ADR 50f9](decision/50f9-move-skill-records-to-skill-bundle.md) で、スキル port-lang の記録をスキルのバンドルへ移した。スキル側の決定は [スキルの ADR 87b9](../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)、作業は [スキルの backlog de90](../.agents/skills/port-lang/references/docs/backlog/de90-skill-docs-okf-bundle-and-records.md)。
   * スキルの `references/` を `references/docs/`（OKF v0.2 のバンドル。[索引](../.agents/skills/port-lang/references/docs/index.md)）に移し、スキルの版を 0.8 にした。ATRS の文書・`lean/`・`trace/project.json` のリンクとパスを張り直した。ADR とこのファイルの本文に書いたパスは記録として残し、リンクだけ直した。
   * ADR edc8・7fe4・6edf・0b83・0eea・9cd9 と backlog 1ae4・a936 を、ID とファイル名を変えずにスキルの `references/docs/decision`・`backlog` へ移した。[index.md](index.md) と [backlog/README.md](backlog/README.md) からは外した。backlog の依存の列と着手順の図からは、スキルの項目をリンクで指す。

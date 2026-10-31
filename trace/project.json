@@ -86,5 +86,115 @@
     "exclude": [
       "upstream/"
     ]
+  },
+  "okf": {
+    "note": "port-lang の scripts/docs/okf_check.py が検査する OKF v0.2 のバンドルとリンク（port-lang の references/docs/maintenance.md#バンドルの検査）",
+    "bundles": [
+      {
+        "root": "docs",
+        "profile": {
+          "okf_version": true,
+          "index_complete": true,
+          "common": {
+            "required": [
+              "title",
+              "description",
+              "tags"
+            ],
+            "quoted": [
+              "title",
+              "description"
+            ],
+            "title_heading": true
+          },
+          "rules": [
+            {
+              "match": "**/README.md",
+              "type": "Overview"
+            },
+            {
+              "match": "decision/*.md",
+              "type": "Architecture Decision Record",
+              "kind": "adr",
+              "required": [
+                "id",
+                "decision_status",
+                "date",
+                "decision-makers"
+              ],
+              "sections": [
+                "Context and Problem Statement",
+                "Decision Drivers",
+                "Considered Options",
+                "Decision Outcome",
+                "More Information"
+              ],
+              "outcome_markers": [
+                "Chosen option",
+                "採択"
+              ]
+            },
+            {
+              "match": "backlog/*.md",
+              "type": "Backlog Item",
+              "kind": "backlog",
+              "required": [
+                "id",
+                "state",
+                "depends_on"
+              ],
+              "sections": [
+                "目的",
+                "範囲",
+                "対象外",
+                "完了条件",
+                "参照"
+              ]
+            },
+            {
+              "match": "spec/*.md",
+              "type": "Specification",
+              "required": [
+                "models",
+                "spec_role"
+              ],
+              "enum": {
+                "models": [
+                  "spec",
+                  "source",
+                  "target"
+                ],
+                "spec_role": [
+                  "normative",
+                  "meta",
+                  "draft",
+                  "informative"
+                ]
+              }
+            },
+            {
+              "match": "rules/*.md",
+              "type": "Guideline"
+            }
+          ]
+        }
+      },
+      {
+        "root": ".agents/skills/port-lang/references/docs",
+        "profile": ".agents/skills/port-lang/scripts/docs/profiles/port-lang.json"
+      }
+    ],
+    "links": {
+      "roots": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "docs",
+        ".agents"
+      ],
+      "absolute": false
+    },
+    "skip": [
+      ".agents/skills/port-lang/scripts/ci/fixtures/"
+    ]
   }
 }

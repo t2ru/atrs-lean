@@ -14,7 +14,7 @@ okf_version: "0.2"
 * [検証の使い分け](verification.md) - 両端の一致を確かめる決定論的な手段と、Lean の証明・検証器・テストの使い分け、保証の限界の文書の必須項目。
 * [版上げへの追従](upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分オラクル、証明のグラフに沿った影響の洗い出し。
 * [言語パックの構成と追加のしかた](adding-a-language.md) - 言語パックの 6 ファイルの構成と、新しい言語・SQL 方言を追加するときの手順。
-* [スキルの文書の保守](maintenance.md) - references/docs（OKF v0.2 のバンドル）の形式、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。
+* [スキルの文書の保守](maintenance.md) - references/docs（OKF v0.2 のバンドル）の形式とその検査、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。
 
 # Language: Java
 
@@ -61,6 +61,7 @@ okf_version: "0.2"
 * [追跡属性の仕組み（Trace）をスキル port-lang の assets に移す](decision/7fe4-move-trace-attributes-to-skill.md) - lean/Trace（追跡属性・trace-dump・obligation-check の本体）はアプリに依存しないので、スキル port-lang の assets/lean/Trace に移し、Lake の依存として取り込む。道具の入口（main）は ATRS の lean/Tools に残す。
 * [アプリに依存しない道具と Lean のライブラリをスキル port-lang へ移し、ATRS 固有の値を trace/project.json に集める](decision/edc8-skill-scripts-and-generic-lean-libraries.md) - tools/ の汎用の道具（追跡の CLI・Lean の静的検査・課題一覧との突き合わせ・上流の版の検査・突き合わせ表の検査・ID の道具）をスキルの scripts/ へ移し、ATRS 固有の値を trace/project.json から読ませる。Abstraction・Tests に混ざっていた汎用の Lean コードを、スキルの assets（Machine.Kernel・LangSemantics.Core（新設）・LangSemantics.Java/Sql・ConformanceKit（新設））へ移す。汎用の方法を文書でもスキルへ移し、スキルに紛れた ATRS 固有の記述を外す。
 * [スキルの文書を references/docs/ の OKF バンドルにし、スキルの決定と作業項目をスキルで持つ](decision/87b9-skill-docs-as-okf-bundle.md) - スキル port-lang の references を references/docs/ に移して OKF v0.2 の Knowledge Bundle とし、スキル自身の意思決定記録と作業項目を references/docs/{decision,backlog} で管理する。適用先のプロジェクトとは ID の空間を共有し、外の項目は来歴としてだけ挙げる。
+* [OKF バンドルとリンクの検査の道具 okf_check.py を置き、規則を設定のプロファイルで与える](decision/330e-okf-bundle-check-tool.md) - OKF v0.2 の適合条件（frontmatter・type・index.md・log.md）、バンドルの規則（種類ごとの type・必須キー・必須の節・意思決定記録と作業項目の形）、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具を scripts/docs/okf_check.py に置く。標準ライブラリだけで動かすため、frontmatter は YAML の部分集合として読む。規則は trace/project.json の okf にバンドルごとのプロファイルとして書く。
 
 # Backlog
 
@@ -68,3 +69,4 @@ okf_version: "0.2"
 * [Machine: 抽象機械と B メソッドのリファインメントの枠組み](backlog/1ae4-machine-refinement-framework.md) - アプリに依存しない Lean ライブラリ Machine（抽象機械、Refines、証明義務 INIT・適用可能性・正しさ、差異の仮定・成分）をスキルの assets/lean/Machine/ に実装する。
 * [LangSemantics.Rust: Rust の意味論](backlog/a936-lang-semantics-rust.md) - 固定長整数（検査付き・折り返し）、char、UTF-8 String、Vec、Result、パニックを、アプリ非依存の検証可能なモデルとして Lean に定義する。
 * [スキルの文書を OKF バンドルにし、スキルの決定と作業項目を移す](backlog/de90-skill-docs-okf-bundle-and-records.md) - references を references/docs/ の OKF v0.2 のバンドルにし、decision/・backlog/ を設けて、適用先にあったスキルの記録を移す。ID の道具を複数の置き場所と持ち出せることの検査に対応させる。
+* [OKF バンドルとリンクの検査の道具](backlog/a49c-okf-bundle-check-tool.md) - OKF v0.2 の適合条件、バンドルのプロファイルの規則、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具 scripts/docs/okf_check.py を作り、このバンドルの規則をプロファイルにする。

@@ -1,0 +1,23 @@
+# 符号 ファイル
+L1 README.md
+L2 README.md
+L3 README.md
+R1 docs/index.md
+I1 docs/index.md
+I2 docs/index.md
+R2 docs/log.md
+R1 docs/guide/sub/index.md
+F1 docs/guide/a.md
+F1 docs/guide/b.md
+F2 docs/guide/c.md
+K1 docs/guide/c.md
+K3 docs/guide/c.md
+K4 docs/guide/c.md
+H1 docs/guide/c.md
+K1 docs/other/d.md
+K1 docs/decision/0001-bad.md
+K2 docs/decision/0001-bad.md
+S1 docs/decision/0001-bad.md
+A1 docs/decision/0001-bad.md
+B1 docs/backlog/0002-bad.md
+B1 docs/backlog/0003-done.md

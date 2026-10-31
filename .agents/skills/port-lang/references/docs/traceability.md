@@ -6,7 +6,7 @@ tags: [traceability]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:19:29+09:00
+  at: 2026-10-31T20:10:00+09:00
 ---
 
 # 両端の追跡（トレーサビリティ）
@@ -160,6 +160,7 @@ locator = kind ":" body
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
 | `conformance` | 適合テストベクタのディレクトリ |
 | `ids` | 任意。`scripts/docs/ids.py`（意思決定記録・作業項目の UUID の採番と参照の検査）の設定（`kinds`・`isolated`・`registers`・`check_roots`・`uuid_roots`・`check_skip`・`exclude`・`legacy`・`features`・`backlog_index`）。`kinds` は種類（`adr`・`backlog`）ごとの置き場所で、文字列か配列。スキルの記録を一緒に検査するときは、スキルの `references/docs/decision`・`references/docs/backlog` を加える。`isolated` は持ち出すバンドルの列 `[{"bundle": <dir>, "root": <リンクが出てはならない範囲>}]` で、スキルでは `{"bundle": "<skill>/references/docs", "root": "<skill>"}`（[maintenance.md](maintenance.md#持ち出せること)） |
+| `okf` | 任意。`scripts/docs/okf_check.py`（OKF のバンドルとリンクの検査）の設定。`bundles` は `[{root, profile}]` で、`profile` はプロファイル（`okf_version`・`index_complete`・`common`・`rules`）か、その JSON のパス。スキルのバンドルは `<skill>/scripts/docs/profiles/port-lang.json` を指す。`links` は `{roots, skip, absolute}`（検査する Markdown の範囲・除外・`/` で始まるリンクを許すか）、`skip` は全体の除外（[maintenance.md](maintenance.md#バンドルの検査)） |
 
 ### 手書きのファイルの形
 

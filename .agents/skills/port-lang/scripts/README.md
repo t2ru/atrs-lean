@@ -13,6 +13,7 @@
 | `ci/check_upstream.py` | 上流の submodule の commit と `trace/upstream.json` の一致 | Python 3、`git` |
 | `ci/with_postgres.sh` | PostgreSQL に接続できる環境でコマンドを実行する（無ければ一時クラスタ。[sql/dialects/postgresql/harness.md](../references/docs/sql/dialects/postgresql/harness.md)） | PostgreSQL |
 | `ci/jvm_table.sh`・`ci/pg_table.sh` | `assets/lean/LangSemanticsTest` の JVM・PostgreSQL との突き合わせ表が、生成器の出力と一致することを確かめる。処理系が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2） | JDK / PostgreSQL |
+| `docs/okf_check.py` | OKF v0.2 のバンドルの検査（frontmatter・`type`・`index.md`・`log.md`、プロファイルの規則、索引の網羅）と、Markdown の相対リンク・見出しアンカーの検査。設定は `trace/project.json` の `okf`、スキルのバンドルの規則は `docs/profiles/port-lang.json`。`--self-test` で `ci/fixtures/okf/` を確かめる（[references/docs/maintenance.md](../references/docs/maintenance.md#バンドルの検査)） | Python 3（標準ライブラリだけ） |
 | `docs/ids.py` | 任意。意思決定記録・作業項目の ID（UUID v4）の採番（`new`）・参照の検査（`check`）・置き場所の間の移動とリンクの張り直し（`move`）・旧番号からの書き換え（`migrate`）。置き場所は種類ごとに複数でよく（プロジェクトの `docs/` とスキルの `references/docs/`）、持ち出すバンドル（スキル）が外を指していないことも検査する。設定は `trace/project.json` の `ids`。スキルの記録の書き方は [references/docs/maintenance.md](../references/docs/maintenance.md) | Python 3、`git` |
 
 ## 使い方（リポジトリのルートで）
@@ -25,9 +26,10 @@ cargo build --release --manifest-path <skill>/scripts/trace/Cargo.toml
 <skill>/scripts/trace/target/release/trace check --dump /tmp/dump.json --obligations /tmp/ob.json
 python3 -I <skill>/scripts/ci/check_lean.py
 python3 -I <skill>/scripts/ci/check_obligations.py /tmp/ob.json
+python3 -I <skill>/scripts/docs/okf_check.py
 ```
 
 - `lake exe trace-dump`・`obligation-check`・`axiom-check` の入口（`main`）は、モデルを import するプロジェクトの側に置く。
   本体はスキルの `assets/lean/Trace`（`Trace.Dump`・`Trace.Obligation`）にある（[references/docs/lean/trace-attributes.md](../references/docs/lean/trace-attributes.md)）。
-- 道具の自己テスト: `cargo test --release`（`scripts/trace` で）、`check_lean.py --self-test`、`check_obligations.py --self-test`。
+- 道具の自己テスト: `cargo test --release`（`scripts/trace` で）、`check_lean.py --self-test`、`check_obligations.py --self-test`、`okf_check.py --self-test`。
 - CI は、これらをプロジェクトの一括検査のスクリプトから呼ぶ。

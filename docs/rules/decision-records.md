@@ -6,7 +6,7 @@ tags: [rules, adr]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:40:00+09:00
+  at: 2026-10-31T20:10:00+09:00
 ---
 
 # 意思決定記録（ADR）規約
@@ -55,7 +55,7 @@ MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `sta
 
 frontmatter は OKF v0.2 のキー（[documentation.md](documentation.md#okf-v02)）と MADR のキーを併せ持つ。
 節見出しは英語（MADR 準拠）、本文は日本語で書く。
-`Considered Options` は最低 2 つ、`Decision Outcome` には採択した選択肢と理由を書く。
+`Considered Options` は最低 2 つ、`Decision Outcome` には採択した選択肢と理由を書く。`Decision Outcome` には、`Chosen option: "…", because …` か `採択: …` で始まる行を置く。`Pros and Cons of the Options` は省いてよい。節と状態の対応は `okf_check.py` が検査する（[documentation.md](documentation.md#検査)）。
 
 ```markdown
 ---

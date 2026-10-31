@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7・114a）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7・114a・ddbd）。
 # 汎用の道具はスキル port-lang の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
 #   tools/ci/lean.sh
 set -euo pipefail
@@ -14,6 +14,12 @@ python3 -I "$scripts/ci/check_upstream.py"
 
 step "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
 python3 -I "$scripts/docs/ids.py" check
+
+step "docs: OKF バンドルとリンクの検査の自己テスト（違反例を検出できること）"
+python3 -I "$scripts/docs/okf_check.py" --self-test
+
+step "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
+python3 -I "$scripts/docs/okf_check.py"
 
 step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check
