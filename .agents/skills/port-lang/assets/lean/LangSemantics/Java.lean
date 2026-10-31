@@ -4,6 +4,7 @@ import LangSemantics.Java.Double
 import LangSemantics.Java.BigDecimal
 import LangSemantics.Java.String
 import LangSemantics.Java.LocalDate
+import LangSemantics.Java.HashMap
 
 /-!
 # LangSemantics.Java

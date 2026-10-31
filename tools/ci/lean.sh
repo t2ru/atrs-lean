@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016・0024）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016・0024・0004）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -8,6 +8,9 @@ step() { printf '\n== %s\n' "$*"; }
 
 step "upstream: submodule の commit と trace/upstream.json の一致"
 python3 -I tools/ci/check_upstream.py
+
+step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
+python3 -I tools/conformance/master_fixture.py --check
 
 step "static: 静的検査の自己テスト（違反例を検出できること）"
 python3 -I tools/ci/check_lean.py --self-test

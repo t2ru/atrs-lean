@@ -4,22 +4,24 @@ title: "運賃計算"
 description: "基本運賃・運賃（大人 1 名）・合計金額（大人・小児、往復）の計算と 100 円単位の切上げ。[Spec] は厳密整数、[Source] は Java の double/int32 意味論。"
 tags: [spec, fare]
 status: draft
-spec_role: draft
+spec_role: informative
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T06:36:39+09:00
+  at: 2026-10-31T09:18:59+09:00
 ---
 
 # 運賃計算
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](../../lean/Spec/Fare.lean)、[Source] は Lean [`SourceModel.Fare`](../../lean/SourceModel/Fare.lean)（Provider のキャッシュは [`SourceModel.MasterData`](../../lean/SourceModel/MasterData.lean)）に形式化した（[backlog 0004](../backlog/0004-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。
 
 ## 基本運賃
 
 ### シグネチャ
 
 `basicFare(routeBasicFare: Nat, boardingClassCd, depDate: Date; master) : Nat`
+
+Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、[Source] `SourceModel.Fare.calculateBasicFare`（`getMultiplicationRatio` を含む）。
 
 ### 事前条件
 
@@ -65,6 +67,8 @@ basicFare = jd2i( jdmul( jd(j32add(routeBasicFare, extra)),
 ### シグネチャ
 
 `fare(basicFare: Nat, discountRate: Nat) : Nat`
+
+Lean: [Spec] `Spec.Fare.fare`、[Source] `SourceModel.Fare.calculateFare`（`FareUtil.ceilFare` は `SourceModel.Fare.ceilFare`）。1430 円・30% の例は、定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Fare.calculateFare_1430_30`（1000）である。
 
 ### 事前条件
 
@@ -112,6 +116,8 @@ fare = bdCeilHundredUp( jd2i( jdmul( jd(basicFare),
 ### シグネチャ
 
 `totalFare(flights: [Flight], passengers: [Passenger]; master, config) : Nat`
+
+Lean: [Spec] `Spec.Fare.totalFare`（便・区間・搭乗クラス・運賃種別のどれかが無ければ `none`）、[Source] `SourceModel.Fare.calculateTotalFare`。
 
 ### 事前条件
 

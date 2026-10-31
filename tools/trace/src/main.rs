@@ -363,9 +363,9 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
     let mut vecs = vec![];
     files_with_ext(&repo.join("conformance"), "json", &mut vecs);
     for p in vecs {
-        if let Some(n) = read_json(&p)["modelDef"].as_str() {
-            let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
-            model_defs.push((rel, n.to_string()));
+        let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();
+        for n in checks::model_defs_of(&read_json(&p)) {
+            model_defs.push((rel.clone(), n));
         }
     }
     let input = check::Input {

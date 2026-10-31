@@ -1,0 +1,26 @@
+{
+  "operation": "fare.fare",
+  "modelDef": "SourceModel.Fare.calculateFare",
+  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "differences": [
+    "D-002"
+  ],
+  "cases": [
+    {
+      "id": "fare-source-1430-30",
+      "description": "基本運賃 1430 円・割引率 30%: double の 1 - 30 * 0.01 の丸めで 1000.99… を切り捨て、1000（[Spec] は 1100。D-002）",
+      "input": {
+        "basicFare": 1430,
+        "discountRate": 30
+      },
+      "expected": {
+        "ok": 1000
+      },
+      "source": "lean-source-model"
+    }
+  ]
+}

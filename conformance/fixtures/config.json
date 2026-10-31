@@ -1,0 +1,17 @@
+{
+  "note": "上流の atrs.properties の設定（tools/conformance/master_fixture.py が生成する。手で編集しない）",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "limitDay": 90,
+  "reserveIntervalTime": 120,
+  "representativeMinAge": 18,
+  "adultPassengerMinAge": 12,
+  "childFareRate": 60,
+  "dateOfBirthMinDate": "1900-01-01",
+  "defaultFlightType": "RT",
+  "defaultDepAirportCd": "HND",
+  "defaultArrAirportCd": "HND",
+  "defaultBoardingClassCd": "N"
+}
