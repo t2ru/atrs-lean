@@ -36,6 +36,71 @@ theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : 
 theorem assertNotEmpty_cons {α : Type} (x : α) (xs : List α) (m : String) :
     SourceModel.Fare.assertNotEmpty (some (x :: xs)) m = .ok (x :: xs) := rfl
 
+theorem routeOfFlightName_mem {md : MasterData} {n : FlightName} {rt : Route}
+    (h : Spec.Fare.routeOfFlightName md n = some rt) : rt ∈ md.routes := by
+  simp only [Spec.Fare.routeOfFlightName, Option.bind_eq_bind, Option.bind_eq_some_iff] at h
+  obtain ⟨fm, -, h⟩ := h
+  exact List.mem_of_find?_eq_some h
+
+theorem boardingClassOf_mem {md : MasterData} {cd : BoardingClassCd} {bc : BoardingClass}
+    (h : md.boardingClassOf cd = some bc) : bc ∈ md.boardingClasses ∧ bc.boardingClassCd = cd := by
+  unfold Spec.MasterData.boardingClassOf at h
+  exact ⟨List.mem_of_find?_eq_some h, by simpa using List.find?_some h⟩
+
+theorem fareTypeOf_mem {md : MasterData} {cd : FareTypeCd} {ft : FareType}
+    (h : md.fareTypeOf cd = some ft) : ft ∈ md.fareTypes := by
+  unfold Spec.MasterData.fareTypeOf at h
+  exact List.mem_of_find?_eq_some h
+
+/-- 1 便の合計（[Spec]）の分解。 -/
+theorem flightTotalOfKey_eq {cfg : Config} {md : MasterData} {ages : List Nat} {k : FlightKey} {v : Nat}
+    (h : Spec.Fare.flightTotalOfKey cfg md ages k = some v) :
+    ∃ rt bc ft, Spec.Fare.routeOfFlightName md k.flightName = some rt ∧ md.boardingClassOf k.boardingClassCd = some bc ∧
+      md.fareTypeOf k.fareTypeCd = some ft ∧
+      v = Spec.Fare.fare ((rt.basicFare + bc.extraCharge) * md.multiplicationRatioOn k.departureDate / 100)
+          ft.discountRate * (ages.length - Spec.Fare.childNumOfAges cfg ages) +
+        pct ((rt.basicFare + bc.extraCharge) * md.multiplicationRatioOn k.departureDate / 100)
+          (cfg.childFareRate - ft.discountRate) * Spec.Fare.childNumOfAges cfg ages := by
+  simp only [Spec.Fare.flightTotalOfKey, Spec.Fare.basicFare, Option.bind_eq_bind, Option.bind_eq_some_iff,
+    Option.map_eq_some_iff, Option.pure_def, Option.some.injEq] at h
+  obtain ⟨rt, hrt, b, ⟨bc, hbc, rfl⟩, ft, hft, rfl⟩ := h
+  exact ⟨rt, bc, ft, hrt, hbc, hft, rfl⟩
+
+/-- 1 便の合計（[Spec]）の上限: 基本運賃は 1 億円以下、搭乗者 1 名あたり 1 億円以下。 -/
+theorem flightTotalOfKey_le {cfg : Config} {md : MasterData} (hcv : cfg.Valid) (hv : md.Valid cfg) {ages : List Nat}
+    {k : FlightKey} {v : Nat} (h : Spec.Fare.flightTotalOfKey cfg md ages k = some v) :
+    v ≤ 100000000 * ages.length := by
+  obtain ⟨rt, bc, ft, hrt, hbc, hft, rfl⟩ := flightTotalOfKey_eq h
+  have hX : rt.basicFare + bc.extraCharge ≤ 10000000 :=
+    hv.md8.2.1 rt (routeOfFlightName_mem hrt) bc (boardingClassOf_mem hbc).1
+  have hC := ratioOn_le hv.md8 k.departureDate
+  have hcr : cfg.childFareRate ≤ 100 := hcv.childFareRate_le
+  generalize (rt.basicFare + bc.extraCharge) = X at *
+  generalize md.multiplicationRatioOn k.departureDate = C at *
+  have hb : X * C / 100 ≤ 100000000 := by
+    have := Nat.mul_le_mul hX hC
+    omega
+  generalize X * C / 100 = b at *
+  have hf : Spec.Fare.fare b ft.discountRate ≤ 100000000 := by
+    simp only [Spec.Fare.fare, Spec.Prim.ceilTo, Spec.Prim.pct]
+    have : b * (100 - ft.discountRate) ≤ b * 100 := Nat.mul_le_mul_left _ (by omega)
+    omega
+  have hq : pct b (cfg.childFareRate - ft.discountRate) ≤ 100000000 := by
+    simp only [Spec.Prim.pct]
+    have : b * (cfg.childFareRate - ft.discountRate) ≤ b * 100 := Nat.mul_le_mul_left _ (by omega)
+    omega
+  have hc : Spec.Fare.childNumOfAges cfg ages ≤ ages.length := by
+    simp only [Spec.Fare.childNumOfAges]; exact List.length_filter_le _ _
+  generalize Spec.Fare.fare b ft.discountRate = F at *
+  generalize pct b (cfg.childFareRate - ft.discountRate) = Q at *
+  generalize Spec.Fare.childNumOfAges cfg ages = c at *
+  have e1 := Nat.mul_le_mul_right (ages.length - c) hf
+  have e2 := Nat.mul_le_mul_right c hq
+  have e3 : 100000000 * (ages.length - c) + 100000000 * c = 100000000 * ages.length := by
+    rw [← Nat.mul_add]; congr 1; omega
+  rw [Nat.mul_comm _ (ages.length - c), Nat.mul_comm _ c] at e3
+  omega
+
 theorem assertNotEmpty_ok {α : Type} {l : List α} (h : l ≠ []) (m : String) :
     SourceModel.Fare.assertNotEmpty (some l) m = .ok l := by
   cases l with
@@ -92,7 +157,7 @@ example {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = s
     · sorry
     · sorry
     · sorry
-  · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a ha b => ?_
+  · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a _ ha b => ?_
     obtain ⟨pp, aJ, rfl, hage, haJ⟩ := ageOfPassenger_eq ha
     simp only [pure_bind, JRef.deref, hage, ok_bind, Providers.ticketReserveService, haJ, hamin]
     by_cases hlt : a < cfg.adultPassengerMinAge
