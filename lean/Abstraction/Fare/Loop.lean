@@ -77,6 +77,11 @@ theorem forall₂_of_mapM {α β γ : Type} {g : α → Option β} {R : γ → �
     exact .cons (hR x (List.mem_cons_self ..) y hy)
       (forall₂_of_mapM mk xs ys' hys fun x' hx' => hR x' (List.mem_cons_of_mem _ hx'))
 
+theorem forall₂_of_mapM_id {α β : Type} {g : α → Option β} {R : α → β → Prop} (xs : List α) (ys : List β)
+    (h : xs.mapM g = some ys) (hR : ∀ x ∈ xs, ∀ y, g x = some y → R x y) : Forall₂ R xs ys := by
+  have := forall₂_of_mapM (R := R) id xs ys h hR
+  rwa [List.map_id] at this
+
 end Abstraction.Fare
 
 namespace Abstraction.Fare
