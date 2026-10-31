@@ -58,6 +58,7 @@ inductive SrcAnswer where
   deriving DecidableEq, Repr
 
 /-- 入力。 -/
+@[gap "D-027"]
 structure SrcInput where
   db : MasterDb
   config : AtrsConfig

@@ -114,7 +114,7 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
 
 /-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件と、
 問い合わせの引数の値域。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
+@[spec_doc "docs/spec/master-data.md#参照関数", gap "D-027"]
 def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
   Machine.Machine.pure (fun i => i.1.Valid ∧ i.2.1.Valid i.1 ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
 

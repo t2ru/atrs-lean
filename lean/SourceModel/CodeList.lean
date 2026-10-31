@@ -36,7 +36,7 @@ structure AirportNop where
   airportNopInsertOrder : J32 := J32.ofInt 100
 
 /-- `AirportCodeList.retrieveMap`: 行は（コード, 名前, 表示順）。 -/
-@[source "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()@ee05610976981369"]
+@[source "java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()@ee05610976981369", gap "D-029"]
 def airportCodeList (cfg : AirportNop) (rows : List (Option String × Option String × Option J32)) : Entries :=
   let step (acc : JLinkedHashMap String String × Bool) (r : Option String × Option String × Option J32) :=
     match r with
