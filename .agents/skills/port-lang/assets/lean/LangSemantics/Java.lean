@@ -16,5 +16,5 @@ import LangSemantics.Java.IntLemmas
 # LangSemantics.Java
 
 Java の言語意味論モデル（アプリ非依存）。移植元・移植先のどちらにも使う。
-説明は port-lang スキルの `references/docs/java/semantics.md`。
+説明は port-lang スキルの `references/docs/lang/java/semantics.md`。
 -/

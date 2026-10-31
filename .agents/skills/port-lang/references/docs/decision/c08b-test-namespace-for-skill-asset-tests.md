@@ -24,7 +24,7 @@ generated:
 ## Decision Drivers
 
 * `assets/lean/` の一覧で、ライブラリの本体と検査を見分けられること
-* ファイルパスと名前空間を一致させる規則（[lean/rules.md](../lean/rules.md)）を保つこと
+* ファイルパスと名前空間を一致させる規則（[lean/rules.md](../lang/lean/rules.md)）を保つこと
 * ライブラリの本体の名前（`Machine.Refines` など）と、検査の名前が衝突しないこと
 * 検査の一部だけを実行できること（`trace/checks.json` の Java・PostgreSQL の突き合わせ）
 

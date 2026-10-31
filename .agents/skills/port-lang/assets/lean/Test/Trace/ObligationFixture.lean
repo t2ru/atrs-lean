@@ -7,7 +7,7 @@ import Test.Machine.Adequacy
 
 `obligation-check`（`Trace.Obligation`）のフィクスチャ。`Test.Trace.ObFix.<層>` の下に、規則をすべて満たす R 課題と、
 規則ごとの違反例を置く（テストは接頭辞 `Test.Trace.ObFix` を除いた名前で層を決める）。違反例には、実装後の敵対的レビューで
-作られた迂回（references/docs/architecture.md#空虚化を防ぐ義務 の「実装後の敵対的レビュー」）を含める。証明は `Test.Machine.Adequacy` の定理を定義の展開で使い回す。
+作られた迂回（references/docs/spec/architecture.md#空虚化を防ぐ義務 の「実装後の敵対的レビュー」）を含める。証明は `Test.Machine.Adequacy` の定理を定義の展開で使い回す。
 
 期待する判定は `Test/Trace/Main.lean` の `obligationTests` に書く。
 -/
@@ -68,7 +68,7 @@ def specFree : Machine.Machine Nat Nat Out :=
 theorem specFree_sound : specFree.Sound := ⟨fun _ _ => trivial, fun _ _ _ _ _ _ _ => trivial⟩
 theorem specFree_initIs : specFree.InitIs 5 := fun _ => Iff.rfl
 
-/-- PRE を入力の値域で制限した抽象機械（環境の前提の必要性の正例。references/docs/architecture.md#空虚化を防ぐ義務）。 -/
+/-- PRE を入力の値域で制限した抽象機械（環境の前提の必要性の正例。references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
 def specPre : Machine.Machine Nat Nat Out :=
   Machine.ofChoice (fun _ => True) (· = 5) (fun _ n => n < 1000) fRes false ()
 
@@ -116,7 +116,7 @@ def domSet : Concrete Nat Req Out Unit where
 /-- 抽象機械そのものを具体機械とする（同語反復）。 -/
 def taut : Concrete Nat Nat Out Unit := spec.toConcrete
 
-/-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。references/docs/architecture.md#空虚化を防ぐ義務）。 -/
+/-- `lang` が真のとき正常終了しない具体機械（必要な差異の正例。references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
 def langErr : Concrete Nat Req Out Unit := Test.Machine.Adequacy.langErr
 
 /-- `langErr` と同じ具体機械（別の基底の違反例のため）。 -/
@@ -351,7 +351,7 @@ theorem aoPart4_kernel : KernelIs aoPart4 (Machine.undefOrEq aoPart) := by
 @[obligation "ABS-927"]
 theorem v0_notRefines : Refines spec (good.restrict devLang) glue ∧ True := ⟨good_refines, trivial⟩
 
-/-! ## 成分の必要性（G9。references/docs/architecture.md#空虚化を防ぐ義務） -/
+/-! ## 成分の必要性（G9。references/docs/spec/architecture.md#空虚化を防ぐ義務） -/
 
 /-- 正例: 前提型の差異 `devLang` が必要な R 課題。 -/
 @[obligation "ABS-950"]

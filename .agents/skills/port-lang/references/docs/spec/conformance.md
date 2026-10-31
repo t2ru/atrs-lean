@@ -1,5 +1,5 @@
 ---
-type: Guideline
+type: Specification
 title: "適合テストベクタの形式"
 description: "言語中立な適合テストベクタの置き場所・JSON の形式・比較の規則・生成と実行器。"
 tags: [conformance]
@@ -75,7 +75,7 @@ conformance/
 ## 意図から書く例
 
 `spec/` のベクタは `Spec` の標準の選択 `run` から生成するので、`Spec` が業務の意図どおりであること（仕様の妥当性）は確かめない。
-そこで、仕様文書の「例」（[spec-documents.md](spec-documents.md#定義の節構成draft-と-normative)）は、ベクタとは別に、期待値を手で書いた検査で `Spec` に照らす（Spec-Testing Proofs の考え方）。
+そこで、仕様文書の「例」（[spec-documents.md](../rules/spec-documents.md#定義の節構成draft-と-normative)）は、ベクタとは別に、期待値を手で書いた検査で `Spec` に照らす（Spec-Testing Proofs の考え方）。
 
 - 形は `#guard`（実行できる計算）か定理（関係 `step` や PRE についての命題）とする。期待値を `run` から写してはならない。
 - 許す例だけでなく、拒む例も書く。
@@ -109,4 +109,4 @@ conformance/
 
 Lean の実行器はスキルの `assets/lean/ConformanceKit` にある（`ConformanceKit.runDoc`・`runDir`・`runDirFx`・`selectModelDef`・`loadFixtures`）。
 プロジェクトは、操作の割当（`operation` → モデルの関数。`List (String × ConformanceKit.Op)`）と、`Spec` の値の表現の読み取り（暦日・時刻など）を書き、`lake test` のドライバから実行器を呼ぶ。
-SQL の差分実行の結果（[sql/harness.md](sql/harness.md#差分実行の結果)）の表は、`ConformanceKit.SqlTable` で読む。
+SQL の差分実行の結果（[sql/harness.md](../lang/sql/harness.md#差分実行の結果)）の表は、`ConformanceKit.SqlTable` で読む。

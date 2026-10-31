@@ -5,7 +5,7 @@ import Trace.Gap
 # Trace.Dump
 
 `lake exe trace-dump` の本体。全定義について、層・追跡属性・Merkle ハッシュ・参照を JSON で返す
-（port-lang の `lean/trace-attributes.md`）。
+（port-lang の `lang/lean/trace-attributes.md`）。
 
 - **references**: 定義の型と本体（帰納型は構築子の型）に現れる定数。`match_1`・`proof_1` などの
   補助定数は、その中身を展開して親の参照に含める。

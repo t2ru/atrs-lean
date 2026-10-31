@@ -11,7 +11,7 @@ generated:
 
 # スキルの意思決定記録
 
-書き方は [maintenance.md](../maintenance.md#意思決定記録decision)。並びは日付の順。
+書き方は [maintenance.md](../rules/maintenance.md#意思決定記録decision)。並びは日付の順。
 
 | ID | 題名 | decision_status | 日付 |
 | --- | --- | --- | --- |
@@ -24,3 +24,4 @@ generated:
 | 87b9 | [スキルの文書を references/docs/ の OKF バンドルにし、スキルの決定と作業項目をスキルで持つ](87b9-skill-docs-as-okf-bundle.md) | accepted | 2026-10-31 |
 | 330e | [OKF バンドルとリンクの検査の道具 okf_check.py を置き、規則を設定のプロファイルで与える](330e-okf-bundle-check-tool.md) | accepted | 2026-10-31 |
 | c08b | [スキルの assets の Lean の検査を名前空間 Test.<ライブラリ> にまとめる](c08b-test-namespace-for-skill-asset-tests.md) | accepted | 2026-10-31 |
+| 748c | [スキルの文書を spec/・rules/・guide/・lang/ に分け、移動の道具 docmv.py を置く](748c-skill-docs-category-directories.md) | accepted | 2026-10-31 |

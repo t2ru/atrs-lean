@@ -139,4 +139,4 @@ Chosen option: "3 原則を最上位の原則とし、語を定義し、言語�
 
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md), [ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md), [ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md), [ADR e56e](e56e-conflict-as-spec-nondeterminism.md)
 * [spec/assurance.md](../spec/assurance.md)（保証の限界）
-* スキル port-lang: [SKILL.md](../../.agents/skills/port-lang/SKILL.md#原則), [verification.md](../../.agents/skills/port-lang/references/docs/verification.md), [architecture.md](../../.agents/skills/port-lang/references/docs/architecture.md#リファインメントb-メソッド)
+* スキル port-lang: [SKILL.md](../../.agents/skills/port-lang/SKILL.md#原則), [verification.md](../../.agents/skills/port-lang/references/docs/spec/verification.md), [architecture.md](../../.agents/skills/port-lang/references/docs/spec/architecture.md#リファインメントb-メソッド)

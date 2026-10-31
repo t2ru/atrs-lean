@@ -19,7 +19,7 @@ generated:
   - 新しい手段を採用したとき
   - 手段の対象外を作ったとき（ハーネスの対象外、Kani の境界、ベクタに無い入力の範囲、`#[verifier::external]` など）
 - 人や LLM のレビューは、ここでは手段として数えない（補助にとどまる）。
-- 手段の一般的な説明は、スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/docs/verification.md) と各言語パックの `verification.md` による。
+- 手段の一般的な説明は、スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/docs/spec/verification.md) と各言語パックの `verification.md` による。
 - 「（付録に記入）」とある行は、詳細な範囲を付録の表に記入する。記入する backlog 項目を付録に示す。
 
 ## 移植元ソース ⇔ SourceModel

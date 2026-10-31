@@ -51,7 +51,7 @@ def find_repo():
 
 
 REPO = find_repo()
-# プロジェクトの設定（trace/project.json の ids。port-lang の references/docs/traceability.md#プロジェクトの設定）
+# プロジェクトの設定（trace/project.json の ids。port-lang の references/docs/spec/traceability.md#プロジェクトの設定）
 CFG = json.loads((REPO / "trace" / "project.json").read_text(encoding="utf-8"))["ids"]
 MAP = REPO / CFG.get("legacy", "docs/legacy-ids.json")
 # 種類 → 置き場所の列（設定は文字列か配列）

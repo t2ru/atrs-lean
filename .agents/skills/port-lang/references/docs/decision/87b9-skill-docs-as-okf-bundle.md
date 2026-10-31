@@ -58,10 +58,10 @@ Chosen option: "`references/docs/` を OKF のバンドルとし、その中に 
 | `references/docs/<lang>/` | 言語パック（`type: Reference`） |
 | `references/docs/decision/` | スキルの意思決定記録（MADR 4.0、`type: Architecture Decision Record`） |
 | `references/docs/backlog/` | スキルの作業項目（`type: Backlog Item`） |
-| `references/docs/maintenance.md` | このバンドルの保守の規則 |
+| `references/docs/rules/maintenance.md` | このバンドルの保守の規則 |
 
-* 各文書は OKF v0.2 の frontmatter を持つ。規則は [maintenance.md](../maintenance.md) にまとめる。
-* 言語パックの 6 ファイルの構成（[adding-a-language.md](../adding-a-language.md)）と相対リンクは変えない。
+* 各文書は OKF v0.2 の frontmatter を持つ。規則は [maintenance.md](../rules/maintenance.md) にまとめる。
+* 言語パックの 6 ファイルの構成（[adding-a-language.md](../guide/adding-a-language.md)）と相対リンクは変えない。
 
 ### 何をスキルに記録するか
 
@@ -108,7 +108,7 @@ ATRS の `docs/` から、純粋にスキルのものだけを `git mv` で移�
 
 * `python3 -I <skill>/scripts/docs/ids.py check` が通る（`ids.isolated` の検査を含む）。
 * `references/docs/` の `index.md`・`log.md` 以外の `.md` が、`type` を持つ frontmatter を持つ。
-* 文書を足したら、`index.md` と `log.md` を更新する（[maintenance.md](../maintenance.md)）。
+* 文書を足したら、`index.md` と `log.md` を更新する（[maintenance.md](../rules/maintenance.md)）。
 
 ## Pros and Cons of the Options
 
@@ -126,7 +126,7 @@ ATRS の `docs/` から、純粋にスキルのものだけを `git mv` で移�
 
 * 来歴: ATRS の ADR f4e1（スキルへの切り出し。スキルに ATRS の語を書かない規則）、ATRS の ADR a0f1（ATRS の `docs/` の OKF）、ATRS の ADR f57e（UUID の ID）。ATRS 側の決定は ATRS の ADR 50f9 にある。
 * 作業: [backlog de90](../backlog/de90-skill-docs-okf-bundle-and-records.md)
-* 規則: [maintenance.md](../maintenance.md)、道具: [scripts/README.md](../../../scripts/README.md)
+* 規則: [maintenance.md](../rules/maintenance.md)、道具: [scripts/README.md](../../../scripts/README.md)
 
 [^okf-spec]: Open Knowledge Format (OKF) Specification v0.2 — §3 Bundle, §4 Frontmatter, §8 Index, §9 Log.
 [^agentskills]: Agent Skills Specification — Optional directories: `references/`.

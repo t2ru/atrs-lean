@@ -116,4 +116,4 @@ conformance/          言語中立の適合テストベクタ
 
 * 配置（どの言語プロジェクトがどの名前空間を持つか）は [ADR dd0f](dd0f-rust-as-target-language.md) で更新した。
 * [ADR a43d](a43d-two-layer-model-java-faithful-and-abstract.md) の層の名前を本 ADR で確定する（二層＋証明という決定内容は変えない）。
-* [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lean/rules.md), [spec/abstraction.md](../spec/abstraction.md), [spec/refinement.md](../spec/refinement.md)
+* [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lang/lean/rules.md), [spec/abstraction.md](../spec/abstraction.md), [spec/refinement.md](../spec/refinement.md)

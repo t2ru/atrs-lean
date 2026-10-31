@@ -1,5 +1,5 @@
 ---
-type: Guideline
+type: Specification
 title: "構成: 層・名前空間・依存・リファインメント・正規性"
 description: "層・Lean の名前空間・依存の向き・B メソッドのリファインメントと証明課題・空虚化を防ぐ義務・正規性の順位。"
 tags: [architecture, refinement]
@@ -26,7 +26,7 @@ generated:
 モデルと証明は、すべて Lean に置く。Lean のトップレベル名前空間は、次の 6 つだけとする。例外は 4 つある。
 - `Machine`: 抽象機械とリファインメントの枠組み。アプリに依存しない
 - `Trace`: 追跡属性の基盤
-- `Tests`・`Tools`: 実行ファイル用。スキルの assets の検査は `Test.<ライブラリ>` に置き、`Tests` と同じ層として扱う（[ADR c08b](decision/c08b-test-namespace-for-skill-asset-tests.md)）
+- `Tests`・`Tools`: 実行ファイル用。スキルの assets の検査は `Test.<ライブラリ>` に置き、`Tests` と同じ層として扱う（[ADR c08b](../decision/c08b-test-namespace-for-skill-asset-tests.md)）
 
 | 名前空間 | 日本語名 | 内容 | 文書上の記号 |
 | --- | --- | --- | --- |
@@ -183,8 +183,8 @@ generated:
 | 観測型 | 出力・状態の一部が常に異なる | J または αₒ の名前付きの成分として現れ、同じ属性を付ける。J と αₒ は、標準の抽象化（下表）と、名前付きの差異成分だけで組み立てる |
 | モデル外 | `Spec` の外の規範（仕様文書）とソースが異なり、どのモデルにも現れない | 定理には現れない。これは抽象モデルとモデルの不一致ではない。登録簿に書き、保証の限界の文書に載せる。`Spec` で表現できる振る舞いの違いを、モデル外としてはならない |
 
-- 差異の登録簿は Lean に置く。差異ごとに、型 `Trace.Gap` の宣言に `@[gap_entry]` を付け、種類・箇所（文書の節）・前提または成分・R 課題・W 課題・影響を値に、説明を docstring に書く。差異の生じる `Spec` と `SourceModel`（`TargetModel`）の定義には、箇所の印 `@[gap "D-NNN"]` を付ける。文書の表は道具が登録簿から生成する（[lean/trace-attributes.md](lean/trace-attributes.md#ギャップの登録簿)）。`Spec` の PRE の外での振る舞い（差異ではない）と、種類が未確定のものも、同じ登録簿に種類を分けて置く。
-- ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で仮定しない（ギャップが実在すれば、差異を外したリファインメントは偽なので矛盾する）。代わりに、ギャップごとに証明の状態（偽を証明済み・被覆・未証明・形式化していない・PRE の外）を登録簿の値に書き、状態を裏付ける宣言（否定の定理・被覆の定理・`opaque` の主張・前提の述語）に `@[gap]` を付ける。obligation-check がその対応を確かめる（[lean/trace-attributes.md](lean/trace-attributes.md#証明の状態evidence)）。
+- 差異の登録簿は Lean に置く。差異ごとに、型 `Trace.Gap` の宣言に `@[gap_entry]` を付け、種類・箇所（文書の節）・前提または成分・R 課題・W 課題・影響を値に、説明を docstring に書く。差異の生じる `Spec` と `SourceModel`（`TargetModel`）の定義には、箇所の印 `@[gap "D-NNN"]` を付ける。文書の表は道具が登録簿から生成する（[lean/trace-attributes.md](../lang/lean/trace-attributes.md#ギャップの登録簿)）。`Spec` の PRE の外での振る舞い（差異ではない）と、種類が未確定のものも、同じ登録簿に種類を分けて置く。
+- ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で仮定しない（ギャップが実在すれば、差異を外したリファインメントは偽なので矛盾する）。代わりに、ギャップごとに証明の状態（偽を証明済み・被覆・未証明・形式化していない・PRE の外）を登録簿の値に書き、状態を裏付ける宣言（否定の定理・被覆の定理・`opaque` の主張・前提の述語）に `@[gap]` を付ける。obligation-check がその対応を確かめる（[lean/trace-attributes.md](../lang/lean/trace-attributes.md#証明の状態evidence)）。
 - 前提型・観測型の差異には、次の 3 つを必須とする。
   - Lean の名前
   - それを含むリファインメントの主定理（R 課題）

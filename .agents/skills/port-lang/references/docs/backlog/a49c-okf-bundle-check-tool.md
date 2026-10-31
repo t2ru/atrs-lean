@@ -27,7 +27,7 @@ generated:
   - 相対リンク・見出しアンカー・`/` で始まるリンク（L1〜L3）
   - `--self-test` と違反例（`scripts/ci/fixtures/okf/`）
 - このバンドルの規則 `scripts/docs/profiles/port-lang.json`
-- 文書: [maintenance.md](../maintenance.md#バンドルの検査)、[traceability.md](../traceability.md#プロジェクトの設定)、`scripts/README.md`、SKILL.md の版（0.9）
+- 文書: [maintenance.md](../rules/maintenance.md#バンドルの検査)、[traceability.md](../spec/traceability.md#プロジェクトの設定)、`scripts/README.md`、SKILL.md の版（0.9）
 
 ## 対象外
 
@@ -42,4 +42,4 @@ generated:
 
 ## 参照
 
-- [ADR 330e](../decision/330e-okf-bundle-check-tool.md)、[maintenance.md](../maintenance.md#バンドルの検査)
+- [ADR 330e](../decision/330e-okf-bundle-check-tool.md)、[maintenance.md](../rules/maintenance.md#バンドルの検査)

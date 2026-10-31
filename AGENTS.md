@@ -21,7 +21,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 - モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` から Verus の写しを生成し、Verus で Rust との一致を証明する。あわせて、追跡注釈・適合テスト・Kani で確認する（[ADR 0bd3](docs/decision/0bd3-generate-verus-mirror-from-target-model.md)）。
 - `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 01d4](docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)）。リファインメントが空虚・自明に成り立たないよう、付帯の義務（選択の像としての `Spec`、環境の固定、標準の貼り合わせ、入口の全域性など）を課す（[ADR 70eb](docs/decision/70eb-refinement-non-vacuity-obligations.md)）。
 - トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR e2a4](docs/decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
-- 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 3f36](docs/decision/3f36-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/docs/upgrade.md)）。
+- 移植元の版上げに追従する。`SourceModel` は最新版のみ（[ADR 3f36](docs/decision/3f36-following-upstream-releases.md)、[port-lang/upgrade.md](.agents/skills/port-lang/references/docs/guide/upgrade.md)）。
 - 移植の方法はアプリに依存しないスキル **port-lang** に、ATRS 固有の情報は `docs/` に置く（[ADR f4e1](docs/decision/f4e1-extract-porting-method-as-agent-skill.md)）。
 
 - 上流ソース: <https://github.com/terasolunaorg/atrs> の `JavaConfig-Thymeleaf/`
@@ -31,7 +31,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 **すべての作業（文書・コード・証明・テスト）の前に、次の 2 つを読むこと。**
 
-1. **言語間移植の方法**: スキル [`.agents/skills/port-lang/SKILL.md`](.agents/skills/port-lang/SKILL.md)（アプリに依存しない方法。Agent Skills 形式。[ADR f4e1](docs/decision/f4e1-extract-porting-method-as-agent-skill.md)）。言語ごとの情報は `references/docs/<lang>/` にあり、ATRS では `java`・`sql`（移植元）、`rust`（移植先）、`lean`（形式化）を使う。
+1. **言語間移植の方法**: スキル [`.agents/skills/port-lang/SKILL.md`](.agents/skills/port-lang/SKILL.md)（アプリに依存しない方法。Agent Skills 形式。[ADR f4e1](docs/decision/f4e1-extract-porting-method-as-agent-skill.md)）。言語ごとの情報は `references/docs/lang/<lang>/` にあり、ATRS では `java`・`sql`（移植元）、`rust`（移植先）、`lean`（形式化）を使う。
 2. **ATRS の運用規約**: [`docs/rules/README.md`](docs/rules/README.md) と、そこから参照される規約。特に [atrs-porting.md](docs/rules/atrs-porting.md)（スキルを ATRS に適用するときの固有事項）。
 
 優先順位は、ATRS の ADR → `docs/rules/` → スキル → 本ファイルの順とする（[docs/rules/README.md](docs/rules/README.md#優先順位)）。

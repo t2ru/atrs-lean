@@ -104,7 +104,7 @@ Chosen option: "成り立つ条件を SKILL.md に置き、進め方を「置き
 * 来歴: ATRS の `docs/decision` で決めた記録を、[ADR 87b9](87b9-skill-docs-as-okf-bundle.md) でこのバンドルへ移した。ATRS へのリンクは、リンク無しの来歴の文に直した。
 * 作成時は旧番号 0042 だったが、main に ATRS の ADR 8f18・ATRS の ADR 9ac6 が先に入ったため、旧番号 0044 に採番し直した。
 * ATRS の ADR f4e1, ATRS の ADR c336, ATRS の ADR 01d4, ATRS の ADR e56e, ATRS の ADR 70eb
-* スキル: [SKILL.md](../../../SKILL.md#移植が成り立つ条件)、[workflow.md](../workflow.md)
+* スキル: [SKILL.md](../../../SKILL.md#移植が成り立つ条件)、[workflow.md](../guide/workflow.md)
 
 ### 敵対的レビュー
 

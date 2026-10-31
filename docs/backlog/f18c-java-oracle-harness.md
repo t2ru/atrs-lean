@@ -38,4 +38,4 @@ generated:
 
 ## 参照
 
-- [port-lang/java/harness.md](../../.agents/skills/port-lang/references/docs/java/harness.md)
+- [port-lang/java/harness.md](../../.agents/skills/port-lang/references/docs/lang/java/harness.md)

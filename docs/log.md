@@ -2,6 +2,10 @@
 
 ## 2026-10-31
 
+* **Update**: スキル port-lang の文書を、性格ごとのディレクトリ `spec/`・`rules/`・`guide/`・`lang/<lang>/` に分けた（[スキルの ADR 748c](../.agents/skills/port-lang/references/docs/decision/748c-skill-docs-category-directories.md)、[スキルの backlog 97a7](../.agents/skills/port-lang/references/docs/backlog/97a7-skill-docs-category-directories.md)）。スキルの版は 0.11。
+  * スキルの道具 `docmv.py` で、ATRS の文書・`lean/`・`trace/project.json`・`.github/workflows/` のリンクとパスの言及を張り直した。ADR とこのファイルの本文に書いたリンクでないパスは記録として残し、リンクだけ直した。
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.11）、[AGENTS.md](../AGENTS.md)（言語パックの置き場所）。`tools/ci/lean.sh` に `docmv.py --self-test` を足した。
+
 * **Update**: [スキルの ADR c08b](../.agents/skills/port-lang/references/docs/decision/c08b-test-namespace-for-skill-asset-tests.md) で、スキルの assets の検査の名前空間を `XxxTest` から `Test.Xxx`（`Test.LangSemantics`・`Test.Machine`・`Test.ConformanceKit`・`Test.Trace`）に改めたのにあわせ、[spec/assurance.md](spec/assurance.md) のパス、`trace/checks.json` の検査の手順（`lake build +Test.LangSemantics`）、`tools/ci/lean.sh` の表示を改めた。ATRS の `Tests` は変えていない。スキルの版は 0.10。
 * **Creation**: [ADR 920d](decision/920d-docs-bundle-check-in-ci.md) で、`docs/` とスキルのバンドルを、スキルの道具 `okf_check.py`（[スキルの ADR 330e](../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)、[スキルの backlog a49c](../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md)）で検査し、`tools/ci/lean.sh` から実行するようにした。[backlog ddbd](backlog/ddbd-okf-bundle-lint.md) を完了した（`done`）。
   * ATRS の規則を `trace/project.json` の `okf` に置いた。スキルの版は 0.9。
@@ -27,7 +31,7 @@
 * **Update**: 次の文書を改めた。
   * [spec/abstraction.md](spec/abstraction.md)（証明の状態。表は生成）・[spec/refinement.md](spec/refinement.md)（表は生成）・[spec/assurance.md](spec/assurance.md)
   * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.7）、[backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
-  * スキル port-lang の SKILL.md（版 0.7）・[lean/trace-attributes.md](../.agents/skills/port-lang/references/docs/lean/trace-attributes.md)（証明の状態）・[architecture.md](../.agents/skills/port-lang/references/docs/architecture.md)（差異）
+  * スキル port-lang の SKILL.md（版 0.7）・[lean/trace-attributes.md](../.agents/skills/port-lang/references/docs/lang/lean/trace-attributes.md)（証明の状態）・[architecture.md](../.agents/skills/port-lang/references/docs/spec/architecture.md)（差異）
 
 * **Add**: [ADR cd33](decision/cd33-spec-nondet-types-and-env-pre.md)（[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める）。
 * **Update**: [backlog 0fdf](backlog/0fdf-spec-nondet-and-entry-env.md) を完了した（`done`）。`Spec.Nondet`（N-001〜N-005 の `@[nondet]`）、`Spec.EnvPre`（`masterConfigOk` の `@[env_pre]`・検査関数 `validB`）、生成した `Spec.Seed` とシードの妥当性 `seed_env` を置いた。入力の値域の前提は [backlog a89e](backlog/a89e-http-contract-adapter.md)・[ac71](backlog/ac71-reservation-history-report.md) の範囲に移した。
@@ -52,7 +56,7 @@
   * [spec/abstraction.md](spec/abstraction.md)（ABS-004・005・112 の定理名、α の表）、`lean/Abstraction/Gap.lean`（D-001・D-002・D-012・D-027 の前提と R 課題。表は生成）
   * [spec/fare-calculation.md](spec/fare-calculation.md)（合計金額の抽象機械）
   * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
-  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/docs/java/semantics.md)（`int` の補題）
+  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/docs/lang/java/semantics.md)（`int` の補題）
 
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 2 段を終えた（`doing`）。R 課題 ABS-001（`Abstraction.Fare.basicFareRefines`）・ABS-002（`fareRefines`）、C 課題 ABS-003、L 課題 ABS-007、W 課題 ABS-101・102（D-001・D-002 の必要性）を証明した。基本運賃・運賃の抽象機械と SPEC 課題を `Spec.Fare` に置いた。
 * **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 2 段の決定（抽象機械の置き場所、具体側の入力、D-027 の定数、差異の前提の形）を加えた。
@@ -78,7 +82,7 @@
   * [spec/fare-calculation.md](spec/fare-calculation.md)（基本運賃・運賃の差異の条件）
   * [spec/assurance.md](spec/assurance.md)（前提が十分条件であること）
   * [backlog/README.md](backlog/README.md)、[AGENTS.md](../AGENTS.md)
-  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/docs/java/semantics.md)（補題と、double の式の差の示し方）
+  * スキル port-lang の [java/semantics.md](../.agents/skills/port-lang/references/docs/lang/java/semantics.md)（補題と、double の式の差の示し方）
 
 * **Update**: [backlog 25f7](backlog/25f7-fare-calculation-both-models.md) を完了した（`done`）。R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と、W 課題 ABS-127（`need_D027`）を証明した。fare-calculation.md の例を、意図から書く例として `Tests.SpecChecks` に置いた。
 * **Update**: [ADR f353](decision/f353-abs-026-proof-structure-nop-and-d027-scope.md) に、次の 2 点の決定を加えた。
@@ -181,7 +185,7 @@
 
 * **Creation**: [ADR 0b83](../.agents/skills/port-lang/references/docs/decision/0b83-porting-conditions-and-workflow.md) で、スキル port-lang に移植が成り立つ条件を明示し、進め方の既定を補うことを決めた。
   * スキルの [SKILL.md](../.agents/skills/port-lang/SKILL.md) に「移植が成り立つ条件」（適用の前提・成立の条件・言えること・言えないこと）を加え、版を 0.4 にした。
-  * 進め方の既定として [workflow.md](../.agents/skills/port-lang/references/docs/workflow.md) を新設した（評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録）。プロジェクトは置き換えてよい。
+  * 進め方の既定として [workflow.md](../.agents/skills/port-lang/references/docs/guide/workflow.md) を新設した（評価・判断を記録する事項・検査ゲート・未着手の可視化・独立した敵対的レビュー・画面の確認・記録）。プロジェクトは置き換えてよい。
   * スキルの process.md・verification.md から workflow.md を参照した。
   * 独立したエージェントによる敵対的レビュー（2 観点、2 巡）を行い、指摘と対応を ADR 0b83 に記した。作成時は旧番号 0042 だったが、main に [ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md)・[ADR 9ac6](decision/9ac6-vacuity-literature-necessity-and-mutation.md) が先に入ったため、旧番号 0044 に採番し直した。
   * main の ADR 9ac6（成分の必要性・仕様の変異テスト・意図から書く例）に合わせて、成立の条件 S2 と workflow.md の判断を記録する事項・検査ゲートを整えた。
@@ -294,7 +298,7 @@
 * **Update**: 上流 `f4bfbf06` と依存ライブラリ（Spring Framework 7.0.3、Spring Security 7.0.x、Hibernate Validator 9.1.0.Final、ActiveMQ Artemis）のソースを読んで、仕様の未決事項と文書間の矛盾を解消した。[spec/input-validation.md](spec/input-validation.md)（Email、エラーの並び、日付の解析、項目名の対応、REST の搭乗者数）、[spec/http-contract.md](spec/http-contract.md)（セッションの規範節、ログインの遷移先、日付の JSON、ApiError のコード、Basic 認証の失敗）、[spec/errors-and-messages.md](spec/errors-and-messages.md)、[spec/ports.md](spec/ports.md)（規範節の範囲、Clock、採番、キュー、トランザクション）、[spec/abstraction.md](spec/abstraction.md)（既知差異 D-011〜D-021、課題 ABS-032〜034）など。
 * **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に上流の依存の版を記録した。backlog [4e0e](backlog/4e0e-member-usecases-and-input-validation.md)・[f18c](backlog/f18c-java-oracle-harness.md) の範囲を改めた。
 
-* **Update**: リポジトリのルートを Lake ワークスペースにした（`lakefile.lean` が `.agents/skills/port-lang/assets` を `require`）。ルートで起動した Lean LSP から `LangSemantics` の import が解決されないのを直した。手順は [atrs-porting.md](rules/atrs-porting.md) とスキルの [lean/rules.md](../.agents/skills/port-lang/references/docs/lean/rules.md)。
+* **Update**: リポジトリのルートを Lake ワークスペースにした（`lakefile.lean` が `.agents/skills/port-lang/assets` を `require`）。ルートで起動した Lean LSP から `LangSemantics` の import が解決されないのを直した。手順は [atrs-porting.md](rules/atrs-porting.md) とスキルの [lean/rules.md](../.agents/skills/port-lang/references/docs/lang/lean/rules.md)。
 
 * **Creation**: スキル port-lang に `assets/LangSemantics/<Lang>/`（Java・Sql・Sql.Postgresql・Rust の Lean モデル。core のみ、`#guard` 検査付き）を追加した。backlog [a8be](backlog/a8be-lang-semantics-java.md)・[c7e8](backlog/c7e8-lang-semantics-sql.md)・[a936](../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) はこれを起点とする。
 
@@ -305,15 +309,15 @@
 
 * **Creation**: [ADR 796c](decision/796c-models-in-lean-and-sources-traced-at-both-ends.md)（モデルと証明をすべて Lean に置き、`TargetModel` を Lean のモデル、Rust を移植先ソースとする）、[ADR 81ab](decision/81ab-cross-language-traceability.md)（両端の追跡: ロケータ・モデル側注釈・確認済みハッシュ・TR 検査）、[ADR 3f36](decision/3f36-following-upstream-releases.md)（上流の版上げ追従・差分オラクル）を作成した。
 * **Deprecation**: [ADR 3e1d](decision/3e1d-language-neutral-top-level-namespaces.md) と [ADR dd0f](decision/dd0f-rust-as-target-language.md) を ADR 796c で置き換えた。
-* **Creation**: 規約 [port-lang/upgrade.md](../.agents/skills/port-lang/references/docs/upgrade.md)（版上げ手順、draft）を追加した。
-* **Update**: [port-lang/lean/rules.md](../.agents/skills/port-lang/references/docs/lean/rules.md)・[port-lang/rust/layout.md](../.agents/skills/port-lang/references/docs/rust/layout.md)・porting・testing・version-control・spec-writing・documentation を新構成と追跡注釈に合わせて改訂した。
+* **Creation**: 規約 [port-lang/upgrade.md](../.agents/skills/port-lang/references/docs/guide/upgrade.md)（版上げ手順、draft）を追加した。
+* **Update**: [port-lang/lean/rules.md](../.agents/skills/port-lang/references/docs/lang/lean/rules.md)・[port-lang/rust/layout.md](../.agents/skills/port-lang/references/docs/lang/rust/layout.md)・porting・testing・version-control・spec-writing・documentation を新構成と追跡注釈に合わせて改訂した。
 * **Update**: [spec/traceability.md](spec/traceability.md) をロケータ文法・注釈・検査・運賃の追跡例を含む形に書き直した。[spec/refinement.md](spec/refinement.md) を REF（Lean で証明）と SRC（TargetModel ⇔ Rust の確認）に分けた。[spec/conformance.md](spec/conformance.md) に `target-model/`・`modelDef`・`upstream` を追加した。
 * **Update**: バックログ be49・aedf・4b0e・a89e・fb50・ddb4・9c1b を改訂し、a936・eff6・26c5・ffdc・455f・773f を追加した。
 
 * **Creation**: [ADR dd0f](decision/dd0f-rust-as-target-language.md)（移植先を Rust とし、Refinement を Verus・Kani・適合テストで充足）と [ADR 61bc](decision/61bc-lean-spec-as-normative-source.md)（Lean `Spec` を正規とし、`Spec` で表現できない仕様だけを docs/spec で定義）を作成した。
 * **Deprecation**: [ADR 3b0a](decision/3b0a-spec-as-normative-source.md) を ADR 61bc で置き換えた。
 * **Update**: [ADR 3e1d](decision/3e1d-language-neutral-top-level-namespaces.md) の配置の記述を ADR dd0f に合わせた（Lean は `TargetModel`・`Refinement` を持たない）。ADR 84bf・97f9・dc3a・659f の関連箇所を更新した。
-* **Creation**: 規約 [port-lang/rust/layout.md](../.agents/skills/port-lang/references/docs/rust/layout.md)（draft）と [rules/version-control.md](rules/version-control.md)（作業の区切りで commit、push しない）を追加した。
+* **Creation**: 規約 [port-lang/rust/layout.md](../.agents/skills/port-lang/references/docs/lang/rust/layout.md)（draft）と [rules/version-control.md](rules/version-control.md)（作業の区切りで commit、push しない）を追加した。
 * **Update**: docs/spec の全文書に区分 `spec_role`（normative / meta / draft）を付け、[spec/refinement.md](spec/refinement.md) を Rust 向けに書き直した。
 * **Update**: バックログ be49・4b0e・a8ef・a89e を Rust 方針に合わせて改訂し、31da を取りやめ、fb50・ddb4・9c1b を追加した。
 

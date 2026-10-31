@@ -4,7 +4,7 @@ import LangSemantics.Sql
 # LangSemantics.Sql.Postgresql
 
 PostgreSQL 方言。共通部分（`LangSemantics.Sql`）との差分だけを定義する。
-説明は port-lang スキルの `references/docs/sql/dialects/postgresql/semantics.md`。
+説明は port-lang スキルの `references/docs/lang/sql/dialects/postgresql/semantics.md`。
 
 lang: `lang:postgresql#datatype-numeric`, `lang:postgresql#datatype-character`, `lang:postgresql#functions-formatting`,
 `lang:postgresql#sql-createsequence`, `lang:postgresql#queries-order`, `lang:postgresql#collation`

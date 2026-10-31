@@ -8,7 +8,7 @@ import Abstraction.Fare.TotalFareRefines
 # Abstraction.Gap
 
 [Spec] と [Source] のギャップの登録簿（正）。既知差異（前提型・観測型・モデル外）、[Spec] の PRE の外での [Source] の振る舞い、
-未確定の差異を、ID ごとに 1 つの宣言として置く（ADR cc24・port-lang の `references/docs/lean/trace-attributes.md`）。
+未確定の差異を、ID ごとに 1 つの宣言として置く（ADR cc24・port-lang の `references/docs/lang/lean/trace-attributes.md`）。
 
 - 説明（`docs/spec/abstraction.md` の表の「差異」「振る舞い」「状況」の列）は docstring に書く。
 - `docs/spec/abstraction.md` の 4 つの表は、`trace manifest`（port-lang の `scripts/trace`）がここから生成する。表を手で直してはならない。

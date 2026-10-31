@@ -1,5 +1,5 @@
 ---
-type: Guideline
+type: Specification
 title: "言語中立性の制約（Spec に課す）"
 description: "Spec をあらゆる移植先言語へ同じ振る舞いで写すために課す、言語中立性の制約。"
 tags: [spec, portability]

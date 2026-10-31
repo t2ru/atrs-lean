@@ -60,7 +60,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ### 空虚化を防ぐ義務
 
-`Machine.Refines` だけでは、[Spec] が緩い場合・PRE が強すぎる場合・貼り合わせが粗い場合にも空虚に成り立つ。そこで、R 課題ごとに次を課す（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)、スキル port-lang の [architecture.md](../../.agents/skills/port-lang/references/docs/architecture.md#空虚化を防ぐ義務)）。
+`Machine.Refines` だけでは、[Spec] が緩い場合・PRE が強すぎる場合・貼り合わせが粗い場合にも空虚に成り立つ。そこで、R 課題ごとに次を課す（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)、スキル port-lang の [architecture.md](../../.agents/skills/port-lang/references/docs/spec/architecture.md#空虚化を防ぐ義務)）。
 
 | 義務 | 内容 |
 | --- | --- |
@@ -156,7 +156,7 @@ Machine.Refines (Spec.<機能>.machine.restrict dev_DNNN …)
 
 ### 前提型の差異の影響
 
-前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。分類は人の判断であり、迷う場合は「中断」とする（[assurance.md](assurance.md#モデル間の保証の限界)）。backlog の列は、その差異の W 課題を完了させる項目である（段階導入。[traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md#検査)）。
+前提型の差異の前提を破る 1 歩の後で、状態が `J` を保つかどうかによる分類である（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。分類は人の判断であり、迷う場合は「中断」とする（[assurance.md](assurance.md#モデル間の保証の限界)）。backlog の列は、その差異の W 課題を完了させる項目である（段階導入。[traceability.md](../../.agents/skills/port-lang/references/docs/spec/traceability.md#検査)）。
 
 - **出力のみ**: 前提を破っても、変わるのは出力だけである。R 課題に `StateSafe` を課す。
 - **中断**: 前提を破ると、[Source] の状態が [Spec] から離れうる。その後の軌跡は保証されない（[assurance.md](assurance.md#モデル間の保証の限界)）。

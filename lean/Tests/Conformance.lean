@@ -4,7 +4,7 @@ import Spec
 /-!
 # Tests.Conformance
 
-適合テストベクタ（`conformance/`）の実行器（スキル port-lang の `conformance.md`）。
+適合テストベクタ（`conformance/`）の実行器（スキル port-lang の `spec/conformance.md`）。
 
 - ファイルの読み込み・形式の検査・`expected` の比較・共有入力・`modelDef` の選択は、スキルの `ConformanceKit` にある。
 - ここには、[Spec] の値の表現の読み取り（日付・時刻）と、`format.*` の操作の割当（`formatOps`）を置く。
@@ -15,7 +15,7 @@ open Lean Spec Spec.Prim ConformanceKit
 
 namespace Tests.Conformance
 
-/-! ## 値の表現（`conformance.md#値の表現`） -/
+/-! ## 値の表現（`spec/conformance.md#値の表現`） -/
 
 /-- `"yyyy-MM-dd"` -/
 def decodeDate (s : String) : Except String Date :=

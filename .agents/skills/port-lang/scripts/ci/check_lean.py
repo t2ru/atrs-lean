@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Lean ソースの静的検査（port-lang の道具。scripts/README.md）。
 
-port-lang の lean/rules.md（全域性と安全性）と architecture.md（依存の向き）を、
+port-lang の lang/lean/rules.md（全域性と安全性）と spec/architecture.md（依存の向き）を、
 コメントと文字列リテラルを除いたトークンで検査する。検査する Lean のルートと言語の組は、
 リポジトリの `trace/project.json`（`lean.roots`・`languages`）から読む。
 
@@ -51,7 +51,7 @@ def lang_layer(lang: str) -> str:
 
 
 def configure(source: list, target: list) -> None:
-    """言語の組（trace/project.json の languages）から、依存の向きの表を作る（architecture.md#依存の向き）。"""
+    """言語の組（trace/project.json の languages）から、依存の向きの表を作る（spec/architecture.md#依存の向き）。"""
     global SOURCE_LANGS, TARGET_LANGS, ALLOWED, SOURCE_SIDE, TARGET_SIDE
     SOURCE_LANGS = {lang_layer(l) for l in source}
     TARGET_LANGS = {lang_layer(l) for l in target}

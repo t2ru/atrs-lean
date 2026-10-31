@@ -37,10 +37,10 @@ generated:
 
 - [ ] `u64` の加算のオーバーフロー時の振る舞い（検査付き・折り返し）を定理で示した
 - [ ] `RString` の `len` と `chars().count()` の違いを例で確認した
-- [ ] 整数演算・文字列演算を、rustc でビルドした実行結果と固定した入力の表で突き合わせ、範囲を、言語パックの [rust/semantics.md](../rust/semantics.md) と、適用先のプロジェクトの保証の限界の文書に記載した
+- [ ] 整数演算・文字列演算を、rustc でビルドした実行結果と固定した入力の表で突き合わせ、範囲を、言語パックの [rust/semantics.md](../lang/rust/semantics.md) と、適用先のプロジェクトの保証の限界の文書に記載した
 - [ ] アプリ固有のモジュールを import していない
 
 ## 参照
 
 - ATRS の ADR 0bd3
-- [port-lang/lean/rules.md](../lean/rules.md)
+- [port-lang/lean/rules.md](../lang/lean/rules.md)

@@ -7,7 +7,7 @@ on:
 jobs:
   lean:
     runs-on: ubuntu-latest
-    # SQL の差分実行に使う PostgreSQL（版は trace/upstream.json。設定は port-lang の postgresql/harness.md）
+    # SQL の差分実行に使う PostgreSQL（版は trace/upstream.json。設定は port-lang の lang/sql/dialects/postgresql/harness.md）
     services:
       postgres:
         image: postgres:16.15

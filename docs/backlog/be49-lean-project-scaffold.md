@@ -22,7 +22,7 @@ Lean 側（全モデルと証明）の作業の土台を用意する。
 ## 範囲
 
 - `lean/lean-toolchain`（着手時点の最新安定版）, `lakefile.lean`（依存は Batteries のみ）
-- トップレベル名前空間 `LangSemantics`, `SourceModel`, `Spec`, `Abstraction`, `TargetModel`, `Refinement`, `Trace` と、実行ファイル用の `Tests`, `Tools` の空モジュール（`Machine` は [backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) でスキルの assets から取り込む）（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lean/rules.md)）
+- トップレベル名前空間 `LangSemantics`, `SourceModel`, `Spec`, `Abstraction`, `TargetModel`, `Refinement`, `Trace` と、実行ファイル用の `Tests`, `Tools` の空モジュール（`Machine` は [backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) でスキルの assets から取り込む）（[port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lang/lean/rules.md)）
 - `Trace`: 属性 `@[source]`, `@[target]`, `@[obligation]`, `@[deviation]`, `@[spec_doc]`, `@[no_source]` の定義と、`lake exe trace-dump`（定義・属性・Merkle ハッシュの JSON 出力）
 - ルートの `lakefile.lean`（作成済みの Lake ワークスペース）に `require atrs from "./lean"` を追加し、ルートで `lake setup-file lean/<任意のファイル>` が成功することを確認する（Lean LSP 用）
 - CI: `lake build`, `lake test`, `sorry`・新規 `axiom`・`Tests` の外の `native_decide`/`bv_decide` の検出, `Float` 使用禁止範囲, 名前空間の依存方向（特に移植元側と移植先側の相互非依存）
@@ -54,4 +54,4 @@ Lean 側（全モデルと証明）の作業の土台を用意する。
 
 - [ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)
 - [ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)
-- [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lean/rules.md)
+- [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lang/lean/rules.md)

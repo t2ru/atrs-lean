@@ -41,7 +41,7 @@ Chosen option: "記号的ロケータ ＋ モデル側の注釈 ＋ 生成 manif
 
 ### ロケータ
 
-ソース側の位置は版に依存しない記号で指す。行番号は道具が版ごとに解決し、permalink を生成する。文法は [port-lang/traceability.md](../../.agents/skills/port-lang/references/docs/traceability.md#ロケータ) に定義する。
+ソース側の位置は版に依存しない記号で指す。行番号は道具が版ごとに解決し、permalink を生成する。文法は [port-lang/traceability.md](../../.agents/skills/port-lang/references/docs/spec/traceability.md#ロケータ) に定義する。
 
 | 側 | 種別 |
 | --- | --- |

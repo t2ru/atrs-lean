@@ -28,7 +28,7 @@ docs/decision/<ID の先頭 4 文字>-<slug>.md
 
 ## スキルの ADR
 
-アプリに依存しない判断（移植の方法、スキルの道具・Lean のライブラリ・構成）は、ATRS の `docs/decision/` ではなく、スキル port-lang の [`references/docs/decision/`](../../.agents/skills/port-lang/references/docs/decision/README.md) に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。書き方はスキルの [maintenance.md](../../.agents/skills/port-lang/references/docs/maintenance.md) に従う。
+アプリに依存しない判断（移植の方法、スキルの道具・Lean のライブラリ・構成）は、ATRS の `docs/decision/` ではなく、スキル port-lang の [`references/docs/decision/`](../../.agents/skills/port-lang/references/docs/decision/README.md) に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。書き方はスキルの [maintenance.md](../../.agents/skills/port-lang/references/docs/rules/maintenance.md) に従う。
 
 - 採番は `python3 -I .agents/skills/port-lang/scripts/docs/ids.py new adr <slug> --dir .agents/skills/port-lang/references/docs/decision`。ID の空間は ATRS と共通である。
 - スキルの ADR から ATRS の文書へはリンクを張らない。ATRS の記録は、来歴としてリンク無しで書く（「ATRS の ADR xxxx」）。
