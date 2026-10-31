@@ -18,6 +18,9 @@ import Abstraction.MasterData.Query
 import Abstraction.MasterData.Refines
 import Abstraction.Fare.Double
 import Abstraction.Fare.Factors
+import Abstraction.Fare.Alpha
+import Abstraction.Fare.FareRefines
+import Abstraction.Fare.BasicFareRefines
 
 /-!
 # Abstraction
@@ -43,7 +46,10 @@ import Abstraction.Fare.Factors
 | `Abstraction.MasterData.Refines` | R 課題 ABS-026 `queryRefines`、`InitSurj`、W 課題 ABS-127 `need_D027` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
 | `Abstraction.Fare.Double` | `(int)(X * F)` の閉じた形 `rneTrunc` と `⌊X·c/100⌋` の比較（因子の近さ `Close`・安全 `Safe`） |
-| `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠 |
+| `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠、安全でない因子の一覧 |
+| `Abstraction.Fare.Alpha` | 運賃計算の α（`aiBF`・`aiF`）と差異の述語 `dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` |
+| `Abstraction.Fare.FareRefines` | R 課題 ABS-002 `fareRefines`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-102 `need_D002` |
+| `Abstraction.Fare.BasicFareRefines` | R 課題 ABS-001 `basicFareRefines`、L 課題 ABS-007 `runBasicFare_spec`、W 課題 ABS-101 `need_D001` |
 -/
 
 namespace Abstraction

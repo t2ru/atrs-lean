@@ -29,7 +29,7 @@ theorem load_correct {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mast
   obtain ⟨ftp, hfl, -⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
   obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
   obtain ⟨fmp, hml, -⟩ := flightMaster_query hm hv.md1 hv.md3 hv.md8 hpf
-  refine ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind, pure_bind]; rfl, rfl, fun cd => hbq cd⟩
+  refine ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd⟩
 
 /-- 前提を満たす入力では、どの許される並びでも `run` は例外を投げず、答えの写しは [Spec] の答え。 -/
 theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : MasterData.Query}
