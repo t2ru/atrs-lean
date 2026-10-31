@@ -128,6 +128,30 @@ def Safe (c fm fs : Nat) : Prop := 2 ^ 54 * (c * 2 ^ fs) < 2 ^ 54 * (100 * fm) +
 instance (c fm fs : Nat) : Decidable (Close c fm fs) := by unfold Close; infer_instance
 instance (c fm fs : Nat) : Decidable (Safe c fm fs) := by unfold Safe; infer_instance
 
+/-- `Close` な因子の値域: `fm ≠ 0`、`2^fs ≤ X·fm·2^1000`、`X·fm < 2^fs·2^29`（`jd2i_mul_nat`・`rneTrunc_spec` の前提）。 -/
+theorem close_range {X c fm fs : Nat} (hX : X ≠ 0) (hc : c ≠ 0) (hfs : fs ≤ 1000) (hr : X * c < 100 * 2 ^ 28)
+    (hcl : Close c fm fs) : fm ≠ 0 ∧ 2 ^ fs ≤ X * fm * 2 ^ 1000 ∧ X * fm < 2 ^ fs * 2 ^ 29 := by
+  obtain ⟨h1, h2⟩ := hcl
+  have hfm : fm ≠ 0 := by
+    intro e; subst e
+    have : 0 < c * 2 ^ fs := Nat.mul_pos (Nat.pos_of_ne_zero hc) (Nat.two_pow_pos _)
+    simp at h2; omega
+  refine ⟨hfm, ?_, ?_⟩
+  · have : 2 ^ fs ≤ 2 ^ 1000 := Nat.pow_le_pow_right (by decide) hfs
+    have : 1 ≤ X * fm := Nat.pos_of_ne_zero (Nat.mul_ne_zero hX hfm)
+    calc 2 ^ fs ≤ 1 * 2 ^ 1000 := by omega
+      _ ≤ X * fm * 2 ^ 1000 := Nat.mul_le_mul_right _ this
+  · have g1 := Nat.mul_le_mul_left X h1
+    have a1 : X * (2 ^ 48 * (100 * fm)) = 2 ^ 48 * (100 * (X * fm)) := by ac_rfl
+    have a2 : X * ((2 ^ 48 + 1) * (c * 2 ^ fs)) = (2 ^ 48 + 1) * (X * c * 2 ^ fs) := by ac_rfl
+    have hY : X * c * 2 ^ fs ≤ (100 * 2 ^ 28 - 1) * 2 ^ fs := Nat.mul_le_mul_right _ (by omega)
+    rw [a1, a2] at g1
+    have hT : 0 < 2 ^ fs := Nat.two_pow_pos _
+    generalize X * fm = N at *
+    generalize X * c * 2 ^ fs = P at *
+    generalize 2 ^ fs = T at *
+    omega
+
 /-- 因子の比較の結論。`X·c` が 100 で割り切れなければ一致し、割り切れれば一致するか 1 小さく、安全な因子なら一致する。 -/
 theorem rneTrunc_factor {X c fm fs : Nat} (hX : X ≠ 0) (hc : c ≠ 0) (hfs : fs ≤ 1000) (hr : X * c < 100 * 2 ^ 28)
     (hcl : Close c fm fs) :

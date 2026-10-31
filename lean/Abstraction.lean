@@ -16,6 +16,8 @@ import Abstraction.MasterData.Pre
 import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Query
 import Abstraction.MasterData.Refines
+import Abstraction.Fare.Double
+import Abstraction.Fare.Factors
 
 /-!
 # Abstraction
@@ -40,6 +42,8 @@ import Abstraction.MasterData.Refines
 | `Abstraction.MasterData.Query` | ABS-026 の問い合わせごとの一致（参照・ピーク時期・積算比率・コードリスト） |
 | `Abstraction.MasterData.Refines` | R 課題 ABS-026 `queryRefines`、`InitSurj`、W 課題 ABS-127 `need_D027` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
+| `Abstraction.Fare.Double` | `(int)(X * F)` の閉じた形 `rneTrunc` と `⌊X·c/100⌋` の比較（因子の近さ `Close`・安全 `Safe`） |
+| `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠 |
 -/
 
 namespace Abstraction
