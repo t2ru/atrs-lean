@@ -88,4 +88,19 @@ theorem filter_cross {α β : Type} {xs : List α} {bs : List β} {c : α → Bo
       rw [List.filter_map]
       simp [Function.comp_def, hc']
 
+/-- 要素の上で等しい述語の検索は等しい。 -/
+theorem find?_congr {α : Type} {p q : α → Bool} : ∀ {l : List α}, (∀ a ∈ l, p a = q a) → l.find? p = l.find? q
+  | [], _ => rfl
+  | a :: l, h => by
+    simp only [List.find?_cons, h a (List.mem_cons_self ..)]
+    cases q a
+    · exact find?_congr fun b hb => h b (List.mem_cons_of_mem _ hb)
+    · rfl
+
+/-- `f` の値が重複せず、`g` の値が等しければ `f` の値も等しいなら、`g` の値も重複しない。 -/
+theorem nodup_map_of_imp {α β γ : Type} {l : List α} {f : α → β} {g : α → γ} (hf : (l.map f).Nodup)
+    (h : ∀ a ∈ l, ∀ b ∈ l, g a = g b → f a = f b) : (l.map g).Nodup := by
+  rw [List.Nodup, List.pairwise_map] at hf ⊢
+  exact (List.Pairwise.and_mem.mp hf).imp fun {a b} ⟨ha, hb, hne⟩ e => hne (h a ha b hb e)
+
 end Abstraction.Prim
