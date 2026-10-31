@@ -12,7 +12,7 @@ import Abstraction.Fare.Alpha
 
 namespace Abstraction.Fare
 
-open Machine LangSemantics.Java Spec Spec.Prim Abstraction.Prim Abstraction.MasterData SourceModel.FareQuery
+open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.FareQuery
 
 /-! ## 入力（合成） -/
 

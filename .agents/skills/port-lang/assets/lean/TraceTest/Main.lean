@@ -94,7 +94,7 @@ def fixtureTests (env : Environment) : IO Unit := do
     (attrsOf? es "SourceModel.base" ==
       [("source", ["java:com.example.Fare#base(int)@0123456789abcdef", "lang:java#JLS-15.17.1@java-17"])])
   check "attributes: target"
-    (attrsOf? es "TargetModel.double" == [("target", ["rust:atrs::fare::double@0123456789abcdef"])])
+    (attrsOf? es "TargetModel.double" == [("target", ["rust:app::fare::double@0123456789abcdef"])])
   check "attributes: spec_doc and no_source on one decl"
     (attrsOf? es "Spec.base" ==
       [("spec_doc", ["docs/spec/example.md#base"]), ("no_source", ["フィクスチャ"])])
@@ -182,7 +182,7 @@ def obligationTests (env : Environment) : IO Unit := do
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
     | some ri => ri.freeLeaves == #[`TraceTest.ObFix.Spec.AnyResult] | none => false)
-  let expectedGlobal := ["G7: TraceTest.ObFix.Abstraction.aoIf", "G7: TraceTest.ObFix.Abstraction.aoPart2 ", "G7: TraceTest.ObFix.Abstraction.ceCheat",
+  let expectedGlobal := ["G7: TraceTest.ObFix.Abstraction.aoIf", "G7: TraceTest.ObFix.Abstraction.aoPart2 ", "G7: TraceTest.ObFix.Abstraction.aoPart4 ", "G7: TraceTest.ObFix.Abstraction.ceCheat",
     "G7: TraceTest.ObFix.Abstraction.via", "G8: TraceTest.ObFix.Abstraction.devK", "G8: TraceTest.ObFix.Abstraction.devNoW",
     "G0: TraceTest.ObFix.Abstraction.v0_notRefines", "G3: TraceTest.ObFix.Spec.specRel",
     "G0: TraceTest.ObFixHelpers.devFalse", "G8: TraceTest.ObFixHelpers.devFalse",

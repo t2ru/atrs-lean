@@ -12,7 +12,7 @@ import Abstraction.MasterData.Refines
 
 namespace Abstraction.MasterData
 
-open LangSemantics.Java LangSemantics.Sql Spec Spec.Prim Abstraction.Prim
+open LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
 
 theorem routeOfRow_fare {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.basicFare : Int) = r.basicFare.val := by
@@ -49,7 +49,7 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
       .ok ((JHashMap.ofList (o.map fun f =>
         (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val) := by
     simp only [getFlightMaster, assertHasText_ok hname]; rfl
-  rw [get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames] at hget
+  rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames] at hget
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
       == name.val) = (fun f => f.flightName.val == name.val) from rfl] at hget

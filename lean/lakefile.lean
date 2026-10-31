@@ -8,7 +8,7 @@ ATRS の Lean プロジェクト（全モデルと証明）。
   `LangSemantics` には ATRS に固有の定義を足さないため、`lean/` に写さず Lake 依存として取り込む。
 - `Machine`（抽象機械とリファインメントの枠組み）と `Trace`（追跡属性・ギャップの登録簿と、trace-dump・obligation-check の本体）も、
   同じ `langSemantics` パッケージから取り込む。道具の入口（`Tools`）だけをここに置く。
-- 名前空間の依存の向きは `tools/ci/check_lean.py` で検査する。
+- 名前空間の依存の向きは port-lang の `scripts/ci/check_lean.py` で検査する。
 -/
 package atrs where
   leanOptions := #[⟨`autoImplicit, false⟩]

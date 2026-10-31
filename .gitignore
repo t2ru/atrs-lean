@@ -5,3 +5,6 @@ rust/target/
 
 # Lake (root workspace)
 .lake/
+
+# Python
+__pycache__/

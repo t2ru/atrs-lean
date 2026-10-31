@@ -1,6 +1,7 @@
 import LangSemantics.Sql.Core
 import LangSemantics.Sql.Query
 import LangSemantics.Sql.Sequence
+import LangSemantics.Sql.QueryLemmas
 
 /-!
 # LangSemantics.Sql

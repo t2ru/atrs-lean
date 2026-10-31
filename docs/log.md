@@ -2,6 +2,16 @@
 
 ## 2026-10-31
 
+* **Creation**: [backlog 38fb](backlog/38fb-move-generic-elements-to-skill.md) を作り、完了した（`done`）。
+* **Creation**: [ADR edc8](decision/edc8-skill-scripts-and-generic-lean-libraries.md) で、アプリに依存しない要素をスキル port-lang へ移した。
+  * 道具（`tools/trace`・`check_lean.py`・`check_obligations.py`・`check_upstream.py`・`with_postgres.sh`・`jvm_table.sh`・`pg_table.sh`・`ids.py`）をスキルの `scripts/` へ移した。ATRS 固有の値は `trace/project.json` に集めた。
+  * 汎用の Lean コードを、スキルの assets（`Machine.Kernel`、`LangSemantics.Core`（新設）、`LangSemantics.Sql.QueryLemmas`、`LangSemantics.Java` の `ResultLemmas`・`DoubleCompare`・`IntLemmas`、`ConformanceKit`（新設））へ移した。main の backlog bbcc 第 3 段を取り込んだとき、そこで足された汎用の補題（`for` 文・`int` の演算・`mapM`）も移した。
+* **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) の More Information に、比較の定理の汎用部を移したことを補足した。
+* **Update**: 次の文書を改めた。
+  * [spec/traceability.md](spec/traceability.md)・[spec/abstraction.md](spec/abstraction.md)・[spec/refinement.md](spec/refinement.md)・[spec/assurance.md](spec/assurance.md)（道具の置き場所、`trace/project.json`、`Machine.undefOrEq`）
+  * [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの版 0.6、配置、取り込むライブラリ）・[rules/backlog.md](rules/backlog.md)・[rules/documentation.md](rules/documentation.md)・[rules/decision-records.md](rules/decision-records.md)・[rules/version-control.md](rules/version-control.md)（道具のパス）
+  * [backlog/README.md](backlog/README.md)、[AGENTS.md](../AGENTS.md)
+  * スキル port-lang の SKILL.md（版 0.6）・`scripts/README.md`（新規）・`traceability.md`（道具・プロジェクトの設定・手書きのファイルの形）・`spec-documents.md`（道具が読む見出しと値・式の書き方）・`architecture.md`（依存の向き・SPEC 課題の一覧・汎用の核）・`verification.md`（保証の限界の必須項目）・`conformance.md`（比較の規則・実行器・架空の例）・`upgrade.md`（版上げの例）・`workflow.md`・`lean/rules.md`・`lean/trace-attributes.md`（架空の例）・`java/semantics.md`・`sql/semantics.md`・`sql/harness.md`（差分実行の結果）・`rust/semantics.md`・`rust/verification.md`（確認の課題の一覧）
 * **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) を完了した（`done`）。第 3 段で、R 課題 ABS-004（`Abstraction.Fare.totalFareRefines`）・L 課題 ABS-005（`runTotalFare_eq`）・W 課題 ABS-112（`need_D012`。D-012 の必要性）を証明した。`Spec.Fare.totalFare` をフライトのキーと搭乗者の年齢の関数 `totalFareOfKeys` で書き直し、合計金額の抽象機械と SPEC 課題を置いた。`SourceModel.Ticket`（`TicketHelper.toFlightList`）を足し、`Tests.TicketChecks` の検査を `trace/checks.json` の `lake-test` に登録した。
 * **Update**: [ADR e9bc](decision/e9bc-fare-double-analysis.md) に、第 3 段の決定（合計金額の [Spec] と具体側の入力、D-001・D-002・D-012 の前提、証人の文字列）を加えた。
 * **Update**: 次の文書を改めた。

@@ -17,49 +17,13 @@ import Tests.ConformanceMaster
 -/
 
 open Lean LangSemantics.Sql LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
-  Tests.Conformance
+  ConformanceKit Tests.Conformance
 
 namespace Tests.MasterSql
 
-abbrev Row := List (Option String)
-
-def getArr (j : Json) (k : String) : Except String (List Json) := (j.getObjValAs? (Array Json) k).map (·.toList)
-
-def rowOf (j : Json) : Except String Row := do
-  let .arr xs := j | throw "row is not an array"
-  return xs.toList.map fun v => match v with | .str s => some s | _ => none
-
-/-- 表: 列名と行。 -/
-structure Table where
-  columns : List String
-  rows : List Row
-
-def table (doc : Json) (name : String) : Except String Table := do
-  let t ← doc.getObjVal? "tables" >>= (·.getObjVal? name)
-  let cols ← (t.getObjValAs? (Array String) "columns").map (·.toList)
-  return { columns := cols, rows := ← (← getArr t "rows").mapM rowOf }
-
-def col (t : Table) (r : Row) (c : String) : Except String (Option String) := do
-  let some i := t.columns.idxOf? c | throw s!"no column {c}"
-  return (r[i]?).getD none
-
-def lift {α : Type} (r : SqlResult α) (what : String) : Except String α :=
-  match r with
-  | .ok a => .ok a
-  | .error e => .error s!"{what}: {repr e}"
-
-def need (o : Option String) (c : String) : Except String String :=
-  match o with | some s => .ok s | none => .error s!"{c} is NULL"
-
-def vcol (n : Nat) (t : Table) (r : Row) (c : String) : Except String (Varchar n) := do
-  lift (Varchar.ofString c n (← need (← col t r c) c)) c
-def icol (t : Table) (r : Row) (c : String) : Except String Int4 := do
-  let s ← need (← col t r c) c
-  let some v := s.toInt? | throw s!"{c}: not an integer: {s}"
-  lift (Int4.ofInt v) c
 def dcol (t : Table) (r : Row) (c : String) : Except String PgDate := do
-  let d ← decodeDate (← need (← col t r c) c)
-  lift (date d.epochDay) c
+  let d ← decodeDate (← notNull (← col t r c) c)
+  liftSql (date d.epochDay) c
 
 /-- PostgreSQL の表の行から `MasterDb` を作る（列の型の範囲を検査する）。 -/
 def decodeDb (doc : Json) : Except String MasterDb := do
@@ -86,7 +50,7 @@ def decodeDb (doc : Json) : Except String MasterDb := do
     boardingClass := ← b.rows.mapM fun x => do
       let name ← match ← col b x "boarding_class_name" with
         | none => pure none
-        | some s => (some ·) <$> lift (Varchar.ofString "boarding_class_name" 10 s) "boarding_class_name"
+        | some s => (some ·) <$> liftSql (Varchar.ofString "boarding_class_name" 10 s) "boarding_class_name"
       return { boardingClassCd := ← vcol 1 b x "boarding_class_cd", boardingClassName := name,
                extraCharge := ← icol b x "extra_charge", displayOrder := ← icol b x "display_order" }
     fareType := ← ft.rows.mapM fun x => do
@@ -129,7 +93,7 @@ def evalStatement (db : MasterDb) : String → Option (List Row)
 
 /-- `ORDER BY` の文: PostgreSQL の結果の各行を、表の行（コードで引く）に戻した並びが、許される順列か。 -/
 def orderedAllowed (db : MasterDb) (id : String) (pg : List Row) : Except String Bool := do
-  let code (r : Row) : Except String String := need r.head?.join "code"
+  let code (r : Row) : Except String String := notNull r.head?.join "code"
   let back {α : Type} [BEq α] (rows : List α) (key : α → String) : Except String (List α) :=
     pg.mapM fun r => do
       let k ← code r

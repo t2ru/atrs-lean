@@ -5,9 +5,9 @@
 - 上流の DDL とシード（00100・00200・00210・00220・00240）を、新しいデータベースに投入する。
   00240 のピーク時期は投入日 2026-11-01 で展開する（current_timestamp を置き換える。ADR 9ee4）。
 - 文の SQL は、上流の Mapper の XML と AtrsCodeListConfig.java から抜き出したものをそのまま使う。
-- PostgreSQL への接続は tools/ci/with_postgres.sh が与える（照合順序 C・UTF8・UTC）。
+- PostgreSQL への接続は .agents/skills/port-lang/scripts/ci/with_postgres.sh が与える（照合順序 C・UTF8・UTC）。
 
-  tools/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py [--check] [--expect-version 16.15]
+  .agents/skills/port-lang/scripts/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py [--check] [--expect-version 16.15]
 """
 import csv
 import io

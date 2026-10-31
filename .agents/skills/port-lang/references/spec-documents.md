@@ -72,6 +72,22 @@
 - 真偽: `true` / `false`、`∧ ∨ ¬`。
 - 文字列: Unicode スカラ値の列。長さは [Spec] では `scalarLen`、[Source] では言語パックの長さ（例 `utf16Len`）。
 
+- 移植元の式は、長いソースを写さず、記法で書き直す（例: `(int)(x * (ratio * 0.01))` は [Source] の `jd2i(jdmul(x, jdmul(ratio, 0.01)))`）。式は `floor(x / 100)` のように書き、LaTeX は使わない。日付は ISO 8601 で書く（移植元の書式そのものを示すときを除く）。
+
+## 道具が読む見出しと値
+
+スキルの道具（`scripts/`）は、課題一覧（抽象化・具体化）の次の見出しと値を、文字列のまま読む。綴りを変えてはならない。
+
+| 見出し・値 | 置き場所 | 読む道具 |
+| --- | --- | --- |
+| `## 既知差異`（具体化では `## 既知差異（T-NNN）`）、`### 前提型の差異の影響`、`### [Spec] の前提の外での [Source] の振る舞い`、`### 未確定の差異` | 課題一覧。表は生成区画（`gaps-known`・`gaps-impact`・`gaps-outside-pre`・`gaps-undetermined`） | `trace manifest` |
+| `### 入口の R 課題` | 課題一覧。行は `| <課題 ID> | … | <作業項目の ID> |` | `trace check`（TR-PE）、`check_obligations.py` |
+| `## Spec の非決定性`、種類の値 `環境`・`自由` | 抽象化の課題一覧。行は `| N-NNN | <種類> | … | <作業項目の ID> |` | `check_obligations.py`（TR-N） |
+| `## 証明課題`（具体化では `## REF:`）、種類の値 `R` | 課題一覧。行は `| <課題 ID> | R | … |` | `trace check`、`check_obligations.py` |
+| 影響の値 `出力のみ`・`中断`、種類の名前（`前提型`・`観測型`・`モデル外`…） | 登録簿から生成する（`Trace.GapKind.label`・`Trace.Impact.label`） | `check_obligations.py` |
+| 行頭の `出典:` と、バッククォートで囲んだロケータ | 仕様文書（`docs.spec`） | `trace check`（TR-R） |
+| 作業項目の frontmatter の `id:`・`state:`（`done` で完了） | 作業項目（`docs.backlog`） | 段階導入（`trace check`・`check_obligations.py`） |
+
 ## してはならないこと
 
 - 「Java と同じ」「フレームワークの既定どおり」のように、**外部の実装に意味を委ねる**。必要な意味はすべて本文に書き下す。

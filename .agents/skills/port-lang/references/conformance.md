@@ -25,18 +25,18 @@ conformance/
 
 ```json
 {
-  "operation": "fare.fare",
-  "modelDef": "Spec.Fare.fare",
+  "operation": "pricing.taxIncluded",
+  "modelDef": "Spec.Pricing.taxIncluded",
   "specRef": "<仕様文書のパス>#<アンカー>",
   "fixtures": { "master": "fixtures/master-data.json", "config": "fixtures/config.json" },
   "cases": [
     {
-      "id": "fare-030-1430",
-      "description": "丸め誤差で Source が少なくなる例",
-      "input": { "basicFare": 1430, "discountRate": 30 },
+      "id": "tax-1000",
+      "description": "double の丸め誤差で Source が 1 円少なくなる例",
+      "input": { "price": 1000 },
       "expected": { "ok": 1100 },
       "source": "lean-spec",
-      "differences": ["D-002"]
+      "differences": ["D-001"]
     }
   ]
 }
@@ -45,7 +45,7 @@ conformance/
 | キー | 必須 | 内容 |
 | --- | --- | --- |
 | `operation` | 必須 | 操作名 |
-| `modelDef` | 必須 | ベクタが試すモデル定義の完全名（`Spec.*` / `SourceModel.*` / `TargetModel.*`）。`shared/` では、モデルごとの名前の配列にしてよい（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。実行器は、実行するモデルの層の名前を選ぶ。追跡の検査 TR-R と、`rehash` の検査の登録（`vectors`）の対象 |
+| `modelDef` | 必須 | ベクタが試すモデル定義の完全名（`Spec.*` / `SourceModel.*` / `TargetModel.*`）。`shared/` では、モデルごとの名前の配列にしてよい（例 `["Spec.Pricing.taxIncluded", "SourceModel.Pricing.calcTax"]`）。実行器は、実行するモデルの層の名前を選ぶ。追跡の検査 TR-R と、`rehash` の検査の登録（`vectors`）の対象 |
 | `specRef` | 必須 | 仕様文書の節への相対パス＋アンカー |
 | `upstream` | `source-model/` では必須 | 期待値を得た移植元の版 `{"release": …, "commit": …}` |
 | `fixtures` | 任意 | 既定の共有入力（`{"master": …, "config": …}`）。ケースの `input` で上書きできる。共有入力は、移植元のシードから生成器で作るとよい（転記の誤りを防ぎ、版上げで差分が見える）。モデルの値域の外の行は、行を残したまま `outsideSpec` に理由を書き、`Spec` 用の読み込みだけが除く |
@@ -87,3 +87,15 @@ conformance/
 | 非決定的な結果（[Source]） | `{"oneOf": [値, ...]}` |
 
 非決定的な外部要素（パスワードハッシュ、採番）を使う操作のベクタは、プロジェクトで決めた決定的な参照実装（例: テスト用ハッシュ関数）を前提にする。
+
+## 比較の規則
+
+- 移植元のほうが非決定性が大きい結果（例: 検証エラーの並びが `HashSet` の反復順で決まる）は、ベクタの期待値を `Spec` の定順の値で書き、移植元のベクタでは、観測型の差異の成分と同じ同一視（例: 多重集合として比べる）で比べる。同一視は差異として登録し、ケースの `differences` に ID を書く（[architecture.md](architecture.md#差異)）。`oneOf` で全順列を並べる書き方は、要素が多いと使えない。
+- 日付に依存する共有入力（シードの日付・予約の期限など）は、固定の基準日から生成し、ケースの `today` をその基準日に合わせる。実行した日によってベクタの意味が変わらないようにするためである。基準日はプロジェクトの意思決定として記録する。
+- 非決定的な外部要素（パスワードのハッシュ、採番）を使う操作は、決定的な参照実装（例: テスト用のハッシュ関数、決まった順に返す採番）を、ポートの実装として与えてから比べる。参照実装の選択は `Spec` の非決定性（自由な選択）の範囲になければならない。
+
+## 実行器
+
+Lean の実行器はスキルの `assets/lean/ConformanceKit` にある（`ConformanceKit.runDoc`・`runDir`・`runDirFx`・`selectModelDef`・`loadFixtures`）。
+プロジェクトは、操作の割当（`operation` → モデルの関数。`List (String × ConformanceKit.Op)`）と、`Spec` の値の表現の読み取り（暦日・時刻など）を書き、`lake test` のドライバから実行器を呼ぶ。
+SQL の差分実行の結果（[sql/harness.md](sql/harness.md#差分実行の結果)）の表は、`ConformanceKit.SqlTable` で読む。

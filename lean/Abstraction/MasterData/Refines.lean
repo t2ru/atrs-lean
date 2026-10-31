@@ -10,7 +10,7 @@ R 課題 ABS-026: マスタ・設定・コードリストの読み込み（`Sour
 
 namespace Abstraction.MasterData
 
-open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim Abstraction.Prim
+open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
 
 /-- 標準の貼り合わせ。 -/

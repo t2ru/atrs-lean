@@ -33,7 +33,7 @@ end SourceModel
 
 namespace TargetModel
 /-- 移植先モデルを模す（移植先の言語意味論を参照する）。 -/
-@[target "rust:atrs::fare::double@0123456789abcdef"]
+@[target "rust:app::fare::double@0123456789abcdef"]
 def double (n : Nat) : Nat := LangSemantics.Rust.wrapAdd n n
 
 /-- `Spec` を参照する（`Spec` は合成の範囲外）。 -/

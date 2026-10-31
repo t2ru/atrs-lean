@@ -10,7 +10,7 @@ R 課題 ABS-004（合計金額）: `SourceModel.FareQuery.totalFareConcrete`（
 
 namespace Abstraction.Fare
 
-open Machine LangSemantics.Java Spec Spec.Prim Abstraction.Prim Abstraction.MasterData SourceModel.MasterData
+open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core Abstraction.MasterData SourceModel.MasterData
   SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
 
 /-- `toFlight` が作るフライト情報（読み込んだ Provider で引く）。 -/
@@ -119,15 +119,6 @@ theorem ageOfPassenger_eq {p : JRef SourceModel.Model.Passenger} {a : Nat} (h : 
   obtain ⟨aJ, ⟨pp, rfl, hpp⟩, ha⟩ := h
   exact ⟨pp, aJ, rfl, hpp, natOfJ32_eq_some.mp ha⟩
 
-theorem mapM_length {α β : Type} {g : α → Option β} : ∀ {xs : List α} {ys : List β}, xs.mapM g = some ys →
-    xs.length = ys.length
-  | [], ys, h => by simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; rfl
-  | x :: xs, ys, h => by
-    simp only [List.mapM_cons, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
-      Option.some.injEq] at h
-    obtain ⟨y, -, ys', hys, rfl⟩ := h
-    simp only [List.length_cons, mapM_length hys]
-
 /-- L 課題 ABS-005: 前提（D-001・D-002・D-012・D-027 と [Spec] の PRE）を満たす入力では、どの許される並びでも、
 [Source] の合計金額の計算（読み込み・`toFlightList`・`calculateTotalFare`）は例外も int32 の溢れも無く、[Spec] の
 合計金額を返す。 -/
@@ -142,7 +133,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     Range.maxAge] at hcv hv hf1 hf2 hp1 hp2 hpa hpt hsome
   obtain ⟨p, hl, hptp, hbq, hfq, hmf⟩ := load_correct' hm hv ho
   have htf : toFlightList p.ticketHelper ic.flights = .ok (ic.flights.map fun f => some (mkFlight p f)) := by
-    apply Abstraction.MasterData.mapM_ok
+    apply LangSemantics.Java.mapM_ok
     intro f hf
     obtain ⟨k, hk, hfk⟩ := mapM_some_mem hks hf
     exact toFlight_ok p hfk (hpt k hk)

@@ -16,7 +16,7 @@ import Tests.ConformanceFare
 結果は、両モデルに共通の JSON に写して比べる（区間の空港名など [Spec] が持たない値は写さない）。
 -/
 
-open Lean Spec Spec.Prim Tests.Conformance Tests.ConformanceFare
+open Lean Spec Spec.Prim ConformanceKit Tests.Conformance Tests.ConformanceFare
 
 namespace Tests.ConformanceMaster
 
@@ -85,14 +85,10 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.MasterQuery
 
-def lift {α : Type} (r : LangSemantics.Sql.SqlResult α) (what : String) : Except String α :=
-  match r with
-  | .ok a => .ok a
-  | .error e => .error s!"{what}: {repr e}"
 
-def vc (n : Nat) (j : Json) (k : String) : Except String (Varchar n) := do lift (Varchar.ofString k n (← getStr j k)) k
-def i4 (j : Json) (k : String) : Except String Int4 := do lift (Int4.ofInt (← getInt j k)) k
-def pd (j : Json) (k : String) : Except String PgDate := do lift (date (← decodeDate (← getStr j k)).epochDay) k
+def vc (n : Nat) (j : Json) (k : String) : Except String (Varchar n) := do liftSql (Varchar.ofString k n (← getStr j k)) k
+def i4 (j : Json) (k : String) : Except String Int4 := do liftSql (Int4.ofInt (← getInt j k)) k
+def pd (j : Json) (k : String) : Except String PgDate := do liftSql (date (← decodeDate (← getStr j k)).epochDay) k
 
 /-- 共有入力の行を、DB の表とみなす。 -/
 def decodeDb (m : Json) : Except String MasterDb := do

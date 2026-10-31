@@ -2,7 +2,7 @@ import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Join
 import Abstraction.MasterData.Key
 import SourceModel.Fare
-import Abstraction.Prim.Order
+import LangSemantics.Sql.QueryLemmas
 
 /-!
 # Abstraction.MasterData.Query
@@ -13,7 +13,7 @@ ABS-026 の問い合わせごとの一致。DB の表の写し（`mapM` の行�
 
 namespace Abstraction.MasterData
 
-open LangSemantics.Java LangSemantics.Sql Spec Spec.Prim Abstraction.Prim
+open Machine LangSemantics.Java LangSemantics.Sql Spec Spec.Prim LangSemantics.Core
   SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
 
 /-! ## 搭乗クラス -/
@@ -57,7 +57,7 @@ theorem boardingClass_query {db : MasterDb} {bcs : List BoardingClass}
   refine ⟨_, boardingClassLoad_eq o keyBC hk, fun cd => ?_⟩
   have hkeys : db.boardingClass.map (keyBC ∘ projBC) = bcs.map (·.boardingClassCd) :=
     (mapM_some_map hm fun _ _ h => (keyBC_proj h).symm).symm
-  rw [get_ofList_perm hp' (hkeys ▸ hnd) cd,
+  rw [JHashMap.get_ofList_perm hp' (hkeys ▸ hnd) cd,
     find?_mapM hm (p := fun r => keyBC (projBC r) == cd) fun _ _ h => by simp only [keyBC_proj h]]
   cases hf : db.boardingClass.find? (fun r => keyBC (projBC r) == cd) with
   | none => rfl
@@ -109,7 +109,7 @@ theorem fareType_query {db : MasterDb} {fts : List FareType}
   refine ⟨_, fareTypeLoad_eq o keyFT hk, fun cd => ?_⟩
   have hkeys : db.fareType.map (keyFT ∘ projFT) = fts.map (·.fareTypeCd) :=
     (mapM_some_map hm fun _ _ h => (keyFT_proj h).symm).symm
-  rw [get_ofList_perm hp' (hkeys ▸ hnd) cd,
+  rw [JHashMap.get_ofList_perm hp' (hkeys ▸ hnd) cd,
     find?_mapM hm (p := fun r => keyFT (projFT r) == cd) fun _ _ h => by simp only [keyFT_proj h]]
   cases hf : db.fareType.find? (fun r => keyFT (projFT r) == cd) with
   | none => rfl
@@ -222,7 +222,7 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
     simp only [e1', e2]
   show answerOf? (.route ((JHashMap.ofList (o.map fun b => (key b, SourceModel.Repository.Mapping.route b))).get
     (makeCacheKey dep.val arr.val))) = _
-  rw [get_ofList_perm hp hnd]
+  rw [JHashMap.get_ofList_perm hp hnd]
   have hspec : md.routeOf dep arr =
       (db.route.find? fun r => key (projR r) == makeCacheKey dep.val arr.val).bind routeOfRow := by
     unfold MasterData.routeOf
@@ -335,7 +335,7 @@ theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf 
   refine ⟨(JHashMap.ofList (o.map fun f =>
     (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val, ?_, ?_⟩
   · simp only [getFlightMaster, assertHasText_ok hname]; rfl
-  rw [get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
+  rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
       == name.val) = (fun f => f.flightName.val == name.val) from rfl]
@@ -471,10 +471,6 @@ theorem ratio_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
 /-- コードリストの要素の写し（`answerOf?` の `codeList`）。 -/
 def toEntry (e : String × String) : CodeEntry := ⟨e.1, e.2⟩
 
-theorem mapM_some_getD {α β : Type} {f : α → Option β} {l : List α} {l' : List β} (h : l.mapM f = some l')
-    (d : β) : l.map (fun a => (f a).getD d) = l' := by
-  have := mapM_some_map h (g := fun a => (f a).getD d) (k := id) fun _ _ e => by simp [e]
-  simpa using this.symm
 
 /-- `ORDER BY display_order` の許される並びを行の葉で写すと、[Spec] の `mergeSort`（表示順が重複しないとき）。 -/
 theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f : ρ → LangSemantics.Sql.Postgresql.Int4}
@@ -489,10 +485,6 @@ theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f 
   simp only [hw, Option.getD_some]
   exact hd r w hw
 
-theorem allowed_perm {ρ : Type} [DecidableEq ρ] {rows o : List ρ} {key : ρ → List SqlValue}
-    (h : isAllowedOrder sortCfg [.asc] key rows o = true) : o.Perm rows := by
-  simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
-  exact h.1.symm
 
 theorem codeList_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h8 : md.MD8) {o : List AirportRow}

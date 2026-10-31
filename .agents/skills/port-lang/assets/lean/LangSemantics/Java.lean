@@ -8,6 +8,9 @@ import LangSemantics.Java.HashMap
 import LangSemantics.Java.LocalDateLemmas
 import LangSemantics.Java.HashMapLemmas
 import LangSemantics.Java.DoubleLemmas
+import LangSemantics.Java.DoubleCompare
+import LangSemantics.Java.ResultLemmas
+import LangSemantics.Java.IntLemmas
 
 /-!
 # LangSemantics.Java

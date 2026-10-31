@@ -6,7 +6,7 @@ tags: [rules, adr]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T12:55:53+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 意思決定記録（ADR）規約
@@ -19,7 +19,7 @@ generated:
 docs/decision/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`python3 -I tools/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
+- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`python3 -I .agents/skills/port-lang/scripts/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
 - ファイル名の先頭は ID の先頭 4 文字。他の ADR と重なってもよい（slug で区別する）。
 - `<slug>` は英小文字・数字・ハイフンのみ。決定内容を表す短い句（例: `two-layer-model-java-faithful-and-abstract`）。
 - 一度採番したファイルは **改名・削除しない**。不要になった ADR は状態を変更する。
@@ -40,7 +40,7 @@ MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `sta
 
 - `accepted` の ADR の **決定内容** を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `decision_status: superseded` / `superseded_by: "<新 ADR の ID>"` / `status: deprecated` にし、新 ADR の「More Information」に旧 ADR へのリンクを書く。
 - 誤字修正・リンク修正・補足情報の追記は書き換えてよい。
-- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`python3 -I tools/docs/ids.py check` を通す。
+- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`python3 -I .agents/skills/port-lang/scripts/docs/ids.py check` を通す。
 
 ## テンプレート
 

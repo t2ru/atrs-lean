@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T16:30:00+09:00
+  at: 2026-10-31T18:30:00+09:00
 ---
 
 # 保証の限界
@@ -26,12 +26,12 @@ generated:
 
 | 対象 | 決定論的な手段 | 保証しないこと | 信頼の基盤 |
 | --- | --- | --- | --- |
-| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。backlog f18c ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)。`SourceModel` の double の式と [Spec] の関係は、値域全体で定理にした。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。`tools/trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
+| ドメイン層の計算（運賃・空席照会の集約など） | Java オラクルで `conformance/source-model/` のベクタを照合する（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。運賃は、シードの範囲を全探索する | ベクタと全探索の範囲の外の入力。backlog f18c ができるまでは、運賃のベクタの [Source] の期待値は仕様の例の表から取ったもので、原典を実行して得た値ではない（double の式だけは JVM とネイティブの double で突き合わせ済み。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)。`SourceModel` の double の式と [Spec] の関係は、値域全体で定理にした。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。`trace rehash` が記録する運賃の合格（`lake-test`）は、この期待値に対する照合である | JVM（`trace/upstream.json` の版） |
 | フレームワークの暗黙の処理（Spring MVC の入力の変換、Bean Validation、Spring Security、Jackson） | HTTP レベルのオラクル（Spring を起動した原典に要求を送り、応答を照合する。[backlog f18c](../backlog/f18c-java-oracle-harness.md)） | ベクタの入力の外。起動できない構成（外部のメール・本番のキュー）。ハーネスが差し替えた構成（パスワードの符号化など） | Spring の各版 |
 | リポジトリ（MyBatis の SQL） | SQL の差分実行: PostgreSQL での実行結果と `LangSemantics.Sql` の評価結果を、同じデータで照合する（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)） | 照合したデータとパラメータの外。SQL の写しは手で翻訳している（文ごとの範囲は付録に記入） | PostgreSQL（`trace/upstream.json` の版） |
 | 画面テンプレート（Thymeleaf の書式） | HTTP レベルのオラクルで、描画結果の該当部分を照合する（D-019 の曜日など） | ベクタの入力の外。HTML の構造全体は照合しない（[ADR 84bf](../decision/84bf-porting-scope.md) で範囲外） | Thymeleaf |
 | 版上げ時の振る舞いの変化 | 差分オラクル（新旧 2 版。入力は除外しない。[ADR 3f36](../decision/3f36-following-upstream-releases.md)、[backlog 773f](../backlog/773f-differential-oracle.md)） | ベクタの入力の外の変化 | 同上 |
-| 改名の対応（`trace/renames.json`） | `tools/trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | `tools/trace` |
+| 改名の対応（`trace/renames.json`） | `trace rehash` が、新しいロケータについて決定論的な検査を実行し、合格したときだけ受け入れる | 検査がベクタの入力の外を確かめないこと（上の行と同じ） | port-lang の `scripts/trace` |
 | 環境（障害・衝突・配備の設定）を入力とする振る舞い（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） | オラクルは障害の無い環境で実行する | 障害・衝突を注入した原典の振る舞い。`SourceModel` の障害の経路は、`LangSemantics` の写しとしてだけ確かめる |
 | マスタ・設定を入力として写すこと | オラクルと SQL の差分実行は fixture のマスタで実行する | 原典は DB からマスタを読む。実行中にマスタが変わらないこと（不変の入力とみなせること）は前提とする |
 | 「今日」に依存する処理 | オラクルを JST・固定した時計で実行する | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
@@ -79,8 +79,8 @@ generated:
 | `Abstraction`・`Refinement`・`Spec` の定理（ABS・REF・SPEC） | Lean の型検査（`sorry`・新規 `axiom`・`native_decide`・`bv_decide` 無し） | Lean の核、公理 `propext`・`Quot.sound`・`Classical.choice`、`Machine` の定義（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)） |
 | ベクタの期待値 | Lean のモデルの実行（`spec/` は `Spec` の標準の選択） | Lean のコンパイラ（実行のみ。証明には使わない） |
 | 証明・検証器の規則の順守（`sorry`・`axiom`・`native_decide`・`bv_decide`・Verus の禁止構文の数） | CI の検査（`#print axioms`、構文の数え上げ） | CI の検査スクリプト |
-| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、`tools/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/TraceTest/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
-| ギャップ（既知差異・PRE の外・未確定）の登録簿と箇所の印（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`tools/trace check`、表の生成（`tools/trace manifest --check`） | 検査器と生成器（`TraceTest/` のフィクスチャと `tools/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である |
+| R 課題の形と、空虚化を防ぐ付帯の義務（TR-G・TR-N。[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)。成分の必要性 G9 は [ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)） | `lake exe obligation-check`、port-lang の `scripts/ci/check_obligations.py` | 2 つの検査器（スキルの `assets/lean/TraceTest/ObligationFixture.lean` と `tools/ci/fixtures/obligations/` の例による確認だけ） |
+| ギャップ（既知差異・PRE の外・未確定）の登録簿と箇所の印（TR-D・TR-K・GK。[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)） | `@[gap_entry]` の値の検査、`lake exe obligation-check`、`trace check`、表の生成（`trace manifest --check`） | 検査器と生成器（`TraceTest/` のフィクスチャと port-lang の `scripts/trace` の自己テストによる確認だけ）。印をどの定義に付けるか（ギャップの箇所として十分か）は人の判断である |
 
 ### モデル間の保証の限界
 
@@ -111,9 +111,9 @@ generated:
 
 | 対象 | 手段 | 信頼の基盤 |
 | --- | --- | --- |
-| インベントリと本文ハッシュ | `tools/trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)） |
+| インベントリと本文ハッシュ | `trace inventory`（tree-sitter-java・tree-sitter-rust、Mapper XML・`web.xml`・SQL ファイル・properties・テンプレートの簡易パーサ）。正規化はコメントを除いたトークン列で、空白の違いを無視し、文字列リテラルの中身は保つ。ハッシュは SHA-256 の先頭 16 桁（[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)） | パーサと正規化の規則（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)） |
 | Lean の Merkle ハッシュ | `lake exe trace-dump`。同じ層と、依存する `LangSemantics`・`Machine` の定数を合成する | Lean の `Expr` のハッシュ |
-| TR 検査と検査済みハッシュの更新 | `tools/trace check`・`tools/trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | `tools/trace` |
+| TR 検査と検査済みハッシュの更新 | `trace check`・`trace rehash`（ソースの本文ハッシュとモデルの Merkle ハッシュの組ごとに、合格した検査を記録する） | port-lang の `scripts/trace` |
 
 ## 仕様の外（規範節）の対応
 

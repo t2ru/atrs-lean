@@ -68,6 +68,19 @@
 2. 意思決定を採択し、変更履歴に記録する。
 3. 旧版の最後のコミットにタグ `upstream-<旧 release>` を付けてから、版上げをコミットする。
 
+### 例（架空）
+
+Java・Spring の移植元で、Spring の版上げにより `StringTrimmerEditor.setAsText` が `trim()` から `strip()` に変わった、と仮定する。
+
+1. インベントリ差分: `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` が「版の変化」になる。アプリ本体のコードは変わらない。
+2. 差分オラクル: 全角空白（U+3000）で始まる氏名を入力するベクタで、旧版は検証エラー、新版は合格になり、差分が出る。
+3. 影響一覧: 入力の前処理（`SourceModel.Validation.trimInput`）→ 入力検証の R 課題 → `Spec.Validation` が出る（`trace impact` は、印 `@[gap]` の付いた定義から見直すギャップも出す）。
+4. 判断: 業務の意図は変わらないので `Spec` は維持する。次の 3 つを行う。
+   - `SourceModel` の前処理を直す。
+   - 前提型の既知差異 `D-NNN`（Unicode 空白の扱い）を登録し（`@[gap_entry]`）、その述語 `dev_DNNN`「入力の前後に、U+0020 以下以外の Unicode 空白を含まない」を R 課題の `restrict` に加える。
+   - W 課題（全角空白で始まる氏名で結果が異なる例と、差異の必要性）を証明する。
+5. `Spec` を変えていないので、`Refinement`・`TargetModel`・移植先ソースは影響を受けない。
+
 ## 移植先の版上げ
 
 ツールチェーン・検証器・依存の版上げも同じ流れで扱う。
