@@ -257,8 +257,8 @@ def queryBack : MasterData.Query → SrcQuery
   | .flightMasterOf name => .flightMasterOf name.val
   | .fareTypeOf cd => .fareTypeOf cd
   | .boardingClassOf cd => .boardingClassOf cd
-  | .peakTimeOn d => .peakTimeOn ⟨d.year, d.month, d.day⟩
-  | .multiplicationRatioOn d => .multiplicationRatioOn ⟨d.year, d.month, d.day⟩
+  | .peakTimeOn d => .peakTimeOn (JLocalDate.ofEpochDay d.epochDay)
+  | .multiplicationRatioOn d => .multiplicationRatioOn (JLocalDate.ofEpochDay d.epochDay)
   | .config => .config
   | .codeList n => .codeList n
 
@@ -266,7 +266,7 @@ theorem queryOf?_eq_some {x : SrcQuery} {q : MasterData.Query} (h : queryOf? x =
   cases x <;> simp only [queryOf?, Option.some.injEq, Option.map_eq_some_iff] at h
   all_goals first
     | (subst h; rfl)
-    | (obtain ⟨D, hD, rfl⟩ := h; simp only [queryBack]; rw [dateOfJ_eq_some hD])
+    | (obtain ⟨D, hD, rfl⟩ := h; simp only [queryBack]; rw [(dateOfJ_eq_some hD).1])
 
 @[obligation "ABS-048"]
 theorem queryOf?_kernel : KernelIs queryOf? (undefOrEq queryOf?) :=
