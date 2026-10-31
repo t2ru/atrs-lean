@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """マスタの Mapper の文とコードリストの SQL を PostgreSQL で実行し、結果を conformance/sql/master-data.json に書き出す
-（backlog 0004、ADR 0045）。lake test（Tests.MasterSql）が、同じ表の行から SourceModel.Repository.* を評価して照合する。
+（backlog 25f7、ADR c108）。lake test（Tests.MasterSql）が、同じ表の行から SourceModel.Repository.* を評価して照合する。
 
 - 上流の DDL とシード（00100・00200・00210・00220・00240）を、新しいデータベースに投入する。
-  00240 のピーク時期は投入日 2026-11-01 で展開する（current_timestamp を置き換える。ADR 0028）。
+  00240 のピーク時期は投入日 2026-11-01 で展開する（current_timestamp を置き換える。ADR 9ee4）。
 - 文の SQL は、上流の Mapper の XML と AtrsCodeListConfig.java から抜き出したものをそのまま使う。
 - PostgreSQL への接続は tools/ci/with_postgres.sh が与える（照合順序 C・UTF8・UTC）。
 

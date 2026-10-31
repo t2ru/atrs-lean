@@ -1,4 +1,4 @@
-//! `impact`: 変化の起点から、証明のグラフ（参照）に沿って影響を求める（port-lang の upgrade.md の手順 5。ADR 0041）。
+//! `impact`: 変化の起点から、証明のグラフ（参照）に沿って影響を求める（port-lang の upgrade.md の手順 5。ADR 9cd9）。
 //!
 //! 移植元の起点（移植元のロケータ・`SourceModel` などの名前）は、次の順に伝播させる。
 //!
@@ -9,7 +9,7 @@
 //!    （`Spec` を変える場合だけ影響する。分けて示す）
 //!
 //! 移植先の起点（`rust:`・`TargetModel` の名前）は、逆向きに `Refinement` の R 課題と `Spec` まで示す。
-//! 移植元ソースと移植先ソースを直接は結ばない（ADR 0036）。
+//! 移植元ソースと移植先ソースを直接は結ばない（ADR e2a4）。
 
 use crate::lean::{closure, split_hash, Dump, Obligations};
 use serde::Serialize;

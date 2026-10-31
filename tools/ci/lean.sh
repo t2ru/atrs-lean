@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog 0001・0025・0027・0002・0030・0016・0024・0004）。
+# Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7）。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -8,6 +8,9 @@ step() { printf '\n== %s\n' "$*"; }
 
 step "upstream: submodule の commit と trace/upstream.json の一致"
 python3 -I tools/ci/check_upstream.py
+
+step "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
+python3 -I tools/docs/ids.py check
 
 step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PostgreSQL に接続できる環境で <command> を実行する（backlog 0016）。
+# PostgreSQL に接続できる環境で <command> を実行する（backlog c7e8）。
 #   tools/ci/with_postgres.sh <command> [args...]
 #
 # - 環境変数 PGHOST が設定されていれば、そのサーバを使う（CI はサービスコンテナ）。

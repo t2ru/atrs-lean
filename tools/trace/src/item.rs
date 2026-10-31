@@ -13,7 +13,7 @@ pub struct Item {
     pub file: String,
     /// 開始行と終了行（1 始まり）
     pub lines: [usize; 2],
-    /// 正規化した本文のハッシュ（ADR 0040）
+    /// 正規化した本文のハッシュ（ADR 0eea）
     pub hash: String,
     /// `trace/out-of-scope.json` に当たるか
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]

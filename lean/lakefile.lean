@@ -4,7 +4,7 @@ open Lake DSL
 /-!
 ATRS の Lean プロジェクト（全モデルと証明）。
 
-- 依存は Batteries と、port-lang スキルの言語意味論モデル（`langSemantics`）だけとする（ADR 0014）。
+- 依存は Batteries と、port-lang スキルの言語意味論モデル（`langSemantics`）だけとする（ADR 659f）。
   `LangSemantics` には ATRS に固有の定義を足さないため、`lean/` に写さず Lake 依存として取り込む。
 - `Machine`（抽象機械とリファインメントの枠組み）も同じ `langSemantics` パッケージから取り込む。
 - 名前空間の依存の向きは `tools/ci/check_lean.py` で検査する。
@@ -47,7 +47,7 @@ require langSemantics from "../.agents/skills/port-lang/assets/lean"
   root := `Tools.AxiomCheck
   supportInterpreter := true
 
-/-- R 課題の形と付帯の義務（TR-G。ADR 0039）を判定する。 -/
+/-- R 課題の形と付帯の義務（TR-G。ADR 70eb）を判定する。 -/
 @[default_target] lean_exe «obligation-check» where
   root := `Tools.ObligationCheck
   supportInterpreter := true

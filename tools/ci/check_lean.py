@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lean ソースの静的検査（backlog 0001）。
+"""Lean ソースの静的検査（backlog be49）。
 
 port-lang の lean/rules.md（全域性と安全性）と architecture.md（依存の向き）を、
 コメントと文字列リテラルを除いたトークンで検査する。

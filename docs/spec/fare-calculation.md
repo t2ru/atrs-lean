@@ -13,7 +13,7 @@ generated:
 
 # 運賃計算
 
-> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](../../lean/Spec/Fare.lean)、[Source] は Lean [`SourceModel.Fare`](../../lean/SourceModel/Fare.lean)（Provider のキャッシュは [`SourceModel.MasterData`](../../lean/SourceModel/MasterData.lean)）に形式化した（[backlog 0004](../backlog/0004-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 0042](../decision/0042-fare-source-model-and-shared-vectors.md)）。
+> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](../../lean/Spec/Fare.lean)、[Source] は Lean [`SourceModel.Fare`](../../lean/SourceModel/Fare.lean)（Provider のキャッシュは [`SourceModel.MasterData`](../../lean/SourceModel/MasterData.lean)）に形式化した（[backlog 25f7](../backlog/25f7-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
 ## 基本運賃
 

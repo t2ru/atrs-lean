@@ -13,7 +13,7 @@ generated:
 
 # 会員（C0/C1/C2）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
 入力検証は [input-validation.md](input-validation.md#会員入力c1c2)、画面遷移は [http-contract.md](http-contract.md#c1-会員登録) を参照。
 
@@ -87,7 +87,7 @@ generated:
 
 ### 定義
 
-**[Spec]**（[ADR 0030](../decision/0030-member-update-in-single-transaction.md)）
+**[Spec]**（[ADR 578b](../decision/578b-member-update-in-single-transaction.md)）
 
 1. 1 つのトランザクションとして:
    1. `checkMemberPassword(input.currentPassword, membershipNumber)`。失敗したら何も更新せずに終える。

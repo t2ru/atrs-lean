@@ -6,11 +6,11 @@ import Spec
 
 適合テストベクタ（`conformance/`）の実行器（スキル port-lang の `conformance.md`）。
 
-- ファイルの読み込み・形式の検査・`expected` の比較は、機能に依存しない（backlog 0012 で生成器と
+- ファイルの読み込み・形式の検査・`expected` の比較は、機能に依存しない（backlog a8ef で生成器と
   他の機能に広げる）。
 - 操作ごとの割当（`operation` → モデルの関数）は `formatOps` のような表で与える。共有入力（`fixtures`）を使う
   操作の表は、`Fixtures` から作る（`Tests.ConformanceFare`）。
-- `modelDef` は文字列か、モデルごとの名前の配列（`shared/` 用。ADR 0042）。実行するモデルの層の名前を選ぶ。
+- `modelDef` は文字列か、モデルごとの名前の配列（`shared/` 用。ADR 8f18）。実行するモデルの層の名前を選ぶ。
 - 現在は `ok` の期待値だけを扱う。
 -/
 

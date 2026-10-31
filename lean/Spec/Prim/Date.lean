@@ -3,7 +3,7 @@ import Trace
 /-!
 # Spec.Prim.Date
 
-先発グレゴリオ暦の暦日（`docs/spec/domain-model.md#date`、ADR 0009）。タイムゾーンを持たない。
+先発グレゴリオ暦の暦日（`docs/spec/domain-model.md#date`、ADR 6eb2）。タイムゾーンを持たない。
 
 - 年は 1〜9999。通算日数 `ordinal`（0001-01-01 を 0 とする）と `epochDay`（1970-01-01 を 0 とする）で
   比較・加減算する。

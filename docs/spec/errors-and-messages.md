@@ -17,9 +17,9 @@ sources:
 
 # エラーとメッセージ
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。メッセージ文言は Lean `Spec` のデータとして形式化する。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。メッセージ文言は Lean `Spec` のデータとして形式化する。
 
-方針は [ADR 0008](../decision/0008-errors-as-values-with-stable-codes.md)。
+方針は [ADR a4fa](../decision/a4fa-errors-as-values-with-stable-codes.md)。
 
 ## 分類（AtrsError）
 
@@ -31,7 +31,7 @@ sources:
 | `InvalidRequest(reason)` | 改竄検知 | 400 エラー画面（`e.ar.fw.0003`） | 500、`code = "e.ar.a0.L9001"`（原典どおり。[http-contract.md](http-contract.md#apierror)） |
 | `PreconditionViolation(reason)` | 前提違反（[Source] のみ） | 500 システムエラー画面 | 500 |
 | `System(code, args)` | 整合性違反・I/O 失敗 | 500 システムエラー画面 | 500 |
-| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
+| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
 
 `InvalidRequest` のログ用コードは `e.ar.a0.L9001`（「不正リクエスト(パラメータ改竄) {0}」）。
 
@@ -113,7 +113,7 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 
 ## ログ・システムコード
 
-ログの文言・形式は対象外（[ADR 0002](../decision/0002-porting-scope.md)）。コードのみ参考として示す。
+ログの文言・形式は対象外（[ADR 84bf](../decision/84bf-porting-scope.md)）。コードのみ参考として示す。
 
 | コード | 意味 |
 | --- | --- |

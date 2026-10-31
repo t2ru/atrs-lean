@@ -13,9 +13,9 @@ generated:
 
 # 具体化証明課題（Refinement）と移植先ソースの確認
 
-> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 0021](../decision/0021-lean-spec-as-normative-source.md)）。
+> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-構成は [ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md) による。関係の定義は [ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md) による。
+構成は [ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md) による。関係の定義は [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md) による。
 
 ```
 Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-verus)→ rust/src/model/ ─(Verus の証明)→ Rust の実行コード
@@ -35,7 +35,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 - 入力の対応 `αᵢ`
 - 出力の対応 `αₒ`
 
-そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`、差異の必要性）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)・[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）。
+そのうえで、`Machine.Refines` の 4 つの証明義務（INIT・入力の全域性・適用可能性・正しさ）と、空虚化を防ぐ付帯の義務（`Glue.ofStd` の形、`InitSurj`、`Sound`・`InitIs`、`Pinned`・`NoFaultReachable`、出力のみの差異の `StateSafe`、入口の全域性 `TotalUnder`・`EnvWitness`、差異の必要性）を示す。形は [abstraction.md](abstraction.md#リファインメントの形) と同じである（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)・[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）。
 `TargetModel` の各操作も、マスタ・設定と環境（衝突・I/O の失敗・配備の設定）を入力の成分として受ける。
 
 抽象化関数 β の標準の抽象化:
@@ -50,18 +50,18 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 各行は Lean では `@[std_abs]` を付けた部分写像（葉）とし、核を L 課題 REF-012 の `KernelIs` で示す。
 
 - 主定理は閉じた命題とし、前提として持ってよいのは PRE（値域とマスタ・設定の制約を含む）・INV・`T-NNN` の述語だけとする。`T-NNN` の述語は `restrict` で機械の中に置く。ポートの契約は、ポート実装の R 課題（REF-008・REF-009）で証明する。値域は [Spec] の PRE である（[domain-model.md](domain-model.md#値域)）。そのため「値域内」は差異ではない。
-- [Spec] の非決定的な結果 `Conflict`（[ADR 0037](../decision/0037-conflict-as-spec-nondeterminism.md)）は、`TargetModel` で選んでも選ばなくてもよい。ただし、選べるのは入力の環境が衝突を示すときだけである（`Pinned`・`NoFaultReachable`。[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の N-001）。I/O の失敗（N-002）も同じである。
+- [Spec] の非決定的な結果 `Conflict`（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)）は、`TargetModel` で選んでも選ばなくてもよい。ただし、選べるのは入力の環境が衝突を示すときだけである（`Pinned`・`NoFaultReachable`。[Spec の非決定性](abstraction.md#spec-の非決定性n-nnn) の N-001）。I/O の失敗（N-002）も同じである。
 
 ## 既知差異（T-NNN）
 
-[Spec] と [Target] が一致しない点である。種類は [ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md#差異) による。前提型・観測型には、R 課題と W 課題（`REF-1NN` が `T-0NN` の証拠）が必須である。
+[Spec] と [Target] が一致しない点である。種類は [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#差異) による。前提型・観測型には、R 課題と W 課題（`REF-1NN` が `T-0NN` の証拠）が必須である。
 
 | ID | 種類 | 箇所 | 差異 | 前提／成分 | R 課題 | W 課題 |
 | --- | --- | --- | --- | --- | --- | --- |
 
 （現在なし。移植先は [Spec] をそのまま実装する方針である。差異が必要になったら、意思決定を記録したうえで、ここに登録する）
 
-W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例と、差異の必要性（差異を外した R 課題の命題が偽であること。[ADR 0043](../decision/0043-vacuity-literature-necessity-and-mutation.md)）を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
+W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向きの例と、差異の必要性（差異を外した R 課題の命題が偽であること。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）を示す。前提型の差異は、[abstraction.md](abstraction.md#前提型の差異の影響) と同じく「出力のみ」「中断」に分類する。
 
 ### 前提型の差異の影響
 
@@ -72,7 +72,7 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 
 ## REF: TargetModel が Spec をリファインする（Lean で証明）
 
-種類は次の 4 つである（[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
+種類は次の 4 つである（[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md#証明課題の種類)）。
 
 - R: 主定理と、その付帯の義務（[abstraction.md](abstraction.md#空虚化を防ぐ義務) と同じ）
 - W: 証拠（両向きの例と、差異の必要性）
@@ -100,8 +100,8 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 
 | ID | 入口 | backlog |
 | --- | --- | --- |
-| REF-007 | HTTP の画面・REST（`Spec.Http`） | 0014 |
-| REF-011 | レポート要求の受信と生成（キューからの配信） | 0023 |
+| REF-007 | HTTP の画面・REST（`Spec.Http`） | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
+| REF-011 | レポート要求の受信と生成（キューからの配信） | 26c57ac3-b6b7-440a-aca5-994943bd7ebd |
 
 ## SRC: TargetModel ⇔ Rust ソース（決定論的な確認）
 
@@ -118,7 +118,7 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 | SRC-009 | 業務機能が `std::time`・浮動小数点型などの暗黙の副作用・禁止 API を使わない | `clippy.toml` の `disallowed-methods` / `disallowed-types`（CI） | 一覧に載せた API に限る |
 | SRC-010 | DB アダプタの SQL が、`TargetModel.Adapter` の `LangSemantics.Sql` の式と一致する | SQL の差分実行（PostgreSQL） | 照合したデータの外 |
 
-SRC-007・SRC-008 は、Rust を変更する各 backlog 項目の完了条件で確かめる。道具は [backlog 0024](../backlog/0024-trace-tooling.md) で作る。
+SRC-007・SRC-008 は、Rust を変更する各 backlog 項目の完了条件で確かめる。道具は [backlog ffdc](../backlog/ffdc-trace-tooling.md) で作る。
 
 ## 状況
 

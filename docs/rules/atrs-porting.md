@@ -11,7 +11,7 @@ generated:
 
 # ATRS での port-lang スキルの適用
 
-移植の **方法** は、アプリに依存しないスキル [port-lang](../../.agents/skills/port-lang/SKILL.md) に従う（[ADR 0025](../decision/0025-extract-porting-method-as-agent-skill.md)）。
+移植の **方法** は、アプリに依存しないスキル [port-lang](../../.agents/skills/port-lang/SKILL.md) に従う（[ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)）。
 本書は、それを ATRS に適用するときの **固有事項** だけを定める。スキルと本書が食い違う場合は、ATRS の ADR が優先し、次に本書、次にスキルの順とする。
 
 ## 言語ペアと使う言語パック
@@ -21,7 +21,7 @@ generated:
 | 移植元 | Java | `references/java/` | Spring MVC、Spring Security、Bean Validation（Hibernate Validator）、Jackson、MyBatis |
 | 移植元 | SQL | `references/sql/`（方言 `references/sql/dialects/postgresql/`） | PostgreSQL、MyBatis の Mapper XML、`atrs-initdb` の DDL・シード |
 | 移植先 | Rust | `references/rust/` | Verus、Kani |
-| 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 0014](../decision/0014-lean-toolchain-and-dependencies.md)） |
+| 形式化 | Lean 4 | `references/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
 使うスキルの版: `metadata.version` = `0.2`。言語意味論の Lean モデルは、スキルの `assets/lean/LangSemantics/`（`Java`, `Sql`, `Sql.Postgresql`, `Rust`）を `lean/LangSemantics/` に取り込んで使う。ATRS に固有の定義を `LangSemantics` に足してはならない（不足はスキルの assets 側に足す）。スキルを更新したら、本書の版の記載と影響する ADR を見直す。
 
@@ -32,8 +32,8 @@ generated:
 | 保証の限界の文書 | [spec/assurance.md](../spec/assurance.md) |
 | 移植元側の既知差異（`D-NNN`）と抽象化の課題 | [spec/abstraction.md](../spec/abstraction.md) |
 | 移植先側の既知差異（`T-NNN`）と具体化・確認の課題 | [spec/refinement.md](../spec/refinement.md) |
-| リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 0027](../backlog/0027-machine-refinement-framework.md)。[ADR 0034](../decision/0034-b-method-refinement-and-explicit-deviations.md)、[ADR 0035](../decision/0035-generate-verus-mirror-from-target-model.md)） |
-| 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog 0028](../backlog/0028-verus-mirror-generator.md)） |
+| リファインメントの枠組み `Machine` | スキルの `assets/lean/Machine/` を Lake 依存として取り込む（[backlog 1ae4](../backlog/1ae4-machine-refinement-framework.md)。[ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)） |
+| 移植先の写しの生成器 | `lean/Tools/GenVerus`（`lake exe gen-verus`。[backlog d77c](../backlog/d77c-verus-mirror-generator.md)） |
 
 ## リポジトリ配置
 
@@ -45,7 +45,7 @@ generated:
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
 | `trace/` | 版の宣言・インベントリ・manifest |
-| `tools/trace/` | 追跡の道具（Rust。[backlog 0024](../backlog/0024-trace-tooling.md)、[ADR 0040](../decision/0040-trace-tooling-unresolved-details.md)・[ADR 0041](../decision/0041-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
+| `tools/trace/` | 追跡の道具（Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
 | `tools/ci/` | CI の検査（`lean.sh` が Lean 側の一括検査。`.github/workflows/lean.yml` から呼ぶ） |
 
 ## 追従中の上流
@@ -72,7 +72,7 @@ generated:
 | PostgreSQL JDBC | 42.7.9 | `pom.xml` |
 | Tomcat（cargo で起動） | 11.0.15 | `terasoluna-gfw-parent` |
 
-版の正は [`trace/upstream.json`](../../trace/upstream.json) であり、上表はその写しである（[ADR 0024](../decision/0024-following-upstream-releases.md)）。submodule の commit と宣言の一致は `python3 -I tools/ci/check_upstream.py` で検査する。上流はデータベースサーバの版を固定していない。SQL の差分実行と方言の突き合わせには PostgreSQL 16.15 を使い、`trace/upstream.json` に記録した（[backlog 0016](../backlog/0016-lang-semantics-sql.md)）。CI はコンテナイメージ `postgres:16.15`（照合順序 C・UTF8・UTC）で、ローカルでは `tools/ci/with_postgres.sh` が一時クラスタを起動する。
+版の正は [`trace/upstream.json`](../../trace/upstream.json) であり、上表はその写しである（[ADR 3f36](../decision/3f36-following-upstream-releases.md)）。submodule の commit と宣言の一致は `python3 -I tools/ci/check_upstream.py` で検査する。上流はデータベースサーバの版を固定していない。SQL の差分実行と方言の突き合わせには PostgreSQL 16.15 を使い、`trace/upstream.json` に記録した（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md)）。CI はコンテナイメージ `postgres:16.15`（照合順序 C・UTF8・UTC）で、ローカルでは `tools/ci/with_postgres.sh` が一時クラスタを起動する。
 
 ## 機能名（層をまたいで共通）
 
@@ -90,7 +90,7 @@ generated:
 | `Repository.*` | `adapter` | — | [ports.md](../spec/ports.md) |
 | `Http` | `adapter::http` | `http` | [http-contract.md](../spec/http-contract.md) |
 
-- エラー型の名前は `AtrsError`（[ADR 0008](../decision/0008-errors-as-values-with-stable-codes.md)）。
+- エラー型の名前は `AtrsError`（[ADR a4fa](../decision/a4fa-errors-as-values-with-stable-codes.md)）。
 - Rust の `model/` には、上表の Rust モジュール名で `TargetModel` の写しを置く。
 
 ## Spec の型（ATRS）
@@ -113,23 +113,23 @@ generated:
 | Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [input-validation.md](../spec/input-validation.md) |
 | `@InitBinder` の名前一致（REST 予約 API の相関検証の抜け、既知差異 D-007） | `dep:org.springframework:spring-web#InitBinder` | [http-contract.md](../spec/http-contract.md) |
 | ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [authentication.md](../spec/authentication.md) |
-| パスワードエンコーダ `{pbkdf2}` | `dep:org.springframework.security:spring-security-crypto#DelegatingPasswordEncoder` | [ADR 0015](../decision/0015-password-hashing-port.md) |
+| パスワードエンコーダ `{pbkdf2}` | `dep:org.springframework.security:spring-security-crypto#DelegatingPasswordEncoder` | [ADR 2d1f](../decision/2d1f-password-hashing-port.md) |
 | REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md#rest-apiapiv1) |
 | `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [ports.md#idgenerator](../spec/ports.md#idgenerator) |
 | `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [ports.md#トランザクション](../spec/ports.md#トランザクション) |
 
 ## 進め方の適用（ATRS）
 
-スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0044](../decision/0044-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
+スキルの [workflow.md](../../.agents/skills/port-lang/references/workflow.md) が示す既定の進め方を、ATRS では次のように当てはめる（[ADR 0b83](../decision/0b83-porting-conditions-and-workflow.md)）。表に無い項目は、スキルの既定に従う。
 
 | 項目 | ATRS での扱い |
 | --- | --- |
-| 評価 | 済み。範囲は [ADR 0002](../decision/0002-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 0025](../backlog/0025-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
+| 評価 | 済み。範囲は [ADR 84bf](../decision/84bf-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 455f](../backlog/455f-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
 | 判断を記録する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、スキルの既定の例に加えて、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
 | 検査ゲート | `tools/ci/lean.sh` と CI。追跡は `tools/trace check`、ハッシュの更新は `tools/trace rehash` |
 | 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
-| 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 0039](../decision/0039-refinement-non-vacuity-obligations.md)） |
-| 画面の確認 | HTTP レベルのオラクルとベクタで行う。HTML の構造は範囲外（ADR 0002）。ブラウザでの操作の流れのテストは、現時点では採らない |
+| 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） |
+| 画面の確認 | HTTP レベルのオラクルとベクタで行う。HTML の構造は範囲外（ADR 84bf）。ブラウザでの操作の流れのテストは、現時点では採らない |
 | 記録 | 作業状態は [docs/backlog/](../backlog/README.md)、判断は ADR、文書の変更は [docs/log.md](../log.md)。git の運用は [version-control.md](version-control.md) |
 
 ## ATRS で採った値

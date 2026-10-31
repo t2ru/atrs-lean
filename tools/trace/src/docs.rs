@@ -113,7 +113,6 @@ pub fn r_tasks(md: &str) -> Vec<String> {
     out
 }
 
-/// `docs/backlog/NNNN-*.md` の `state`。
 /// 文書の「出典:」の行にある、バッククォートで囲んだロケータ（行番号は 1 始まり）。
 /// ロケータの種類（`java:`・`sql:`・`rust:`・`dep:`・`lang:` など）で始まるものだけを拾う。
 pub fn citations(md: &str) -> Vec<(usize, String)> {
@@ -131,17 +130,19 @@ pub fn citations(md: &str) -> Vec<(usize, String)> {
     out
 }
 
+/// `docs/backlog/*.md` の `state`（frontmatter の `id` ごと。ADR f57e）。
 pub fn backlog_states(repo: &Path) -> BTreeMap<String, String> {
     let mut out = BTreeMap::new();
     if let Ok(rd) = std::fs::read_dir(repo.join("docs/backlog")) {
         for e in rd.flatten() {
             let name = e.file_name().to_string_lossy().to_string();
-            if name.len() < 5 || !name[..4].chars().all(|c| c.is_ascii_digit()) {
+            if !name.ends_with(".md") || name == "README.md" {
                 continue;
             }
             let s = std::fs::read_to_string(e.path()).unwrap_or_default();
-            if let Some(l) = s.lines().find(|l| l.starts_with("state:")) {
-                out.insert(name[..4].to_string(), l["state:".len()..].trim().to_string());
+            let field = |k: &str| s.lines().find(|l| l.starts_with(k)).map(|l| l[k.len()..].trim().trim_matches('"').to_string());
+            if let (Some(id), Some(state)) = (field("id:"), field("state:")) {
+                out.insert(id, state);
             }
         }
     }
@@ -168,7 +169,7 @@ pub struct FeaturesFile {
 
 const LAYERS: &[&str] = &["SourceModel", "Abstraction", "TargetModel", "Refinement"];
 
-/// 機能の対応表（ADR 0040）。
+/// 機能の対応表（ADR 0eea）。
 pub struct Features {
     pub list: Vec<Feature>,
     globs: Vec<Vec<GlobMatcher>>,
@@ -249,9 +250,9 @@ mod tests {
     fn reads_tables() {
         let md = "## 既知差異\n\n| ID | 種類 | 箇所 | 差異 | 前提 | R 課題 | W 課題 |\n| --- | --- |\n\
                   | D-001 | 前提型 | a | b | `dev_D001` | ABS-001, ABS-004 | ABS-101 |\n\
-                  | D-013 | モデル外 | a | b | — | — | — |\n\n### 小節\n\n| D-001 | 中断 | x | 0005 |\n\
+                  | D-013 | モデル外 | a | b | — | — | — |\n\n### 小節\n\n| D-001 | 中断 | x | 00000000-0000-4000-8000-000000000005 |\n\
                   ## 証明課題\n\n| ID | 種類 | 内容 | 差異 |\n| ABS-001 | R | x | D-001 |\n| ABS-101 | W | y | D-001 |\n\
-                  ### 入口の R 課題\n\n| ID | 入口 | backlog |\n| --- | --- | --- |\n| ABS-031 | REST | 0014 |\n";
+                  ### 入口の R 課題\n\n| ID | 入口 | backlog |\n| --- | --- | --- |\n| ABS-031 | REST | 00000000-0000-4000-8000-000000000014 |\n";
         let ds = deviations(md, "既知差異");
         assert_eq!(ds.len(), 2);
         assert_eq!(ds[0].r_tasks, vec!["ABS-001", "ABS-004"]);

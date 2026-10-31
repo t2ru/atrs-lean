@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # conformance/sql/master-data.json が、PostgreSQL でのマスタの Mapper の文・コードリストの SQL の実行結果と
-# 一致することを確かめる（backlog 0004）。照合そのものは lake test（Tests.MasterSql）が行う。
+# 一致することを確かめる（backlog 25f7）。照合そのものは lake test（Tests.MasterSql）が行う。
 # PostgreSQL が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
 #   tools/ci/master_sql.sh
 set -euo pipefail
