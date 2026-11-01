@@ -57,7 +57,12 @@ Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FL
 ### 事前条件
 
 - [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[input-validation.md](input-validation.md)）を通過していれば満たされる。
-- [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードが空白でないこと。空港コードの形（英大文字 3 文字）は課さない（形の違うコードは区間が無いので `e.ar.b1.2002`。[Source] も同じ）。
+- [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 次の連言。どれも入力だけの条件である（[ADR 0b0c](../decision/0b0c-flight-search-stage3-abs011.md)）。
+  - 設定とマスタの不変条件（MD-1〜MD-8）
+  - 照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList` に当たる）
+  - 照会の空港コードが空白でないこと。空港コードの形（英大文字 3 文字）は課さない（形の違うコードは区間が無いので `e.ar.b1.2002`。[Source] も同じ）
+  - 便マスタの便名が空白でないこと（`FlightNamesHaveText`）。空白の便名の便マスタが結果に現れると、[Source] は `getFlightMaster` の `Assert.hasText` で例外を投げる（D-033。PRE の外）
+- フライトの参照整合性（`World.RefMaster`）は PRE に課さない。マスタに無い便名・運賃種別を指すフライトは、[Spec] の候補の条件でも [Source] の結合でも除かれる。
 
 ### 定義（評価順）
 

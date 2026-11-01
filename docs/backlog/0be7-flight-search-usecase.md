@@ -46,7 +46,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 ## 完了条件
 
 - [x] [flight-search.md](../spec/flight-search.md) の例がベクタで通る
-- [ ] ABS-010, ABS-011 を証明した（ABS-011 は `Machine.Refines` の形。運賃計算の `dev_D001`・`dev_D002` を引き継ぐ）
+- [x] ABS-010, ABS-011 を証明した（ABS-011 は `Machine.Refines` の形。運賃計算の `dev_D001`・`dev_D002` を引き継ぐ）
 - [x] 空席照会の SPEC-001 を証明した
 - [x] SQL `findByVacantSeatSearchCriteria` の写しを PostgreSQL での差分実行で照合した
 - [x] 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外し、D-031 を登録した
@@ -80,9 +80,27 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 - D-027 の範囲を状態の表に広げ、α `flightOfRow`・`worldOfDb` と核の定理（ABS-048）を置いた。
 - 第 3 段に申し送るもの: 初期状態の対応（`worldOfDb seedFlightDb = some world`）、ABS-010・ABS-011 とトップレベルへの統合、D-032 の述語。
 
+## 第 3 段の結果
+
+2026-11-01 に完了した（[ADR 0b0c](../decision/0b0c-flight-search-stage3-abs011.md)）。
+
+- R 課題 ABS-011 `Abstraction.FlightSearch.searchRefines`（`Machine.Refines`）と、束 `searchPreserves`（`ch`・D-032 の `outsC` の層を含む）を証明した。
+  - 1 歩の対応 `Run.run_spec` は、下位のモジュールの補題を合わせる。
+  - 結合（`Join`・`Candidates`）、整列（`Order`。同順位が無いこと `noTie_cands`）、Provider（`Providers`）、畳み込み（`Group`）、期間（`Period`）、初期状態（`Init`）の補題である。
+- L 課題 ABS-010 `Period.isAvailableFareType_between` を証明した。
+- W 課題 ABS-132 `need_D032`（区切り文字 `.`）と ABS-114 `need_D014`（共有サービスの今日だけが進む）を証明した。証人は `Witness`。
+- PRE を改めた。`World.RefMaster` を外し、照会の搭乗クラスがマスタにあることと、便マスタの便名が空白でないこと（`FlightNamesHaveText`）を課す。
+  - 空白の便名での [Source] の例外を、PRE の外の差異 D-033 として登録した（プロジェクトオーナーの確認待ち）。
+- 具体側の入力に、区切り文字 `groupingSeparator`（D-032）と、共有サービスが読む今日 `sharedClock`（D-014）を置いた。
+  - 述語は `dev_D032`・`dev_D014S`。D-014 は計画では述語を置かない案だった。[Source] の 3 回の Clock の読み出しをモデルの形に隠さないため、述語を置いた。
+- トップレベルの主定理 `Abstraction.refines`・`preserves`・`abstracts` に、空席照会を 5 番目の成分として加えた。
+- `trace/features.json` の FlightSearch を 0be7 の範囲に絞り、移植元側の検査が失敗扱いで通ることを確かめた。HTTP の層は Http（a89e）、予約が使う文・メソッドは Reserve（aedf）へ移した。
+- スキルに汎用の補題を足した（版 0.17）。
+
 ## 参照
 
 - [flight-search.md](../spec/flight-search.md)
 - [ADR 5fcb](../decision/5fcb-sql-semantics-for-source-repositories.md)
 - [ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)
 - [ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)
+- [ADR 0b0c](../decision/0b0c-flight-search-stage3-abs011.md)

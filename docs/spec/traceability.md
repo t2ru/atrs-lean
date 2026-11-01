@@ -340,6 +340,7 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.model.Route#setRouteNo(Integer)` | `SourceModel.Model.Route` | `a9c754e56f9d626c` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route#toString()` | `SourceModel.Model.Route` | `b78e85e304022465` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route.serialVersionUID` | `SourceModel.Model.Route` | `e55e25f5719b321f` | lake-test |
+| `java:jp.co.ntt.atrs.domain.model.FareTypeCd#getCode()` | `SourceModel.Model.fareTypeCdCode` | `3855e45998af62f8` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `da10cbbc34c14874` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBeforeDayNum()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `87c12b12578b0d7e` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBoardingClass()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `14872a96b272a9e5` | lake-test |
@@ -349,7 +350,7 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#toString()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `b78e85e304022465` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto.serialVersionUID` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `652bd2782db8027a` | lake-test |
 | `dep:org.mybatis:mybatis#EnumTypeHandler` | `SourceModel.Repository.Flight.bind` | `mybatis-3.5.19` | （なし） |
-| `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria` | `SourceModel.Repository.Flight.vacantSeatRows` | `2fbe03024cd7d231` | lake-test |
+| `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria` | `SourceModel.Repository.Flight.vacantSeatRows` | `2fbe03024cd7d231` | lake-test, pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Repository.FlightSeed.days` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Repository.FlightSeed.names` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Repository.FlightSeed.slots` | `ebc1effd92f8d4a3` | pg-flight-sql |

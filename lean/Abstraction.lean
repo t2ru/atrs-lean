@@ -44,7 +44,7 @@ import Abstraction.FlightSearch
 依存してよいもの: `SourceModel`, `Spec`, `LangSemantics.Core`, `LangSemantics.Java`, `LangSemantics.Sql`, `Machine`, `Trace`。
 汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.Kernel.undefOrEq`・機械の並置 `Machine.Sum`）は、
 スキルの assets にある。
-機能の証明課題（R・W・C 課題と付帯の義務、束 `Machine.Preserves`）は機能のモジュール（`Abstraction.Fare`・`Abstraction.MasterData`）に、
+機能の証明課題（R・W・C 課題と付帯の義務、束 `Machine.Preserves`）は機能のモジュール（`Abstraction.Fare`・`Abstraction.MasterData`・`Abstraction.FlightSearch`）に、
 その補題は下位のモジュールに置く（port-lang の `lang/lean/rules.md#証明課題の配置`）。
 
 ## トップレベルの主定理（本ファイル）
@@ -69,6 +69,7 @@ import Abstraction.FlightSearch
 | ABS-001 | 基本運賃 | `Abstraction.Fare.basicFareRefines` | `Abstraction.Fare.basicFarePreserves` |
 | ABS-002 | 運賃 | `Abstraction.Fare.fareRefines` | `Abstraction.Fare.farePreserves` |
 | ABS-004 | 合計金額 | `Abstraction.Fare.totalFareRefines` | `Abstraction.Fare.totalFarePreserves` |
+| ABS-011 | 空席照会 | `Abstraction.FlightSearch.searchRefines` | `Abstraction.FlightSearch.searchPreserves` |
 
 ## モジュール
 
@@ -97,7 +98,19 @@ import Abstraction.FlightSearch
 | `Abstraction.Fare.BasicFareRun` | ABS-001・ABS-101 の補題、L 課題 ABS-007 `runBasicFare_spec` |
 | `Abstraction.Fare.Preserves` | ABS-001・ABS-002・ABS-004 の束 `Machine.Preserves` の部品: 環境の前提 `envBF`・`envF`・`envTF` と証人 |
 | `Abstraction.Fare` | 機能の証明課題: 束 `basicFarePreserves`・`farePreserves`・`totalFarePreserves` と 1 歩の可換式 `*Refines_commutes`、R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`・ABS-004 `totalFareRefines` と `InitSurj`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002`・ABS-112 `need_D012` |
-| `Abstraction.FlightSearch.Alpha` | 空席照会の状態の α（FLIGHT の行 `flightOfRow`・表 `worldOfDb`。D-027 の範囲）。R 課題 ABS-011 は backlog 0be7 の第 3 段 |
+| `Abstraction.FlightSearch.Alpha` | 空席照会の α（FLIGHT の行・表、入力 `aiS`、出力 `aoS`、環境 `ceFS`）と核、貼り合わせ `glueFS`、差異の述語 `dev_D001S`・`dev_D002S`・`dev_D014S`・`dev_D027S`・`dev_D032` |
+| `Abstraction.FlightSearch.Format` | 書式の一致（3 桁区切り・時刻・日付） |
+| `Abstraction.FlightSearch.Period` | 照会可能期間の検査の一致、L 課題 ABS-010 `isAvailableFareType_between` |
+| `Abstraction.FlightSearch.Init` | 初期状態の対応 `worldOfDb_seed` |
+| `Abstraction.FlightSearch.Join` | 空席照会の文の結合と、FLIGHT の行ごとの評価 `rowAt` |
+| `Abstraction.FlightSearch.Candidates` | 行ごとの対応 `rowAt_rel`、結果の行の α `candOfRow`、列の対応 `rows_cands` |
+| `Abstraction.FlightSearch.Order` | `ORDER BY` と `mergeSort candidateLe`（`sorted_cands`）、同順位の無さ `noTie_cands`、許される並びの証人 `mergeSortRows` |
+| `Abstraction.FlightSearch.Group` | `createFlightVacantInfoList` の畳み込みと `group`（`group_spec`） |
+| `Abstraction.FlightSearch.Providers` | キャッシュの答え（`flightMaster_full`・`load_fs`） |
+| `Abstraction.FlightSearch.Run` | ABS-011 の 1 歩 `run_spec` |
+| `Abstraction.FlightSearch.Witness` | W 課題 ABS-114・ABS-132 の証人、差異の述語の非自明性 |
+| `Abstraction.FlightSearch.Preserves` | ABS-011 の束の部品: 環境の前提 `envFS`、選択の像の材料 `chFS` |
+| `Abstraction.FlightSearch` | 機能の証明課題: R 課題 ABS-011 `searchRefines` と `InitSurj`、束 `searchPreserves`、W 課題 ABS-114 `need_D014`・ABS-132 `need_D032` |
 -/
 
 namespace Abstraction

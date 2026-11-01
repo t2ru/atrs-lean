@@ -46,8 +46,9 @@ theorem Abstraction.abstracts :
 | ABS-001 | 基本運賃 | `Abstraction.Fare.basicFarePreserves` | `envBF`: `masterConfigOk`、`routeBasicFare + extraCharge` の値域、`dev_D001` |
 | ABS-002 | 運賃 | `Abstraction.Fare.farePreserves` | `envF`: 基本運賃と割引率の値域、`dev_D002` |
 | ABS-004 | 合計金額 | `Abstraction.Fare.totalFarePreserves` | `envTF`: `masterConfigOk`、入力の値域、`dev_D001T`・`dev_D002T`・`dev_D012` |
+| ABS-011 | 空席照会 | `Abstraction.FlightSearch.searchPreserves` | `envFS`: `masterConfigOk`、照会の搭乗クラスがマスタにあること、空港コードと便マスタの便名が空白でないこと、`dev_D001S`・`dev_D002S` |
 
-あわせて、R 課題ごとの 1 歩の可換式（`queryRefines_commutes`・`basicFareRefines_commutes`・`fareRefines_commutes`・`totalFareRefines_commutes`）を示す。
+あわせて、R 課題ごとの 1 歩の可換式（`queryRefines_commutes`・`basicFareRefines_commutes`・`fareRefines_commutes`・`totalFareRefines_commutes`・`searchRefines_commutes`）を示す。
 内容は、環境の前提の下で [Source] のどの結果も正常終了で、出力の像が [Spec] の出力に等しい、というものである。
 
 ## リファインメントの形
@@ -173,7 +174,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-011 | 前提型 | [Email](input-validation.md#email) | [Source] はドメイン部を `IDN.toASCII` で変換し、失敗すれば不合格とし、変換後の長さで 255 を判定する。[Spec] は変換しない（[ADR ac33](../decision/ac33-email-validation-rule.md)） | `dev_D011`: ドメイン部が ASCII だけからなる | ABS-031, ABS-034, ABS-042, ABS-045, ABS-046 | ABS-111 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
 | D-012 | 前提型 | [合計金額](fare-calculation.md#合計金額) | [Source] の小児分の途中計算 `j32mul(b, childFareRate − r)` は、`b × (childFareRate − r) > 2,147,483,647` のとき int32 で折り返す（値域の上限 `b = 100,000,000` では最大 約 1e10）。[Spec] は任意精度 | `dev_D012`（`Abstraction.Fare`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件） | ABS-004, ABS-031, ABS-041, ABS-045 | ABS-112 | 偽を証明済み（`need_D012`） |
 | D-013 | モデル外 | [会員情報変更](member.md#会員情報変更update)・[トランザクション](ports.md#トランザクション)（規範節） | [Source] は、現在パスワードの照合と更新を別のトランザクションで行う。[Spec] は 1 トランザクションで行う（[ADR 578b](../decision/578b-member-update-in-single-transaction.md)）。違いが観測できるのは並行実行のときだけである。各モデルは各ユースケースを 1 つの原子的な操作として扱うので、[Source] の具体機械でも 1 つの操作として写す | — モデル外（並行実行はモデルに現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D013`） |
-| D-014 | 前提型（具体側の環境） | [Clock](ports.md#clock) | [Source] は `today()` を呼ぶたびに現在日付を読む。そのため、日付をまたいで実行されたユースケースの中で今日が変わりうる。[Spec] はユースケースの初めに 1 回だけ読む | `dev_D014`: 1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す | ABS-011, ABS-031, ABS-041, ABS-044, ABS-045 | ABS-114 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
+| D-014 | 前提型（具体側の環境） | [Clock](ports.md#clock) | [Source] は `today()` を呼ぶたびに現在日付を読む。そのため、日付をまたいで実行されたユースケースの中で今日が変わりうる。[Spec] はユースケースの初めに 1 回だけ読む | `dev_D014`: 1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す。空席照会では `dev_D014S`（`TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ） | ABS-011, ABS-031, ABS-041, ABS-044, ABS-045 | ABS-114 | 偽を証明済み（`need_D014`） |
 | D-016 | モデル外 | [セッション](http-contract.md#セッション)（規範節） | [Source] はログイン時にセッション ID を変えない（セッション固定化の対策が無い）。[Spec] は新しい ID に変える | — モデル外（セッション ID は [Spec] の外の規範節で定め、どのモデルにも現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D016`） |
 | D-017 | 前提型 | [ログイン成功時の遷移先](http-contract.md#認証と権限) | [Source] は `redirectTo` の絶対 URL（外部サイト）へもリダイレクトする。[Spec] はアプリ内のパスだけを受け付ける | `dev_D017`: `redirectTo` が無いか、`/` で始まり `//` で始まらない | ABS-045 | ABS-117 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
 | D-018 | 前提型 | [Min/Max](input-validation.md#文字クラス)・[creditTerm](domain-model.md#member) | [Source] は文字列の `Min`・`Max` を `BigDecimal` として判定する（`"1.5"`, `"+1"`, `"1e1"` も数になる）。`creditTerm` が 6 文字以上なら、DB の `VARCHAR(5)` 違反でシステムエラーになる（会員登録・会員情報変更）。[Spec] は十進整数だけを数とし、長さの上限を持たない | `dev_D018`: `creditMonth`・`creditYear` が `[0-9]+` で、`creditTerm` が 5 文字以下 | ABS-031, ABS-034, ABS-042, ABS-045, ABS-046 | ABS-118 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
@@ -185,9 +186,9 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D024`） |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D025`） |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md)・[空席照会の状態（FLIGHT 表）](ports.md#world抽象状態) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻（到着時刻は翌日の 23:59 を超えるもの。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会では、状態の表 FLIGHT の各行も [Spec] の型で表せる（`Abstraction.FlightSearch.Alpha.worldOfDb` が定義される。負の空席数・未知のコード・暦日の外の日付を含まない）。照会は状態を変えないので、初期状態（シードの FLIGHT 表）が前提を満たせば、到達する状態も満たす。初期状態が満たすこと（`worldOfDb seedFlightDb = some world`）と、FLIGHT の部分の証拠は backlog 0be7 の第 3 段で示す。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)） | ABS-001, ABS-002, ABS-004, ABS-011, ABS-026 | ABS-127 | 偽を証明済み（`need_D027`） |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md)・[空席照会の状態（FLIGHT 表）](ports.md#world抽象状態) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻（到着時刻は翌日の 23:59 を超えるもの。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会では、状態の表 FLIGHT の各行も [Spec] の型で表せる（`Abstraction.FlightSearch.Alpha.worldOfDb` が定義される。負の空席数・未知のコード・暦日の外の日付を含まない）。照会は状態を変えないので、初期状態（シードの FLIGHT 表）が前提を満たせば、到達する状態も満たす。初期状態が満たすこと（`Abstraction.FlightSearch.Init.worldOfDb_seed`）は backlog 0be7 の第 3 段で示した。空席照会の入力の述語は `dev_D027S`（`aiS` が定義される）。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)） | ABS-001, ABS-002, ABS-004, ABS-011, ABS-026 | ABS-127 | 偽を証明済み（`need_D027`） |
 | D-031 | 前提型 | [往復の便の検査](reservation.md)・[便マスタの到着時刻](master-data.md) | [Source] の往復の予約の検査（`validateFlightDepartureDateForRoundTripFlight`）は、往路便の到着時刻を `DateTimeFormatter("HHmm")`（SMART）で読むので、到着時刻が 24:00 より後（翌日着。シードの NTT523・NTT528 の `2415`）の便では `DateTimeParseException` を投げる。`2400` は例外にならず、翌日 0:00 でなく当日 0:00 と読まれる（往路便の到着日時が 1 日早くなる）。[Spec] は到着時刻を出発日 0:00 からの時分で表し、往路便の到着日時を求められる （[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。空席照会は到着時刻を文字列として整形するだけなので、 この差異は起きない | `dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である | ABS-021, ABS-041 | ABS-131 | 未証明（Lean に述語がまだ無い。予約の `SourceModel` と R 課題が未着手） |
-| D-032 | 前提型（具体側の環境） | [空席照会の運賃の書式](flight-search.md#出力-flightvacantinfo) | [Source] の空席照会は、運賃を `new DecimalFormat("###,###")` で書式化する。区切り文字は JVM の既定の書式ロケール （`Locale.getDefault(Locale.Category.FORMAT)`）で決まる（例: ドイツ語では `20.600`）。[Spec] は常に `,` で区切る（`fmtYen`）。 モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は前提のもとで `,` を固定している | `dev_D032`: [Source] の JVM の既定の書式ロケールの 3 桁区切りの文字が `,` である（日本語・英語のロケール） | ABS-011 | ABS-132 | 未証明（Lean に述語がまだ無い。空席照会の具体機械と R 課題が未着手（backlog 0be7 の第 2・3 段）） |
+| D-032 | 前提型（具体側の環境） | [空席照会の運賃の書式](flight-search.md#出力-flightvacantinfo) | [Source] の空席照会は、運賃を `new DecimalFormat("###,###")` で書式化する。区切り文字は JVM の既定の書式ロケール （`Locale.getDefault(Locale.Category.FORMAT)`）で決まる（例: ドイツ語では `20.600`）。[Spec] は常に `,` で区切る（`fmtYen`）。 モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は、区切り文字を配備の環境 `groupingSeparator` として受ける | `dev_D032`（`Abstraction.FlightSearch.Alpha`。具体側の入力の述語）: [Source] の JVM の既定の書式ロケールの 3 桁区切りの文字（`SearchInput.groupingSeparator`）が `,` である（日本語・英語のロケール） | ABS-011 | ABS-132 | 偽を証明済み（`need_D032`） |
 <!-- END GENERATED: gaps-known -->
 
 ### 前提型の差異の影響
@@ -209,7 +210,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-009 | 中断 | 使用済みの番号による挿入の失敗、または既存の行との衝突 | aedfeffc-3e82-46b1-b497-3d8b7808d068 |
 | D-011 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 4e0e3dd1-d282-46e2-aa98-719853bc9fd2 |
 | D-012 | 中断 | 折り返した合計金額が保存される | bbcce088-c475-4378-9cc6-e3d821acc0f5 |
-| D-014 | 中断 | 日付をまたぐと、予約・レポートに記録される日付が変わりうる | aedfeffc-3e82-46b1-b497-3d8b7808d068 |
+| D-014 | 中断 | 日付をまたぐと、予約・レポートに記録される日付が変わりうる | aedfeffc-3e82-46b1-b497-3d8b7808d068, 0be7c5d4-01d9-43f4-a50d-227f174830f0 |
 | D-017 | 出力のみ | ログインの成否と状態更新は同じで、遷移先だけが異なる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
 | D-018 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 4e0e3dd1-d282-46e2-aa98-719853bc9fd2 |
 | D-019 | 出力のみ | 曜日の表示だけが異なる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
@@ -237,6 +238,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-015 | [マスタの不変条件](master-data.md#不変条件spec) | MD-1〜MD-3 が破れると、後勝ちの上書きか、`null` による前提違反になる | PRE MD-1〜MD-3 |
 | D-029 | [空港コードリスト](master-data.md#空港コードリスト画面用) | コードが区切り行と同じ `NOP` の空港があると、`LinkedHashMap` の同じキーへの `put` で、区切り行の表示がその空港の名前に置き換わり、空港の行は現れない | PRE（MD-8: 空港のコードは `NOP` でない。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)） |
 | D-030 | [値域](domain-model.md#値域) | マスタ・入力が値域の外のとき、int32 で折り返す | PRE（入力の値域・MD-8） |
+| D-033 | [空席照会の便マスタの参照](flight-search.md#事前条件) | 空白の便名の便マスタが空席照会の結果に現れると、[Source] は `getFlightMaster` の `Assert.hasText` で `IllegalArgumentException` を投げる。[Spec] は PRE で除く | PRE `FlightNamesHaveText`（便マスタの便名が空白でない） |
 <!-- END GENERATED: gaps-outside-pre -->
 
 [Spec] が型で除外している入力での [Source] の前提違反（`Assert`・`NullPointerException`）も、同じ扱いとする（例: [fare-calculation.md](fare-calculation.md)、[reservation.md](reservation.md)、[flight-search.md](flight-search.md)、[member.md](member.md) の [Source] の前提違反）。ただし、これは HTTP の要求から到達できない入力に限る。`Spec.Http` はすべての要求文字列に応答を定めるので、HTTP から到達できる前提違反は PRE の内である。その場合は、前提型の差異として登録する（例: D-020）か、L 課題 ABS-047 で到達しないことを示す。
@@ -269,8 +271,8 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | ABS-005 | L | 値域内で、`dev_D001T`・`dev_D002T`・`dev_D012` の下では、[Source] の合計金額の計算は例外も int32 の溢れも無く、[Spec] の合計金額を返す（ABS-004 の適用可能性と正しさに使う）。前提 `dev_D012` が破れる入力では、小児分の途中計算だけが折り返す（ABS-112）。Lean: `Abstraction.Fare.TotalFareRun.runTotalFare_eq` | D-012 |
 | ABS-006 | — | 取り消し。ピーク時期の参照 `peakTimeOn` の一致は ABS-026 に含めた（ID は再利用しない。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | — |
 | ABS-007 | L | 値域内で、[Source] の基本運賃は [Spec] に等しいか 1 小さく、1 小さいのは `x·ratio` が 100 で割り切れ、積算比率の因子が安全でないときに限る。値域全体での一致は成り立たない（反例は ABS-101。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。Lean: `Abstraction.Fare.BasicFareRun.runBasicFare_spec`（`calculateBasicFare` について。中身は `basicFare_src`） | D-001 |
-| ABS-010 | L | `isAvailableFareType` と SQL 条件 `beforeDayNum BETWEEN end AND start` の同値 | — |
-| ABS-011 | R | 空席照会 `searchFlight`: PRE（MD-5）と、運賃計算から引き継ぐ `dev_D001`・`dev_D002` の下で、[Source]（`LangSemantics.Sql` の照会＋Java の集約）の許されるすべての結果についてリファインする。具体側の入力は、マスタ・設定・照会の引数が [Spec] の型で表せること（D-027）を引き継ぐ。[Source] は 1 回の照会で Clock を 3 回読むので、D-014 の前提（同じ日付を返す）を課す | D-001, D-002, D-014, D-027, D-032 |
+| ABS-010 | L | `isAvailableFareType` と SQL 条件 `beforeDayNum BETWEEN end AND start` の同値。Lean: `Abstraction.FlightSearch.Period.isAvailableFareType_between` | — |
+| ABS-011 | R | 空席照会 `searchFlight`: PRE（MD-5）と、運賃計算から引き継ぐ `dev_D001`・`dev_D002` の下で、[Source]（`LangSemantics.Sql` の照会＋Java の集約）の許されるすべての結果についてリファインする。具体側の入力は、マスタ・設定・照会の引数が [Spec] の型で表せること（D-027）を引き継ぐ。[Source] は 1 回の照会で Clock を 3 回読むので、D-014 の前提（同じ日付を返す。`dev_D014S`）を課す。区切り文字の前提 `dev_D032` も課す。Lean: `Abstraction.FlightSearch.searchRefines`（[ADR 0b0c](../decision/0b0c-flight-search-stage3-abs011.md)） | D-001, D-002, D-014, D-027, D-032 |
 | ABS-020 | L | [Source] の予約確定の前後で、全フライトの `vacantNum ≥ 0`。失敗時は `sequences` を除いて状態が変わらない（ABS-041 の正しさに使う） | — |
 | ABS-021 | R | 採番ポートの [Source] 実装（シーケンス）が、`dev_D009` の下で、[Spec] の採番の契約をリファインする | D-009 |
 | ABS-022 | L | `J` と INV の下で、[Source] の `e.ar.a0.L9002` に到達しない（各ユースケースの適用可能性に使う） | — |
@@ -300,7 +302,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | ABS-109 | W | D-009 の証拠: シーケンスが最大値に達した状態で、[Source] が使用済みの値を返す | D-009 |
 | ABS-111 | W | D-011 の証拠: 非 ASCII のドメイン部で、[Source] と [Spec] の判定が異なる入力 | D-011 |
 | ABS-112 | W | D-012 の証拠と必要性: 基本運賃 1 億円（区間の運賃 1,000 万円・積算比率 1000%）・割引率 0・小児 1 名で、[Source] 17,050,400 円、[Spec] 60,000,000 円。`dev_D012` を外すと ABS-004 は成り立たない（`Abstraction.Fare.need_D012`） | D-012 |
-| ABS-114 | W | D-014 の証拠: Clock の呼び出しごとに異なる日付を返す実行で、[Source] と [Spec] の結果が異なる | D-014 |
+| ABS-114 | W | D-014 の証拠: Clock の呼び出しごとに異なる日付を返す実行で、[Source] と [Spec] の結果が異なる。空席照会で、共有サービスの読む今日だけが 1 日進むと、[Source] は `e.ar.b1.2001`、[Spec] は空席情報を返す。`dev_D014S` を外すと ABS-011 は成り立たない（`Abstraction.FlightSearch.need_D014`） | D-014 |
 | ABS-117 | W | D-017 の証拠: `redirectTo = "https://example.com/"` で、遷移先が異なる | D-017 |
 | ABS-118 | W | D-018 の証拠: `creditMonth = "1e1"`、または 6 文字の `creditTerm` で、結果が異なる | D-018 |
 | ABS-119 | W | D-019 の証拠: `Accept-Language: en` で、曜日の表示が異なる | D-019 |
@@ -310,7 +312,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | ABS-126 | W | D-026 の証拠: `"\ud800"` を含む REST の要求で、[Source] は処理を続け、[Spec] は `InvalidRequest` を返す | D-026 |
 | ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB。Lean: `Abstraction.MasterData.need_D027`（前提を外すと入力の全域性が破れる）と `unknownBoardingClass_throws` | D-027 |
 | ABS-131 | W | D-031 の証拠: 往路便を NTT523（到着時刻 `2415`）とする往復の予約で、[Source] は `DateTimeParseException`（500）、[Spec] は往路便の到着日時を翌日 0:15 として検査を続ける。`2400` では [Source] は例外を出さず当日 0:00 と読む（backlog aedf） | D-031 |
-| ABS-132 | W | D-032 の証拠: 既定の書式ロケールがドイツ語の [Source] で、空席照会の運賃は `20.600`、[Spec] は `20,600`（backlog 0be7） | D-032 |
+| ABS-132 | W | D-032 の証拠: 既定の書式ロケールの区切り文字が `.`（ドイツ語など）の [Source] で、空席照会の運賃 100,000 円は `100.000`、[Spec] は `100,000`。`dev_D032` を外すと ABS-011 は成り立たない（`Abstraction.FlightSearch.need_D032`） | D-032 |
 
 ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利用しない）。
 

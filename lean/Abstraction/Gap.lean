@@ -391,13 +391,13 @@ def D031 : Gap where
 
 /-- [Source] の空席照会は、運賃を `new DecimalFormat("###,###")` で書式化する。区切り文字は JVM の既定の書式ロケール
 （`Locale.getDefault(Locale.Category.FORMAT)`）で決まる（例: ドイツ語では `20.600`）。[Spec] は常に `,` で区切る（`fmtYen`）。
-モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は前提のもとで `,` を固定している -/
+モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は、区切り文字を配備の環境 `groupingSeparator` として受ける -/
 @[gap_entry]
 def D032 : Gap where
   id := "D-032"
   kind := .preConcreteEnv
   sites := [⟨"空席照会の運賃の書式", "docs/spec/flight-search.md#出力-flightvacantinfo", ""⟩]
-  premise := "`dev_D032`: [Source] の JVM の既定の書式ロケールの 3 桁区切りの文字が `,` である（日本語・英語のロケール）"
+  premise := "`dev_D032`（`Abstraction.FlightSearch.Alpha`。具体側の入力の述語）: [Source] の JVM の既定の書式ロケールの 3 桁区切りの文字（`SearchInput.groupingSeparator`）が `,` である（日本語・英語のロケール）"
   deviations := [``Abstraction.FlightSearch.Alpha.dev_D032]
   evidence := .refuted [``Abstraction.FlightSearch.need_D032]
   rTasks := ["ABS-011"]
