@@ -2,6 +2,14 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 2 段の設計を決め、完了した。
+  * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Repository.FlightSeed` を置いた。
+  * [Spec] に `Spec.Seed.FlightProps`（主キーの一意性・参照整合性）、抽象機械 `Spec.FlightSearch.searchMachine` と SPEC 課題を置いた。
+  * [Source] に具体機械 `SourceModel.FlightSearchQuery.searchConcrete`（業務例外は出力の値）と、条件の押し下げ `vacantSeatRows_eq_on` を置いた。
+  * `findByVacantSeatSearchCriteria` を PostgreSQL で差分実行するようにした（`tools/conformance/master_sql.py`、`conformance/sql/flight-search.json`、`Tests.FlightSql`、`trace/checks.json` の `pg-flight-sql`）。
+  * D-027 の範囲を状態の表 FLIGHT に広げ、α `Abstraction.FlightSearch.Alpha` を置いた。
+  * スキルの版を 0.16 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[spec/conformance.md](spec/conformance.md)、[spec/flight-search.md](spec/flight-search.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+
 * **Creation**: [ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md)（空席照会）を 3 段に分け、第 1 段の設計を決めた。0be7 に着手した（`doing`）。
   * Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。
   * 便マスタの到着時刻を `Spec.Prim.Time.ArrivalTime`（出発日 0:00 からの時分。24 時以降を許す）にした。fixture の `outsideSpec` を外し、`Spec.Seed` に NTT523・NTT528 を含めた。[ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md) に補足を書いた。`flightMasterOf` の 2415 の例を `shared/master-data` に移した。

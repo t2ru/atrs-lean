@@ -117,7 +117,9 @@ structure FlightRow where
   vacantNum : Int4
   deriving DecidableEq, Repr
 
-/-- 状態の表の内容（いまは FLIGHT だけ）。[Spec] の `World` に対応する（ADR ce36）。 -/
+/-- 状態の表の内容（いまは FLIGHT だけ）。[Spec] の `World` に対応する（ADR ce36）。列の型の範囲は [Spec] の型より広く
+（負の空席数など）、[Spec] の型で表せる状態に限ることは既知差異 D-027 の前提である（ADR cdb6）。 -/
+@[gap "D-027"]
 structure FlightDb where
   flight : LangSemantics.Sql.Query.Bag FlightRow := []
   deriving DecidableEq, Repr
