@@ -37,7 +37,7 @@ generated:
 
 - [ ] [http-contract.md](../spec/http-contract.md) の全リクエストにベクタがある
 - [ ] SRC-006・SRC-007・SRC-008 を満たす
-- [ ] HTTP の `source-model/` ベクタが、HTTP レベルの Java オラクルと一致する
+- [ ] HTTP の `source-model/` ベクタが、HTTP レベルの Java の原典実行と一致する
 - [ ] Kani のハーネスの境界を [assurance.md](../spec/assurance.md) の付録に記入した
 - [ ] REF-007・ABS-031・ABS-045・ABS-047 と、関係する W 課題を証明し、TR-D が通る
 - [ ] HTTP の規範節で、ベクタで確かめきれない部分を [assurance.md](../spec/assurance.md) に記載した

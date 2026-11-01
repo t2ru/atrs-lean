@@ -23,7 +23,7 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <!-- HTTP レベルのオラクルだけが使う（WebappServer）。使う側が自分の版で入れる -->
+    <!-- HTTP レベルの原典実行だけが使う（WebappServer）。使う側が自分の版で入れる -->
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>

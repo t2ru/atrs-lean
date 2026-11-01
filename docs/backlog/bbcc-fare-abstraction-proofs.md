@@ -34,7 +34,7 @@ generated:
 ## 対象外
 
 - `native_decide`・`bv_decide` を証明に使うこと（[verification.md](../../.agents/skills/spec-pivot/references/docs/spec/verification.md#証明の運用)）
-- 運賃計算の `source-model/` ベクタと Java オラクルとの一致（[backlog f18c](f18c-java-oracle-harness.md) に移した。ADR e9bc）
+- 運賃計算の `source-model/` ベクタと Java の原典実行との一致（[backlog f18c](f18c-java-oracle-harness.md) に移した。ADR e9bc）
 
 ## 完了条件
 

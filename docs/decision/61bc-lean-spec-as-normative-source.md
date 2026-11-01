@@ -44,7 +44,7 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 2. `docs/spec` の **規範節**: `Spec` で表現できない仕様の正規の定義
 3. 適合テストベクタ `conformance/`: `spec/` の期待値は Lean `Spec` を実行して生成する
 4. 移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）: 上記に従う（[ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md)）
-5. Java 原典: 移植元モデル `SourceModel` を検証するためのオラクル
+5. Java 原典: 移植元モデル `SourceModel` を検証するための原典実行
 
 ### docs/spec に置くもの
 

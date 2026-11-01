@@ -20,7 +20,7 @@
       "expected": {
         "ok": 1000
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     }
   ]
 }

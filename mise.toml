@@ -7,7 +7,7 @@
 # - `depends` は実際の依存、`wait_for` は同じ起動の中での直列化だけを表す（単独実行では引き込まない）。
 #   lake は同じパッケージの .lake を同時に書かないよう、`assets:*` → `lean:*` → `workspace:*` の順に直列にする。
 #   PostgreSQL を使う段（CI では同じサーバ）も直列にする。
-# - JDK・PostgreSQL を使う段（assets:jvm-table・assets:pg-table・conformance:master-sql・oracle:*）は、処理系が無ければ終了コード 2
+# - JDK・PostgreSQL を使う段（assets:jvm-table・assets:pg-table・conformance:master-sql・origin-run:*）は、処理系が無ければ終了コード 2
 #   （「飛ばした」。ローカルだけ。CI では 1 になる）で失敗する。一括検査 `ci` は、これを tools/ci/skippable.sh で 0 に読み替える
 #   `ci:*` の段から呼ぶ。trace/checks.json（trace rehash）は飛ばさない側を呼ぶ。
 
@@ -31,7 +31,7 @@ depends = [
   "docs:ids", "docs:self-test", "docs:okf",
   "conformance:check",
   "static:self-test", "static:lean",
-  "ci:jvm-table", "ci:pg-table", "ci:master-sql", "ci:java-oracle",
+  "ci:jvm-table", "ci:pg-table", "ci:master-sql", "ci:java-origin-run",
   "assets:build", "assets:trace-test", "assets:layout-check",
   "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump",
   "trace:self-test", "trace:build", "trace:manifest", "trace:check", "trace:review",
@@ -57,11 +57,11 @@ hide = true
 wait_for = ["ci:pg-table"]
 run = "tools/ci/skippable.sh tools/ci/master_sql.sh"
 
-[tasks."ci:java-oracle"]
-description = "oracle:domain・oracle:http（java・mvn・PostgreSQL が無ければ、ローカルでは飛ばす）"
+[tasks."ci:java-origin-run"]
+description = "origin-run:domain・origin-run:http（java・mvn・PostgreSQL が無ければ、ローカルでは飛ばす）"
 hide = true
 wait_for = ["ci:master-sql"]
-run = "tools/ci/skippable.sh tools/ci/java_oracle.sh all"
+run = "tools/ci/skippable.sh tools/ci/java_origin_run.sh all"
 
 # ---------------------------------------------------------------------------
 # 上流・文書
@@ -110,21 +110,21 @@ wait_for = ["assets:pg-table"]
 run = "tools/ci/master_sql.sh"
 
 # ---------------------------------------------------------------------------
-# Java オラクル（backlog f18c。原典を複写してビルドし、tools/oracle のハーネスで実行する。MAVEN_SETTINGS で mvn -s を指定できる）
+# Java の原典実行（backlog f18c。原典を複写してビルドし、tools/origin-run のハーネスで実行する。MAVEN_SETTINGS で mvn -s を指定できる）
 
-[tasks."oracle:domain"]
-description = "oracle: 運賃計算・空席照会のベクタを原典で照合し、生成するベクタ（conformance/source-model/*/oracle-*.json）が最新である"
+[tasks."origin-run:domain"]
+description = "origin-run: 運賃計算・空席照会のベクタを原典で照合し、生成するベクタ（conformance/source-model/*/origin-run-*.json）が最新である"
 wait_for = ["conformance:master-sql"]
-run = "tools/ci/java_oracle.sh domain"
+run = "tools/ci/java_origin_run.sh domain"
 
-[tasks."oracle:http"]
-description = "oracle: Spring を起動した原典に要求を送り、採取結果（tools/oracle/http/*.json）が最新である"
-wait_for = ["conformance:master-sql", "oracle:domain"]
-run = "tools/ci/java_oracle.sh http"
+[tasks."origin-run:http"]
+description = "origin-run: Spring を起動した原典に要求を送り、採取結果（tools/origin-run/http/*.json）が最新である"
+wait_for = ["conformance:master-sql", "origin-run:domain"]
+run = "tools/ci/java_origin_run.sh http"
 
-[tasks."oracle:gen"]
-description = "oracle: 生成するベクタと HTTP の採取結果を、原典から書き出す"
-run = ["tools/ci/java_oracle.sh domain --write", "tools/ci/java_oracle.sh http --write"]
+[tasks."origin-run:gen"]
+description = "origin-run: 生成するベクタと HTTP の採取結果を、原典から書き出す"
+run = ["tools/ci/java_origin_run.sh domain --write", "tools/ci/java_origin_run.sh http --write"]
 
 # ---------------------------------------------------------------------------
 # 静的検査

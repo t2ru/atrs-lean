@@ -17,7 +17,7 @@ generated:
 移植元ソース ⇔①⇔ SourceModel ─Abstraction→ Spec ←Refinement─ TargetModel ⇔②⇔ 移植先ソース
 ```
 
-- ① と ② は **追跡** と **決定論的な一致の確認** である。追跡はソースとモデルの対応を指す。一致の確認には、検証器・生成・オラクル・ベクタを使う（[traceability.md](traceability.md)、[verification.md](verification.md)）。
+- ① と ② は **追跡** と **決定論的な一致の確認** である。追跡はソースとモデルの対応を指す。一致の確認には、検証器・生成・原典実行・ベクタを使う（[traceability.md](traceability.md)、[verification.md](verification.md)）。
 - `Abstraction` と `Refinement` は **証明** である。どちらも、モデルが `Spec` を B メソッドの意味でリファインすることを示す（[下記](#リファインメントb-メソッド)）。
 - 移植元ソースと移植先ソースを直接つないではならない。
 
@@ -68,7 +68,7 @@ generated:
 
 これらを `Spec` に入れると、全移植先にその偶発性を強いることになる。そこで次のように分ける。
 
-- `SourceModel` は、偶発性ごと再現する（移植元オラクルで確認できる）。
+- `SourceModel` は、偶発性ごと再現する（原典実行で確認できる）。
 - `Spec` は意図を表す。
 - 差は既知差異 `D-NNN` として記録し、リファインメントの定理の中に名前付きで出す（[差異](#差異)）。
 
@@ -282,7 +282,7 @@ theorem abstracts : Machine.Abstracts (Spec.machine.restrict dev) (SourceModel.m
 2. 仕様文書の **規範** 節（`Spec` で表現できない仕様）
 3. 適合テストベクタ（モデルを実行して生成する）
 4. `SourceModel` / `TargetModel` と、それぞれのソース
-5. 移植元ソース（`SourceModel` を確かめるためのオラクル）
+5. 移植元ソース（`SourceModel` を確かめるための原典実行）
 
 `Spec` と矛盾する文書・ベクタ・ソースは、`Spec` を正として直す。`Spec` 自体を変えるのは、業務の意図が変わるときだけである（変更はプロジェクトの意思決定記録に記録する）。
 この序列は仕様の正規性の序列であり、作業規約どうしの優先順位とは別のものである。

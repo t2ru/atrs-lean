@@ -18,7 +18,7 @@ generated:
 | --- | --- | --- | --- |
 | 1 | **原典の調査** | 観測可能な振る舞いの一覧 | SQL・設定・メッセージ・フレームワークの暗黙の処理（移植元の言語パックの `frameworks.md`）まで洗い出した |
 | 2 | **草案** | 仕様文書の draft 節（[Spec] と [Source] を併記、差異 `D-NNN` とその種類） | [spec-documents.md](../rules/spec-documents.md) の節構成を満たす |
-| 3 | **形式化（移植元側）** | `LangSemantics.<移植元>`（不足分）、`SourceModel`、`@[source]` 注釈 | `SourceModel` が、移植元オラクルのベクタ（`source-model/`）と処理系の差分実行を通す |
+| 3 | **形式化（移植元側）** | `LangSemantics.<移植元>`（不足分）、`SourceModel`、`@[source]` 注釈 | `SourceModel` が、原典実行のベクタ（`source-model/`）と処理系の差分実行を通す |
 | 4 | **形式化（抽象）** | `Spec`（抽象機械: 関係と標準の選択、INV・INIT・PRE）、`@[spec_doc]` | 次の 3 つを満たす。<br>- 草案の例を Lean のテストとして通す<br>- `Spec` の不変条件の証明が通る<br>- 草案を informative に置き換える |
 | 5 | **抽象化証明** | `Abstraction`（`ABS-NNN`）、差異の述語・成分（`@[deviation]`） | R 課題（リファインメント）と W 課題（差異の証拠）が `sorry` 無しで通る |
 | 6 | **形式化（移植先側）** | `LangSemantics.<移植先>`（不足分）、`TargetModel` | `TargetModel` が、移植先ソースの予定構造（関数の分け方・評価順・エラーの返し方）を写している |

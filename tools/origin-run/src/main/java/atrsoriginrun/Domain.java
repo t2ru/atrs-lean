@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import jp.co.ntt.atrs.app.b0.SelectFlightForm;
 import jp.co.ntt.atrs.app.b0.TicketHelper;
@@ -65,7 +65,7 @@ final class Domain implements AutoCloseable {
         if (Pg.props().getProperty("password") != null) ds.setPassword(Pg.props().getProperty("password"));
         ds.setOptions("-c TimeZone=UTC");
         Configuration conf = MybatisConfig.configuration();
-        conf.setEnvironment(new Environment("oracle", new JdbcTransactionFactory(), ds));
+        conf.setEnvironment(new Environment("origin-run", new JdbcTransactionFactory(), ds));
         for (Class<?> m : List.of(RouteRepository.class, FlightRepository.class, BoardingClassRepository.class,
                 FareTypeRepository.class, PeakTimeRepository.class)) {
             conf.addMapper(m);

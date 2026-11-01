@@ -17,7 +17,7 @@ generated:
 conformance/
   fixtures/                共有入力（マスタデータ、設定、状態のスナップショット）
   spec/<feature>/          [Spec] の期待値（Lean Spec を実行して生成）
-  source-model/<feature>/  [Source] の期待値（Lean SourceModel の実行と移植元オラクル）
+  source-model/<feature>/  [Source] の期待値（Lean SourceModel の実行と原典実行）
   target-model/<feature>/  [Target] の期待値（Lean TargetModel を実行して生成）
   shared/<feature>/        複数のモデルで同じ期待値
 ```
@@ -65,7 +65,7 @@ conformance/
 | `cases[].world` | 状態を使う操作では必須 | 実行前の状態、またはその fixture への参照 |
 | `cases[].input` | 必須 | 操作の入力 |
 | `cases[].expected` | 必須 | `{"ok": 値}` または `{"error": {"kind": "...", "code": "...", "args": []}}`。状態を変える操作は `"worldAfter"` も持てる |
-| `cases[].source` | 必須 | `lean-spec` / `lean-source-model` / `<移植元>-oracle` / `lean-target-model` |
+| `cases[].source` | 必須 | `lean-spec` / `lean-source-model` / `<移植元>-origin-run` / `lean-target-model` |
 | `cases[].differences` | 任意 | 関係する既知差異 ID |
 | `cases[].outsidePre` | 前提の外に落ちるケースでは必須 | 外に落ちる理由の配列。前提型の差異の前提（具体側の定義域・制限した PRE）を破るなら差異の ID、基底の PRE（値域など）を破るなら `PRE`、具体側の不変条件を破るなら `INV`。付けたケースと外に落ちるケースが一致することを、TR-V で検査する |
 | `cases[].environment` | 環境の選択を試すケースでは必須 | 具体側の入力の環境（衝突・I/O の失敗・配備の設定）。省いたケースは障害の無い環境（`Spec` の標準の選択）とする |

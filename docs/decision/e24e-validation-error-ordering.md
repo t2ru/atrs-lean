@@ -55,7 +55,7 @@ Chosen option: "[Source] は順序不定とし、[Spec] だけで並びを定め
 ### Confirmation
 
 * `Abstraction` の課題 ABS-033 で、検証エラーの多重集合が一致することを証明する。
-* 差分オラクル（[backlog 773f](../backlog/773f-differential-oracle.md)）では、検証エラーを多重集合として比較する。
+* 差分の原典実行（[backlog 773f](../backlog/773f-differential-oracle.md)）では、検証エラーを多重集合として比較する。
 
 ## Pros and Cons of the Options
 
@@ -67,7 +67,7 @@ Chosen option: "[Source] は順序不定とし、[Spec] だけで並びを定め
 ### [Source] も同じ並びと仮定する
 
 * Good, because モデルとテストが単純になる
-* Bad, because 原典では成り立たない仮定であり、オラクルで差分が出たときに無視する運用が必要になる
+* Bad, because 原典では成り立たない仮定であり、原典実行で差分が出たときに無視する運用が必要になる
 
 ## More Information
 

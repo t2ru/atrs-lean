@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く"
-description: "backlog bbcc の第 1 段として、[Source] の運賃計算の double の式と [Spec] の整数の式の差を、因子の表（カーネルの評価）と閉じた形の補題で確定する。D-001 は値域内に差異があり（ABS-007 は否定的に解決）、D-001・D-002 の前提を「100 で割り切れない、または因子が安全」の形に改める。あわせて ABS-006 を ABS-026 に含めて取り消し、Java オラクルとの一致の完了条件を backlog f18c に移し、bbcc を 3 段に分ける。"
+description: "backlog bbcc の第 1 段として、[Source] の運賃計算の double の式と [Spec] の整数の式の差を、因子の表（カーネルの評価）と閉じた形の補題で確定する。D-001 は値域内に差異があり（ABS-007 は否定的に解決）、D-001・D-002 の前提を「100 で割り切れない、または因子が安全」の形に改める。あわせて ABS-006 を ABS-026 に含めて取り消し、Java の原典実行との一致の完了条件を backlog f18c に移し、bbcc を 3 段に分ける。"
 tags: [adr, abstraction, fare, double, lang-semantics]
 id: "e9bcbb3d-8249-4211-98d4-6634ff10dec5"
 status: stable
@@ -73,7 +73,7 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 | 十分条件であること | 安全でない因子でも、差異が実際に起きるとは限らない。開発中の探索では、積算比率 447（`X` ≤ 20,000）と割引率 68・92（`b` ≤ 200,000）で差異が見つからなかった。前提は十分条件なので、これらの入力も前提の外になる。[assurance.md](../spec/assurance.md) に記す |
 | ABS-006 | ピーク時期の参照 `peakTimeOn`・積算比率 `multiplicationRatioOn` の一致は ABS-026（`Abstraction.MasterData.Query`）で証明済みなので、ABS-006 は ABS-026 に含めて取り消す（プロジェクトオーナーの決定） |
 | 運賃の R 課題の具体側の入力 | DB のマスタと引数とし、ABS-026 の α と補題を再利用する（bbcc 第 2・3 段。プロジェクトオーナーの決定） |
-| Java オラクルとの一致 | bbcc の完了条件「運賃計算の `source-model/` ベクタが Java オラクルと一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、bbcc の `depends_on` から f18c を外す（プロジェクトオーナーの決定） |
+| Java の原典実行との一致 | bbcc の完了条件「運賃計算の `source-model/` ベクタが Java の原典実行と一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、bbcc の `depends_on` から f18c を外す（プロジェクトオーナーの決定） |
 | bbcc の分割 | 第 1 段（本 ADR の補題と差異の解析）、第 2 段（ABS-001・002・003・007 と W 課題 ABS-101・102）、第 3 段（ABS-004・005・112、合計金額の `Spec` の機械、SPEC-001）に分ける（プロジェクトオーナーの決定） |
 | 抽象機械の置き場所（第 2 段） | 基本運賃・運賃の抽象機械 `Spec.Fare.basicFareMachine`・`fareMachine`（`Machine.pure`）と、その SPEC 課題（SPEC-001〜003・007）は第 2 段で作る。R 課題に抽象機械が要るためである。第 3 段には合計金額の機械が残る。PRE は、設定とマスタの不変条件、搭乗クラスの存在（MD-3）、値域（`routeBasicFare + extraCharge ≤ 10,000,000`、基本運賃 `≤ 100,000,000`（`Range.maxBasicFare` を追加）、割引率 `≤ 100`） |
 | 具体側の入力（第 2 段） | 基本運賃は、DB のマスタ・設定・`calculateBasicFare` の引数とし、許される並びのどれかで起動時の読み込み（`SourceModel.MasterQuery.load`。`run` から切り出した）を行ってから計算する（`SourceModel.FareQuery.basicFareConcrete`）。運賃の `calculateFare` はマスタを読まないので、引数だけを入力とする（`fareConcrete`）。「DB と引数」の決定は、マスタを読む操作に当てはめる |

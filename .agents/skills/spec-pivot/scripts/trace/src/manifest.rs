@@ -37,7 +37,7 @@ pub struct CheckRecord {
     pub locator: String,
     pub hash: String,
     pub merkle: String,
-    /// 合格した決定論的な検査（ベクタ・オラクル・差分実行・Verus など）
+    /// 合格した決定論的な検査（ベクタ・原典実行・差分実行・Verus など）
     pub checks: Vec<String>,
 }
 

@@ -66,7 +66,7 @@ Chosen option: "スキル `port-lang` に方法を切り出し、役割に依存
 | `semantics.md` | `LangSemantics.<Lang>` |
 | `locators.md` | ロケータとインベントリ |
 | `frameworks.md` | フレームワーク・ランタイムの効果 |
-| `harness.md` | ベクタの実行（オラクル／照合） |
+| `harness.md` | ベクタの実行（原典実行／照合） |
 | `verification.md` | 検証器 |
 | `layout.md` | ソース構成と Lean 名前空間の対応 |
 

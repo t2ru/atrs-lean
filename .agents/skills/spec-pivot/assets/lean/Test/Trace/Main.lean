@@ -227,7 +227,7 @@ def obligationTests (env : Environment) : IO Unit := do
     ((gapOf "D-901").getObjValD "w_task" == "ABS-951" && (gapOf "D-913").getObjValD "w_task" == "ABS-990" &&
       (gapOf "D-906").getObjValD "w_task" == Json.null)
   check "gaps: resolution of an unformalized undetermined gap"
-    ((gapOf "D-921").getObjValD "resolution" == "オラクルで確かめる")
+    ((gapOf "D-921").getObjValD "resolution" == "原典実行で確かめる")
   check "preserves: the Machine.Preserves bundles are listed (obs_preserves, gp_mismatch, gp_noR, good_preserves, …)"
     (r.preserves.size == 10 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
       ab "good_abbrev_preserves", ab "v1_preserves", ab "v2_preserves", ab "need_preserves", ab "v9_noPinned_preserves",

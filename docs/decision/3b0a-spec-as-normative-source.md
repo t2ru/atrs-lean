@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "docs/spec を唯一の正規仕様とし、Lean を参照実装とする"
-description: "docs/spec を唯一の正規仕様、Lean を参照実装、Java 原典をオラクルとする。"
+description: "docs/spec を唯一の正規仕様、Lean を参照実装、Java 原典の実行（原典実行）を照合の基準とする。"
 tags: [adr, spec]
 id: "3b0ab328-a955-4296-a49f-8b6b28cb3b1a"
 status: deprecated
@@ -29,20 +29,20 @@ generated:
 
 ## Considered Options
 
-* `docs/spec` を正規とし、Lean は参照実装、Java はオラクル
+* `docs/spec` を正規とし、Lean は参照実装、Java は原典実行
 * Lean 実装を正規（「コードが仕様」）とする
 * Java 原典を正規とし、仕様文書は説明に留める
 
 ## Decision Outcome
 
-Chosen option: "`docs/spec` を正規とし、Lean は参照実装、Java はオラクル", because 言語中立な文書だけを読めば移植できる状態を最終目標としており、Lean はそれを機械的に検証する手段として最も価値が高いため。
+Chosen option: "`docs/spec` を正規とし、Lean は参照実装、Java は原典実行", because 言語中立な文書だけを読めば移植できる状態を最終目標としており、Lean はそれを機械的に検証する手段として最も価値が高いため。
 
 優先関係は次のとおり。
 
 1. `docs/spec`（正規）
 2. 適合テストベクタ `conformance/`（仕様の例を機械可読にしたもの。仕様と矛盾したら仕様を正として直す）
 3. Lean 参照実装（仕様に従う。食い違いは Lean の不具合か仕様の不備として扱う）
-4. Java 原典（振る舞いの発見と [Source] モデルの検証に使うオラクル）
+4. Java 原典（振る舞いの発見と [Source] モデルの検証に使う原典実行）
 
 ### Consequences
 

@@ -4,7 +4,7 @@ import SourceModel
 # Tests.TicketChecks
 
 `SourceModel.App.B0.TicketHelper.toFlightList`（`TicketHelper.toFlightList`）と、合計金額の具体機械の実行（`runTotalFare`）の検査。
-期待値は原典のコードを読んで手で書いた（オラクルとの照合は backlog f18c）。
+期待値は原典のコードを読んで手で書いた（原典実行との照合は backlog f18c）。
 -/
 
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas

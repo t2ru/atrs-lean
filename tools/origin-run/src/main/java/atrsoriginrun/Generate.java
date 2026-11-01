@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * オラクルが期待値を採取するベクタ（{@code conformance/source-model/<feature>/oracle-*.json}）。入力はシードの値から機械的に作る
+ * 原典実行が期待値を採取するベクタ（{@code conformance/source-model/<feature>/origin-run-*.json}）。入力はシードの値から機械的に作る
  * （範囲は docs/spec/assurance.md の付録）。{@code --check} では再生成し、書いてあるものとの差分 0 を求める。
  */
 final class Generate {
@@ -28,7 +28,7 @@ final class Generate {
 
     /** ケースの中身（input・expected）を 1 行に書く深さ（文書 0 → cases 1 → ケース 2 → 値 3）。 */
     static final int FLAT = 3;
-    static final String SOURCE = "java-oracle";
+    static final String SOURCE = "java-origin-run";
     static final LocalDate TODAY = LocalDate.parse(SeedDb.LOAD_DATE);
 
     static void all(Path repo, Map<String, Op> ops, boolean write, List<String> problems) throws Exception {
@@ -106,7 +106,7 @@ final class Generate {
             List<String> classes = new ArrayList<>();
             for (JsonNode b : master.get("boardingClasses")) classes.add(b.get("boardingClassCd").asText());
 
-            ObjectNode bf = header("fare/basicFare.json", "Java オラクルが原典から採取した期待値（tools/oracle の Generate。手で編集しない）。"
+            ObjectNode bf = header("fare/basicFare.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
                     + "入力はシードの区間の運賃 × 搭乗クラス × 搭乗日（投入日と、各ピーク時期の前日・初日・末日・翌日）の全組", List.of("D-001"));
             ArrayNode cases = bf.withArray("cases");
             for (int x : routeFares) {
@@ -120,14 +120,14 @@ final class Generate {
                     }
                 }
             }
-            emit("fare/oracle-basicFare.json", bf);
+            emit("fare/origin-run-basicFare.json", bf);
 
             Set<Integer> basicFares = new TreeSet<>();
             for (JsonNode c : bf.get("cases")) basicFares.add(c.get("expected").get("ok").intValue());
             Set<Integer> rates = new TreeSet<>();
             for (JsonNode f : master.get("fareTypes")) rates.add(f.get("discountRate").intValue());
-            ObjectNode fa = header("fare/fare.json", "Java オラクルが原典から採取した期待値（tools/oracle の Generate。手で編集しない）。"
-                    + "入力は oracle-basicFare.json の基本運賃のすべて × シードの運賃種別の割引率のすべて", List.of("D-002"));
+            ObjectNode fa = header("fare/fare.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
+                    + "入力は origin-run-basicFare.json の基本運賃のすべて × シードの運賃種別の割引率のすべて", List.of("D-002"));
             ArrayNode fc = fa.withArray("cases");
             for (int b : basicFares) {
                 for (int r : rates) {
@@ -137,7 +137,7 @@ final class Generate {
                     fc.add(testCase("fare-" + b + "-" + r, "基本運賃 " + b + "・割引率 " + r + "%", in));
                 }
             }
-            emit("fare/oracle-fare.json", fa);
+            emit("fare/origin-run-fare.json", fa);
         }
 
         /** 区間ごとの代表便（シードの順で最初の便マスタ）。 */
@@ -169,7 +169,7 @@ final class Generate {
             Map<String, String> roundTrip = Map.of("N", "RT", "S", "SRT");
             List<int[]> passengerTypes = List.of(new int[] {30}, new int[] {30, 11}, new int[] {11, 12}, new int[] {30, 30, 5, 8, 11, 2});
             LocalDate peak = LocalDate.parse("2026-12-26");
-            ObjectNode doc = header("fare/totalFare.json", "Java オラクルが原典から採取した期待値（tools/oracle の Generate。手で編集しない）。"
+            ObjectNode doc = header("fare/totalFare.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
                     + "入力は区間ごとの代表便 × 搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便）× 搭乗者の型 × 搭乗日"
                     + "（投入日 2026-11-01 とピーク日 2026-12-26）の抽出", List.of("D-001", "D-002", "D-012"));
             ArrayNode cases = doc.withArray("cases");
@@ -215,13 +215,13 @@ final class Generate {
                     }
                 }
             }
-            emit("fare/oracle-totalFare.json", doc);
+            emit("fare/origin-run-totalFare.json", doc);
         }
 
         /** シードの FLIGHT（投入日で展開）から、搭乗日・区間の便の行（両搭乗クラス）を読む。 */
         ArrayNode seedFlights(LocalDate d, int routeNo) throws Exception {
             ArrayNode rows = Json.arr();
-            try (Connection c = Pg.connect(DomainOracle.SEED_DB);
+            try (Connection c = Pg.connect(DomainOriginRun.SEED_DB);
                     PreparedStatement p = c.prepareStatement("SELECT f.departure_date, f.flight_name, f.boarding_class_cd, f.fare_type_cd, "
                             + "f.vacant_num FROM flight f JOIN flight_master fm ON f.flight_name = fm.flight_name "
                             + "WHERE f.departure_date = ? AND fm.route_no = ? "
@@ -243,7 +243,7 @@ final class Generate {
         }
 
         void searchFlight() throws Exception {
-            ObjectNode doc = header("flight-search/searchFlight.json", "Java オラクルが原典から採取した期待値（tools/oracle の Generate。手で編集しない）。"
+            ObjectNode doc = header("flight-search/searchFlight.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
                     + "入力の flights は、シードの FLIGHT（00250 を投入日 2026-11-01 で展開）のうち、搭乗日・区間の便の行（両搭乗クラス）。"
                     + "区間 × 搭乗クラス × 片道・往復（搭乗日 2026-11-11）と、照会可能期間の境界（区間 1）",
                     List.of("D-001", "D-002"));
@@ -267,7 +267,7 @@ final class Generate {
                 cases.add(searchCase("searchFlight-route1-N-OW-d" + k, r1, d, "N", "OW", seedFlights(d, r1.get("routeNo").intValue()),
                         "照会可能期間の境界: 今日から " + k + " 日後（照会可能期間は " + limitDay + " 日後まで）"));
             }
-            emit("flight-search/oracle-searchFlight.json", doc);
+            emit("flight-search/origin-run-searchFlight.json", doc);
         }
 
         static ObjectNode searchCase(String id, JsonNode route, LocalDate dep, String cls, String type, ArrayNode rows, String description) {

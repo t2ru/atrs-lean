@@ -73,7 +73,7 @@ Chosen option: "二層モデル", because 原典互換と言語中立性を両�
 
 * `Spec` が `SourceModel` に依存していないことをビルド構成で確認する。
 * [abstraction.md](../spec/abstraction.md) の全証明義務に対応する Lean 定理が `sorry` 無しで存在することを CI で確認する。
-* `conformance/source-model/` のベクタは Java オラクル（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）と一致する。
+* `conformance/source-model/` のベクタは Java の原典実行（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）と一致する。
 
 ## Pros and Cons of the Options
 

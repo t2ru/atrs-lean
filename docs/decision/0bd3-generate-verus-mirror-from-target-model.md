@@ -95,7 +95,7 @@ Chosen option: "Lean `TargetModel` から Verus の写しを生成し、Verus �
 
 | 境界 | 決定論的な手段 | 限界（[spec/assurance.md](../spec/assurance.md) に列挙） |
 | --- | --- | --- |
-| 移植元ソース ⇔ `SourceModel` | 次の 2 つを照合する。<br>- Java/SQL のオラクルの結果と `conformance/source-model/` のベクタ<br>- PostgreSQL での SQL の実行結果と `LangSemantics.Sql` の評価結果（同じデータで）<br>版上げ時は、新旧の差分オラクルを使う（[ADR 3f36](3f36-following-upstream-releases.md)） | ベクタの入力の外は保証しない。ハーネス化できない部分は保証しない |
+| 移植元ソース ⇔ `SourceModel` | 次の 2 つを照合する。<br>- Java/SQL の原典実行の結果と `conformance/source-model/` のベクタ<br>- PostgreSQL での SQL の実行結果と `LangSemantics.Sql` の評価結果（同じデータで）<br>版上げ時は、新旧の差分の原典実行を使う（[ADR 3f36](3f36-following-upstream-releases.md)） | ベクタの入力の外は保証しない。ハーネス化できない部分は保証しない |
 | `TargetModel` ⇔ 移植先ソース | 次の 4 つで確認する。<br>- `TargetModel` から写しを生成する（変換）<br>- Verus で、実行コードと写しの一致を全入力について証明する<br>- `conformance/target-model/` のベクタを通す<br>- Kani で有界に検査する | 次の 3 つは保証しない。<br>- `verus!` の外のコード: 有界な範囲とベクタの入力に限る<br>- DB・ファイル・時計・HTTP のアダプタ: SQL の差分実行と結合テストの入力に限る<br>- 生成器・`model_prelude.rs` の対応表・vstd・Rust 標準の `Mutex`: 信頼する |
 
 * 構造の一致（追跡）は [ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md) で保つ。

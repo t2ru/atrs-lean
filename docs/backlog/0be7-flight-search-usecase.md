@@ -31,7 +31,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 ## 対象外
 
 - HTTP（[backlog a89e](a89e-http-contract-adapter.md)）
-- `source-model/` ベクタと Java オラクルとの一致（[backlog f18c](f18c-java-oracle-harness.md) に移した。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)。プロジェクトオーナーの決定）
+- `source-model/` ベクタと Java の原典実行との一致（[backlog f18c](f18c-java-oracle-harness.md) に移した。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)。プロジェクトオーナーの決定）
 
 ## 進め方
 

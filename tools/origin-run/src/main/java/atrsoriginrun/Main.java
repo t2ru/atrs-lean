@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -7,15 +7,15 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * ATRS の Java オラクルの入口（backlog f18c）。tools/ci/java_oracle.sh から呼ぶ。
+ * ATRS の Java の原典実行の入口（backlog f18c）。tools/ci/java_origin_run.sh から呼ぶ。
  *
  * <pre>
- *   java … atrsoracle.Main &lt;repo&gt; domain [--write]   ドメイン層（運賃・空席照会）
- *   java … atrsoracle.Main &lt;repo&gt; http   [--write]   HTTP レベル（Spring を起動した原典）
+ *   java … atrsoriginrun.Main &lt;repo&gt; domain [--write]   ドメイン層（運賃・空席照会）
+ *   java … atrsoriginrun.Main &lt;repo&gt; http   [--write]   HTTP レベル（Spring を起動した原典）
  * </pre>
  *
  * 既定（--check）は、既存のベクタの照合と、生成するベクタの再生成との差分 0 を求める。--write は生成するベクタを書き出す。
- * JVM は Asia/Tokyo・ja_JP で動かす（D-023・D-032。java_oracle.sh が -D で与え、ここでも確かめる）。
+ * JVM は Asia/Tokyo・ja_JP で動かす（D-023・D-032。java_origin_run.sh が -D で与え、ここでも確かめる）。
  */
 public final class Main {
     private Main() {}
@@ -26,7 +26,7 @@ public final class Main {
             System.exit(64);
         }
         if (!TimeZone.getDefault().getID().equals("Asia/Tokyo") || !Locale.getDefault(Locale.Category.FORMAT).equals(Locale.JAPAN)) {
-            System.err.println("oracle: run with -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP (got "
+            System.err.println("origin-run: run with -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP (got "
                     + TimeZone.getDefault().getID() + ", " + Locale.getDefault(Locale.Category.FORMAT) + ")");
             System.exit(1);
         }
@@ -34,8 +34,8 @@ public final class Main {
         boolean write = List.of(args).contains("--write");
         List<String> problems = new ArrayList<>();
         switch (args[1]) {
-            case "domain" -> DomainOracle.run(repo, write, problems);
-            case "http" -> HttpOracle.run(repo, write, problems);
+            case "domain" -> DomainOriginRun.run(repo, write, problems);
+            case "http" -> HttpOriginRun.run(repo, write, problems);
             default -> {
                 System.err.println("unknown mode " + args[1]);
                 System.exit(64);
@@ -46,7 +46,7 @@ public final class Main {
             System.err.println(problems.size() + " problem(s)");
             System.exit(1);
         }
-        System.out.println("oracle " + args[1] + ": OK");
+        System.out.println("origin-run " + args[1] + ": OK");
         System.exit(0);
     }
 }

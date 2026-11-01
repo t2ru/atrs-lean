@@ -24,7 +24,7 @@ generated:
 
 * どの言語でも読み込めること
 * 仕様の例・境界値・既知差異（[Spec]/[Source]）を区別して表現できること
-* 期待値の出所（手計算・Java オラクル・Lean 生成）を追跡できること
+* 期待値の出所（手計算・Java の原典実行・Lean 生成）を追跡できること
 
 ## Considered Options
 
@@ -42,7 +42,7 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
   * `conformance/target-model/<feature>/*.json` — 移植先モデル `TargetModel` の期待値（Lean `TargetModel` を実行して生成。[ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md)）
   * `conformance/shared/<feature>/*.json` — 複数のモデルで同じ期待値
   * `conformance/fixtures/*.json` — マスタデータ・設定値などの共有入力
-* `spec/` と `shared/` の期待値は、正規仕様である Lean `Spec` を実行して生成する（[ADR 61bc](61bc-lean-spec-as-normative-source.md)）。`source-model/` の期待値は Lean `SourceModel` の実行と Java オラクルで得る。
+* `spec/` と `shared/` の期待値は、正規仕様である Lean `Spec` を実行して生成する（[ADR 61bc](61bc-lean-spec-as-normative-source.md)）。`source-model/` の期待値は Lean `SourceModel` の実行と Java の原典実行で得る。
 * 1 ファイル = 1 ケース群。各ケースは `id`, `description`, `operation`, `today`, `input`, `expected`（`ok` または `error`）, `source`, `specRef` を持つ（詳細は [spec/conformance.md](../spec/conformance.md)）。
 * JSON の値は整数・文字列・真偽・null・配列・オブジェクトのみ（浮動小数を使わない）。日付は `"yyyy-MM-dd"` 文字列。
 * 移植の完了条件: Rust の移植先ソースが `target-model/` と `shared/` の全ベクタを通すこと。Lean の `Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`、`TargetModel` は `target-model/`・`shared/` を通す。

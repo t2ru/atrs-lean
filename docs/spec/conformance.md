@@ -34,7 +34,7 @@ generated:
 | `report.reportFileName`, `report.renderCsv`, `report.createReport`, `report.listReports` | [reservation-history-report.md](reservation-history-report.md) |
 | `validation.<入力名>` | [input-validation.md](input-validation.md) |
 | `format.fmtDate`, `format.fmtIsoDate`, `format.fmtTime`, `format.fmtTimestamp`, `format.fmtYen`, `format.fmtPaymentDate`, `format.fullYearsBetween`, `format.parseHHmm`, `format.addDays`, `format.daysBetween` | [domain-model.md](domain-model.md) |
-| `http.<リクエスト>` | [http-contract.md](http-contract.md)（HTTP レベルのオラクルの採取結果は、`SourceModel.Http` ができるまで `tools/oracle/http/` に置く。`modelDef` は `null`。[ADR 81da](../decision/81da-java-oracle-harness-domain-and-http.md)） |
+| `http.<リクエスト>` | [http-contract.md](http-contract.md)（HTTP レベルの原典実行の採取結果は、`SourceModel.Http` ができるまで `tools/origin-run/http/` に置く。`modelDef` は `null`。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)） |
 
 ## 共有入力（fixtures）
 
@@ -47,7 +47,7 @@ generated:
 
 マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Domain.Repository.*`・`SourceModel.Config.App.AtrsCodeListConfig` と照合する。[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。空席照会の文 `findByVacantSeatSearchCriteria` の結果は `conformance/sql/flight-search.json` にあり、`Tests.FlightSql` が照合する。FLIGHT 表は 00250 を投入日で実行したもので、生成器 `tools/conformance/flight_seed.py` の展開・`SourceModel.Db.FlightSeed` と要約で照合する（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。
 
-`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]`）。`source-model/` の期待値は、原典を実行して得る（Java オラクル。`source: "java-oracle"`、`upstream` に版。[backlog f18c](../backlog/f18c-java-oracle-harness.md)、[ADR 81da](../decision/81da-java-oracle-harness-domain-and-http.md)）。オラクルは `shared/`・`source-model/` の手で書いたケースを原典で照合し、シードの範囲から作った入力の期待値を `source-model/<feature>/oracle-*.json` に書き出す（手で編集しない。`mise run oracle:gen` で再生成し、CI の `oracle:domain` が再生成との差分 0 を確かめる）。オラクルの無い操作の `source-model/` の期待値は、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
+`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]`）。`source-model/` の期待値は、原典を実行して得る（Java の原典実行。`source: "java-origin-run"`、`upstream` に版。[backlog f18c](../backlog/f18c-java-oracle-harness.md)、[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)）。原典実行は `shared/`・`source-model/` の手で書いたケースを原典で照合し、シードの範囲から作った入力の期待値を `source-model/<feature>/origin-run-*.json` に書き出す（手で編集しない。`mise run origin-run:gen` で再生成し、CI の `origin-run:domain` が再生成との差分 0 を確かめる）。原典実行の無い操作の `source-model/` の期待値は、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
 | `fixtures/world-*.json` | 状態を使う操作の初期状態（フライトの空席数、会員、予約、各シーケンスの次の値） |
 
 ## ATRS 固有の前提

@@ -56,7 +56,7 @@ generated:
 
 ## 移植元として
 
-原典と `SourceModel` の一致は、オラクル（[harness.md](harness.md)）で `source-model/` のベクタと照合して確認する（限界: ベクタの入力の外）。
+原典と `SourceModel` の一致は、原典実行（[harness.md](harness.md)）で `source-model/` のベクタと照合して確認する（限界: ベクタの入力の外）。
 原典にすでに Verus の検証があっても、その事後条件をリファインメント定理の仮定として使ってはならない（主定理の仮定は PRE・INV・`@[deviation]` だけである）。既存の検証は補助の手段として扱い、その範囲を保証の限界の文書に書く。
 
 ## 品質

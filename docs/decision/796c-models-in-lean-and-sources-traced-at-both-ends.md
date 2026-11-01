@@ -79,7 +79,7 @@ Chosen option: "すべてのモデルと証明を Lean に置き、ソースは�
 
 | 境界 | 振る舞いの一致 | 構造の一致 |
 | --- | --- | --- |
-| 移植元ソース ⇔ `SourceModel` | Java オラクルで `conformance/source-model/` のベクタを確認する。版上げ時は新旧の差分オラクル（[ADR 3f36](3f36-following-upstream-releases.md)） | 追跡注釈と本文ハッシュ（[ADR 81ab](81ab-cross-language-traceability.md)） |
+| 移植元ソース ⇔ `SourceModel` | Java の原典実行で `conformance/source-model/` のベクタを確認する。版上げ時は新旧の差分の原典実行（[ADR 3f36](3f36-following-upstream-releases.md)） | 追跡注釈と本文ハッシュ（[ADR 81ab](81ab-cross-language-traceability.md)） |
 | `TargetModel` ⇔ 移植先ソース | Lean `TargetModel` を実行して生成した `conformance/target-model/` のベクタを Rust が通す。Verus で Rust の実行コードが `model/` の写しと一致することを証明する。Kani で有界検査する | 追跡注釈と本文ハッシュ（双方向） |
 
 * ADR dd0f の「Verus・Kani・適合テストベクタ」は、`Spec` との関係ではなく **`TargetModel` ⇔ Rust ソースの対応の確認手段** として引き継ぐ。`Spec` → `TargetModel` は Lean で証明する。

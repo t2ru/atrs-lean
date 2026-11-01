@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- ATRS の Java オラクル（backlog f18c）。原典を改変せずにビルドしたもの（build-upstream.sh）に依存する。
+<!-- ATRS の Java の原典実行（backlog f18c）。原典を改変せずにビルドしたもの（build-upstream.sh）に依存する。
      親は原典のルートの pom（jp.co.ntt.atrs:atrs）とし、依存の版を原典とそろえる。 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -11,10 +11,10 @@
     <relativePath />
   </parent>
   <groupId>atrs-lean</groupId>
-  <artifactId>atrs-oracle</artifactId>
+  <artifactId>atrs-origin-run</artifactId>
   <version>0.1.0</version>
   <packaging>jar</packaging>
-  <name>ATRS Java oracle</name>
+  <name>ATRS Java origin run</name>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
@@ -48,7 +48,7 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
     </dependency>
-    <!-- HTTP レベルのオラクルのサーブレットコンテナ（原典が cargo で起動する Tomcat と同じ系列。trace/upstream.json） -->
+    <!-- HTTP レベルの原典実行のサーブレットコンテナ（原典が cargo で起動する Tomcat と同じ系列。trace/upstream.json） -->
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-core</artifactId>
@@ -60,7 +60,7 @@
   </dependencies>
 
   <build>
-    <finalName>atrs-oracle</finalName>
+    <finalName>atrs-origin-run</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

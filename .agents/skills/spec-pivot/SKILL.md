@@ -1,7 +1,7 @@
 ---
 name: spec-pivot
-description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
-compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。
+description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
+compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。
 metadata:
   version: "0.21"
   formalization: "lean4"
@@ -51,7 +51,7 @@ metadata:
 | --- | --- | --- |
 | P1 | 移植元ソースが手元にあり、版を固定できる | その対象には適用できない。追跡（[traceability.md](references/docs/spec/traceability.md)）が成り立たない |
 | P2 | 観測可能な振る舞いを、入力・出力・ポートの効果として区切れる | 区切れない振る舞いは、規範の仕様文書に書く（[spec-documents.md](references/docs/rules/spec-documents.md)） |
-| P3 | 移植元とモデルの一致を、決定論的な手段（[verification.md](references/docs/spec/verification.md#決定論的な手段)。例: オラクル、処理系の差分実行）で確かめられる | 確かめられない部分は、保証の限界になる |
+| P3 | 移植元とモデルの一致を、決定論的な手段（[verification.md](references/docs/spec/verification.md#決定論的な手段)。例: 原典実行、処理系の差分実行）で確かめられる | 確かめられない部分は、保証の限界になる |
 | P4 | 使う言語の意味を、`LangSemantics` に書け、処理系と突き合わせられる | 言語パックを追加・拡充する（[adding-a-language.md](references/docs/guide/adding-a-language.md)）。突き合わせられない演算は、保証の限界になる |
 | P5 | 移植先ソースとモデルの一致を、決定論的な手段（例: 生成した写しと検証器、ベクタを通すハーネス）で確かめられる | 確かめられない部分は、保証の限界になる |
 | P6 | 業務規則を、言語中立な `Spec`（[portability.md](references/docs/spec/portability.md)）で表せる | 表せない性質（並行性・非機能など）は、規範節と保証の限界で扱う。リファインメントの証明の対象にはならない |
@@ -130,12 +130,12 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/docs/lang/lean/rules.md)）。`SourceModel` は原典のソースツリーの形に並べ、式・語彙を原典と同じ字面で書く（Java は `java!`・`Assert.*`。[lang/java/layout.md](references/docs/lang/java/layout.md#移植元として原典を読む)）。人が見比べるときは `trace review` の対照表を使う。
 4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R。`Machine.Refines`、B refines A）とその束（`Machine.Preserves`、A preserves B）、差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。`Abstraction.lean` のトップレベルには、機能の機械を並置した `Spec.machine` と `SourceModel.machine` の `Machine.Refines`・`Machine.Preserves`・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）を置く（[architecture.md](references/docs/spec/architecture.md#トップレベルの主定理)）。
 5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN`（R・W）を証明する。
-6. **ベクタを生成する**。`Spec`・`SourceModel`・`TargetModel` を実行して期待値を作る。`SourceModel` 側は移植元オラクルでも確かめる（[conformance.md](references/docs/spec/conformance.md)）。
+6. **ベクタを生成する**。`Spec`・`SourceModel`・`TargetModel` を実行して期待値を作る。`SourceModel` 側は原典実行でも確かめる（[conformance.md](references/docs/spec/conformance.md)）。
 7. **移植先ソースを書く**。`TargetModel` と同じ構造で書く（移植先の言語パックの `layout.md`）。一致は `verification.md`・`harness.md` の決定論的な手段で確認する。例: 生成した写しに対する Verus の証明、Kani、照合テスト。
 8. **両端を追跡する**。`@[source]` / `@[target]` を付ける。ハッシュは、決定論的な検査が合格したときに道具が書き込む（[traceability.md](references/docs/spec/traceability.md#検査済みハッシュ)、[lean/trace-attributes.md](references/docs/lang/lean/trace-attributes.md)）。
 9. **検証し、限界を記録する**。全ベクタ、全証明、追跡の検査 TR-*（TR-D を含む）、言語ごとの検証器をすべて通す。手段の届かない部分を、保証の限界の文書に列挙する（[verification.md](references/docs/spec/verification.md)）。
 
-移植元・移植先の版上げは [upgrade.md](references/docs/guide/upgrade.md) の手順に従う（インベントリ差分＋差分オラクル→影響を証明グラフに沿って伝播→層ごとに判断）。
+移植元・移植先の版上げは [upgrade.md](references/docs/guide/upgrade.md) の手順に従う（インベントリ差分＋差分の原典実行→影響を証明グラフに沿って伝播→層ごとに判断）。
 
 ## 言語パック
 
@@ -147,7 +147,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | `semantics.md` | `LangSemantics.<Lang>`（基本型・演算・文字列・例外の意味） |
 | `locators.md` | ロケータの文法とインベントリの取り方 |
 | `frameworks.md` | フレームワーク・ランタイムの暗黙の効果、依存の版、版上げで起こりがちな変化 |
-| `harness.md` | ベクタの実行（移植元ならオラクル、移植先なら照合） |
+| `harness.md` | ベクタの実行（移植元なら原典実行、移植先なら照合） |
 | `verification.md` | 言語内の検証器とモデル ⇔ ソースの確認 |
 | `layout.md` | ソースの構成と Lean 名前空間の対応（移植先として書く／移植元として読む） |
 
@@ -178,9 +178,9 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 - 使い方: プロジェクトの `lean/LangSemantics/` に写すか、Lake の依存として取り込む。LSP から import を解決させるには、リポジトリのルートを Lake ワークスペースにして `require langSemantics from "<このスキルの置き場所>/assets/lean"` とする（[lean/rules.md](references/docs/lang/lean/rules.md#ルートのワークスペースlsp-用)）。写した後にアプリ固有の定義を足してはならない（不足は assets 側に足す）。
 - 検査: `assets/lean/` で `lake build` を実行すると、`Test/LangSemantics/` の `#guard` が走る。Java の double モデルはネイティブ `Float` とビット単位で突き合わせている。`Test/ConformanceKit/` では実行器をメモリ上のベクタで確かめる。`Test/Trace/` では追跡属性の引数の誤りを `#guard_msgs` で確かめ、`lake exe trace-test` で `trace-dump`・`obligation-check` の処理をフィクスチャにかける。`Test/Machine/` では、リファインメントの例と反例を証明し、公理を `#guard_msgs` で固定している。反例は、具体側の非決定性が抽象側より大きい場合と、`Refines` が空虚・自明に成り立つ抜け道（`Test/Machine/Preserves.lean`）である。`Test/LangSemantics/JavaJvm.lean` は JVM で計算した突き合わせ表（生成物）で、`java Test/LangSemantics/jvm/JavaTable.java > Test/LangSemantics/JavaJvm.lean` で再生成する。CI では再生成して差分が無いことを確かめる。同様に `Test/LangSemantics/PostgresqlDb.lean` は PostgreSQL で計算した突き合わせ表で、`uv run python -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean` で再生成する（接続先は psql の環境変数。[sql/dialects/postgresql/harness.md](references/docs/lang/sql/dialects/postgresql/harness.md)）。
 
-### Java のオラクルの道具（assets）
+### Java の原典実行の道具（assets）
 
-`assets/java/conformance-kit/` は、Java の移植元のオラクル（ドメイン層と HTTP レベル）に共通の部分を持つ Maven モジュールである（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）。使い方は [lang/java/harness.md](references/docs/lang/java/harness.md#道具-conformance-kit)。
+`assets/java/conformance-kit/` は、Java の移植元の原典実行（ドメイン層と HTTP レベル）に共通の部分を持つ Maven モジュールである（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）。使い方は [lang/java/harness.md](references/docs/lang/java/harness.md#道具-conformance-kit)。
 
 ### 道具（scripts）
 
@@ -198,7 +198,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | 適合テスト | 各モデル・各ソースが担当ディレクトリのベクタを全件通す | [conformance.md](references/docs/spec/conformance.md) |
 | 追跡 | TR-S1/S2（移植元側の網羅とハッシュ）、TR-T1/T2（移植先側）、TR-P（R 課題の存在）、TR-D（差異の登録簿と `@[deviation]` の対応）、TR-K（差異の箇所の印 `@[gap]`）、TR-G（R 課題の形と付帯の義務）、TR-N（非決定性の文書と `@[nondet]` の対応）、TR-V（ベクタの前提のラベル）、TR-X（直接接続の禁止）、TR-R（参照切れ） | [traceability.md](references/docs/spec/traceability.md) |
 | 依存の向き | 移植元側と移植先側の相互非依存、`Spec` の独立 | [architecture.md](references/docs/spec/architecture.md) |
-| 言語ごと | 例: 写しの再生成で差分が無いこと・Verus・Kani・Java オラクル・SQL の差分実行 | 各言語パックの `verification.md`・`harness.md` |
+| 言語ごと | 例: 写しの再生成で差分が無いこと・Verus・Kani・Java の原典実行・SQL の差分実行 | 各言語パックの `verification.md`・`harness.md` |
 | 保証の限界 | 決定論的な手段の届かない部分が、プロジェクトの限界の文書にすべて載っている | [verification.md](references/docs/spec/verification.md#保証の限界) |
 
 ## よくある落とし穴
