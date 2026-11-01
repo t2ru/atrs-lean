@@ -40,9 +40,21 @@
       "steps": [
         { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/master_fixture.py", "--check"] },
         { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/seed_lean.py", "--check"] },
+        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/flight_seed.py", "--check"] },
         { "cwd": "lean", "argv": ["lake", "test"] }
       ],
       "covers": { "names": ["Spec.Seed.*"] }
+    },
+    {
+      "id": "pg-flight-sql",
+      "description": "空席照会の文の PostgreSQL での差分実行と、シードの FLIGHT 表の照合（結果の再生成と lake test の Tests.FlightSql。FLIGHT の要約は master_sql.py が生成器の展開と照合する）",
+      "steps": [
+        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/flight_seed.py", "--check"] },
+        { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
+        { "cwd": "lean", "argv": ["lake", "test"] }
+      ],
+      "covers": { "names": ["SourceModel.Repository.Flight.*", "SourceModel.Repository.FlightSeed.*",
+        "SourceModel.Repository.Schema.FlightRow", "SourceModel.Repository.Mapping.flight"] }
     }
   ]
 }
