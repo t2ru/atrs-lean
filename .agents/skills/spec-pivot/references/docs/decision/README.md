@@ -6,7 +6,7 @@ tags: [adr, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:40:00+09:00
+  at: 2026-11-01T20:40:00+09:00
 ---
 
 # スキルの意思決定記録
@@ -34,3 +34,4 @@ generated:
 | 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |
 | 7d3a | [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](7d3a-java-conformance-kit-and-http-origin-run-method.md) | accepted | 2026-11-01 |
 | 288a | [「オラクル」を「原典実行」（origin-run）と呼び替える](288a-rename-oracle-to-origin-run.md) | accepted | 2026-11-01 |
+| 22b4 | [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](22b4-split-okf-and-records-skills.md) | accepted | 2026-11-01 |

@@ -4,6 +4,7 @@
 # - mise が管理する道具は uv だけ。Python は uv で実行する（`uv run python -I`。版は .python-version・pyproject.toml）。
 #   Lean は elan（lean-toolchain）、Java・Rust・PostgreSQL は従来どおり。
 # - 汎用の道具はスキル spec-pivot の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
+#   文書の道具はスキル okf-bundle（設定 .okf.json）と work-records（設定 .work-records.json）にある（ADR 625d）。
 # - `depends` は実際の依存、`wait_for` は同じ起動の中での直列化だけを表す（単独実行では引き込まない）。
 #   lake は同じパッケージの .lake を同時に書かないよう、`assets:*` → `lean:*` → `workspace:*` の順に直列にする。
 #   PostgreSQL を使う段（CI では同じサーバ）も直列にする。
@@ -18,6 +19,8 @@ uv = "0.11.32"
 
 [vars]
 skill = ".agents/skills/spec-pivot"
+okf = ".agents/skills/okf-bundle"
+records = ".agents/skills/work-records"
 py = "uv run --quiet python -I"
 ci_out = "lean/.lake/ci"
 
@@ -71,19 +74,23 @@ description = "upstream: submodule の commit と trace/upstream.json の一致"
 run = "{{vars.py}} {{vars.skill}}/scripts/ci/check_upstream.py"
 
 [tasks."docs:ids"]
-description = "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
-run = "{{vars.py}} {{vars.skill}}/scripts/docs/ids.py check"
+description = "docs: ADR・backlog の ID・ファイル名・参照・記録の形（ADR f57e・ADR 625d）と、登録簿の旧番号"
+run = [
+  "{{vars.py}} {{vars.records}}/scripts/ids.py check",
+  "{{vars.py}} tools/docs/legacy_ids.py check",
+]
 
 [tasks."docs:self-test"]
-description = "docs: OKF バンドルとリンクの検査・文書の移動の道具の自己テスト（違反例を検出できること）"
+description = "docs: OKF バンドルとリンクの検査・文書の移動・ADR と backlog の検査の道具の自己テスト（違反例を検出できること）"
 run = [
-  "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py --self-test",
-  "{{vars.py}} {{vars.skill}}/scripts/docs/docmv.py --self-test",
+  "{{vars.py}} {{vars.okf}}/scripts/okf_check.py --self-test",
+  "{{vars.py}} {{vars.okf}}/scripts/docmv.py --self-test",
+  "{{vars.py}} {{vars.records}}/scripts/ids.py --self-test",
 ]
 
 [tasks."docs:okf"]
 description = "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
-run = "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py"
+run = "{{vars.py}} {{vars.okf}}/scripts/okf_check.py"
 
 # ---------------------------------------------------------------------------
 # 適合テストの共有入力・シード

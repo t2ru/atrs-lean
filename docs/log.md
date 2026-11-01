@@ -2,6 +2,11 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 625d](decision/625d-adopt-okf-bundle-and-work-records-skills.md) と [backlog 2ba8](backlog/2ba8-split-okf-and-records-skills.md)（完了）で、スキル spec-pivot から移植に関係の無い文書の道具と規則を、汎用のスキル [okf-bundle](../.agents/skills/okf-bundle/SKILL.md)（OKF のバンドルとリンクの検査・文書の移動）と [work-records](../.agents/skills/work-records/SKILL.md)（ADR・backlog の形式と ID）に分けた。スキルの側は [スキルの ADR 22b4](../.agents/skills/spec-pivot/references/docs/decision/22b4-split-okf-and-records-skills.md)。spec-pivot の版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+  * 設定を `trace/project.json` の `okf`・`ids` から、ルートの `.okf.json`・`.work-records.json` に移した。`trace/features.json` の backlog の欄は `id_fields` で宣言した。ADR・backlog の形の検査（状態・選択肢・採択の行・完了条件）は `ids.py check` に移った。
+  * 旧番号からの書き換えと登録簿の旧番号の検査を、ATRS の `tools/docs/legacy_ids.py` に移した（mise の `docs:ids`）。
+  * [rules/documentation.md](rules/documentation.md)・[rules/decision-records.md](rules/decision-records.md)・[rules/backlog.md](rules/backlog.md)・[rules/README.md](rules/README.md)、`AGENTS.md`・`mise.toml`、[index.md](index.md)・[backlog/README.md](backlog/README.md) を改めた。完了済みの ADR・backlog の本文の旧パス（`scripts/docs/`）は来歴として残す。
+
 * **Update**: [ADR 18ca](decision/18ca-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた（DBMS の Oracle と紛れるため）。文書・既存の ADR と作業項目の本文・この変更履歴・ベクタの `source`（`java-origin-run`）・道具（`tools/origin-run/`・`tools/ci/java_origin_run.sh`・mise の `origin-run:*`・`trace/checks.json`）をそろえた。backlog f18c・773f のファイル名は残した。スキルの側は [スキルの ADR 288a](../.agents/skills/spec-pivot/references/docs/decision/288a-rename-oracle-to-origin-run.md)（スキルの版 0.21 に含める）。
 * **Creation**: [ADR 81da](decision/81da-java-origin-run-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java の原典実行）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
   * ドメイン層: 原典を複写してビルドし（`tools/origin-run/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/origin-run/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/origin-run-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-origin-run` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。

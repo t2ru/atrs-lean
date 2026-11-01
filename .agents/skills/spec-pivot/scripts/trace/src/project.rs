@@ -78,7 +78,7 @@ pub struct Docs {
     pub refinement: String,
     /// 追跡の文書（`source-trace`・`target-trace` の生成区画）
     pub traceability: String,
-    /// 意思決定記録のディレクトリ（`scripts/docs/ids.py` が使う）
+    /// 意思決定記録のディレクトリ（記録の検査はスキル work-records の `scripts/ids.py`。この道具は読まない）
     #[allow(dead_code)]
     pub decision: String,
     /// 作業項目のディレクトリ（frontmatter の `id`・`state`）

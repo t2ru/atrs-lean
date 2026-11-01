@@ -6,7 +6,7 @@ tags: [rules, documentation, okf]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T20:10:00+09:00
+  at: 2026-11-01T20:40:00+09:00
 ---
 
 # 文書規約
@@ -49,15 +49,17 @@ generated:
 - リポジトリ内のリンクは **相対パス** で書く（OKF は `/` 始まりのバンドル相対リンクも認めるが、GitHub 上で解決されないため使わない）。
 - ADR は `[ADR xxxx](../decision/xxxx-<slug>.md)`、backlog は `[backlog yyyy](../backlog/yyyy-<slug>.md)` の形で参照する。リンクの文字列は ID の先頭 4 文字とする。リンクを張れない箇所（コードのコメントなど）は `ADR xxxx`・`backlog yyyy` と書く。先頭 4 文字が同じ種類の他の項目と重なる項目は、リンクの無い参照では stem（`ADR xxxx-<slug>`）で書く（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
 - スキルの ADR・backlog も、同じ形でスキルのバンドルへの相対パスで書く。ATRS の記録と紛らわしいときは「スキルの ADR xxxx」と書く。
-- 道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）には ID 全体を書く。参照は `uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py check` で検査する。
-- 相対リンクの指す先と見出しアンカーは、`uv run python -I .agents/skills/spec-pivot/scripts/docs/okf_check.py` で検査する（[ADR 920d](../decision/920d-docs-bundle-check-in-ci.md)）。見出しを改めるときは、そのアンカーを指すリンクも直す。
+- 道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）には ID 全体を書く。参照は `uv run python -I .agents/skills/work-records/scripts/ids.py check` で検査する（スキル work-records。設定は `.work-records.json`）。
+- 相対リンクの指す先と見出しアンカーは、`uv run python -I .agents/skills/okf-bundle/scripts/okf_check.py` で検査する（[ADR 920d](../decision/920d-docs-bundle-check-in-ci.md)）。見出しを改めるときは、そのアンカーを指すリンクも直す。
 - 仕様節への参照はファイル名＋見出しアンカーで書く（例: `fare-calculation.md#基本運賃`）。
 
 ## OKF v0.2
 
 `docs/` は **Open Knowledge Format (OKF) v0.2** の Knowledge Bundle である（[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
 バンドルのルートは `docs/` で、リポジトリ直下の `AGENTS.md`・`CLAUDE.md` はバンドル外である。
-スキル spec-pivot の文書は、別のバンドル [`.agents/skills/spec-pivot/references/docs/`](../../.agents/skills/spec-pivot/references/docs/index.md) である（規則はスキルの [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md)）。`docs/` からはリンクで参照してよいが、逆向きのリンクは張らない。
+OKF のバンドルの一般の規則と検査の道具は、スキル [okf-bundle](../../.agents/skills/okf-bundle/SKILL.md) の [bundle.md](../../.agents/skills/okf-bundle/references/docs/rules/bundle.md) にある（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。本節は、`docs/` での当てはめを書く。
+
+スキル spec-pivot・okf-bundle・work-records の文書は、それぞれ別のバンドル（[spec-pivot](../../.agents/skills/spec-pivot/references/docs/index.md)・[okf-bundle](../../.agents/skills/okf-bundle/references/docs/index.md)・[work-records](../../.agents/skills/work-records/references/docs/index.md) の `references/docs/`）である（spec-pivot の規則はスキルの [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md)）。`docs/` からはリンクで参照してよいが、逆向きのリンクは張らない。
 
 ### 予約ファイル
 
@@ -85,7 +87,7 @@ generated:
 
 `title`・`description` の値は YAML として安全なように **常にダブルクォートで囲む**（`[Spec]` などで始まる値はクォートしないと YAML の配列と解釈される）。
 
-frontmatter は YAML の **部分集合** で書かなければならない（[スキルの maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md#バンドルの検査)）。ブロックのマッピングと列（字下げは空白。列はキーより深く）、引用符付きと 1 行のプレーンのスカラ、要素がスカラだけのフローの列 `[a, b]`、コメントだけを使う。フローのマッピング `{…}`・ブロックのスカラ `|`・`>`・複数行の値・アンカー・タグ・キーの重複は使わない。
+frontmatter は YAML の **部分集合** で書かなければならない（スキル okf-bundle の [bundle.md](../../.agents/skills/okf-bundle/references/docs/rules/bundle.md#yaml-の部分集合)）。ブロックのマッピングと列（字下げは空白。列はキーより深く）、引用符付きと 1 行のプレーンのスカラ、要素がスカラだけのフローの列 `[a, b]`、コメントだけを使う。フローのマッピング `{…}`・ブロックのスカラ `|`・`>`・複数行の値・アンカー・タグ・キーの重複は使わない。
 
 | ディレクトリ | `type` | 種別固有のキー |
 | --- | --- | --- |
@@ -97,11 +99,11 @@ frontmatter は YAML の **部分集合** で書かなければならない（[�
 
 ### 検査
 
-`uv run python -I .agents/skills/spec-pivot/scripts/docs/okf_check.py` が、`docs/` とスキルのバンドルを、上の規則で検査する（`mise run docs:okf`。`mise run ci` が実行する。[ADR 920d](../decision/920d-docs-bundle-check-in-ci.md)）。規則は `trace/project.json` の `okf` にある。
+`uv run python -I .agents/skills/okf-bundle/scripts/okf_check.py` が、`docs/` とスキルのバンドルを、上の規則で検査する（`mise run docs:okf`。`mise run ci` が実行する。[ADR 920d](../decision/920d-docs-bundle-check-in-ci.md)）。規則はルートの `.okf.json` にある。ADR・backlog の ID・参照・状態は `uv run python -I .agents/skills/work-records/scripts/ids.py check` が検査する（`mise run docs:ids`。設定はルートの `.work-records.json`）。
 
 - frontmatter が部分集合の YAML として読め、`type` が上の表の値である。`title`・`description`・`tags` があり、`title`・`description` がダブルクォートで囲まれている。`spec/` は `models`・`spec_role` を持つ。
 - `#` 見出しが 1 つだけで、`title` と一致する。
-- ADR・backlog が、テンプレートの節を順に持つ（[decision-records.md](decision-records.md#テンプレート)・[backlog.md](backlog.md#項目の形式)）。状態の対応（`decision_status` と `status`、`superseded_by`）、`state` の値、`done` の完了条件がすべて埋まっていること。
+- ADR・backlog が、テンプレートの節を順に持つ（[decision-records.md](decision-records.md#テンプレート)・[backlog.md](backlog.md#項目の形式)）。状態の対応（`decision_status` と `status`、`superseded_by`）、選択肢が 2 つ以上・採択の行、`state` の値、`done` の完了条件がすべて埋まっていること（`ids.py check`）。
 - [`docs/index.md`](../index.md) がすべての文書を列挙し、項目の題名・説明が `title`・`description` と一致する。[`docs/log.md`](../log.md) の日付の見出しが新しい順である。
 - 相対リンクの指す先があり、見出しアンカーが指す文書にある（[リンク](#リンク)）。
 
