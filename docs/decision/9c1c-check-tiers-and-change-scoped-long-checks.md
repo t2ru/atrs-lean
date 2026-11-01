@@ -68,6 +68,7 @@ Chosen option: "3 層（常時の段・変更時の段・全数）に分け、�
 ### Consequences
 
 * Good, because 文書だけの PR は長い段を実行せず、Lean の PR も関係する長い段だけを実行する。PR の二重起動も無くなる。
+* Good, because 測ると（この ADR の PR の全数の実行。run 41310667003）、`lake test` は 384 s から約 3 s になった。分けた `long-tests` は約 216 s（シードの DB を使う適合ベクタ 131 s、空席照会の SQL 78 s）である。証明だけの変更（`lean/Abstraction/**`）では、`long-tests`・原典実行・`assets:trace-test` などの長い段を飛ばす。runner のメモリの最大は 6.3 GB（上限 7.9 GB）だった。
 * Good, because 範囲が宣言され、改名や段の追加で腐らないことを常時の段が確かめる。
 * Good, because 飛ばした段と理由が CI の記録に残る。
 * Bad, because 範囲の宣言に漏れがあると、PR では検出されず、main への push か週次の全数まで遅れる。限界として [assurance.md](../spec/assurance.md#追跡の道具) に書いた。
