@@ -85,26 +85,32 @@ structure VacantSeatRow where
   departureTime : Varchar 4
   deriving DecidableEq, Repr
 
-/-- `findByVacantSeatSearchCriteria` の整列前の結果。
-`FROM flight f, fare_type ft, flight_master fm, route r WHERE f.fare_type_cd = ft.fare_type_cd
-AND f.fare_type_cd IN (…) AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no
-AND r.dep_airport_cd = #{…} AND r.arr_airport_cd = #{…} AND f.departure_date = #{…}
-AND f.boarding_class_cd = #{…} AND #{beforeDayNum} BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num` -/
+/-- `findByVacantSeatSearchCriteria` の `WHERE` の条件（直積の 1 組について）。
+`f.fare_type_cd = ft.fare_type_cd AND f.fare_type_cd IN (…) AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no
+AND r.dep_airport_cd = #{…} AND r.arr_airport_cd = #{…} AND f.departure_date = #{…} AND f.boarding_class_cd = #{…}
+AND #{beforeDayNum} BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num` -/
+def vacantSeatCond (p : Params) (t : ((FlightRow × FareTypeRow) × FlightMasterRow) × RouteRow) : Truth :=
+  let (((f, ft), fm), r) := t
+  (eqText f.fareTypeCd ft.fareTypeCd).and
+  ((inList collationC f.fareTypeCd.toSql p.fareTypeList).and
+  ((eqText f.flightName fm.flightName).and
+  ((eqInt fm.routeNo r.routeNo).and
+  ((SqlValue.eq collationC r.depAirportCd.toSql p.depAirportCd).and
+  ((SqlValue.eq collationC r.arrAirportCd.toSql p.arrAirportCd).and
+  ((SqlValue.eq collationC f.departureDate.toSql p.depDate).and
+  ((SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).and
+  (between collationC p.beforeDayNum ft.rsrvAvailableEndDayNum.toSql ft.rsrvAvailableStartDayNum.toSql))))))))
+
+/-- `SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd` と、整列キーの列。 -/
+def vacantSeatProj (t : ((FlightRow × FareTypeRow) × FlightMasterRow) × RouteRow) : VacantSeatRow :=
+  let (((f, ft), fm), _) := t
+  ⟨⟨f.departureDate, f.flightName, f.fareTypeCd, f.vacantNum, f.boardingClassCd⟩, ft.displayOrder, fm.departureTime⟩
+
+/-- `findByVacantSeatSearchCriteria` の整列前の結果（`FROM flight f, fare_type ft, flight_master fm, route r WHERE …`）。 -/
 @[source "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria@2fbe03024cd7d231"]
 def vacantSeatRows (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeatRow :=
-  Bag.project (fun (((f, ft), fm), _) =>
-      ⟨⟨f.departureDate, f.flightName, f.fareTypeCd, f.vacantNum, f.boardingClassCd⟩, ft.displayOrder, fm.departureTime⟩)
-    (Bag.select (fun (((f, ft), fm), r) =>
-        (eqText f.fareTypeCd ft.fareTypeCd).and
-        ((inList collationC f.fareTypeCd.toSql p.fareTypeList).and
-        ((eqText f.flightName fm.flightName).and
-        ((eqInt fm.routeNo r.routeNo).and
-        ((SqlValue.eq collationC r.depAirportCd.toSql p.depAirportCd).and
-        ((SqlValue.eq collationC r.arrAirportCd.toSql p.arrAirportCd).and
-        ((SqlValue.eq collationC f.departureDate.toSql p.depDate).and
-        ((SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).and
-        (between collationC p.beforeDayNum ft.rsrvAvailableEndDayNum.toSql ft.rsrvAvailableStartDayNum.toSql)))))))))
-      (Bag.cross (Bag.cross (Bag.cross fd.flight db.fareType) db.flightMaster) db.route))
+  Bag.project vacantSeatProj
+    (Bag.select (vacantSeatCond p) (Bag.cross (Bag.cross (Bag.cross fd.flight db.fareType) db.flightMaster) db.route))
 
 /-- FLIGHT の行だけで決まる条件（運賃種別の `IN`・出発日・搭乗クラス）。 -/
 def flightPre (p : Params) (f : FlightRow) : Bool :=
@@ -125,8 +131,8 @@ theorem vacantSeatRows_eq_on (db : MasterDb) (fd : FlightDb) (p : Params) :
     LangSemantics.Sql.QueryLemmas.cross_filter_left _ db.flightMaster,
     LangSemantics.Sql.QueryLemmas.cross_filter_left _ db.route]
   apply LangSemantics.Sql.QueryLemmas.select_filter_of_imp
-  intro t ht
-  simp only [Truth.holds_and, Bool.and_eq_true] at ht
+  intro ⟨⟨⟨f, ft⟩, fm⟩, r⟩ ht
+  simp only [vacantSeatCond, Truth.holds_and, Bool.and_eq_true] at ht
   simp only [flightPre, Bool.and_eq_true]
   exact ⟨⟨ht.2.1, ht.2.2.2.2.2.2.1⟩, ht.2.2.2.2.2.2.2.1⟩
 

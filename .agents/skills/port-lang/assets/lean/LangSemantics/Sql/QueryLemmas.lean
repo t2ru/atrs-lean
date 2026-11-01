@@ -111,6 +111,60 @@ theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {dirs : Lis
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
   exact h.1.symm
 
+/-- 結合の補題（高々 1 行の形）: 左の各行 `x` で、右の行のうち `P x` を満たすものが `g x` の 0 行か 1 行なら、
+直積を `P` で選んだ結果は、`g x` が定義される左の行ごとに `(x, g x)` を並べたもの。 -/
+theorem filter_cross_opt {α β : Type} (xs : List α) (bs : List β) (P : α → β → Bool) (g : α → Option β)
+    (h : ∀ x ∈ xs, bs.filter (P x) = (g x).toList) :
+    (Bag.cross xs bs).filter (fun t => P t.1 t.2) = xs.filterMap fun x => (g x).map (x, ·) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    have ih := ih fun y hy => h y (List.mem_cons_of_mem _ hy)
+    simp only [Bag.cross] at ih ⊢
+    rw [List.flatMap_cons, List.filter_append, ih, List.filter_map]
+    have hx := h x (List.mem_cons_self ..)
+    have e : (bs.filter ((fun t => P t.1 t.2) ∘ fun b => (x, b))) = bs.filter (P x) := rfl
+    rw [e, hx]
+    cases hg : g x <;> simp [hg]
+
+/-- 結合の補題（`filterMap` の形）: 左の各行 `x` で、右の行のうち `h x` が値を持つものが `g x` の高々 1 行なら、
+直積の `filterMap` は、左の行ごとに `g x` で `h x` を評価したもの。 -/
+theorem filterMap_cross {α β γ : Type} (xs : List α) (bs : List β) (h : α → β → Option γ) (g : α → Option β)
+    (H : ∀ x ∈ xs, bs.filterMap (h x) = ((g x).bind (h x)).toList) :
+    (Bag.cross xs bs).filterMap (fun t => h t.1 t.2) = xs.filterMap fun x => (g x).bind (h x) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    have ih := ih fun y hy => H y (List.mem_cons_of_mem _ hy)
+    simp only [Bag.cross] at ih ⊢
+    rw [List.flatMap_cons, List.filterMap_append, ih, List.filterMap_map]
+    have hx := H x (List.mem_cons_self ..)
+    have e : bs.filterMap ((fun t => h t.1 t.2) ∘ fun b => (x, b)) = bs.filterMap (h x) := rfl
+    rw [e, hx]
+    cases hg : (g x).bind (h x) <;> simp [hg]
+
+/-- キーが重複しない表で、キーが `v` の行のほかは `h` が値を持たないなら、表の `filterMap` は、キーが `v` の行
+（`find?`）を `h` で評価したもの（高々 1 行）。 -/
+theorem filterMap_unique {β σ γ : Type} [DecidableEq σ] (bs : List β) (k : β → σ) (v : σ) (h : β → Option γ)
+    (hnd : (bs.map k).Nodup) (hh : ∀ b ∈ bs, k b ≠ v → h b = none) :
+    bs.filterMap h = ((bs.find? fun b => k b == v).bind h).toList := by
+  induction bs with
+  | nil => rfl
+  | cons b bs ih =>
+    rw [List.map_cons, List.nodup_cons] at hnd
+    have ih := ih hnd.2 fun c hc => hh c (List.mem_cons_of_mem _ hc)
+    by_cases hb : k b = v
+    · have hrest : bs.filterMap h = [] := by
+        rw [List.filterMap_eq_nil_iff]
+        intro c hc
+        apply hh c (List.mem_cons_of_mem _ hc)
+        intro e; apply hnd.1; rw [hb, ← e]; exact List.mem_map_of_mem hc
+      simp only [List.filterMap_cons, List.find?_cons, hb, beq_self_eq_true, hrest, Option.bind_some]
+      cases h b <;> rfl
+    · have hn : h b = none := hh b (List.mem_cons_self ..) hb
+      have hb' : (k b == v) = false := by simp [hb]
+      simp only [List.filterMap_cons, hn, List.find?_cons, hb', ih]
+
 /-- 左の表を絞ってから直積を取るのは、直積を左の成分の条件で絞るのと同じ。 -/
 theorem cross_filter_left {α β : Type} (xs : List α) (bs : List β) (q : α → Bool) :
     Bag.cross (xs.filter q) bs = (Bag.cross xs bs).filter (fun t => q t.1) := by
