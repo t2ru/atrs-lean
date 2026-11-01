@@ -91,7 +91,12 @@ jobs:
             cargo-${{ runner.os }}-
 
       - name: Lean checks
-        run: mise run ci
+        # [mem] の行は、20 秒ごとのメモリの使用量（runner は 8 GB。止まったときの診断のため）
+        run: |
+          ( while sleep 20; do echo "[mem] $(date -u +%T) $(free -m | awk 'NR==2{print $3 " / " $2 " MB used"}')"; done ) &
+          mon=$!
+          trap 'kill $mon 2> /dev/null || true' EXIT
+          mise run ci
 
       - name: Upload the source/model review (trace review)
         if: always()

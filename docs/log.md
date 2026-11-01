@@ -2,6 +2,7 @@
 
 ## 2026-11-01
 
+* **Update**: `lake exe layout-check` のモジュールの組を、組ごとに別のプロセスで判定するようにした（[スキルの ADR 89f2](../.agents/skills/spec-pivot/references/docs/decision/89f2-layout-check-one-process-per-group.md)）。組ごとの環境を解放しないために CI の runner のメモリが上限に近づいていた（5 つの組で 7.4 GB / 7.9 GB）。メモリの最大は組 1 つ分になり、組を足してもメモリは増えない。spec-pivot の版を 0.23 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。CI の検査の段に、20 秒ごとのメモリの使用量の行（`[mem]`）を出すようにした。
 * **Creation**: [ADR 625d](decision/625d-adopt-okf-bundle-and-work-records-skills.md) と [backlog 2ba8](backlog/2ba8-split-okf-and-records-skills.md)（完了）で、スキル spec-pivot から移植に関係の無い文書の道具と規則を、汎用のスキル [okf-bundle](../.agents/skills/okf-bundle/SKILL.md)（OKF のバンドルとリンクの検査・文書の移動）と [work-records](../.agents/skills/work-records/SKILL.md)（ADR・backlog の形式と ID）に分けた。スキルの側は [スキルの ADR 22b4](../.agents/skills/spec-pivot/references/docs/decision/22b4-split-okf-and-records-skills.md)。spec-pivot の版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
   * 設定を `trace/project.json` の `okf`・`ids` から、ルートの `.okf.json`・`.work-records.json` に移した。`trace/features.json` の backlog の欄は `id_fields` で宣言した。ADR・backlog の形の検査（状態・選択肢・採択の行・完了条件）は `ids.py check` に移った。
   * 旧番号からの書き換えと登録簿の旧番号の検査を、ATRS の `tools/docs/legacy_ids.py` に移した（mise の `docs:ids`）。

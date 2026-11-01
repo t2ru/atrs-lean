@@ -9,7 +9,8 @@ import Trace.Layout
 `--json` で結果を JSON で出す。
 -/
 
-/-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。 -/
+/-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。
+組は 1 つずつ別のプロセスで判定する（`Trace.Layout.run`）ので、組を増やすと時間は増えるが、メモリの最大は組 1 つ分のままである。 -/
 def Tools.LayoutCheck.groups : Array (Array Lean.Name) :=
   #[#[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement, `Tests, `Tools.LayoutCheck],
     #[`Tests.Main], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
