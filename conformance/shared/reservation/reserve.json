@@ -1,0 +1,1359 @@
+{
+  "operation": "reservation.reserve",
+  "modelDef": [
+    "Spec.UseCase.Reserve.reserveOp",
+    "SourceModel.ReserveQuery.runReserve"
+  ],
+  "specRef": "docs/spec/reservation.md#予約確定reserve",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "rs-ow-success",
+      "description": "片道・大人 1 名・残席 10: 予約番号 0000000001、支払期限は搭乗日、残席 9、採番は次へ",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000001",
+            "paymentDate": "2026-04-11",
+            "totalFare": 20600
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "OW",
+                "vacantNum": 9
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000001",
+                "reserveDate": "2026-04-01",
+                "totalFare": 20600,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": null,
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 1,
+                    "departureDate": "2026-04-11",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "OW",
+                    "passengers": [
+                      {
+                        "passengerNo": 1,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 2,
+              "reserveFlight": 2,
+              "passenger": 2
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-rt-success-members",
+      "description": "往復・会員の代表者・会員の大人 1 名と小児 1 名・採番の次の値 5・7・11: 予約フライトごとに搭乗者を採番する",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          },
+          {
+            "membershipNumber": "0000000002",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "タロウ",
+            "gender": "M"
+          }
+        ],
+        "sequences": {
+          "reserve": 5,
+          "reserveFlight": 7,
+          "passenger": 11
+        },
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": "0000000001",
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F",
+              "membershipNumber": "0000000001"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 5,
+              "gender": "M",
+              "membershipNumber": "0000000002"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000005",
+            "paymentDate": "2026-04-11",
+            "totalFare": 61900
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RT",
+                "vacantNum": 8
+              },
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT136",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RT",
+                "vacantNum": 8
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000005",
+                "reserveDate": "2026-04-01",
+                "totalFare": 61900,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": "0000000001",
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 7,
+                    "departureDate": "2026-04-11",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "RT",
+                    "passengers": [
+                      {
+                        "passengerNo": 11,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": "0000000001"
+                      },
+                      {
+                        "passengerNo": 12,
+                        "familyName": "デンデン",
+                        "givenName": "タロウ",
+                        "age": 5,
+                        "gender": "M",
+                        "membershipNumber": "0000000002"
+                      }
+                    ]
+                  },
+                  {
+                    "reserveFlightNo": 8,
+                    "departureDate": "2026-04-11",
+                    "flightName": "NTT136",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "RT",
+                    "passengers": [
+                      {
+                        "passengerNo": 13,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": "0000000001"
+                      },
+                      {
+                        "passengerNo": 14,
+                        "familyName": "デンデン",
+                        "givenName": "タロウ",
+                        "age": 5,
+                        "gender": "M",
+                        "membershipNumber": "0000000002"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 6,
+              "reserveFlight": 9,
+              "passenger": 15
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-exact-vacancy",
+      "description": "残席 1 に 1 名: 予約でき、残席 0",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 1
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000001",
+            "paymentDate": "2026-04-11",
+            "totalFare": 20600
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "OW",
+                "vacantNum": 0
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000001",
+                "reserveDate": "2026-04-01",
+                "totalFare": 20600,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": null,
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 1,
+                    "departureDate": "2026-04-11",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "OW",
+                    "passengers": [
+                      {
+                        "passengerNo": 1,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 2,
+              "reserveFlight": 2,
+              "passenger": 2
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-vacancy-short",
+      "description": "仕様の例: 残席 2 に 3 名 → e.ar.b2.2009、残席 2 のまま、予約・採番も変わらない",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 2
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 5,
+              "gender": "M"
+            },
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2009",
+              "args": []
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "OW",
+                "vacantNum": 2
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-rt-homeward-short",
+      "description": "仕様の例: 往復で往路は残席十分、復路が残席不足 → e.ar.b2.2009、往路の残席も変わらない（取消）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 1
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 5,
+              "gender": "M"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2009",
+              "args": []
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RT",
+                "vacantNum": 10
+              },
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT136",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RT",
+                "vacantNum": 1
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-fare-type-unavailable",
+      "description": "予約割7 で搭乗日の 4 日前 → e.ar.b2.2008",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-05",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-05",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2008",
+              "args": []
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-05",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RD7",
+                "vacantNum": 10
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-fare-type-boundary-end",
+      "description": "予約割7 で搭乗日のちょうど 7 日前（予約可能期間の終わり。両端を含む）→ 予約できる",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-08",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-08",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000001",
+            "paymentDate": "2026-04-08",
+            "totalFare": 16500
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-08",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RD7",
+                "vacantNum": 9
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000001",
+                "reserveDate": "2026-04-01",
+                "totalFare": 16500,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": null,
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 1,
+                    "departureDate": "2026-04-08",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "RD7",
+                    "passengers": [
+                      {
+                        "passengerNo": 1,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 2,
+              "reserveFlight": 2,
+              "passenger": 2
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-fare-type-boundary-start",
+      "description": "予約割7 で搭乗日のちょうど 60 日前（予約可能期間の始まり）→ 予約できる",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-05-31",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-05-31",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000001",
+            "paymentDate": "2026-05-31",
+            "totalFare": 16500
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-05-31",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RD7",
+                "vacantNum": 9
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000001",
+                "reserveDate": "2026-04-01",
+                "totalFare": 16500,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": null,
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 1,
+                    "departureDate": "2026-05-31",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "RD7",
+                    "passengers": [
+                      {
+                        "passengerNo": 1,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 2,
+              "reserveFlight": 2,
+              "passenger": 2
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-fare-type-before-start",
+      "description": "予約割7 で搭乗日の 61 日前 → e.ar.b2.2008",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-06-01",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-06-01",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RD7"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2008",
+              "args": []
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-06-01",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "RD7",
+                "vacantNum": 10
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-gd-success",
+      "description": "グループ割・3 名: 残席は 3 減る。1 名分 floor(20600 × 0.7) = 14420 → 14500、3 名で 43500",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "GD",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "GD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 20,
+              "gender": "M"
+            },
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "reserveNo": "0000000001",
+            "paymentDate": "2026-04-11",
+            "totalFare": 43500
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "GD",
+                "vacantNum": 7
+              }
+            ],
+            "reservations": [
+              {
+                "reserveNo": "0000000001",
+                "reserveDate": "2026-04-01",
+                "totalFare": 43500,
+                "repFamilyName": "デンデン",
+                "repGivenName": "ハナコ",
+                "repAge": 30,
+                "repGender": "F",
+                "repTel": "03-1234-5678",
+                "repMail": "hanako@example.com",
+                "repMembershipNumber": null,
+                "reserveFlights": [
+                  {
+                    "reserveFlightNo": 1,
+                    "departureDate": "2026-04-11",
+                    "flightName": "NTT001",
+                    "boardingClassCd": "N",
+                    "fareTypeCd": "GD",
+                    "passengers": [
+                      {
+                        "passengerNo": 1,
+                        "familyName": "デンデン",
+                        "givenName": "ハナコ",
+                        "age": 30,
+                        "gender": "F",
+                        "membershipNumber": null
+                      },
+                      {
+                        "passengerNo": 2,
+                        "familyName": "デンデン",
+                        "givenName": "タロウ",
+                        "age": 30,
+                        "gender": "M",
+                        "membershipNumber": null
+                      },
+                      {
+                        "passengerNo": 3,
+                        "familyName": "デンデン",
+                        "givenName": "ジロウ",
+                        "age": 20,
+                        "gender": "M",
+                        "membershipNumber": null
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "sequences": {
+              "reserve": 2,
+              "reserveFlight": 2,
+              "passenger": 4
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-rt-homeward-short-special",
+      "description": "往復（特別往復運賃）で復路が残席不足 → e.ar.b2.2009、往路の空席の更新を取り消す",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "SRT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "SRT",
+            "vacantNum": 0
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "SRT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "SRT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2009",
+              "args": []
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "SRT",
+                "vacantNum": 10
+              },
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT136",
+                "boardingClassCd": "N",
+                "fareTypeCd": "SRT",
+                "vacantNum": 0
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-rep-age-17",
+      "description": "代表者 17 歳 → e.ar.b2.2004、状態は変わらない",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 17,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "business",
+              "code": "e.ar.b2.2004",
+              "args": [
+                "18"
+              ]
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "OW",
+                "vacantNum": 10
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "rs-flight-not-found",
+      "description": "主キーのフライトが無い → InvalidRequest、状態は変わらない",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-12",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "result": {
+            "error": {
+              "kind": "invalidRequest"
+            }
+          },
+          "world": {
+            "flights": [
+              {
+                "departureDate": "2026-04-11",
+                "flightName": "NTT001",
+                "boardingClassCd": "N",
+                "fareTypeCd": "OW",
+                "vacantNum": 10
+              }
+            ],
+            "reservations": [],
+            "sequences": {
+              "reserve": 1,
+              "reserveFlight": 1,
+              "passenger": 1
+            }
+          }
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

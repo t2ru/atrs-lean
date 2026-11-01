@@ -27,13 +27,13 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 | 整列 | `ORDER BY k1, k2 …`: キーが等しい行の相対順序は **未規定**。結果は「許される順列の集合」として表す。`ORDER BY` が無い照会の順序も未規定。文字列の比較は照合順序（方言のパラメータ）に従う |
 | 更新 | `UPDATE … SET c1 = e1, c2 = e2`: 右辺は更新前の行で評価する。`INSERT`・`UPDATE`・`DELETE` は件数を返す |
 | 制約 | 主キー・一意・外部キー・NOT NULL の違反はエラー値になる |
-| トランザクション | コミット／ロールバックの原子性。分離レベルの既定値と、行ロックの構文・意味は方言が与える |
+| トランザクション | コミット／ロールバックの原子性。分離レベルの既定値と、行ロックの構文・意味は方言が与える。ロールバックはシーケンスを戻さない。モデルは逐次の実行だけを写し、行ロック（`SELECT … FOR UPDATE`）と分離レベルは、逐次の実行では観測されないので写さない |
 
 ### Lean 実装の範囲
 
-実装済み: `SqlValue`（NULL・整数・文字列・真偽・日付）、`Truth`（三値論理）、比較・`between`・`inList`・`isNull`、`Bag`（選択・射影・直積・内部結合・`EXISTS`・`COUNT(*)`）、`isAllowedOrder`・`orderByStable`、`updateWhere`・`deleteWhere`・`insertUnique`、`nextval`。
+実装済み: `SqlValue`（NULL・整数・文字列・真偽・日付）、`Truth`（三値論理）、比較・`between`・`inList`・`isNull`、`Bag`（選択・射影・直積・内部結合・`EXISTS`・`COUNT(*)`）、`isAllowedOrder`・`orderByStable`、`updateWhere`・`deleteWhere`・`insertUnique`、`nextval`、取消 `Transaction.run`（`EStateM` の計算。例外で終わったら、状態を `restore 開始時 終了時` にする。表は開始時、シーケンスは終了時のように、戻す成分は呼び出し側が決める）。方言 PostgreSQL の `TIMESTAMP` の列の型 `PgTimestamp`。
 
-**未整備**: `NUMERIC`・`TIMESTAMP`、外部結合、`DISTINCT`、`COUNT(*)` 以外の集約、外部キー・NOT NULL の検査関数。
+**未整備**: `NUMERIC`、`TIMESTAMP` の演算と格納、外部結合、`DISTINCT`、`COUNT(*)` 以外の集約、外部キー・NOT NULL の検査関数。
 
 ## 方言（LangSemantics.Sql.<Dbms>）
 

@@ -23,6 +23,10 @@
     { "coordinate": "com.fasterxml.jackson.core:jackson-databind", "version": "2.20.2", "from": "terasoluna-gfw-common-dependencies 5.11.0.RELEASE" },
     { "coordinate": "org.mybatis:mybatis", "version": "3.5.19", "from": "terasoluna-dependencies 3.0.0.RELEASE" },
     { "coordinate": "org.springframework:spring-core", "version": "7.0.3", "from": "spring-framework-bom 7.0.3", "note": "Assert" },
+    { "coordinate": "org.springframework:spring-tx", "version": "7.0.3", "from": "spring-framework-bom 7.0.3", "note": "@Transactional（予約の登録の取消。backlog aedf）" },
+    { "coordinate": "org.springframework:spring-jdbc", "version": "7.0.3", "from": "spring-framework-bom 7.0.3", "note": "SQLErrorCodeSQLExceptionTranslator（SQL のエラーの変換）" },
+    { "coordinate": "org.mybatis:mybatis-spring", "version": "4.0.0", "from": "terasoluna-dependencies 3.0.0.RELEASE", "note": "MyBatisExceptionTranslator" },
+    { "coordinate": "org.mapstruct:mapstruct", "version": "1.6.3", "from": "terasoluna-gfw-parent 5.11.0.RELEASE#properties/mapstruct.version", "note": "B2Mapper（MapStruct が実装を生成する）" },
     { "coordinate": "org.postgresql:postgresql", "version": "42.7.9", "from": "JavaConfig-Thymeleaf/atrs/pom.xml#properties/postgresql.version" },
     { "coordinate": "org.apache.tomcat:tomcat", "version": "11.0.15", "from": "terasoluna-gfw-parent 5.11.0.RELEASE", "note": "cargo で起動するコンテナ" }
   ]

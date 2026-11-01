@@ -9,9 +9,10 @@ import Tests.JavaDouble
 
 `lake test` のドライバ（実行ファイル `tests`）。追跡属性の道具の検査は、スキルの `assets/lean` の `lake exe trace-test` にある。
 
-- 適合テストベクタ（`../conformance/`）を実行する（`Tests.Conformance`・`Tests.ConformanceFare`・`Tests.ConformanceMaster`・`Tests.ConformanceFlightSearch`）。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。
+- 適合テストベクタ（`../conformance/`）を実行する（`Tests.Conformance`・`Tests.ConformanceFare`・`Tests.ConformanceMaster`・`Tests.ConformanceFlightSearch`・`Tests.ConformanceReservation`）。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。
 - マスタの Mapper の文・コードリストの SQL の、PostgreSQL との差分実行の結果（`Tests.MasterSql`）。
 - 空席照会の文の、PostgreSQL との差分実行の結果と、シードの FLIGHT 表の照合（`Tests.FlightSql`）。
+- 予約が使う文とシードの会員の、PostgreSQL との差分実行の結果（`Tests.ReservationSql`）。
 - 暦日の全日の検査（`Tests.DateExhaustive`）と、運賃計算の double 式のソフトモデルとネイティブ `Float` の突き合わせ（`Tests.JavaDouble`）。
 
 実行の時点は `docs/rules/checks.md`。節ごとの経過時間を表示する（`Tests.Report.timed`）。
@@ -34,9 +35,12 @@ unsafe def conformanceTests : IO Unit := do
       ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps),
       ("shared/master-data", "Spec", Tests.ConformanceMaster.specOps),
       ("shared/flight-search", "Spec", Tests.ConformanceFlightSearch.specOps),
+      ("shared/reservation", "Spec", Tests.ConformanceReservation.specOps),
       ("shared/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps),
       ("shared/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps),
-      ("source-model/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps)] do
+      ("source-model/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps),
+      ("shared/reservation", "SourceModel", Tests.ConformanceReservation.sourceOps),
+      ("source-model/reservation", "SourceModel", Tests.ConformanceReservation.sourceOps)] do
     timed s!"conformance {dir} ({layer})" do
       reportConformance s!"{dir} ({layer})" (← ConformanceKit.Runner.runDirFx ops layer env.contains root (root / dir))
 
@@ -93,6 +97,29 @@ def javaDoubleTests : IO Unit := do
   for b in r.bad do IO.eprintln s!"    mismatch: {b}"
   check s!"java double: bit-exact ({r.count} cases)" r.bad.isEmpty
 
+/-- 予約が使う文の、PostgreSQL との差分実行（`conformance/sql/reservation.json`）と、シードの会員の照合。
+`knownMismatch` のあるケースは、モデルと異なると分かっているもので、実際に異なることを確かめる。 -/
+def reservationSqlTests : IO Unit := do
+  IO.println "reservation SQL (PostgreSQL results vs SourceModel.Domain.Repository.{Flight,Member,Reservation})"
+  let master ← match Json.parse (← IO.FS.readFile "../conformance/sql/master-data.json") with
+    | .ok d => pure d
+    | .error e => do check s!"master-data.json: {e}" false; return
+  let doc ← match Json.parse (← IO.FS.readFile "../conformance/sql/reservation.json") with
+    | .ok d => pure d
+    | .error e => do check s!"reservation.json: {e}" false; return
+  match Tests.ReservationSql.seedMatches doc with
+  | .error e => check s!"member seed: {e}" false
+  | .ok rs => for (label, ok) in rs do check s!"member seed vs PostgreSQL: {label}" ok
+  match Tests.ReservationSql.run master doc with
+  | .error e => check s!"reservation SQL: {e}" false
+  | .ok rs =>
+    for (id, ok, info, known) in rs do
+      if known then
+        check s!"reservation SQL: {id} (known mismatch, expected to differ: {info})" (!ok)
+      else
+        check s!"reservation SQL: {id} ({info})" ok
+
+
 end Tests.Main
 
 open Tests.Main
@@ -101,6 +128,7 @@ unsafe def main : IO UInt32 := do
   timed "conformance" conformanceTests
   timed "master SQL" masterSqlTests
   timed "flight search SQL" flightSqlTests
+  timed "reservation SQL" reservationSqlTests
   timed "date" dateTests
   timed "java double" javaDoubleTests
   finish

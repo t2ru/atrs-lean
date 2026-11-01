@@ -1,7 +1,27 @@
 # Directory Update Log
 
+## 2026-11-02
+
+* **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
+  * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.25）。
+  * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
+  * 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。
+  * 会員のシードの生成器 `tools/conformance/member_seed.py` を置き、初期状態 `Spec.Seed.World`・`SourceModel.Db.Seed` を作った。
+  * 予約の SQL の差分実行（`tools/conformance/reservation_sql.py`・`conformance/sql/reservation.json`・`Tests.ReservationSql`・検査 `pg-reservation-sql`）を足した。制約の検査の順のずれ 4 件を、写しを直して解消した。[spec/conformance.md](spec/conformance.md)・[spec/assurance.md](spec/assurance.md) を改めた。
+  * [backlog/aedf](backlog/aedf-reservation-usecase.md) に第 2 段の結果を、[index.md](index.md) に ADR を足した。
+
 ## 2026-11-01
 
+* **Creation**: [ADR 4c45](decision/4c45-reservation-stage1-shared-state-and-source-model.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を 3 段に分け、第 1 段を行った（`doing`）。
+  * [Spec]: `Spec.Ticket`（選択フライトの解決と `validateFlightList`）、`Spec.UseCase.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）。`Spec.Port.World` に会員・予約・採番（`Sequences`）とポートの操作を、`Spec.Error.AtrsError` に `invalidRequest`・`system`・`conflict` を、`Spec.Model` に `PassengerRecord` を足した。
+  * [Source]: 原典のソースツリーの形で、`App.B2`（フォーム・`B2Mapper`・`TicketReserveHelper`）、`TicketSharedServiceImpl.validateFlightList`、`TicketReserveServiceImpl` の `validateReservation`・`registerReservation`（`findMember` は画面の初期値だけが使うので、HTTP の backlog a89e で写す）、`MemberRepository.findOne`・`ReservationRepository` の 3 つの insert・`FlightRepository` の `exists`・`findOneForUpdate`・`update`、モデルのクラスを写した。状態の表に会員・予約の表とシーケンスを足し、状態の表に対する計算 `SourceModel.Db.Tx`（Mapper の文・`@Transactional` の取消・Clock・実行環境）と、入口の計算 `SourceModel.ReserveQuery` を置いた。
+  * 共有ベクタ `conformance/shared/reservation/` の 47 件が `Spec` と `SourceModel` で通る（期待値は仕様の例と手計算）。[spec/conformance.md](spec/conformance.md) に操作を足した。
+  * Java の原典実行（`tools/origin-run`）に予約の操作を足した。47 件が原典と一致し、シードの範囲から予約確認の 76 件を採取した（`conformance/source-model/reservation/origin-run-confirm.json`）。原典の `TicketReserveServiceImpl` は Spring の `TransactionInterceptor` で包む。`trace/checks.json` の `java-origin-run` の範囲を広げた。[spec/assurance.md](spec/assurance.md) の移植元側の行と、暫定の限界（空席照会の α の定義域）を改めた。
+  * `trace/features.json` の Reserve・Member の `lean` を改め、`trace/upstream.json` に spring-tx・spring-jdbc・mybatis-spring・mapstruct を足した。
+  * 敵対的レビューの指摘と対応は ADR 4c45 に記した。
+  * 空席照会の α `worldOfDb` の定義域を、予約・会員の表とシーケンスが使われていない状態に限った（ABS-011 は通り続ける）。
+  * 登録簿: D-009 の範囲を INT の上限に広げた（確認待ち）。D-031 の R 課題を ABS-031・ABS-041・ABS-045 に直した（確認待ち）。D-014 に予約確定の Clock の読み出しを足した。
+  * スキルの側は [スキルの ADR a303](../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)（`Machine.alt` の方針、`LangSemantics.Sql.Transaction`、`PgTimestamp`、`JLocalTime`、`JList.get`、`StringUtils`）。スキルの版を 0.25 にした（[rules/atrs-porting.md](rules/atrs-porting.md)。main の 0.24 の後）。[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
 * **Creation**: [ADR aaf8](decision/aaf8-drop-long-tests-tier.md) で、`lake test` の分割をやめ、長い検査の段 `long-tests`（mise の `lean:test-long`）を無くした。[ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) には追記だけを足した（層・範囲・選択の決定は変わらない）。
   * シードの DB を使う SourceModel の照合が遅かった原因は、SourceModel の SQL の写し（`findAllFlightMaster`・`vacantSeatRows`・`RouteRepository.findAll`）が直積の全件（1 回で最大約 650 万組）を作ってから選び、ケースごとにそれを評価していたことだった。
   * 条件を押し下げた結合が元の定義と等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（スキルの ADR b187、スキルの版 0.24）。定義・証明・検査の中身は変えていない。CI で 4 つの節が合わせて約 359 s から約 0.9 s になった。

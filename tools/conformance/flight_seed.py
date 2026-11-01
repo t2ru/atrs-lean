@@ -145,7 +145,7 @@ def spec_lean(days, slots, names, tables, h):
           "def dayFlights (d : Date) (vs : List (List Nat)) : List Flight :=",
           "  (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨⟨d, n, b, f⟩, v⟩", "",
           "/-- シードのフライト（`World` の初期状態）。 -/",
-          "def world : Spec.Port.World := ⟨(days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i)⟩", "",
+          "def world : Spec.Port.World := { flights := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i) }", "",
           "end Spec.Seed.Flight", ""]
     return "\n".join(L)
 
@@ -181,7 +181,7 @@ def src_lean(days, slots, names, tables, h):
           "def dayRows (d : PgDate) (vs : List (List Int4)) : List FlightRow :=",
           "  (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨d, n, b, f, v⟩", "",
           "/-- シードの FLIGHT 表（`SELECT C_FLIGHT()` の後）。 -/",
-          "def seedFlightDb : FlightDb := ⟨(days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i)⟩", "",
+          "def seedFlightDb : FlightDb := { flight := (days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i) }", "",
           "end SourceModel.Db.FlightSeed", ""]
     return "\n".join(L)
 

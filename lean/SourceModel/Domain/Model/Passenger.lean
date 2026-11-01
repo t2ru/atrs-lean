@@ -2,6 +2,7 @@ import Trace
 import LangSemantics.Java
 import LangSemantics.Sql
 import LangSemantics.Sql.Postgresql
+import SourceModel.Domain.Model.Member
 import Spec.Model
 
 /-!
@@ -15,7 +16,7 @@ open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntL
 open LangSemantics.Java
 open SourceModel.Domain.Model
 
-/-- `Passenger`。会員（`member`）は、予約の backlog で足す。 -/
+/-- `Passenger`。 -/
 structure Passenger where
   passengerNo : JRef J32 := none
   reserveFlightNo : JRef J32 := none
@@ -23,6 +24,7 @@ structure Passenger where
   givenName : JRef String := none
   age : JRef J32 := none
   gender : JRef Spec.Model.Gender := none
+  member : JRef Member := none
   deriving Repr, DecidableEq
 
 namespace Passenger

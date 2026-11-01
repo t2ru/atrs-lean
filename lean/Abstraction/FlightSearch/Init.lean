@@ -115,7 +115,8 @@ theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = s
 /-- 初期状態の対応: シードの FLIGHT 表は、シードの `World` に写る。 -/
 theorem worldOfDb_seed :
     worldOfDb SourceModel.Db.FlightSeed.seedFlightDb = some Spec.Seed.Flight.world := by
-  simp only [worldOfDb, SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.Flight.world,
-    mapM_days days_map 0, Option.map_some]
+  have hn : noReservationState SourceModel.Db.FlightSeed.seedFlightDb = true := rfl
+  rw [worldOfDb, if_pos hn]
+  simp only [SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.Flight.world, mapM_days days_map 0, Option.map_some]
 
 end Abstraction.FlightSearch.Init

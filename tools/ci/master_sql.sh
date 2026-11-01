@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# conformance/sql/master-data.json・flight-search.json が、PostgreSQL でのマスタの Mapper の文・コードリストの SQL・空席照会の文の実行結果と
-# 一致することを確かめる（backlog 25f7・0be7）。照合そのものは lake test（Tests.MasterSql・Tests.FlightSql）が行う。
+# conformance/sql/master-data.json・flight-search.json・reservation.json が、PostgreSQL でのマスタの Mapper の文・コードリストの SQL・
+# 空席照会の文・予約が使う文の実行結果と一致することを確かめる（backlog 25f7・0be7・aedf）。照合そのものは lake test
+# （Tests.MasterSql・Tests.FlightSql・Tests.ReservationSql）が行う。
 # PostgreSQL が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
 #   tools/ci/master_sql.sh
 set -euo pipefail
@@ -12,3 +13,4 @@ if ! { [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/p
   echo "PostgreSQL not found: skipped"; exit 2
 fi
 .agents/skills/spec-pivot/scripts/ci/with_postgres.sh uv run --quiet python -I tools/conformance/master_sql.py --check --expect-version "$pgver"
+.agents/skills/spec-pivot/scripts/ci/with_postgres.sh uv run --quiet python -I tools/conformance/reservation_sql.py --check --expect-version "$pgver"

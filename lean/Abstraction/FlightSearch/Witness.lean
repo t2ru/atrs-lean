@@ -24,7 +24,7 @@ def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-"⟩
 def dbFS : MasterDb := dbTF ⟨100000, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩
 
 /-- FLIGHT 表（1970-01-01 の NTT001・N・OW、空席 10）。 -/
-def fdFS : FlightDb := ⟨[⟨⟨0, by decide⟩, ⟨"NTT001", by decide⟩, ⟨"N", by decide⟩, ⟨"OW", by decide⟩, ⟨10, by decide⟩⟩]⟩
+def fdFS : FlightDb := { flight := [⟨⟨0, by decide⟩, ⟨"NTT001", by decide⟩, ⟨"N", by decide⟩, ⟨"OW", by decide⟩, ⟨10, by decide⟩⟩] }
 
 /-- 配備の環境の書式の記号 `sym` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
 def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
@@ -48,7 +48,7 @@ def mdFS : Spec.MasterData :=
 def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, ⟨"HND"⟩, ⟨"ITM"⟩, .OW⟩⟩
 
 /-- [Spec] の状態。 -/
-def wFS : Spec.Port.World := ⟨[⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩]⟩
+def wFS : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩] }
 
 theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 

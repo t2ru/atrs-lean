@@ -2,7 +2,7 @@
 # ATRS の Java の原典実行（backlog f18c）。原典を複写してビルドし（tools/origin-run/build-upstream.sh）、spec-pivot の conformance-kit と
 # ハーネス（tools/origin-run）を作って、PostgreSQL のある環境で実行する。
 #   tools/ci/java_origin_run.sh [domain|http|all] [--write]
-# - domain: 運賃計算・空席照会のベクタを原典で照合し、生成するベクタ（conformance/source-model/*/origin-run-*.json）との差分 0 を求める
+# - domain: 運賃計算・空席照会・予約のベクタを原典で照合し、生成するベクタ（conformance/source-model/*/origin-run-*.json）との差分 0 を求める
 # - http:   Spring を起動した原典に要求を送り、採取結果（tools/origin-run/http/*.json）との差分 0 を求める
 # - --write: 生成するベクタ・採取結果を書き出す
 # java・mvn・PostgreSQL が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2）。
