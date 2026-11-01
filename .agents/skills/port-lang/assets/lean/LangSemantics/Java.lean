@@ -4,6 +4,7 @@ import LangSemantics.Java.JDouble
 import LangSemantics.Java.DoubleOps
 import LangSemantics.Java.BigDecimal
 import LangSemantics.Java.String
+import LangSemantics.Java.DecimalFormat
 import LangSemantics.Java.JLocalDate
 import LangSemantics.Java.HashMap
 import LangSemantics.Java.JLocalDate.Lemmas

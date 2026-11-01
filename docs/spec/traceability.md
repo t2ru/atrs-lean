@@ -131,7 +131,7 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 189 件。`trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 269 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
@@ -173,6 +173,75 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)` | `SourceModel.Fare.calculateTotalFare` | `35bc5d27ed5f2ca9` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.util.FareUtil#ceilFare(int)` | `SourceModel.Fare.ceilFare` | `345c1d9656b3930c` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.util.FareUtil.CEIL_FARE_SCALE` | `SourceModel.Fare.ceilFare` | `cd0475f0dda7e5e1` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#<init>(String,String,Integer)` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `b5ab6bf246edfbbf` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFare()` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `3aecf0e9bebb654a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFareTypeName()` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `fe0943673fcac4f0` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getVacantNum()` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `1727d00958d6c3a3` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#toString()` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `b78e85e304022465` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto.serialVersionUID` | `SourceModel.FlightSearch.FareTypeVacantInfoDto` | `dd46f950a2716a7f` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrAirportName()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `168f6313b91f7efc` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrTime()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `eba19a6e8cfe7373` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getBoardingClassCd()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `2c95f973159bc7cc` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepAirportName()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `613fd9acef107682` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepDate()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `369d89134caefd5a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepTime()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `e8756384892001a1` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFareTypes()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `b4cb9d39c4e1670d` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFlightName()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `56b669a044a195ca` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrAirportName(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `6ed33d2eb1ba891b` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrTime(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `a72394c9d4069159` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setBoardingClassCd(BoardingClassCd)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `fab24fded6a99658` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepAirportName(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `fccb4abecff6d001` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepDate(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `962bd97bc530d3db` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepTime(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `a032ee060e4c3da2` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFareTypes(Map)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `28c6e4b5185f43b9` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFlightName(String)` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `c8ed541ae69f3cad` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#toString()` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `b78e85e304022465` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto.serialVersionUID` | `SourceModel.FlightSearch.FlightVacantInfoDto` | `c450724693049058` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#addFareTypeVacantInfo(FareTypeCd,FareTypeVacantInfoDto)` | `SourceModel.FlightSearch.FlightVacantInfoDto.addFareTypeVacantInfo` | `1c016d6655a35b9a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getArrivalAirportCd()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `1c111d784bf8d220` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getBoardingClassCd()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `2c95f973159bc7cc` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepDate()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `9e5ad0157d1bece7` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepartureAirportCd()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `08763144c723fca5` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getFlightType()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `a815d39b257bbd2b` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setArrivalAirportCd(String)` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `922656e0efb53e00` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setBoardingClassCd(BoardingClassCd)` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `fab24fded6a99658` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepDate(LocalDate)` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `e4d262f79ebcb7ac` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepartureAirportCd(String)` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `48b1037e44becf59` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setFlightType(FlightType)` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `7f178ac43c6090bd` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#toString()` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `b78e85e304022465` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto.serialVersionUID` | `SourceModel.FlightSearch.TicketSearchCriteriaDto` | `c846f41752a6a6bf` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)` | `SourceModel.FlightSearch.businessException` | `70bc401f3ab46d0d` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID` | `SourceModel.FlightSearch.businessException` | `3d4b63a6702d11d1` | lake-test |
+| `lang:java#java.text.DecimalFormat` | `SourceModel.FlightSearch.createFlightVacantInfoList` | `java-17` | （なし） |
+| `lang:java#java.util.LinkedHashMap` | `SourceModel.FlightSearch.createFlightVacantInfoList` | `java-17` | （なし） |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode#code()` | `SourceModel.FlightSearch.errorCode` | `5fde806a365dc7a0` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2001` | `SourceModel.FlightSearch.errorCode` | `d4efdf3f2ea8e7cc` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2002` | `SourceModel.FlightSearch.errorCode` | `c1a57c4052f9c12b` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2003` | `SourceModel.FlightSearch.errorCode` | `2ea2beee13c2ea3a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5001` | `SourceModel.FlightSearch.errorCode` | `9bd02ea3ebb9a87f` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5002` | `SourceModel.FlightSearch.errorCode` | `c2b041fc47e7f619` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()` | `SourceModel.FlightSearch.flightNotFound` | `a759c61b6ed17dc4` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException.serialVersionUID` | `SourceModel.FlightSearch.flightNotFound` | `8c008f35f98c4bb6` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#getFareTypeCdList(FlightType)` | `SourceModel.FlightSearch.getFareTypeCdList` | `23c5f6e900fea030` | lake-test |
+| `java:jp.co.ntt.atrs.domain.model.FlightType#getCode()` | `SourceModel.FlightSearch.getFareTypeCdList` | `3855e45998af62f8` | lake-test |
+| `java:jp.co.ntt.atrs.domain.model.FlightType.OW` | `SourceModel.FlightSearch.getFareTypeCdList` | `7e4b60f4d2ee743b` | lake-test |
+| `java:jp.co.ntt.atrs.domain.model.FlightType.RT` | `SourceModel.FlightSearch.getFareTypeCdList` | `3165be96f5833ae0` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#getSearchLimitDate()` | `SourceModel.FlightSearch.getSearchLimitDate` | `9196be73040e6f0f` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getSearchLimitDate()` | `SourceModel.FlightSearch.getSearchLimitDate` | `07352a31cf61634a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#isAvailableFareType(FareType,LocalDate)` | `SourceModel.FlightSearch.isAvailableFareType` | `920d960054ac73a8` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)` | `SourceModel.FlightSearch.isAvailableFareType` | `c724cf20ebe62f82` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES` | `SourceModel.FlightSearch.oneWayFareTypes` | `13a685de676dd6d0` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ROUND_TRIP_FARETYPES` | `SourceModel.FlightSearch.roundTripFareTypes` | `93a93cb033a0d234` | lake-test |
+| `dep:org.springframework:spring-core#Assert.notNull` | `SourceModel.FlightSearch.searchFlight` | `spring-core-7.0.3` | （なし） |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.FlightSearch.searchFlight` | `aebd2fb115cd02fc` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.FlightSearch.searchFlight` | `75061ffc6ae02ecb` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatDateString(LocalDate)` | `SourceModel.FlightSearch.toFormatDateString` | `a9c17cb275f550f1` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.DATE_FORMATTER` | `SourceModel.FlightSearch.toFormatDateString` | `6231e4eebda71cf4` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatTimeString(String)` | `SourceModel.FlightSearch.toFormatTimeString` | `45ff7b872987b979` | lake-test |
+| `java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER` | `SourceModel.FlightSearch.toFormatTimeString` | `b3ea6e972e16ec6a` | lake-test |
+| `lang:java#java.lang.String.format` | `SourceModel.FlightSearch.toFormatTimeString` | `java-17` | （なし） |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)` | `SourceModel.FlightSearch.validateDepatureDate` | `9b898d66ce284b6a` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)` | `SourceModel.FlightSearch.validateDepatureDate` | `ab7abd9ac674d349` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#load()` | `SourceModel.MasterData.BoardingClassProvider.load` | `ea4f74c6c99e9b67` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.boardingclass.BoardingClassRepository#findAll()` | `SourceModel.MasterData.BoardingClassProvider.load` | `a75e2344e7b09314` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#load()` | `SourceModel.MasterData.FareTypeProvider.load` | `accd51e500f0cb16` | lake-test |
@@ -271,6 +340,16 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.model.Route#setRouteNo(Integer)` | `SourceModel.Model.Route` | `a9c754e56f9d626c` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route#toString()` | `SourceModel.Model.Route` | `b78e85e304022465` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route.serialVersionUID` | `SourceModel.Model.Route` | `e55e25f5719b321f` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `da10cbbc34c14874` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBeforeDayNum()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `87c12b12578b0d7e` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBoardingClass()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `14872a96b272a9e5` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getDepDate()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `9e5ad0157d1bece7` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getFareTypeList()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `108313590608caad` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getRoute()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `bb4d94a040ef721d` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#toString()` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `b78e85e304022465` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto.serialVersionUID` | `SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto` | `652bd2782db8027a` | lake-test |
+| `dep:org.mybatis:mybatis#EnumTypeHandler` | `SourceModel.Repository.Flight.bind` | `mybatis-3.5.19` | （なし） |
+| `sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria` | `SourceModel.Repository.Flight.vacantSeatRows` | `2fbe03024cd7d231` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()` | `SourceModel.Repository.Mapping.boardingClassCd` | `3855e45998af62f8` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.BoardingClassCd.N` | `SourceModel.Repository.Mapping.boardingClassCd` | `8ce86a6ae65d3692` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.BoardingClassCd.S` | `SourceModel.Repository.Mapping.boardingClassCd` | `8de0b3c47f112c59` | lake-test |
@@ -285,6 +364,7 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.model.FareTypeCd.SOW` | `SourceModel.Repository.Mapping.fareTypeCd` | `7b105823acf590f2` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRD` | `SourceModel.Repository.Mapping.fareTypeCd` | `b111f3efc4632267` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRT` | `SourceModel.Repository.Mapping.fareTypeCd` | `8a21220051bcc7d6` | lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria(VacantSeatSearchCriteriaDto)` | `SourceModel.Repository.Mapping.flight` | `642c24ce08bfe364` | lake-test |
 | `java:jp.co.ntt.atrs.config.app.AtrsInfraConfig#sqlSessionFactory(DataSource)` | `SourceModel.Repository.Mapping.route` | `b1ab3854afd9d9e6` | lake-test |
 | `java:jp.co.ntt.atrs.config.app.mybatis.MybatisConfig#configuration()` | `SourceModel.Repository.Mapping.route` | `81014029228aac4a` | lake-test |
 | `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_AIRPORT()` | `SourceModel.Repository.MasterData.airportCodeListRows` | `6236d6ba59dfd39c` | lake-test, pg-master-sql |
@@ -308,6 +388,11 @@ pub fn basic_fare(...) -> (r: u64)
 | `ddl:00100_create_all_tables.sql#FK_FLIGHT_MASTER_2` | `SourceModel.Repository.Schema.FlightMasterRow` | `32419bcbe5e7e96d` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#FLIGHT_MASTER` | `SourceModel.Repository.Schema.FlightMasterRow` | `d92b2c0f805256a1` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PK_FLIGHT_MASTER` | `SourceModel.Repository.Schema.FlightMasterRow` | `88b87dbbb2237387` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FK_FLIGHT_1` | `SourceModel.Repository.Schema.FlightRow` | `2d0e26c837cc8f79` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FK_FLIGHT_2` | `SourceModel.Repository.Schema.FlightRow` | `d395df3615466997` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FK_FLIGHT_3` | `SourceModel.Repository.Schema.FlightRow` | `d4327a6873ccf4c0` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#FLIGHT` | `SourceModel.Repository.Schema.FlightRow` | `97fb492b5adfbec4` | lake-test, pg-master-sql |
+| `ddl:00100_create_all_tables.sql#PK_FLIGHT` | `SourceModel.Repository.Schema.FlightRow` | `75e469d15a6da12e` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PEAK_TIME` | `SourceModel.Repository.Schema.PeakTimeRow` | `2639ea660139925b` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PK_PEAK_TIME` | `SourceModel.Repository.Schema.PeakTimeRow` | `bbba432826561bb6` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PK_PLANE` | `SourceModel.Repository.Schema.PlaneRow` | `1ddda697876bfc78` | lake-test, pg-master-sql |

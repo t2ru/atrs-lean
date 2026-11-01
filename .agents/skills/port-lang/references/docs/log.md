@@ -1,5 +1,11 @@
 # Directory Update Log
 
+## 2026-11-01
+
+* **Update**: `LangSemantics.Java` に `String.substring`（`jSubstring`・`jSubstringFrom`。UTF-16 の位置と補助文字の扱いの補題 `charsBeforeUtf16_bmp`）と、`DecimalFormat` の 3 桁区切りの整数の書式（`LangSemantics.Java.DecimalFormat.formatGrouped`）を足した。JVM との突き合わせ表（`Test/LangSemantics/JavaJvm.lean`。生成器 `jvm/JavaTable.java`）に行を足した。スキルの版を 0.15 にした。
+  * [lang/java/semantics.md](lang/java/semantics.md#演算名前は仕様文書でも共通に使う) を改めた。
+  * 来歴: 適用先 ATRS の空席照会（ATRS の ADR ce36・backlog 0be7）。
+
 ## 2026-10-31
 
 * **Creation**: [ADR 6b4b](decision/6b4b-preserves-refines-abstracts.md) で、義務の束 `Machine.Adequate` を廃止し、`Machine.Refines`（B refines A。B メソッドのリファインメント）・`Machine.Preserves`（A preserves B。R 課題の空虚化を防ぐ意味的な義務のすべて。`Refines` を含まない）・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）に分けた。[ADR ab9e](decision/ab9e-adequate-bundle-sum-and-side-staging.md) を置き換えた（並置と側ごとの段階導入は引き継ぐ）。スキルの版を 0.14 にした。

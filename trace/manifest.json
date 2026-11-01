@@ -1949,6 +1949,382 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.fare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.fareTypeName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FareTypeVacantInfoDto.vacantNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.addFareTypeVacantInfo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.arrAirportName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.arrTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.depAirportName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.depTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.fareTypes",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.FlightVacantInfoDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.config",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.criteria",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.db",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.today",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.arrivalAirportCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.departureAirportCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.flightType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchCriteriaDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.boardingClassProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.fareTypeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.flightMasterProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.flightRepository",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.limitDay",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.routeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.ticketSharedService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.today",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.businessException",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.createFlightVacantInfo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.createFlightVacantInfoList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.errorCode",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.flightNotFound",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.getFareTypeCdList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.getSearchLimitDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqFareTypeVacantInfoDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqFareTypeVacantInfoDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqSearchInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqSearchInput.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqTicketSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instDecidableEqTicketSearchCriteriaDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprFareTypeVacantInfoDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprFareTypeVacantInfoDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprFlightVacantInfoDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprFlightVacantInfoDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprSearchInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprSearchInput.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprTicketSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.instReprTicketSearchCriteriaDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.isAvailableFareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.oneWayFareTypes",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.repositoryOf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.roundTripFareTypes",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.runSearchFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.searchFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.toFormatDateString",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.toFormatTimeString",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.validateDepatureDate",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Input",
       "layer": "SourceModel"
     },
@@ -3225,6 +3601,286 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Flight.FlightResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.departureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.FlightResult.vacantNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.arrAirportCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.beforeDayNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.depAirportCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.fareTypeList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.Params.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.SortAllowed",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.departureTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.displayOrder",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatRow.result",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.beforeDayNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.depDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.fareTypeList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto.route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.bind",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqFlightResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqFlightResult.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqParams",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqParams.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqVacantSeatRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqVacantSeatRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqVacantSeatSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instDecidableEqVacantSeatSearchCriteriaDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprFlightResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprFlightResult.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprParams",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprParams.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprVacantSeatRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprVacantSeatRow.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprVacantSeatSearchCriteriaDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.instReprVacantSeatSearchCriteriaDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.sqlOf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.standardSort",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatDirs",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatKey",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatRows",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Mapping.boardingClass",
       "layer": "SourceModel"
     },
@@ -3242,6 +3898,10 @@
     },
     {
       "name": "SourceModel.Repository.Mapping.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Mapping.flight",
       "layer": "SourceModel"
     },
     {
@@ -3757,6 +4417,38 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Schema.FlightDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.flight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightDb.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Schema.FlightMasterRow",
       "layer": "SourceModel"
     },
@@ -3802,6 +4494,54 @@
     },
     {
       "name": "SourceModel.Repository.Schema.FlightMasterRow.routeNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.departureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.FlightRow.vacantNum",
       "layer": "SourceModel"
     },
     {
@@ -4029,11 +4769,27 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Schema.instDecidableEqFlightDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instDecidableEqFlightDb.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Schema.instDecidableEqFlightMasterRow",
       "layer": "SourceModel"
     },
     {
       "name": "SourceModel.Repository.Schema.instDecidableEqFlightMasterRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instDecidableEqFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instDecidableEqFlightRow.decEq",
       "layer": "SourceModel"
     },
     {
@@ -4101,11 +4857,27 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Schema.instReprFlightDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instReprFlightDb.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Schema.instReprFlightMasterRow",
       "layer": "SourceModel"
     },
     {
       "name": "SourceModel.Repository.Schema.instReprFlightMasterRow.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instReprFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Schema.instReprFlightRow.repr",
       "layer": "SourceModel"
     },
     {
@@ -5181,6 +5953,41 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.FlightSearch.SearchInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.getSearchLimitDate",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.isAvailableFareType",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "D-001"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "D-002"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.validateDepatureDate",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.MasterData.BoardingClassProvider.load",
       "to": "D-015"
     },
@@ -5979,6 +6786,420 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#<init>(String,String,Integer)",
+      "hash": "b5ab6bf246edfbbf"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFare()",
+      "hash": "3aecf0e9bebb654a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFareTypeName()",
+      "hash": "fe0943673fcac4f0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getVacantNum()",
+      "hash": "1727d00958d6c3a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto.serialVersionUID",
+      "hash": "dd46f950a2716a7f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrAirportName()",
+      "hash": "168f6313b91f7efc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrTime()",
+      "hash": "eba19a6e8cfe7373"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepAirportName()",
+      "hash": "613fd9acef107682"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepDate()",
+      "hash": "369d89134caefd5a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepTime()",
+      "hash": "e8756384892001a1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFareTypes()",
+      "hash": "b4cb9d39c4e1670d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFlightName()",
+      "hash": "56b669a044a195ca"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrAirportName(String)",
+      "hash": "6ed33d2eb1ba891b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrTime(String)",
+      "hash": "a72394c9d4069159"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepAirportName(String)",
+      "hash": "fccb4abecff6d001"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepDate(String)",
+      "hash": "962bd97bc530d3db"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepTime(String)",
+      "hash": "a032ee060e4c3da2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFareTypes(Map)",
+      "hash": "28c6e4b5185f43b9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFlightName(String)",
+      "hash": "c8ed541ae69f3cad"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto.serialVersionUID",
+      "hash": "c450724693049058"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.FlightVacantInfoDto.addFareTypeVacantInfo",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#addFareTypeVacantInfo(FareTypeCd,FareTypeVacantInfoDto)",
+      "hash": "1c016d6655a35b9a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getArrivalAirportCd()",
+      "hash": "1c111d784bf8d220"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepDate()",
+      "hash": "9e5ad0157d1bece7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepartureAirportCd()",
+      "hash": "08763144c723fca5"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getFlightType()",
+      "hash": "a815d39b257bbd2b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setArrivalAirportCd(String)",
+      "hash": "922656e0efb53e00"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepDate(LocalDate)",
+      "hash": "e4d262f79ebcb7ac"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepartureAirportCd(String)",
+      "hash": "48b1037e44becf59"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setFlightType(FlightType)",
+      "hash": "7f178ac43c6090bd"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto.serialVersionUID",
+      "hash": "c846f41752a6a6bf"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.businessException",
+      "to": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
+      "hash": "70bc401f3ab46d0d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.businessException",
+      "to": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID",
+      "hash": "3d4b63a6702d11d1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.createFlightVacantInfoList",
+      "to": "lang:java#java.text.DecimalFormat",
+      "hash": "java-17"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.createFlightVacantInfoList",
+      "to": "lang:java#java.util.LinkedHashMap",
+      "hash": "java-17"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode#code()",
+      "hash": "5fde806a365dc7a0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2001",
+      "hash": "d4efdf3f2ea8e7cc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2002",
+      "hash": "c1a57c4052f9c12b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2003",
+      "hash": "2ea2beee13c2ea3a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5001",
+      "hash": "9bd02ea3ebb9a87f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.errorCode",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5002",
+      "hash": "c2b041fc47e7f619"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.flightNotFound",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()",
+      "hash": "a759c61b6ed17dc4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.flightNotFound",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException.serialVersionUID",
+      "hash": "8c008f35f98c4bb6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getFareTypeCdList",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#getFareTypeCdList(FlightType)",
+      "hash": "23c5f6e900fea030"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getFareTypeCdList",
+      "to": "java:jp.co.ntt.atrs.domain.model.FlightType#getCode()",
+      "hash": "3855e45998af62f8"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getFareTypeCdList",
+      "to": "java:jp.co.ntt.atrs.domain.model.FlightType.OW",
+      "hash": "7e4b60f4d2ee743b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getFareTypeCdList",
+      "to": "java:jp.co.ntt.atrs.domain.model.FlightType.RT",
+      "hash": "3165be96f5833ae0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getSearchLimitDate",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#getSearchLimitDate()",
+      "hash": "9196be73040e6f0f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.getSearchLimitDate",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getSearchLimitDate()",
+      "hash": "07352a31cf61634a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.isAvailableFareType",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#isAvailableFareType(FareType,LocalDate)",
+      "hash": "920d960054ac73a8"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.isAvailableFareType",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)",
+      "hash": "c724cf20ebe62f82"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.oneWayFareTypes",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES",
+      "hash": "13a685de676dd6d0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.roundTripFareTypes",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ROUND_TRIP_FARETYPES",
+      "hash": "93a93cb033a0d234"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "dep:org.springframework:spring-core#Assert.notNull",
+      "hash": "spring-core-7.0.3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)",
+      "hash": "aebd2fb115cd02fc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)",
+      "hash": "75061ffc6ae02ecb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.toFormatDateString",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatDateString(LocalDate)",
+      "hash": "a9c17cb275f550f1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.toFormatDateString",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.DATE_FORMATTER",
+      "hash": "6231e4eebda71cf4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.toFormatTimeString",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatTimeString(String)",
+      "hash": "45ff7b872987b979"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.toFormatTimeString",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER",
+      "hash": "b3ea6e972e16ec6a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.toFormatTimeString",
+      "to": "lang:java#java.lang.String.format",
+      "hash": "java-17"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.validateDepatureDate",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)",
+      "hash": "9b898d66ce284b6a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.FlightSearch.validateDepatureDate",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)",
+      "hash": "ab7abd9ac674d349"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.MasterData.BoardingClassProvider.load",
       "to": "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#load()",
       "hash": "ea4f74c6c99e9b67"
@@ -6567,6 +7788,66 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)",
+      "hash": "da10cbbc34c14874"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBeforeDayNum()",
+      "hash": "87c12b12578b0d7e"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBoardingClass()",
+      "hash": "14872a96b272a9e5"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getDepDate()",
+      "hash": "9e5ad0157d1bece7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getFareTypeList()",
+      "hash": "108313590608caad"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getRoute()",
+      "hash": "bb4d94a040ef721d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto.serialVersionUID",
+      "hash": "652bd2782db8027a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.bind",
+      "to": "dep:org.mybatis:mybatis#EnumTypeHandler",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Flight.vacantSeatRows",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
+      "hash": "2fbe03024cd7d231"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Repository.Mapping.boardingClassCd",
       "to": "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()",
       "hash": "3855e45998af62f8"
@@ -6648,6 +7929,12 @@
       "from": "SourceModel.Repository.Mapping.fareTypeCd",
       "to": "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRT",
       "hash": "8a21220051bcc7d6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Mapping.flight",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria(VacantSeatSearchCriteriaDto)",
+      "hash": "642c24ce08bfe364"
     },
     {
       "type": "source",
@@ -6786,6 +8073,36 @@
       "from": "SourceModel.Repository.Schema.FlightMasterRow",
       "to": "ddl:00100_create_all_tables.sql#PK_FLIGHT_MASTER",
       "hash": "88b87dbbb2237387"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Schema.FlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_FLIGHT_1",
+      "hash": "2d0e26c837cc8f79"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Schema.FlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_FLIGHT_2",
+      "hash": "d395df3615466997"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Schema.FlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_FLIGHT_3",
+      "hash": "d4327a6873ccf4c0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Schema.FlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FLIGHT",
+      "hash": "97fb492b5adfbec4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.Schema.FlightRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_FLIGHT",
+      "hash": "75e469d15a6da12e"
     },
     {
       "type": "source",
@@ -8188,6 +9505,591 @@
       ]
     },
     {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#<init>(String,String,Integer)",
+      "hash": "b5ab6bf246edfbbf",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFare()",
+      "hash": "3aecf0e9bebb654a",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getFareTypeName()",
+      "hash": "fe0943673fcac4f0",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#getVacantNum()",
+      "hash": "1727d00958d6c3a3",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FareTypeVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FareTypeVacantInfoDto.serialVersionUID",
+      "hash": "dd46f950a2716a7f",
+      "merkle": "2f9a1d31a8279a97",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrAirportName()",
+      "hash": "168f6313b91f7efc",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getArrTime()",
+      "hash": "eba19a6e8cfe7373",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepAirportName()",
+      "hash": "613fd9acef107682",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepDate()",
+      "hash": "369d89134caefd5a",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getDepTime()",
+      "hash": "e8756384892001a1",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFareTypes()",
+      "hash": "b4cb9d39c4e1670d",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#getFlightName()",
+      "hash": "56b669a044a195ca",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrAirportName(String)",
+      "hash": "6ed33d2eb1ba891b",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setArrTime(String)",
+      "hash": "a72394c9d4069159",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepAirportName(String)",
+      "hash": "fccb4abecff6d001",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepDate(String)",
+      "hash": "962bd97bc530d3db",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setDepTime(String)",
+      "hash": "a032ee060e4c3da2",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFareTypes(Map)",
+      "hash": "28c6e4b5185f43b9",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#setFlightName(String)",
+      "hash": "c8ed541ae69f3cad",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto.serialVersionUID",
+      "hash": "c450724693049058",
+      "merkle": "3ab5daf275ef30c7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.FlightVacantInfoDto.addFareTypeVacantInfo",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#addFareTypeVacantInfo(FareTypeCd,FareTypeVacantInfoDto)",
+      "hash": "1c016d6655a35b9a",
+      "merkle": "f188afc024bd3697",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getArrivalAirportCd()",
+      "hash": "1c111d784bf8d220",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepDate()",
+      "hash": "9e5ad0157d1bece7",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getDepartureAirportCd()",
+      "hash": "08763144c723fca5",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#getFlightType()",
+      "hash": "a815d39b257bbd2b",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setArrivalAirportCd(String)",
+      "hash": "922656e0efb53e00",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepDate(LocalDate)",
+      "hash": "e4d262f79ebcb7ac",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setDepartureAirportCd(String)",
+      "hash": "48b1037e44becf59",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#setFlightType(FlightType)",
+      "hash": "7f178ac43c6090bd",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.TicketSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchCriteriaDto.serialVersionUID",
+      "hash": "c846f41752a6a6bf",
+      "merkle": "d4d3738f08de0bd9",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.businessException",
+      "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
+      "hash": "70bc401f3ab46d0d",
+      "merkle": "ccf8ad730f17796b",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.businessException",
+      "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID",
+      "hash": "3d4b63a6702d11d1",
+      "merkle": "ccf8ad730f17796b",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode#code()",
+      "hash": "5fde806a365dc7a0",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2001",
+      "hash": "d4efdf3f2ea8e7cc",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2002",
+      "hash": "c1a57c4052f9c12b",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_2003",
+      "hash": "2ea2beee13c2ea3a",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5001",
+      "hash": "9bd02ea3ebb9a87f",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.errorCode",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode.E_AR_B1_5002",
+      "hash": "c2b041fc47e7f619",
+      "merkle": "b30ef4a460fac2e7",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.flightNotFound",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()",
+      "hash": "a759c61b6ed17dc4",
+      "merkle": "51450d2b5e3d0efd",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.flightNotFound",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException.serialVersionUID",
+      "hash": "8c008f35f98c4bb6",
+      "merkle": "51450d2b5e3d0efd",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getFareTypeCdList",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#getFareTypeCdList(FlightType)",
+      "hash": "23c5f6e900fea030",
+      "merkle": "7596d05504926d79",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getFareTypeCdList",
+      "locator": "java:jp.co.ntt.atrs.domain.model.FlightType#getCode()",
+      "hash": "3855e45998af62f8",
+      "merkle": "7596d05504926d79",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getFareTypeCdList",
+      "locator": "java:jp.co.ntt.atrs.domain.model.FlightType.OW",
+      "hash": "7e4b60f4d2ee743b",
+      "merkle": "7596d05504926d79",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getFareTypeCdList",
+      "locator": "java:jp.co.ntt.atrs.domain.model.FlightType.RT",
+      "hash": "3165be96f5833ae0",
+      "merkle": "7596d05504926d79",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getSearchLimitDate",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#getSearchLimitDate()",
+      "hash": "9196be73040e6f0f",
+      "merkle": "27c2e93eb51857a4",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.getSearchLimitDate",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getSearchLimitDate()",
+      "hash": "07352a31cf61634a",
+      "merkle": "27c2e93eb51857a4",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.isAvailableFareType",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#isAvailableFareType(FareType,LocalDate)",
+      "hash": "920d960054ac73a8",
+      "merkle": "f420296e15278814",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.isAvailableFareType",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)",
+      "hash": "c724cf20ebe62f82",
+      "merkle": "f420296e15278814",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.oneWayFareTypes",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES",
+      "hash": "13a685de676dd6d0",
+      "merkle": "9c8e552a4a603e2e",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.roundTripFareTypes",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ROUND_TRIP_FARETYPES",
+      "hash": "93a93cb033a0d234",
+      "merkle": "7576054463c3c15a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.searchFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)",
+      "hash": "aebd2fb115cd02fc",
+      "merkle": "db1122396aea39db",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.searchFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)",
+      "hash": "75061ffc6ae02ecb",
+      "merkle": "db1122396aea39db",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.toFormatDateString",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatDateString(LocalDate)",
+      "hash": "a9c17cb275f550f1",
+      "merkle": "93fef58f19d12989",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.toFormatDateString",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.DATE_FORMATTER",
+      "hash": "6231e4eebda71cf4",
+      "merkle": "93fef58f19d12989",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.toFormatTimeString",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toFormatTimeString(String)",
+      "hash": "45ff7b872987b979",
+      "merkle": "67177b7ac19afe9b",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.toFormatTimeString",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER",
+      "hash": "b3ea6e972e16ec6a",
+      "merkle": "67177b7ac19afe9b",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.validateDepatureDate",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)",
+      "hash": "9b898d66ce284b6a",
+      "merkle": "44f182764982841c",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.FlightSearch.validateDepatureDate",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)",
+      "hash": "ab7abd9ac674d349",
+      "merkle": "44f182764982841c",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.MasterData.BoardingClassProvider.load",
       "locator": "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#load()",
       "hash": "ea4f74c6c99e9b67",
@@ -9061,6 +10963,87 @@
       ]
     },
     {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)",
+      "hash": "da10cbbc34c14874",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBeforeDayNum()",
+      "hash": "87c12b12578b0d7e",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getBoardingClass()",
+      "hash": "14872a96b272a9e5",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getDepDate()",
+      "hash": "9e5ad0157d1bece7",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getFareTypeList()",
+      "hash": "108313590608caad",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#getRoute()",
+      "hash": "bb4d94a040ef721d",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto.serialVersionUID",
+      "hash": "652bd2782db8027a",
+      "merkle": "83674d51d18a455a",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Flight.vacantSeatRows",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
+      "hash": "2fbe03024cd7d231",
+      "merkle": "d3f87ba666f809ac",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Repository.Mapping.boardingClassCd",
       "locator": "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()",
       "hash": "3855e45998af62f8",
@@ -9182,6 +11165,15 @@
       "locator": "java:jp.co.ntt.atrs.domain.model.FareTypeCd.SRT",
       "hash": "8a21220051bcc7d6",
       "merkle": "8e1af74644cb61e3",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Mapping.flight",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria(VacantSeatSearchCriteriaDto)",
+      "hash": "642c24ce08bfe364",
+      "merkle": "21321377808b9e7f",
       "checks": [
         "lake-test"
       ]
@@ -9409,6 +11401,56 @@
       "locator": "ddl:00100_create_all_tables.sql#PK_FLIGHT_MASTER",
       "hash": "88b87dbbb2237387",
       "merkle": "30b30b2dd248a9c6",
+      "checks": [
+        "lake-test",
+        "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Schema.FlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_FLIGHT_1",
+      "hash": "2d0e26c837cc8f79",
+      "merkle": "289355ce1ed007be",
+      "checks": [
+        "lake-test",
+        "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Schema.FlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_FLIGHT_2",
+      "hash": "d395df3615466997",
+      "merkle": "289355ce1ed007be",
+      "checks": [
+        "lake-test",
+        "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Schema.FlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_FLIGHT_3",
+      "hash": "d4327a6873ccf4c0",
+      "merkle": "289355ce1ed007be",
+      "checks": [
+        "lake-test",
+        "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Schema.FlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FLIGHT",
+      "hash": "97fb492b5adfbec4",
+      "merkle": "289355ce1ed007be",
+      "checks": [
+        "lake-test",
+        "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.Schema.FlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_FLIGHT",
+      "hash": "75e469d15a6da12e",
+      "merkle": "289355ce1ed007be",
       "checks": [
         "lake-test",
         "pg-master-sql"

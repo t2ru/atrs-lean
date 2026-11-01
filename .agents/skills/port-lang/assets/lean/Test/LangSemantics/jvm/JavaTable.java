@@ -10,10 +10,13 @@ import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class JavaTable {
     static final StringBuilder out = new StringBuilder();
@@ -30,6 +33,17 @@ public class JavaTable {
             else b.appendCodePoint(cp);
         });
         return b.append('"').toString();
+    }
+
+    /** 不対サロゲートを含むか。 */
+    static boolean loneSurrogate(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (Character.isHighSurrogate(c) && (i + 1 >= s.length() || !Character.isLowSurrogate(s.charAt(i + 1)))) return true;
+            if (Character.isLowSurrogate(c) && (i == 0 || !Character.isHighSurrogate(s.charAt(i - 1)))) return true;
+            if (Character.isHighSurrogate(c)) i++;
+        }
+        return false;
     }
 
     static String lit(char c) {
@@ -93,6 +107,39 @@ public class JavaTable {
             for (String p : parts) ps.add(lit(p));
             line("#guard jSplitChar " + lit(sp[0]) + " " + lit(sp[1].charAt(0)) + " == [" + String.join(", ", ps) + "]");
         }
+        String[] subs = {"0945", "2415", "abc", "ab", "", "山田太郎", "a𠮷b"};
+        int[][] ranges = {{0, 2}, {2, 4}, {0, 0}, {1, 3}, {3, 1}, {0, 5}};
+        line("-- String.substring(begin, end)（例外は StringIndexOutOfBoundsException）");
+        for (String sub : subs) {
+            for (int[] r : ranges) {
+                String expect;
+                try {
+                    String got = sub.substring(r[0], r[1]);
+                    // 切り口が補助文字の中にある（結果が不対サロゲートを含む）場合は、モデルが表さないので表に載せない
+                    if (loneSurrogate(got)) continue;
+                    expect = "some " + lit(got);
+                }
+                catch (StringIndexOutOfBoundsException e) { expect = "error"; }
+                if (expect.equals("error"))
+                    line("#guard (jSubstring " + lit(sub) + " " + r[0] + " " + r[1] + ") matches .error (.other \"java.lang.StringIndexOutOfBoundsException\" _)");
+                else
+                    line("#guard (jSubstring " + lit(sub) + " " + r[0] + " " + r[1] + ").toOption == " + expect);
+            }
+        }
+        line("-- String.substring(begin)");
+        for (String sub : subs) {
+            if (sub.length() >= 2 && !loneSurrogate(sub.substring(2))) line("#guard (jSubstringFrom " + lit(sub) + " 2).toOption == some " + lit(sub.substring(2)));
+        }
+    }
+
+    static void decimalFormat() {
+        line("");
+        line("/-! ## DecimalFormat -/");
+        line("");
+        DecimalFormat f = new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(Locale.JAPAN));
+        long[] ns = {0, 1, 12, 123, 1234, 12345, 123456, 1234567, 20600, 18600, 2147483647L, -1, -1234, -2147483648L};
+        line("-- new DecimalFormat(\"###,###\").format(n)（Locale.JAPAN。区切り文字 ','）");
+        for (long n : ns) line("#guard formatGrouped ',' " + intLit(n) + " == " + lit(f.format(n)));
     }
 
     static void localDate() {
@@ -196,9 +243,10 @@ public class JavaTable {
         line("");
         line("open LangSemantics.Java");
         line("open LangSemantics.Java.BigDecimal LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String");
-        line("open LangSemantics.Java.DoubleOps");
+        line("open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat");
         bigDecimal();
         string();
+        decimalFormat();
         localDate();
         doubles();
         PrintStream ps = new PrintStream(System.out, true, StandardCharsets.UTF_8);

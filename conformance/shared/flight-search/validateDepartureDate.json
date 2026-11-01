@@ -1,0 +1,88 @@
+{
+  "operation": "flightSearch.validateDepartureDate",
+  "modelDef": [
+    "Spec.FlightSearch.validateDepartureDate",
+    "SourceModel.FlightSearch.validateDepatureDate"
+  ],
+  "specRef": "docs/spec/flight-search.md#照会可能期間",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "validateDepartureDate-today",
+      "description": "照会可能期間の初日（今日）",
+      "input": {
+        "today": "2026-04-01",
+        "depDate": "2026-04-01"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "validateDepartureDate-yesterday",
+      "description": "今日より前（e.ar.b1.2001）",
+      "input": {
+        "today": "2026-04-01",
+        "depDate": "2026-03-31"
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b1.2001"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "validateDepartureDate-limit",
+      "description": "照会可能期間の末日（今日 + 90 日）",
+      "input": {
+        "today": "2026-04-01",
+        "depDate": "2026-06-30"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "validateDepartureDate-beyond",
+      "description": "末日の翌日（e.ar.b1.2001）",
+      "input": {
+        "today": "2026-04-01",
+        "depDate": "2026-07-01"
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b1.2001"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "validateDepartureDate-yearEnd",
+      "description": "年をまたぐ末日（今日 + 90 日）",
+      "input": {
+        "today": "2026-12-01",
+        "depDate": "2027-03-01"
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

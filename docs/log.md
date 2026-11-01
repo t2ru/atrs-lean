@@ -7,6 +7,10 @@
   * 便マスタの到着時刻を `Spec.Prim.Time.ArrivalTime`（出発日 0:00 からの時分。24 時以降を許す）にした。fixture の `outsideSpec` を外し、`Spec.Seed` に NTT523・NTT528 を含めた。[ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md) に補足を書いた。`flightMasterOf` の 2415 の例を `shared/master-data` に移した。
   * `DateTimeParseException` は空席照会でなく予約の往復便の検査で起きることを確かめ、既知差異 D-031（W 課題 ABS-131）を登録した。[spec/master-data.md](spec/master-data.md) の誤りを直した。
   * [spec/domain-model.md](spec/domain-model.md#arrivaltime)、[spec/master-data.md](spec/master-data.md)、[spec/abstraction.md](spec/abstraction.md#証明課題)（ABS-011・ABS-127・ABS-131、D-027 の範囲）、[spec/conformance.md](spec/conformance.md)、[spec/assurance.md](spec/assurance.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
+  * Lean: `Spec.Error`（`Business`・`NotFound`）、`Spec.Port`（`World` とその不変条件）、`Spec.FlightSearch`（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。`SourceModel.FlightSearch`（`searchFlight` と、起動時の読み込みと合わせて実行する `runSearchFlight`）、`SourceModel.Repository.Flight`（`findByVacantSeatSearchCriteria` の `Bag` 式と許される並べ方）、FLIGHT の行 `FlightRow`・状態の表 `FlightDb`、`flight-map`。
+  * 適合テストベクタ `conformance/shared/flight-search/`（`flightSearch.searchFlight`・`validateDepartureDate`・`isAvailableFareType`）を足し、`Spec` と `SourceModel` の両方で通した。[spec/flight-search.md](spec/flight-search.md) に Lean への参照を書き、[spec/conformance.md](spec/conformance.md#操作名) にエラーの表し方を書いた。
+  * スキル port-lang の `LangSemantics.Java` に `String.substring` と `DecimalFormat` の 3 桁区切りを足した（スキルの版 0.15。[rules/atrs-porting.md](rules/atrs-porting.md)）。
+  * `trace/features.json`（空席照会の名前空間・ABS-010・`validateDepatureDate` のロケータ）を改め、`trace rehash` で合格の記録を取った。
 
 ## 2026-10-31
 

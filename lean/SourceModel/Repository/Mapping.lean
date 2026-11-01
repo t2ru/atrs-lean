@@ -3,6 +3,7 @@ import LangSemantics.Java
 import LangSemantics.Sql
 import SourceModel.Model
 import SourceModel.Repository.MasterData
+import SourceModel.Repository.Flight
 
 /-!
 # SourceModel.Repository.Mapping
@@ -95,5 +96,15 @@ def fareType (f : FareTypeResult) : JResult FareType := do
 def peakTime (p : PeakTimeRow) : PeakTime :=
   { peakTimeCd := str p.peakTimeCd, peakStartDate := date p.peakStartDate, peakEndDate := date p.peakEndDate,
     multiplicationRatio := int p.multiplicationRatio }
+
+/-- `flight-map`（`FlightRepository.findByVacantSeatSearchCriteria` の結果）。入れ子の対応が無いので、行をまとめない。
+便マスタ・運賃種別・搭乗クラスは、コードだけを入れた値になる（`searchFlight` が Provider で詰め直す）。 -/
+@[source "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria(VacantSeatSearchCriteriaDto)@642c24ce08bfe364"]
+def flight (r : SourceModel.Repository.Flight.FlightResult) : JResult Flight := do
+  let bc ← boardingClassCd r.boardingClassCd.val
+  let ft ← fareTypeCd r.fareTypeCd.val
+  return { departureDate := date r.departureDate, flightMaster := some { flightName := str r.flightName },
+           boardingClass := some { boardingClassCd := some bc }, fareType := some { fareTypeCd := some ft },
+           vacantNum := int r.vacantNum }
 
 end SourceModel.Repository.Mapping

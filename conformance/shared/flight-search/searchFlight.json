@@ -1,0 +1,1353 @@
+{
+  "operation": "flightSearch.searchFlight",
+  "modelDef": [
+    "Spec.FlightSearch.searchFlight",
+    "SourceModel.FlightSearch.runSearchFlight"
+  ],
+  "specRef": "docs/spec/flight-search.md#searchflight",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "searchFlight-example",
+      "description": "仕様の例（flight-search.md）: 2026-04-01 に、2026-04-11 の HND→ITM・N・片道を照会。NTT001・NTT031 の 2 グループで、運賃種別は OW・RD1・RD7・LD・GD の順（ED は 30 日前まで、RT・S は対象外、空席 0 も含む）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-04-11",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": [
+          {
+            "flightName": "NTT001",
+            "fareTypes": [
+              {
+                "vacantNum": 153,
+                "fareTypeName": "片道運賃",
+                "fareTypeCd": "OW",
+                "fare": "20,600"
+              },
+              {
+                "vacantNum": 30,
+                "fareTypeName": "予約割1",
+                "fareTypeCd": "RD1",
+                "fare": "18,600"
+              },
+              {
+                "vacantNum": 0,
+                "fareTypeName": "予約割7",
+                "fareTypeCd": "RD7",
+                "fare": "16,500"
+              },
+              {
+                "vacantNum": 5,
+                "fareTypeName": "レディース割",
+                "fareTypeCd": "LD",
+                "fare": "14,500"
+              },
+              {
+                "vacantNum": 8,
+                "fareTypeName": "グループ割",
+                "fareTypeCd": "GD",
+                "fare": "14,500"
+              }
+            ],
+            "depTime": "09:00",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:00",
+            "arrAirportName": "大阪(伊丹)"
+          },
+          {
+            "flightName": "NTT031",
+            "fareTypes": [
+              {
+                "vacantNum": 100,
+                "fareTypeName": "片道運賃",
+                "fareTypeCd": "OW",
+                "fare": "20,600"
+              },
+              {
+                "vacantNum": 20,
+                "fareTypeName": "予約割1",
+                "fareTypeCd": "RD1",
+                "fare": "18,600"
+              },
+              {
+                "vacantNum": 10,
+                "fareTypeName": "予約割7",
+                "fareTypeCd": "RD7",
+                "fare": "16,500"
+              },
+              {
+                "vacantNum": 0,
+                "fareTypeName": "レディース割",
+                "fareTypeCd": "LD",
+                "fare": "14,500"
+              },
+              {
+                "vacantNum": 3,
+                "fareTypeName": "グループ割",
+                "fareTypeCd": "GD",
+                "fare": "14,500"
+              }
+            ],
+            "depTime": "09:45",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:45",
+            "arrAirportName": "大阪(伊丹)"
+          }
+        ]
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-roundTrip",
+      "description": "往復（RT）で照会すると、往復の運賃種別（RT）だけが候補になる",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "RT",
+          "depDate": "2026-04-11",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": [
+          {
+            "flightName": "NTT001",
+            "fareTypes": [
+              {
+                "vacantNum": 120,
+                "fareTypeName": "往復運賃",
+                "fareTypeCd": "RT",
+                "fare": "19,600"
+              }
+            ],
+            "depTime": "09:00",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:00",
+            "arrAirportName": "大阪(伊丹)"
+          },
+          {
+            "flightName": "NTT031",
+            "fareTypes": [
+              {
+                "vacantNum": 90,
+                "fareTypeName": "往復運賃",
+                "fareTypeCd": "RT",
+                "fare": "19,600"
+              }
+            ],
+            "depTime": "09:45",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:45",
+            "arrAirportName": "大阪(伊丹)"
+          }
+        ]
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-special",
+      "description": "搭乗クラス S（特別席。加算料金 5000）の片道は SOW・SRD",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-04-11",
+          "depAirportCd": "HND",
+          "boardingClassCd": "S",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": [
+          {
+            "flightName": "NTT001",
+            "fareTypes": [
+              {
+                "vacantNum": 10,
+                "fareTypeName": "特別片道運賃",
+                "fareTypeCd": "SOW",
+                "fare": "25,600"
+              },
+              {
+                "vacantNum": 8,
+                "fareTypeName": "特別予約割",
+                "fareTypeCd": "SRD",
+                "fare": "23,100"
+              }
+            ],
+            "depTime": "09:00",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "S",
+            "arrTime": "10:00",
+            "arrAirportName": "大阪(伊丹)"
+          }
+        ]
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-groupOrder",
+      "description": "NTT001 に OW の行が無いと、第 1 グループは OW を持つ NTT031 になり、NTT001 のグループは後ろに回る（単純な出発時刻順ではない）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-04-11",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": [
+          {
+            "flightName": "NTT031",
+            "fareTypes": [
+              {
+                "vacantNum": 100,
+                "fareTypeName": "片道運賃",
+                "fareTypeCd": "OW",
+                "fare": "20,600"
+              },
+              {
+                "vacantNum": 20,
+                "fareTypeName": "予約割1",
+                "fareTypeCd": "RD1",
+                "fare": "18,600"
+              }
+            ],
+            "depTime": "09:45",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:45",
+            "arrAirportName": "大阪(伊丹)"
+          },
+          {
+            "flightName": "NTT001",
+            "fareTypes": [
+              {
+                "vacantNum": 30,
+                "fareTypeName": "予約割1",
+                "fareTypeCd": "RD1",
+                "fare": "18,600"
+              }
+            ],
+            "depTime": "09:00",
+            "depDate": "2026/04/11",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "10:00",
+            "arrAirportName": "大阪(伊丹)"
+          }
+        ]
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-nextDayArrival",
+      "description": "翌日着の便 NTT523（HND→OKA、21:45 発・到着時刻 2415）。到着時刻は 24:15 と表示する（ADR ce36）",
+      "input": {
+        "today": "2026-11-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT523",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-11-21",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT013",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-11-21",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-11-21",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "OKA"
+        }
+      },
+      "expected": {
+        "ok": [
+          {
+            "flightName": "NTT013",
+            "fareTypes": [
+              {
+                "vacantNum": 0,
+                "fareTypeName": "片道運賃",
+                "fareTypeCd": "OW",
+                "fare": "37,400"
+              }
+            ],
+            "depTime": "09:00",
+            "depDate": "2026/11/21",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "11:30",
+            "arrAirportName": "沖縄"
+          },
+          {
+            "flightName": "NTT523",
+            "fareTypes": [
+              {
+                "vacantNum": 153,
+                "fareTypeName": "片道運賃",
+                "fareTypeCd": "OW",
+                "fare": "37,400"
+              }
+            ],
+            "depTime": "21:45",
+            "depDate": "2026/11/21",
+            "depAirportName": "東京(羽田)",
+            "boardingClassCd": "N",
+            "arrTime": "24:15",
+            "arrAirportName": "沖縄"
+          }
+        ]
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-outOfPeriod",
+      "description": "搭乗日が今日より前（e.ar.b1.2001）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-03-31",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b1.2001"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-beyondLimit",
+      "description": "搭乗日が照会可能期間の末日（今日 + 90 日）より後（e.ar.b1.2001）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-07-01",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "ITM"
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b1.2001"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-noRoute",
+      "description": "区間が無い（HND→NGO。e.ar.b1.2002）",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-04-11",
+          "depAirportCd": "HND",
+          "boardingClassCd": "N",
+          "arrAirportCd": "NGO"
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b1.2002"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "searchFlight-notFound",
+      "description": "候補が 0 件（e.ar.b1.2003）。区間・期間は正しいがフライトが無い",
+      "input": {
+        "today": "2026-04-01",
+        "flights": [
+          {
+            "vacantNum": 153,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 120,
+            "flightName": "NTT001",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 30,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT001",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 12,
+            "flightName": "NTT001",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 5,
+            "flightName": "NTT001",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 100,
+            "flightName": "NTT031",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 90,
+            "flightName": "NTT031",
+            "fareTypeCd": "RT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 20,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD1",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT031",
+            "fareTypeCd": "RD7",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 4,
+            "flightName": "NTT031",
+            "fareTypeCd": "ED",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 0,
+            "flightName": "NTT031",
+            "fareTypeCd": "LD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 3,
+            "flightName": "NTT031",
+            "fareTypeCd": "GD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "N"
+          },
+          {
+            "vacantNum": 10,
+            "flightName": "NTT001",
+            "fareTypeCd": "SOW",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 9,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRT",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 8,
+            "flightName": "NTT001",
+            "fareTypeCd": "SRD",
+            "departureDate": "2026-04-11",
+            "boardingClassCd": "S"
+          },
+          {
+            "vacantNum": 50,
+            "flightName": "NTT001",
+            "fareTypeCd": "OW",
+            "departureDate": "2026-04-12",
+            "boardingClassCd": "N"
+          }
+        ],
+        "criteria": {
+          "flightType": "OW",
+          "depDate": "2026-04-11",
+          "depAirportCd": "ITM",
+          "boardingClassCd": "N",
+          "arrAirportCd": "HND"
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "notFound",
+            "code": "e.ar.b1.2003"
+          }
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

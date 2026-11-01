@@ -36,6 +36,8 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 | `jTrim` | `String.trim()` | 前後の U+0000–U+0020 を除去 |
 | `jStrip` | `String.strip()` | 前後の Unicode 空白（`Character.isWhitespace`）を除去 |
 | `jSplitChar` | `String.split(regex)` | 正規表現として特別な意味を持たない 1 文字の区切りに限る。末尾の空要素を除く |
+| `jSubstring`, `jSubstringFrom` | `String.substring(b, e)`, `substring(b)` | 位置は UTF-16 符号単位。範囲外は `StringIndexOutOfBoundsException`。切り口が補助文字の中にある場合（結果が不対サロゲートを含む）は表さない |
+| `DecimalFormat.formatGrouped sep n` | `new DecimalFormat("###,###").format(n)` | 整数を 3 桁ごとに区切る。区切り文字は既定の書式ロケールによるので引数に取る（日本語・英語では `,`）。負の数は `-` を前に付ける |
 | `JLocalDate` | `java.time.LocalDate` | 先発グレゴリオ暦の暦日。`plusDays`, `isBefore`, `isAfter`, `ChronoUnit.YEARS.between`（満年数） |
 | `JRef` | 参照の `null` | 参照型は `Option` で表す。`JRef.deref` は `null` で `NullPointerException` |
 | `JHashMap`, `JLinkedHashMap` | `HashMap`, `LinkedHashMap` | `put` は同じキーの値を置き換える（後勝ち）。`get` は無ければ `null`。`HashMap` の反復の順序は与えない。`LinkedHashMap` は挿入順で、同じキーの `put` は位置を保つ |

@@ -14,6 +14,8 @@ generated:
 # 空席照会（B1）
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
+>
+> 照会可能期間・運賃種別の予約可能判定・`searchFlight` は Lean [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) に形式化した（正。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。以下のそれらの定義は、Lean の非規範の要約である。[Source] の写しは [`SourceModel.FlightSearch`](../../lean/SourceModel/FlightSearch.lean)・[`SourceModel.Repository.Flight`](../../lean/SourceModel/Repository/Flight.lean)。適合テストベクタは `conformance/shared/flight-search/`。機械とリファインメント（ABS-010・ABS-011）は [backlog 0be7](../backlog/0be7-flight-search-usecase.md) の第 2・3 段で置く。
 
 ## 照会可能期間
 
@@ -49,7 +51,8 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
              flights: [Flight]; master, config, today) : Except AtrsError [FlightVacantInfo]
 ```
 
-`flights` はフライトの全件（[ports.md](ports.md) の `FlightRepository.findAll` 相当。実装は絞り込みを永続化層に押し下げてよい）。
+`flights` はフライトの全件（[ports.md](ports.md) の `FlightRepository.findAll` 相当。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
+Lean では、MD-3 が破れて区間の空港名か搭乗クラスがマスタに無いとき（PRE の外）、結果を `none` とする。
 
 ### 事前条件
 
@@ -86,7 +89,7 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
 | `depAirportName` | 区間の出発空港の `name` |
 | `arrAirportName` | 区間の到着空港の `name` |
 | `depTime` | `fmtTime(departureTime)`（`HH:mm`） |
-| `arrTime` | `fmtTime(arrivalTime)` |
+| `arrTime` | `fmtArrTime(arrivalTime)`（翌日着は `24:15` のように 24 時以降で表す。[Source] の `toFormatTimeString` と同じ） |
 | `depDate` | `fmtDate(departureDate)`（`yyyy/MM/dd`） |
 | `boardingClassCd` | `boardingClassCd` |
 | `fareTypes` | 順序付き写像 `FareTypeCd ↦ { fareTypeName: String, fare: String, vacantNum: Nat }` |
