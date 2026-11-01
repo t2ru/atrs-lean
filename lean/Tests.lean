@@ -1,6 +1,7 @@
 import Tests.Conformance
 import Tests.ConformanceFare
 import Tests.ConformanceMaster
+import Tests.ConformanceFlightSearch
 import Tests.MasterSql
 import Tests.SpecChecks
 import Tests.JavaDouble

@@ -40,7 +40,9 @@ unsafe def conformanceTests : IO Unit := do
   for (dir, layer, ops) in [("spec/fare", "Spec", Tests.ConformanceFare.specOps), ("shared/fare", "Spec", Tests.ConformanceFare.specOps),
       ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps),
       ("shared/master-data", "Spec", Tests.ConformanceMaster.specOps),
-      ("shared/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps)] do
+      ("shared/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps),
+      ("shared/flight-search", "Spec", Tests.ConformanceFlightSearch.specOps),
+      ("shared/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps)] do
     report s!"{dir} ({layer})" (← ConformanceKit.Runner.runDirFx ops layer env.contains root (root / dir))
 
 /-- マスタの Mapper の文とコードリストの SQL の、PostgreSQL との差分実行（`conformance/sql/master-data.json`）。

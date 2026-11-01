@@ -23,10 +23,10 @@
         "source": ["0be7c5d4-01d9-43f4-a50d-227f174830f0"],
         "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
       },
-      "lean": ["FlightSearch"],
-      "tasks": ["ABS-011"],
+      "lean": ["FlightSearch", "Repository.Flight", "Repository.Schema.FlightRow", "Repository.Schema.FlightDb", "Repository.Mapping.flight"],
+      "tasks": ["ABS-010", "ABS-011"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{isAvailableFareType,getSearchLimitDate}*",
+        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{isAvailableFareType,getSearchLimitDate,validateDepatureDate}*",
         "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil*",
         "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil*",
         "java:jp.co.ntt.atrs.domain.model.FlightType*",

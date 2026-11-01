@@ -9,7 +9,7 @@ import LangSemantics.Java
 
 open LangSemantics.Java
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
-open LangSemantics.Java.DoubleOps
+open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 
 /-! ## BigDecimal -/
 
@@ -211,6 +211,71 @@ open LangSemantics.Java.DoubleOps
 #guard jSplitChar "/1" '/' == ["", "1"]
 #guard jSplitChar "12345" '/' == ["12345"]
 #guard jSplitChar "a//b" '/' == ["a", "", "b"]
+-- String.substring(begin, end)（例外は StringIndexOutOfBoundsException）
+#guard (jSubstring "0945" 0 2).toOption == some "09"
+#guard (jSubstring "0945" 2 4).toOption == some "45"
+#guard (jSubstring "0945" 0 0).toOption == some ""
+#guard (jSubstring "0945" 1 3).toOption == some "94"
+#guard (jSubstring "0945" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "0945" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "2415" 0 2).toOption == some "24"
+#guard (jSubstring "2415" 2 4).toOption == some "15"
+#guard (jSubstring "2415" 0 0).toOption == some ""
+#guard (jSubstring "2415" 1 3).toOption == some "41"
+#guard (jSubstring "2415" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "2415" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 0 2).toOption == some "ab"
+#guard (jSubstring "abc" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 0 0).toOption == some ""
+#guard (jSubstring "abc" 1 3).toOption == some "bc"
+#guard (jSubstring "abc" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 0 2).toOption == some "ab"
+#guard (jSubstring "ab" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 0 0).toOption == some ""
+#guard (jSubstring "ab" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 0 2) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 0 0).toOption == some ""
+#guard (jSubstring "" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "山田太郎" 0 2).toOption == some "山田"
+#guard (jSubstring "山田太郎" 2 4).toOption == some "太郎"
+#guard (jSubstring "山田太郎" 0 0).toOption == some ""
+#guard (jSubstring "山田太郎" 1 3).toOption == some "田太"
+#guard (jSubstring "山田太郎" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "山田太郎" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "a𠮷b" 0 0).toOption == some ""
+#guard (jSubstring "a𠮷b" 1 3).toOption == some "𠮷"
+#guard (jSubstring "a𠮷b" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "a𠮷b" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+-- String.substring(begin)
+#guard (jSubstringFrom "0945" 2).toOption == some "45"
+#guard (jSubstringFrom "2415" 2).toOption == some "15"
+#guard (jSubstringFrom "abc" 2).toOption == some "c"
+#guard (jSubstringFrom "ab" 2).toOption == some ""
+#guard (jSubstringFrom "山田太郎" 2).toOption == some "太郎"
+
+/-! ## DecimalFormat -/
+
+-- new DecimalFormat("###,###").format(n)（Locale.JAPAN。区切り文字 ','）
+#guard formatGrouped ',' 0 == "0"
+#guard formatGrouped ',' 1 == "1"
+#guard formatGrouped ',' 12 == "12"
+#guard formatGrouped ',' 123 == "123"
+#guard formatGrouped ',' 1234 == "1,234"
+#guard formatGrouped ',' 12345 == "12,345"
+#guard formatGrouped ',' 123456 == "123,456"
+#guard formatGrouped ',' 1234567 == "1,234,567"
+#guard formatGrouped ',' 20600 == "20,600"
+#guard formatGrouped ',' 18600 == "18,600"
+#guard formatGrouped ',' 2147483647 == "2,147,483,647"
+#guard formatGrouped ',' (-1) == "-1"
+#guard formatGrouped ',' (-1234) == "-1,234"
+#guard formatGrouped ',' (-2147483648) == "-2,147,483,648"
 
 /-! ## LocalDate -/
 

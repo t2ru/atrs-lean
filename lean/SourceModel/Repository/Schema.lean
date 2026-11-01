@@ -5,10 +5,10 @@ import LangSemantics.Sql.Postgresql
 /-!
 # SourceModel.Repository.Schema
 
-マスタの表の行（`atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql`）。
+マスタの表と FLIGHT の表の行（`atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql`）。
 列の型は、処理系が許す範囲を持つ型で写す（ADR c108）: `INT` は `Int4`、`DATE` は `PgDate`、
 `VARCHAR(n)` は `Varchar n`、NOT NULL の無い列は `Option`。
-主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3 が対応する）。
+主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3 と `World` の不変条件が対応する）。
 -/
 
 namespace SourceModel.Repository.Schema
@@ -101,6 +101,25 @@ structure CreditTypeRow where
   creditTypeCd : Varchar 3
   creditFirm : Varchar 80
   displayOrder : Int4
+  deriving DecidableEq, Repr
+
+/-- `FLIGHT`（フライト。予約で空席数が変わる。マスタでなく状態の表。ADR ce36）。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_FLIGHT@75e469d15a6da12e",
+  "ddl:00100_create_all_tables.sql#FK_FLIGHT_1@2d0e26c837cc8f79",
+  "ddl:00100_create_all_tables.sql#FK_FLIGHT_2@d395df3615466997",
+  "ddl:00100_create_all_tables.sql#FK_FLIGHT_3@d4327a6873ccf4c0",
+  "ddl:00100_create_all_tables.sql#FLIGHT@97fb492b5adfbec4"]
+structure FlightRow where
+  departureDate : PgDate
+  flightName : Varchar 6
+  boardingClassCd : Varchar 1
+  fareTypeCd : Varchar 4
+  vacantNum : Int4
+  deriving DecidableEq, Repr
+
+/-- 状態の表の内容（いまは FLIGHT だけ）。[Spec] の `World` に対応する（ADR ce36）。 -/
+structure FlightDb where
+  flight : LangSemantics.Sql.Query.Bag FlightRow := []
   deriving DecidableEq, Repr
 
 /-- マスタの表の内容（各表は行のバッグ）。 -/

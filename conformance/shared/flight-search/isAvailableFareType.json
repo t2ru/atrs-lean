@@ -1,0 +1,109 @@
+{
+  "operation": "flightSearch.isAvailableFareType",
+  "modelDef": [
+    "Spec.FlightSearch.isAvailableFareType",
+    "SourceModel.FlightSearch.isAvailableFareType"
+  ],
+  "specRef": "docs/spec/flight-search.md#運賃種別の予約可能判定",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "isAvailableFareType-ED-30",
+      "description": "早期割（30〜60 日前）: 30 日前",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "ED",
+        "depDate": "2026-05-01"
+      },
+      "expected": {
+        "ok": true
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-ED-29",
+      "description": "早期割: 29 日前は不可",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "ED",
+        "depDate": "2026-04-30"
+      },
+      "expected": {
+        "ok": false
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-ED-60",
+      "description": "早期割: 60 日前",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "ED",
+        "depDate": "2026-05-31"
+      },
+      "expected": {
+        "ok": true
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-ED-61",
+      "description": "早期割: 61 日前は不可",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "ED",
+        "depDate": "2026-06-01"
+      },
+      "expected": {
+        "ok": false
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-OW-0",
+      "description": "片道運賃（0〜90 日前）: 当日",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "OW",
+        "depDate": "2026-04-01"
+      },
+      "expected": {
+        "ok": true
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-RD1-0",
+      "description": "予約割1（1〜60 日前）: 当日は不可",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "RD1",
+        "depDate": "2026-04-01"
+      },
+      "expected": {
+        "ok": false
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "isAvailableFareType-RD7-7",
+      "description": "予約割7（7〜60 日前）: 7 日前",
+      "input": {
+        "today": "2026-04-01",
+        "fareTypeCd": "RD7",
+        "depDate": "2026-04-08"
+      },
+      "expected": {
+        "ok": true
+      },
+      "source": "lean-spec"
+    }
+  ]
+}
