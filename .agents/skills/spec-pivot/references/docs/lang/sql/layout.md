@@ -13,7 +13,7 @@ generated:
 
 ## 移植元として
 
-- Mapper（またはクエリファイル）の各文を、`SourceModel.Repository.<機能>` の 1 定義に写す。名前は文の id を lowerCamelCase にしたもの。
+- Mapper（またはクエリファイル）の各文を、Mapper のインタフェースのモジュール（原典のソースツリーの形。Java パックの [layout.md](../java/layout.md#移植元として原典を読む)）の 1 定義に写す。名前は文の id（`findAll` など）、resultMap は id を lowerCamelCase にしたもの（`route-map` → `routeMap`）。
 - 文の中にある業務ロジック（絞り込み条件・並び順・採番）は、`Spec` では純粋関数として取り出す。リポジトリのポートは「全件取得」「キー検索」などの単純な契約にする。こうすると、移植先は永続化技術を自由に選べる。
 - DDL は `SourceModel.Db.Schema` に、制約（主キー・一意・外部キー）とシーケンスを写す。
 

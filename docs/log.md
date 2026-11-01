@@ -2,6 +2,10 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR e41c](decision/e41c-source-model-mirrors-java-tree.md) と [backlog cb06](backlog/cb06-source-model-review-aids.md)（完了）で、`SourceModel` を原典と見比べやすくした。スキルの版を 0.19 にした（[スキルの ADR 1f75](../.agents/skills/spec-pivot/references/docs/decision/1f75-java-expression-syntax-and-spring-assert.md)・[ADR 8a3c](../.agents/skills/spec-pivot/references/docs/decision/8a3c-mirror-layout-check-and-review-view.md)）。
+  * `SourceModel` のモジュールを原典の Java のソースツリーと同じ形に並べた（改名の対応表 `tools/docs/lean-renames-mirror.json`）。`trace/features.json` の `lean`・`trace/checks.json` の `covers`・`trace/project.json` の `source.mirror` を改めた。
+  * 式を `java!`、検査を `Assert.*` で書いた。TR-M の指摘で、原典と名前が食い違っていた欄（`fareTypeMap`）と引数を直した。
+  * 改めた文書: [rules/atrs-porting.md](rules/atrs-porting.md)、[spec/fare-calculation.md](spec/fare-calculation.md)・[spec/flight-search.md](spec/flight-search.md)・[spec/conformance.md](spec/conformance.md)・[spec/traceability.md](spec/traceability.md)・[spec/abstraction.md](spec/abstraction.md) のリンクと名前。
 * **Creation**: [ADR fa26](decision/fa26-rename-skill-to-spec-pivot.md) で、スキルの名前を `port-lang` から `spec-pivot` に改めたのに合わせ、ATRS のパスと参照を張り直した。方法の名前は Spec Pivot とした（[スキルの ADR cfad](../.agents/skills/spec-pivot/references/docs/decision/cfad-name-the-method-spec-pivot.md)）。
   * 張り直した設定: `lakefile.lean`・`lake-manifest.json`（ルートと `lean/`）、`.github/workflows/lean.yml`、`tools/ci/`・`tools/conformance/`、`trace/project.json`・`trace/checks.json`・`trace/renames.json`。
   * 文書・コード・コメントの名前を改めた。この変更履歴の過去の項と、ADR f4e1 の本文は旧名のまま残す。ADR f4e1 の More Information に改名を記した。

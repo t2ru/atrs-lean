@@ -52,7 +52,7 @@ theorem boardingClassLoad_eq (rows : List BoardingClassResult) (k : BoardingClas
 theorem fareTypeLoad_eq (rows : List FareTypeResult) (k : FareTypeResult → Spec.Model.FareTypeCd)
     (hk : ∀ f ∈ rows, SourceModel.Domain.Model.FareTypeCd.valueOf f.fareTypeCd.val = .ok (k f)) :
     FareTypeProvider.load rows =
-      .ok { fareTypeCodeMap := JHashMap.ofList (rows.map fun f => (k f, fareTypeOf f (k f))) } := by
+      .ok { fareTypeMap := JHashMap.ofList (rows.map fun f => (k f, fareTypeOf f (k f))) } := by
   have hm := mapM_ok rows SourceModel.Domain.Repository.Faretype.FareTypeRepository.fareTypeMap (fun f => fareTypeOf f (k f)) fun f hf => by
     simp only [SourceModel.Domain.Repository.Faretype.FareTypeRepository.fareTypeMap, hk f hf]; rfl
   simp only [FareTypeProvider.load, hm, ok_bind]

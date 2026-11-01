@@ -141,7 +141,7 @@ theorem load_correct' {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mas
     ∃ p, load o = .ok p ∧ p.peakTime = PeakTimeProvider.load o.peakTime ∧
       (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
-      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeCodeMap.get cd)) =
+      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
         some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
       (∀ name : FlightName, hasText name.val = true → ∀ rt, Spec.Fare.routeOfFlightName md name = some rt →
         ∃ fm r b, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧

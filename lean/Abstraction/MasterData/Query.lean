@@ -110,7 +110,7 @@ theorem fareType_query {db : MasterDb} {fts : List FareType}
     (hm : db.fareType.mapM fareTypeOfRow = some fts) (hnd : (fts.map (·.fareTypeCd)).Nodup)
     {o : List FareTypeResult} (hp : o.Perm (FareTypeRepository.findAll db)) :
     ∃ ftp, FareTypeProvider.load o = .ok ftp ∧ ∀ cd : FareTypeCd,
-      answerOf? (.fareType (ftp.fareTypeCodeMap.get cd)) =
+      answerOf? (.fareType (ftp.fareTypeMap.get cd)) =
         some (.fareType ((fts.find? fun f => f.fareTypeCd == cd).map (·.info))) := by
   have hp' : o.Perm (db.fareType.map projFT) := hp
   have hk : ∀ f ∈ o, SourceModel.Domain.Model.FareTypeCd.valueOf f.fareTypeCd.val = .ok (keyFT f) := by

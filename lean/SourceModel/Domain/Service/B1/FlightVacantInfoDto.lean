@@ -53,9 +53,9 @@ namespace FlightVacantInfoDto
 /-- `addFareTypeVacantInfo(fareTypeCd, info)`: `fareTypes.put(fareTypeCd.getCode(), info)`（`null` なら NPE）。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#addFareTypeVacantInfo(FareTypeCd,FareTypeVacantInfoDto)@1c016d6655a35b9a"]
 def addFareTypeVacantInfo (v : FlightVacantInfoDto) (fareTypeCd : JRef Spec.Model.FareTypeCd)
-    (info : FareTypeVacantInfoDto) : JResult FlightVacantInfoDto := do
+    (fareTypeVacantInfo : FareTypeVacantInfoDto) : JResult FlightVacantInfoDto := do
   let cd ← fareTypeCd.deref "fareTypeCd"
-  return { v with fareTypes := v.fareTypes.put (SourceModel.Domain.Model.FareTypeCd.getCode cd) info }
+  return { v with fareTypes := v.fareTypes.put (SourceModel.Domain.Model.FareTypeCd.getCode cd) fareTypeVacantInfo }
 
 end FlightVacantInfoDto
 

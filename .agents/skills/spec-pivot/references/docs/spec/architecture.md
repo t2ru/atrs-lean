@@ -37,7 +37,7 @@ generated:
 | `TargetModel` | 移植先モデル | 移植先ソースの振る舞いを、移植先言語の意味論で写す | **[Target]** |
 | `Refinement` | 具体化証明課題 | `TargetModel` が `Spec` をリファインする定理 | `REF-NNN` |
 
-- 下位の名前空間は、層をまたいで同じ機能名を使う（`SourceModel.Fare` / `Spec.Fare` / `Abstraction.Fare` / `TargetModel.Fare` / `Refinement.Fare`）。
+- 下位の名前空間は、層をまたいで同じ機能名を使う（`Spec.Fare` / `Abstraction.Fare` / `TargetModel.Fare` / `Refinement.Fare`。`SourceModel` は原典のソースツリーの形に並べ、機能の具体機械を `SourceModel.<機能>` に置く。言語パックの `layout.md`）。
 - 宣言はモジュール名の下に置き、機能の証明課題は機能のモジュールに、補題は下位のモジュールに置く（[lean/rules.md](../lang/lean/rules.md#モジュールと名前空間)、[ADR 1a30](../decision/1a30-lean-module-namespace-layout.md)）。
 - 移植先言語が複数ある場合は、`TargetModel.<lang>` / `Refinement.<lang>` と言語で分ける。移植元が複数ある場合も同様に分ける。
 

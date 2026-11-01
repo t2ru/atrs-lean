@@ -13,8 +13,16 @@ generated:
 
 ## 移植元として（原典を読む）
 
-- 原典の層（Controller / Service / Repository / Util など）と、`SourceModel` の下位名前空間を、**業務機能単位** で対応づける。`SourceModel` はパッケージ構成を写す必要は無い。ロケータで原典の位置を指せばよい。
-- 1 つの `SourceModel` 定義が、複数のメソッドに対応してよい（`@[source]` に複数のロケータを並べる）。逆に、1 つのメソッドを複数の定義で分けて写してもよい。
+- `SourceModel` のモジュールは、原典のソースツリーと同じ形に並べる（[ADR 8a3c](../../decision/8a3c-mirror-layout-check-and-review-view.md)）。人が原典のファイルを開けば、同じパスにモデルの写しがある。
+  - 原典のクラス `<prefix>.<pkg>.<Class>` は、モジュール `SourceModel.<Pkg>.<Class>` に写す。`<prefix>` はプロジェクトの共通の接頭辞、`<Pkg>` はパッケージの各成分の先頭を大文字にしたもの（`case = upper-camel`。`same` ならそのまま）。
+    例: `jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl` → `lean/SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean`。
+  - クラスの型（注入された依存・`@Value` の値・欄）は、モジュールと同じ名前の構造体にする。メソッドは `<Class>.<method>`、定数は原典の綴り、コンストラクタは `<Class>.new`、private のメソッドも同じ名前で写す。
+  - 1 つのクラスのメソッドは、業務機能が違っても同じモジュールに置く。どの機能に属するかは `trace/features.json` の `lean` に、メソッドの粒度で書く。
+  - Mapper の XML の文と resultMap は、同じパッケージのリポジトリのモジュール（`…Repository`）に、文の id・resultMap の id の名前で写す。enum の `name()`・`valueOf` は enum のモジュールに置く。
+  - 原典のクラスに当たらないもの（具体機械、DB の状態、フレームワークの値、設定）は、ソースツリーの根（`roots`）の外に置く。
+  - 対応は `trace check` の TR-M が確かめる（設定は `trace/project.json` の `source.mirror`。[traceability.md](../../spec/traceability.md#検査)）。原典とモデルを並べた対照表は `trace review` が生成する。
+- 式・検査の語彙は原典と同じ字面で書く（[semantics.md](semantics.md#式の構文-java)・[原典の語彙とモデルの語彙](semantics.md#原典の語彙とモデルの語彙)）。
+- 1 つの `SourceModel` 定義が、複数のメソッドに対応してよい（`@[source]` に複数のロケータを並べる。インタフェースと実装クラスのメソッドなど）。逆に、1 つのメソッドを複数の定義で分けて写してもよい。
 - SQL（MyBatis の Mapper、JPA の JPQL）は SQL パックで写し、Java 側では呼び出しと結果の対応づけだけを写す。
 - 原典の `@Transactional` などの境界は、`SourceModel` のユースケースの境界として写す。
 

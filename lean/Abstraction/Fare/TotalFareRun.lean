@@ -27,7 +27,7 @@ open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
 /-- `toFlight` が作るフライト情報（読み込んだ Provider で引く）。 -/
 def mkFlight (p : Providers) (f : SelectFlightForm) : SourceModel.Domain.Model.Flight :=
   { departureDate := f.depDate, flightMaster := f.flightName.bind p.flightMaster.flightMasterMap.get,
-    fareType := f.fareTypeCd.bind p.fareType.fareTypeCodeMap.get,
+    fareType := f.fareTypeCd.bind p.fareType.fareTypeMap.get,
     boardingClass := f.boardingClassCd.bind p.boardingClass.boardingClassCodeMap.get }
 
 theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k) :
@@ -199,7 +199,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       obtain ⟨bcJ, e, hgetbc, hbccd, hex, heval⟩ := boardingClass_of_answer
         (r := p.boardingClass.boardingClassCodeMap.get k.boardingClassCd) (by rw [hbq, hbc]; rfl)
       obtain ⟨fJ, dJ, hgetft, hdr, hdval⟩ := fareType_of_answer
-        (r := p.fareType.fareTypeCodeMap.get k.fareTypeCd) (by rw [hfq, hft]; rfl)
+        (r := p.fareType.fareTypeMap.get k.fareTypeCd) (by rw [hfq, hft]; rfl)
       have hbcmem := boardingClassOf_mem hbc
       have hftmem := fareTypeOf_mem hft
       have hX : rt.basicFare + bc.extraCharge ≤ 10000000 :=
