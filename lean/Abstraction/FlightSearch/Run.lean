@@ -73,10 +73,7 @@ theorem repo_spec {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterD
         some ((w.flights.filterMap (candidateOf md c route bdn)).mergeSort candidateLe) ∧
       ∀ r ∈ sortRows (vacantSeatRows db fd (paramsOf c dep arr bdn)),
         ∃ X ∈ w.flights.filterMap (candidateOf md c route bdn), RowOk md r X := by
-  have hfl : fd.flight.mapM flightOfRow = some w.flights := by
-    simp only [worldOfDb, Option.map_eq_some_iff] at hw
-    obtain ⟨fs, hfs, rfl⟩ := hw
-    exact hfs
+  have hfl : fd.flight.mapM flightOfRow = some w.flights := worldOfDb_flights hw
   rw [vacantSeatRows_eq (fareTypeCodes_nodup hm hv.md1) (flightNames_nodup hm hv.md1) (routeKeys_nodup hm hv.md2)
     (dep := dep) (arr := arr) rfl rfl]
   obtain ⟨h1, h2⟩ := rows_cands hm hroute bdn hfl (c := c)

@@ -34,3 +34,4 @@ generated:
 | 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |
 | 7d3a | [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](7d3a-java-conformance-kit-and-http-origin-run-method.md) | accepted | 2026-11-01 |
 | 288a | [「オラクル」を「原典実行」（origin-run）と呼び替える](288a-rename-oracle-to-origin-run.md) | accepted | 2026-11-01 |
+| a303 | [同じ状態を共有する機能の合成子 Machine.alt、トランザクションの取消、LocalTime・List.get・StringUtils・TIMESTAMP の写し](a303-shared-state-machine-alt-and-transaction.md) | accepted | 2026-11-01 |

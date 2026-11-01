@@ -210,6 +210,42 @@ public class JavaTable {
         }
     }
 
+    static void localTime() {
+        line("");
+        line("/-! ## LocalTime（DateTimeFormatter.ofPattern(\"HHmm\")、SMART）と LocalDateTime -/");
+        line("");
+        java.time.format.DateTimeFormatter f = java.time.format.DateTimeFormatter.ofPattern("HHmm");
+        String[] ts = {"0000", "0900", "1000", "2359", "2400", "2401", "2415", "2460", "2500", "4815", "0060", "0959", "1260",
+            "900", "09000", "", "ab00", "09:0", "\uff10\uff19\uff10\uff10", "-100", "+100", " 900"};
+        for (String t : ts) {
+            String r;
+            try {
+                java.time.LocalTime lt = java.time.LocalTime.from(f.parse(t));
+                r = "some (" + lt.getHour() + ", " + lt.getMinute() + ")";
+            } catch (java.time.format.DateTimeParseException ex) { r = "none"; }
+            line("#guard ((JLocalTime.parseHHmm " + lit(t) + ").toOption.map fun t => (t.hour, t.minute)) == " + r);
+        }
+        line("-- atTime / plusMinutes / isBefore");
+        LocalDate[] ds = {LocalDate.of(2026, 4, 11), LocalDate.of(2026, 12, 31), LocalDate.of(2024, 2, 28), LocalDate.of(1969, 12, 31)};
+        int[][] hms = {{0, 0}, {10, 0}, {23, 59}, {22, 15}};
+        long[] mins = {0, 1, 120, 119, 1440, -1, -1441, 2880, 100000};
+        for (LocalDate d : ds) for (int[] hm : hms) for (long n : mins) {
+            java.time.LocalDateTime x = d.atTime(hm[0], hm[1]).plusMinutes(n);
+            String pre = "#guard " + ofYmd(d) + ".map (fun d => let r := (JLocalDateTime.atTime d ⟨" + hm[0] + ", " + hm[1] + "⟩).plusMinutes " + intLit(n);
+            line(pre + "; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (" + x.getYear() + ", " + x.getMonthValue()
+                + ", " + x.getDayOfMonth() + ", " + x.getHour() + ", " + x.getMinute() + ")");
+        }
+        java.time.LocalDateTime a = LocalDate.of(2026, 4, 11).atTime(12, 0);
+        java.time.LocalDateTime[] bs = {LocalDate.of(2026, 4, 11).atTime(11, 59), LocalDate.of(2026, 4, 11).atTime(12, 0),
+            LocalDate.of(2026, 4, 11).atTime(12, 1), LocalDate.of(2026, 4, 10).atTime(23, 59), LocalDate.of(2026, 4, 12).atStartOfDay()};
+        for (java.time.LocalDateTime b : bs) {
+            line("#guard (do let d ← " + ofYmd(a.toLocalDate()) + "; let e ← " + ofYmd(b.toLocalDate()) + "; pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨"
+                + b.getHour() + ", " + b.getMinute() + "⟩), (JLocalDateTime.atTime e ⟨" + b.getHour() + ", " + b.getMinute() + "⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some ("
+                + a.isBefore(b) + ", " + b.isBefore(a) + ")");
+        }
+        line("#guard (JLocalDate.ofYMD? 2026 4 12).map (fun d => JLocalDateTime.atStartOfDay d == JLocalDateTime.atTime d ⟨0, 0⟩) == some true");
+    }
+
     static void doubles() {
         line("");
         line("/-! ## double -/");
@@ -268,6 +304,7 @@ public class JavaTable {
         string();
         decimalFormat();
         localDate();
+        localTime();
         doubles();
         PrintStream ps = new PrintStream(System.out, true, StandardCharsets.UTF_8);
         ps.print(out);

@@ -67,7 +67,8 @@ def ticketHelper (p : Providers) : SourceModel.App.B0.TicketHelper :=
 
 /-- 読み込んだ Provider と設定を注入した `TicketReserveServiceImpl`。 -/
 def ticketReserveService (p : Providers) (c : AtrsConfig) : SourceModel.Domain.Service.B2.TicketReserveServiceImpl :=
-  { ticketSharedService := p.shared, adultPassengerMinAge := c.adultPassengerMinAge, childFareRate := c.childFareRate }
+  { ticketSharedService := p.shared, representativeMinAge := c.representativeMinAge,
+    adultPassengerMinAge := c.adultPassengerMinAge, childFareRate := c.childFareRate }
 
 /-- 起動時の読み込み、`toFlightList`、`calculateTotalFare`（並び `o` を選んだとき）。 -/
 def runTotalFare (ic : TotalFareInput) (o : Order) : JResult J32 := do

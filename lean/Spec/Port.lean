@@ -1,34 +1,50 @@
 import Spec.Model
 import Spec.MasterData
+import Spec.Prim.Format
 
 /-!
 # Spec.Port
 
-ポートと抽象状態 `World`（`docs/spec/ports.md`）。いまの成分はフライトだけで、会員・予約・採番・レポートは、
-それを使う機能の backlog で足す（ADR ce36）。マスタ・設定は `World` に含めず、不変の入力とする。
+ポートと抽象状態 `World`（`docs/spec/ports.md`）。成分はフライト・会員・予約・採番の状態で、レポートは
+それを使う機能の backlog（ac71）で足す（ADR ce36）。マスタ・設定は `World` に含めず、不変の入力とする。
 -/
 
 namespace Spec.Port
-open Spec.Model
+open Spec.Model Spec.Prim.Format
+
+/-- 採番の状態: 各 `IdGenerator` の操作が次に返す値（`docs/spec/ports.md#idgenerator`）。値の空間は上限を持たない。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator"]
+structure Sequences where
+  member : Nat := 1
+  reserve : Nat := 1
+  reserveFlight : Nat := 1
+  passenger : Nat := 1
+  deriving DecidableEq, Repr
 
 /-- 抽象状態。 -/
 @[spec_doc "docs/spec/ports.md#world抽象状態"]
 structure World where
   /-- フライトの集合（主キーで一意。列の順序は意味を持たない） -/
   flights : List Flight
+  /-- 会員の集合（会員番号で一意） -/
+  members : List Member := []
+  /-- 予約の集合（予約番号で一意。登録順） -/
+  reservations : List Reservation := []
+  /-- 採番の状態 -/
+  sequences : Sequences := {}
   deriving DecidableEq
 
 namespace World
 
-/-- `World` の不変条件: フライトは主キーで一意である。 -/
+/-- `World` の不変条件: フライトは主キーで一意である。会員・予約・採番の不変条件は、それを使う機械（backlog aedf の
+第 2 段）で足す。 -/
 @[spec_doc "docs/spec/ports.md#world抽象状態"]
 def Inv (w : World) : Prop := (w.flights.map (·.key)).Nodup
 
 instance (w : World) : Decidable w.Inv := by unfold Inv; infer_instance
 
 /-- フライトの参照整合性（DDL の FK_FLIGHT_1〜3）: 各フライトの便名・搭乗クラス・運賃種別がマスタにある。
-マスタは `World` に含めない入力なので、`World.Inv` でなく、マスタとの組の述語とする（MD-3 の残り。
-機械の PRE に入れるのは backlog 0be7 の第 2 段）。 -/
+マスタは `World` に含めない入力なので、`World.Inv` でなく、マスタとの組の述語とする（MD-3 の残り）。 -/
 @[spec_doc "docs/spec/master-data.md#不変条件spec"]
 def RefMaster (md : Spec.MasterData) (w : World) : Prop :=
   ∀ f ∈ w.flights, (∃ m ∈ md.flightMasters, m.flightName = f.key.flightName) ∧
@@ -38,9 +54,59 @@ def RefMaster (md : Spec.MasterData) (w : World) : Prop :=
 instance (md : Spec.MasterData) (w : World) : Decidable (w.RefMaster md) := by
   unfold RefMaster; infer_instance
 
+/-! ## FlightRepository -/
+
 /-- `FlightRepository.findAll`: 全フライト（絞り込み・整列は呼び出し側の純粋関数で行う）。 -/
 @[spec_doc "docs/spec/ports.md#flightrepository"]
 def findAll (w : World) : List Flight := w.flights
+
+/-- `FlightRepository.exists(key)`。 -/
+@[spec_doc "docs/spec/ports.md#flightrepository"]
+def existsFlight (w : World) (k : FlightKey) : Bool := w.flights.any (·.key == k)
+
+/-- `FlightRepository.findForUpdate(key)`。排他はモデルの外の要件で、各操作は原子的に実行される
+（`docs/spec/ports.md#トランザクション`）。 -/
+@[spec_doc "docs/spec/ports.md#flightrepository"]
+def findForUpdate (w : World) (k : FlightKey) : Option Flight := w.flights.find? (·.key == k)
+
+/-- `FlightRepository.updateVacantNum(key, n)`。 -/
+@[spec_doc "docs/spec/ports.md#flightrepository"]
+def updateVacantNum (w : World) (k : FlightKey) (n : Nat) : World :=
+  { w with flights := w.flights.map fun f => if f.key == k then { f with vacantNum := n } else f }
+
+/-! ## MemberRepository -/
+
+/-- `MemberRepository.find(membershipNumber)`。 -/
+@[spec_doc "docs/spec/ports.md#memberrepository"]
+def findMember (w : World) (n : MembershipNumber) : Option Member := w.members.find? (·.membershipNumber == n)
+
+/-! ## ReservationRepository -/
+
+/-- `ReservationRepository.insert(reservation)`: 予約・予約フライト・搭乗者を登録する。 -/
+@[spec_doc "docs/spec/ports.md#reservationrepository"]
+def insertReservation (w : World) (r : Reservation) : World := { w with reservations := w.reservations ++ [r] }
+
+/-! ## IdGenerator（参照実装: `n`, `n+1`, …） -/
+
+/-- 予約番号の書式: 10 桁ゼロ埋めの十進文字列。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator"]
+def reserveNoOf (n : Nat) : ReserveNo := ⟨padNat 10 n⟩
+
+/-- `IdGenerator.nextReserveNo()`。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator"]
+def nextReserveNo (w : World) : ReserveNo × World :=
+  (reserveNoOf w.sequences.reserve, { w with sequences := { w.sequences with reserve := w.sequences.reserve + 1 } })
+
+/-- `IdGenerator.nextReserveFlightNo()`。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator"]
+def nextReserveFlightNo (w : World) : Nat × World :=
+  (w.sequences.reserveFlight,
+    { w with sequences := { w.sequences with reserveFlight := w.sequences.reserveFlight + 1 } })
+
+/-- `IdGenerator.nextPassengerNo()`。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator"]
+def nextPassengerNo (w : World) : Nat × World :=
+  (w.sequences.passenger, { w with sequences := { w.sequences with passenger := w.sequences.passenger + 1 } })
 
 end World
 

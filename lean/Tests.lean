@@ -2,6 +2,7 @@ import Tests.Conformance
 import Tests.ConformanceFare
 import Tests.ConformanceMaster
 import Tests.ConformanceFlightSearch
+import Tests.ConformanceReservation
 import Tests.MasterSql
 import Tests.FlightSql
 import Tests.SpecChecks

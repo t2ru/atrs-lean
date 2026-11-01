@@ -47,6 +47,7 @@ import SourceModel.Domain.Service.B1.FareTypeVacantInfoDto
 import SourceModel.Domain.Service.B1.FlightVacantInfoDto
 import SourceModel.Domain.Service.B1.TicketSearchServiceImpl
 import SourceModel.FlightSearchQuery
+import SourceModel.ReserveQuery
 import SourceModel.Db.FlightSeed
 
 /-!

@@ -1,6 +1,10 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt` を決め（実装は適用先の段に合わせる）、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.22 にした。
+  * `LangSemantics.Sql.Transaction.run`（取消。戻す成分は呼び出し側が決める）、`LangSemantics.Sql.Postgresql.PgTimestamp`（`TIMESTAMP` の列）。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。
+  * `LangSemantics.Java.JLocalTime`・`JLocalDateTime`（`DateTimeFormatter.ofPattern("HHmm")` の SMART 解決、`LocalDateTime` の `atTime`・`atStartOfDay`・`plusMinutes`・`isBefore`。JVM の表に 22 の文字列と分の加算・比較の行を足した）、`LangSemantics.Java.JList.get`、`StringUtils.hasLength`・`hasText`。[lang/java/semantics.md](lang/java/semantics.md) を改めた。
+  * 来歴: 適用先 ATRS の ADR 4c45（予約の第 1 段）。
 * **Update**: [ADR 288a](decision/288a-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた。ベクタの `source` は `<移植元>-origin-run`。言語パック・方法の文書・既存の ADR と作業項目の本文・この変更履歴をそろえた（版 0.21 に含める）。来歴: 適用先 ATRS の ADR 18ca。
 * **Creation**: [ADR 7d3a](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) で、Java の原典実行の道具 `assets/java/conformance-kit/`（Maven）を置いた。スキルの版を 0.21 にした。
   * `Json`・`Op`・`Runner`（照合・期待値の採取・`--check`）、`Reflect`（注入）、`http.HttpCapture`（要求の送信と応答の採取・正規化）、`http.WebappServer`（web.xml のままの webapp を組み込み Tomcat で起動）。

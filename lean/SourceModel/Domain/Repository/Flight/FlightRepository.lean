@@ -5,6 +5,7 @@ import LangSemantics.Sql.Postgresql
 import LangSemantics.Sql.QueryLemmas
 import SourceModel.Db.MyBatis
 import SourceModel.Db.Schema
+import SourceModel.Db.Tx
 import SourceModel.Domain.Model.Airport
 import SourceModel.Domain.Model.BoardingClass
 import SourceModel.Domain.Model.BoardingClassCd
@@ -145,7 +146,7 @@ def flightPre (p : Params) (f : FlightRow) : Bool :=
 
 /-- 評価用: FLIGHT の行を `flightPre` で先に絞ってから同じ文を評価する（全件の直積を避ける。テストの差分実行に使う）。 -/
 def vacantSeatRowsOn (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeatRow :=
-  vacantSeatRows db ⟨fd.flight.filter (flightPre p)⟩ p
+  vacantSeatRows db { fd with flight := fd.flight.filter (flightPre p) } p
 
 /-- 条件の押し下げ: 先に絞っても、文の結果は変わらない。 -/
 theorem vacantSeatRows_eq_on (db : MasterDb) (fd : FlightDb) (p : Params) :
@@ -194,6 +195,81 @@ def flightMap (r : SourceModel.Domain.Repository.Flight.FlightRepository.FlightR
   return { departureDate := date r.departureDate, flightMaster := some { flightName := str r.flightName },
            boardingClass := some { boardingClassCd := some bc }, fareType := some { fareTypeCd := some ft },
            vacantNum := int r.vacantNum }
+
+/-! ## 予約が使う文（`exists`・`findOneForUpdate`・`update`。backlog aedf） -/
+
+/-- 主キーの束縛変数（`#{departureDate}`・`#{flightName}`・`#{boardingClass.boardingClassCd}`・`#{fareType.fareTypeCd}`）。
+`null` の参照をたどる式は `NULL`（MyBatis の `MetaObject`）。 -/
+structure KeyParams where
+  departureDate : SqlValue
+  flightName : SqlValue
+  boardingClass : SqlValue
+  fareType : SqlValue
+  deriving DecidableEq, Repr
+
+/-- 主キーの束縛（`exists`・`findOneForUpdate` の引数）。 -/
+@[source "dep:org.mybatis:mybatis#EnumTypeHandler@mybatis-3.5.19"]
+def bindKey (departureDate : JRef JLocalDate) (flightName : JRef String) (boardingClass : JRef BoardingClass)
+    (fareType : JRef FareType) : KeyParams where
+  departureDate := sqlOf (fun d => .date d.toEpochDay) departureDate
+  flightName := sqlOf .text flightName
+  boardingClass := sqlOf (fun b => .text (BoardingClassCd.name b)) (boardingClass.bind (·.boardingClassCd))
+  fareType := sqlOf (fun t => .text (FareTypeCd.name t)) (fareType.bind (·.fareTypeCd))
+
+/-- 主キーの条件 `departure_date = … AND flight_name = … AND boarding_class_cd = … AND fare_type_cd = …`。 -/
+def keyCond (p : KeyParams) (f : FlightRow) : Truth :=
+  (SqlValue.eq collationC f.departureDate.toSql p.departureDate).and
+  ((SqlValue.eq collationC f.flightName.toSql p.flightName).and
+  ((SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).and
+  (SqlValue.eq collationC f.fareTypeCd.toSql p.fareType)))
+
+/-- `SELECT EXISTS (SELECT * FROM flight WHERE <主キーの条件>)`。 -/
+@[source "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists@fe988ee9710d5e94"]
+def existsRows (fd : FlightDb) (p : KeyParams) : Bool := Bag.exists' (Bag.select (keyCond p) fd.flight)
+
+/-- `SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd FROM flight f
+WHERE <主キーの条件> FOR UPDATE`。行ロックは逐次の実行では観測されない（`SourceModel.Db.Tx`）。 -/
+@[source "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate@a0b73cb5abc18dbc"]
+def findOneForUpdateRows (fd : FlightDb) (p : KeyParams) : Bag FlightResult :=
+  Bag.project (fun f => ⟨f.departureDate, f.flightName, f.fareTypeCd, f.vacantNum, f.boardingClassCd⟩)
+    (Bag.select (keyCond p) fd.flight)
+
+/-- `UPDATE flight SET vacant_num = #{vacantNum} WHERE departure_date = #{departureDate} AND flight_name = #{flightMaster.flightName}
+AND boarding_class_cd = #{boardingClass.boardingClassCd} AND fare_type_cd = #{fareType.fareTypeCd}`。更新件数を返す。
+`vacant_num` は NOT NULL の `INT`。 -/
+@[source "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update@de19197b9e62d467"]
+def updateRows (fd : FlightDb) (p : KeyParams) (vacantNum : JRef J32) : SqlResult (Nat × FlightDb) := do
+  if (Bag.select (keyCond p) fd.flight).isEmpty then return (0, fd)
+  let v ← match vacantNum with
+    | some v => Int4.ofInt v.val
+    | none => throw (.notNullViolation "vacant_num")
+  let (rows, n) := updateWhere (keyCond p) (fun f => { f with vacantNum := v }) fd.flight
+  return (n, { fd with flight := rows })
+
+/-- `boolean exists(LocalDate departureDate, String flightName, BoardingClass boardingClass, FareType fareType)`。 -/
+@[source "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists(LocalDate,String,BoardingClass,FareType)@963eff23e19232bd"]
+def «exists» (departureDate : JRef JLocalDate) (flightName : JRef String) (boardingClass : JRef BoardingClass)
+    (fareType : JRef FareType) : SourceModel.Db.Tx.DbM Bool :=
+  SourceModel.Db.Tx.query fun fd => .ok (existsRows fd (bindKey departureDate flightName boardingClass fareType))
+
+/-- `Flight findOneForUpdate(LocalDate departureDate, String flightName, BoardingClass boardingClass, FareType fareType)`。
+`selectOne` なので、0 行なら `null`（主キーの条件なので 2 行以上にはならない）。 -/
+@[source "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate(LocalDate,String,BoardingClass,FareType)@852c2d72ff703d07"]
+def findOneForUpdate (departureDate : JRef JLocalDate) (flightName : JRef String) (boardingClass : JRef BoardingClass)
+    (fareType : JRef FareType) : SourceModel.Db.Tx.DbM (JRef Flight) := do
+  let rows ← SourceModel.Db.Tx.query fun fd =>
+    .ok (findOneForUpdateRows fd (bindKey departureDate flightName boardingClass fareType))
+  match rows with
+  | [] => pure none
+  | r :: _ => some <$> SourceModel.Db.Tx.lift (flightMap r)
+
+/-- `int update(Flight flight)`。 -/
+@[source "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update(Flight)@3a289afa23fe78a3"]
+def update (flight : JRef Flight) : SourceModel.Db.Tx.DbM J32 := do
+  let f ← SourceModel.Db.Tx.lift (flight.deref "flight")
+  let p := bindKey f.departureDate (f.flightMaster.bind (·.flightName)) f.boardingClass f.fareType
+  let n ← SourceModel.Db.Tx.sql fun fd => updateRows fd p f.vacantNum
+  pure (J32.ofInt n)
 
 end FlightRepository
 

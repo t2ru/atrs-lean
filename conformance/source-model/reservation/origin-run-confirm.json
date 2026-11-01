@@ -1,0 +1,553 @@
+{
+  "operation": "reservation.confirm",
+  "modelDef": "SourceModel.ReserveQuery.runConfirm",
+  "specRef": "docs/spec/reservation.md#予約確認reserveconfirm",
+  "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力の flights は、選択フライトのシードの FLIGHT の行（00250 を投入日 2026-11-01 で展開）。今日は投入日。区間 1 の代表便（シードにある便のうち便名の順で最初のもの。搭乗日 2026-11-11）の搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便の 2 日後）× 搭乗者の型のすべてと、ほかの区間（シードに便のあるもの）の代表便（搭乗日 2026-12-26）の搭乗クラス・運賃種別・搭乗者の型の巡回",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "differences": [
+    "D-001",
+    "D-002",
+    "D-012"
+  ],
+  "cases": [
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-F30",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 20600}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-M40-F8",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 33000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-F30-F29",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 41200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-F30-M31-F12",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 61800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-gap-F30-M5",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 33000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-six",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 90700}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-OW-rep17",
+      "description": "N・OW・NTT001-2026-11-11-N-OW・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 191}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-F30",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 18600}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-M40-F8",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 28900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-F30-F29",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 37200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-F30-M31-F12",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 55800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-gap-F30-M5",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 28900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-six",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 78400}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD1-rep17",
+      "description": "N・RD1・NTT001-2026-11-11-N-RD1・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 44}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-F30",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 16500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-M40-F8",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 24800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-F30-F29",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 33000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-F30-M31-F12",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 49500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-gap-F30-M5",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 24800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-six",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 66000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-RD7-rep17",
+      "description": "N・RD7・NTT001-2026-11-11-N-RD7・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-F30",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 14500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-M40-F8",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 20700}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-F30-F29",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 29000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-F30-M31-F12",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 43500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-gap-F30-M5",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 20700}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-six",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 53800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-ED-rep17",
+      "description": "N・ED・NTT001-2026-11-11-N-ED・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-F30",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 14500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-M40-F8",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2007", "args": []}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-F30-F29",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 29000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-F30-M31-F12",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2007", "args": []}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-gap-F30-M5",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2007", "args": []}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-six",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2007", "args": []}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-LD-rep17",
+      "description": "N・LD・NTT001-2026-11-11-N-LD・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-F30",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2010", "args": ["グループ割", "3"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-M40-F8",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2010", "args": ["グループ割", "3"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-F30-F29",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2010", "args": ["グループ割", "3"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-F30-M31-F12",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 43500}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-gap-F30-M5",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2010", "args": ["グループ割", "3"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-six",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 53800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-N-GD-rep17",
+      "description": "N・GD・NTT001-2026-11-11-N-GD・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-F30",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 25600}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-M40-F8",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 41000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-F30-F29",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 51200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-F30-M31-F12",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 76800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-gap-F30-M5",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 41000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-six",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 112700}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SOW-rep17",
+      "description": "S・SOW・NTT001-2026-11-11-S-SOW・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW", "vacantNum": 6}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SOW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-F30",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 23100}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-M40-F8",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 35900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-F30-F29",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 46200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-F30-M31-F12",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 69300}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-gap-F30-M5",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 35900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-six",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 97400}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-S-SRD-rep17",
+      "description": "S・SRD・NTT001-2026-11-11-S-SRD・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-F30",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 39200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-M40-F8",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 61900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-F30-F29",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 78400}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-F30-M31-F12",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 117600}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-gap-F30-M5",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 61900}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-six",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 169100}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-N-RT-rep17",
+      "description": "N・RT・NTT001-2026-11-11-NTT016-2026-11-13-N-RT・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 256}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT", "vacantNum": 46}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "N", "fareTypeCd": "RT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-F30",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 48800}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-M40-F8",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 77000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-F30-F29",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 97600}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-F30-M31-F12",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 146400}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-gap-F30-M5",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 77000}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-six",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 210300}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT001-2026-11-11-NTT016-2026-11-13-S-SRT-rep17",
+      "description": "S・SRT・NTT001-2026-11-11-NTT016-2026-11-13-S-SRT・代表者 17 歳（大人の女性 1 名）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 25}, {"departureDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT", "vacantNum": 15}], "selectFlights": [{"depDate": "2026-11-11", "flightName": "NTT001", "boardingClassCd": "S", "fareTypeCd": "SRT"}, {"depDate": "2026-11-13", "flightName": "NTT016", "boardingClassCd": "S", "fareTypeCd": "SRT"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 17, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 17, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2004", "args": ["18"]}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT006-2026-12-26-N-OW-F30",
+      "description": "N・OW・NTT006-2026-12-26-N-OW・大人の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT006", "boardingClassCd": "N", "fareTypeCd": "OW", "vacantNum": 482}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT006", "boardingClassCd": "N", "fareTypeCd": "OW"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 53100}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT013-2026-12-26-N-RD1-M40-F8",
+      "description": "N・RD1・NTT013-2026-12-26-N-RD1・大人の男性 1 名と小児の女性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT013", "boardingClassCd": "N", "fareTypeCd": "RD1", "vacantNum": 71}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT013", "boardingClassCd": "N", "fareTypeCd": "RD1"}], "form": {"repFamilyName": "デンデン", "repGivenName": "タロウ", "repAge": 40, "repGender": "M", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "タロウ", "age": 40, "gender": "M"}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 8, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 73400}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT016-2026-12-26-N-RD7-F30-F29",
+      "description": "N・RD7・NTT016-2026-12-26-N-RD7・大人の女性 2 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RD7", "vacantNum": 18}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT016", "boardingClassCd": "N", "fareTypeCd": "RD7"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 29, "gender": "F"}, {}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 46200}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT018-2026-12-26-N-ED-F30-M31-F12",
+      "description": "N・ED・NTT018-2026-12-26-N-ED・大人 3 名（12 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT018", "boardingClassCd": "N", "fareTypeCd": "ED", "vacantNum": 64}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT018", "boardingClassCd": "N", "fareTypeCd": "ED"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 31, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 12, "gender": "F"}, {}, {}, {}]}},
+      "expected": {"ok": {"totalFare": 110100}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT019-2026-12-26-N-LD-gap-F30-M5",
+      "description": "N・LD・NTT019-2026-12-26-N-LD・空の欄を挟む大人の女性 1 名と小児の男性 1 名",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT019", "boardingClassCd": "N", "fareTypeCd": "LD", "vacantNum": 2}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT019", "boardingClassCd": "N", "fareTypeCd": "LD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{}, {"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {}, {}]}},
+      "expected": {"ok": {"error": {"kind": "business", "code": "e.ar.b2.2007", "args": []}}},
+      "source": "java-origin-run"
+    },
+    {
+      "id": "confirm-NTT021-2026-12-26-N-GD-six",
+      "description": "N・GD・NTT021-2026-12-26-N-GD・6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）",
+      "input": {"today": "2026-11-01", "flights": [{"departureDate": "2026-12-26", "flightName": "NTT021", "boardingClassCd": "N", "fareTypeCd": "GD", "vacantNum": 0}], "selectFlights": [{"depDate": "2026-12-26", "flightName": "NTT021", "boardingClassCd": "N", "fareTypeCd": "GD"}], "form": {"repFamilyName": "デンデン", "repGivenName": "ハナコ", "repAge": 30, "repGender": "F", "repTel1": "03", "repTel2": "1234", "repTel3": "5678", "repMail": "hanako@example.com", "repMembershipNumber": null, "passengers": [{"familyName": "デンデン", "givenName": "ハナコ", "age": 30, "gender": "F"}, {"familyName": "デンデン", "givenName": "タロウ", "age": 30, "gender": "M"}, {"familyName": "デンデン", "givenName": "ジロウ", "age": 5, "gender": "M"}, {"familyName": "デンデン", "givenName": "サクラ", "age": 8, "gender": "F"}, {"familyName": "デンデン", "givenName": "サブロウ", "age": 11, "gender": "M"}, {"familyName": "デンデン", "givenName": "モモ", "age": 2, "gender": "F"}]}},
+      "expected": {"ok": {"totalFare": 138100}},
+      "source": "java-origin-run"
+    }
+  ]
+}

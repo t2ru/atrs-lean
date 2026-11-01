@@ -2,6 +2,17 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 4c45](decision/4c45-reservation-stage1-shared-state-and-source-model.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を 3 段に分け、第 1 段を行った（`doing`）。
+  * [Spec]: `Spec.Ticket`（選択フライトの解決と `validateFlightList`）、`Spec.UseCase.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）。`Spec.Port.World` に会員・予約・採番（`Sequences`）とポートの操作を、`Spec.Error.AtrsError` に `invalidRequest`・`system`・`conflict` を、`Spec.Model` に `PassengerRecord` を足した。
+  * [Source]: 原典のソースツリーの形で、`App.B2`（フォーム・`B2Mapper`・`TicketReserveHelper`）、`TicketSharedServiceImpl.validateFlightList`、`TicketReserveServiceImpl` の `validateReservation`・`registerReservation`（`findMember` は画面の初期値だけが使うので、HTTP の backlog a89e で写す）、`MemberRepository.findOne`・`ReservationRepository` の 3 つの insert・`FlightRepository` の `exists`・`findOneForUpdate`・`update`、モデルのクラスを写した。状態の表に会員・予約の表とシーケンスを足し、状態の表に対する計算 `SourceModel.Db.Tx`（Mapper の文・`@Transactional` の取消・Clock・実行環境）と、入口の計算 `SourceModel.ReserveQuery` を置いた。
+  * 共有ベクタ `conformance/shared/reservation/` の 47 件が `Spec` と `SourceModel` で通る（期待値は仕様の例と手計算）。[spec/conformance.md](spec/conformance.md) に操作を足した。
+  * Java の原典実行（`tools/origin-run`）に予約の操作を足した。47 件が原典と一致し、シードの範囲から予約確認の 76 件を採取した（`conformance/source-model/reservation/origin-run-confirm.json`）。原典の `TicketReserveServiceImpl` は Spring の `TransactionInterceptor` で包む。`trace/checks.json` の `java-origin-run` の範囲を広げた。[spec/assurance.md](spec/assurance.md) の移植元側の行と、暫定の限界（空席照会の α の定義域）を改めた。
+  * `trace/features.json` の Reserve・Member の `lean` を改め、`trace/upstream.json` に spring-tx・spring-jdbc・mybatis-spring・mapstruct を足した。
+  * 敵対的レビューの指摘と対応は ADR 4c45 に記した。
+  * 空席照会の α `worldOfDb` の定義域を、予約・会員の表とシーケンスが使われていない状態に限った（ABS-011 は通り続ける）。
+  * 登録簿: D-009 の範囲を INT の上限に広げた（確認待ち）。D-031 の R 課題を ABS-031・ABS-041・ABS-045 に直した（確認待ち）。D-014 に予約確定の Clock の読み出しを足した。
+  * スキルの側は [スキルの ADR a303](../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)（`Machine.alt` の方針、`LangSemantics.Sql.Transaction`、`PgTimestamp`、`JLocalTime`、`JList.get`、`StringUtils`）。スキルの版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+
 * **Update**: [ADR 18ca](decision/18ca-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた（DBMS の Oracle と紛れるため）。文書・既存の ADR と作業項目の本文・この変更履歴・ベクタの `source`（`java-origin-run`）・道具（`tools/origin-run/`・`tools/ci/java_origin_run.sh`・mise の `origin-run:*`・`trace/checks.json`）をそろえた。backlog f18c・773f のファイル名は残した。スキルの側は [スキルの ADR 288a](../.agents/skills/spec-pivot/references/docs/decision/288a-rename-oracle-to-origin-run.md)（スキルの版 0.21 に含める）。
 * **Creation**: [ADR 81da](decision/81da-java-origin-run-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java の原典実行）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
   * ドメイン層: 原典を複写してビルドし（`tools/origin-run/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/origin-run/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/origin-run-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-origin-run` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。

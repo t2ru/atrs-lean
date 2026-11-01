@@ -10,6 +10,8 @@ import Spec.Fare
 import Spec.Error
 import Spec.Port
 import Spec.FlightSearch
+import Spec.Ticket
+import Spec.UseCase.Reserve
 import Spec.Nondet
 import Spec.Seed
 import Spec.Seed.Flight

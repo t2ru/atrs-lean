@@ -10,7 +10,7 @@ import java.util.TimeZone;
  * ATRS の Java の原典実行の入口（backlog f18c）。tools/ci/java_origin_run.sh から呼ぶ。
  *
  * <pre>
- *   java … atrsoriginrun.Main &lt;repo&gt; domain [--write]   ドメイン層（運賃・空席照会）
+ *   java … atrsoriginrun.Main &lt;repo&gt; domain [--write]   ドメイン層（運賃・空席照会・予約）
  *   java … atrsoriginrun.Main &lt;repo&gt; http   [--write]   HTTP レベル（Spring を起動した原典）
  * </pre>
  *

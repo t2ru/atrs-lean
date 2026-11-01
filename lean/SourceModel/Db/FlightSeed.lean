@@ -570,6 +570,6 @@ def dayRows (d : PgDate) (vs : List (List Int4)) : List FlightRow :=
   (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨d, n, b, f, v⟩
 
 /-- シードの FLIGHT 表（`SELECT C_FLIGHT()` の後）。 -/
-def seedFlightDb : FlightDb := ⟨(days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i)⟩
+def seedFlightDb : FlightDb := { flight := (days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i) }
 
 end SourceModel.Db.FlightSeed
