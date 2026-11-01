@@ -56,7 +56,7 @@ generated:
   - `SourceModel.MasterData`: `BoardingClassProvider`・`PeakTimeProvider` のキャッシュと参照
   - `SourceModel.Fare`: `calculateBasicFare`・`calculateFare`・`ceilFare`・`calculateTotalFare`
   - `LangSemantics.Java.HashMap.JHashMap` を追加した。
-- 1430 円・30% の例: 定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Fare.calculateFare_1430_30`（1000）
+- 1430 円・30% の例: 定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare_1430_30`（1000）
 - ベクタ（`lake test` で実行）
   - `shared/fare/`（13 件）は、`Spec` と `SourceModel` の両方で実行する。
     - 内訳は `basicFare` 4 件・`fare` 5 件・`totalFare` 4 件。

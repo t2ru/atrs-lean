@@ -21,7 +21,7 @@ def envMQ (i : Config × Spec.MasterData × Spec.MasterQuery.Query) : Prop :=
 /-- 前提を満たす [Source] の入力: `Abstraction.Fare.TotalAlpha.dbTF` の DB（空港 2・区間 1・便 1）、上流の設定、設定の参照。 -/
 def icMQ : SrcInput :=
   { db := Abstraction.Fare.TotalAlpha.dbTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩,
-    config := SourceModel.Config.upstreamConfig, query := .config }
+    config := SourceModel.AtrsProperties.upstreamConfig, query := .config }
 
 theorem envMQ_icMQ : ∃ ia, aiMQ icMQ = some ia ∧ envMQ ia := by
   cases he : aiMQ icMQ with

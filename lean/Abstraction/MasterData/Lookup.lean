@@ -10,6 +10,4 @@ DB の行を写した列の並べ替えである。キーが重複しなけれ�
 namespace Abstraction.MasterData.Lookup
 open LangSemantics.Java.HashMap
 
-
-
 end Abstraction.MasterData.Lookup

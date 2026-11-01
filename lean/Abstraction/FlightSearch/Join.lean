@@ -12,8 +12,10 @@ ABS-011 の補題: 空席照会の文の結合（FLIGHT × FARE_TYPE × FLIGHT_M
 namespace Abstraction.FlightSearch.Join
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Abstraction.MasterData.Join
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
-  SourceModel.Repository.Flight
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository
+  SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
+  SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
+  SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig
 
 /-- 区間の行を引くキー（出発・到着の空港コード）。 -/
 def routeKey (r : RouteRow) : String × String := (r.depAirportCd.val, r.arrAirportCd.val)

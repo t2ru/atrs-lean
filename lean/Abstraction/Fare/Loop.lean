@@ -10,35 +10,42 @@ import Abstraction.Fare.BasicFareRun
 -/
 
 namespace Abstraction.Fare.Loop
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Query Spec.Model
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
+  Abstraction.MasterData.Lookup Abstraction.MasterData.Query Spec.Model
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+  LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java Spec Spec.Prim
 
 end Abstraction.Fare.Loop
 
 namespace Abstraction.Fare.Loop
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Query Spec.Model
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
+  Abstraction.MasterData.Lookup Abstraction.MasterData.Query Spec.Model
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+  LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec Spec.Prim SourceModel.MasterData
-open LangSemantics.Java.Spring
-  SourceModel.MasterQuery
+open LangSemantics.Java Spec Spec.Prim SourceModel.Domain.Common.Masterdata
+open LangSemantics.Java.Spring SourceModel.MasterQuery
 
 /-- 読み込んだ Provider での `calculateBasicFare`: D-001 の前提の下で、[Spec] の基本運賃 `X·C/100` を返す。 -/
-theorem calculateBasicFare_eq {db : SourceModel.Repository.Schema.MasterDb} {cfg : Config} {md : MasterData}
+theorem calculateBasicFare_eq {db : SourceModel.Db.Schema.MasterDb} {cfg : Config} {md : MasterData}
     (hm : masterDataOf db = some md) (hv : md.Valid cfg) {o : Order}
-    (hppt : o.peakTime.Perm (SourceModel.Repository.MasterData.peakTimeFindAll db)) {p : Providers}
-    (hpt : p.peakTime = PeakTimeProvider.load o.peakTime) {cd : BoardingClassCd} {bJ : SourceModel.Model.BoardingClass}
+    (hppt : o.peakTime.Perm (SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.findAll db)) {p : Providers}
+    (hpt : p.peakTime = PeakTimeProvider.load o.peakTime) {cd : BoardingClassCd} {bJ : SourceModel.Domain.Model.BoardingClass}
     (hget : p.boardingClass.boardingClassCodeMap.get cd = some bJ) {e : J32} (hex : bJ.extraCharge = some e)
     {ex : Nat} (heval : e.val = (ex : Int)) {rbJ : J32} {b : Nat} (hb : rbJ.val = (b : Int)) {dj : JLocalDate}
     {D : Spec.Prim.Date} (hD : dateOfJ dj = some D) (hX : b + ex ≤ 10000000)
     (hdev : (b + ex) * md.multiplicationRatioOn D % 100 ≠ 0 ∨ md.multiplicationRatioOn D ∉ unsafeBasicRatios) :
-    ∃ v, SourceModel.Fare.calculateBasicFare p.shared rbJ (some cd) (some dj) = .ok v ∧
+    ∃ v, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare p.shared rbJ (some cd) (some dj) = .ok v ∧
       v.val = (((b + ex) * md.multiplicationRatioOn D / 100 : Nat) : Int) := by
   obtain ⟨n, hn, hna⟩ := ratio_query hm hv.md4 hppt hD p.boardingClass
   simp only [answerOf?, Option.map_eq_some_iff, Spec.MasterQuery.Answer.ratio.injEq] at hna
@@ -53,22 +60,22 @@ theorem calculateBasicFare_eq {db : SourceModel.Repository.Schema.MasterDb} {cfg
   have hr : (b + ex) * c < 100 * 2 ^ 28 :=
     Nat.lt_of_le_of_lt (Nat.mul_le_mul hX hc1000) (by decide)
   refine ⟨jd2i (jdmul (jd ((b + ex : Nat) : Int)) (basicFactor c)), ?_, basicFare_src_eq' hc1000 (by omega) hr hdev⟩
-  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.Fare.calculateBasicFare, hshared]
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare, hshared]
   simp only [Assert.isTrue, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
-    getBoardingClass, LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, hget, JRef.deref, hex]
+    BoardingClassProvider.getBoardingClass, LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, hget, JRef.deref, hex]
   rw [hn]
   simp only [ok_bind, hadd, hc, basicFactor]
   rfl
 
 /-- `calculateFare` の値（引数が非負で割引率が 100 以下）。 -/
 theorem calculateFare_ok {bJ rJ : J32} {b r : Nat} (hb : bJ.val = (b : Int)) (hr : rJ.val = (r : Int)) (hr100 : r ≤ 100) :
-    SourceModel.Fare.calculateFare bJ rJ =
+    SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare bJ rJ =
       .ok (bdCeilHundredUp (jd2i (jdmul (jd (b : Int)) (fareFactor r)))) := by
   have e1 : Assert.isTrue (decide ((b : Int) ≥ 0)) "basicFare must be 0 or higher." = .ok () := by simp [Assert.isTrue]
   have e2 : Assert.isTrue (decide ((r : Int) ≥ 0)) "discountRate must be 0 or higher." = .ok () := by simp [Assert.isTrue]
   have e3 : Assert.isTrue (decide ((r : Int) ≤ 100)) "discountRate must be 100 or less." = .ok () := by
     simp [Assert.isTrue]; omega
-  simp only [SourceModel.Fare.calculateFare, hb, hr, e1, e2, e3, ok_bind, SourceModel.Fare.ceilFare, fareFactor]
+  simp only [SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare, hb, hr, e1, e2, e3, ok_bind, SourceModel.Domain.Common.Util.FareUtil.ceilFare, fareFactor]
   rfl
 
 end Abstraction.Fare.Loop

@@ -11,8 +11,8 @@ ABS-011（空席照会）の束 `Machine.Preserves`（`Abstraction.FlightSearch.
 -/
 
 namespace Abstraction.FlightSearch.Preserves
-open Machine Spec Spec.EnvPre Spec.FlightSearch Spec.Prim.Text Abstraction.FlightSearch.Alpha
-  Abstraction.FlightSearch.Witness
+open Machine Spec Spec.EnvPre Spec.FlightSearch
+  Spec.Prim.Text Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Witness
 
 /-- ABS-011 の環境の前提。 -/
 def envFS (i : Spec.FlightSearch.SearchInput) : Prop :=
@@ -33,16 +33,16 @@ def iaFSbad : Spec.FlightSearch.SearchInput :=
 
 /-- 選択の像の材料（基底の `searchStep`・標準の環境 `()`、`@[std_abs]` の `ceFS`）。自由な選択は `Unit`。 -/
 def chFS : Machine.Preserves.Choice Spec.Port.World Spec.FlightSearch.SearchInput Spec.FlightSearch.SearchOutput
-    SourceModel.FlightSearch.SearchInput :=
+    SourceModel.FlightSearchQuery.SearchInput :=
   ⟨Unit, Unit, Spec.Port.World × Spec.FlightSearch.SearchOutput, searchStep, ceFS, (), fun r => r⟩
 
 /-- 具体側の 1 歩は状態を変えない。 -/
-theorem step_state {t : SourceModel.Repository.Schema.FlightDb} {ic : SourceModel.FlightSearch.SearchInput}
-    {t' : SourceModel.Repository.Schema.FlightDb} {oc : SourceModel.FlightSearchQuery.SearchOutput} (h : SourceModel.FlightSearchQuery.searchConcrete.step t ic (.ok (t', oc))) :
+theorem step_state {t : SourceModel.Db.Schema.FlightDb} {ic : SourceModel.FlightSearchQuery.SearchInput}
+    {t' : SourceModel.Db.Schema.FlightDb} {oc : SourceModel.FlightSearchQuery.SearchOutput} (h : SourceModel.FlightSearchQuery.searchConcrete.step t ic (.ok (t', oc))) :
     t' = t := by
   obtain ⟨mo, sr, -, -, he⟩ := h
   revert he
-  cases SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearch.runSearchFlight t ic mo sr) with
+  cases SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearchQuery.runSearchFlight t ic mo sr) with
   | error e => intro he; cases he
   | ok o =>
     intro he

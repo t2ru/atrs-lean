@@ -3,7 +3,7 @@ import LangSemantics.Sql
 import LangSemantics.Sql.Postgresql
 
 /-!
-# SourceModel.Repository.Schema
+# SourceModel.Db.Schema
 
 マスタの表と FLIGHT の表の行（`atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql`）。
 列の型は、処理系が許す範囲を持つ型で写す（ADR c108）: `INT` は `Int4`、`DATE` は `PgDate`、
@@ -11,8 +11,8 @@ import LangSemantics.Sql.Postgresql
 主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3、`World.Inv`（主キー）・`World.RefMaster`（FK_FLIGHT）が対応する）。
 -/
 
-namespace SourceModel.Repository.Schema
-
+namespace SourceModel.Db.Schema
+open LangSemantics.Sql.Core LangSemantics.Sql.Query
 open LangSemantics.Sql.Postgresql
 
 /-- `AIRPORT`。 -/
@@ -136,4 +136,16 @@ structure MasterDb where
   creditType : LangSemantics.Sql.Query.Bag CreditTypeRow := []
   deriving DecidableEq, Repr
 
-end SourceModel.Repository.Schema
+/-- 文字列の列の等号（`a = b`。照合順序 C）。 -/
+def eqText {m n : Nat} (a : Varchar m) (b : Varchar n) : Truth := SqlValue.eq collationC a.toSql b.toSql
+
+/-- 整数の列の等号。 -/
+def eqInt (a b : Int4) : Truth := SqlValue.eq collationC a.toSql b.toSql
+
+/-- 整列の設定（PostgreSQL の既定。照合順序 C）。 -/
+def sortCfg : SortConfig := sortConfig
+
+/-- `ORDER BY display_order ASC` の整列キー。 -/
+def orderKey {α : Type} (displayOrder : α → Int4) (r : α) : List SqlValue := [(displayOrder r).toSql]
+
+end SourceModel.Db.Schema

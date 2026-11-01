@@ -76,7 +76,7 @@ import Abstraction.FlightSearch
 | モジュール | 内容 |
 | --- | --- |
 | `Abstraction.Prim.Date` | `LocalDate` の通算日数と [Spec] の暦日の一致 |
-| `Abstraction.MasterData.Join` | `routeFindAll`・`flightMasterFindAll` の形 |
+| `Abstraction.MasterData.Join` | `RouteRepository.findAll`・`FlightRepository.findAllFlightMaster` の形 |
 | `Abstraction.MasterData.Key` | `RouteProvider` のキャッシュのキーの単射性 |
 | `Abstraction.MasterData.Load` | Provider の `load()` の形（例外を投げない条件と、キャッシュの表） |
 | `Abstraction.MasterData.AlphaLeaf` | ABS-026 の標準の抽象化 α の値の葉（数・暦日・時刻・コード）と核 |
@@ -115,9 +115,11 @@ import Abstraction.FlightSearch
 
 namespace Abstraction
 
-open Machine Abstraction.MasterData Abstraction.Fare Abstraction.MasterData.Preserves Abstraction.Fare.Preserves
+open Machine Abstraction.MasterData Abstraction.Fare Abstraction.MasterData.Preserves
+  Abstraction.Fare.Preserves
 open Abstraction.FlightSearch Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Preserves
-open Abstraction.MasterData.Alpha Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha Abstraction.MasterData.QueryRun Machine.Sum
+open Abstraction.MasterData.Alpha Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha Abstraction.MasterData.QueryRun
+  Machine.Sum
 
 /-- 抽象側の前提型の差異（各 R 課題の `restrict` の述語を並置したもの）。 -/
 def dev : Spec.Input → Prop :=

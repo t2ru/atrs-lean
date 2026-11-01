@@ -1,5 +1,6 @@
 import SourceModel.MasterQuery
-import SourceModel.Ticket
+import SourceModel.App.B0.SelectFlightForm
+import SourceModel.App.B0.TicketHelper
 
 /-!
 # SourceModel.FareQuery
@@ -17,7 +18,8 @@ import SourceModel.Ticket
 namespace SourceModel.FareQuery
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open LangSemantics.Java SourceModel.Model SourceModel.Repository.Schema SourceModel.Config SourceModel.MasterQuery
+open LangSemantics.Java SourceModel.Domain.Model SourceModel.Db.Schema SourceModel.AtrsProperties
+  SourceModel.MasterQuery
 
 /-- 基本運賃の入力。 -/
 @[gap "D-027"]
@@ -32,7 +34,7 @@ structure BasicFareInput where
 /-- 起動時の読み込みと `calculateBasicFare`（並び `o` を選んだとき）。 -/
 def runBasicFare (ic : BasicFareInput) (o : Order) : JResult J32 := do
   let p ← load o
-  SourceModel.Fare.calculateBasicFare p.shared ic.basicFareOfRoute ic.boardingClassCd ic.depDate
+  SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare p.shared ic.basicFareOfRoute ic.boardingClassCd ic.depDate
 
 /-- 基本運賃の具体機械（状態を持たない）。1 歩は、許される並びのどれかで読み込んで計算する。 -/
 def basicFareConcrete : Machine.Concrete Unit BasicFareInput J32 JThrow where
@@ -48,30 +50,30 @@ structure FareInput where
 
 /-- 運賃の具体機械（状態を持たない）。 -/
 def fareConcrete : Machine.Concrete Unit FareInput J32 JThrow :=
-  Machine.Concrete.pure fun ic => SourceModel.Fare.calculateFare ic.basicFare ic.discountRate
+  Machine.Concrete.pure fun ic => SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare ic.basicFare ic.discountRate
 
 /-- 合計金額の入力。 -/
 @[gap "D-027"]
 structure TotalFareInput where
   db : MasterDb
   config : AtrsConfig
-  flights : List SourceModel.Ticket.SelectFlightForm
+  flights : List SourceModel.App.B0.SelectFlightForm
   passengers : List (JRef Passenger)
   deriving DecidableEq, Repr
 
 /-- 読み込んだ Provider を注入した `TicketHelper`。 -/
-def ticketHelper (p : Providers) : SourceModel.Ticket.TicketHelper :=
+def ticketHelper (p : Providers) : SourceModel.App.B0.TicketHelper :=
   { flightMasterProvider := p.flightMaster, fareTypeProvider := p.fareType, boardingClassProvider := p.boardingClass }
 
 /-- 読み込んだ Provider と設定を注入した `TicketReserveServiceImpl`。 -/
-def ticketReserveService (p : Providers) (c : AtrsConfig) : SourceModel.Fare.TicketReserveService :=
+def ticketReserveService (p : Providers) (c : AtrsConfig) : SourceModel.Domain.Service.B2.TicketReserveServiceImpl :=
   { ticketSharedService := p.shared, adultPassengerMinAge := c.adultPassengerMinAge, childFareRate := c.childFareRate }
 
 /-- 起動時の読み込み、`toFlightList`、`calculateTotalFare`（並び `o` を選んだとき）。 -/
 def runTotalFare (ic : TotalFareInput) (o : Order) : JResult J32 := do
   let p ← load o
-  let flights ← SourceModel.Ticket.toFlightList (ticketHelper p) ic.flights
-  SourceModel.Fare.calculateTotalFare (ticketReserveService p ic.config) (some flights) (some ic.passengers)
+  let flights ← SourceModel.App.B0.TicketHelper.toFlightList (ticketHelper p) ic.flights
+  SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare (ticketReserveService p ic.config) (some flights) (some ic.passengers)
 
 /-- 合計金額の具体機械（状態を持たない）。 -/
 def totalFareConcrete : Machine.Concrete Unit TotalFareInput J32 JThrow where

@@ -2,7 +2,7 @@
   "operation": "fare.totalFare",
   "modelDef": [
     "Spec.Fare.totalFare",
-    "SourceModel.Fare.calculateTotalFare"
+    "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare"
   ],
   "specRef": "docs/spec/fare-calculation.md#合計金額",
   "upstream": {

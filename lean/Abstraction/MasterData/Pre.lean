@@ -10,12 +10,13 @@ DB の行と [Source] の対応（MyBatis の対応・`Assert.hasText`）につ�
 -/
 
 namespace Abstraction.MasterData.Pre
-open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQuery Spec.Model Spec.Prim.Text
-open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQuery Spec.Model
+  Spec.Prim.Text
+open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+  LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql Spec LangSemantics.Core
-open LangSemantics.Java.Spring
-  SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
+open LangSemantics.Java.Spring SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.AtrsProperties
 
 /-! ## α の分解 -/
 
@@ -44,7 +45,6 @@ theorem masterDataOf_eq_some {db : MasterDb} {md : MasterData} :
     exact ⟨a, ha, r, hr, f, hf, b, hb, ft, hft, p, hp, pl, hpl, c, hc, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
 
 /-! ## 文字 -/
-
 
 /-- [Spec] の空白（`Blank`）は、Java の `Character.isWhitespace` と同じ文字の集合。 -/
 theorem isBlank_eq_isJavaWhitespace (c : Char) : isBlank c = isJavaWhitespace c := by
@@ -93,18 +93,18 @@ theorem AirportCd.no_dash_of_wellFormed {c : AirportCd} (h : c.WellFormed) : '-'
 
 /-! ## 値の対応 -/
 
-theorem natOfJ32_int {v : Int4} : (SourceModel.Repository.Mapping.int v).bind natOfJ32 = natOfInt4 v := by
+theorem natOfJ32_int {v : Int4} : (SourceModel.Db.MyBatis.int v).bind natOfJ32 = natOfInt4 v := by
   have h := J32.val_ofInt_of_inRange v.val ⟨by
     have := v.property.1; simp only [J32.minValue]; omega, by
     have := v.property.2; simp only [J32.maxValue]; omega⟩
-  simp only [SourceModel.Repository.Mapping.int, Option.bind_some, natOfJ32, natOfInt4, h]
+  simp only [SourceModel.Db.MyBatis.int, Option.bind_some, natOfJ32, natOfInt4, h]
 
 theorem bcCdOf_mapping {s : String} {c : BoardingClassCd} (h : bcCdOf s = some c) :
-    SourceModel.Repository.Mapping.boardingClassCd s = .ok c := by
+    SourceModel.Domain.Model.BoardingClassCd.valueOf s = .ok c := by
   rw [bcCdOf_eq_some h]; cases c <;> rfl
 
 theorem ftCdOf_mapping {s : String} {c : FareTypeCd} (h : ftCdOf s = some c) :
-    SourceModel.Repository.Mapping.fareTypeCd s = .ok c := by
+    SourceModel.Domain.Model.FareTypeCd.valueOf s = .ok c := by
   rw [ftCdOf_eq_some h]; cases c <;> rfl
 
 end Abstraction.MasterData.Pre

@@ -1,7 +1,9 @@
 import Abstraction.MasterData.Lookup
 import Abstraction.MasterData.Join
 import Abstraction.MasterData.Key
-import SourceModel.Fare
+import SourceModel.Domain.Service.B0.TicketSharedServiceImpl
+import SourceModel.Domain.Common.Util.FareUtil
+import SourceModel.Domain.Service.B2.TicketReserveServiceImpl
 import LangSemantics.Sql.QueryLemmas
 
 /-!
@@ -12,16 +14,24 @@ ABS-026 の問い合わせごとの一致。DB の表の写し（`mapM` の行�
 -/
 
 namespace Abstraction.MasterData.Query
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Spec.CodeList Spec.Model Spec.Prim.Text
-open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.ResultLemmas LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Machine.Kernel
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join
+  Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre
+  Spec.CodeList Spec.Model Spec.Prim.Text
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.HashMap
+  LangSemantics.Java.ResultLemmas LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Machine.Kernel
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
+  SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight
+  SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype
+  SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App
+  SourceModel.Config.App.AtrsCodeListConfig SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery
 
 /-! ## 搭乗クラス -/
 
-/-- `boardingClassFindAll` の射影。 -/
+/-- `BoardingClassRepository.findAll` の射影。 -/
 def projBC (b : BoardingClassRow) : BoardingClassResult := ⟨b.boardingClassCd, b.boardingClassName, b.extraCharge⟩
 
 /-- キャッシュのキー（コードが列挙型の値なら、その値）。 -/
@@ -46,12 +56,12 @@ theorem answer_boardingClassOf {r : BoardingClassRow} {x : BoardingClass} (h : b
 
 theorem boardingClass_query {db : MasterDb} {bcs : List BoardingClass}
     (hm : db.boardingClass.mapM boardingClassOfRow = some bcs) (hnd : (bcs.map (·.boardingClassCd)).Nodup)
-    {o : List BoardingClassResult} (hp : o.Perm (boardingClassFindAll db)) :
+    {o : List BoardingClassResult} (hp : o.Perm (BoardingClassRepository.findAll db)) :
     ∃ bcp, BoardingClassProvider.load o = .ok bcp ∧ ∀ cd : BoardingClassCd,
       answerOf? (.boardingClass (bcp.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((bcs.find? fun b => b.boardingClassCd == cd).map (·.info))) := by
   have hp' : o.Perm (db.boardingClass.map projBC) := hp
-  have hk : ∀ b ∈ o, SourceModel.Repository.Mapping.boardingClassCd b.boardingClassCd.val = .ok (keyBC b) := by
+  have hk : ∀ b ∈ o, SourceModel.Domain.Model.BoardingClassCd.valueOf b.boardingClassCd.val = .ok (keyBC b) := by
     intro b hb
     obtain ⟨r, hr, rfl⟩ := List.mem_map.mp (hp'.mem_iff.mp hb)
     obtain ⟨x, _, hx⟩ := mapM_some_mem hm hr
@@ -71,7 +81,7 @@ theorem boardingClass_query {db : MasterDb} {bcs : List BoardingClass}
 
 /-! ## 運賃種別 -/
 
-/-- `fareTypeFindAll` の射影。 -/
+/-- `FareTypeRepository.findAll` の射影。 -/
 def projFT (f : FareTypeRow) : FareTypeResult :=
   ⟨f.fareTypeCd, f.fareTypeName, f.discountRate, f.rsrvAvailableStartDayNum, f.rsrvAvailableEndDayNum,
     f.passengerMinNum⟩
@@ -93,17 +103,17 @@ theorem answer_fareTypeOf {r : FareTypeRow} {x : FareType} (h : fareTypeOfRow r 
     AnswerOf.fareType (fareTypeOf (projFT r) x.fareTypeCd) = some x.info := by
   simp only [fareTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨cd, _, dr, hdr, st, hst, en, hen, pm, hpm, d, _, rfl⟩ := h
-  simp only [AnswerOf.fareType, fareTypeOf, projFT, SourceModel.Repository.Mapping.str, natOfJ32_int, hdr, hst, hen,
+  simp only [AnswerOf.fareType, fareTypeOf, projFT, SourceModel.Db.MyBatis.str, natOfJ32_int, hdr, hst, hen,
     hpm, Option.bind_eq_bind, Option.bind_some, Option.pure_def, FareType.info]
 
 theorem fareType_query {db : MasterDb} {fts : List FareType}
     (hm : db.fareType.mapM fareTypeOfRow = some fts) (hnd : (fts.map (·.fareTypeCd)).Nodup)
-    {o : List FareTypeResult} (hp : o.Perm (fareTypeFindAll db)) :
+    {o : List FareTypeResult} (hp : o.Perm (FareTypeRepository.findAll db)) :
     ∃ ftp, FareTypeProvider.load o = .ok ftp ∧ ∀ cd : FareTypeCd,
       answerOf? (.fareType (ftp.fareTypeCodeMap.get cd)) =
         some (.fareType ((fts.find? fun f => f.fareTypeCd == cd).map (·.info))) := by
   have hp' : o.Perm (db.fareType.map projFT) := hp
-  have hk : ∀ f ∈ o, SourceModel.Repository.Mapping.fareTypeCd f.fareTypeCd.val = .ok (keyFT f) := by
+  have hk : ∀ f ∈ o, SourceModel.Domain.Model.FareTypeCd.valueOf f.fareTypeCd.val = .ok (keyFT f) := by
     intro f hf
     obtain ⟨r, hr, rfl⟩ := List.mem_map.mp (hp'.mem_iff.mp hf)
     obtain ⟨x, _, hx⟩ := mapM_some_mem hm hr
@@ -182,17 +192,17 @@ theorem route_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = 
 
 theorem answer_route {db : MasterDb} {r : RouteRow} {x : Route} (h : routeOfRow r = some x)
     (hd : AirportAt db (apOf db) r.depAirportCd.val) (ha : AirportAt db (apOf db) r.arrAirportCd.val) :
-    AnswerOf.route (SourceModel.Repository.Mapping.route
+    AnswerOf.route (SourceModel.Domain.Repository.Route.RouteRepository.routeMap
       (routeResultOf r (apOf db r.depAirportCd.val) (apOf db r.arrAirportCd.val))) = some x := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨no, hno, bf, hbf, rfl⟩ := h
-  simp only [AnswerOf.route, SourceModel.Repository.Mapping.route, routeResultOf, SourceModel.Repository.Mapping.str,
+  simp only [AnswerOf.route, SourceModel.Domain.Repository.Route.RouteRepository.routeMap, routeResultOf, SourceModel.Db.MyBatis.str,
     natOfJ32_int, hno, hbf, hd.2, ha.2, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (routeFindAll db)) :
+    (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (RouteRepository.findAll db)) :
     ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : AirportCd, hasText dep.val = true → hasText arr.val = true →
-      ∃ ans, getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
+      ∃ ans, RouteProvider.getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
       answerOf? (.route ans) = some (.route (md.routeOf dep arr)) := by
   obtain ⟨ha, hrt, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
@@ -201,14 +211,14 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
   rw [routeFindAll_eq hapnd hat] at hp
   refine ⟨_, routeLoad_eq o, fun dep arr hdep harr => ?_⟩
   refine ⟨(JHashMap.ofList (o.map fun r =>
-    (makeCacheKey r.depAirportCd.val r.aarAirportCd.val, SourceModel.Repository.Mapping.route r))).get
-      (makeCacheKey dep.val arr.val), ?_, ?_⟩
-  · simp only [getRouteByAirportCd, assertHasText_ok hdep, assertHasText_ok harr]
+    (RouteProvider.makeCacheKey r.depAirportCd.val r.aarAirportCd.val, SourceModel.Domain.Repository.Route.RouteRepository.routeMap r))).get
+      (RouteProvider.makeCacheKey dep.val arr.val), ?_, ?_⟩
+  · simp only [RouteProvider.getRouteByAirportCd, assertHasText_ok hdep, assertHasText_ok harr]
     rfl
-  let key : RouteResult → String := fun res => makeCacheKey res.depAirportCd.val res.aarAirportCd.val
+  let key : RouteResult → String := fun res => RouteProvider.makeCacheKey res.depAirportCd.val res.aarAirportCd.val
   let projR : RouteRow → RouteResult := fun r =>
     routeResultOf r (apOf db r.depAirportCd.val) (apOf db r.arrAirportCd.val)
-  have hkey : ∀ r ∈ db.route, key (projR r) = makeCacheKey r.depAirportCd.val r.arrAirportCd.val := by
+  have hkey : ∀ r ∈ db.route, key (projR r) = RouteProvider.makeCacheKey r.depAirportCd.val r.arrAirportCd.val := by
     intro r hr
     simp only [key, projR, routeResultOf, (hat r hr).1.2, (hat r hr).2.2]
   have hpairs : (db.route.map fun r => ((⟨r.depAirportCd.val⟩ : AirportCd), (⟨r.arrAirportCd.val⟩ : AirportCd))).Nodup := by
@@ -222,11 +232,11 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
       (AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hb).2.2.1) e
     have e1' : a.depAirportCd.val = b.depAirportCd.val := e1
     simp only [e1', e2]
-  show answerOf? (.route ((JHashMap.ofList (o.map fun b => (key b, SourceModel.Repository.Mapping.route b))).get
-    (makeCacheKey dep.val arr.val))) = _
+  show answerOf? (.route ((JHashMap.ofList (o.map fun b => (key b, SourceModel.Domain.Repository.Route.RouteRepository.routeMap b))).get
+    (RouteProvider.makeCacheKey dep.val arr.val))) = _
   rw [JHashMap.get_ofList_perm hp hnd]
   have hspec : md.routeOf dep arr =
-      (db.route.find? fun r => key (projR r) == makeCacheKey dep.val arr.val).bind routeOfRow := by
+      (db.route.find? fun r => key (projR r) == RouteProvider.makeCacheKey dep.val arr.val).bind routeOfRow := by
     unfold MasterData.routeOf
     rw [find?_mapM hrt (p := fun r => (⟨r.depAirportCd.val⟩ : AirportCd) == dep && (⟨r.arrAirportCd.val⟩ : AirportCd) == arr)
       fun _ _ h => by rw [(routeOfRow_codes h).1, (routeOfRow_codes h).2]]
@@ -244,7 +254,7 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
       exact ⟨by cases dep; simp only [AirportCd.mk.injEq] at *; exact e1,
         by cases arr; simp only [AirportCd.mk.injEq] at *; exact e2⟩
   rw [hspec]
-  cases hf : db.route.find? (fun r => key (projR r) == makeCacheKey dep.val arr.val) with
+  cases hf : db.route.find? (fun r => key (projR r) == RouteProvider.makeCacheKey dep.val arr.val) with
   | none => rfl
   | some r =>
     have hr := List.mem_of_find?_eq_some hf
@@ -302,20 +312,20 @@ theorem flightMaster_route {db : MasterDb} {md : MasterData} (hm : masterDataOf 
 
 theorem answer_flightMaster {db : MasterDb} {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x)
     (hrt : RouteAt db (rtOf db) f.routeNo.val) :
-    AnswerOf.flightMaster (SourceModel.Repository.Mapping.flightMasterRow (flightMasterResultOf f (rtOf db f.routeNo.val)
+    AnswerOf.flightMaster (SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap (flightMasterResultOf f (rtOf db f.routeNo.val)
       (apOf db (rtOf db f.routeNo.val).depAirportCd.val) (apOf db (rtOf db f.routeNo.val).arrAirportCd.val))) =
       some x := by
   have hno : (rtOf db f.routeNo.val).routeNo = f.routeNo := Subtype.ext hrt.2
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨no, hn, dt, hdt, ar, har, rfl⟩ := h
-  simp only [AnswerOf.flightMaster, SourceModel.Repository.Mapping.flightMasterRow, SourceModel.Repository.Mapping.route,
-    flightMasterResultOf, routeResultOf, SourceModel.Repository.Mapping.str, hno, natOfJ32_int, hn, hdt, har,
+  simp only [AnswerOf.flightMaster, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, SourceModel.Domain.Repository.Route.RouteRepository.routeMap,
+    flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hno, natOfJ32_int, hn, hdt, har,
     Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db)) :
+    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
-      ∃ ans, getFlightMaster fmp name.val = .ok ans ∧
+      ∃ ans, FlightMasterProvider.getFlightMaster fmp name.val = .ok ans ∧
       answerOf? (.flightMaster ans) = some (.flightMaster (md.flightMasterOf name)) := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
@@ -336,8 +346,8 @@ theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf 
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname => ?_⟩
   refine ⟨(JHashMap.ofList (o.map fun f =>
-    (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val, ?_, ?_⟩
-  · simp only [getFlightMaster, assertHasText_ok hname]; rfl
+    (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val, ?_, ?_⟩
+  · simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
@@ -362,17 +372,17 @@ theorem Date.le_iff_epochDay_le (a b : Date) : a ≤ b ↔ a.epochDay ≤ b.epoc
   show a.ordinal ≤ b.ordinal ↔ _
   unfold Date.epochDay; omega
 
-/-- `getPeakTime` の判定（`depLocalDate` が期間に両端を含めて入る）を、DB の行で書いたもの。 -/
+/-- `PeakTimeProvider.getPeakTime` の判定（`depLocalDate` が期間に両端を含めて入る）を、DB の行で書いたもの。 -/
 def peakPred (d : JLocalDate) (r : PeakTimeRow) : Bool :=
   !(d.isBefore (JLocalDate.ofEpochDay r.peakStartDate.val) || d.isAfter (JLocalDate.ofEpochDay r.peakEndDate.val))
 
 theorem getPeakTime_go (d : JLocalDate) : ∀ l : List PeakTimeRow,
-    getPeakTime.go d (l.map SourceModel.Repository.Mapping.peakTime) =
-      .ok ((l.find? (peakPred d)).map SourceModel.Repository.Mapping.peakTime)
+    PeakTimeProvider.getPeakTime.go d (l.map SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap) =
+      .ok ((l.find? (peakPred d)).map SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap)
   | [] => rfl
   | r :: l => by
-    simp only [List.map_cons, getPeakTime.go, SourceModel.Repository.Mapping.peakTime,
-      SourceModel.Repository.Mapping.date, JRef.deref, ok_bind, List.find?_cons]
+    simp only [List.map_cons, PeakTimeProvider.getPeakTime.go, SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap,
+      SourceModel.Db.MyBatis.date, JRef.deref, ok_bind, List.find?_cons]
     unfold peakPred
     cases (!(d.isBefore (JLocalDate.ofEpochDay r.peakStartDate.val) ||
       d.isAfter (JLocalDate.ofEpochDay r.peakEndDate.val)))
@@ -397,25 +407,25 @@ theorem peakPred_eq {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) {r : P
   omega
 
 theorem answer_peakTime {r : PeakTimeRow} {x : PeakTime} (h : peakTimeOfRow r = some x) :
-    AnswerOf.peakTime (SourceModel.Repository.Mapping.peakTime r) = some x := by
+    AnswerOf.peakTime (SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap r) = some x := by
   simp only [peakTimeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨s, hs, e, he, m, hmr, rfl⟩ := h
-  simp only [AnswerOf.peakTime, SourceModel.Repository.Mapping.peakTime, SourceModel.Repository.Mapping.str,
-    SourceModel.Repository.Mapping.date, Option.bind_some, dateOfJ_ofEpochDay, natOfJ32_int, hmr,
+  simp only [AnswerOf.peakTime, SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap, SourceModel.Db.MyBatis.str,
+    SourceModel.Db.MyBatis.date, Option.bind_some, dateOfJ_ofEpochDay, natOfJ32_int, hmr,
     Option.bind_eq_bind, Option.pure_def]
   simp only [dateOfPg] at hs he
   simp only [hs, he, Option.bind_some]
 
 /-- ピーク時期の参照は、Mapper の結果のどの並びでも、DB の行で `peakPred` を満たす行の写し（MD-4 で高々 1 つ）。 -/
 theorem getPeakTime_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
-    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
-    getPeakTime (PeakTimeProvider.load o) (some d) =
-      .ok ((db.peakTime.find? (peakPred d)).map SourceModel.Repository.Mapping.peakTime) ∧
+    {o : List PeakTimeRow} (hp : o.Perm (PeakTimeRepository.findAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
+    PeakTimeProvider.getPeakTime (PeakTimeProvider.load o) (some d) =
+      .ok ((db.peakTime.find? (peakPred d)).map SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap) ∧
     md.peakTimeOn D = (db.peakTime.find? (peakPred d)).bind peakTimeOfRow := by
   obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
   have hp' : o.Perm db.peakTime := hp
   constructor
-  · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, getPeakTime, PeakTimeProvider.load, pure_bind]
+  · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, PeakTimeProvider.getPeakTime, PeakTimeProvider.load, pure_bind]
     rw [getPeakTime_go, find?_perm hp']
     intro a ha b hb ea eb
     obtain ⟨x, hx, hxa⟩ := mapM_some_mem hpt (hp'.mem_iff.mp ha)
@@ -431,8 +441,8 @@ theorem getPeakTime_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
     exact find?_mapM hpt fun _ _ h => (peakPred_eq hd h).symm
 
 theorem peakTime_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
-    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
-    ∃ ans, getPeakTime (PeakTimeProvider.load o) (some d) = .ok ans ∧
+    {o : List PeakTimeRow} (hp : o.Perm (PeakTimeRepository.findAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D) :
+    ∃ ans, PeakTimeProvider.getPeakTime (PeakTimeProvider.load o) (some d) = .ok ans ∧
       answerOf? (.peakTime ans) = some (.peakTime (md.peakTimeOn D)) := by
   obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
   obtain ⟨e1, e2⟩ := getPeakTime_eq hm h4 hp hd
@@ -445,18 +455,18 @@ theorem peakTime_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
     simp only [Option.map_some, Option.bind_some, hx, answerOf?, AnswerOf.opt, answer_peakTime hx]
 
 theorem ratio_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h4 : md.MD4)
-    {o : List PeakTimeRow} (hp : o.Perm (peakTimeFindAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D)
+    {o : List PeakTimeRow} (hp : o.Perm (PeakTimeRepository.findAll db)) {d : JLocalDate} {D : Date} (hd : dateOfJ d = some D)
     (bcp : BoardingClassProvider) :
-    ∃ n, SourceModel.Fare.getMultiplicationRatio
+    ∃ n, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getMultiplicationRatio
         { boardingClassProvider := bcp, peakTimeProvider := PeakTimeProvider.load o } (some d) = .ok n ∧
       answerOf? (.ratio n) = some (.ratio (md.multiplicationRatioOn D)) := by
   obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
   obtain ⟨e1, e2⟩ := getPeakTime_eq hm h4 hp hd
-  simp only [SourceModel.Fare.getMultiplicationRatio, e1, ok_bind, MasterData.multiplicationRatioOn, e2]
+  simp only [SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getMultiplicationRatio, e1, ok_bind, MasterData.multiplicationRatioOn, e2]
   cases hf : db.peakTime.find? (peakPred d) with
   | none =>
     refine ⟨_, rfl, ?_⟩
-    simp only [Option.bind_none, answerOf?, SourceModel.Fare.multiplicationRatioInNormalTime]
+    simp only [Option.bind_none, answerOf?, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.MULTIPLICATION_RATIO_IN_NORMAL_TIME]
     rfl
   | some r =>
     obtain ⟨x, _, hx⟩ := mapM_some_mem hpt (List.mem_of_find?_eq_some hf)
@@ -474,7 +484,6 @@ theorem ratio_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
 /-- コードリストの要素の写し（`answerOf?` の `codeList`）。 -/
 def toEntry (e : String × String) : CodeEntry := ⟨e.1, e.2⟩
 
-
 /-- `ORDER BY display_order` の許される並びを行の葉で写すと、[Spec] の `mergeSort`（表示順が重複しないとき）。 -/
 theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f : ρ → LangSemantics.Sql.Postgresql.Int4}
     {a : ρ → Option ω} {ws : List ω} (hm : rows.mapM a = some ws) (dOrd : ω → Nat)
@@ -488,11 +497,10 @@ theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f 
   simp only [hw, Option.getD_some]
   exact hd r w hw
 
-
 theorem codeList_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h8 : md.MD8) {o : List AirportRow}
     (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o = true) :
-    (SourceModel.CodeList.airport o).map toEntry = CodeList.airport md := by
+    (SourceModel.Config.App.AtrsCodeListConfig.CL_AIRPORT o).map toEntry = CodeList.airport md := by
   obtain ⟨ha, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.airport := allowed_perm ho
   have hnd := airportCodes_nodup ha h1.1
@@ -524,7 +532,7 @@ theorem boardingClassOfRow_parts {r : BoardingClassRow} {w : BoardingClass} (h :
 theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List BoardingClassRow}
     (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
-    (SourceModel.CodeList.boardingClass o).map toEntry = CodeList.boardingClass md := by
+    (SourceModel.Config.App.AtrsCodeListConfig.CL_BOARDINGCLASS o).map toEntry = CodeList.boardingClass md := by
   obtain ⟨-, -, -, hb, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.boardingClass := allowed_perm ho
   let g : BoardingClassRow → BoardingClass := fun r => (boardingClassOfRow r).getD ⟨.N, "", 0, 0⟩
@@ -548,14 +556,14 @@ theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDat
     refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.1) fun a _ b _ e => ?_
     have := congrArg BoardingClassCd.ofCode? e
     simpa [Function.comp, BoardingClassCd.ofCode?_toCode] using this
-  unfold SourceModel.CodeList.boardingClass
+  unfold SourceModel.Config.App.AtrsCodeListConfig.CL_BOARDINGCLASS
   rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.boardingClass]
   rfl
 
 theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List FareTypeRow}
     (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
-    (SourceModel.CodeList.fareType o).map toEntry = CodeList.fareType md := by
+    (SourceModel.Config.App.AtrsCodeListConfig.CL_FARETYPE o).map toEntry = CodeList.fareType md := by
   obtain ⟨-, -, -, -, hf, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.fareType := allowed_perm ho
   let g : FareTypeRow → FareType := fun r => (fareTypeOfRow r).getD ⟨.OW, "", 0, 0, 0, 0, 0⟩
@@ -585,14 +593,14 @@ theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf d
     refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.2.1) fun a _ b _ e => ?_
     have := congrArg FareTypeCd.ofCode? e
     simpa [Function.comp, FareTypeCd.ofCode?_toCode] using this
-  unfold SourceModel.CodeList.fareType
+  unfold SourceModel.Config.App.AtrsCodeListConfig.CL_FARETYPE
   rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.fareType]
   rfl
 
 theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List CreditTypeRow}
     (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
-    (SourceModel.CodeList.creditType o).map toEntry = CodeList.creditType md := by
+    (SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE o).map toEntry = CodeList.creditType md := by
   obtain ⟨-, -, -, -, -, -, -, hc⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.creditType := allowed_perm ho
   let g : CreditTypeRow → CreditType := fun r => (creditTypeOfRow r).getD ⟨⟨""⟩, "", 0⟩
@@ -620,15 +628,15 @@ theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf
       (·.creditTypeCd)
     refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.2.2.2.2.1) fun a _ b _ e => ?_
     exact congrArg CreditTypeCd.mk e
-  unfold SourceModel.CodeList.creditType
+  unfold SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE
   rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.creditType]
   rfl
 
 theorem codeList_fixed :
-    SourceModel.CodeList.creditMonth.map toEntry = CodeList.creditMonth ∧
-    SourceModel.CodeList.creditYear.map toEntry = CodeList.creditYear ∧
-    SourceModel.CodeList.gender.map toEntry = CodeList.gender ∧
-    SourceModel.CodeList.flightType.map toEntry = CodeList.flightType := by
+    SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITMONTH.map toEntry = CodeList.creditMonth ∧
+    SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITYEAR.map toEntry = CodeList.creditYear ∧
+    SourceModel.Config.App.AtrsCodeListConfig.CL_GENDER.map toEntry = CodeList.gender ∧
+    SourceModel.Config.App.AtrsCodeListConfig.CL_FLIGHTTYPE.map toEntry = CodeList.flightType := by
   refine ⟨by decide, by decide, by decide, by decide⟩
 
 end Abstraction.MasterData.Query

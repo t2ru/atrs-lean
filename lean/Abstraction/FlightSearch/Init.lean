@@ -1,6 +1,6 @@
 import Abstraction.FlightSearch.Alpha
 import Spec.Seed.Flight
-import SourceModel.Repository.FlightSeed
+import SourceModel.Db.FlightSeed
 
 /-!
 # Abstraction.FlightSearch.Init
@@ -16,10 +16,10 @@ ABS-011 の補題: シードの FLIGHT 表（[Source] の初期状態 `seedFligh
 namespace Abstraction.FlightSearch.Init
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.FlightSearch.Alpha Spec.Model
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema Spec.Prim
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
 
 namespace FS
-open SourceModel.Repository.FlightSeed
+open SourceModel.Db.FlightSeed
 
 /-- 1 日分の行の、日付を除いた成分（便名・搭乗クラス・運賃種別・空席数）の列。 -/
 def cells (vs : List (List Int4)) : List (Varchar 6 × Varchar 1 × Varchar 4 × Int4) :=
@@ -54,25 +54,25 @@ def cellOf (c : Varchar 6 × Varchar 1 × Varchar 4 × Int4) : Option (FlightNam
   pure (⟨c.1.val⟩, bc, ft, v)
 
 theorem days_map :
-    SourceModel.Repository.FlightSeed.days.mapM dateOfPg = some Spec.Seed.Flight.days := by
+    SourceModel.Db.FlightSeed.days.mapM dateOfPg = some Spec.Seed.Flight.days := by
   decide +kernel
 
 theorem cells_map0 :
-    (FS.cells SourceModel.Repository.FlightSeed.vacant0).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant0) := by
+    (FS.cells SourceModel.Db.FlightSeed.vacant0).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant0) := by
   decide +kernel
 
 theorem cells_map1 :
-    (FS.cells SourceModel.Repository.FlightSeed.vacant1).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant1) := by
+    (FS.cells SourceModel.Db.FlightSeed.vacant1).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant1) := by
   decide +kernel
 
 theorem cells_map2 :
-    (FS.cells SourceModel.Repository.FlightSeed.vacant2).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant2) := by
+    (FS.cells SourceModel.Db.FlightSeed.vacant2).mapM cellOf = some (SF.cells Spec.Seed.Flight.vacant2) := by
   decide +kernel
 
 theorem cells_map (i : Nat) :
-    (FS.cells (SourceModel.Repository.FlightSeed.pattern i)).mapM cellOf =
+    (FS.cells (SourceModel.Db.FlightSeed.pattern i)).mapM cellOf =
       some (SF.cells (Spec.Seed.Flight.pattern i)) := by
-  unfold SourceModel.Repository.FlightSeed.pattern Spec.Seed.Flight.pattern
+  unfold SourceModel.Db.FlightSeed.pattern Spec.Seed.Flight.pattern
   split
   · exact cells_map0
   · split
@@ -98,8 +98,8 @@ theorem mapM_day {d : PgDate} {d' : Date} (hd : dateOfPg d = some d')
 
 /-- 日付の列と、日の番号ごとの 1 日分の写しから、全体の写し。 -/
 theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = some ds') (k : Nat) :
-    ((ds.zipIdx k).flatMap fun (d, i) => SourceModel.Repository.FlightSeed.dayRows d
-        (SourceModel.Repository.FlightSeed.pattern i)).mapM flightOfRow =
+    ((ds.zipIdx k).flatMap fun (d, i) => SourceModel.Db.FlightSeed.dayRows d
+        (SourceModel.Db.FlightSeed.pattern i)).mapM flightOfRow =
       some ((ds'.zipIdx k).flatMap fun (d, i) => Spec.Seed.Flight.dayFlights d (Spec.Seed.Flight.pattern i)) := by
   induction ds generalizing ds' k with
   | nil => simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; rfl
@@ -114,8 +114,8 @@ theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = s
 
 /-- 初期状態の対応: シードの FLIGHT 表は、シードの `World` に写る。 -/
 theorem worldOfDb_seed :
-    worldOfDb SourceModel.Repository.FlightSeed.seedFlightDb = some Spec.Seed.Flight.world := by
-  simp only [worldOfDb, SourceModel.Repository.FlightSeed.seedFlightDb, Spec.Seed.Flight.world,
+    worldOfDb SourceModel.Db.FlightSeed.seedFlightDb = some Spec.Seed.Flight.world := by
+  simp only [worldOfDb, SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.Flight.world,
     mapM_days days_map 0, Option.map_some]
 
 end Abstraction.FlightSearch.Init

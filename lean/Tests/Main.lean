@@ -25,7 +25,6 @@ def check (label : String) (ok : Bool) : IO Unit := do
     IO.eprintln s!"  FAIL {label}"
     failures.modify (· + 1)
 
-
 /-- 適合テストベクタを実行する。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。 -/
 unsafe def conformanceTests : IO Unit := do
   IO.println "conformance (Spec: spec/*, shared/*; SourceModel: source-model/*, shared/*)"
@@ -48,7 +47,7 @@ unsafe def conformanceTests : IO Unit := do
 /-- マスタの Mapper の文とコードリストの SQL の、PostgreSQL との差分実行（`conformance/sql/master-data.json`）。
 あわせて、共有入力の表と PostgreSQL に投入した表、共有入力の設定と上流の設定の一致を確かめる。 -/
 def masterSqlTests : IO Unit := do
-  IO.println "master SQL (PostgreSQL results vs SourceModel.Repository)"
+  IO.println "master SQL (PostgreSQL results vs SourceModel.Domain.Repository)"
   let doc ← match Json.parse (← IO.FS.readFile "../conformance/sql/master-data.json") with
     | .ok d => pure d
     | .error e => do check s!"master-data.json: {e}" false; return
@@ -64,12 +63,12 @@ def masterSqlTests : IO Unit := do
   let config ← match Json.parse (← IO.FS.readFile "../conformance/fixtures/config.json") with
     | .ok d => pure d
     | .error e => do check s!"fixtures/config.json: {e}" false; return
-  check "fixtures/config.json = SourceModel.Config.upstreamConfig"
-    ((Tests.ConformanceMaster.srcConfig config).toOption == some SourceModel.Config.upstreamConfig)
+  check "fixtures/config.json = SourceModel.AtrsProperties.upstreamConfig"
+    ((Tests.ConformanceMaster.srcConfig config).toOption == some SourceModel.AtrsProperties.upstreamConfig)
 
 /-- 空席照会の文の、PostgreSQL との差分実行（`conformance/sql/flight-search.json`）と、シードの FLIGHT 表の照合。 -/
 def flightSqlTests : IO Unit := do
-  IO.println "flight search SQL (PostgreSQL results vs SourceModel.Repository.Flight)"
+  IO.println "flight search SQL (PostgreSQL results vs SourceModel.Domain.Repository.Flight)"
   let master ← match Json.parse (← IO.FS.readFile "../conformance/sql/master-data.json") with
     | .ok d => pure d
     | .error e => do check s!"master-data.json: {e}" false; return

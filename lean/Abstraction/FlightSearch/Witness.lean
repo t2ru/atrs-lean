@@ -12,7 +12,9 @@ W 課題 ABS-132（D-032 の必要性）の証人: 区間の運賃 100,000 円�
 
 namespace Abstraction.FlightSearch.Witness
 open Abstraction.Fare.TotalAlpha Abstraction.FlightSearch.Alpha Abstraction.MasterData.Pre Spec.Model
-open SourceModel.FlightSearch SourceModel.FlightSearchQuery SourceModel.Repository.Schema Spec.Prim.Text
+open SourceModel.Domain.Common.Exception SourceModel.Domain.Service.B1 SourceModel.Domain.Common.Util SourceModel.Domain.Common.Util.FareTypeUtil
+  SourceModel.Domain.Common.Util.DateTimeUtil SourceModel.Domain.Service.B0 SourceModel.Domain.Service.B0.TicketSharedServiceImpl SourceModel.Domain.Service.B1.FlightVacantInfoDto
+  SourceModel.Domain.Service.B1.TicketSearchServiceImpl SourceModel.FlightSearchQuery SourceModel.Db.Schema Spec.Prim.Text
   LangSemantics.Core.List
 
 /-- 区切り文字が `.` の記号（ドイツ語など）。 -/
@@ -26,7 +28,7 @@ def fdFS : FlightDb := ⟨[⟨⟨0, by decide⟩, ⟨"NTT001", by decide⟩, ⟨
 
 /-- 配備の環境の書式の記号 `sym` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
 def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
-  { db := dbFS, config := SourceModel.Config.upstreamConfig, today := ⟨1970, 1, 1⟩,
+  { db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, today := ⟨1970, 1, 1⟩,
     sharedClock := (⟨1970, 1, 1⟩, ⟨1970, 1, 1⟩),
     criteria := some { flightType := some .OW, departureAirportCd := some "HND", arrivalAirportCd := some "ITM",
                        depDate := some ⟨1970, 1, 1⟩, boardingClassCd := some .N },
@@ -112,8 +114,8 @@ theorem run_icFS_dot :
         | some (.ok l) => l == [vDot]
         | _ => false
       | .error _ => false) = true := by
-    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
-      SourceModel.MasterData.getFlightMaster, assertHasText_eq]
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight, SourceModel.Domain.Common.Masterdata.RouteProvider.getRouteByAirportCd,
+      SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq]
     decide +kernel
   split at h
   · rename_i oc hoc
@@ -163,8 +165,8 @@ theorem run_icFS14 :
       Abstraction.FlightSearch.Order.mergeSortRows) with
       | .ok (.error (.notFound c)) => c == "e.ar.b1.2003"
       | _ => false) = true := by
-    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
-      SourceModel.MasterData.getFlightMaster, assertHasText_eq]
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight, SourceModel.Domain.Common.Masterdata.RouteProvider.getRouteByAirportCd,
+      SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq]
     decide +kernel
   split at h
   · rename_i c hc

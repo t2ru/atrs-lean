@@ -1,4 +1,6 @@
-import SourceModel.CodeList
+import SourceModel.Gfw.CodeList
+import SourceModel.Config.App.AtrsCodeListConfig
+import SourceModel.Domain.Common.Codelist.AirportCodeList
 import Spec.CodeList
 
 /-!
@@ -13,7 +15,8 @@ import Spec.CodeList
 namespace Abstraction.MasterData.CodeList
 open LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open LangSemantics.Java SourceModel.Repository.Schema SourceModel.CodeList
+open LangSemantics.Java SourceModel.Db.Schema SourceModel.Gfw.CodeList SourceModel.Config.App
+  SourceModel.Config.App.AtrsCodeListConfig SourceModel.Domain.Common.Codelist
 
 /-- 空港の行の、[Spec] の空港（コード・名前・表示順）。 -/
 def airportOf (r : AirportRow) : Spec.MasterData.Airport := ⟨⟨r.airportCd.val⟩, r.airportName.val, r.displayOrder.val.toNat⟩
@@ -30,8 +33,8 @@ def airportStep (acc : JLinkedHashMap String String × Bool) (r : AirportRow) : 
   (m.put r.airportCd.val r.airportName.val, nopInserted)
 
 theorem airport_eq_foldl (rows : List AirportRow) :
-    airport rows = (rows.foldl airportStep ({}, false)).1.entries := by
-  unfold airport airportCodeList
+    CL_AIRPORT rows = (rows.foldl airportStep ({}, false)).1.entries := by
+  unfold CL_AIRPORT AirportCodeList.afterPropertiesSet
   simp only [List.foldl_map]
   congr 3
   funext acc r
@@ -105,7 +108,7 @@ theorem foldl_airportStep_false (rows : List AirportRow) (m : JLinkedHashMap Str
 /-- `CL_AIRPORT`: 空港コードが一意で、`NOP` を使わなければ、原典の値は [Spec] の `insertNop` に一致する。 -/
 theorem airport_eq_insertNop (rows : List AirportRow) (hnd : (rows.map (·.airportCd.val)).Nodup)
     (hnop : ∀ r ∈ rows, r.airportCd.val ≠ Spec.MasterData.airportNopCode) :
-    airport rows = (Spec.CodeList.insertNop (rows.map airportOf)).map CodeEntry.toPair := by
+    CL_AIRPORT rows = (Spec.CodeList.insertNop (rows.map airportOf)).map CodeEntry.toPair := by
   rw [airport_eq_foldl, foldl_airportStep_false]
   · rfl
   · refine List.nodup_cons.mpr ⟨?_, hnd⟩

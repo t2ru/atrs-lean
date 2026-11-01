@@ -8,7 +8,7 @@ import Tests.ConformanceMaster
 
 マスタの Mapper の文とコードリストの SQL の差分実行（backlog 25f7、ADR c108）。
 `conformance/sql/master-data.json`（`tools/conformance/master_sql.py` が PostgreSQL で生成）の表の行から
-`SourceModel.Repository.MasterData` の各文を評価し、PostgreSQL の結果と照合する。
+マスタの Mapper の文（`SourceModel.Domain.Repository.*`）とコードリストの SQL（`SourceModel.Config.App.AtrsCodeListConfig`）を評価し、PostgreSQL の結果と照合する。
 
 - 順序の無い文: 結果がバッグとして等しい（値は文字列にして比べる）。
 - `ORDER BY` の文: PostgreSQL の結果の並びが、モデルの許される順列（`isAllowedOrder`）である。
@@ -16,8 +16,11 @@ import Tests.ConformanceMaster
   （共有入力の生成器 `master_fixture.py` と、PostgreSQL への投入の突き合わせ）。
 -/
 
-open Lean LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.MasterData
-  ConformanceKit Tests.Conformance
+open Lean LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Route
+  SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass
+  SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime
+  SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig ConformanceKit
+  Tests.Conformance
 
 open LangSemantics.Sql.Query ConformanceKit.SqlTable ConformanceKit.Runner
 
@@ -81,15 +84,15 @@ def routeRow (r : RouteResult) : Row :=
   [sI r.routeNo, sI r.basicFare, sV r.depAirportCd, sV r.depAirportName, sV r.aarAirportCd, sV r.aarAirportName]
 
 def evalStatement (db : MasterDb) : String → Option (List Row)
-  | "route.findAll" => some ((routeFindAll db).map routeRow)
-  | "flight.findAllFlightMaster" => some ((flightMasterFindAll db).map fun f =>
+  | "route.findAll" => some ((RouteRepository.findAll db).map routeRow)
+  | "flight.findAllFlightMaster" => some ((FlightRepository.findAllFlightMaster db).map fun f =>
       [sV f.flightName, sV f.departureTime, sV f.arrivalTime, sV f.craftType] ++ routeRow f.route)
-  | "boardingclass.findAll" => some ((boardingClassFindAll db).map fun b =>
+  | "boardingclass.findAll" => some ((BoardingClassRepository.findAll db).map fun b =>
       [sV b.boardingClassCd, b.boardingClassName.map (·.val), sI b.extraCharge])
-  | "faretype.findAll" => some ((fareTypeFindAll db).map fun f =>
+  | "faretype.findAll" => some ((FareTypeRepository.findAll db).map fun f =>
       [sV f.fareTypeCd, sV f.fareTypeName, sI f.discountRate, sI f.rsrvAvailableStartDayNum, sI f.rsrvAvailableEndDayNum,
        sI f.passengerMinNum])
-  | "peaktime.findAll" => some ((peakTimeFindAll db).map fun p =>
+  | "peaktime.findAll" => some ((PeakTimeRepository.findAll db).map fun p =>
       [sV p.peakTimeCd, sD p.peakStartDate, sD p.peakEndDate, sI p.multiplicationRatio])
   | _ => none
 

@@ -24,7 +24,7 @@ python3 -I "$scripts/docs/docmv.py" --self-test
 step "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
 python3 -I "$scripts/docs/okf_check.py"
 
-step "conformance: 共有入力（fixtures/master-data.json・config.json）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Repository.FlightSeed）が上流のシード・設定からの生成と一致する"
+step "conformance: 共有入力（fixtures/master-data.json・config.json）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check
 python3 -I tools/conformance/seed_lean.py --check
 python3 -I tools/conformance/flight_seed.py --check

@@ -16,12 +16,15 @@ import Tests.Conformance
 
 open Lean Spec ConformanceKit Tests.Conformance
 
-open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.HashMap
+  LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open Spec.CodeList Spec.Config Spec.Model Spec.Prim.Time
 
 namespace Tests.ConformanceFare
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
 
 def boardingClassCd (s : String) : Except String BoardingClassCd := need (BoardingClassCd.ofCode? s) s!"boarding class: {s}"
 def fareTypeCd (s : String) : Except String FareTypeCd := need (FareTypeCd.ofCode? s) s!"fare type: {s}"
@@ -95,7 +98,8 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
 
 /-! ## SourceModel -/
 
-open LangSemantics.Java SourceModel.Model SourceModel.Fare
+open LangSemantics.Java SourceModel.Domain.Model SourceModel.Domain.Service.B0 SourceModel.Domain.Service.B0.TicketSharedServiceImpl
+  SourceModel.Domain.Common.Util SourceModel.Domain.Common.Util.FareUtil SourceModel.Domain.Service.B2 SourceModel.Domain.Service.B2.TicketReserveServiceImpl
 
 def j32 (j : Json) (k : String) : Except String J32 := do return J32.ofInt (← getInt j k)
 
@@ -103,21 +107,21 @@ def jdate (s : String) : Except String JLocalDate := do
   let d ← decodeDate s
   need (JLocalDate.ofYMD? d.year d.month d.day) s!"date: {s}"
 
-def srcBoardingClass (b : Json) : Except String SourceModel.Model.BoardingClass := do
+def srcBoardingClass (b : Json) : Except String SourceModel.Domain.Model.BoardingClass := do
   return { boardingClassCd := some (← boardingClassCd (← getStr b "boardingClassCd")),
            boardingClassName := some (← getStr b "boardingClassName"), extraCharge := some (← j32 b "extraCharge") }
 
-def srcFareType (f : Json) : Except String SourceModel.Model.FareType := do
+def srcFareType (f : Json) : Except String SourceModel.Domain.Model.FareType := do
   return { fareTypeCd := some (← fareTypeCd (← getStr f "fareTypeCd")), fareTypeName := some (← getStr f "fareTypeName"),
            discountRate := some (← j32 f "discountRate"), rsrvAvailableStartDayNum := some (← j32 f "rsrvAvailableStartDayNum"),
            rsrvAvailableEndDayNum := some (← j32 f "rsrvAvailableEndDayNum"), passengerMinNum := some (← j32 f "passengerMinNum") }
 
-def srcPeakTime (p : Json) : Except String SourceModel.Model.PeakTime := do
+def srcPeakTime (p : Json) : Except String SourceModel.Domain.Model.PeakTime := do
   return { peakTimeCd := some (← getStr p "peakTimeCd"), peakStartDate := some (← jdate (← getStr p "peakStartDate")),
            peakEndDate := some (← jdate (← getStr p "peakEndDate")), multiplicationRatio := some (← j32 p "multiplicationRatio") }
 
-/-- 共有入力の行の順に作った `TicketSharedService`（Provider の `load()` の結果）。 -/
-def srcSharedService (master : Json) : Except String TicketSharedService := do
+/-- 共有入力の行の順に作った `TicketSharedServiceImpl`（Provider の `load()` の結果）。 -/
+def srcSharedService (master : Json) : Except String TicketSharedServiceImpl := do
   if master.isNull then return {}
   let bcs ← (← getArr master "boardingClasses").mapM fun b => do
     let bc ← srcBoardingClass b
@@ -129,11 +133,11 @@ def findRow (rows : List Json) (k v : String) : Except String Json :=
   need (rows.find? fun r => (getStr r k).toOption == some v) s!"{k} = {v} not found"
 
 /-- 入力のフライト（便名・搭乗日・搭乗クラス・運賃種別）から、Mapper が返す形の `Flight` を組み立てる。 -/
-def srcFlight (master : Json) (f : Json) : Except String SourceModel.Model.Flight := do
+def srcFlight (master : Json) (f : Json) : Except String SourceModel.Domain.Model.Flight := do
   let fm ← findRow (← getArr master "flightMasters") "flightName" (← getStr f "flightName")
   let routeNo ← getNat fm "routeNo"
   let route ← need ((← getArr master "routes").find? fun r => (getNat r "routeNo").toOption == some routeNo) s!"route {routeNo}"
-  let airport (cd : String) : Except String SourceModel.Model.Airport := do
+  let airport (cd : String) : Except String SourceModel.Domain.Model.Airport := do
     let a ← findRow (← getArr master "airports") "code" cd
     return { code := some cd, name := some (← getStr a "name") }
   let dep ← airport (← getStr route "depAirportCd")
@@ -156,7 +160,7 @@ def javaResult (r : JResult J32) : Except String Json :=
 def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let svc ← srcSharedService fx.master
   let cfg ← decodeConfig fx.config
-  let reserve : TicketReserveService :=
+  let reserve : TicketReserveServiceImpl :=
     { ticketSharedService := svc, adultPassengerMinAge := J32.ofInt cfg.adultPassengerMinAge,
       childFareRate := J32.ofInt cfg.childFareRate }
   return [
@@ -166,7 +170,7 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
     ("fare.fare", fun i => do javaResult (calculateFare (← j32 i "basicFare") (← j32 i "discountRate"))),
     ("fare.totalFare", fun i => do
       let flights ← (← getArr i "flights").mapM (srcFlight fx.master)
-      let passengers ← (← getArr i "passengers").mapM fun p => do return ({ age := some (← j32 p "age") } : SourceModel.Model.Passenger)
+      let passengers ← (← getArr i "passengers").mapM fun p => do return ({ age := some (← j32 p "age") } : SourceModel.Domain.Model.Passenger)
       javaResult (calculateTotalFare reserve (some (flights.map some)) (some (passengers.map some))))
   ]
 

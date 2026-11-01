@@ -12,7 +12,9 @@ ABS-001・ABS-002・ABS-004（運賃計算）の束 `Machine.Preserves`（`Abstr
 
 namespace Abstraction.Fare.Preserves
 
-open Machine Spec LangSemantics.Core Spec.EnvPre Spec.Model Spec.Prim.Text LangSemantics.Core.List LangSemantics.Java.IntLemmas LangSemantics.Java.Int Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha
+open Machine Spec LangSemantics.Core Spec.EnvPre
+  Spec.Model Spec.Prim.Text LangSemantics.Core.List LangSemantics.Java.IntLemmas
+  LangSemantics.Java.Int Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha
 open SourceModel.FareQuery
 
 /-- ABS-001 の環境の前提: マスタ・設定の妥当性、`routeBasicFare + extraCharge` の値域、D-001 の前提。 -/

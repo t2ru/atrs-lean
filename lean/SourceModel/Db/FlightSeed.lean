@@ -1,9 +1,9 @@
 import Trace
 import LangSemantics.Sql.Postgresql
-import SourceModel.Repository.Schema
+import SourceModel.Db.Schema
 
 /-!
-# SourceModel.Repository.FlightSeed
+# SourceModel.Db.FlightSeed
 
 シードの FLIGHT 表（[Source] の状態の初期値。backlog 0be7 の第 2 段）。`C_FLIGHT()` は、投入日 2026-11-01 から
 121 日の各日に、空席数のパターン `mod(i, 3)` の INSERT を順に実行する。行の順は INSERT の順（日・便・枠）である。
@@ -14,8 +14,8 @@ import SourceModel.Repository.Schema
 
 set_option maxRecDepth 8192
 
-namespace SourceModel.Repository.FlightSeed
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+namespace SourceModel.Db.FlightSeed
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema
 
 /-- 日付の列（`DATE` の通算日数。投入日から 121 日）。 -/
 @[source "seed:00250_insert_flight.sql#FLIGHT@ebc1effd92f8d4a3"]
@@ -572,4 +572,4 @@ def dayRows (d : PgDate) (vs : List (List Int4)) : List FlightRow :=
 /-- シードの FLIGHT 表（`SELECT C_FLIGHT()` の後）。 -/
 def seedFlightDb : FlightDb := ⟨(days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i)⟩
 
-end SourceModel.Repository.FlightSeed
+end SourceModel.Db.FlightSeed

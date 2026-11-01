@@ -79,7 +79,7 @@ generated:
 | 定理・定義 | 内容 |
 | --- | --- |
 | `Spec.Fare.totalFareOfKeys`・`totalFareMachine` | 合計金額をキーと年齢で書いた関数（`totalFare_eq`）と抽象機械、SPEC-001〜003・007 |
-| `SourceModel.Ticket.toFlightList`・`SourceModel.FareQuery.totalFareConcrete` | 選択フライト情報からのフライト情報の組み立てと、合計金額の具体機械 |
+| `SourceModel.App.B0.TicketHelper.toFlightList`・`SourceModel.FareQuery.totalFareConcrete` | 選択フライト情報からのフライト情報の組み立てと、合計金額の具体機械 |
 | `Abstraction.Fare.TotalAlpha.aiTF`・`dev_D001T`・`dev_D002T`・`dev_D012`・`dev_D027TF` | α と差異の述語 |
 | `Abstraction.Fare.Load.flightMaster_fare`・`load_correct'` | 便マスタのキャッシュの区間の運賃、読み込みの性質 |
 | `Abstraction.Fare.forIn_sum_eq`・`forIn_count_eq` | `for` 文の和・計数 |

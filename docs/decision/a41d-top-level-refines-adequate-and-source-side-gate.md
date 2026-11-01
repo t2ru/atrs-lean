@@ -60,7 +60,7 @@ Chosen option: "機能を並置したトップレベルの `Refines`・`Adequate
   - `Abstraction.adequate : Machine.Adequate (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env`
 - R 課題ごとの束 `queryAdequate`・`basicFareAdequate`・`fareAdequate`・`totalFareAdequate`（機能のモジュール `Abstraction.MasterData`・`Abstraction.Fare`。当初は `Abstraction.Adequacy`）に、R 課題と同じ課題 ID の `@[obligation]` を付ける。
   - 環境の前提 `envMQ`・`envBF`・`envF`・`envTF` は、`Spec.EnvPre.masterConfigOk` と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語とする。入口の機械ではないので `@[env_pre]` を付けない。
-  - `EnvWitness` の証人は、上流の設定 `SourceModel.Config.upstreamConfig` と小さな DB（`dbTF`・`db29` の変形）である。
+  - `EnvWitness` の証人は、上流の設定 `SourceModel.AtrsProperties.upstreamConfig` と小さな DB（`dbTF`・`db29` の変形）である。
   - あわせて、1 歩の可換式 `queryRefines_commutes`（旧 `queryCommutes`）などを示す。
 - `Refinement.lean` も同じ形とし、`TargetModel` ができた時点（[backlog eff6](../backlog/eff6-target-model-fare-and-refinement.md)）で主定理を置く。それまでは `sorry` や公理で置かない。
 
@@ -84,8 +84,8 @@ Chosen option: "機能を並置したトップレベルの `Refines`・`Adequate
 - 対象外: `commons-logging.properties`（[ADR 84bf](84bf-porting-scope.md#decision-outcome) のログ）
 - `@[source]` を付けた項目
   - ドメインモデルのアクセサ・`toString`・`serialVersionUID` は、そのクラスを写した `SourceModel.Model` の構造体に付ける。構造体のフィールドは、クラスのフィールドとアクセサの組を写す。`toString`・`serialVersionUID` は観測されない（応答に現れない）ので、構造体が覆うとみなす。
-  - 列挙 `BoardingClassCd`・`FareTypeCd` の定数と `getCode` は、`Enum.valueOf` を写した `SourceModel.Repository.Mapping.boardingClassCd`・`fareTypeCd` に付ける。
-  - DDL の制約（主キー・一意・外部キー・索引）は、表の行の構造体（`SourceModel.Repository.Schema`）に付ける。制約の効果（DB の状態が満たすこと）は、[Spec] の不変条件 MD-1〜MD-3 と既知差異 D-027 の前提で扱う。照合は PostgreSQL での差分実行（`pg-master-sql`）が DDL を実行して行う。
+  - 列挙 `BoardingClassCd`・`FareTypeCd` の定数と `getCode` は、`Enum.valueOf` を写した `SourceModel.Domain.Model.BoardingClassCd.valueOf`・`fareTypeCd` に付ける。
+  - DDL の制約（主キー・一意・外部キー・索引）は、表の行の構造体（`SourceModel.Db.Schema`）に付ける。制約の効果（DB の状態が満たすこと）は、[Spec] の不変条件 MD-1〜MD-3 と既知差異 D-027 の前提で扱う。照合は PostgreSQL での差分実行（`pg-master-sql`）が DDL を実行して行う。
   - シードのマスタの文は、生成器 `tools/conformance/seed_lean.py` が `Spec.Seed` の各表に付ける。シードから [Spec] の値への変換は、この生成器の決定論的な変換である。`trace/checks.json` に検査 `seed-lean` を足した。
   - 設定・MyBatis の Bean: `propertySourcesPlaceholderConfigurer` は `upstreamConfig`、`jdbcTemplateForCodeList` は `jdbcCodeList`、`AirportCodeList` の setter・`afterPropertiesSet` は `airportCodeList`、`MybatisConfig#configuration`・`sqlSessionFactory` は `Mapping.route`（列名とプロパティの対応）、`FareUtil.CEIL_FARE_SCALE` は `ceilFare`、`MULTIPLICATION_RATIO_IN_NORMAL_TIME` は `calculateBasicFare` に付ける。
 

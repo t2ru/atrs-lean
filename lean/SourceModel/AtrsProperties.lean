@@ -2,7 +2,7 @@ import LangSemantics.Java
 import Spec.Model
 
 /-!
-# SourceModel.Config
+# SourceModel.AtrsProperties
 
 `atrs.properties`（`META-INF/spring/atrs.properties`）の値のうち、`@Value` でサービス・ヘルパーに注入されるもの。
 フィールドの型は注入先の Java の型である（`int` は `J32`、enum は `Spec.Model` の型、ほかは `String`）。
@@ -10,7 +10,7 @@ import Spec.Model
 モデルは変換後の値を入力として受ける（変換できない値と、[Spec] の型で表せない値は、既知差異 D-027 の前提の外）。
 -/
 
-namespace SourceModel.Config
+namespace SourceModel.AtrsProperties
 open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java
@@ -64,4 +64,4 @@ def upstreamConfig : AtrsConfig where
   defaultArrAirportCd := "HND"
   defaultBoardingClassCd := .N
 
-end SourceModel.Config
+end SourceModel.AtrsProperties
