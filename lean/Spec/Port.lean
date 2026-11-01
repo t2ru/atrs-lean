@@ -54,6 +54,15 @@ def RefMaster (md : Spec.MasterData) (w : World) : Prop :=
 instance (md : Spec.MasterData) (w : World) : Decidable (w.RefMaster md) := by
   unfold RefMaster; infer_instance
 
+/-- 会員の参照整合性（DDL の FK_MEMBER_1）: 各会員のカード種別がマスタにある。`World.RefMaster` と同じく、マスタとの組の
+述語とする。予約の PRE に含める（会員の取得は、原典ではカード種別の表と結合する。backlog aedf の第 3 段）。 -/
+@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+def MemberRefMaster (md : Spec.MasterData) (w : World) : Prop :=
+  ∀ m ∈ w.members, ∃ c ∈ md.creditTypes, c.creditTypeCd = m.creditTypeCd
+
+instance (md : Spec.MasterData) (w : World) : Decidable (w.MemberRefMaster md) := by
+  unfold MemberRefMaster; infer_instance
+
 /-! ## FlightRepository -/
 
 /-- `FlightRepository.findAll`: 全フライト（絞り込み・整列は呼び出し側の純粋関数で行う）。 -/

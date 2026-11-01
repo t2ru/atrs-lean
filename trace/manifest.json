@@ -2121,6 +2121,110 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Alpha.aiR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.aoR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.aoR_confirmed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.aoR_error",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.aoR_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.aoR_reserved",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.glueR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.opOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.opOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.optAgeOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.optAgeOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.optDateOfJ_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.optNatOfJ32_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.passengerInputOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.requestOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.reserveInputOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.selectOfForm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.existsRows_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.filter_key_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.keyCond_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.keyParams",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.select_key",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.select_key_find",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.toCode_inj_bc",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.toCode_inj_ft",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Port.updateWhere_alpha",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.World.Alpha.IcW",
       "layer": "Abstraction"
     },
@@ -8689,6 +8793,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Port.World.MemberRefMaster",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Port.World.RefMaster",
       "layer": "Spec"
     },
@@ -9058,6 +9166,10 @@
     },
     {
       "name": "Spec.UseCase.Reserve.Request",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.Request.Valid",
       "layer": "Spec"
     },
     {
@@ -10104,6 +10216,21 @@
       "type": "obligation",
       "from": "Abstraction.MasterData.queryRefines",
       "to": "ABS-026"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.Alpha.aoR_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.Alpha.opOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.Alpha.optAgeOf_kernel",
+      "to": "ABS-048"
     },
     {
       "type": "obligation",
@@ -13260,6 +13387,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Port.World.MemberRefMaster",
+      "to": "docs/spec/master-data.md#不変条件spec"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Port.World.RefMaster",
       "to": "docs/spec/master-data.md#不変条件spec"
     },
@@ -13645,6 +13777,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.Request.Valid",
+      "to": "docs/spec/input-validation.md#予約入力b2"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.ReserveInput",
       "to": "docs/spec/input-validation.md#予約入力b2"
     },
@@ -13916,6 +14053,46 @@
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.natOfJ32",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.aiR",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.aoR",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.opOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.optAgeOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.passengerInputOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.requestOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.reserveInputOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.selectOfForm",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
