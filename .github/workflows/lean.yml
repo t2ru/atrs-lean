@@ -105,7 +105,11 @@ jobs:
       - name: Checks (selected by the changes on PRs, all otherwise)
         env:
           CHECK_BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}
+        # [mem] の行は、20 秒ごとのメモリの使用量（runner が止まったときの診断のため）
         run: |
+          ( while sleep 20; do echo "[mem] $(date -u +%T) $(free -m | awk 'NR==2{print $3 " / " $2 " MB used"}')"; done ) &
+          mon=$!
+          trap 'kill $mon 2> /dev/null || true' EXIT
           if [ -n "$CHECK_BASE" ]; then mise run check; else mise run ci; fi
 
       - name: Upload the source/model review (trace review)

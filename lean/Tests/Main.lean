@@ -29,7 +29,8 @@ unsafe def conformanceTests : IO Unit := do
     for r in results do
       for f in r.failures do IO.eprintln s!"    {label}/{r.path.fileName.getD ""}: {f}"
       check s!"conformance: {label}/{r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
-  report "shared/format (Spec)" (← ConformanceKit.Runner.runDir Tests.Conformance.formatOps env.contains (root / "shared/format"))
+  timed "conformance shared/format (Spec)" do
+    report "shared/format (Spec)" (← ConformanceKit.Runner.runDir Tests.Conformance.formatOps env.contains (root / "shared/format"))
   for (dir, layer, ops) in [("spec/fare", "Spec", Tests.ConformanceFare.specOps), ("shared/fare", "Spec", Tests.ConformanceFare.specOps),
       ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps),
       ("shared/master-data", "Spec", Tests.ConformanceMaster.specOps),
@@ -37,7 +38,8 @@ unsafe def conformanceTests : IO Unit := do
       ("shared/flight-search", "Spec", Tests.ConformanceFlightSearch.specOps),
       ("shared/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps),
       ("source-model/flight-search", "SourceModel", Tests.ConformanceFlightSearch.sourceOps)] do
-    report s!"{dir} ({layer})" (← ConformanceKit.Runner.runDirFx ops layer env.contains root (root / dir))
+    timed s!"conformance {dir} ({layer})" do
+      report s!"{dir} ({layer})" (← ConformanceKit.Runner.runDirFx ops layer env.contains root (root / dir))
 
 /-- マスタの Mapper の文とコードリストの SQL の、PostgreSQL との差分実行（`conformance/sql/master-data.json`）。
 あわせて、共有入力の表と PostgreSQL に投入した表、共有入力の設定と上流の設定の一致を確かめる。 -/
