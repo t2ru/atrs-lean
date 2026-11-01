@@ -11,6 +11,7 @@
   * 適合テストベクタ `conformance/shared/flight-search/`（`flightSearch.searchFlight`・`validateDepartureDate`・`isAvailableFareType`）を足し、`Spec` と `SourceModel` の両方で通した。[spec/flight-search.md](spec/flight-search.md) に Lean への参照を書き、[spec/conformance.md](spec/conformance.md#操作名) にエラーの表し方を書いた。
   * スキル port-lang の `LangSemantics.Java` に `String.substring` と `DecimalFormat` の 3 桁区切りを足した（スキルの版 0.15。[rules/atrs-porting.md](rules/atrs-porting.md)）。
   * `trace/features.json`（空席照会の名前空間・ABS-010・`validateDepatureDate` のロケータ）を改め、`trace rehash` で合格の記録を取った。
+  * 敵対的レビューの指摘に対応した（[ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md#more-information)）。`Spec.Port.World.RefMaster` を足し、D-014 に ABS-011 を加え、D-031 の説明を直し、既知差異 D-032（運賃の書式の既定ロケール。W 課題 ABS-132）を登録した。
 
 ## 2026-10-31
 

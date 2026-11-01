@@ -665,6 +665,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Gap.D032",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Gap.claim_D013",
       "layer": "Abstraction"
     },
@@ -5962,6 +5966,11 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.FlightSearch.createFlightVacantInfoList",
+      "to": "D-032"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.FlightSearch.getSearchLimitDate",
       "to": "D-014"
     },
@@ -6269,6 +6278,11 @@
       "type": "gap_entry",
       "from": "Abstraction.Gap.D031",
       "to": "D-031"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D032",
+      "to": "D-032"
     },
     {
       "type": "kernel",

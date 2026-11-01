@@ -383,4 +383,18 @@ def D031 : Gap where
   impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる（`2400` なら往路便の到着日時を 1 日早く検査する）")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 
+/-- [Source] の空席照会は、運賃を `new DecimalFormat("###,###")` で書式化する。区切り文字は JVM の既定の書式ロケール
+（`Locale.getDefault(Locale.Category.FORMAT)`）で決まる（例: ドイツ語では `20.600`）。[Spec] は常に `,` で区切る（`fmtYen`）。
+モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は前提のもとで `,` を固定している -/
+@[gap_entry]
+def D032 : Gap where
+  id := "D-032"
+  kind := .preConcreteEnv
+  sites := [⟨"空席照会の運賃の書式", "docs/spec/flight-search.md#出力-flightvacantinfo", ""⟩]
+  premise := "`dev_D032`: [Source] の JVM の既定の書式ロケールの 3 桁区切りの文字が `,` である（日本語・英語のロケール）"
+  evidence := .pending "Lean に述語がまだ無い。空席照会の具体機械と R 課題が未着手（backlog 0be7 の第 2・3 段）" (some "ABS-132")
+  rTasks := ["ABS-011"]
+  impact := some (.outputOnly, "空席照会の運賃の表示だけが異なる")
+  backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
+
 end Abstraction.Gap
