@@ -1,18 +1,18 @@
 {
-  "note": "trace rehash（spec-pivot の scripts/trace）が実行する決定論的な検査の登録（ADR e2a4・ADR 9cd9）。各検査は steps を順に実行し、すべて終了コード 0 なら合格とする。covers は覆う Lean の定義で、名前の glob（names）と、適合テストベクタの modelDef とその参照の閉包（vectors。リポジトリからの相対 glob）で書く。Verus・Kani・移植元のオラクルは、それぞれの backlog が足す",
+  "note": "trace rehash（spec-pivot の scripts/trace）が実行する決定論的な検査の登録（ADR e2a4・ADR 9cd9）。各段は mise のタスク（mise.toml。ADR 44a0）か uv で実行する。各検査は steps を順に実行し、すべて終了コード 0 なら合格とする。covers は覆う Lean の定義で、名前の glob（names）と、適合テストベクタの modelDef とその参照の閉包（vectors。リポジトリからの相対 glob）で書く。Verus・Kani・移植元のオラクルは、それぞれの backlog が足す",
   "checks": [
     {
       "id": "lake-test",
       "description": "適合テストベクタの照合（Lean の Tests。lake test）",
-      "steps": [{ "cwd": "lean", "argv": ["lake", "test"] }],
+      "steps": [{ "cwd": ".", "argv": ["mise", "run", "lean:test"] }],
       "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.Ticket.*"] }
     },
     {
       "id": "pg-master-sql",
       "description": "マスタの Mapper の文・コードリストの SQL の PostgreSQL での差分実行（結果の再生成と lake test の Tests.MasterSql）",
       "steps": [
-        { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
-        { "cwd": "lean", "argv": ["lake", "test"] }
+        { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["SourceModel.Repository.Schema.*", "SourceModel.Repository.MasterData.*", "SourceModel.Config.*"] }
     },
@@ -20,8 +20,8 @@
       "id": "jvm-table",
       "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
-        { "cwd": ".", "argv": [".agents/skills/spec-pivot/scripts/ci/jvm_table.sh"] },
-        { "cwd": ".agents/skills/spec-pivot/assets/lean", "argv": ["lake", "build", "+Test.LangSemantics"] }
+        { "cwd": ".", "argv": ["mise", "run", "assets:jvm-table"] },
+        { "cwd": ".", "argv": ["mise", "run", "assets:build"] }
       ],
       "covers": { "names": ["LangSemantics.Java.*"] }
     },
@@ -29,8 +29,8 @@
       "id": "pg-table",
       "description": "SQL の言語意味論と PostgreSQL の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
-        { "cwd": ".", "argv": [".agents/skills/spec-pivot/scripts/ci/pg_table.sh"] },
-        { "cwd": ".agents/skills/spec-pivot/assets/lean", "argv": ["lake", "build", "+Test.LangSemantics"] }
+        { "cwd": ".", "argv": ["mise", "run", "assets:pg-table"] },
+        { "cwd": ".", "argv": ["mise", "run", "assets:build"] }
       ],
       "covers": { "names": ["LangSemantics.Sql.*"] }
     },
@@ -38,10 +38,8 @@
       "id": "seed-lean",
       "description": "上流のシードから [Spec] のシードの値への変換（master_fixture.py・seed_lean.py の再生成との一致と、lake test のシードと PostgreSQL の照合）",
       "steps": [
-        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/master_fixture.py", "--check"] },
-        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/seed_lean.py", "--check"] },
-        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/flight_seed.py", "--check"] },
-        { "cwd": "lean", "argv": ["lake", "test"] }
+        { "cwd": ".", "argv": ["mise", "run", "conformance:check"] },
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["Spec.Seed.*"] }
     },
@@ -49,9 +47,9 @@
       "id": "pg-flight-sql",
       "description": "空席照会の文の PostgreSQL での差分実行と、シードの FLIGHT 表の照合（結果の再生成と lake test の Tests.FlightSql。FLIGHT の要約は master_sql.py が生成器の展開と照合する）",
       "steps": [
-        { "cwd": ".", "argv": ["python3", "-I", "tools/conformance/flight_seed.py", "--check"] },
-        { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
-        { "cwd": "lean", "argv": ["lake", "test"] }
+        { "cwd": ".", "argv": ["uv", "run", "--quiet", "python", "-I", "tools/conformance/flight_seed.py", "--check"] },
+        { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["SourceModel.Repository.Flight.*", "SourceModel.Repository.FlightSeed.*",
         "SourceModel.Repository.Schema.FlightRow", "SourceModel.Repository.Mapping.flight"] }

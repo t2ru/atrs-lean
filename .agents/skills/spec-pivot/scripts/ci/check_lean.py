@@ -15,8 +15,8 @@ spec-pivot の lang/lean/rules.md（全域性と安全性）と spec/architectur
 | LEAN-IMPORT | 名前空間の依存の向きに反する import がある（移植元側と移植先側の相互依存を含む） |
 
 使い方:
-  python3 -I <skill>/scripts/ci/check_lean.py              # trace/project.json の lean.roots を検査
-  python3 -I <skill>/scripts/ci/check_lean.py --self-test  # 違反例（scripts/ci/fixtures/lean）で検出できることを確かめる
+  uv run python -I <skill>/scripts/ci/check_lean.py              # trace/project.json の lean.roots を検査
+  uv run python -I <skill>/scripts/ci/check_lean.py --self-test  # 違反例（scripts/ci/fixtures/lean）で検出できることを確かめる
 """
 import json
 import pathlib

@@ -8,3 +8,6 @@ rust/target/
 
 # Python
 __pycache__/
+
+# Python（uv）
+.venv/

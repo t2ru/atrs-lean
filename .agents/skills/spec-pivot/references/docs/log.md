@@ -1,6 +1,10 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR 8cb7](decision/8cb7-run-python-tools-with-uv.md) で、Python の道具をシステムの `python3` でなく `uv run python -I` で実行するようにした。スキルの版を 0.19 にした。
+  * `scripts/ci/pg_table.sh`・`scripts/trace`（`check_obligations.py` の呼び出し）が uv で Python を呼ぶ。各道具の使い方の docstring、`assets/lean/Test/LangSemantics/pg/pg_table.py` とその生成物 `PostgresqlDb.lean` の再生成の手順、[rules/maintenance.md](rules/maintenance.md)・`SKILL.md`・`scripts/README.md` を改めた。
+  * 来歴: 適用先 ATRS の ADR 44a0（タスクの実行器は適用先が選ぶ）。
+
 * **Creation**: [ADR cfad](decision/cfad-name-the-method-spec-pivot.md) で、この方法を **Spec Pivot** と名付け、スキルの名前を `port-lang` から `spec-pivot` に改めた。スキルの版を 0.18 にした。
   * ディレクトリ・frontmatter の `name`・文書のバンドルの規則のファイル（`scripts/docs/profiles/spec-pivot.json`）を改め、文書・コード・コメントの名前を改めた。過去の項の文は来歴として旧名のまま残す。
   * 来歴: 適用先 ATRS の ADR fa26。

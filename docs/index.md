@@ -68,6 +68,7 @@ okf_version: "0.2"
 * [空席照会の第 3 段: R 課題 ABS-011 の証明の構成、PRE の改め、D-014・D-032 の具体側の入力、D-033 の登録、トップレベルへの統合](decision/0b0c-flight-search-stage3-abs011.md) - backlog 0be7 の第 3 段の設計を決める。R 課題 ABS-011（空席照会）を Machine.Refines の形で証明し、束 Machine.Preserves とトップレベルの主定理に加える。PRE の World.RefMaster を入力だけの条件に改め、空白の便名の便マスタを PRE の外（D-033）とする。D-032 の区切り文字と、D-014 の Clock の読み出しを具体側の入力に置き、W 課題 ABS-132・ABS-114 で必要性を示す。
 * [空席照会の第 2 段: 状態を読むだけの機械、シードのフライトの生成と展開しない証明、業務例外を出力の値にすること、SQL の差分実行](decision/cdb6-flight-search-stage2-machines-seed-sql.md) - backlog 0be7 の第 2 段の設計を決める。空席照会の抽象機械は選択を持たない Machine.ofChoice で状態を変えない 1 歩とし、初期状態はシード 00250 の生成の形から作り、主キーの一意性と参照整合性を展開せずに証明する。具体機械は FLIGHT 表を状態とし、業務例外を出力の値として受ける。findByVacantSeatSearchCriteria は PostgreSQL で全件を投入して実行し、条件の押し下げを定理で示したうえで照合する。D-027 の範囲を状態の表 FLIGHT に広げる。
 * [スキルの名前を port-lang から spec-pivot に改め、ATRS のパスと参照を張り直す](decision/fa26-rename-skill-to-spec-pivot.md) - スキルの ADR cfad で方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改めた。ATRS では、スキルのパス（Lake の require・lake-manifest・CI・trace/project.json・trace/checks.json・tools/ci）と文書の参照を新しい名前に張り直す。ADR f4e1 のほかの決定は変えない。
+* [検査・生成を mise のタスクで実行し、Python を mise が入れる uv で実行する](decision/44a0-mise-tasks-and-uv-for-tools.md) - 一括検査 tools/ci/lean.sh を廃止し、各段をルートの mise.toml のタスクに分ける。一括検査は mise run ci とし、CI・trace/checks.json・規約もタスクを呼ぶ。mise が管理する道具は uv だけとし、Python の道具は uv run python -I で実行する（版は .python-version・pyproject.toml）。Lean は elan、Java・Rust・PostgreSQL は従来どおり。
 
 # Specification
 

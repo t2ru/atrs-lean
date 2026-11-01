@@ -2,9 +2,9 @@
 """Lean の宣言・モジュールの完全名を、リポジトリのテキストの中で一度に書き換える（spec-pivot の道具。scripts/README.md）。
 
 使い方:
-  python3 -I <skill>/scripts/lean/rename.py apply <map.json> [--dry-run] [<path> ...]
-  python3 -I <skill>/scripts/lean/rename.py check <map.json> [<path> ...]
-  python3 -I <skill>/scripts/lean/rename.py --self-test
+  uv run python -I <skill>/scripts/lean/rename.py apply <map.json> [--dry-run] [<path> ...]
+  uv run python -I <skill>/scripts/lean/rename.py check <map.json> [<path> ...]
+  uv run python -I <skill>/scripts/lean/rename.py --self-test
 
 `<map.json>` は `{"<旧い完全名>": "<新しい完全名>", ...}`（または `{"renames": {...}}`）。名前空間の接頭辞を
 書けば、その下の名前もまとめて写る（`Test.Trace.ObFix` → `Test.Trace.ObligationFixture`）。モジュール名も同じ表に書ける

@@ -8,13 +8,13 @@ set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 assets="$(cd "$here/../../assets/lean" && pwd)"
 
-pgver="$(python3 -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
+pgver="$(uv run --quiet python -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
 if ! { [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/postgresql/*/bin/initdb > /dev/null 2>&1; }; then
   if [ -n "${CI:-}" ]; then echo "PostgreSQL not available (required in CI)" >&2; exit 1; fi
   echo "PostgreSQL not found: skipped"; exit 2
 fi
 pgt="$(mktemp)"
 trap 'rm -f "$pgt"' EXIT
-"$here/with_postgres.sh" python3 -I "$assets/Test/LangSemantics/pg/pg_table.py" --expect-version "$pgver" > "$pgt"
+"$here/with_postgres.sh" uv run --quiet python -I "$assets/Test/LangSemantics/pg/pg_table.py" --expect-version "$pgver" > "$pgt"
 diff -u "$assets/Test/LangSemantics/PostgresqlDb.lean" "$pgt"
 echo "PostgresqlDb.lean: up to date (PostgreSQL $pgver)"

@@ -15,8 +15,8 @@
 
 ほかの道具（tools/conformance/master_sql.py）は、`expand()` で全件を展開して PostgreSQL の投入結果と照合する。
 
-  python3 -I tools/conformance/flight_seed.py           # 書き出す
-  python3 -I tools/conformance/flight_seed.py --check   # 最新であることを確かめる
+  uv run python -I tools/conformance/flight_seed.py           # 書き出す
+  uv run python -I tools/conformance/flight_seed.py --check   # 最新であることを確かめる
 """
 import datetime
 import json

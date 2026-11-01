@@ -19,7 +19,7 @@ generated:
 docs/decision/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`python3 -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
+- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
 - ファイル名の先頭は ID の先頭 4 文字。他の ADR と重なってもよい（slug で区別する）。
 - `<slug>` は英小文字・数字・ハイフンのみ。決定内容を表す短い句（例: `two-layer-model-java-faithful-and-abstract`）。
 - 一度採番したファイルは **改名・削除しない**。不要になった ADR は状態を変更する。
@@ -30,7 +30,7 @@ docs/decision/<ID の先頭 4 文字>-<slug>.md
 
 アプリに依存しない判断（移植の方法、スキルの道具・Lean のライブラリ・構成）は、ATRS の `docs/decision/` ではなく、スキル spec-pivot の [`references/docs/decision/`](../../.agents/skills/spec-pivot/references/docs/decision/README.md) に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。書き方はスキルの [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md) に従う。
 
-- 採番は `python3 -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug> --dir .agents/skills/spec-pivot/references/docs/decision`。ID の空間は ATRS と共通である。
+- 採番は `uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug> --dir .agents/skills/spec-pivot/references/docs/decision`。ID の空間は ATRS と共通である。
 - スキルの ADR から ATRS の文書へはリンクを張らない。ATRS の記録は、来歴としてリンク無しで書く（「ATRS の ADR xxxx」）。
 - 判断が ATRS にも影響する場合は、ATRS 側にも ADR を書き、スキルの ADR へリンクする（[ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)）。
 - ATRS とスキルの両方にかかる既存の ADR を分けて移すときは、`ids.py move <stem> <dir>` でリンクを張り直す。
@@ -49,7 +49,7 @@ MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `sta
 
 - `accepted` の ADR の **決定内容** を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `decision_status: superseded` / `superseded_by: "<新 ADR の ID>"` / `status: deprecated` にし、新 ADR の「More Information」に旧 ADR へのリンクを書く。
 - 誤字修正・リンク修正・補足情報の追記は書き換えてよい。
-- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`python3 -I .agents/skills/spec-pivot/scripts/docs/ids.py check` を通す。
+- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py check` を通す。
 
 ## テンプレート
 

@@ -16,11 +16,11 @@ ADR・backlog の置き場所（`ids.kinds`）は種類ごとに複数でもよ�
 それを要約する `index.md`・`log.md`（来歴）だけである。
 
 使い方:
-  python3 -I <skill>/scripts/docs/ids.py new adr <slug> [--dir <dir>]   # 新しい ID とファイル名を表示する
-  python3 -I <skill>/scripts/docs/ids.py new backlog <slug> [--dir <dir>]
-  python3 -I <skill>/scripts/docs/ids.py check                # ID・ファイル名・参照を検査する（違反で終了コード 1）
-  python3 -I <skill>/scripts/docs/ids.py move <stem> <dir>    # 項目を同じ種類の別の置き場所へ移し、リンクを張り直す
-  python3 -I <skill>/scripts/docs/ids.py migrate              # 旧番号（NNNN-<slug>.md、`ADR NNNN`）を新 ID に書き換える
+  uv run python -I <skill>/scripts/docs/ids.py new adr <slug> [--dir <dir>]   # 新しい ID とファイル名を表示する
+  uv run python -I <skill>/scripts/docs/ids.py new backlog <slug> [--dir <dir>]
+  uv run python -I <skill>/scripts/docs/ids.py check                # ID・ファイル名・参照を検査する（違反で終了コード 1）
+  uv run python -I <skill>/scripts/docs/ids.py move <stem> <dir>    # 項目を同じ種類の別の置き場所へ移し、リンクを張り直す
+  uv run python -I <skill>/scripts/docs/ids.py migrate              # 旧番号（NNNN-<slug>.md、`ADR NNNN`）を新 ID に書き換える
 
 `--dir` を省くと、その種類の最初の置き場所に作る。`move` は `git mv` の後、リポジトリの Markdown のリンクのうち
 その項目を指すものと、移した項目の中の相対リンクを張り直す。リンク以外でパスを書いた箇所は表示するので、手で直す。

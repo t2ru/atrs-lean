@@ -29,3 +29,4 @@ generated:
 | 1a30 | [Lean の宣言をモジュール名の下に置き、機能の証明課題を機能のモジュールに置く](1a30-lean-module-namespace-layout.md) | accepted | 2026-10-31 |
 | 6b4b | [adequate の廃止: A abstracts B = A preserves B ∧ B refines A](6b4b-preserves-refines-abstracts.md) | accepted | 2026-10-31 |
 | cfad | [この方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改める](cfad-name-the-method-spec-pivot.md) | accepted | 2026-11-01 |
+| 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |

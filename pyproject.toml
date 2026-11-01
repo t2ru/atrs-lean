@@ -1,0 +1,10 @@
+# ATRS とスキル spec-pivot の Python の道具を uv で実行するための設定（ADR 44a0）。
+# 道具は標準ライブラリだけを使うので、依存は無い。実行は `uv run python -I <script>`（mise のタスクから）。
+[project]
+name = "atrs-tools"
+version = "0.0.0"
+requires-python = ">=3.13,<3.14"
+dependencies = []
+
+[tool.uv]
+package = false

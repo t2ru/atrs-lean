@@ -164,11 +164,11 @@ fn citations(repo: &Path) -> Vec<(String, String)> {
     out
 }
 
-/// スキルの `scripts/ci/check_obligations.py` を実行し、その誤り・警告を TR-G・TR-N として取り込む。
+/// スキルの `scripts/ci/check_obligations.py` を uv で実行し（ADR 8cb7）、その誤り・警告を TR-G・TR-N として取り込む。
 fn obligation_script(repo: &Path, obligations: &Path) -> Result<Vec<check::Finding>, String> {
     let script = Path::new(&project::get().skill).join("scripts/ci/check_obligations.py");
-    let out = std::process::Command::new("python3")
-        .arg("-I")
+    let out = std::process::Command::new("uv")
+        .args(["run", "--quiet", "python", "-I"])
         .arg(&script)
         .arg(obligations)
         .current_dir(repo)
