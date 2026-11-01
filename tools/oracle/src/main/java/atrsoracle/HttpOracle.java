@@ -44,7 +44,8 @@ final class HttpOracle {
         System.setProperty(OracleContextInitializer.PREFIX + "database.url", Pg.url(DB));
         System.setProperty(OracleContextInitializer.PREFIX + "database.username", Pg.props().getProperty("user"));
         System.setProperty(OracleContextInitializer.PREFIX + "database.password", Pg.props().getProperty("password", ""));
-        System.setProperty(OracleContextInitializer.PREFIX + "report.dir", Files.createTempDirectory("atrs-report").toString());
+        // 作業ディレクトリ（java_oracle.sh の一時ディレクトリ）の下
+        System.setProperty(OracleContextInitializer.PREFIX + "report.dir", Files.createDirectories(Path.of("report")).toAbsolutePath().toString());
         Path docBase = Upstream.built(repo).resolve("atrs-web/src/main/webapp");
         try (WebappServer server = WebappServer.start(docBase, CONTEXT,
                 Map.of("globalInitializerClasses", OracleContextInitializer.class.getName()))) {

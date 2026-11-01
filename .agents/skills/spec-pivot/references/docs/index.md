@@ -60,6 +60,7 @@ okf_version: "0.2"
 # Decisions
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
+* [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルのオラクルの方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-oracle-method.md) - Java のオラクルに共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルのオラクル（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
 * [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](decision/1f75-java-expression-syntax-and-spring-assert.md) - 移植元のモデルの式を、原典の Java の式と同じ字面で書けるよう、LangSemantics.Java に式の構文 java!（JLS の優先順位・数値昇格・リテラルの型・キャスト・短絡評価・例外を投げうる式）を置く。展開した項は原始関数を手で書いた項と構文として同じで、証明は変えない。あわせて Spring の Assert を同じ名前で置き、原典の語彙とモデルの語彙の対応表を言語パックに書く。
 * [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](decision/8a3c-mirror-layout-check-and-review-view.md) - 移植元のモデルのモジュールを原典のクラスと 1 対 1 にする規則を言語パックに置き、プロジェクトの設定 source.mirror で有効にする。配置・名前・引数・欄の対応を trace check の TR-M で検査し、原典とモデルを並べた静的な HTML を trace review で生成する。trace-dump は宣言の引数・欄・行の範囲を出力する。
 * [スキル spec-pivot の Lean パッケージを assets/lean/ に置く](decision/6edf-lean-package-under-skill-assets-lean.md) - スキル spec-pivot の assets 直下にあった Lake パッケージ langSemantics（LangSemantics・Machine とその検査）を assets/lean/ に移し、assets の下を資産の種類ごとに分ける。Lean 以外の資産（assets/verus/ など）は assets/lean/ の外に置く。

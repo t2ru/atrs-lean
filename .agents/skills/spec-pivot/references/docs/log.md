@@ -1,6 +1,11 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR 7d3a](decision/7d3a-java-conformance-kit-and-http-oracle-method.md) で、Java のオラクルの道具 `assets/java/conformance-kit/`（Maven）を置いた。スキルの版を 0.21 にした。
+  * `Json`・`Op`・`Runner`（照合・期待値の採取・`--check`）、`Reflect`（注入）、`http.HttpCapture`（要求の送信と応答の採取・正規化）、`http.WebappServer`（web.xml のままの webapp を組み込み Tomcat で起動）。
+  * [lang/java/harness.md](lang/java/harness.md) に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルのオラクルの方法と道具を書いた。`SKILL.md`・`scripts/README.md` を合わせた。
+  * `scripts/ci/with_postgres.sh`: `WITH_POSTGRES_TCP=1` で一時クラスタを 127.0.0.1 でも待ち受けさせる（JDBC 用）。
+  * 来歴: 適用先 ATRS の ADR 81da（backlog f18c）。
 * **Creation**: [ADR 8cb7](decision/8cb7-run-python-tools-with-uv.md) で、Python の道具をシステムの `python3` でなく `uv run python -I` で実行するようにした。スキルの版を 0.20 にした。
   * `scripts/ci/pg_table.sh`・`scripts/trace`（`check_obligations.py` の呼び出し）が uv で Python を呼ぶ。各道具の使い方の docstring、`assets/lean/Test/LangSemantics/pg/pg_table.py` とその生成物 `PostgresqlDb.lean` の再生成の手順、[rules/maintenance.md](rules/maintenance.md)・`SKILL.md`・`scripts/README.md` を改めた。
   * 来歴: 適用先 ATRS の ADR 44a0（タスクの実行器は適用先が選ぶ）。

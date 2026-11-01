@@ -8,7 +8,7 @@ state: todo
 depends_on: ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2", "f18c3c0f-4007-42c1-ba25-102fb385a16c", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-11-01T19:00:00+09:00
 ---
 
 # 認証（A1/A2）

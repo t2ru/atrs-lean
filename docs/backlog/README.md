@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T20:10:00+09:00
+  at: 2026-11-01T19:00:00+09:00
 ---
 
 # バックログ
@@ -28,7 +28,7 @@ generated:
 | ac71 | [予約履歴レポート（D1）](ac71-reservation-history-report.md) | todo | [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
 | 4b0e | [Rust: インメモリアダプタとシードデータ](4b0e-in-memory-adapters-and-seed-data.md) | todo | [9c1b](9c1b-rust-usecases-core.md), [ffdc](ffdc-trace-tooling.md) |
 | a8ef | [適合テストベクタの生成と検査（Lean 側）](a8ef-conformance-vector-format-and-generator.md) | todo | [25f7](25f7-fare-calculation-both-models.md) |
-| f18c | [Java オラクルハーネス](f18c-java-oracle-harness.md) | todo | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
+| f18c | [Java オラクルハーネス](f18c-java-oracle-harness.md) | done | — |
 | a89e | [Rust: HTTP 契約アダプタ](a89e-http-contract-adapter.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 31da | [第二言語での移植試行](31da-second-language-portability-pilot.md) | dropped | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
 | c7e8 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](c7e8-lang-semantics-sql.md) | done | [be49](be49-lean-project-scaffold.md) |
