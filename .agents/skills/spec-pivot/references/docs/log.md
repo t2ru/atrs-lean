@@ -1,7 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-01
-* **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt` を決め（実装は適用先の段に合わせる）、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.22 にした。
+* **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt`（`Machine.Alt`・`Machine.Machine.Alt`・`Machine.Concrete.Alt`・`Machine.Glue.Alt`・`Machine.Refines.Alt`・`Machine.Preserves.Alt`、例と反例 `Test/Machine/Alt.lean`）を足し、[spec/architecture.md](spec/architecture.md) に並置の使い分けを書き、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.22 にした。
   * `LangSemantics.Sql.Transaction.run`（取消。戻す成分は呼び出し側が決める）、`LangSemantics.Sql.Postgresql.PgTimestamp`（`TIMESTAMP` の列）。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。
   * `LangSemantics.Java.JLocalTime`・`JLocalDateTime`（`DateTimeFormatter.ofPattern("HHmm")` の SMART 解決、`LocalDateTime` の `atTime`・`atStartOfDay`・`plusMinutes`・`isBefore`。JVM の表に 22 の文字列と分の加算・比較の行を足した）、`LangSemantics.Java.JList.get`、`StringUtils.hasLength`・`hasText`。[lang/java/semantics.md](lang/java/semantics.md) を改めた。
   * 来歴: 適用先 ATRS の ADR 4c45（予約の第 1 段）。

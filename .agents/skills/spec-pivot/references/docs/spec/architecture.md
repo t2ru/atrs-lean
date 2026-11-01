@@ -206,6 +206,7 @@ B の記法では、M（INVARIANT I）を M'（INVARIANT J）がリファイン�
 - `Spec` の標準の選択 `run` が業務の意図どおりであること（仕様の妥当性）は、どの義務でも確かめられない。仕様文書の例を、`run` と独立に期待値を書いた検査（意図から書く例。[conformance.md](conformance.md#意図から書く例)）で確かめ、保証の限界の文書に載せる。
 - R 課題は `Refines.trans` で合成できない（合成した貼り合わせは `Glue.ofStd` の形にならない）。主定理は、具体機械と `Spec` の間で直接に述べる。
 - 機能の機械は並置（`Machine.sum`・`Concrete.sum`・`Glue.sum`。入力は和、状態は積）でトップレベルの機械にまとめる。並置はリファインメントと束を保つ（`Refines.sum`・`Preserves.sum`・`Abstracts.sum`）。トップレベルの主定理（[トップレベルの主定理](#トップレベルの主定理)）は、R 課題ごとの主定理と束をそれぞれ並置して示す（[ADR ab9e](../decision/ab9e-adequate-bundle-sum-and-side-staging.md)・[ADR 6b4b](../decision/6b4b-preserves-refines-abstracts.md)）。条件付きの成分を持つ束どうしの並置（`Choice` と層の並置）は、最初の `ofChoice`・「出力のみ」の R 課題を取り込むときに足す。
+- 状態の成分を共有する機能（例: 状態を読む照会と、同じ成分を書く登録）は、`sum` でなく `alt`（`Machine.alt`・`Concrete.alt`・`Glue.alt`。同じ状態の上で入力と出力を和にする）で並置する。`sum` では、それぞれが状態の別の写しを持ってしまう。`Refines.alt` は 2 つの貼り合わせの `J` が等しいこと、`Preserves.alt` は抽象側の INV と具体側の初期状態が等しいことを仮定する。`alt` で並置した機能を、ほかの機能と `sum` で並べる（[ADR a303](../decision/a303-shared-state-machine-alt-and-transaction.md)）。
 
 #### トップレベルの主定理
 

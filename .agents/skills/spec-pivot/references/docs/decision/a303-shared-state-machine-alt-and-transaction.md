@@ -59,7 +59,7 @@ Chosen option: "共有状態の並置 (a)・取消 (a)"。理由は次のとお�
 
 | 項目 | 決定 |
 | --- | --- |
-| `Machine.alt` | `alt (A₁ : Machine σ ι₁ ο₁) (A₂ : Machine σ ι₂ ο₂) : Machine σ (ι₁ ⊕ ι₂) (ο₁ ⊕ ο₂)`。<br>- `Inv`: 両方の `Inv` の積<br>- `Init`: 両方の `Init` の積<br>- `Pre`・`step`・`run`: 入力の側で振り分ける<br>あわせて次を置く。<br>- `Concrete.alt`: 同じ状態 τ<br>- `Glue.alt g₁ g₂`: 2 つの貼り合わせの `J` が等しいことを引数に取る<br>- `Refines.alt`<br>- `Preserves.core.alt`<br>例と反例は `Test/Machine/` に置く。実装は、適用先の予約の第 2 段で、その証明に合わせて行う（スキルの版はそのとき上げる） |
+| `Machine.alt` | `alt (A₁ : Machine σ ι₁ ο₁) (A₂ : Machine σ ι₂ ο₂) : Machine σ (ι₁ ⊕ ι₂) (ο₁ ⊕ ο₂)`。<br>- `Inv`: 両方の `Inv` の積<br>- `Init`: 両方の `Init` の積<br>- `Pre`・`step`・`run`: 入力の側で振り分ける<br>あわせて次を置く。<br>- `Concrete.alt`: 同じ状態 τ<br>- `Glue.alt g₁ g₂`: 2 つの貼り合わせの `J` が等しいことを引数に取る<br>- `Refines.alt`<br>- `Preserves.core.alt`<br>例と反例は `Test/Machine/Alt.lean` に置く（`sum` だと読む操作が更新を見ないこと、`alt` だと見ること、`Refines.alt` の使用例）。適用先の予約の第 2 段の初めに実装した（版 0.22 に含める） |
 | `LangSemantics.Sql.Transaction.run` | `run (restore : σ → σ → σ) (body : EStateM ε σ α) : EStateM ε σ α`。<br>- 正常に終われば確定する。<br>- 例外で終われば、状態を `restore 開始時 終了時` にして例外を伝える。<br>- どの成分を戻すかは、呼び出し側が `restore` で決める（表は開始時、シーケンスは終了時など）。<br>- 行ロックと分離レベルは写さない。逐次の実行では観測されず、並行実行はモデルの外である |
 | `LangSemantics.Java.JLocalTime`・`JLocalDateTime` | `JLocalTime`（時・分）と `JLocalDateTime`（暦日と時・分）。モジュールを分け、`localDate.atTime(t)` は `JLocalDateTime.atTime d t` とする（宣言をモジュール名の下に置く）。<br>- `JLocalTime.parseHHmm`: `LocalTime.from(DateTimeFormatter.ofPattern("HHmm").parse(s))`（SMART）。ASCII の数字 4 文字に限る。`24:00` は 0:00。ほかの 24 時台・25 時以上・60 分以上は `DateTimeParseException`。<br>- `atTime`・`atStartOfDay`・`plusMinutes`・`isBefore`: 通算の分で計算する。<br>- JVM の表（`Test/LangSemantics/jvm/JavaTable.java`）で突き合わせる |
 | `LangSemantics.Java.JList.get` | `list.get(index)`。範囲外は `IndexOutOfBoundsException`。適用先の `SourceModel` は `]!` を使えないので、Java の `get` はこれで写す |
@@ -76,7 +76,7 @@ Chosen option: "共有状態の並置 (a)・取消 (a)"。理由は次のとお�
 ### Confirmation
 
 * `assets/lean` の `lake build` が通り、`LocalTime` の表（22 の文字列と、`plusMinutes`・`isBefore`）が JVM と一致する。
-* `Machine.alt` の例と反例が `Test/Machine/` で証明され、公理が `#guard_msgs` で固定されている（適用先の第 2 段）。
+* `Machine.alt` の例と反例が `Test/Machine/Alt.lean` で証明され、公理が `#guard_msgs` で固定されている（`Test/Machine/Axioms.lean`）。
 
 ## More Information
 

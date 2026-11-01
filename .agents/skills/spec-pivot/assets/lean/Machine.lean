@@ -17,6 +17,12 @@ import Machine.Glue.Sum
 import Machine.Refines.Sum
 import Machine.Preserves.Sum
 import Machine.Abstracts.Sum
+import Machine.Alt
+import Machine.Machine.Alt
+import Machine.Concrete.Alt
+import Machine.Glue.Alt
+import Machine.Refines.Alt
+import Machine.Preserves.Alt
 import Machine.Kernel
 
 /-!

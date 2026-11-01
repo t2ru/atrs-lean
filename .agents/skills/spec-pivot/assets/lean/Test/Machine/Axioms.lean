@@ -109,6 +109,14 @@ import Test.Machine.Preserves
 #guard_msgs in
 #print axioms Machine.Refines.congrPre
 
+/-- info: 'Machine.Refines.alt' depends on axioms: [propext] -/
+#guard_msgs in
+#print axioms Machine.Refines.alt
+
+/-- info: 'Machine.Preserves.alt' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms Machine.Preserves.alt
+
 /-- info: 'Machine.Abstracts.sum' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
 #print axioms Machine.Abstracts.sum

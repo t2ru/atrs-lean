@@ -170,7 +170,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新、結合と許される順列の補題） | `assets/lean/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/lean/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/lean/LangSemantics/Rust/` |
-| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務の束 `Machine.Preserves`（`Refines` を含まない）と `Machine.Abstracts`、機能の機械の並置 `Machine.Sum`、標準の抽象化の汎用の核 `Machine.Kernel.undefOrEq`） | `assets/lean/Machine/` |
+| `Machine`（抽象機械、具体機械、貼り合わせ、B メソッドのリファインメント `Refines` と証明義務、差異による制限、推移性、空虚化を防ぐ義務の束 `Machine.Preserves`（`Refines` を含まない）と `Machine.Abstracts`、機能の機械の並置 `Machine.Sum`（状態は積）と、状態を共有する機能の並置 `Machine.Alt`（同じ状態）、標準の抽象化の汎用の核 `Machine.Kernel.undefOrEq`） | `assets/lean/Machine/` |
 | `Trace`（追跡属性、ギャップの登録簿 `Trace.Gap`、`trace-dump`・`obligation-check` の本体。道具の入口 `main` はプロジェクトの側に置く。[lean/trace-attributes.md](references/docs/lang/lean/trace-attributes.md)） | `assets/lean/Trace/` |
 | `ConformanceKit`（適合テストベクタの実行器と、SQL の差分実行の結果の表の読み取り。メタ層。[conformance.md](references/docs/spec/conformance.md)） | `assets/lean/ConformanceKit/` |
 | Verus 向けの `LangSemantics.Rust` の写し（`model_prelude.rs`）。**未整備** | `assets/verus/`（予定） |
