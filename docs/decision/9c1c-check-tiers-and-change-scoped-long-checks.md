@@ -64,17 +64,17 @@ Chosen option: "3 層（常時の段・変更時の段・全数）に分け、�
 * シードの DB を使う照合の速さ: シードの DB を使う SourceModel の適合ベクタ（`shared/master-data`・`shared/flight-search`・`source-model/flight-search`）と空席照会の SQL の結果の照合は、はじめ `long-tests` に移したが、遅い原因を除いて `lake test` に戻した。
   * 原因: SourceModel の SQL の写し（`FlightRepository.findAllFlightMaster`・`FlightRepository.vacantSeatRows`・`RouteRepository.findAll`）が、直積の全件を作ってから選んでいた。`findAllFlightMaster` は 1 回で約 650 万組（便マスタ 126 × 区間 20 × 空港 51 × 空港 51）になる。照合はケースごとに起動時の読み込み（`MasterQuery.standardOrder`・`load`）と空席照会の文を評価するので、そのたびにこれが走った。シードの DB の作り直しや、インタプリタでの実行ではなかった（適合ベクタのケースは小さな `flights` を持ち、`seedFlightDb` は閉じた項として起動時に 1 度だけ作られる）。
   * 対処: 条件を各段の直積に押し下げた入れ子ループの結合（スキルの `Bag.crossWhere`）が、元の定義と行の並びも含めて等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（[スキルの ADR b187](../../.agents/skills/spec-pivot/references/docs/decision/b187-proven-csimp-for-evaluating-models.md)）。定義・`@[source]`・証明は変えず、テストは同じ関数を呼ぶ。検査の結果の行（検査とケースの数）は、差し替えの前と同じである。
-  * 時間（節ごと。CI は差し替えの前の run 41309054977、手元は 4 コアの同じ環境での前と後）:
+  * 時間（節ごと。CI の前は run 41309054977、後は run 41314658541（全数）。手元は 4 コアの同じ環境での前と後）:
 
-    | 節 | CI（前） | 手元（前） | 手元（後） |
-    | --- | --- | --- | --- |
-    | `source-model/flight-search`（83 件） | 176 s | 274 s | 0.33 s |
-    | 空席照会の SQL の結果（15 文とシードの照合） | 138 s | 254 s | 1.3 s |
-    | `shared/master-data`（SourceModel） | 30 s | 48 s | 0.07 s |
-    | `shared/flight-search`（SourceModel） | 15 s | 26 s | 0.03 s |
-    | マスタの SQL の結果（`lake test` の既存の節） | — | 3.5 s | 0.07 s |
+    | 節 | CI（前） | CI（後） | 手元（前） | 手元（後） |
+    | --- | --- | --- | --- | --- |
+    | `source-model/flight-search`（83 件） | 176 s | 0.15 s | 274 s | 0.33 s |
+    | 空席照会の SQL の結果（15 文とシードの照合） | 138 s | 0.71 s | 254 s | 1.3 s |
+    | `shared/master-data`（SourceModel） | 30 s | 0.04 s | 48 s | 0.07 s |
+    | `shared/flight-search`（SourceModel） | 15 s | 0.02 s | 26 s | 0.03 s |
+    | マスタの SQL の結果（`lake test` の既存の節） | — | 0.05 s | 3.5 s | 0.07 s |
 
-    `lake test` 全体は、手元で 11 s から 9 s になった（4 つの節を戻した後）。`long-tests` は暦日の全日と double の総当たりだけになり、手元で 20 s である（これらは閉じた項としてモジュールの初期化で評価されるため、節の `time` は 0 ms と表示される）。
+    4 つの節を戻した後の `lake test` は、CI で約 4 s（手元で 9 s）である。全数の `mise run ci` は、CI で 554 s から 244 s になった。`long-tests` は暦日の全日と double の総当たりだけになり、CI で約 7 s、手元で 20 s である（これらは閉じた項としてモジュールの初期化で評価されるため、節の `time` は 0 ms と表示される）。
 * layout-check のメモリ: `lake exe layout-check` は、モジュールの組ごとに環境を読み込んで解放しない。組を 1 つ足しただけで、CI の runner（8 GB）のメモリが尽きた（使用量が 1.2 GB から 40 秒で 7.4 GB になり、runner が止められた）。このため組は増やさず、`main` を持たない本体（`Tests.Long`）を既存の組に入れ、`main` だけの入口は組に入れない。
 * CI: `pull_request` は選択実行（`CHECK_BASE=origin/<base>`）。`push`（main だけ）・週次の `schedule`・`workflow_dispatch` は全数。全ブランチの `push` をやめ、PR の古い実行は取り消す（`concurrency`）。
 * 選択の道具はアプリに依存しないが、移植の方法でも文書の管理でもないため、当面 ATRS の `tools/ci/` に置く。他のリポジトリで要るときにスキルへ移す。
