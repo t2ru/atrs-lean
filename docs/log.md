@@ -6,6 +6,7 @@
   * シードの DB を使う SourceModel の照合が遅かった原因は、SourceModel の SQL の写し（`findAllFlightMaster`・`vacantSeatRows`・`RouteRepository.findAll`）が直積の全件（1 回で最大約 650 万組）を作ってから選び、ケースごとにそれを評価していたことだった。
   * 条件を押し下げた結合が元の定義と等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（スキルの ADR b187、スキルの版 0.24）。定義・証明・検査の中身は変えていない。CI で 4 つの節が合わせて約 359 s から約 0.9 s になった。
   * 残る暦日の全日と double の総当たり（CI で約 7 s）も `lake test` に戻し、`lean/Tests/Long.lean`・`LongMain.lean`、`long-tests` の実行ファイル、`lean:test-long`、その範囲（`tools/ci/check-scopes.toml`）、`trace/checks.json` の段、layout-check の組（5 組にした）を除いた。
+  * 廃止の後の CI（run 41320107059）で、`lake test` 全体は約 20 s（うち約 18 s は起動と、全日・総当たりの初期化での評価）だった。
   * [rules/checks.md](rules/checks.md)・[rules/atrs-porting.md](rules/atrs-porting.md)・[spec/assurance.md](spec/assurance.md)・[spec/domain-model.md](spec/domain-model.md)・`AGENTS.md`・[index.md](index.md) を改めた。
 
 * **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
