@@ -14,6 +14,7 @@ open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQu
 open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql Spec LangSemantics.Core
+open LangSemantics.Java.Spring
   SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
 
 /-! ## α の分解 -/
@@ -55,8 +56,8 @@ theorem isBlank_eq_isJavaWhitespace (c : Char) : isBlank c = isJavaWhitespace c 
 
 /-- [Spec] の `hasText` が成り立てば、原典の `Assert.hasText` は通る。 -/
 theorem assertHasText_ok {s : String} (h : hasText s = true) (m : String) :
-    SourceModel.MasterData.assertHasText s m = .ok () := by
-  simp only [SourceModel.MasterData.assertHasText, jAssert]
+    LangSemantics.Java.Spring.Assert.hasText s m = .ok () := by
+  simp only [LangSemantics.Java.Spring.Assert.hasText, Assert.isTrue]
   have : (s.any fun c => !isJavaWhitespace c) = true := by
     have e : (fun c => !isJavaWhitespace c) = (fun c => !isBlank c) :=
       funext fun c => by rw [isBlank_eq_isJavaWhitespace]

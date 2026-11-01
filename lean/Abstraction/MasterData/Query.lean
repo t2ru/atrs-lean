@@ -415,7 +415,7 @@ theorem getPeakTime_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
   obtain ⟨-, -, -, -, -, hpt, -⟩ := masterDataOf_eq_some.mp hm
   have hp' : o.Perm db.peakTime := hp
   constructor
-  · simp only [getPeakTime, PeakTimeProvider.load, pure_bind]
+  · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, getPeakTime, PeakTimeProvider.load, pure_bind]
     rw [getPeakTime_go, find?_perm hp']
     intro a ha b hb ea eb
     obtain ⟨x, hx, hxa⟩ := mapM_some_mem hpt (hp'.mem_iff.mp ha)

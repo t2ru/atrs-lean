@@ -55,7 +55,7 @@ theorem worldOfDb_fdFS : worldOfDb fdFS = some wFS := rfl
 theorem wFS_inv : wFS.Inv := by decide
 
 theorem hasText_ok (s : String) (h : hasText s = true) (m : String) :
-    SourceModel.MasterData.assertHasText s m = .ok () := assertHasText_ok h m
+    LangSemantics.Java.Spring.Assert.hasText s m = .ok () := assertHasText_ok h m
 
 theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
   have hN : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
@@ -94,9 +94,9 @@ theorem iaFS_devs : dev_D001S iaFS ∧ dev_D002S iaFS := by
     decide
 
 theorem assertHasText_eq (s m : String) :
-    SourceModel.MasterData.assertHasText s m =
-      LangSemantics.Java.Exception.jAssert (s.toList.any fun c => !LangSemantics.Java.String.isJavaWhitespace c) m := by
-  simp only [SourceModel.MasterData.assertHasText, string_any_toList]
+    LangSemantics.Java.Spring.Assert.hasText s m =
+      LangSemantics.Java.Spring.Assert.isTrue (s.toList.any fun c => !LangSemantics.Java.String.isJavaWhitespace c) m := by
+  simp only [LangSemantics.Java.Spring.Assert.hasText, string_any_toList]
 
 /-- [Source] の結果の写し（区切り文字 `.`）: 運賃の表示は `100.000`。 -/
 def vDot : Spec.FlightSearch.FlightVacantInfo :=
@@ -112,7 +112,7 @@ theorem run_icFS_dot :
         | some (.ok l) => l == [vDot]
         | _ => false
       | .error _ => false) = true := by
-    simp only [runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
       SourceModel.MasterData.getFlightMaster, assertHasText_eq]
     decide +kernel
   split at h
@@ -163,7 +163,7 @@ theorem run_icFS14 :
       Abstraction.FlightSearch.Order.mergeSortRows) with
       | .ok (.error (.notFound c)) => c == "e.ar.b1.2003"
       | _ => false) = true := by
-    simp only [runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
       SourceModel.MasterData.getFlightMaster, assertHasText_eq]
     decide +kernel
   split at h

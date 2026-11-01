@@ -179,7 +179,7 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   refine ⟨(⟨p.fareType.fareTypeCodeMap.get ftc, SourceModel.Repository.Mapping.date r.result.departureDate,
     SourceModel.Repository.Mapping.int r.result.vacantNum, some fmJ,
     p.boardingClass.boardingClassCodeMap.get c.boardingClassCd⟩ : SourceModel.Model.Flight), ?_, ?_⟩
-  · simp only [enrich, JRef.deref, SourceModel.MasterData.getFareType, SourceModel.MasterData.getBoardingClass,
+  · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, enrich, JRef.deref, SourceModel.MasterData.getFareType, SourceModel.MasterData.getBoardingClass,
       hgfm, ok_bind, pure_bind]
     rfl
   · refine ⟨⟨fmJ, rJ, da, aa, dt, art, rfl, hfmJn, hdt, hdt', hat, hat', hrJ, hda, by rw [hdan, hdn], haa,
@@ -247,7 +247,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
   obtain ⟨hcv, hv, hbsome, hdepT, harrT, hfn⟩ := hp
   simp only at hcv hv hbsome hdepT harrT hfn h1 h2
   obtain ⟨p, hl, hpt, hrq, hbcq, hftq, hfmq⟩ := Abstraction.FlightSearch.Providers.load_fs hm hv hmo
-  simp only [SourceModel.FlightSearch.runSearchFlight, hl, ok_bind, SourceModel.FlightSearch.searchFlight, htc, hdj, hbc,
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.FlightSearch.runSearchFlight, hl, ok_bind, SourceModel.FlightSearch.searchFlight, htc, hdj, hbc,
     hdep, harr, hft, pure_bind, Option.getD_some, show ic.sharedClock = (ic.today, ic.today) from h14]
   have hL : ic.config.limitDay.val = (cfg.limitDay : Int) := by
     simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hcfg

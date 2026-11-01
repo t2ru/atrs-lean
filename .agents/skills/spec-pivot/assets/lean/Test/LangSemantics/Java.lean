@@ -4,7 +4,7 @@ import LangSemantics.Java
 
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.BigDecimal LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
-open LangSemantics.Java
+open LangSemantics.Java LangSemantics.Java.Spring
 
 namespace Test.LangSemantics.Java
 
@@ -83,5 +83,14 @@ def softMatchesNative (x r : Nat) : Bool :=
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).get "a") == some 3
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).size) == 2
 #guard ((JHashMap.ofList [("a", 1)] : JHashMap String Nat).get "z") == none
+
+-- Spring の Assert: 条件を満たさなければ IllegalArgumentException(message)
+#guard (Assert.isTrue false "m") matches .error (.illegalArgument "m")
+#guard (Assert.notNull (none : Option Nat) "m") matches .error (.illegalArgument "m")
+#guard (Assert.notNullValue (some 3) "m").toOption == some 3
+#guard (Assert.notEmpty (some ([] : List Nat)) "m") matches .error (.illegalArgument "m")
+#guard (Assert.notEmptyValue (some [1, 2]) "m").toOption == some [1, 2]
+#guard (Assert.hasText " \t\u3000" "m") matches .error (.illegalArgument "m")
+#guard (Assert.hasText " a " "m").toOption == some ()
 
 end Test.LangSemantics.Java

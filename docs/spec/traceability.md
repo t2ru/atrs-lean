@@ -232,6 +232,7 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)` | `SourceModel.FlightSearch.isAvailableFareType` | `c724cf20ebe62f82` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES` | `SourceModel.FlightSearch.oneWayFareTypes` | `13a685de676dd6d0` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ROUND_TRIP_FARETYPES` | `SourceModel.FlightSearch.roundTripFareTypes` | `93a93cb033a0d234` | lake-test |
+| `dep:org.springframework:spring-core#Assert.hasText` | `SourceModel.FlightSearch.searchFlight` | `spring-core-7.0.3` | （なし） |
 | `dep:org.springframework:spring-core#Assert.notNull` | `SourceModel.FlightSearch.searchFlight` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.FlightSearch.searchFlight` | `aebd2fb115cd02fc` | lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.FlightSearch.searchFlight` | `75061ffc6ae02ecb` | lake-test |
@@ -252,11 +253,12 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll()` | `SourceModel.MasterData.PeakTimeProvider.load` | `4020414e93f77c78` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#load()` | `SourceModel.MasterData.RouteProvider.load` | `ce13818ba91368aa` | lake-test |
 | `java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()` | `SourceModel.MasterData.RouteProvider.load` | `3cd8d3e7f6409637` | lake-test |
-| `dep:org.springframework:spring-core#Assert.hasText` | `SourceModel.MasterData.assertHasText` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)` | `SourceModel.MasterData.getBoardingClass` | `363af6d3dd2e282d` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#getFareType(FareTypeCd)` | `SourceModel.MasterData.getFareType` | `8cca1518f179d5a0` | lake-test |
+| `dep:org.springframework:spring-core#Assert.hasText` | `SourceModel.MasterData.getFlightMaster` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#getFlightMaster(String)` | `SourceModel.MasterData.getFlightMaster` | `73525e4cbaf2e787` | lake-test |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)` | `SourceModel.MasterData.getPeakTime` | `1b19d6cad612b687` | lake-test |
+| `dep:org.springframework:spring-core#Assert.hasText` | `SourceModel.MasterData.getRouteByAirportCd` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)` | `SourceModel.MasterData.getRouteByAirportCd` | `4266ccb1fdc24df9` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Airport#getCode()` | `SourceModel.Model.Airport` | `da85740cb21790bb` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Airport#getDisplayOrder()` | `SourceModel.Model.Airport` | `15b3aeb33df2350d` | lake-test |

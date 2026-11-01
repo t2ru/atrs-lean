@@ -36,7 +36,7 @@ theorem isAvailableFareType_between (ft : SourceModel.Model.FareType) (s e : J32
     (hs : ft.rsrvAvailableStartDayNum = some s) (he : ft.rsrvAvailableEndDayNum = some e) (dep today : JLocalDate) :
     SourceModel.FlightSearch.isAvailableFareType (some ft) (some dep) today =
       .ok (between collationC (.int (JLocalDate.daysBetween today dep)) (.int e.val) (.int s.val)).holds := by
-  simp only [SourceModel.FlightSearch.isAvailableFareType, JRef.deref, between_int_holds]
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.FlightSearch.isAvailableFareType, JRef.deref, between_int_holds]
   simp only [JLocalDate.minusDays, JLocalDate.isBefore, JLocalDate.isAfter, JLocalDate.toEpochDay_ofEpochDay]
   have hdb : JLocalDate.daysBetween today dep = dep.toEpochDay - today.toEpochDay := rfl
   simp only [pure_bind]
@@ -69,7 +69,7 @@ theorem validateDepatureDate_eq {cfg : Spec.Config} {limitDay : J32} (hL : limit
     simp only [Bool.or_eq_true, decide_eq_true_eq, hlt]
     constructor <;> rintro (h | h) <;> first | (left; omega) | (right; omega)
   unfold SourceModel.FlightSearch.validateDepatureDate
-  simp only [pure_bind]
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind]
   rw [← hcond]
   cases (dJ.isBefore tJ || dJ.isAfter (SourceModel.FlightSearch.getSearchLimitDate limitDay tJ)) <;> rfl
 
