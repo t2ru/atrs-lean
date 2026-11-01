@@ -10,8 +10,11 @@ import Abstraction.MasterData.QueryRun
 
 namespace Abstraction.MasterData
 open Abstraction.MasterData.Preserves
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun SourceModel.MasterQuery Spec Spec.EnvPre
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun
+  SourceModel.MasterQuery Spec Spec.EnvPre
 
 /-- R 課題 ABS-026。 -/
 @[obligation "ABS-026"]

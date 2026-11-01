@@ -1,11 +1,24 @@
 import LangSemantics.Java
 import LangSemantics.Sql
 import Machine
-import SourceModel.Repository.MasterData
-import SourceModel.MasterData
-import SourceModel.CodeList
-import SourceModel.Config
-import SourceModel.Fare
+import SourceModel.Db.Schema
+import SourceModel.Domain.Repository.Route.RouteRepository
+import SourceModel.Domain.Repository.Flight.FlightRepository
+import SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
+import SourceModel.Domain.Repository.Faretype.FareTypeRepository
+import SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
+import SourceModel.Config.App.AtrsCodeListConfig
+import SourceModel.Domain.Common.Masterdata.BoardingClassProvider
+import SourceModel.Domain.Common.Masterdata.PeakTimeProvider
+import SourceModel.Domain.Common.Masterdata.FareTypeProvider
+import SourceModel.Domain.Common.Masterdata.RouteProvider
+import SourceModel.Domain.Common.Masterdata.FlightMasterProvider
+import SourceModel.Gfw.CodeList
+import SourceModel.Domain.Common.Codelist.AirportCodeList
+import SourceModel.AtrsProperties
+import SourceModel.Domain.Service.B0.TicketSharedServiceImpl
+import SourceModel.Domain.Common.Util.FareUtil
+import SourceModel.Domain.Service.B2.TicketReserveServiceImpl
 import Spec.MasterQuery
 
 /-!
@@ -23,8 +36,11 @@ Mapper の文の結果は順序が未規定で、`ORDER BY` の文は許され�
 namespace SourceModel.MasterQuery
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Sql.Query
 
-open LangSemantics.Java SourceModel.Model SourceModel.Repository.Schema
-  SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.Config
+open LangSemantics.Java SourceModel.Domain.Model SourceModel.Db.Schema SourceModel.Domain.Repository.Route
+  SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass
+  SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime
+  SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig SourceModel.Domain.Common.Masterdata
+  SourceModel.AtrsProperties
 
 /-- 問い合わせ（原典の各参照の呼び出し）。 -/
 inductive SrcQuery where
@@ -55,7 +71,7 @@ inductive SrcAnswer where
   | peakTime (p : JRef PeakTime)
   | ratio (n : J32)
   | config (c : AtrsConfig)
-  | codeList (l : SourceModel.CodeList.Entries)
+  | codeList (l : SourceModel.Gfw.CodeList.Entries)
   deriving DecidableEq, Repr
 
 /-- 入力。 -/
@@ -80,9 +96,9 @@ structure Order where
 
 /-- 並びが許される: 順序の無い文は結果のバッグの並べ替え、`ORDER BY display_order` の文は `isAllowedOrder`。 -/
 def Order.Allowed (db : MasterDb) (o : Order) : Prop :=
-  o.route.Perm (routeFindAll db) ∧ o.flightMaster.Perm (flightMasterFindAll db) ∧
-  o.boardingClass.Perm (boardingClassFindAll db) ∧ o.fareType.Perm (fareTypeFindAll db) ∧
-  o.peakTime.Perm (peakTimeFindAll db) ∧
+  o.route.Perm (RouteRepository.findAll db) ∧ o.flightMaster.Perm (FlightRepository.findAllFlightMaster db) ∧
+  o.boardingClass.Perm (BoardingClassRepository.findAll db) ∧ o.fareType.Perm (FareTypeRepository.findAll db) ∧
+  o.peakTime.Perm (PeakTimeRepository.findAll db) ∧
   isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o.airportCl = true ∧
   isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o.boardingClassCl = true ∧
   isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o.fareTypeCl = true ∧
@@ -106,37 +122,37 @@ def load (o : Order) : JResult Providers := do
   return ⟨bcp, ftp, ptp, rtp, fmp⟩
 
 /-- `TicketSharedServiceImpl`（読み込んだ Provider を注入したもの）。 -/
-def Providers.shared (p : Providers) : SourceModel.Fare.TicketSharedService :=
+def Providers.shared (p : Providers) : SourceModel.Domain.Service.B0.TicketSharedServiceImpl :=
   { boardingClassProvider := p.boardingClass, peakTimeProvider := p.peakTime }
 
 /-- 起動時の読み込みと、問い合わせへの答え（並び `o` を選んだとき）。 -/
 def run (ic : SrcInput) (o : Order) : JResult SrcAnswer := do
   let p ← load o
   match ic.query with
-  | .routeOf dep arr => return .route (← getRouteByAirportCd p.route dep arr)
-  | .flightMasterOf name => return .flightMaster (← getFlightMaster p.flightMaster name)
-  | .fareTypeOf cd => return .fareType (← getFareType p.fareType (some cd))
-  | .boardingClassOf cd => return .boardingClass (← getBoardingClass p.boardingClass (some cd))
-  | .peakTimeOn d => return .peakTime (← getPeakTime p.peakTime (some d))
-  | .multiplicationRatioOn d => return .ratio (← SourceModel.Fare.getMultiplicationRatio p.shared (some d))
+  | .routeOf dep arr => return .route (← RouteProvider.getRouteByAirportCd p.route dep arr)
+  | .flightMasterOf name => return .flightMaster (← FlightMasterProvider.getFlightMaster p.flightMaster name)
+  | .fareTypeOf cd => return .fareType (← FareTypeProvider.getFareType p.fareType (some cd))
+  | .boardingClassOf cd => return .boardingClass (← BoardingClassProvider.getBoardingClass p.boardingClass (some cd))
+  | .peakTimeOn d => return .peakTime (← PeakTimeProvider.getPeakTime p.peakTime (some d))
+  | .multiplicationRatioOn d => return .ratio (← SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getMultiplicationRatio p.shared (some d))
   | .config => return .config ic.config
   | .codeList n => return .codeList (match n with
-    | .airport => SourceModel.CodeList.airport o.airportCl
-    | .boardingClass => SourceModel.CodeList.boardingClass o.boardingClassCl
-    | .fareType => SourceModel.CodeList.fareType o.fareTypeCl
-    | .creditType => SourceModel.CodeList.creditType o.creditTypeCl
-    | .creditMonth => SourceModel.CodeList.creditMonth
-    | .creditYear => SourceModel.CodeList.creditYear
-    | .gender => SourceModel.CodeList.gender
-    | .flightType => SourceModel.CodeList.flightType)
+    | .airport => SourceModel.Config.App.AtrsCodeListConfig.CL_AIRPORT o.airportCl
+    | .boardingClass => SourceModel.Config.App.AtrsCodeListConfig.CL_BOARDINGCLASS o.boardingClassCl
+    | .fareType => SourceModel.Config.App.AtrsCodeListConfig.CL_FARETYPE o.fareTypeCl
+    | .creditType => SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE o.creditTypeCl
+    | .creditMonth => SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITMONTH
+    | .creditYear => SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITYEAR
+    | .gender => SourceModel.Config.App.AtrsCodeListConfig.CL_GENDER
+    | .flightType => SourceModel.Config.App.AtrsCodeListConfig.CL_FLIGHTTYPE)
 
 /-- 標準の並び: 順序の無い文は評価の結果のまま、`ORDER BY` の文は安定整列（テストと参照に使う）。 -/
 def standardOrder (db : MasterDb) : Order where
-  route := routeFindAll db
-  flightMaster := flightMasterFindAll db
-  boardingClass := boardingClassFindAll db
-  fareType := fareTypeFindAll db
-  peakTime := peakTimeFindAll db
+  route := RouteRepository.findAll db
+  flightMaster := FlightRepository.findAllFlightMaster db
+  boardingClass := BoardingClassRepository.findAll db
+  fareType := FareTypeRepository.findAll db
+  peakTime := PeakTimeRepository.findAll db
   airportCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db)
   boardingClassCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db)
   fareTypeCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db)

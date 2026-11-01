@@ -12,8 +12,13 @@ import Abstraction.Fare.TotalFareRun
 
 namespace Abstraction.Fare
 open Abstraction.Fare.Preserves
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Spec Spec.EnvPre Spec.Model
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
+  Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine
+  Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha
+  Abstraction.Fare.TotalFareRun Spec Spec.EnvPre Spec.Model
 
 /-- R 課題 ABS-001。 -/
 @[obligation "ABS-001"]
@@ -85,13 +90,13 @@ theorem fareRefines : Refines (Spec.Fare.fareMachine.restrict dev_D002) (fareCon
     have e := calculateFare_eq hα hpre.1
     refine ⟨⟨_, rfl⟩, fun err he => ?_⟩
     have he' : Except.error err =
-        (SourceModel.Fare.calculateFare ic.basicFare ic.discountRate).map fun o => ((), o) := he
+        (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare ic.basicFare ic.discountRate).map fun o => ((), o) := he
     rw [e] at he'
     cases he'
   correct s t ic ia t' oc _ _ hα hpre _ hs := by
     have e := calculateFare_eq hα hpre.1
     have hs' : Except.ok (t', oc) =
-        (SourceModel.Fare.calculateFare ic.basicFare ic.discountRate).map fun o => ((), o) := hs
+        (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare ic.basicFare ic.discountRate).map fun o => ((), o) := hs
     rw [e] at hs'
     simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at hs'
     obtain ⟨-, rfl⟩ := hs'
@@ -107,7 +112,7 @@ theorem fareRefines_initSurj :
 /-- C 課題 ABS-003: 値域内では、[Source] の運賃は [Spec] の運賃に等しいか 100 円少ない（D-002 の前提によらない）。 -/
 @[obligation "ABS-003"]
 theorem fare_diff {ic : FareInput} {i : Spec.Fare.FareInput} (h : aiF ic = some i) (hp : i.Pre) :
-    ∃ v, SourceModel.Fare.calculateFare ic.basicFare ic.discountRate = .ok v ∧
+    ∃ v, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare ic.basicFare ic.discountRate = .ok v ∧
       (v.val = Spec.Fare.fare i.basicFare i.discountRate ∨
         v.val + 100 = Spec.Fare.fare i.basicFare i.discountRate) := by
   refine ⟨_, calculateFare_eq h hp, ?_⟩

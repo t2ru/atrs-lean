@@ -15,7 +15,7 @@
   * 敵対的レビューの指摘に対応した（[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md#more-information)）。D-032 の環境を書式の記号の組にし、ABS-114 の証人を単調な Clock にし、`dev_D001S`・`dev_D002S` と `FlightNamesHaveText` を絞った。
 
 * **Creation**: [ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 2 段の設計を決め、完了した。
-  * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Repository.FlightSeed` を置いた。
+  * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Db.FlightSeed` を置いた。
   * [Spec] に `Spec.Seed.FlightProps`（主キーの一意性・参照整合性）、抽象機械 `Spec.FlightSearch.searchMachine` と SPEC 課題を置いた。
   * [Source] に具体機械 `SourceModel.FlightSearchQuery.searchConcrete`（業務例外は出力の値）と、条件の押し下げ `vacantSeatRows_eq_on` を置いた。
   * `findByVacantSeatSearchCriteria` を PostgreSQL で差分実行するようにした（`tools/conformance/master_sql.py`、`conformance/sql/flight-search.json`、`Tests.FlightSql`、`trace/checks.json` の `pg-flight-sql`）。

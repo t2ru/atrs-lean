@@ -5,7 +5,7 @@
       "id": "lake-test",
       "description": "適合テストベクタの照合（Lean の Tests。lake test）",
       "steps": [{ "cwd": "lean", "argv": ["lake", "test"] }],
-      "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.Ticket.*"] }
+      "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.App.B0.*"] }
     },
     {
       "id": "pg-master-sql",
@@ -14,7 +14,10 @@
         { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
         { "cwd": "lean", "argv": ["lake", "test"] }
       ],
-      "covers": { "names": ["SourceModel.Repository.Schema.*", "SourceModel.Repository.MasterData.*", "SourceModel.Config.*"] }
+      "covers": { "names": ["SourceModel.Db.Schema.*", "SourceModel.Domain.Repository.Route.*", "SourceModel.Domain.Repository.Boardingclass.*",
+        "SourceModel.Domain.Repository.Faretype.*", "SourceModel.Domain.Repository.Peaktime.*",
+        "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster", "SourceModel.Domain.Repository.Flight.FlightRepository.FlightMasterResult",
+        "SourceModel.Config.App.AtrsCodeListConfig.*CodeListRows", "SourceModel.AtrsProperties.*"] }
     },
     {
       "id": "jvm-table",
@@ -53,8 +56,8 @@
         { "cwd": ".", "argv": ["tools/ci/master_sql.sh"] },
         { "cwd": "lean", "argv": ["lake", "test"] }
       ],
-      "covers": { "names": ["SourceModel.Repository.Flight.*", "SourceModel.Repository.FlightSeed.*",
-        "SourceModel.Repository.Schema.FlightRow", "SourceModel.Repository.Mapping.flight"] }
+      "covers": { "names": ["SourceModel.Domain.Repository.Flight.*", "SourceModel.Db.FlightSeed.*",
+        "SourceModel.Db.Schema.FlightRow", "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap"] }
     }
   ]
 }

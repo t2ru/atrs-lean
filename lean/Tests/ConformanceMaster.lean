@@ -18,12 +18,16 @@ import Tests.ConformanceFare
 
 open Lean ConformanceKit Tests.Conformance Tests.ConformanceFare
 
-open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.Int
+  LangSemantics.Java.IntLemmas
 
-open Spec.CodeList Spec.Config Spec.MasterQuery Spec.Model Spec.Prim.Format Spec.Prim.Time
+open Spec.CodeList Spec.Config Spec.MasterQuery Spec.Model
+  Spec.Prim.Format Spec.Prim.Time
 
 namespace Tests.ConformanceMaster
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
 
 /-! ## 共通の JSON -/
 
@@ -89,8 +93,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
 
 /-! ## SourceModel -/
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.MasterQuery
-
+open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.MasterQuery
 
 def vc (n : Nat) (j : Json) (k : String) : Except String (Varchar n) := do liftSql (Varchar.ofString k n (← getStr j k)) k
 def i4 (j : Json) (k : String) : Except String Int4 := do liftSql (Int4.ofInt (← getInt j k)) k
@@ -124,8 +127,8 @@ def decodeDb (m : Json) : Except String MasterDb := do
     creditType := ← (← getArr m "creditTypes").mapM fun c => do
       return { creditTypeCd := ← vc 3 c "creditTypeCd", creditFirm := ← vc 80 c "creditFirm", displayOrder := ← i4 c "displayOrder" } }
 
-def srcConfig (c : Json) : Except String SourceModel.Config.AtrsConfig := do
-  if c.isNull then return SourceModel.Config.upstreamConfig
+def srcConfig (c : Json) : Except String SourceModel.AtrsProperties.AtrsConfig := do
+  if c.isNull then return SourceModel.AtrsProperties.upstreamConfig
   let ft ← getStr c "defaultFlightType"
   let dob ← decodeDate (← getStr c "dateOfBirthMinDate")
   return { limitDay := ← j32 c "limitDay", reserveIntervalTime := ← j32 c "reserveIntervalTime",
@@ -142,20 +145,20 @@ def jdate (r : JRef JLocalDate) : Json :=
   optJson (fun d => .str s!"{padNat 4 d.year.toNat}-{padNat 2 d.month}-{padNat 2 d.day}") r
 
 def srcAnswerJson : SrcAnswer → Json
-  | .route r => optJson (fun (r : SourceModel.Model.Route) => Json.mkObj [("routeNo", jint r.routeNo),
+  | .route r => optJson (fun (r : SourceModel.Domain.Model.Route) => Json.mkObj [("routeNo", jint r.routeNo),
       ("depAirportCd", jstr (r.departureAirport.bind (·.code))), ("arrAirportCd", jstr (r.arrivalAirport.bind (·.code))),
       ("basicFare", jint r.basicFare)]) r
-  | .flightMaster f => optJson (fun (f : SourceModel.Model.FlightMaster) => Json.mkObj [("flightName", jstr f.flightName),
+  | .flightMaster f => optJson (fun (f : SourceModel.Domain.Model.FlightMaster) => Json.mkObj [("flightName", jstr f.flightName),
       ("routeNo", jint (f.route.bind (·.routeNo))), ("departureTime", jstr f.departureTime), ("arrivalTime", jstr f.arrivalTime),
       ("craftType", jstr (f.plane.bind (·.craftType)))]) f
-  | .fareType f => optJson (fun (f : SourceModel.Model.FareType) => Json.mkObj [
+  | .fareType f => optJson (fun (f : SourceModel.Domain.Model.FareType) => Json.mkObj [
       ("fareTypeCd", optJson (fun c => .str (FareTypeCd.toCode c)) f.fareTypeCd), ("fareTypeName", jstr f.fareTypeName),
       ("discountRate", jint f.discountRate), ("rsrvAvailableStartDayNum", jint f.rsrvAvailableStartDayNum),
       ("rsrvAvailableEndDayNum", jint f.rsrvAvailableEndDayNum), ("passengerMinNum", jint f.passengerMinNum)]) f
-  | .boardingClass b => optJson (fun (b : SourceModel.Model.BoardingClass) => Json.mkObj [
+  | .boardingClass b => optJson (fun (b : SourceModel.Domain.Model.BoardingClass) => Json.mkObj [
       ("boardingClassCd", optJson (fun c => .str (BoardingClassCd.toCode c)) b.boardingClassCd),
       ("boardingClassName", jstr b.boardingClassName), ("extraCharge", jint b.extraCharge)]) b
-  | .peakTime p => optJson (fun (p : SourceModel.Model.PeakTime) => Json.mkObj [("peakTimeCd", jstr p.peakTimeCd),
+  | .peakTime p => optJson (fun (p : SourceModel.Domain.Model.PeakTime) => Json.mkObj [("peakTimeCd", jstr p.peakTimeCd),
       ("peakStartDate", jdate p.peakStartDate), ("peakEndDate", jdate p.peakEndDate),
       ("multiplicationRatio", jint p.multiplicationRatio)]) p
   | .ratio n => toJson n.val

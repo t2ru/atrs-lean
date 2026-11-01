@@ -45,9 +45,9 @@ generated:
 
 `master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。[Spec] の値域の外の時刻の便マスタには `outsideSpec` が付く（上流のシードには無い。到着時刻 `2415` は [Spec] の値域の内である。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
 
-マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。空席照会の文 `findByVacantSeatSearchCriteria` の結果は `conformance/sql/flight-search.json` にあり、`Tests.FlightSql` が照合する。FLIGHT 表は 00250 を投入日で実行したもので、生成器 `tools/conformance/flight_seed.py` の展開・`SourceModel.Repository.FlightSeed` と要約で照合する（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。
+マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Domain.Repository.*`・`SourceModel.Config.App.AtrsCodeListConfig` と照合する。[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。空席照会の文 `findByVacantSeatSearchCriteria` の結果は `conformance/sql/flight-search.json` にあり、`Tests.FlightSql` が照合する。FLIGHT 表は 00250 を投入日で実行したもので、生成器 `tools/conformance/flight_seed.py` の展開・`SourceModel.Db.FlightSeed` と要約で照合する（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。
 
-`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]`）。`source-model/` の期待値は、[backlog f18c](../backlog/f18c-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
+`shared/` のベクタの `modelDef` は、`Spec` と `SourceModel` の名前の配列とする（例 `["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]`）。`source-model/` の期待値は、[backlog f18c](../backlog/f18c-java-oracle-harness.md) の Java オラクルができるまで、仕様の例の [Source] の値を使う（`source: "lean-source-model"`）。
 | `fixtures/world-*.json` | 状態を使う操作の初期状態（フライトの空席数、会員、予約、各シーケンスの次の値） |
 
 ## ATRS 固有の前提

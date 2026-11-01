@@ -9,12 +9,18 @@ R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と W 課題 ABS-127�
 -/
 
 namespace Abstraction.MasterData.QueryRun
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.Alpha Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Spec.CodeList Spec.Model
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre
+  Abstraction.MasterData.Query Spec.CodeList Spec.Model
 open LangSemantics.Java.Exception LangSemantics.Java.ResultLemmas LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
 
-open Machine Spec LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
+open Machine Spec LangSemantics.Core SourceModel.Db.Schema
+  SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
+  SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository
+  SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig
+  SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery
 
 /-- 標準の貼り合わせ。 -/
 abbrev glueMQ := Glue.ofStd betaMQ (fun _ => True) aiMQ answerOf?
@@ -93,11 +99,11 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.M
 
 /-- 許される並びの 1 つ: 順序の無い文は評価の結果のまま、`ORDER BY display_order` の文は表示順で `mergeSort`。 -/
 def mergeOrder (db : MasterDb) : Order where
-  route := routeFindAll db
-  flightMaster := flightMasterFindAll db
-  boardingClass := boardingClassFindAll db
-  fareType := fareTypeFindAll db
-  peakTime := peakTimeFindAll db
+  route := RouteRepository.findAll db
+  flightMaster := FlightRepository.findAllFlightMaster db
+  boardingClass := BoardingClassRepository.findAll db
+  fareType := FareTypeRepository.findAll db
+  peakTime := PeakTimeRepository.findAll db
   airportCl := (airportCodeListRows db).mergeSort fun a b => decide (a.displayOrder.val ≤ b.displayOrder.val)
   boardingClassCl := (boardingClassCodeListRows db).mergeSort fun a b => decide (a.displayOrder.val ≤ b.displayOrder.val)
   fareTypeCl := (fareTypeCodeListRows db).mergeSort fun a b => decide (a.displayOrder.val ≤ b.displayOrder.val)
@@ -115,12 +121,12 @@ theorem mergeOrder_allowed (db : MasterDb) : (mergeOrder db).Allowed db :=
 theorem unknownBoardingClass_throws {r : Except JThrow (Unit × SrcAnswer)}
     (h : queryConcrete.step () ic_unknownBoardingClass r) : ∃ msg, r = .error (.illegalArgument msg) := by
   obtain ⟨o, ho, rfl⟩ := h
-  have hb : o.boardingClass = boardingClassFindAll ic_unknownBoardingClass.db :=
+  have hb : o.boardingClass = BoardingClassRepository.findAll ic_unknownBoardingClass.db :=
     List.perm_singleton.mp ho.2.2.1
   refine ⟨"No enum constant BoardingClassCd.X", ?_⟩
-  simp only [run, load, hb, BoardingClassProvider.load, ic_unknownBoardingClass, boardingClassFindAll, Bag.project,
-    List.map_cons, List.map_nil, List.mapM_cons, SourceModel.Repository.Mapping.boardingClass,
-    SourceModel.Repository.Mapping.boardingClassCd]
+  simp only [run, load, hb, BoardingClassProvider.load, ic_unknownBoardingClass, BoardingClassRepository.findAll, Bag.project,
+    List.map_cons, List.map_nil, List.mapM_cons, SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository.boardingClassMap,
+    SourceModel.Domain.Model.BoardingClassCd.valueOf]
   rfl
 
 end Abstraction.MasterData.QueryRun

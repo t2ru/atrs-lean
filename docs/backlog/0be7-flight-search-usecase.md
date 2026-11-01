@@ -66,7 +66,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 2026-11-01 に完了した（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。
 
-- シード 00250 の生成器 `tools/conformance/flight_seed.py` を置いた。生成の形（121 日 × 便名 126 × 枠 10、空席数のパターン 3）のまま、`Spec.Seed.Flight` と `SourceModel.Repository.FlightSeed` を書き出す。
+- シード 00250 の生成器 `tools/conformance/flight_seed.py` を置いた。生成の形（121 日 × 便名 126 × 枠 10、空席数のパターン 3）のまま、`Spec.Seed.Flight` と `SourceModel.Db.FlightSeed` を書き出す。
 - [Spec]:
   - `world_inv`（主キーの一意性）と `world_refMaster` を、全件に展開せずに証明した。
   - 抽象機械 `searchMachine`（選択を持たない `ofChoice`。状態を変えない）を置いた。

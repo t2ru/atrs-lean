@@ -3,17 +3,18 @@ import SourceModel
 /-!
 # Tests.TicketChecks
 
-`SourceModel.Ticket.toFlightList`（`TicketHelper.toFlightList`）と、合計金額の具体機械の実行（`runTotalFare`）の検査。
+`SourceModel.App.B0.TicketHelper.toFlightList`（`TicketHelper.toFlightList`）と、合計金額の具体機械の実行（`runTotalFare`）の検査。
 期待値は原典のコードを読んで手で書いた（オラクルとの照合は backlog f18c）。
 -/
 
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
-open LangSemantics.Java SourceModel.Model SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
+open LangSemantics.Java SourceModel.Domain.Model SourceModel.MasterQuery SourceModel.FareQuery
+  SourceModel.App.B0 SourceModel.App.B0.TicketHelper
 
 namespace Tests.TicketChecks
 
 /-- 空港 2 つ・区間 1 つ（運賃 20,600 円）・便 NTT001・搭乗クラス N（加算料金 0）・運賃種別 OW（割引率 0）の DB。 -/
-def db : SourceModel.Repository.Schema.MasterDb :=
+def db : SourceModel.Db.Schema.MasterDb :=
   { airport := [⟨⟨"HND", by decide⟩, ⟨"Haneda", by decide⟩, ⟨1, by decide⟩⟩,
       ⟨⟨"ITM", by decide⟩, ⟨"Itami", by decide⟩, ⟨2, by decide⟩⟩],
     route := [⟨⟨1, by decide⟩, ⟨"HND", by decide⟩, ⟨"ITM", by decide⟩, ⟨"0100", by decide⟩, ⟨20600, by decide⟩⟩],
@@ -41,7 +42,7 @@ def providers : Option Providers := (load (standardOrder db)).toOption
 
 -- 合計金額（fare-calculation.md の例: 大人 2 名・小児 1 名で 53,600 円）
 def passengers : List (JRef Passenger) := [30, 28, 5].map fun a => some { age := some (J32.ofInt a) }
-#guard ((runTotalFare ⟨db, SourceModel.Config.upstreamConfig, [form (some "NTT001")], passengers⟩
+#guard ((runTotalFare ⟨db, SourceModel.AtrsProperties.upstreamConfig, [form (some "NTT001")], passengers⟩
   (standardOrder db)).toOption.map (·.val)) == some 53600
 
 end Tests.TicketChecks

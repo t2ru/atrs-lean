@@ -16,10 +16,14 @@ ABS-011 の補題: FLIGHT の行ごとの結合の結果（`Join.rowAt`）と、
 namespace Abstraction.FlightSearch.Candidates
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.MasterData.Query
 open Abstraction.MasterData.Pre Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Join
-open LangSemantics.Sql.Core LangSemantics.Core.MapM Machine.Kernel Spec.Model Spec.FlightSearch
+open LangSemantics.Sql.Core LangSemantics.Core.MapM Machine.Kernel Spec.Model
+  Spec.FlightSearch
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema SourceModel.Repository.Flight Spec.Prim Spec.MasterData
-  SourceModel.Repository.MasterData Abstraction.MasterData.Join Abstraction.FlightSearch.Period
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
+  Spec.Prim Spec.MasterData SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository
+  SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository
+  SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig
+  Abstraction.MasterData.Join Abstraction.FlightSearch.Period
 
 /-! ## マスタの引き方 -/
 

@@ -8,7 +8,7 @@
   結果を conformance/sql/flight-search.json に書き出す（backlog 0be7 の第 2 段）。動的 SQL（<foreach>・#{…}）は、
   この文に限って、束縛する値をリテラルにして描画する。投入した FLIGHT 表は書き出さず、要約（行数・整列した全行の md5）を
   生成器 tools/conformance/flight_seed.py の展開と照合し、あわせて生成順の全行の多項式ハッシュ（lake test が
-  SourceModel.Repository.FlightSeed と照合する）を書く。
+  SourceModel.Db.FlightSeed と照合する）を書く。
 - 文の SQL は、上流の Mapper の XML と AtrsCodeListConfig.java から抜き出したものをそのまま使う。
 - PostgreSQL への接続は .agents/skills/spec-pivot/scripts/ci/with_postgres.sh が与える（照合順序 C・UTF8・UTC）。
 

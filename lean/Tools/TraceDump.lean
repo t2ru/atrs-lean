@@ -20,7 +20,6 @@ import Refinement
 
 namespace Tools.TraceDump
 
-
 open Lean
 
 /-- 既定で読むモジュール。 -/

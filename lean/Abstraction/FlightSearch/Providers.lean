@@ -14,7 +14,9 @@ ABS-011 の補題: 起動時の読み込みで作られるキャッシュ（Prov
 -/
 
 namespace Abstraction.FlightSearch.Providers
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Join Abstraction.MasterData.Load
   Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun
   Spec.Model Spec.Prim.Text Abstraction.Fare.Load
@@ -22,7 +24,10 @@ open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exceptio
   LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
+  SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight
+  SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype
+  SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App
+  SourceModel.Config.App.AtrsCodeListConfig SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery
 
 theorem flightMasterOfRow_arr {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
     arrOfStr f.arrivalTime.val = some x.arrivalTime := by
@@ -58,10 +63,10 @@ theorem airportName_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
 
 /-- 便マスタのキャッシュの答え（空席照会が使う成分）: 便名・出発時刻・到着時刻と、区間の出発・到着の空港名。 -/
 theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db)) :
+    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-      ∃ fm r da aa dt art, getFlightMaster fmp name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
+      ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
         fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
         arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧ r.departureAirport = some da ∧
         da.name = Spec.FlightSearch.airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧
@@ -83,11 +88,11 @@ theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname X hX rt hrt' => ?_⟩
-  have hget : getFlightMaster (⟨JHashMap.ofList (o.map fun f =>
-      (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))⟩ : FlightMasterProvider) name.val =
+  have hget : FlightMasterProvider.getFlightMaster (⟨JHashMap.ofList (o.map fun f =>
+      (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))⟩ : FlightMasterProvider) name.val =
       .ok ((JHashMap.ofList (o.map fun f =>
-        (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val) := by
-    simp only [getFlightMaster, assertHasText_ok hname]; rfl
+        (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val) := by
+    simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames] at hget
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
@@ -118,17 +123,17 @@ theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf d
       obtain ⟨hd, ha'⟩ := routeOfRow_codes hrt'
       obtain ⟨hda, haa, -⟩ := route_airport hm h3 h8 hr0m
       refine ⟨_, _, _, _, _, _, by rw [hget]; rfl, ?_, rfl, ?_, rfl, ?_, rfl, rfl, ?_, rfl, ?_⟩
-      · simp only [Function.comp, SourceModel.Repository.Mapping.flightMasterRow, flightMasterResultOf,
-          SourceModel.Repository.Mapping.str, hfn]
+      · simp only [Function.comp, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, flightMasterResultOf,
+          SourceModel.Db.MyBatis.str, hfn]
       · exact Abstraction.FlightSearch.Candidates.flightMasterOfRow_dep hX
       · exact flightMasterOfRow_arr hX
       · rw [hd, airportName_eq hm hapnd hda]
-        simp only [flightMasterResultOf, routeResultOf, SourceModel.Repository.Mapping.str, hrt0]
+        simp only [flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hrt0]
       · rw [ha', airportName_eq hm hapnd haa]
-        simp only [flightMasterResultOf, routeResultOf, SourceModel.Repository.Mapping.str, hrt0]
+        simp only [flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hrt0]
 
 /-- 運賃種別のキャッシュの答えから、コード・名前・割引率を取り出す。 -/
-theorem fareType_of_answer' {r : JRef SourceModel.Model.FareType} {ft : FareType}
+theorem fareType_of_answer' {r : JRef SourceModel.Domain.Model.FareType} {ft : FareType}
     (h : answerOf? (.fareType r) = some (.fareType (some ft.info))) :
     ∃ f d, r = some f ∧ f.fareTypeCd = some ft.fareTypeCd ∧ f.fareTypeName = some ft.fareTypeName ∧
       f.discountRate = some d ∧ d.val = (ft.discountRate : Int) := by
@@ -153,7 +158,7 @@ theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDat
     (hv : md.Valid cfg) {o : Order} (ho : o.Allowed db) :
     ∃ p, load o = .ok p ∧ p.peakTime = PeakTimeProvider.load o.peakTime ∧
       (∀ dep arr : AirportCd, hasText dep.val = true → hasText arr.val = true →
-        ∃ ans, getRouteByAirportCd p.route dep.val arr.val = .ok ans ∧
+        ∃ ans, RouteProvider.getRouteByAirportCd p.route dep.val arr.val = .ok ans ∧
           answerOf? (.route ans) = some (.route (md.routeOf dep arr))) ∧
       (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
@@ -161,7 +166,7 @@ theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDat
         some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
       (∀ name : FlightName, hasText name.val = true →
         ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-        ∃ fm r da aa dt art, getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
+        ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
           fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
           arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧ r.departureAirport = some da ∧
           da.name = Spec.FlightSearch.airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧

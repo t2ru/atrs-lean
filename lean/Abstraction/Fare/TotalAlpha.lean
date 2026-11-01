@@ -11,23 +11,28 @@ import Abstraction.Fare.Alpha
 -/
 
 namespace Abstraction.Fare.TotalAlpha
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Spec.CodeList Spec.Config Spec.Model Spec.Prim.Text
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
+  Abstraction.MasterData.Lookup Spec.CodeList Spec.Config Spec.Model
+  Spec.Prim.Text
 open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always anyOf
+  Covers Covers₂ Nontrivial Nontrivial₂
+  KernelIs)
 
-open Machine LangSemantics.Java Spec Spec.Prim LangSemantics.Core SourceModel.FareQuery
+open Machine LangSemantics.Java Spec Spec.Prim
+  LangSemantics.Core SourceModel.FareQuery
 
 /-! ## 入力（合成） -/
 
 /-- 選択フライト情報: 出発日・便名・搭乗クラス・運賃種別（`null` には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def keyOfForm (f : SourceModel.Ticket.SelectFlightForm) : Option FlightKey :=
+def keyOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option FlightKey :=
   (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
     f.fareTypeCd.map fun ft => ⟨d, ⟨n⟩, bc, ft⟩
 
 /-- 搭乗者の年齢（`null` と負の値には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def ageOfPassenger (p : JRef SourceModel.Model.Passenger) : Option Nat :=
+def ageOfPassenger (p : JRef SourceModel.Domain.Model.Passenger) : Option Nat :=
   (p.bind (·.age)).bind natOfJ32
 
 /-- 合計金額の入力: 設定・マスタ・フライトのキーの列・搭乗者の年齢の列。 -/
@@ -80,7 +85,7 @@ instance : DecidablePred dev_D012 := fun i => by unfold dev_D012; infer_instance
 
 /-- 空港 2 つ・区間 1 つ（運賃 `bf`）・便 1 つ・搭乗クラス N（加算料金 0）・運賃種別 OW（割引率 `disc`）・
 1970-01-01 の積算比率 `ratio` のピーク時期を持つ DB。 -/
-def dbTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) : SourceModel.Repository.Schema.MasterDb :=
+def dbTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) : SourceModel.Db.Schema.MasterDb :=
   { airport := [⟨⟨"HND", by decide⟩, ⟨"Haneda", by decide⟩, ⟨1, by decide⟩⟩,
       ⟨⟨"ITM", by decide⟩, ⟨"Itami", by decide⟩, ⟨2, by decide⟩⟩],
     route := [⟨⟨1, by decide⟩, ⟨"HND", by decide⟩, ⟨"ITM", by decide⟩, ⟨"0100", by decide⟩, bf⟩],
@@ -93,10 +98,10 @@ def dbTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) : SourceModel.Repos
 
 /-- 1970-01-01 の NTT001・N・OW を 1 つ選び、搭乗者の年齢を `ages` とする入力。 -/
 def icTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) (ages : List Int) : TotalFareInput :=
-  { db := dbTF bf ratio disc, config := SourceModel.Config.upstreamConfig,
-    flights := [SourceModel.Ticket.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) (some "NTT001") (some FareTypeCd.OW)
+  { db := dbTF bf ratio disc, config := SourceModel.AtrsProperties.upstreamConfig,
+    flights := [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) (some "NTT001") (some FareTypeCd.OW)
       (some BoardingClassCd.N)],
-    passengers := ages.map fun a => some ({ age := some (J32.ofInt a) } : SourceModel.Model.Passenger) }
+    passengers := ages.map fun a => some ({ age := some (J32.ofInt a) } : SourceModel.Domain.Model.Passenger) }
 
 /-- D-012 の差異が起きる入力: 区間の運賃 10,000,000 円・積算比率 1000%（基本運賃 1 億円）・割引率 0・小児 1 名。 -/
 def icTF012 : TotalFareInput := icTF ⟨10000000, by decide⟩ ⟨1000, by decide⟩ ⟨0, by decide⟩ [5]
@@ -138,8 +143,8 @@ theorem iaTF012_devs : dev_D001T iaTF012 ∧ dev_D002T iaTF012 ∧ ¬ dev_D012 i
 
 /-- 前提を満たさない入力: 便名が `null`。 -/
 def icTFnull : TotalFareInput :=
-  ⟨dbTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩, SourceModel.Config.upstreamConfig,
-    [SourceModel.Ticket.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
+  ⟨dbTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩, SourceModel.AtrsProperties.upstreamConfig,
+    [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
     []⟩
 
 /-- フライトの無い入力（各フライトの述語は自明に成り立つ）。 -/

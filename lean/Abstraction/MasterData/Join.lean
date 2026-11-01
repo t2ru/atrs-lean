@@ -1,10 +1,16 @@
 import LangSemantics.Sql.QueryLemmas
-import SourceModel.Repository.MasterData
+import SourceModel.Db.Schema
+import SourceModel.Domain.Repository.Route.RouteRepository
+import SourceModel.Domain.Repository.Flight.FlightRepository
+import SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
+import SourceModel.Domain.Repository.Faretype.FareTypeRepository
+import SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
+import SourceModel.Config.App.AtrsCodeListConfig
 
 /-!
 # Abstraction.MasterData.Join
 
-Mapper の結合の文（`routeFindAll`・`flightMasterFindAll`）の形。空港コード（区間番号）が表の中で一意で、
+Mapper の結合の文（`RouteRepository.findAll`・`FlightRepository.findAllFlightMaster`）の形。空港コード（区間番号）が表の中で一意で、
 区間の空港（便マスタの区間）が存在するなら、結合の結果は、左の表の行ごとに 1 行ずつ、同じ順に並ぶ。
 -/
 
@@ -12,8 +18,10 @@ namespace Abstraction.MasterData.Join
 open LangSemantics.Core.List
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
-  SourceModel.Repository.MasterData LangSemantics.Core
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository
+  SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
+  SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
+  SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig LangSemantics.Core
 
 theorem eqText_holds {m n : Nat} (a : Varchar m) (b : Varchar n) : (eqText a b).holds = (a.val == b.val) :=
   SqlValue.eq_text_holds a.val b.val
@@ -37,11 +45,11 @@ theorem filter_airport {db : MasterDb} {ap : String → AirportRow} {c : String}
   rw [← this, h.2]
   exact List.filter_congr fun d _ => by rw [Bool.beq_comm]
 
-/-- `routeFindAll`: 区間の行ごとに、出発・到着の空港を結合した 1 行。 -/
+/-- `RouteRepository.findAll`: 区間の行ごとに、出発・到着の空港を結合した 1 行。 -/
 theorem routeFindAll_eq {db : MasterDb} {ap : String → AirportRow}
     (hnd : (db.airport.map (·.airportCd.val)).Nodup)
     (hap : ∀ r ∈ db.route, AirportAt db ap r.depAirportCd.val ∧ AirportAt db ap r.arrAirportCd.val) :
-    routeFindAll db = db.route.map fun r => routeResultOf r (ap r.depAirportCd.val) (ap r.arrAirportCd.val) := by
+    RouteRepository.findAll db = db.route.map fun r => routeResultOf r (ap r.depAirportCd.val) (ap r.arrAirportCd.val) := by
   have e1 : Bag.select (fun ((r, d), a) =>
         (eqText r.depAirportCd d.airportCd).and (eqText r.arrAirportCd a.airportCd))
         (Bag.cross (Bag.cross db.route db.airport) db.airport) =
@@ -61,7 +69,7 @@ theorem routeFindAll_eq {db : MasterDb} {ap : String → AirportRow}
       (fun r hr _ => filter_airport hnd (hap r hr).1)
     rw [List.filter_eq_self.mpr (fun _ _ => rfl)] at this
     simpa using this
-  unfold routeFindAll Bag.project
+  unfold RouteRepository.findAll Bag.project
   rw [e1, e2, List.map_map, List.map_map]
   exact List.map_congr_left fun _ _ => rfl
 
@@ -73,12 +81,12 @@ def flightMasterResultOf (f : FlightMasterRow) (r : RouteRow) (dep arr : Airport
 def RouteAt (db : MasterDb) (rt : Int → RouteRow) (n : Int) : Prop :=
   rt n ∈ db.route ∧ (rt n).routeNo.val = n
 
-/-- `flightMasterFindAll`: 便マスタの行ごとに、区間と、その出発・到着の空港を結合した 1 行。 -/
+/-- `FlightRepository.findAllFlightMaster`: 便マスタの行ごとに、区間と、その出発・到着の空港を結合した 1 行。 -/
 theorem flightMasterFindAll_eq {db : MasterDb} {ap : String → AirportRow} {rt : Int → RouteRow}
     (hnd : (db.airport.map (·.airportCd.val)).Nodup) (hrn : (db.route.map (·.routeNo.val)).Nodup)
     (hap : ∀ r ∈ db.route, AirportAt db ap r.depAirportCd.val ∧ AirportAt db ap r.arrAirportCd.val)
     (hrt : ∀ f ∈ db.flightMaster, RouteAt db rt f.routeNo.val) :
-    flightMasterFindAll db = db.flightMaster.map fun f =>
+    FlightRepository.findAllFlightMaster db = db.flightMaster.map fun f =>
       flightMasterResultOf f (rt f.routeNo.val) (ap (rt f.routeNo.val).depAirportCd.val)
         (ap (rt f.routeNo.val).arrAirportCd.val) := by
   have e1 : Bag.select (fun (((f, r), d), a) =>
@@ -111,7 +119,7 @@ theorem flightMasterFindAll_eq {db : MasterDb} {ap : String → AirportRow} {rt 
         exact List.filter_congr fun r _ => by rw [Bool.beq_comm]
     rw [List.filter_eq_self.mpr (fun _ _ => rfl)] at this
     simpa using this
-  unfold flightMasterFindAll Bag.project
+  unfold FlightRepository.findAllFlightMaster Bag.project
   rw [e1, e2, e3, List.map_map, List.map_map, List.map_map]
   exact List.map_congr_left fun _ _ => rfl
 

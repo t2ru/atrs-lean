@@ -1,6 +1,6 @@
 {
   "operation": "fare.fare",
-  "modelDef": "SourceModel.Fare.calculateFare",
+  "modelDef": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
   "specRef": "docs/spec/fare-calculation.md#運賃",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

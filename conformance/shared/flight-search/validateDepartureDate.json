@@ -2,7 +2,7 @@
   "operation": "flightSearch.validateDepartureDate",
   "modelDef": [
     "Spec.FlightSearch.validateDepartureDate",
-    "SourceModel.FlightSearch.validateDepatureDate"
+    "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate"
   ],
   "specRef": "docs/spec/flight-search.md#照会可能期間",
   "upstream": {

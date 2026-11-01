@@ -12,11 +12,14 @@ import Spec
 
 open Spec Spec.Prim
 
-open Spec.Config Spec.EnvPre Spec.Model Spec.Prim.Int Spec.Prim.Text Spec.Prim.Time
+open Spec.Config Spec.EnvPre Spec.Model Spec.Prim.Int
+  Spec.Prim.Text Spec.Prim.Time
 
 namespace Tests.SpecChecks
 open Spec.Prim.Date
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
 
 /-- `d` の翌日の年月日（規則から直接求める）。 -/
 def nextYmd (d : Date) : Nat × Nat × Nat :=

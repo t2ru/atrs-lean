@@ -50,7 +50,7 @@ generated:
 - [x] Fare・MasterData の移植元側の TR-S1・TR-P・TR-D・TR-K の指摘が 0 件で、移植元側の作業項目が完了しているので失敗扱いで判定される
 - [x] 規約と文書（ADR、traceability、abstraction.md、AGENTS.md）を更新した
 - [x] `tools/ci/lean.sh` が全段通る
-- [x] 本項目を `done` にした状態で、`@[source]` を 1 つ外すと `trace check` が失敗することを確かめた（`SourceModel.Model.Airport` の `toString` を外した dump で TR-S1 の誤り。`doing` の間は警告）
+- [x] 本項目を `done` にした状態で、`@[source]` を 1 つ外すと `trace check` が失敗することを確かめた（`SourceModel.Domain.Model.Airport` の `toString` を外した dump で TR-S1 の誤り。`doing` の間は警告）
 
 ## 参照
 

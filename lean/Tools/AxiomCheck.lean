@@ -18,7 +18,6 @@ import Refinement
 
 namespace Tools.AxiomCheck
 
-
 open Lean
 
 /-- 許可する公理。 -/
