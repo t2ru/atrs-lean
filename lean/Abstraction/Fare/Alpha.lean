@@ -15,10 +15,15 @@ import SourceModel.FareQuery
 -/
 
 namespace Abstraction.Fare.Alpha
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Spec.CodeList
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
+  Spec.CodeList
 open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always anyOf
+  Covers Covers₂ Nontrivial Nontrivial₂
+  KernelIs)
 
 open Machine LangSemantics.Core SourceModel.FareQuery
 
@@ -70,13 +75,13 @@ def dev_D002 (i : Spec.Fare.FareInput) : Prop :=
 /-! ## 例（差異の述語の非自明性と、W 課題の証人） -/
 
 /-- 搭乗クラス N（加算料金 0）と、1970-01-01 の 1 日だけ積算比率 29% のピーク時期を持つ DB。 -/
-def db29 : SourceModel.Repository.Schema.MasterDb :=
+def db29 : SourceModel.Db.Schema.MasterDb :=
   { boardingClass := [⟨⟨"N", by decide⟩, some ⟨"N", by decide⟩, ⟨0, by decide⟩, ⟨1, by decide⟩⟩],
     peakTime := [⟨⟨"P", by decide⟩, ⟨0, by decide⟩, ⟨0, by decide⟩, ⟨29, by decide⟩⟩] }
 
 /-- D-001 の差異が起きる入力: 区間の運賃 100 円・搭乗クラス N・1970-01-01（積算比率 29%）。 -/
 def icBF29 : BasicFareInput :=
-  { db := db29, config := SourceModel.Config.upstreamConfig, basicFareOfRoute := J32.ofInt 100,
+  { db := db29, config := SourceModel.AtrsProperties.upstreamConfig, basicFareOfRoute := J32.ofInt 100,
     boardingClassCd := some .N, depDate := some ⟨1970, 1, 1⟩ }
 
 /-- 前提を満たさない入力: 搭乗クラスが `null`。 -/

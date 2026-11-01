@@ -186,8 +186,8 @@ mod tests {
     fn model_def_string_or_array() {
         assert_eq!(model_defs_of(&serde_json::json!({"modelDef": "Spec.Fare.fare"})), vec!["Spec.Fare.fare"]);
         assert_eq!(
-            model_defs_of(&serde_json::json!({"modelDef": ["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]})),
-            vec!["Spec.Fare.fare", "SourceModel.Fare.calculateFare"]
+            model_defs_of(&serde_json::json!({"modelDef": ["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]})),
+            vec!["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]
         );
         assert!(model_defs_of(&serde_json::json!({"cases": []})).is_empty());
     }

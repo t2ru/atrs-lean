@@ -13,7 +13,7 @@ generated:
 
 # 運賃計算
 
-> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](../../lean/Spec/Fare.lean)、[Source] は Lean [`SourceModel.Fare`](../../lean/SourceModel/Fare.lean)（Provider のキャッシュは [`SourceModel.MasterData`](../../lean/SourceModel/MasterData.lean)）に形式化した（[backlog 25f7](../backlog/25f7-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
+> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](../../lean/Spec/Fare.lean)、[Source] は Lean [`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../../lean/SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)・[`SourceModel.Domain.Common.Util.FareUtil`](../../lean/SourceModel/Domain/Common/Util/FareUtil.lean)・[`SourceModel.Domain.Service.B2.TicketReserveServiceImpl`](../../lean/SourceModel/Domain/Service/B2/TicketReserveServiceImpl.lean)（Provider のキャッシュは `SourceModel.Domain.Common.Masterdata.*Provider`。原典のクラスと 1 対 1。[ADR e41c](../decision/e41c-source-model-mirrors-java-tree.md)）に形式化した（[backlog 25f7](../backlog/25f7-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
 ## 基本運賃
 
@@ -21,7 +21,7 @@ generated:
 
 `basicFare(routeBasicFare: Nat, boardingClassCd, depDate: Date; master) : Nat`
 
-Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、[Source] `SourceModel.Fare.calculateBasicFare`（`getMultiplicationRatio` を含む）。
+Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、[Source] `SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare`（`getMultiplicationRatio` を含む）。
 
 ### 事前条件
 
@@ -70,7 +70,7 @@ basicFare = jd2i( jdmul( jd(j32add(routeBasicFare, extra)),
 
 `fare(basicFare: Nat, discountRate: Nat) : Nat`
 
-Lean: [Spec] `Spec.Fare.fare`、[Source] `SourceModel.Fare.calculateFare`（`FareUtil.ceilFare` は `SourceModel.Fare.ceilFare`）。1430 円・30% の例は、定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Fare.calculateFare_1430_30`（1000）である。
+Lean: [Spec] `Spec.Fare.fare`、[Source] `SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare`（`FareUtil.ceilFare` は `SourceModel.Domain.Common.Util.FareUtil.ceilFare`）。1430 円・30% の例は、定理 `Spec.Fare.fare_1430_30`（1100）と `SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare_1430_30`（1000）である。
 
 ### 事前条件
 
@@ -121,7 +121,7 @@ fare = bdCeilHundredUp( jd2i( jdmul( jd(basicFare),
 
 `totalFare(flights: [Flight], passengers: [Passenger]; master, config) : Nat`
 
-Lean: [Spec] `Spec.Fare.totalFare`（便・区間・搭乗クラス・運賃種別のどれかが無ければ `none`）、[Source] `SourceModel.Fare.calculateTotalFare`。
+Lean: [Spec] `Spec.Fare.totalFare`（便・区間・搭乗クラス・運賃種別のどれかが無ければ `none`）、[Source] `SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare`。
 
 ### 事前条件
 

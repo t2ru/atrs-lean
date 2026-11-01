@@ -10,7 +10,7 @@ import Tests.MasterSql
 `conformance/sql/flight-search.json`（`tools/conformance/master_sql.py` が PostgreSQL で生成）と照合する。
 
 - FLIGHT 表: PostgreSQL に投入した表は、生成器 `flight_seed.py` の展開と md5 で照合済み（生成器の側）。ここでは、
-  `SourceModel.Repository.FlightSeed.seedFlightDb` の全行（生成順）の行数と多項式ハッシュが、同じ展開の値と一致することを
+  `SourceModel.Db.FlightSeed.seedFlightDb` の全行（生成順）の行数と多項式ハッシュが、同じ展開の値と一致することを
   確かめる。こうして PostgreSQL の表と `seedFlightDb` が結ばれる。
 - 各条件: マスタの表（`master-data.json` の `tables`）と `seedFlightDb` から `vacantSeatRowsOn`（条件の押し下げ。
   `vacantSeatRows_eq_on` で `vacantSeatRows` に等しい）を評価し、PostgreSQL の結果の並びが許される並び
@@ -18,8 +18,9 @@ import Tests.MasterSql
   確かめる。束縛する値は、原典の条件 `VacantSeatSearchCriteriaDto` から `bind`（MyBatis の型ハンドラの写し）で作る。
 -/
 
-open Lean LangSemantics.Sql.Core LangSemantics.Sql.Postgresql LangSemantics.Sql.Query SourceModel.Repository.Schema
-  SourceModel.Repository.Flight ConformanceKit Tests.Conformance
+open Lean LangSemantics.Sql.Core LangSemantics.Sql.Postgresql LangSemantics.Sql.Query
+  SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository ConformanceKit
+  Tests.Conformance
 
 open ConformanceKit.SqlTable ConformanceKit.Runner
 
@@ -36,7 +37,7 @@ def canon (r : FlightRow) : String :=
 
 /-- `seedFlightDb` の（行数, 多項式ハッシュ）。 -/
 def seedSummary : Nat × Nat :=
-  let rows := SourceModel.Repository.FlightSeed.seedFlightDb.flight
+  let rows := SourceModel.Db.FlightSeed.seedFlightDb.flight
   (rows.length, rows.foldl (fun h r => polyHash h (canon r)) 0)
 
 /-- 束縛した値（`params`）から、原典の `VacantSeatSearchCriteriaDto` を作る（`bind` が SQL の値にする）。 -/
@@ -55,7 +56,7 @@ def criteria (p : Json) : Except String VacantSeatSearchCriteriaDto := do
            fareTypeList := some fts }
 
 /-- `flight-map` の結果を、結果の列の表し方にする。 -/
-def mappedRow (f : SourceModel.Model.Flight) : Row :=
+def mappedRow (f : SourceModel.Domain.Model.Flight) : Row :=
   [f.departureDate.map (·.formatYMD "-"), f.flightMaster.bind (·.flightName),
    (f.fareType.bind (·.fareTypeCd)).map Spec.Model.FareTypeCd.toCode, f.vacantNum.map fun v => toString v.val,
    (f.boardingClass.bind (·.boardingClassCd)).map Spec.Model.BoardingClassCd.toCode]
@@ -70,15 +71,15 @@ def checkStatement (db : MasterDb) (st : Json) : Except String (String × Bool �
   let id ← getStr st "id"
   let p := bind (← criteria (← st.getObjVal? "params"))
   let pg ← (← getArr st "rows").mapM rowOf
-  let rows := vacantSeatRowsOn db SourceModel.Repository.FlightSeed.seedFlightDb p
+  let rows := vacantSeatRowsOn db SourceModel.Db.FlightSeed.seedFlightDb p
   -- PostgreSQL の各行を、モデルの行（列の値が等しいもの。主キーの列を含むのでただ 1 つ）に戻す
   let o ← pg.mapM fun r => do
     match rows.filter (fun x => resultRow x == r) with
     | [x] => pure x
     | xs => throw s!"{id}: {r} matches {xs.length} model rows"
-  let allowed := isAllowedOrder SourceModel.Repository.MasterData.sortCfg vacantSeatDirs vacantSeatKey rows o
+  let allowed := isAllowedOrder SourceModel.Db.Schema.sortCfg vacantSeatDirs vacantSeatKey rows o
   -- 結果の写像 `flight-map` が例外を投げず、写した値が PostgreSQL の列と一致する
-  let mapped := match o.mapM fun r => SourceModel.Repository.Mapping.flight r.result with
+  let mapped := match o.mapM fun r => SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result with
     | .ok fs => fs.map mappedRow == pg
     | .error _ => false
   return (id, allowed && mapped && o.length == rows.length, s!"{pg.length} rows (model {rows.length}), ORDER BY")

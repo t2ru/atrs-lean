@@ -14,6 +14,9 @@ import Trace.Gap
   相互再帰は強連結成分（SCC）ごとにまとめて計算する。値は 64 bit の 16 進 16 桁。
   属性（追跡属性を含む）は含めない。注釈のハッシュを `rehash` が書き換えても値は変わらない。
 - **module**: 定義のあるモジュール。`scripts/trace` の `rehash` が注釈を書き換えるファイルを引くのに使う。
+- **params**: 明示的な引数の名前（型の先頭の `∀` の既定の束縛子）。**fields**: 構造体なら欄の名前。
+  **range**: 宣言の行の範囲（`[開始, 終了]`。1 始まり）。`scripts/trace` の TR-M（原典との名前の対応）と
+  `review`（原典とモデルの対照表）が使う。どれも `merkle` には含めない。
 - **gaps**: ギャップの登録簿（`@[gap_entry]` の宣言の値と docstring、印 `@[gap]`・`@[deviation]` の定数。`Trace.Gap.gapsJson`）。
 - ハッシュは処理系の内部表現に依存しうる。Lean の版を上げると全定義の値が変わりうる。
 -/
@@ -216,6 +219,28 @@ def moduleOf (env : Environment) (n : Name) : String :=
   | some i => (env.header.moduleNames[i.toNat]?.map (·.toString)).getD ""
   | none => ""
 
+/-- 明示的な引数の名前（型の先頭の `∀` の、既定の束縛子）。 -/
+def explicitParams (env : Environment) (n : Name) : Array String := Id.run do
+  let some ci := env.find? n | return #[]
+  let mut t := ci.type
+  let mut out := #[]
+  for _ in [0:256] do
+    match t with
+    | .forallE x _ b bi =>
+      if bi == .default then out := out.push x.eraseMacroScopes.toString
+      t := b
+    | _ => break
+  return out
+
+/-- 構造体の欄の名前（構造体でなければ空）。 -/
+def structureFields (env : Environment) (n : Name) : Array String :=
+  if isStructure env n then (getStructureFields env n).map (·.toString) else #[]
+
+/-- 宣言の行の範囲（1 始まり。記録が無ければ `none`）。 -/
+def declLines (env : Environment) (n : Name) : Option (Nat × Nat) :=
+  (declRangeExt.find? (level := .server) env n <|> declRangeExt.find? (level := .exported) env n).map
+    fun r => (r.range.pos.line, r.range.endPos.line)
+
 /-- 1 定義の出力。 -/
 structure Entry where
   name : Name
@@ -225,6 +250,12 @@ structure Entry where
   references : Array Name
   /-- 定義のあるモジュール（`rehash` が注釈を書き換えるファイルを引くため）。 -/
   module : String
+  /-- 明示的な引数の名前 -/
+  params : Array String := #[]
+  /-- 構造体の欄の名前 -/
+  fields : Array String := #[]
+  /-- 宣言の行の範囲 -/
+  range : Option (Nat × Nat) := none
 
 /-- JSON に変換する。 -/
 def Entry.toJson (e : Entry) : Json :=
@@ -234,7 +265,12 @@ def Entry.toJson (e : Entry) : Json :=
     ("attributes", Json.mkObj (e.attributes.map fun (k, vs) => (k, Lean.toJson vs))),
     ("merkle", Lean.toJson e.merkle),
     ("references", Lean.toJson (e.references.map (·.toString))),
-    ("module", Lean.toJson e.module)]
+    ("module", Lean.toJson e.module),
+    ("params", Lean.toJson e.params),
+    ("fields", Lean.toJson e.fields),
+    ("range", match e.range with
+      | some (a, b) => Lean.toJson #[a, b]
+      | none => Json.null)]
 
 /-- 環境の全定義を走査して出力を作る（名前順）。 -/
 def dump (env : Environment) (cfg : Config) : Array Entry := Id.run do
@@ -259,7 +295,10 @@ def dump (env : Environment) (cfg : Config) : Array Entry := Id.run do
     attributes := attrsOf env node.name
     merkle := hex64 ((merkle.find? node.name).getD 0)
     references := (refsOf.find? node.name).getD #[]
-    module := moduleOf env node.name }
+    module := moduleOf env node.name
+    params := explicitParams env node.name
+    fields := structureFields env node.name
+    range := declLines env node.name }
 
 /-- 出力全体の JSON。 -/
 def dumpJson (env : Environment) (cfg : Config) : Json :=

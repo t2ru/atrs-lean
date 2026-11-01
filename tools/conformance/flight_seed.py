@@ -11,7 +11,7 @@
 
 生成物:
 - lean/Spec/Seed/Flight.lean: [Spec] の `World` の初期状態 `Spec.Seed.Flight.world`
-- lean/SourceModel/Repository/FlightSeed.lean: [Source] の FLIGHT 表の初期状態 `seedFlightDb`（行の順は INSERT の順）
+- lean/SourceModel/Db/FlightSeed.lean: [Source] の FLIGHT 表の初期状態 `seedFlightDb`（行の順は INSERT の順）
 
 ほかの道具（tools/conformance/master_sql.py）は、`expand()` で全件を展開して PostgreSQL の投入結果と照合する。
 
@@ -27,7 +27,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SQL = ROOT / "upstream/atrs/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00250_insert_flight.sql"
 SPEC_OUT = ROOT / "lean/Spec/Seed/Flight.lean"
-SRC_OUT = ROOT / "lean/SourceModel/Repository/FlightSeed.lean"
+SRC_OUT = ROOT / "lean/SourceModel/Db/FlightSeed.lean"
 LOAD_DATE = datetime.date(2026, 11, 1)
 SEED_LOCATOR = "seed:00250_insert_flight.sql#FLIGHT"
 
@@ -152,13 +152,13 @@ def spec_lean(days, slots, names, tables, h):
 
 def src_lean(days, slots, names, tables, h):
     epoch = datetime.date(1970, 1, 1)
-    L = ["import Trace", "import LangSemantics.Sql.Postgresql", "import SourceModel.Repository.Schema", ""]
-    L += header("SourceModel.Repository.FlightSeed", [
+    L = ["import Trace", "import LangSemantics.Sql.Postgresql", "import SourceModel.Db.Schema", ""]
+    L += header("SourceModel.Db.FlightSeed", [
         "シードの FLIGHT 表（[Source] の状態の初期値。backlog 0be7 の第 2 段）。`C_FLIGHT()` は、投入日 2026-11-01 から",
         "121 日の各日に、空席数のパターン `mod(i, 3)` の INSERT を順に実行する。行の順は INSERT の順（日・便・枠）である。",
         "全件には展開せず、日付・枠・便名・パターンの表から `seedFlightDb` を作る。"])
-    L += ["set_option maxRecDepth 8192", "", "namespace SourceModel.Repository.FlightSeed",
-          "open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema", ""]
+    L += ["set_option maxRecDepth 8192", "", "namespace SourceModel.Db.FlightSeed",
+          "open LangSemantics.Sql.Postgresql SourceModel.Db.Schema", ""]
     L += ["/-- 日付の列（`DATE` の通算日数。投入日から 121 日）。 -/", f'@[source "{SEED_LOCATOR}@{h}"]', "def days : List PgDate := ["]
     L += [f"  ⟨{(d - epoch).days}, by decide⟩," for d in dates(days)]
     L[-1] = L[-1].rstrip(",")
@@ -182,7 +182,7 @@ def src_lean(days, slots, names, tables, h):
           "  (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨d, n, b, f, v⟩", "",
           "/-- シードの FLIGHT 表（`SELECT C_FLIGHT()` の後）。 -/",
           "def seedFlightDb : FlightDb := ⟨(days.zipIdx).flatMap fun (d, i) => dayRows d (pattern i)⟩", "",
-          "end SourceModel.Repository.FlightSeed", ""]
+          "end SourceModel.Db.FlightSeed", ""]
     return "\n".join(L)
 
 

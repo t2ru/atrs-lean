@@ -32,11 +32,11 @@ theorem between_int_holds (x lo hi : Int) :
 /-- L 課題 ABS-010: `isAvailableFareType`（予約可能期間の始まり `depDate − start`・終わり `depDate − end` に今日が
 入るか）は、`beforeDayNum = daysBetween(today, depDate)` についての `beforeDayNum BETWEEN end AND start` と同値。 -/
 @[obligation "ABS-010"]
-theorem isAvailableFareType_between (ft : SourceModel.Model.FareType) (s e : J32)
+theorem isAvailableFareType_between (ft : SourceModel.Domain.Model.FareType) (s e : J32)
     (hs : ft.rsrvAvailableStartDayNum = some s) (he : ft.rsrvAvailableEndDayNum = some e) (dep today : JLocalDate) :
-    SourceModel.FlightSearch.isAvailableFareType (some ft) (some dep) today =
+    SourceModel.Domain.Service.B0.TicketSharedServiceImpl.isAvailableFareType (some ft) (some dep) today =
       .ok (between collationC (.int (JLocalDate.daysBetween today dep)) (.int e.val) (.int s.val)).holds := by
-  simp only [SourceModel.FlightSearch.isAvailableFareType, JRef.deref, between_int_holds]
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.isAvailableFareType, JRef.deref, between_int_holds]
   simp only [JLocalDate.minusDays, JLocalDate.isBefore, JLocalDate.isAfter, JLocalDate.toEpochDay_ofEpochDay]
   have hdb : JLocalDate.daysBetween today dep = dep.toEpochDay - today.toEpochDay := rfl
   simp only [pure_bind]
@@ -52,15 +52,15 @@ theorem isAvailableFareType_between (ft : SourceModel.Model.FareType) (s e : J32
 /-- 搭乗日の検査: [Source] の `validateDepatureDate` は、[Spec] の `outOfPeriod` が真のときだけ業務例外 2001 を投げる。 -/
 theorem validateDepatureDate_eq {cfg : Spec.Config} {limitDay : J32} (hL : limitDay.val = (cfg.limitDay : Int))
     {tJ dJ : JLocalDate} {T D : Date} (hT : dateOfJ tJ = some T) (hD : dateOfJ dJ = some D) :
-    SourceModel.FlightSearch.validateDepatureDate limitDay tJ tJ (some dJ) =
+    SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate limitDay tJ tJ (some dJ) =
       if Spec.FlightSearch.outOfPeriod cfg T D = true then
-        .error (SourceModel.FlightSearch.businessException (SourceModel.FlightSearch.errorCode "e.ar.b1.2001"))
+        .error (SourceModel.Domain.Common.Exception.AtrsBusinessException.new (SourceModel.Domain.Service.B1.TicketSearchErrorCode.code "e.ar.b1.2001"))
       else .ok () := by
   have eT := (dateOfJ_eq_some hT).2
   have eD := (dateOfJ_eq_some hD).2
-  have hcond : (dJ.isBefore tJ || dJ.isAfter (SourceModel.FlightSearch.getSearchLimitDate limitDay tJ)) =
+  have hcond : (dJ.isBefore tJ || dJ.isAfter (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getSearchLimitDate limitDay tJ)) =
       Spec.FlightSearch.outOfPeriod cfg T D := by
-    simp only [SourceModel.FlightSearch.getSearchLimitDate, JLocalDate.plusDays, JLocalDate.isBefore,
+    simp only [SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getSearchLimitDate, JLocalDate.plusDays, JLocalDate.isBefore,
       JLocalDate.isAfter, JLocalDate.toEpochDay_ofEpochDay, Spec.FlightSearch.outOfPeriod]
     have hdb : Date.daysBetween T D = D.epochDay - T.epochDay := rfl
     rw [eT, eD, hL]
@@ -68,10 +68,10 @@ theorem validateDepatureDate_eq {cfg : Spec.Config} {limitDay : J32} (hL : limit
     rw [Bool.eq_iff_iff]
     simp only [Bool.or_eq_true, decide_eq_true_eq, hlt]
     constructor <;> rintro (h | h) <;> first | (left; omega) | (right; omega)
-  unfold SourceModel.FlightSearch.validateDepatureDate
-  simp only [pure_bind]
+  unfold SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind]
   rw [← hcond]
-  cases (dJ.isBefore tJ || dJ.isAfter (SourceModel.FlightSearch.getSearchLimitDate limitDay tJ)) <;> rfl
+  cases (dJ.isBefore tJ || dJ.isAfter (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.getSearchLimitDate limitDay tJ)) <;> rfl
 
 /-- 照会の `beforeDayNum`（`long`）の値は、[Spec] の `daysBetween`。 -/
 theorem beforeDayNum_val {tJ dJ : JLocalDate} {T D : Date} (hT : dateOfJ tJ = some T) (hD : dateOfJ dJ = some D) :

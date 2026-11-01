@@ -27,7 +27,7 @@ generated:
 ## 対象外
 
 - SQL のパーサ
-- ATRS 固有のテーブル定義（`SourceModel.Repository.Schema` で扱う）
+- ATRS 固有のテーブル定義（`SourceModel.Db.Schema` で扱う）
 
 ## 完了条件
 

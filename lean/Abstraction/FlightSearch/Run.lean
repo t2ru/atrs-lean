@@ -14,15 +14,16 @@ ABS-011 の補題: 空席照会の具体機械の 1 歩（`runSearchFlight` と 
 -/
 
 namespace Abstraction.FlightSearch.Run
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Pre Abstraction.MasterData.Query
-  Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Join Abstraction.FlightSearch.Candidates
-  Abstraction.FlightSearch.Order
+  Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Join Abstraction.FlightSearch.Candidates Abstraction.FlightSearch.Order
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.Int
   LangSemantics.Java.ResultLemmas Spec.Model Spec.FlightSearch
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Spec Spec.Prim
-  SourceModel.Repository.Schema SourceModel.Repository.Flight
+open LangSemantics.Java LangSemantics.Sql.Postgresql LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
+  Spec Spec.Prim SourceModel.Db.Schema SourceModel.Domain.Repository.Flight
+  SourceModel.Domain.Repository.Flight.FlightRepository
 
 /-! ## キーの一意性（MD-1・MD-2 から） -/
 
@@ -60,7 +61,7 @@ theorem routeKeys_nodup {db : MasterDb} {md : MasterData} (hm : masterDataOf db 
 /-! ## 束縛する値と文の結果 -/
 
 theorem getFareTypeCdList_eq (t : FlightType) :
-    SourceModel.FlightSearch.getFareTypeCdList (some t) = fareTypesFor t := by
+    SourceModel.Domain.Common.Util.FareTypeUtil.getFareTypeCdList (some t) = fareTypesFor t := by
   cases t <;> rfl
 
 /-- 文の結果の並び: 並べ方が許される並びを返すなら、並べた行の写しは [Spec] の整列した候補で、各行は `RowOk`。 -/
@@ -86,17 +87,17 @@ theorem repo_spec {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterD
 /-! ## 行ごとの写像と Provider での詰め直し -/
 
 /-- `searchFlight` の `flightList.mapM` の本体（Provider で詰め直す）。 -/
-def enrich (ftp : SourceModel.MasterData.FareTypeProvider) (fmp : SourceModel.MasterData.FlightMasterProvider)
-    (bcp : SourceModel.MasterData.BoardingClassProvider) (flight : SourceModel.Model.Flight) :
-    JResult SourceModel.Model.Flight := do
+def enrich (ftp : SourceModel.Domain.Common.Masterdata.FareTypeProvider) (fmp : SourceModel.Domain.Common.Masterdata.FlightMasterProvider)
+    (bcp : SourceModel.Domain.Common.Masterdata.BoardingClassProvider) (flight : SourceModel.Domain.Model.Flight) :
+    JResult SourceModel.Domain.Model.Flight := do
   let ftCd := (← flight.fareType.deref "fareType").fareTypeCd
-  let fareType ← SourceModel.MasterData.getFareType ftp ftCd
+  let fareType ← SourceModel.Domain.Common.Masterdata.FareTypeProvider.getFareType ftp ftCd
   let name ← match (← flight.flightMaster.deref "flightMaster").flightName with
     | some n => pure n
     | none => throw (.illegalArgument "flightName must have some text.")
-  let flightMaster ← SourceModel.MasterData.getFlightMaster fmp name
+  let flightMaster ← SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster fmp name
   let bcCd := (← flight.boardingClass.deref "boardingClass").boardingClassCd
-  let boardingClass ← SourceModel.MasterData.getBoardingClass bcp bcCd
+  let boardingClass ← SourceModel.Domain.Common.Masterdata.BoardingClassProvider.getBoardingClass bcp bcCd
   return { flight with fareType := fareType, flightMaster := flightMaster, boardingClass := boardingClass }
 
 theorem find?_routeNo {md : MasterData} (h1 : md.MD1) {route : Route} (hr : route ∈ md.routes) :
@@ -117,11 +118,11 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
     {p : SourceModel.MasterQuery.Providers}
     (hbcq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
-    (hftq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeCodeMap.get cd)) =
+    (hftq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
     (hfmq : ∀ name : FlightName, Text.hasText name.val = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-      ∃ fm r da aa dt art, SourceModel.MasterData.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
+      ∃ fm r da aa dt art, SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
         fm.flightName = some name.val ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
         fm.arrivalTime = some art ∧ arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧
         r.departureAirport = some da ∧ da.name = airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧
@@ -132,7 +133,7 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
     {bfJ : J32} {b : Nat} (hbf : bfJ.val = (b : Int)) (hb : b ≤ Range.maxBasicFare)
     (hd2 : ∀ ft ∈ md.fareTypes, ft.fareTypeCd ∈ fareTypesFor c.flightType → Abstraction.Fare.Alpha.dev_D002 ⟨b, ft.discountRate⟩)
     {r : VacantSeatRow} {X : Candidate} (hr : RowOk md r X) (hX : X ∈ w.flights.filterMap (candidateOf md c route bdn)) :
-    ∃ F0, SourceModel.Repository.Mapping.flight r.result = .ok F0 ∧
+    ∃ F0, SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result = .ok F0 ∧
       ∃ E, enrich p.fareType p.flightMaster p.boardingClass F0 = .ok E ∧
         Abstraction.FlightSearch.Group.FlightOk LangSemantics.Java.DecimalFormat.Symbols.ascii bfJ b depName arrName E X := by
   obtain ⟨hc, -, -⟩ := hr
@@ -147,10 +148,10 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   obtain ⟨d, hd, bc, hbc, ftc, hftc, v, hvn, rfl⟩ := hF
   simp only at hbcF hfm hft hftin
   subst hbcF
-  refine ⟨(⟨some { fareTypeCd := some ftc }, SourceModel.Repository.Mapping.date r.result.departureDate,
-    SourceModel.Repository.Mapping.int r.result.vacantNum, some { flightName := some r.result.flightName.val },
-    some { boardingClassCd := some c.boardingClassCd }⟩ : SourceModel.Model.Flight), ?_, ?_⟩
-  · simp only [SourceModel.Repository.Mapping.flight, bcCdOf_mapping hbc, ftCdOf_mapping hftc, ok_bind]
+  refine ⟨(⟨some { fareTypeCd := some ftc }, SourceModel.Db.MyBatis.date r.result.departureDate,
+    SourceModel.Db.MyBatis.int r.result.vacantNum, some { flightName := some r.result.flightName.val },
+    some { boardingClassCd := some c.boardingClassCd }⟩ : SourceModel.Domain.Model.Flight), ?_, ?_⟩
+  · simp only [SourceModel.Domain.Repository.Flight.FlightRepository.flightMap, bcCdOf_mapping hbc, ftCdOf_mapping hftc, ok_bind]
     rfl
   -- 便マスタ
   have hfmm := List.mem_of_find?_eq_some hfm
@@ -176,10 +177,10 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   have hfare := Abstraction.Fare.Factors.fare_src_eq' hr100 (b := b) (by omega)
     (Nat.lt_of_le_of_lt (Nat.mul_le_mul hb' (Nat.sub_le 100 ft.discountRate)) (by decide)) (hd2 ft hftm (by
       have hc' := List.find?_some hft; simp only [beq_iff_eq] at hc'; rw [hc']; exact hftin))
-  refine ⟨(⟨p.fareType.fareTypeCodeMap.get ftc, SourceModel.Repository.Mapping.date r.result.departureDate,
-    SourceModel.Repository.Mapping.int r.result.vacantNum, some fmJ,
-    p.boardingClass.boardingClassCodeMap.get c.boardingClassCd⟩ : SourceModel.Model.Flight), ?_, ?_⟩
-  · simp only [enrich, JRef.deref, SourceModel.MasterData.getFareType, SourceModel.MasterData.getBoardingClass,
+  refine ⟨(⟨p.fareType.fareTypeMap.get ftc, SourceModel.Db.MyBatis.date r.result.departureDate,
+    SourceModel.Db.MyBatis.int r.result.vacantNum, some fmJ,
+    p.boardingClass.boardingClassCodeMap.get c.boardingClassCd⟩ : SourceModel.Domain.Model.Flight), ?_, ?_⟩
+  · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, enrich, JRef.deref, SourceModel.Domain.Common.Masterdata.FareTypeProvider.getFareType, SourceModel.Domain.Common.Masterdata.BoardingClassProvider.getBoardingClass,
       hgfm, ok_bind, pure_bind]
     rfl
   · refine ⟨⟨fmJ, rJ, da, aa, dt, art, rfl, hfmJn, hdt, hdt', hat, hat', hrJ, hda, by rw [hdan, hdn], haa,
@@ -207,11 +208,11 @@ theorem mapM_ok_of {β γ : Type} (l : List β) (f : β → JResult γ) (d : γ)
   rw [hy]; rfl
 
 /-- 詰め直しと畳み込み: 各行で詰め直しが例外を投げず `FlightOk` なら、業務例外にならず、写しは [Spec] の `group`。 -/
-theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Model.Flight → JResult SourceModel.Model.Flight)
-    (M : ρ → SourceModel.Model.Flight) (C : ρ → Candidate) {bf : J32} {b : Nat} {dn an : String}
+theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Domain.Model.Flight → JResult SourceModel.Domain.Model.Flight)
+    (M : ρ → SourceModel.Domain.Model.Flight) (C : ρ → Candidate) {bf : J32} {b : Nat} {dn an : String}
     (h : ∀ r ∈ o, ∃ E, F (M r) = .ok E ∧ Abstraction.FlightSearch.Group.FlightOk LangSemantics.Java.DecimalFormat.Symbols.ascii bf b dn an E (C r)) :
     ∃ oc, SourceModel.FlightSearchQuery.catchBusiness
-        ((o.map M).mapM F >>= fun fl => SourceModel.FlightSearch.createFlightVacantInfoList LangSemantics.Java.DecimalFormat.Symbols.ascii fl bf) = .ok oc ∧
+        ((o.map M).mapM F >>= fun fl => SourceModel.Domain.Service.B1.TicketSearchServiceImpl.createFlightVacantInfoList LangSemantics.Java.DecimalFormat.Symbols.ascii fl bf) = .ok oc ∧
       aoS oc = some (.ok (group dn an b (o.map C))) := by
   have hm : (o.map M).mapM F = .ok (o.map fun r => okD {} (F (M r))) := by
     rw [mapM_ok_of (o.map M) F {} (fun x hx => by
@@ -232,11 +233,11 @@ theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Model.Flight → JRes
 /-- 具体側の 1 歩: D-027（入力の像がある）・PRE・D-001・D-002・D-014・D-032 の下で、どの許される並びでも、
 `catchBusiness (runSearchFlight …)` は例外を投げず、結果の写しは [Spec] の `answer`。 -/
 theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
-    {ic : SourceModel.FlightSearch.SearchInput} {i : Spec.FlightSearch.SearchInput} (hα : aiS ic = some i)
+    {ic : SourceModel.FlightSearchQuery.SearchInput} {i : Spec.FlightSearch.SearchInput} (hα : aiS ic = some i)
     (hp : SearchInput.Pre w i) (h1 : dev_D001S i) (h2 : dev_D002S i) (h14 : dev_D014S ic) (h32 : dev_D032 ic)
     {mo : SourceModel.MasterQuery.Order} (hmo : mo.Allowed ic.db) {sortRows : List VacantSeatRow → List VacantSeatRow}
     (hs : SortAllowed sortRows) :
-    ∃ oc, SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearch.runSearchFlight fd ic mo sortRows) = .ok oc ∧
+    ∃ oc, SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearchQuery.runSearchFlight fd ic mo sortRows) = .ok oc ∧
       aoS oc = some (answer w i) := by
   simp only [aiS, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hα
   obtain ⟨cfg, hcfg, md, hm, T, hT, c, hc, rfl⟩ := hα
@@ -247,7 +248,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
   obtain ⟨hcv, hv, hbsome, hdepT, harrT, hfn⟩ := hp
   simp only at hcv hv hbsome hdepT harrT hfn h1 h2
   obtain ⟨p, hl, hpt, hrq, hbcq, hftq, hfmq⟩ := Abstraction.FlightSearch.Providers.load_fs hm hv hmo
-  simp only [SourceModel.FlightSearch.runSearchFlight, hl, ok_bind, SourceModel.FlightSearch.searchFlight, htc, hdj, hbc,
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.FlightSearchQuery.runSearchFlight, hl, ok_bind, SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight, htc, hdj, hbc,
     hdep, harr, hft, pure_bind, Option.getD_some, show ic.sharedClock = (ic.today, ic.today) from h14]
   have hL : ic.config.limitDay.val = (cfg.limitDay : Int) := by
     simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hcfg
@@ -298,9 +299,9 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
       -- 束縛する値
       have hbdn := Abstraction.FlightSearch.Period.beforeDayNum_val hT hDj
       have hparams : bind (⟨some bc, some dj, some rr, some (J64.ofInt (ic.today.daysBetween dj)),
-          some (SourceModel.FlightSearch.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
+          some (SourceModel.Domain.Common.Util.FareTypeUtil.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
           paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D) := by
-        simp only [SourceModel.Repository.Flight.bind, sqlOf, paramsOf, hda, hdac, haa, haac, Option.bind_some, Option.getD_some,
+        simp only [SourceModel.Domain.Repository.Flight.FlightRepository.bind, sqlOf, paramsOf, hda, hdac, haa, haac, Option.bind_some, Option.getD_some,
           getFareTypeCdList_eq, hbdn, (dateOfJ_eq_some hDj).2, fareTypeCdName_eq, boardingClassCdName_eq]
       -- 基本運賃
       obtain ⟨bcM, hbcM⟩ := Option.isSome_iff_exists.mp hbsome
@@ -331,12 +332,12 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
       -- 文の結果
       obtain ⟨hcs, hok⟩ := repo_spec hm hv hw hinv hro (Date.daysBetween T D) hs (c := ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩)
       have hd2 := h2 _ _ hro hop hbasic
-      have hrepo : SourceModel.FlightSearch.repositoryOf ic.db fd sortRows
+      have hrepo : SourceModel.FlightSearchQuery.repositoryOf ic.db fd sortRows
           (⟨some bc, some dj, some rr, some (J64.ofInt (ic.today.daysBetween dj)),
-            some (SourceModel.FlightSearch.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
+            some (SourceModel.Domain.Common.Util.FareTypeUtil.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
           .ok ((sortRows (vacantSeatRows ic.db fd (paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D)))).map
-            fun r => okD {} (SourceModel.Repository.Mapping.flight r.result)) := by
-        unfold SourceModel.FlightSearch.repositoryOf
+            fun r => okD {} (SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result)) := by
+        unfold SourceModel.FlightSearchQuery.repositoryOf
         rw [hparams]
         apply mapM_ok_of
         intro r hr
@@ -357,7 +358,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
         obtain ⟨X0, -, hX0, -, -⟩ := hok r0 (List.mem_cons_self ..)
         have hsorted := mapM_eq_map_getD X0 hcs
         obtain ⟨Y, Ys, -, -, hYs⟩ := mapM_some_cons hcs
-        have hne : (List.map (fun r => okD {} (SourceModel.Repository.Mapping.flight r.result)) (r0 :: os)).isEmpty =
+        have hne : (List.map (fun r => okD {} (SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result)) (r0 :: os)).isEmpty =
           false := rfl
         rw [hne]
         simp only [Bool.false_eq_true, ↓reduceIte, hbfJ, JRef.deref, ok_bind, hcalc, show ic.formatSymbols = LangSemantics.Java.DecimalFormat.Symbols.ascii from h32]

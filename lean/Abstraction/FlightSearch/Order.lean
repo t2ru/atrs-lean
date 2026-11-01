@@ -17,7 +17,10 @@ namespace Abstraction.FlightSearch.Order
 open Abstraction.MasterData.AlphaLeaf Abstraction.FlightSearch.Candidates Spec.FlightSearch Spec.Prim.Time
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Core.MapM
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Flight SourceModel.Repository.MasterData Spec.MasterData Spec.Model
+open LangSemantics.Sql.Postgresql SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Db.Schema
+  SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
+  SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
+  SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig Spec.MasterData Spec.Model
 
 /-! ## 4 桁の数字列の順序 -/
 

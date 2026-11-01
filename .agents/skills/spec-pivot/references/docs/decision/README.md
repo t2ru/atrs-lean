@@ -29,4 +29,6 @@ generated:
 | 1a30 | [Lean の宣言をモジュール名の下に置き、機能の証明課題を機能のモジュールに置く](1a30-lean-module-namespace-layout.md) | accepted | 2026-10-31 |
 | 6b4b | [adequate の廃止: A abstracts B = A preserves B ∧ B refines A](6b4b-preserves-refines-abstracts.md) | accepted | 2026-10-31 |
 | cfad | [この方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改める](cfad-name-the-method-spec-pivot.md) | accepted | 2026-11-01 |
+| 1f75 | [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](1f75-java-expression-syntax-and-spring-assert.md) | accepted | 2026-11-01 |
+| 8a3c | [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](8a3c-mirror-layout-check-and-review-view.md) | accepted | 2026-11-01 |
 | 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |

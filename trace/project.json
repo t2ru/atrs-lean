@@ -20,7 +20,19 @@
     "root": "upstream/atrs/JavaConfig-Thymeleaf/atrs",
     "sql_dirs": [
       "atrs-initdb"
-    ]
+    ],
+    "mirror": {
+      "note": "SourceModel を原典の Java のソースツリーと同じ形に並べる（ADR e41c。TR-M）。shared は、どの定義から引いてもよい横断的な設定のクラス",
+      "lean_root": "SourceModel",
+      "package_prefix": "jp.co.ntt.atrs",
+      "roots": ["Domain", "App", "Config", "Api"],
+      "case": "upper-camel",
+      "shared": [
+        "jp.co.ntt.atrs.config.app.mybatis.MybatisConfig",
+        "jp.co.ntt.atrs.config.app.AtrsInfraConfig",
+        "jp.co.ntt.atrs.config.app.ApplicationContextConfig"
+      ]
+    }
   },
   "target": {
     "root": "rust",

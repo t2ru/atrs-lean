@@ -102,7 +102,7 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
 
 - 機能の名前空間は `<層>.<x>` で、`x` は適用先の機能の対応表（`trace/features.json` の `lean`）に挙げたものとする。
 - `trace check` の TR-L1 は、R 課題と W 課題が機能の名前空間に直接あることを、TR-L2 は、機能のモジュールに上の表のもの以外が無いことを確かめる（[traceability.md](../../spec/traceability.md#検査)）。C 課題と L 課題は道具で区別できないので、この表で分ける。
-- `Spec` の機能のモジュール（`Spec/Fare.lean`）は、機械と SPEC 課題を持ち、補助は `Spec.Fare.*` の下位に置いてよい。`SourceModel`・`TargetModel` はソースの構造を写すので、NS-1 だけを課す。
+- `Spec` の機能のモジュール（`Spec/Fare.lean`）は、機械と SPEC 課題を持ち、補助は `Spec.Fare.*` の下位に置いてよい。`SourceModel`・`TargetModel` はソースの構造を写すので、NS-1 だけを課す。`SourceModel` のモジュールは原典のソースツリーの形に並べる（言語パックの `layout.md`。TR-M）。
 
 ## 書き方
 
@@ -115,6 +115,7 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
   - `structure`・`inductive`
   - `LangSemantics.<移植先>` の演算
 - `SourceModel` は移植元ソースの構造を、`TargetModel` は移植先ソースの構造（関数の分け方・評価順・エラーの返し方）を、そのまま写す。最適化を抽象化してはならない。抽象化は `Abstraction` / `Refinement` の仕事である。
+- `SourceModel` の式は、言語パックに式の構文があればそれで書く（Java は `java!`）。原典と同じ字面になり、展開した項は原始関数の項と同じである。
 - `LangSemantics` にはアプリ固有の型・用語を入れてはならない。言語仕様の該当節を docstring と `lang:` ロケータに書く。
 - 言語の例外・パニックは、`LangSemantics.<Lang>` の値として明示的に表す。Lean の `panic!` で表してはならない。
 

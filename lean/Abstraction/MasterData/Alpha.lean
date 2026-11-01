@@ -16,14 +16,17 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 -/
 
 namespace Abstraction.MasterData.Alpha
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.CodeList Spec.Model
 open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Kernel
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always anyOf
+  Covers Covers₂ Nontrivial Nontrivial₂
+  KernelIs)
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
-
+open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim
+  LangSemantics.Core SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.AtrsProperties
 
 /-! ## DB の行（葉） -/
 
@@ -290,13 +293,13 @@ def aiMQ (ic : SrcInput) : Option (Config × MasterData × Spec.MasterQuery.Quer
 namespace AnswerOf
 
 /-- 区間のうち [Spec] が観測する成分（区間番号・運賃・出発・到着の空港コード）。 -/
-def routeObs (r : SourceModel.Model.Route) : SourceModel.Model.Route :=
+def routeObs (r : SourceModel.Domain.Model.Route) : SourceModel.Domain.Model.Route :=
   { routeNo := r.routeNo, basicFare := r.basicFare,
     departureAirport := r.departureAirport.map fun a => { code := a.code },
     arrivalAirport := r.arrivalAirport.map fun a => { code := a.code } }
 
 /-- 便マスタのうち [Spec] が観測する成分（便名・時刻・区間番号・機材の型式）。 -/
-def flightMasterObs (f : SourceModel.Model.FlightMaster) : SourceModel.Model.FlightMaster :=
+def flightMasterObs (f : SourceModel.Domain.Model.FlightMaster) : SourceModel.Domain.Model.FlightMaster :=
   { flightName := f.flightName, departureTime := f.departureTime, arrivalTime := f.arrivalTime,
     route := f.route.map fun r => { routeNo := r.routeNo }, plane := f.plane.map fun p => { craftType := p.craftType } }
 
@@ -305,14 +308,14 @@ def opt {α β : Type} (f : α → Option β) : Option α → Option (Option β)
   | none => some none
   | some a => (f a).map some
 
-def route (r : SourceModel.Model.Route) : Option Spec.MasterData.Route := do
+def route (r : SourceModel.Domain.Model.Route) : Option Spec.MasterData.Route := do
   let no ← r.routeNo.bind natOfJ32
   let bf ← r.basicFare.bind natOfJ32
   let dep ← r.departureAirport.bind (·.code)
   let arr ← r.arrivalAirport.bind (·.code)
   pure ⟨no, ⟨dep⟩, ⟨arr⟩, bf⟩
 
-def flightMaster (f : SourceModel.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
+def flightMaster (f : SourceModel.Domain.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
   let name ← f.flightName
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
@@ -320,13 +323,13 @@ def flightMaster (f : SourceModel.Model.FlightMaster) : Option Spec.MasterData.F
   let ct ← f.plane.bind (·.craftType)
   pure ⟨⟨name⟩, no, dt, ar, ct⟩
 
-def boardingClass (b : SourceModel.Model.BoardingClass) : Option MasterData.BoardingClassInfo := do
+def boardingClass (b : SourceModel.Domain.Model.BoardingClass) : Option MasterData.BoardingClassInfo := do
   let cd ← b.boardingClassCd
   let nm ← b.boardingClassName
   let ex ← b.extraCharge.bind natOfJ32
   pure ⟨cd, nm, ex⟩
 
-def fareType (f : SourceModel.Model.FareType) : Option MasterData.FareTypeInfo := do
+def fareType (f : SourceModel.Domain.Model.FareType) : Option MasterData.FareTypeInfo := do
   let cd ← f.fareTypeCd
   let nm ← f.fareTypeName
   let dr ← f.discountRate.bind natOfJ32
@@ -335,7 +338,7 @@ def fareType (f : SourceModel.Model.FareType) : Option MasterData.FareTypeInfo :
   let pm ← f.passengerMinNum.bind natOfJ32
   pure ⟨cd, nm, dr, s, e, pm⟩
 
-def peakTime (p : SourceModel.Model.PeakTime) : Option Spec.MasterData.PeakTime := do
+def peakTime (p : SourceModel.Domain.Model.PeakTime) : Option Spec.MasterData.PeakTime := do
   let cd ← p.peakTimeCd
   let s ← p.peakStartDate.bind dateOfJ
   let e ← p.peakEndDate.bind dateOfJ
@@ -402,7 +405,7 @@ theorem natOfJ32_inj {x y : J32} {n : Nat} (hx : natOfJ32 x = some n) (hy : natO
 
 namespace AnswerOf
 
-theorem route_inj {r r' : SourceModel.Model.Route} {c : Spec.MasterData.Route} (h : route r = some c)
+theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.Route} (h : route r = some c)
     (h' : route r' = some c) : routeObs r = routeObs r' := by
   simp only [route, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨no, ⟨v, hv, e1⟩, bf, ⟨w, hw, e2⟩, dep, ⟨a, ha, e3⟩, arr, ⟨b, hb, e4⟩, rfl⟩ := h
@@ -417,7 +420,7 @@ theorem route_inj {r r' : SourceModel.Model.Route} {c : Spec.MasterData.Route} (
   subst hv hw ha hb hv' hw' ha' hb'
   simp only [routeObs, Option.map_some, natOfJ32_inj e1 f1, natOfJ32_inj e2 f2]
 
-theorem flightMaster_inj {f f' : SourceModel.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
+theorem flightMaster_inj {f f' : SourceModel.Domain.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
     (h : flightMaster f = some c) (h' : flightMaster f' = some c) : flightMasterObs f = flightMasterObs f' := by
   simp only [flightMaster, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨nm, hn, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
@@ -434,7 +437,7 @@ theorem flightMaster_inj {f f' : SourceModel.Model.FlightMaster} {c : Spec.Maste
   simp only [flightMasterObs, Option.map_some, natOfJ32_inj e1 f1, inj_of_kernel hmOfStr_kernel e2 f2,
     inj_of_kernel arrOfStr_kernel e3 f3]
 
-theorem boardingClass_inj {b b' : SourceModel.Model.BoardingClass} {c : MasterData.BoardingClassInfo}
+theorem boardingClass_inj {b b' : SourceModel.Domain.Model.BoardingClass} {c : MasterData.BoardingClassInfo}
     (h : boardingClass b = some c) (h' : boardingClass b' = some c) : b = b' := by
   simp only [boardingClass, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨cd, hc, nm, hn, ex, ⟨v, hv, e1⟩, rfl⟩ := h
@@ -446,7 +449,7 @@ theorem boardingClass_inj {b b' : SourceModel.Model.BoardingClass} {c : MasterDa
   subst hc hn hv hc' hn' hv'
   rw [natOfJ32_inj e1 f1]
 
-theorem fareType_inj {f f' : SourceModel.Model.FareType} {c : MasterData.FareTypeInfo}
+theorem fareType_inj {f f' : SourceModel.Domain.Model.FareType} {c : MasterData.FareTypeInfo}
     (h : fareType f = some c) (h' : fareType f' = some c) : f = f' := by
   simp only [fareType, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨cd, hc, nm, hn, dr, ⟨v1, h1, e1⟩, st, ⟨v2, h2, e2⟩, en, ⟨v3, h3, e3⟩, pm, ⟨v4, h4, e4⟩, rfl⟩ := h
@@ -458,7 +461,7 @@ theorem fareType_inj {f f' : SourceModel.Model.FareType} {c : MasterData.FareTyp
   subst hc hn h1 h2 h3 h4 hc' hn' k1 k2 k3 k4
   rw [natOfJ32_inj e1 f1, natOfJ32_inj e2 f2, natOfJ32_inj e3 f3, natOfJ32_inj e4 f4]
 
-theorem peakTime_inj {p p' : SourceModel.Model.PeakTime} {c : Spec.MasterData.PeakTime}
+theorem peakTime_inj {p p' : SourceModel.Domain.Model.PeakTime} {c : Spec.MasterData.PeakTime}
     (h : peakTime p = some c) (h' : peakTime p' = some c) : p = p' := by
   simp only [peakTime, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨cd, hc, s, ⟨d1, h1, e1⟩, e, ⟨d2, h2, e2⟩, r, ⟨v, h3, e3⟩, rfl⟩ := h

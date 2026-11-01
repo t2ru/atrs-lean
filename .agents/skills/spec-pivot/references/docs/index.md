@@ -60,6 +60,8 @@ okf_version: "0.2"
 # Decisions
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
+* [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](decision/1f75-java-expression-syntax-and-spring-assert.md) - 移植元のモデルの式を、原典の Java の式と同じ字面で書けるよう、LangSemantics.Java に式の構文 java!（JLS の優先順位・数値昇格・リテラルの型・キャスト・短絡評価・例外を投げうる式）を置く。展開した項は原始関数を手で書いた項と構文として同じで、証明は変えない。あわせて Spring の Assert を同じ名前で置き、原典の語彙とモデルの語彙の対応表を言語パックに書く。
+* [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](decision/8a3c-mirror-layout-check-and-review-view.md) - 移植元のモデルのモジュールを原典のクラスと 1 対 1 にする規則を言語パックに置き、プロジェクトの設定 source.mirror で有効にする。配置・名前・引数・欄の対応を trace check の TR-M で検査し、原典とモデルを並べた静的な HTML を trace review で生成する。trace-dump は宣言の引数・欄・行の範囲を出力する。
 * [スキル spec-pivot の Lean パッケージを assets/lean/ に置く](decision/6edf-lean-package-under-skill-assets-lean.md) - スキル spec-pivot の assets 直下にあった Lake パッケージ langSemantics（LangSemantics・Machine とその検査）を assets/lean/ に移し、assets の下を資産の種類ごとに分ける。Lean 以外の資産（assets/verus/ など）は assets/lean/ の外に置く。
 * [追跡の道具の未確定事項（本文ハッシュ・正規化・ロケータの細部・機能と backlog の対応）を決める](decision/0eea-trace-tooling-unresolved-details.md) - ATRS の ADR e2a4 と言語パックで未確定だった、本文ハッシュの方式、正規化での空白の扱い、private の呼び先の連結、ロケータとハッシュの区切り、seed:・tmpl:・xml:・http:・prop:/msg: の形、dep:/lang: の版の文字列、警告と誤りを決める機能と backlog の対応表（trace/features.json）、合格の記録が無い場合、TR-P の数え方を決める。
 * [rehash・diff・impact の細部（検査の登録・注釈の書き換え・改名・出典の検査）を決める](decision/9cd9-rehash-diff-impact-details.md) - ATRS の ADR e2a4 の rehash・diff・impact について、検査の登録（trace/checks.json）とそれが覆う定義、rehash の対象と手順、Lean の注釈の書き換え方、renames.json の検査、diff の分類と impact の伝播、文書の「出典:」のロケータの検査を決める。ADR 0eea を補う。

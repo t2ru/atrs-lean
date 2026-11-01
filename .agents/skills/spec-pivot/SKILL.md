@@ -3,7 +3,7 @@ name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java oracles, Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java オラクル用の JDK、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。
 metadata:
-  version: "0.19"
+  version: "0.20"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -127,7 +127,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 0. **評価する**（任意）。対象ごとに適用の前提を確かめ、適用する範囲を決める（[workflow.md](references/docs/guide/workflow.md#評価)）。
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。
 2. **草案を書く**。仕様文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/docs/rules/spec-documents.md)）。
-3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/docs/lang/lean/rules.md)）。
+3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/docs/lang/lean/rules.md)）。`SourceModel` は原典のソースツリーの形に並べ、式・語彙を原典と同じ字面で書く（Java は `java!`・`Assert.*`。[lang/java/layout.md](references/docs/lang/java/layout.md#移植元として原典を読む)）。人が見比べるときは `trace review` の対照表を使う。
 4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R。`Machine.Refines`、B refines A）とその束（`Machine.Preserves`、A preserves B）、差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。`Abstraction.lean` のトップレベルには、機能の機械を並置した `Spec.machine` と `SourceModel.machine` の `Machine.Refines`・`Machine.Preserves`・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）を置く（[architecture.md](references/docs/spec/architecture.md#トップレベルの主定理)）。
 5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN`（R・W）を証明する。
 6. **ベクタを生成する**。`Spec`・`SourceModel`・`TargetModel` を実行して期待値を作る。`SourceModel` 側は移植元オラクルでも確かめる（[conformance.md](references/docs/spec/conformance.md)）。

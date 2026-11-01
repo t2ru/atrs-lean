@@ -9,18 +9,25 @@ R 課題 ABS-004（合計金額。`Abstraction.Fare.totalFareRefines`）と W �
 -/
 
 namespace Abstraction.Fare.TotalFareRun
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.Loop Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.QueryRun Spec.CodeList Spec.Model Spec.Prim.Int Spec.Prim.Text
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.Loop
+  Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
+  Abstraction.MasterData.Pre Abstraction.MasterData.QueryRun Spec.CodeList Spec.Model
+  Spec.Prim.Int Spec.Prim.Text
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception
+  LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec Spec.Prim LangSemantics.Core SourceModel.MasterData
-  SourceModel.MasterQuery SourceModel.FareQuery SourceModel.Ticket
+open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
+  SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery SourceModel.FareQuery SourceModel.App.B0
+  SourceModel.App.B0.TicketHelper
 
 /-- `toFlight` が作るフライト情報（読み込んだ Provider で引く）。 -/
-def mkFlight (p : Providers) (f : SelectFlightForm) : SourceModel.Model.Flight :=
+def mkFlight (p : Providers) (f : SelectFlightForm) : SourceModel.Domain.Model.Flight :=
   { departureDate := f.depDate, flightMaster := f.flightName.bind p.flightMaster.flightMasterMap.get,
-    fareType := f.fareTypeCd.bind p.fareType.fareTypeCodeMap.get,
+    fareType := f.fareTypeCd.bind p.fareType.fareTypeMap.get,
     boardingClass := f.boardingClassCd.bind p.boardingClass.boardingClassCodeMap.get }
 
 theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k) :
@@ -33,12 +40,12 @@ theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = s
 theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
     (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
   obtain ⟨dj, hdj, -, hn, hbc, hft⟩ := keyOfForm_eq h
-  simp only [toFlight, hn, getFlightMaster, assertHasText_ok ht, getFareType, hft, getBoardingClass, hbc, ok_bind,
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, toFlight, hn, FlightMasterProvider.getFlightMaster, assertHasText_ok ht, FareTypeProvider.getFareType, hft, BoardingClassProvider.getBoardingClass, hbc, ok_bind,
     pure_bind, SourceModel.FareQuery.ticketHelper, mkFlight, Option.bind_some]
   rfl
 
 theorem assertNotEmpty_cons {α : Type} (x : α) (xs : List α) (m : String) :
-    SourceModel.Fare.assertNotEmpty (some (x :: xs)) m = .ok (x :: xs) := rfl
+    LangSemantics.Java.Spring.Assert.notEmptyValue (some (x :: xs)) m = .ok (x :: xs) := rfl
 
 theorem routeOfFlightName_mem {md : MasterData} {n : FlightName} {rt : Route}
     (h : Spec.Fare.routeOfFlightName md n = some rt) : rt ∈ md.routes := by
@@ -106,18 +113,18 @@ theorem flightTotalOfKey_le {cfg : Config} {md : MasterData} (hcv : cfg.Valid) (
   omega
 
 theorem assertNotEmpty_ok {α : Type} {l : List α} (h : l ≠ []) (m : String) :
-    SourceModel.Fare.assertNotEmpty (some l) m = .ok l := by
+    LangSemantics.Java.Spring.Assert.notEmptyValue (some l) m = .ok l := by
   cases l with
   | nil => exact absurd rfl h
   | cons x xs => rfl
 
-theorem configOf_fields {c : SourceModel.Config.AtrsConfig} {cfg : Config} (h : configOf c = some cfg) :
+theorem configOf_fields {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Config} (h : configOf c = some cfg) :
     c.adultPassengerMinAge.val = (cfg.adultPassengerMinAge : Int) ∧ c.childFareRate.val = (cfg.childFareRate : Int) := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, rfl⟩ := h
   exact ⟨natOfJ32_eq_some.mp e4, natOfJ32_eq_some.mp e5⟩
 
-theorem ageOfPassenger_eq {p : JRef SourceModel.Model.Passenger} {a : Nat} (h : ageOfPassenger p = some a) :
+theorem ageOfPassenger_eq {p : JRef SourceModel.Domain.Model.Passenger} {a : Nat} (h : ageOfPassenger p = some a) :
     ∃ pp aJ, p = some pp ∧ pp.age = some aJ ∧ aJ.val = (a : Int) := by
   simp only [ageOfPassenger, Option.bind_eq_some_iff] at h
   obtain ⟨aJ, ⟨pp, rfl, hpp⟩, ha⟩ := h
@@ -161,7 +168,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     have := mapM_length hks; intro e; rw [List.map_eq_nil_iff] at e; rw [e] at this; simp at this; omega
   have hpne : ic.passengers ≠ [] := by
     have := mapM_length hages; intro e; rw [e] at this; simp at this; omega
-  simp only [runTotalFare, hl, ok_bind, htf, SourceModel.Fare.calculateTotalFare, assertNotEmpty_ok hfne,
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runTotalFare, hl, ok_bind, htf, SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare, assertNotEmpty_ok hfne,
     assertNotEmpty_ok hpne]
   rw [forIn_count_eq (P := fun a => decide (a < cfg.adultPassengerMinAge)) ic.passengers ages (J32.ofInt 0) 0 ?_
     (by decide) (by have := mapM_length hages; omega)]
@@ -177,7 +184,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       have hS : (J32.ofInt (S : Int)).val = (S : Int) := J32.val_ofInt_of_inRange _ ⟨by
         simp only [J32.minValue]; omega, by simp only [J32.maxValue]; omega⟩
       show Except.ok _ = _
-      rw [← J32.ofInt_val (SourceModel.Fare.ceilFare _), SourceModel.Fare.ceilFare,
+      rw [← J32.ofInt_val (SourceModel.Domain.Common.Util.FareUtil.ceilFare _), SourceModel.Domain.Common.Util.FareUtil.ceilFare,
         bdCeilHundredUp_val (by rw [hS]; omega) (by rw [hS, Int.toNat_natCast]; omega), hS, Int.toNat_natCast]
       simp only [ceilTo]
       congr 4
@@ -187,12 +194,12 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       obtain ⟨rt, bc, ft, hrt, hbc, hft, hvdef⟩ := flightTotalOfKey_eq hv'
       obtain ⟨fm, r, bJ, hgfm, hfmr, hrb, hbJ⟩ := hmf k.flightName (hpt k hk) rt hrt
       have hgetfm : p.flightMaster.flightMasterMap.get k.flightName.val = some fm := by
-        simp only [getFlightMaster, assertHasText_ok (hpt k hk), ok_bind] at hgfm
+        simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok (hpt k hk), ok_bind] at hgfm
         exact Except.ok.inj hgfm
       obtain ⟨bcJ, e, hgetbc, hbccd, hex, heval⟩ := boardingClass_of_answer
         (r := p.boardingClass.boardingClassCodeMap.get k.boardingClassCd) (by rw [hbq, hbc]; rfl)
       obtain ⟨fJ, dJ, hgetft, hdr, hdval⟩ := fareType_of_answer
-        (r := p.fareType.fareTypeCodeMap.get k.fareTypeCd) (by rw [hfq, hft]; rfl)
+        (r := p.fareType.fareTypeMap.get k.fareTypeCd) (by rw [hfq, hft]; rfl)
       have hbcmem := boardingClassOf_mem hbc
       have hftmem := fareTypeOf_mem hft
       have hX : rt.basicFare + bc.extraCharge ≤ 10000000 :=
@@ -215,7 +222,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       generalize hXd : rt.basicFare + bc.extraCharge = X at *
       have hb8 : X * C / 100 ≤ 100000000 := by have := Nat.mul_le_mul hX hC; omega
       generalize hbd : X * C / 100 = bb at *
-      simp only [mkFlight, pure_bind, hn, Option.bind_some, hgetfm, JRef.deref, ok_bind, hfmr, hrb, hbcd, hgetbc,
+      simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, mkFlight, pure_bind, hn, Option.bind_some, hgetfm, JRef.deref, ok_bind, hfmr, hrb, hbcd, hgetbc,
         SourceModel.FareQuery.ticketReserveService, hftd, hgetft, hdr]
       rw [hbccd, hbcmem.2, hdj, hcb, ok_bind,
         calculateFare_ok (b := bb) (r := ft.discountRate) hvb hdval hr100, ok_bind]
@@ -223,6 +230,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       have hmul := j32mul_nat hvb hsub hd12
       obtain ⟨cp, hcp, hcpv⟩ := jdiv32_nat hmul
       rw [hcp, ok_bind]
+      simp only [pure_bind]
       -- 値
       have hlen : ic.passengers.length = ages.length := mapM_length hages
       rw [hlen]
@@ -253,7 +261,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     · simp only [Nat.zero_add]; omega
   · refine forall₂_of_mapM_id ic.passengers ages hages fun x hx a _ ha b => ?_
     obtain ⟨pp, aJ, rfl, hage, haJ⟩ := ageOfPassenger_eq ha
-    simp only [pure_bind, JRef.deref, hage, ok_bind, SourceModel.FareQuery.ticketReserveService, haJ, hamin]
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, JRef.deref, hage, ok_bind, SourceModel.FareQuery.ticketReserveService, haJ, hamin]
     by_cases hlt : a < cfg.adultPassengerMinAge
     · simp [hlt]; rfl
     · simp [hlt]; rfl
@@ -284,9 +292,9 @@ theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
 /-- `icTF012` の [Source] の合計金額は 17,050,400 円（小児分の途中計算 `100,000,000 × 60` が int32 で折り返す）。 -/
 theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .ok (J32.ofInt 17050400) := by
   have ht : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
-  have hA : ∀ m, SourceModel.MasterData.assertHasText "NTT001" m = .ok () := fun m => assertHasText_ok ht m
+  have hA : ∀ m, LangSemantics.Java.Spring.Assert.hasText "NTT001" m = .ok () := fun m => assertHasText_ok ht m
   have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩] := rfl
-  simp only [runTotalFare, hfl, toFlightList, List.mapM_cons, List.mapM_nil, toFlight, pure_bind, getFlightMaster, hA,
+  simp only [runTotalFare, hfl, toFlightList, List.mapM_cons, List.mapM_nil, toFlight, pure_bind, FlightMasterProvider.getFlightMaster, hA,
     ok_bind]
   rfl
 

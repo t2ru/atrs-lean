@@ -45,7 +45,7 @@ def hhmm (h m : Nat) : String := padNat 2 h ++ padNat 2 m
 theorem hhmm_table : ∀ h < 48, ∀ m < 60,
     ArrivalTime.parseHHmm (hhmm h m) = ArrivalTime.ofHm? h m ∧
     (h < 24 → HourMinute.parseHHmm (hhmm h m) = HourMinute.ofHm? h m) ∧
-    (SourceModel.FlightSearch.toFormatTimeString (some (hhmm h m))).toOption = some (some (padNat 2 h ++ ":" ++ padNat 2 m)) := by
+    (SourceModel.Domain.Common.Util.DateTimeUtil.toFormatTimeString (some (hhmm h m))).toOption = some (some (padNat 2 h ++ ":" ++ padNat 2 m)) := by
   decide +kernel
 
 /-! ## 時刻 -/
@@ -70,14 +70,14 @@ theorem hm_eq_hhmm {s : String} {t : HourMinute} (h : hmOfStr s = some t) : s = 
 
 /-- 到着時刻の文字列の `toFormatTimeString` は、読んだ到着時刻の `fmtArrTime`。 -/
 theorem toFormatTimeString_arr {s : String} {t : ArrivalTime} (h : arrOfStr s = some t) :
-    SourceModel.FlightSearch.toFormatTimeString (some s) = .ok (some (fmtArrTime t)) := by
+    SourceModel.Domain.Common.Util.DateTimeUtil.toFormatTimeString (some s) = .ok (some (fmtArrTime t)) := by
   rw [arr_eq_hhmm h]
   have hv := t.valid
   exact toOption_ok (hhmm_table t.hour (by omega) t.minute (by omega)).2.2
 
 /-- 出発時刻の文字列の `toFormatTimeString` は、読んだ時刻の `fmtTime`。 -/
 theorem toFormatTimeString_hm {s : String} {t : HourMinute} (h : hmOfStr s = some t) :
-    SourceModel.FlightSearch.toFormatTimeString (some s) = .ok (some (fmtTime t)) := by
+    SourceModel.Domain.Common.Util.DateTimeUtil.toFormatTimeString (some s) = .ok (some (fmtTime t)) := by
   rw [hm_eq_hhmm h]
   have hv := t.valid
   exact toOption_ok (hhmm_table t.hour (by omega) t.minute (by omega)).2.2
@@ -115,9 +115,9 @@ theorem dateOfJ_fields {j : JLocalDate} {D : Date} (h : dateOfJ j = some D) :
 
 /-- `toFormatDateString` は、写した暦日の `fmtDate`。 -/
 theorem toFormatDateString_eq {j : JLocalDate} {D : Date} (h : dateOfJ j = some D) :
-    SourceModel.FlightSearch.toFormatDateString (some j) = fmtDate D := by
+    SourceModel.Domain.Common.Util.DateTimeUtil.toFormatDateString (some j) = fmtDate D := by
   rw [dateOfJ_fields h]
-  simp only [SourceModel.FlightSearch.toFormatDateString, JLocalDate.formatYMD, fmtDate, Int.toNat_natCast]
+  simp only [SourceModel.Domain.Common.Util.DateTimeUtil.toFormatDateString, JLocalDate.formatYMD, fmtDate, Int.toNat_natCast]
   rfl
 
 end Abstraction.FlightSearch.Format

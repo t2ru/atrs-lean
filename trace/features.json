@@ -7,7 +7,10 @@
         "source": ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "76a63816-6065-4ee7-97a0-c0a0c60e79a0"],
         "target": ["ddb4cafe-4bc3-4235-8efa-7f6eb7ff0ea8", "eff6bfce-0ef0-49a1-8c6e-e2b7235fd113"]
       },
-      "lean": ["Fare", "FareQuery"],
+      "lean": [
+        "Fare", "FareQuery", "Domain.Service.B0.TicketSharedServiceImpl", "Domain.Common.Util.FareUtil",
+        "Domain.Service.B2.TicketReserveServiceImpl"
+      ],
       "tasks": ["ABS-001", "ABS-002", "ABS-004", "REF-001", "REF-004"],
       "locators": [
         "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#calculate*",
@@ -23,7 +26,12 @@
         "source": ["0be7c5d4-01d9-43f4-a50d-227f174830f0"],
         "target": ["9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
       },
-      "lean": ["FlightSearch", "FlightSearchQuery", "Repository.Flight", "Repository.FlightSeed", "Repository.Schema.FlightRow", "Repository.Schema.FlightDb", "Repository.Mapping.flight"],
+      "lean": [
+        "FlightSearch", "FlightSearchQuery", "Domain.Service.B0.TicketSharedServiceImpl.getSearchLimitDate",
+        "Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate", "Domain.Service.B1",
+        "Domain.Common.Util.FareTypeUtil", "Domain.Common.Util.DateTimeUtil", "Domain.Common.Exception",
+        "Domain.Repository.Flight", "Db.FlightSeed", "Db.Schema.FlightRow", "Db.Schema.FlightDb"
+      ],
       "tasks": ["ABS-010", "ABS-011", "ABS-114", "ABS-132"],
       "locators": [
         "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{getSearchLimitDate,validateDepatureDate}*",
@@ -44,7 +52,7 @@
         "source": ["aedfeffc-3e82-46b1-b497-3d8b7808d068"],
         "target": ["4b0e2070-e086-4966-95f8-9e366f4324a0", "9c1b5a33-ee88-4bd7-87f3-05094c95b55b", "26c57ac3-b6b7-440a-aca5-994943bd7ebd"]
       },
-      "lean": ["Ticket", "UseCase.Reserve", "Repository", "FlightSearch.isAvailableFareType"],
+      "lean": ["Ticket", "UseCase.Reserve", "App.B0", "Domain.Service.B0.TicketSharedServiceImpl.isAvailableFareType", "Domain.Repository"],
       "tasks": ["ABS-021", "ABS-023", "ABS-041", "REF-002", "REF-008"],
       "locators": [
         "java:jp.co.ntt.atrs.domain.service.b0.*",
@@ -179,15 +187,11 @@
         "target": ["4b0e2070-e086-4966-95f8-9e366f4324a0"]
       },
       "lean": [
-        "Model",
-        "MasterData",
-        "MasterQuery",
-        "CodeList",
-        "Config",
-        "Prim",
-        "Repository.Schema",
-        "Repository.MasterData",
-        "Repository.Mapping"
+        "Model", "MasterData", "MasterQuery", "CodeList", "Config", "Prim", "Domain.Model", "Domain.Common.Masterdata",
+        "Domain.Common.Codelist", "Config.App", "Gfw", "Db", "AtrsProperties", "Domain.Repository.Route",
+        "Domain.Repository.Boardingclass", "Domain.Repository.Faretype", "Domain.Repository.Peaktime",
+        "Domain.Repository.Flight.FlightRepository.findAllFlightMaster", "Domain.Repository.Flight.FlightRepository.FlightMasterResult",
+        "Domain.Repository.Flight.FlightRepository.flightMasterMap", "Domain.Repository.Flight.FlightRepository.flightMasters"
       ],
       "tasks": ["ABS-026", "REF-010"],
       "locators": [

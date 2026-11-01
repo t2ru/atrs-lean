@@ -1,6 +1,6 @@
 import Abstraction.MasterData.AlphaLeaf
 import Abstraction.MasterData.Alpha
-import SourceModel.Repository.Schema
+import SourceModel.Db.Schema
 import Spec.Port
 import Spec.FlightSearch
 import SourceModel.FlightSearchQuery
@@ -26,7 +26,7 @@ namespace Abstraction.FlightSearch.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Spec.Model Machine.Kernel
 open Machine.Preserves (KernelIs)
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Schema Spec.Prim
+open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
 
 /-- FLIGHT の行。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -72,7 +72,7 @@ theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
 
 /-- 照会条件（`null` には定義しない。空港コードはそのまま包む）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def criteriaOf (c : SourceModel.FlightSearch.TicketSearchCriteriaDto) : Option Spec.FlightSearch.Criteria := do
+def criteriaOf (c : SourceModel.Domain.Service.B1.TicketSearchCriteriaDto) : Option Spec.FlightSearch.Criteria := do
   let d ← c.depDate.bind dateOfJ
   let bc ← c.boardingClassCd
   let dep ← c.departureAirportCd
@@ -97,7 +97,7 @@ theorem criteriaOf_kernel : KernelIs criteriaOf (undefOrEq criteriaOf) := by
 
 /-- 入力: 設定・マスタ・今日の日付・照会条件。配備の環境（区切り文字）は写さない（D-032）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def aiS (ic : SourceModel.FlightSearch.SearchInput) : Option Spec.FlightSearch.SearchInput := do
+def aiS (ic : SourceModel.FlightSearchQuery.SearchInput) : Option Spec.FlightSearch.SearchInput := do
   let cfg ← configOf ic.config
   let md ← masterDataOf ic.db
   let today ← dateOfJ ic.today
@@ -108,7 +108,7 @@ def aiS (ic : SourceModel.FlightSearch.SearchInput) : Option Spec.FlightSearch.S
 
 /-- 運賃種別ごとの空席情報（キーは運賃種別のコード）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def fareTypeInfoOf (e : String × SourceModel.FlightSearch.FareTypeVacantInfoDto) :
+def fareTypeInfoOf (e : String × SourceModel.Domain.Service.B1.FareTypeVacantInfoDto) :
     Option (FareTypeCd × Spec.FlightSearch.FareTypeVacantInfo) := do
   let cd ← ftCdOf e.1
   let n ← e.2.fareTypeName
@@ -134,7 +134,7 @@ theorem fareTypeInfoOf_kernel : KernelIs fareTypeInfoOf (undefOrEq fareTypeInfoO
 
 /-- 便ごとの空席情報。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def vacantInfoOf (d : SourceModel.FlightSearch.FlightVacantInfoDto) : Option Spec.FlightSearch.FlightVacantInfo := do
+def vacantInfoOf (d : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Option Spec.FlightSearch.FlightVacantInfo := do
   let n ← d.flightName
   let dn ← d.depAirportName
   let an ← d.arrAirportName
@@ -183,11 +183,11 @@ theorem aoS_kernel : KernelIs aoS (undefOrEq aoS) := by
 
 /-- 具体側の入力の環境（[Spec] の選択の環境は `Unit` なので、どの入力も標準の環境 `()`）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def ceFS (_ : SourceModel.FlightSearch.SearchInput) : Unit := ()
+def ceFS (_ : SourceModel.FlightSearchQuery.SearchInput) : Unit := ()
 
 /-- `ceFS` の核: どの入力も同一視する。 -/
 @[kernel "docs/spec/abstraction.md#抽象化関数-α"]
-def ceFSKer (_ _ : SourceModel.FlightSearch.SearchInput) : Prop := True
+def ceFSKer (_ _ : SourceModel.FlightSearchQuery.SearchInput) : Prop := True
 
 @[obligation "ABS-048"]
 theorem ceFS_kernel : KernelIs ceFS ceFSKer := fun _ _ => by simp [ceFS, ceFSKer]
@@ -200,16 +200,16 @@ abbrev glueFS := Machine.Glue.ofStd worldOfDb (fun _ => True) aiS aoS
 /-- D-027（空席照会）: 具体側の入力（DB のマスタ・設定・今日の日付・照会条件）が [Spec] の型で表せる。
 状態の表 FLIGHT が表せることは、貼り合わせの部分写像 `worldOfDb` で表す（表せない状態は `World` と結ばれない）。 -/
 @[deviation "D-027"]
-def dev_D027S (ic : SourceModel.FlightSearch.SearchInput) : Prop := (aiS ic).isSome = true
+def dev_D027S (ic : SourceModel.FlightSearchQuery.SearchInput) : Prop := (aiS ic).isSome = true
 
 /-- D-014（空席照会）: `TicketSharedServiceImpl` が読む今日の日付（`validateDepatureDate`・`getSearchLimitDate`）が、
 `searchFlight` の今日の日付と同じ（1 回の照会の中で Clock が日付をまたがない）。 -/
 @[deviation "D-014"]
-def dev_D014S (ic : SourceModel.FlightSearch.SearchInput) : Prop := ic.sharedClock = (ic.today, ic.today)
+def dev_D014S (ic : SourceModel.FlightSearchQuery.SearchInput) : Prop := ic.sharedClock = (ic.today, ic.today)
 
 /-- D-032: 配備の環境の既定の書式ロケールの 3 桁区切りの文字が `,`。 -/
 @[deviation "D-032"]
-def dev_D032 (ic : SourceModel.FlightSearch.SearchInput) : Prop :=
+def dev_D032 (ic : SourceModel.FlightSearchQuery.SearchInput) : Prop :=
   ic.formatSymbols = LangSemantics.Java.DecimalFormat.Symbols.ascii
 
 /-- D-001（空席照会）: 搭乗日が照会可能期間の内で、照会の区間があるとき、区間の運賃・搭乗クラス・搭乗日の基本運賃に
@@ -233,11 +233,11 @@ def dev_D002S (i : Spec.FlightSearch.SearchInput) : Prop :=
 
 /-! ## enum の名前 -/
 
-theorem fareTypeCdCode_eq (t : FareTypeCd) : SourceModel.Model.fareTypeCdCode t = t.toCode := by cases t <;> rfl
+theorem fareTypeCdCode_eq (t : FareTypeCd) : SourceModel.Domain.Model.FareTypeCd.getCode t = t.toCode := by cases t <;> rfl
 
-theorem fareTypeCdName_eq (t : FareTypeCd) : SourceModel.Model.fareTypeCdName t = t.toCode := by cases t <;> rfl
+theorem fareTypeCdName_eq (t : FareTypeCd) : SourceModel.Domain.Model.FareTypeCd.name t = t.toCode := by cases t <;> rfl
 
-theorem boardingClassCdName_eq (b : BoardingClassCd) : SourceModel.Model.boardingClassCdName b = b.toCode := by
+theorem boardingClassCdName_eq (b : BoardingClassCd) : SourceModel.Domain.Model.BoardingClassCd.name b = b.toCode := by
   cases b <;> rfl
 
 end Abstraction.FlightSearch.Alpha

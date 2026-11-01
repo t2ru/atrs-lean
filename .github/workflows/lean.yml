@@ -80,3 +80,11 @@ jobs:
 
       - name: Lean checks
         run: mise run ci
+
+      - name: Upload the source/model review (trace review)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-model-review
+          path: build/review/
+          if-no-files-found: ignore

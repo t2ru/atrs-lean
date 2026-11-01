@@ -391,7 +391,7 @@ def D031 : Gap where
 
 /-- [Source] の空席照会は、運賃を `new DecimalFormat("###,###")` で書式化する。区切り文字は JVM の既定の書式ロケール
 （`Locale.getDefault(Locale.Category.FORMAT)`）で決まる（例: ドイツ語では `20.600`）。[Spec] は常に `,` で区切る（`fmtYen`）。
-モデル `SourceModel.FlightSearch.createFlightVacantInfoList` は、区切り文字を配備の環境 `groupingSeparator` として受ける -/
+モデル `SourceModel.Domain.Service.B1.TicketSearchServiceImpl.createFlightVacantInfoList` は、区切り文字を配備の環境 `groupingSeparator` として受ける -/
 @[gap_entry]
 def D032 : Gap where
   id := "D-032"
@@ -404,7 +404,7 @@ def D032 : Gap where
   impact := some (.outputOnly, "空席照会の運賃の表示だけが異なる")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
 
-/-- 空白の便名の便マスタが空席照会の結果に現れると、[Source] は `getFlightMaster` の `Assert.hasText` で
+/-- 空白の便名の便マスタが空席照会の結果に現れると、[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で
 `IllegalArgumentException` を投げる。[Spec] は PRE で除く（照会の区間の便マスタに限る） -/
 @[gap_entry]
 def D033 : Gap where

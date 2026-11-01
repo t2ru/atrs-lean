@@ -4,9 +4,13 @@
 
 * **Creation**: [ADR 44a0](decision/44a0-mise-tasks-and-uv-for-tools.md) で、一括検査 `tools/ci/lean.sh` を廃止し、各段をルートの `mise.toml` のタスクに分けた（一括検査は `mise run ci`）。mise が管理する道具は uv だけとし、Python の道具を `uv run python -I` で実行するようにした（`.python-version`・`pyproject.toml`・`uv.lock`）。
   * `.github/workflows/lean.yml` は mise を入れて `mise run ci` を実行する。`trace/checks.json` の各段はタスクを呼ぶ。終了コード 2（飛ばした）の読み替えは `tools/ci/skippable.sh` に移した。
-  * スキルの側は [スキルの ADR 8cb7](../.agents/skills/spec-pivot/references/docs/decision/8cb7-run-python-tools-with-uv.md)（uv だけ。mise は求めない）。スキルの版を 0.19 にした（[rules/atrs-porting.md](rules/atrs-porting.md)。記載が 0.17 のままだったのも直した）。
+  * スキルの側は [スキルの ADR 8cb7](../.agents/skills/spec-pivot/references/docs/decision/8cb7-run-python-tools-with-uv.md)（uv だけ。mise は求めない）。スキルの版を 0.20 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
   * `AGENTS.md`、[rules/atrs-porting.md](rules/atrs-porting.md)・[rules/version-control.md](rules/version-control.md)・[rules/documentation.md](rules/documentation.md)・[rules/decision-records.md](rules/decision-records.md)・[rules/backlog.md](rules/backlog.md)、[spec/traceability.md](spec/traceability.md)、[index.md](index.md) を改めた。完了済みの ADR・backlog の本文の `tools/ci/lean.sh` は来歴として残す。
 
+* **Creation**: [ADR e41c](decision/e41c-source-model-mirrors-java-tree.md) と [backlog cb06](backlog/cb06-source-model-review-aids.md)（完了）で、`SourceModel` を原典と見比べやすくした。スキルの版を 0.19 にした（[スキルの ADR 1f75](../.agents/skills/spec-pivot/references/docs/decision/1f75-java-expression-syntax-and-spring-assert.md)・[ADR 8a3c](../.agents/skills/spec-pivot/references/docs/decision/8a3c-mirror-layout-check-and-review-view.md)）。
+  * `SourceModel` のモジュールを原典の Java のソースツリーと同じ形に並べた（改名の対応表 `tools/docs/lean-renames-mirror.json`）。`trace/features.json` の `lean`・`trace/checks.json` の `covers`・`trace/project.json` の `source.mirror` を改めた。
+  * 式を `java!`、検査を `Assert.*` で書いた。TR-M の指摘で、原典と名前が食い違っていた欄（`fareTypeMap`）と引数を直した。
+  * 改めた文書: [rules/atrs-porting.md](rules/atrs-porting.md)、[spec/fare-calculation.md](spec/fare-calculation.md)・[spec/flight-search.md](spec/flight-search.md)・[spec/conformance.md](spec/conformance.md)・[spec/traceability.md](spec/traceability.md)・[spec/abstraction.md](spec/abstraction.md) のリンクと名前。
 * **Creation**: [ADR fa26](decision/fa26-rename-skill-to-spec-pivot.md) で、スキルの名前を `port-lang` から `spec-pivot` に改めたのに合わせ、ATRS のパスと参照を張り直した。方法の名前は Spec Pivot とした（[スキルの ADR cfad](../.agents/skills/spec-pivot/references/docs/decision/cfad-name-the-method-spec-pivot.md)）。
   * 張り直した設定: `lakefile.lean`・`lake-manifest.json`（ルートと `lean/`）、`.github/workflows/lean.yml`、`tools/ci/`・`tools/conformance/`、`trace/project.json`・`trace/checks.json`・`trace/renames.json`。
   * 文書・コード・コメントの名前を改めた。この変更履歴の過去の項と、ADR f4e1 の本文は旧名のまま残す。ADR f4e1 の More Information に改名を記した。
@@ -20,7 +24,7 @@
   * 敵対的レビューの指摘に対応した（[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md#more-information)）。D-032 の環境を書式の記号の組にし、ABS-114 の証人を単調な Clock にし、`dev_D001S`・`dev_D002S` と `FlightNamesHaveText` を絞った。
 
 * **Creation**: [ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 2 段の設計を決め、完了した。
-  * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Repository.FlightSeed` を置いた。
+  * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Db.FlightSeed` を置いた。
   * [Spec] に `Spec.Seed.FlightProps`（主キーの一意性・参照整合性）、抽象機械 `Spec.FlightSearch.searchMachine` と SPEC 課題を置いた。
   * [Source] に具体機械 `SourceModel.FlightSearchQuery.searchConcrete`（業務例外は出力の値）と、条件の押し下げ `vacantSeatRows_eq_on` を置いた。
   * `findByVacantSeatSearchCriteria` を PostgreSQL で差分実行するようにした（`tools/conformance/master_sql.py`、`conformance/sql/flight-search.json`、`Tests.FlightSql`、`trace/checks.json` の `pg-flight-sql`）。

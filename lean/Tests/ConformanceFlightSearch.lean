@@ -25,7 +25,8 @@ open ConformanceKit.Runner LangSemantics.Java.Exception LangSemantics.Java.HashM
 open Spec.Config Spec.Model Spec.Prim.Time Spec.Prim.Format
 
 namespace Tests.ConformanceFlightSearch
-open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig)
+open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster
+  decodeConfig)
 
 def getObjVal (j : Json) (k : String) : Except String Json := j.getObjVal? k
 
@@ -85,7 +86,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
 
 /-! ## SourceModel -/
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Repository.Schema
+open LangSemantics.Java LangSemantics.Sql.Postgresql SourceModel.Db.Schema
 
 def jdate (s : String) : Except String JLocalDate := do
   let d ← decodeDate s
@@ -96,7 +97,7 @@ def flightRow (f : Json) : Except String FlightRow := do
            boardingClassCd := ← Tests.ConformanceMaster.vc 1 f "boardingClassCd",
            fareTypeCd := ← Tests.ConformanceMaster.vc 4 f "fareTypeCd", vacantNum := ← Tests.ConformanceMaster.i4 f "vacantNum" }
 
-def srcCriteria (c : Json) : Except String SourceModel.FlightSearch.TicketSearchCriteriaDto := do
+def srcCriteria (c : Json) : Except String SourceModel.Domain.Service.B1.TicketSearchCriteriaDto := do
   return { flightType := some (← flightType (← getStr c "flightType")), departureAirportCd := some (← getStr c "depAirportCd"),
            arrivalAirportCd := some (← getStr c "arrAirportCd"), depDate := some (← jdate (← getStr c "depDate")),
            boardingClassCd := some (← boardingClassCd (← getStr c "boardingClassCd")) }
@@ -110,7 +111,7 @@ def srcErrorJson (e : JThrow) : Except String Json :=
 
 def jstr (r : JRef String) : Json := optJson Json.str r
 
-def srcInfoJson (v : SourceModel.FlightSearch.FlightVacantInfoDto) : Json :=
+def srcInfoJson (v : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Json :=
   Json.mkObj [("flightName", jstr v.flightName), ("depAirportName", jstr v.depAirportName),
     ("arrAirportName", jstr v.arrAirportName), ("depTime", jstr v.depTime), ("arrTime", jstr v.arrTime),
     ("depDate", jstr v.depDate), ("boardingClassCd", optJson (fun c => .str (BoardingClassCd.toCode c)) v.boardingClassCd),
@@ -128,25 +129,25 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
   return [
     ("flightSearch.validateDepartureDate", fun i => do
       let t ← jdate (← getStr i "today")
-      match SourceModel.FlightSearch.validateDepatureDate cfg.limitDay t t
+      match SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate cfg.limitDay t t
           (some (← jdate (← getStr i "depDate"))) with
       | .ok () => return .null
       | .error e => srcErrorJson e),
     ("flightSearch.isAvailableFareType", fun i => do
-      let ft ← match SourceModel.MasterData.getFareType p.fareType (some (← fareTypeCd (← getStr i "fareTypeCd"))) with
+      let ft ← match SourceModel.Domain.Common.Masterdata.FareTypeProvider.getFareType p.fareType (some (← fareTypeCd (← getStr i "fareTypeCd"))) with
         | .ok ft => pure ft
         | .error e => throw s!"java exception: {repr e}"
-      match SourceModel.FlightSearch.isAvailableFareType ft (some (← jdate (← getStr i "depDate"))) (← jdate (← getStr i "today")) with
+      match SourceModel.Domain.Service.B0.TicketSharedServiceImpl.isAvailableFareType ft (some (← jdate (← getStr i "depDate"))) (← jdate (← getStr i "today")) with
       | .ok b => return toJson b
       | .error e => throw s!"java exception: {repr e}"),
     ("flightSearch.searchFlight", fun i => do
       let fd : FlightDb := { flight := ← (← getArr i "flights").mapM flightRow }
       let t ← jdate (← getStr i "today")
-      let ic : SourceModel.FlightSearch.SearchInput :=
+      let ic : SourceModel.FlightSearchQuery.SearchInput :=
         { db, config := cfg, today := t, sharedClock := (t, t), criteria := some (← srcCriteria (← getObjVal i "criteria")),
           formatSymbols := LangSemantics.Java.DecimalFormat.Symbols.ascii }
-      match SourceModel.FlightSearch.runSearchFlight fd ic (SourceModel.MasterQuery.standardOrder db)
-          SourceModel.Repository.Flight.standardSort with
+      match SourceModel.FlightSearchQuery.runSearchFlight fd ic (SourceModel.MasterQuery.standardOrder db)
+          SourceModel.Domain.Repository.Flight.FlightRepository.standardSort with
       | .ok vs => return .arr (vs.map srcInfoJson).toArray
       | .error e => srcErrorJson e)
   ]

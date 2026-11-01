@@ -2,7 +2,7 @@
   "operation": "flightSearch.searchFlight",
   "modelDef": [
     "Spec.FlightSearch.searchFlight",
-    "SourceModel.FlightSearch.runSearchFlight"
+    "SourceModel.FlightSearchQuery.runSearchFlight"
   ],
   "specRef": "docs/spec/flight-search.md#searchflight",
   "upstream": {

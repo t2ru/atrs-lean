@@ -10,11 +10,13 @@ DB の行と [Source] の対応（MyBatis の対応・`Assert.hasText`）につ�
 -/
 
 namespace Abstraction.MasterData.Pre
-open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQuery Spec.Model Spec.Prim.Text
-open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.String
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQuery Spec.Model
+  Spec.Prim.Text
+open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+  LangSemantics.Java.String
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql Spec LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.MasterQuery SourceModel.Config
+open LangSemantics.Java.Spring SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.AtrsProperties
 
 /-! ## α の分解 -/
 
@@ -44,7 +46,6 @@ theorem masterDataOf_eq_some {db : MasterDb} {md : MasterData} :
 
 /-! ## 文字 -/
 
-
 /-- [Spec] の空白（`Blank`）は、Java の `Character.isWhitespace` と同じ文字の集合。 -/
 theorem isBlank_eq_isJavaWhitespace (c : Char) : isBlank c = isJavaWhitespace c := by
   simp only [isBlank, inRange, isJavaWhitespace]
@@ -55,8 +56,8 @@ theorem isBlank_eq_isJavaWhitespace (c : Char) : isBlank c = isJavaWhitespace c 
 
 /-- [Spec] の `hasText` が成り立てば、原典の `Assert.hasText` は通る。 -/
 theorem assertHasText_ok {s : String} (h : hasText s = true) (m : String) :
-    SourceModel.MasterData.assertHasText s m = .ok () := by
-  simp only [SourceModel.MasterData.assertHasText, jAssert]
+    LangSemantics.Java.Spring.Assert.hasText s m = .ok () := by
+  simp only [LangSemantics.Java.Spring.Assert.hasText, Assert.isTrue]
   have : (s.any fun c => !isJavaWhitespace c) = true := by
     have e : (fun c => !isJavaWhitespace c) = (fun c => !isBlank c) :=
       funext fun c => by rw [isBlank_eq_isJavaWhitespace]
@@ -92,18 +93,18 @@ theorem AirportCd.no_dash_of_wellFormed {c : AirportCd} (h : c.WellFormed) : '-'
 
 /-! ## 値の対応 -/
 
-theorem natOfJ32_int {v : Int4} : (SourceModel.Repository.Mapping.int v).bind natOfJ32 = natOfInt4 v := by
+theorem natOfJ32_int {v : Int4} : (SourceModel.Db.MyBatis.int v).bind natOfJ32 = natOfInt4 v := by
   have h := J32.val_ofInt_of_inRange v.val ⟨by
     have := v.property.1; simp only [J32.minValue]; omega, by
     have := v.property.2; simp only [J32.maxValue]; omega⟩
-  simp only [SourceModel.Repository.Mapping.int, Option.bind_some, natOfJ32, natOfInt4, h]
+  simp only [SourceModel.Db.MyBatis.int, Option.bind_some, natOfJ32, natOfInt4, h]
 
 theorem bcCdOf_mapping {s : String} {c : BoardingClassCd} (h : bcCdOf s = some c) :
-    SourceModel.Repository.Mapping.boardingClassCd s = .ok c := by
+    SourceModel.Domain.Model.BoardingClassCd.valueOf s = .ok c := by
   rw [bcCdOf_eq_some h]; cases c <;> rfl
 
 theorem ftCdOf_mapping {s : String} {c : FareTypeCd} (h : ftCdOf s = some c) :
-    SourceModel.Repository.Mapping.fareTypeCd s = .ok c := by
+    SourceModel.Domain.Model.FareTypeCd.valueOf s = .ok c := by
   rw [ftCdOf_eq_some h]; cases c <;> rfl
 
 end Abstraction.MasterData.Pre

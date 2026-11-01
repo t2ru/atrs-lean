@@ -9,13 +9,16 @@ R 課題 ABS-001（基本運賃。`Abstraction.Fare.basicFareRefines`）と W �
 -/
 
 namespace Abstraction.Fare.BasicFareRun
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup Abstraction.MasterData.Query Abstraction.MasterData.QueryRun
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
+  Abstraction.MasterData.Lookup Abstraction.MasterData.Query Abstraction.MasterData.QueryRun
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec LangSemantics.Core SourceModel.MasterData
-  SourceModel.MasterQuery SourceModel.FareQuery
+open LangSemantics.Java Spec LangSemantics.Core SourceModel.Domain.Common.Masterdata
+open LangSemantics.Java.Spring SourceModel.MasterQuery SourceModel.FareQuery
 
 /-- 積算比率は値域内（MD-8）。 -/
 theorem ratioOn_le {md : MasterData} (h8 : md.MD8) (d : Spec.Prim.Date) : md.multiplicationRatioOn d ≤ 1000 := by
@@ -26,7 +29,7 @@ theorem ratioOn_le {md : MasterData} (h8 : md.MD8) (d : Spec.Prim.Date) : md.mul
   · decide
 
 /-- 搭乗クラスのキャッシュの答えから、加算料金を取り出す。 -/
-theorem extraCharge_of_answer {r : JRef SourceModel.Model.BoardingClass} {bc : BoardingClass}
+theorem extraCharge_of_answer {r : JRef SourceModel.Domain.Model.BoardingClass} {bc : BoardingClass}
     (h : answerOf? (.boardingClass r) = some (.boardingClass (some bc.info))) :
     ∃ b e, r = some b ∧ b.extraCharge = some e ∧ e.val = (bc.extraCharge : Int) := by
   cases r with
@@ -91,9 +94,9 @@ theorem runBasicFare_spec {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} 
     Nat.lt_of_le_of_lt (Nat.mul_le_mul hbx' hc1000) (by decide)
   have hX : X < 2 ^ 53 := by omega
   have hrun : runBasicFare ic o = .ok (jd2i (jdmul (jd (X : Int)) (basicFactor C))) := by
-    simp only [runBasicFare, hl, ok_bind, SourceModel.Fare.calculateBasicFare, hcd, hdj, hshared]
-    simp only [jAssert, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
-      getBoardingClass, pure_bind, hget, JRef.deref, hex]
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runBasicFare, hl, ok_bind, SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare, hcd, hdj, hshared]
+    simp only [Assert.isTrue, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
+      BoardingClassProvider.getBoardingClass, LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, hget, JRef.deref, hex]
     rw [hn]
     simp only [ok_bind, hadd, hc, basicFactor]
     rfl

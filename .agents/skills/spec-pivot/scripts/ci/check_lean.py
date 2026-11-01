@@ -12,7 +12,7 @@ spec-pivot の lang/lean/rules.md（全域性と安全性）と spec/architectur
 | LEAN-DECIDE | `native_decide`・`bv_decide` が Tests の外にある |
 | LEAN-FLOAT  | `Float`・`Float32` が Tests の外にある |
 | LEAN-UNSAFE | `partial`・`unsafe`・`implemented_by`・`extern`・`panic!`・`get!`・`xs[i]!` が Trace/ConformanceKit/Tests/Tools の外にある |
-| LEAN-IMPORT | 名前空間の依存の向きに反する import がある（移植元側と移植先側の相互依存を含む） |
+| LEAN-IMPORT | 名前空間の依存の向きに反する import がある（移植元側と移植先側の相互依存を含む）。モデルの層は `Lean` を import してはならない（例外は、言語パックの式の構文のモジュール `LangSemantics.<Lang>.Expr`） |
 
 使い方:
   uv run python -I <skill>/scripts/ci/check_lean.py              # trace/project.json の lean.roots を検査
@@ -34,6 +34,9 @@ ALL_LANGS = KNOWN_LANGS | {CORE}
 EXTERNAL_FOR_MODELS = {"Init", "Std", "Batteries"}
 EXTERNAL_FOR_META = EXTERNAL_FOR_MODELS | {"Lean", "Lake"}
 META_LAYERS = {"Trace", "ConformanceKit", "Tests", "Tools"}
+# 言語パックの式の構文だけを与えるモジュール（`LangSemantics.<Lang>.Expr`。lang/<lang>/semantics.md）。
+# 構文を展開するために Lean のメタ層（`Lean`）を import してよい。展開した項は、その言語パックの原始関数だけからなる
+SYNTAX_MODULE_RE = re.compile(r"^LangSemantics\.[A-Z]\w*\.Expr$")
 MODEL_LAYERS = {"Machine", "Spec", "SourceModel", "Abstraction", "TargetModel", "Refinement", "LangSemantics"} | ALL_LANGS
 ALL_LAYERS = MODEL_LAYERS | META_LAYERS
 
@@ -191,7 +194,8 @@ def check_file(path: pathlib.Path, module: str):
         root = target.split(".")[0]
         tl = layer_of(target)
         if tl is None:
-            ext = EXTERNAL_FOR_META if layer in META_LAYERS else EXTERNAL_FOR_MODELS
+            meta = layer in META_LAYERS or SYNTAX_MODULE_RE.match(module) is not None
+            ext = EXTERNAL_FOR_META if meta else EXTERNAL_FOR_MODELS
             if root not in ext:
                 found.append(("LEAN-IMPORT", line, f"{layer} must not import {target} (external package {root})"))
             continue

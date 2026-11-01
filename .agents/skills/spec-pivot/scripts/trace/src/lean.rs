@@ -17,6 +17,15 @@ pub struct Def {
     /// 定義のあるモジュール（`rehash` が注釈を書き換えるファイルを引く）
     #[serde(default)]
     pub module: String,
+    /// 明示的な引数の名前（TR-M3）
+    #[serde(default)]
+    pub params: Vec<String>,
+    /// 構造体の欄の名前（TR-M4）
+    #[serde(default)]
+    pub fields: Vec<String>,
+    /// 宣言の行の範囲（1 始まり。`review`）
+    #[serde(default)]
+    pub range: Option<[usize; 2]>,
 }
 
 impl Def {

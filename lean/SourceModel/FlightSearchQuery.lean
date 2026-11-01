@@ -1,5 +1,21 @@
-import SourceModel.FlightSearch
-import SourceModel.Repository.FlightSeed
+import LangSemantics.Java
+import SourceModel.AtrsProperties
+import SourceModel.Db.Schema
+import SourceModel.Domain.Model.Flight
+import SourceModel.Domain.Repository.Flight.FlightRepository
+import SourceModel.Domain.Repository.Flight.VacantSeatSearchCriteriaDto
+import SourceModel.Domain.Service.B1.FlightVacantInfoDto
+import SourceModel.Domain.Service.B1.TicketSearchCriteriaDto
+import SourceModel.Domain.Service.B1.TicketSearchServiceImpl
+import SourceModel.MasterQuery
+import SourceModel.Domain.Common.Exception.AtrsBusinessException
+import SourceModel.Domain.Service.B1.FlightNotFoundException
+import SourceModel.Domain.Service.B1.TicketSearchErrorCode
+import SourceModel.Domain.Common.Util.FareTypeUtil
+import SourceModel.Domain.Common.Util.DateTimeUtil
+import SourceModel.Domain.Service.B0.TicketSharedServiceImpl
+import SourceModel.Domain.Service.B1.FareTypeVacantInfoDto
+import SourceModel.Db.FlightSeed
 
 /-!
 # SourceModel.FlightSearchQuery
@@ -7,7 +23,7 @@ import SourceModel.Repository.FlightSeed
 空席照会の具体機械（R 課題 ABS-011 の具体側。backlog 0be7 の第 2 段）。
 
 - 状態は FLIGHT 表 `FlightDb`。初期状態は、シードの投入後の表 `FlightSeed.seedFlightDb`。照会は状態を変えない。
-- 入力は、DB のマスタ・注入された設定・今日の日付・照会条件（`SourceModel.FlightSearch.SearchInput`）。
+- 入力は、DB のマスタ・注入された設定・今日の日付・照会条件（`SourceModel.FlightSearchQuery.SearchInput`）。
 - 1 歩は、マスタの文の許される並び `mo`（`Order.Allowed`）と、空席照会の文の許される並べ方 `sortRows`
   （`SortAllowed`）のどれかで、起動時の読み込みと `searchFlight` を実行する関係とする。原典はマスタを起動時に 1 度だけ
   読み込むが、この機械はマスタの並びを 1 歩ごとに選び直す。許す振る舞いが原典より多い（上からの近似）ので、
@@ -18,9 +34,46 @@ import SourceModel.Repository.FlightSeed
 -/
 
 namespace SourceModel.FlightSearchQuery
-open LangSemantics.Java.Exception
+open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.String LangSemantics.Java.HashMap
+  LangSemantics.Java.Spring
+open LangSemantics.Java SourceModel.Domain.Model SourceModel.Domain.Common.Masterdata SourceModel.Domain.Repository.Flight
+  SourceModel.Domain.Repository.Flight.FlightRepository
+open SourceModel.Domain.Common.Exception SourceModel.Domain.Service.B1 SourceModel.Domain.Common.Util SourceModel.Domain.Common.Util.FareTypeUtil
+  SourceModel.Domain.Common.Util.DateTimeUtil SourceModel.Domain.Service.B0 SourceModel.Domain.Service.B0.TicketSharedServiceImpl SourceModel.Domain.Service.B1.FlightVacantInfoDto
+  SourceModel.Domain.Service.B1.TicketSearchServiceImpl
 
-open LangSemantics.Java SourceModel.FlightSearch SourceModel.Repository.Flight SourceModel.Repository.Schema
+open SourceModel.Db.Schema
+
+/-- リポジトリのポート: 束縛した条件で SQL を評価し、並べ方 `sortRows` で並べて、`flight-map` で写す。
+`sortRows` が `SortAllowed` を満たすとき、原典の許される結果の 1 つになる（標準は `standardSort`）。 -/
+def repositoryOf (db : SourceModel.Db.Schema.MasterDb) (fd : SourceModel.Db.Schema.FlightDb)
+    (sortRows : List VacantSeatRow → List VacantSeatRow) (c : VacantSeatSearchCriteriaDto) : JResult (List Flight) :=
+  (sortRows (vacantSeatRows db fd (bind c))).mapM fun r => SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result
+
+/-- 空席照会の入力（状態 FLIGHT 以外）: DB のマスタ・注入された設定・今日の日付・照会条件。 -/
+@[gap "D-027"]
+structure SearchInput where
+  db : SourceModel.Db.Schema.MasterDb
+  config : SourceModel.AtrsProperties.AtrsConfig
+  today : JLocalDate
+  /-- `TicketSharedServiceImpl` が読む今日の日付（D-014） -/
+  sharedClock : JLocalDate × JLocalDate
+  criteria : JRef TicketSearchCriteriaDto
+  /-- 配備の環境: 既定の書式ロケールの書式の記号（D-032） -/
+  formatSymbols : DecimalFormat.Symbols
+  deriving DecidableEq, Repr
+
+/-- 起動時の読み込みと `searchFlight`（マスタの文の並び `mo`、空席照会の文の並べ方 `sortRows` を選んだとき）。
+状態の FLIGHT 表 `fd` は読むだけで変えない。backlog 0be7 の第 2 段の具体機械の 1 歩は、許される `mo`・`sortRows` の
+どれかでこれを実行する関係とする（`mo.Allowed ic.db` と `SortAllowed sortRows` を課す）。 -/
+def runSearchFlight (fd : SourceModel.Db.Schema.FlightDb) (ic : SearchInput) (mo : SourceModel.MasterQuery.Order)
+    (sortRows : List VacantSeatRow → List VacantSeatRow) : JResult (List FlightVacantInfoDto) := do
+  let p ← SourceModel.MasterQuery.load mo
+  let svc : TicketSearchServiceImpl :=
+    { routeProvider := p.route, fareTypeProvider := p.fareType, flightMasterProvider := p.flightMaster,
+      boardingClassProvider := p.boardingClass, ticketSharedService := p.shared, limitDay := ic.config.limitDay,
+      today := ic.today, sharedClock := ic.sharedClock, formatSymbols := ic.formatSymbols, flightRepository := repositoryOf ic.db fd sortRows }
+  searchFlight svc ic.criteria
 
 /-- 業務例外（原典の `AtrsBusinessException` と、その派生の `FlightNotFoundException`）。 -/
 inductive BusinessError where
@@ -38,14 +91,14 @@ def catchBusiness (r : JResult (List FlightVacantInfoDto)) : JResult SearchOutpu
   match r with
   | .ok v => .ok (.ok v)
   | .error (.other cls code) =>
-    if cls = businessExceptionClass then .ok (.error (.business code))
-    else if cls = flightNotFoundClass then .ok (.error (.notFound code))
+    if cls = AtrsBusinessException.className then .ok (.error (.business code))
+    else if cls = FlightNotFoundException.className then .ok (.error (.notFound code))
     else .error (.other cls code)
   | .error e => .error e
 
 /-- 空席照会の具体機械。1 歩は、許される並びのどれかで照会し、状態を変えない。 -/
 def searchConcrete : Machine.Concrete FlightDb SearchInput SearchOutput JThrow where
-  Init t := t = SourceModel.Repository.FlightSeed.seedFlightDb
+  Init t := t = SourceModel.Db.FlightSeed.seedFlightDb
   step t ic r := ∃ mo sortRows, mo.Allowed ic.db ∧ SortAllowed sortRows ∧
     r = (catchBusiness (runSearchFlight t ic mo sortRows)).map fun o => (t, o)
 

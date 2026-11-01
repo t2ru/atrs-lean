@@ -2,7 +2,7 @@
   "operation": "flightSearch.isAvailableFareType",
   "modelDef": [
     "Spec.FlightSearch.isAvailableFareType",
-    "SourceModel.FlightSearch.isAvailableFareType"
+    "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.isAvailableFareType"
   ],
   "specRef": "docs/spec/flight-search.md#運賃種別の予約可能判定",
   "upstream": {

@@ -11,9 +11,8 @@ import Abstraction.FlightSearch.Preserves
 -/
 
 namespace Abstraction.FlightSearch
-open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.FlightSearch.Order
-  Abstraction.FlightSearch.Init Abstraction.FlightSearch.Witness Abstraction.FlightSearch.Preserves
-  Abstraction.MasterData.QueryRun Machine
+open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.FlightSearch.Order Abstraction.FlightSearch.Init
+  Abstraction.FlightSearch.Witness Abstraction.FlightSearch.Preserves Abstraction.MasterData.QueryRun Machine
 open SourceModel.FlightSearchQuery
 
 /-- R 課題 ABS-011: 空席照会。[Spec] の `searchMachine`（D-001・D-002 の前提で PRE を強める）は、具体機械
@@ -55,7 +54,7 @@ theorem searchRefines :
 theorem searchRefines_initSurj :
     Refines.InitSurj ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
       (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS :=
-  fun s hs => ⟨SourceModel.Repository.FlightSeed.seedFlightDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, trivial⟩⟩
+  fun s hs => ⟨SourceModel.Db.FlightSeed.seedFlightDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, trivial⟩⟩
 
 /-- W 課題 ABS-132（D-032 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。配備の環境の区切り文字が `.` のとき、
 運賃 100,000 円の表示は、[Source] が `100.000`、[Spec] が `100,000` になる（`Witness`）。 -/
@@ -135,8 +134,8 @@ theorem searchPreserves :
 
 /-- ABS-011 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、状態を変えず、出力の像は
 [Spec] の `answer`。 -/
-theorem searchRefines_commutes {t : SourceModel.Repository.Schema.FlightDb} {w : Spec.Port.World}
-    (hw : worldOfDb t = some w) (hinv : w.Inv) {ic : SourceModel.FlightSearch.SearchInput}
+theorem searchRefines_commutes {t : SourceModel.Db.Schema.FlightDb} {w : Spec.Port.World}
+    (hw : worldOfDb t = some w) (hinv : w.Inv) {ic : SourceModel.FlightSearchQuery.SearchInput}
     {ia : Spec.FlightSearch.SearchInput} (hα : aiS ic = some ia) (hv : envFS ia) (h14 : dev_D014S ic)
     (h32 : dev_D032 ic) :
     ∀ r, searchConcrete.step t ic r → ∃ oc, r = .ok (t, oc) ∧ aoS oc = some (Spec.FlightSearch.answer w ia) := by

@@ -34,7 +34,7 @@ depends = [
   "ci:jvm-table", "ci:pg-table", "ci:master-sql",
   "assets:build", "assets:trace-test", "assets:layout-check",
   "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump",
-  "trace:self-test", "trace:build", "trace:manifest", "trace:check",
+  "trace:self-test", "trace:build", "trace:manifest", "trace:check", "trace:review",
   "workspace:setup-file",
 ]
 run = "echo OK"
@@ -83,7 +83,7 @@ run = "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py"
 # 適合テストの共有入力・シード
 
 [tasks."conformance:check"]
-description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Repository.FlightSeed）が上流のシード・設定からの生成と一致する"
+description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed）が上流のシード・設定からの生成と一致する"
 run = [
   "{{vars.py}} tools/conformance/master_fixture.py --check",
   "{{vars.py}} tools/conformance/seed_lean.py --check",
@@ -222,9 +222,14 @@ run = [
 ]
 
 [tasks."trace:check"]
-description = "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L、TR-G・TR-N）"
+description = "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L/M、TR-G・TR-N）"
 depends = ["trace:build", "lean:obligations", "lean:trace-dump"]
 run = "{{vars.skill}}/scripts/trace/target/release/trace check --dump {{vars.ci_out}}/trace-dump.json --obligations {{vars.ci_out}}/obligations.json"
+
+[tasks."trace:review"]
+description = "trace: 原典とモデルの対照表（build/review/。生成物。CI の artifact）"
+depends = ["trace:build", "lean:trace-dump"]
+run = "{{vars.skill}}/scripts/trace/target/release/trace review --dump {{vars.ci_out}}/trace-dump.json"
 
 # ---------------------------------------------------------------------------
 # ルートの Lake ワークスペース

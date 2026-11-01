@@ -2,7 +2,7 @@
   "operation": "fare.basicFare",
   "modelDef": [
     "Spec.Fare.basicFare",
-    "SourceModel.Fare.calculateBasicFare"
+    "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare"
   ],
   "specRef": "docs/spec/fare-calculation.md#基本運賃",
   "upstream": {

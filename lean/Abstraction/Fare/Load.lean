@@ -11,12 +11,20 @@ import Abstraction.MasterData.QueryRun
 -/
 
 namespace Abstraction.Fare.Load
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Join Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun Spec.Model Spec.Prim.Text
-open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
+open Spec.MasterData (Airport Route FlightMaster
+  BoardingClass FareType PeakTime Plane
+  CreditType BoardingClassInfo FareTypeInfo)
+open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Join Abstraction.MasterData.Load
+  Abstraction.MasterData.Lookup Abstraction.MasterData.Pre Abstraction.MasterData.Query Abstraction.MasterData.QueryRun
+  Spec.Model Spec.Prim.Text
+open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.HashMap
+  LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
-  SourceModel.Repository.Schema SourceModel.Repository.MasterData SourceModel.MasterData SourceModel.MasterQuery
+  SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight
+  SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype
+  SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App
+  SourceModel.Config.App.AtrsCodeListConfig SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery
 
 theorem routeOfRow_fare {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.basicFare : Int) = r.basicFare.val := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
@@ -25,10 +33,10 @@ theorem routeOfRow_fare {r : RouteRow} {x : Route} (h : routeOfRow r = some x) :
 
 /-- 便マスタのキャッシュの答えが持つ区間の運賃は、[Spec] の便名の区間の運賃。 -/
 theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (flightMasterFindAll db)) :
+    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       ∀ rt, Spec.Fare.routeOfFlightName md name = some rt →
-      ∃ fm r b, getFlightMaster fmp name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧
+      ∃ fm r b, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧
         b.val = (rt.basicFare : Int) := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
@@ -47,11 +55,11 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname rt hrt' => ?_⟩
-  have hget : getFlightMaster (⟨JHashMap.ofList (o.map fun f =>
-      (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))⟩ : FlightMasterProvider) name.val =
+  have hget : FlightMasterProvider.getFlightMaster (⟨JHashMap.ofList (o.map fun f =>
+      (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))⟩ : FlightMasterProvider) name.val =
       .ok ((JHashMap.ofList (o.map fun f =>
-        (f.flightName.val, SourceModel.Repository.Mapping.flightMasterRow f))).get name.val) := by
-    simp only [getFlightMaster, assertHasText_ok hname]; rfl
+        (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val) := by
+    simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames] at hget
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
@@ -80,14 +88,14 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
       rw [hr0, Option.bind_some] at hr
       have hrt0 : rtOf db f.routeNo.val = r0 := by simp only [rtOf, hr0, Option.getD_some]
       refine ⟨_, _, _, by rw [hget]; rfl, rfl, rfl, ?_⟩
-      simp only [Function.comp, SourceModel.Repository.Mapping.flightMasterRow, flightMasterResultOf,
-        SourceModel.Repository.Mapping.route, routeResultOf, SourceModel.Repository.Mapping.int, hrt0]
+      simp only [Function.comp, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, flightMasterResultOf,
+        SourceModel.Domain.Repository.Route.RouteRepository.routeMap, routeResultOf, SourceModel.Db.MyBatis.int, hrt0]
       rw [routeOfRow_fare hr]
       exact J32.val_ofInt_of_inRange _ ⟨by have := r0.basicFare.property.1; simp only [J32.minValue]; omega,
         by have := r0.basicFare.property.2; simp only [J32.maxValue]; omega⟩
 
 /-- 搭乗クラスのキャッシュの答えから、コードと加算料金を取り出す。 -/
-theorem boardingClass_of_answer {r : JRef SourceModel.Model.BoardingClass} {bc : BoardingClass}
+theorem boardingClass_of_answer {r : JRef SourceModel.Domain.Model.BoardingClass} {bc : BoardingClass}
     (h : answerOf? (.boardingClass r) = some (.boardingClass (some bc.info))) :
     ∃ b e, r = some b ∧ b.boardingClassCd = some bc.boardingClassCd ∧ b.extraCharge = some e ∧
       e.val = (bc.extraCharge : Int) := by
@@ -108,7 +116,7 @@ theorem boardingClass_of_answer {r : JRef SourceModel.Model.BoardingClass} {bc :
     exact ⟨b, e, rfl, hcd, he1, he2⟩
 
 /-- 運賃種別のキャッシュの答えから、割引率を取り出す。 -/
-theorem fareType_of_answer {r : JRef SourceModel.Model.FareType} {ft : FareType}
+theorem fareType_of_answer {r : JRef SourceModel.Domain.Model.FareType} {ft : FareType}
     (h : answerOf? (.fareType r) = some (.fareType (some ft.info))) :
     ∃ f d, r = some f ∧ f.discountRate = some d ∧ d.val = (ft.discountRate : Int) := by
   cases r with
@@ -133,10 +141,10 @@ theorem load_correct' {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mas
     ∃ p, load o = .ok p ∧ p.peakTime = PeakTimeProvider.load o.peakTime ∧
       (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
-      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeCodeMap.get cd)) =
+      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
         some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
       (∀ name : FlightName, hasText name.val = true → ∀ rt, Spec.Fare.routeOfFlightName md name = some rt →
-        ∃ fm r b, getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧
+        ∃ fm r b, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧
           b.val = (rt.basicFare : Int)) := by
   obtain ⟨-, -, -, hbcs, hfts, -⟩ := masterDataOf_eq_some.mp hm
   obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
