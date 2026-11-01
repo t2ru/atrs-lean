@@ -3,7 +3,7 @@ name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。スキルの文書・記録の保守と、適用先の文書の検査には、スキル okf-bundle（OKF のバンドル）と work-records（意思決定記録・作業項目）を使う。
 metadata:
-  version: "0.23"
+  version: "0.24"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---

@@ -2,11 +2,11 @@
 
 ## 2026-11-01
 
-* **Update**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) を改め、シードの DB を使う SourceModel の照合と空席照会の SQL の結果を `lake test` に戻した。
-  * 遅い原因は、SourceModel の SQL の写し（`findAllFlightMaster`・`vacantSeatRows`・`RouteRepository.findAll`）が直積の全件（1 回で最大約 650 万組）を作ってから選び、ケースごとにそれを評価していたことだった。
-  * 条件を押し下げた結合が元の定義と等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（スキルの ADR b187、スキルの版 0.23）。定義・証明・検査の中身は変えていない。
-  * 手元で 4 つの節が合わせて約 600 s から約 2 s になった。`long-tests` は暦日の全日と double の総当たりだけになった（`tools/ci/check-scopes.toml` の範囲も合わせた）。
-  * [rules/checks.md](rules/checks.md)・[rules/atrs-porting.md](rules/atrs-porting.md)・[spec/assurance.md](spec/assurance.md)・`AGENTS.md`・[index.md](index.md) を改めた。
+* **Creation**: [ADR aaf8](decision/aaf8-drop-long-tests-tier.md) で、`lake test` の分割をやめ、長い検査の段 `long-tests`（mise の `lean:test-long`）を無くした。[ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) には追記だけを足した（層・範囲・選択の決定は変わらない）。
+  * シードの DB を使う SourceModel の照合が遅かった原因は、SourceModel の SQL の写し（`findAllFlightMaster`・`vacantSeatRows`・`RouteRepository.findAll`）が直積の全件（1 回で最大約 650 万組）を作ってから選び、ケースごとにそれを評価していたことだった。
+  * 条件を押し下げた結合が元の定義と等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（スキルの ADR b187、スキルの版 0.24）。定義・証明・検査の中身は変えていない。CI で 4 つの節が合わせて約 359 s から約 0.9 s になった。
+  * 残る暦日の全日と double の総当たり（CI で約 7 s）も `lake test` に戻し、`lean/Tests/Long.lean`・`LongMain.lean`、`long-tests` の実行ファイル、`lean:test-long`、その範囲（`tools/ci/check-scopes.toml`）、`trace/checks.json` の段、layout-check の組（5 組にした）を除いた。
+  * [rules/checks.md](rules/checks.md)・[rules/atrs-porting.md](rules/atrs-porting.md)・[spec/assurance.md](spec/assurance.md)・[spec/domain-model.md](spec/domain-model.md)・`AGENTS.md`・[index.md](index.md) を改めた。
 
 * **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
   * CI で 20 秒以上かかる段（`lean:test-long`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。

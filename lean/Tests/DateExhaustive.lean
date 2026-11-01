@@ -3,7 +3,7 @@ import Spec.Prim.Date
 /-!
 # Tests.DateExhaustive
 
-暦日の全日の検査（`Tests.Long` が実行する。`lake exe long-tests`。`Spec` の土台、backlog 591d）。
+暦日の全日の検査（`lake test` の `Tests.Main` が実行する。`Spec` の土台、backlog 591d）。
 
 - `dateExhaustive`: 0001-01-01〜9999-12-31 の全日について、`ofOrdinal?` が値を返し（取りこぼしが無い）、
   翌日が年月日の繰り上がりの規則どおりであることを確かめる（`Spec.Prim.Date` の冒頭を参照）。

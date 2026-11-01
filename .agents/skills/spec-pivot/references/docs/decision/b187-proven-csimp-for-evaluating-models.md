@@ -90,4 +90,4 @@ Chosen option: "速い実装を別の定義にし、元の定義と等しいこ�
 
 * 規則: [lean/rules.md](../lang/lean/rules.md#書き方)
 * 道具: `assets/lean/LangSemantics/Sql/Query.lean`（`Bag.crossWhere`）、`assets/lean/LangSemantics/Sql/QueryLemmas.lean`（`filter_cross_split`・`select_cross_split`）
-* 来歴: 適用先 ATRS の ADR 9c1c（シードの DB を使う照合の速さ）
+* 来歴: 適用先 ATRS の ADR 9c1c・aaf8（シードの DB を使う照合の速さと、長い検査の段の廃止）
