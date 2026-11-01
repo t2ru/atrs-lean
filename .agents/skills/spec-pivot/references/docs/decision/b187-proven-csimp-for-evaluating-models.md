@@ -85,3 +85,9 @@ Chosen option: "速い実装を別の定義にし、元の定義と等しいこ�
 
 * Good, because 宣言が増えない。
 * Bad, because 原典の SQL の字面との対応が崩れ、既存の証明も書き直しになる。
+
+## More Information
+
+* 規則: [lean/rules.md](../lang/lean/rules.md#書き方)
+* 道具: `assets/lean/LangSemantics/Sql/Query.lean`（`Bag.crossWhere`）、`assets/lean/LangSemantics/Sql/QueryLemmas.lean`（`filter_cross_split`・`select_cross_split`）
+* 来歴: 適用先 ATRS の ADR 9c1c（シードの DB を使う照合の速さ）
