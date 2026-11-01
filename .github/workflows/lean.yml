@@ -112,24 +112,6 @@ jobs:
           trap 'kill $mon 2> /dev/null || true' EXIT
           if [ -n "$CHECK_BASE" ]; then mise run check; else mise run ci; fi
 
-      # 計測だけの段（スキルの ADR 89f2 の確認）。layout-check を単独で 1 秒ごとの [mem] とともに動かす。数値を記録したら外す
-      - name: Layout-check peak memory (diagnostic, ADR 89f2)
-        working-directory: lean
-        run: |
-          ( while sleep 1; do echo "[mem] $(date -u +%T) $(free -m | awk 'NR==2{print $3 " / " $2 " MB used"}')"; done ) > "$RUNNER_TEMP/mem.log" &
-          mon=$!
-          trap 'kill $mon 2> /dev/null || true' EXIT
-          echo "[mem] before: $(free -m | awk 'NR==2{print $3 " / " $2 " MB used"}')"
-          if [ -x /usr/bin/time ]; then
-            /usr/bin/time -f '[maxrss] largest single process: %M KB' lake exe layout-check
-          else
-            lake exe layout-check
-          fi
-          sleep 1
-          kill $mon 2> /dev/null || true
-          cat "$RUNNER_TEMP/mem.log"
-          echo "[mem] peak during layout-check: $(awk '{print $3}' "$RUNNER_TEMP/mem.log" | sort -n | tail -1) MB used"
-
       - name: Upload the source/model review (trace review)
         if: always()
         uses: actions/upload-artifact@v4
