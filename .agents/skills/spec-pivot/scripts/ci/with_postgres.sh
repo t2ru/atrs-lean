@@ -6,6 +6,8 @@
 # - 無ければ、一時クラスタを作って起動する。設定は spec-pivot の
 #   references/docs/lang/sql/dialects/postgresql/harness.md に従う（initdb --locale=C --encoding=UTF8、TimeZone=UTC）。
 #   root で実行した場合は postgres ユーザで起動する。
+# - 環境変数 WITH_POSTGRES_TCP=1 なら、一時クラスタを 127.0.0.1 の空いているポートでも待ち受けさせ、
+#   PGHOST=127.0.0.1・PGPORT をそのポートにする（Unix ソケットを使えない JDBC などのため。Java のオラクル）。
 set -euo pipefail
 
 if [ -n "${PGHOST:-}" ]; then
@@ -34,6 +36,13 @@ stop() {
 trap stop EXIT
 
 "${as[@]}" "$bindir/initdb" -D "$dir/data" --locale=C --encoding=UTF8 -U postgres -A trust > /dev/null
+if [ "${WITH_POSTGRES_TCP:-}" = 1 ]; then
+  port="$(python3 -I -c 'import socket; s = socket.socket(); s.bind(("127.0.0.1", 0)); print(s.getsockname()[1])')"
+  "${as[@]}" "$bindir/pg_ctl" -D "$dir/data" -l "$dir/server.log" -w \
+    -o "-k $dir -c listen_addresses=127.0.0.1 -p $port -c TimeZone=UTC" start > /dev/null
+  PGHOST=127.0.0.1 PGPORT="$port" PGUSER=postgres PGDATABASE=postgres "$@"
+  exit
+fi
 "${as[@]}" "$bindir/pg_ctl" -D "$dir/data" -l "$dir/server.log" -w \
   -o "-k $dir -c listen_addresses='' -c TimeZone=UTC" start > /dev/null
 

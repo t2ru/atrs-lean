@@ -1,0 +1,2119 @@
+{
+  "operation": "fare.fare",
+  "modelDef": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
+  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "note": "Java オラクルが原典から採取した期待値（tools/oracle の Generate。手で編集しない）。入力は oracle-basicFare.json の基本運賃のすべて × シードの運賃種別の割引率のすべて",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "differences": [
+    "D-002"
+  ],
+  "cases": [
+    {
+      "id": "fare-20100-0",
+      "description": "基本運賃 20100・割引率 0%",
+      "input": {"basicFare": 20100, "discountRate": 0},
+      "expected": {"ok": 20100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20100-5",
+      "description": "基本運賃 20100・割引率 5%",
+      "input": {"basicFare": 20100, "discountRate": 5},
+      "expected": {"ok": 19100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20100-10",
+      "description": "基本運賃 20100・割引率 10%",
+      "input": {"basicFare": 20100, "discountRate": 10},
+      "expected": {"ok": 18100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20100-20",
+      "description": "基本運賃 20100・割引率 20%",
+      "input": {"basicFare": 20100, "discountRate": 20},
+      "expected": {"ok": 16100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20100-30",
+      "description": "基本運賃 20100・割引率 30%",
+      "input": {"basicFare": 20100, "discountRate": 30},
+      "expected": {"ok": 14100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20600-0",
+      "description": "基本運賃 20600・割引率 0%",
+      "input": {"basicFare": 20600, "discountRate": 0},
+      "expected": {"ok": 20600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20600-5",
+      "description": "基本運賃 20600・割引率 5%",
+      "input": {"basicFare": 20600, "discountRate": 5},
+      "expected": {"ok": 19600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20600-10",
+      "description": "基本運賃 20600・割引率 10%",
+      "input": {"basicFare": 20600, "discountRate": 10},
+      "expected": {"ok": 18600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20600-20",
+      "description": "基本運賃 20600・割引率 20%",
+      "input": {"basicFare": 20600, "discountRate": 20},
+      "expected": {"ok": 16500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-20600-30",
+      "description": "基本運賃 20600・割引率 30%",
+      "input": {"basicFare": 20600, "discountRate": 30},
+      "expected": {"ok": 14500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25100-0",
+      "description": "基本運賃 25100・割引率 0%",
+      "input": {"basicFare": 25100, "discountRate": 0},
+      "expected": {"ok": 25100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25100-5",
+      "description": "基本運賃 25100・割引率 5%",
+      "input": {"basicFare": 25100, "discountRate": 5},
+      "expected": {"ok": 23900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25100-10",
+      "description": "基本運賃 25100・割引率 10%",
+      "input": {"basicFare": 25100, "discountRate": 10},
+      "expected": {"ok": 22600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25100-20",
+      "description": "基本運賃 25100・割引率 20%",
+      "input": {"basicFare": 25100, "discountRate": 20},
+      "expected": {"ok": 20100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25100-30",
+      "description": "基本運賃 25100・割引率 30%",
+      "input": {"basicFare": 25100, "discountRate": 30},
+      "expected": {"ok": 17600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25125-0",
+      "description": "基本運賃 25125・割引率 0%",
+      "input": {"basicFare": 25125, "discountRate": 0},
+      "expected": {"ok": 25200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25125-5",
+      "description": "基本運賃 25125・割引率 5%",
+      "input": {"basicFare": 25125, "discountRate": 5},
+      "expected": {"ok": 23900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25125-10",
+      "description": "基本運賃 25125・割引率 10%",
+      "input": {"basicFare": 25125, "discountRate": 10},
+      "expected": {"ok": 22700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25125-20",
+      "description": "基本運賃 25125・割引率 20%",
+      "input": {"basicFare": 25125, "discountRate": 20},
+      "expected": {"ok": 20100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25125-30",
+      "description": "基本運賃 25125・割引率 30%",
+      "input": {"basicFare": 25125, "discountRate": 30},
+      "expected": {"ok": 17600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25600-0",
+      "description": "基本運賃 25600・割引率 0%",
+      "input": {"basicFare": 25600, "discountRate": 0},
+      "expected": {"ok": 25600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25600-5",
+      "description": "基本運賃 25600・割引率 5%",
+      "input": {"basicFare": 25600, "discountRate": 5},
+      "expected": {"ok": 24400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25600-10",
+      "description": "基本運賃 25600・割引率 10%",
+      "input": {"basicFare": 25600, "discountRate": 10},
+      "expected": {"ok": 23100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25600-20",
+      "description": "基本運賃 25600・割引率 20%",
+      "input": {"basicFare": 25600, "discountRate": 20},
+      "expected": {"ok": 20500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25600-30",
+      "description": "基本運賃 25600・割引率 30%",
+      "input": {"basicFare": 25600, "discountRate": 30},
+      "expected": {"ok": 18000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25750-0",
+      "description": "基本運賃 25750・割引率 0%",
+      "input": {"basicFare": 25750, "discountRate": 0},
+      "expected": {"ok": 25800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25750-5",
+      "description": "基本運賃 25750・割引率 5%",
+      "input": {"basicFare": 25750, "discountRate": 5},
+      "expected": {"ok": 24500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25750-10",
+      "description": "基本運賃 25750・割引率 10%",
+      "input": {"basicFare": 25750, "discountRate": 10},
+      "expected": {"ok": 23200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25750-20",
+      "description": "基本運賃 25750・割引率 20%",
+      "input": {"basicFare": 25750, "discountRate": 20},
+      "expected": {"ok": 20600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-25750-30",
+      "description": "基本運賃 25750・割引率 30%",
+      "input": {"basicFare": 25750, "discountRate": 30},
+      "expected": {"ok": 18100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28140-0",
+      "description": "基本運賃 28140・割引率 0%",
+      "input": {"basicFare": 28140, "discountRate": 0},
+      "expected": {"ok": 28200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28140-5",
+      "description": "基本運賃 28140・割引率 5%",
+      "input": {"basicFare": 28140, "discountRate": 5},
+      "expected": {"ok": 26800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28140-10",
+      "description": "基本運賃 28140・割引率 10%",
+      "input": {"basicFare": 28140, "discountRate": 10},
+      "expected": {"ok": 25400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28140-20",
+      "description": "基本運賃 28140・割引率 20%",
+      "input": {"basicFare": 28140, "discountRate": 20},
+      "expected": {"ok": 22600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28140-30",
+      "description": "基本運賃 28140・割引率 30%",
+      "input": {"basicFare": 28140, "discountRate": 30},
+      "expected": {"ok": 19700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28840-0",
+      "description": "基本運賃 28840・割引率 0%",
+      "input": {"basicFare": 28840, "discountRate": 0},
+      "expected": {"ok": 28900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28840-5",
+      "description": "基本運賃 28840・割引率 5%",
+      "input": {"basicFare": 28840, "discountRate": 5},
+      "expected": {"ok": 27400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28840-10",
+      "description": "基本運賃 28840・割引率 10%",
+      "input": {"basicFare": 28840, "discountRate": 10},
+      "expected": {"ok": 26000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28840-20",
+      "description": "基本運賃 28840・割引率 20%",
+      "input": {"basicFare": 28840, "discountRate": 20},
+      "expected": {"ok": 23100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-28840-30",
+      "description": "基本運賃 28840・割引率 30%",
+      "input": {"basicFare": 28840, "discountRate": 30},
+      "expected": {"ok": 20200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-30700-0",
+      "description": "基本運賃 30700・割引率 0%",
+      "input": {"basicFare": 30700, "discountRate": 0},
+      "expected": {"ok": 30700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-30700-5",
+      "description": "基本運賃 30700・割引率 5%",
+      "input": {"basicFare": 30700, "discountRate": 5},
+      "expected": {"ok": 29200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-30700-10",
+      "description": "基本運賃 30700・割引率 10%",
+      "input": {"basicFare": 30700, "discountRate": 10},
+      "expected": {"ok": 27700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-30700-20",
+      "description": "基本運賃 30700・割引率 20%",
+      "input": {"basicFare": 30700, "discountRate": 20},
+      "expected": {"ok": 24600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-30700-30",
+      "description": "基本運賃 30700・割引率 30%",
+      "input": {"basicFare": 30700, "discountRate": 30},
+      "expected": {"ok": 21500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31375-0",
+      "description": "基本運賃 31375・割引率 0%",
+      "input": {"basicFare": 31375, "discountRate": 0},
+      "expected": {"ok": 31400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31375-5",
+      "description": "基本運賃 31375・割引率 5%",
+      "input": {"basicFare": 31375, "discountRate": 5},
+      "expected": {"ok": 29900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31375-10",
+      "description": "基本運賃 31375・割引率 10%",
+      "input": {"basicFare": 31375, "discountRate": 10},
+      "expected": {"ok": 28300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31375-20",
+      "description": "基本運賃 31375・割引率 20%",
+      "input": {"basicFare": 31375, "discountRate": 20},
+      "expected": {"ok": 25100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31375-30",
+      "description": "基本運賃 31375・割引率 30%",
+      "input": {"basicFare": 31375, "discountRate": 30},
+      "expected": {"ok": 22000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31400-0",
+      "description": "基本運賃 31400・割引率 0%",
+      "input": {"basicFare": 31400, "discountRate": 0},
+      "expected": {"ok": 31400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31400-5",
+      "description": "基本運賃 31400・割引率 5%",
+      "input": {"basicFare": 31400, "discountRate": 5},
+      "expected": {"ok": 29900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31400-10",
+      "description": "基本運賃 31400・割引率 10%",
+      "input": {"basicFare": 31400, "discountRate": 10},
+      "expected": {"ok": 28300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31400-20",
+      "description": "基本運賃 31400・割引率 20%",
+      "input": {"basicFare": 31400, "discountRate": 20},
+      "expected": {"ok": 25200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-31400-30",
+      "description": "基本運賃 31400・割引率 30%",
+      "input": {"basicFare": 31400, "discountRate": 30},
+      "expected": {"ok": 22000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-32000-0",
+      "description": "基本運賃 32000・割引率 0%",
+      "input": {"basicFare": 32000, "discountRate": 0},
+      "expected": {"ok": 32000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-32000-5",
+      "description": "基本運賃 32000・割引率 5%",
+      "input": {"basicFare": 32000, "discountRate": 5},
+      "expected": {"ok": 30400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-32000-10",
+      "description": "基本運賃 32000・割引率 10%",
+      "input": {"basicFare": 32000, "discountRate": 10},
+      "expected": {"ok": 28800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-32000-20",
+      "description": "基本運賃 32000・割引率 20%",
+      "input": {"basicFare": 32000, "discountRate": 20},
+      "expected": {"ok": 25600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-32000-30",
+      "description": "基本運賃 32000・割引率 30%",
+      "input": {"basicFare": 32000, "discountRate": 30},
+      "expected": {"ok": 22400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-33700-0",
+      "description": "基本運賃 33700・割引率 0%",
+      "input": {"basicFare": 33700, "discountRate": 0},
+      "expected": {"ok": 33700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-33700-5",
+      "description": "基本運賃 33700・割引率 5%",
+      "input": {"basicFare": 33700, "discountRate": 5},
+      "expected": {"ok": 32100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-33700-10",
+      "description": "基本運賃 33700・割引率 10%",
+      "input": {"basicFare": 33700, "discountRate": 10},
+      "expected": {"ok": 30400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-33700-20",
+      "description": "基本運賃 33700・割引率 20%",
+      "input": {"basicFare": 33700, "discountRate": 20},
+      "expected": {"ok": 27000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-33700-30",
+      "description": "基本運賃 33700・割引率 30%",
+      "input": {"basicFare": 33700, "discountRate": 30},
+      "expected": {"ok": 23600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-34200-0",
+      "description": "基本運賃 34200・割引率 0%",
+      "input": {"basicFare": 34200, "discountRate": 0},
+      "expected": {"ok": 34200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-34200-5",
+      "description": "基本運賃 34200・割引率 5%",
+      "input": {"basicFare": 34200, "discountRate": 5},
+      "expected": {"ok": 32500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-34200-10",
+      "description": "基本運賃 34200・割引率 10%",
+      "input": {"basicFare": 34200, "discountRate": 10},
+      "expected": {"ok": 30800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-34200-20",
+      "description": "基本運賃 34200・割引率 20%",
+      "input": {"basicFare": 34200, "discountRate": 20},
+      "expected": {"ok": 27400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-34200-30",
+      "description": "基本運賃 34200・割引率 30%",
+      "input": {"basicFare": 34200, "discountRate": 30},
+      "expected": {"ok": 24000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35140-0",
+      "description": "基本運賃 35140・割引率 0%",
+      "input": {"basicFare": 35140, "discountRate": 0},
+      "expected": {"ok": 35200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35140-5",
+      "description": "基本運賃 35140・割引率 5%",
+      "input": {"basicFare": 35140, "discountRate": 5},
+      "expected": {"ok": 33400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35140-10",
+      "description": "基本運賃 35140・割引率 10%",
+      "input": {"basicFare": 35140, "discountRate": 10},
+      "expected": {"ok": 31700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35140-20",
+      "description": "基本運賃 35140・割引率 20%",
+      "input": {"basicFare": 35140, "discountRate": 20},
+      "expected": {"ok": 28200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35140-30",
+      "description": "基本運賃 35140・割引率 30%",
+      "input": {"basicFare": 35140, "discountRate": 30},
+      "expected": {"ok": 24600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35700-0",
+      "description": "基本運賃 35700・割引率 0%",
+      "input": {"basicFare": 35700, "discountRate": 0},
+      "expected": {"ok": 35700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35700-5",
+      "description": "基本運賃 35700・割引率 5%",
+      "input": {"basicFare": 35700, "discountRate": 5},
+      "expected": {"ok": 34000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35700-10",
+      "description": "基本運賃 35700・割引率 10%",
+      "input": {"basicFare": 35700, "discountRate": 10},
+      "expected": {"ok": 32200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35700-20",
+      "description": "基本運賃 35700・割引率 20%",
+      "input": {"basicFare": 35700, "discountRate": 20},
+      "expected": {"ok": 28600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35700-30",
+      "description": "基本運賃 35700・割引率 30%",
+      "input": {"basicFare": 35700, "discountRate": 30},
+      "expected": {"ok": 25000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35840-0",
+      "description": "基本運賃 35840・割引率 0%",
+      "input": {"basicFare": 35840, "discountRate": 0},
+      "expected": {"ok": 35900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35840-5",
+      "description": "基本運賃 35840・割引率 5%",
+      "input": {"basicFare": 35840, "discountRate": 5},
+      "expected": {"ok": 34100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35840-10",
+      "description": "基本運賃 35840・割引率 10%",
+      "input": {"basicFare": 35840, "discountRate": 10},
+      "expected": {"ok": 32300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35840-20",
+      "description": "基本運賃 35840・割引率 20%",
+      "input": {"basicFare": 35840, "discountRate": 20},
+      "expected": {"ok": 28700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-35840-30",
+      "description": "基本運賃 35840・割引率 30%",
+      "input": {"basicFare": 35840, "discountRate": 30},
+      "expected": {"ok": 25100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-36400-0",
+      "description": "基本運賃 36400・割引率 0%",
+      "input": {"basicFare": 36400, "discountRate": 0},
+      "expected": {"ok": 36400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-36400-5",
+      "description": "基本運賃 36400・割引率 5%",
+      "input": {"basicFare": 36400, "discountRate": 5},
+      "expected": {"ok": 34600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-36400-10",
+      "description": "基本運賃 36400・割引率 10%",
+      "input": {"basicFare": 36400, "discountRate": 10},
+      "expected": {"ok": 32800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-36400-20",
+      "description": "基本運賃 36400・割引率 20%",
+      "input": {"basicFare": 36400, "discountRate": 20},
+      "expected": {"ok": 29200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-36400-30",
+      "description": "基本運賃 36400・割引率 30%",
+      "input": {"basicFare": 36400, "discountRate": 30},
+      "expected": {"ok": 25500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37400-0",
+      "description": "基本運賃 37400・割引率 0%",
+      "input": {"basicFare": 37400, "discountRate": 0},
+      "expected": {"ok": 37400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37400-5",
+      "description": "基本運賃 37400・割引率 5%",
+      "input": {"basicFare": 37400, "discountRate": 5},
+      "expected": {"ok": 35600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37400-10",
+      "description": "基本運賃 37400・割引率 10%",
+      "input": {"basicFare": 37400, "discountRate": 10},
+      "expected": {"ok": 33700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37400-20",
+      "description": "基本運賃 37400・割引率 20%",
+      "input": {"basicFare": 37400, "discountRate": 20},
+      "expected": {"ok": 30000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37400-30",
+      "description": "基本運賃 37400・割引率 30%",
+      "input": {"basicFare": 37400, "discountRate": 30},
+      "expected": {"ok": 26200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37900-0",
+      "description": "基本運賃 37900・割引率 0%",
+      "input": {"basicFare": 37900, "discountRate": 0},
+      "expected": {"ok": 37900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37900-5",
+      "description": "基本運賃 37900・割引率 5%",
+      "input": {"basicFare": 37900, "discountRate": 5},
+      "expected": {"ok": 36100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37900-10",
+      "description": "基本運賃 37900・割引率 10%",
+      "input": {"basicFare": 37900, "discountRate": 10},
+      "expected": {"ok": 34200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37900-20",
+      "description": "基本運賃 37900・割引率 20%",
+      "input": {"basicFare": 37900, "discountRate": 20},
+      "expected": {"ok": 30400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-37900-30",
+      "description": "基本運賃 37900・割引率 30%",
+      "input": {"basicFare": 37900, "discountRate": 30},
+      "expected": {"ok": 26600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38375-0",
+      "description": "基本運賃 38375・割引率 0%",
+      "input": {"basicFare": 38375, "discountRate": 0},
+      "expected": {"ok": 38400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38375-5",
+      "description": "基本運賃 38375・割引率 5%",
+      "input": {"basicFare": 38375, "discountRate": 5},
+      "expected": {"ok": 36500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38375-10",
+      "description": "基本運賃 38375・割引率 10%",
+      "input": {"basicFare": 38375, "discountRate": 10},
+      "expected": {"ok": 34600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38375-20",
+      "description": "基本運賃 38375・割引率 20%",
+      "input": {"basicFare": 38375, "discountRate": 20},
+      "expected": {"ok": 30700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38375-30",
+      "description": "基本運賃 38375・割引率 30%",
+      "input": {"basicFare": 38375, "discountRate": 30},
+      "expected": {"ok": 26900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38700-0",
+      "description": "基本運賃 38700・割引率 0%",
+      "input": {"basicFare": 38700, "discountRate": 0},
+      "expected": {"ok": 38700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38700-5",
+      "description": "基本運賃 38700・割引率 5%",
+      "input": {"basicFare": 38700, "discountRate": 5},
+      "expected": {"ok": 36800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38700-10",
+      "description": "基本運賃 38700・割引率 10%",
+      "input": {"basicFare": 38700, "discountRate": 10},
+      "expected": {"ok": 34900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38700-20",
+      "description": "基本運賃 38700・割引率 20%",
+      "input": {"basicFare": 38700, "discountRate": 20},
+      "expected": {"ok": 31000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-38700-30",
+      "description": "基本運賃 38700・割引率 30%",
+      "input": {"basicFare": 38700, "discountRate": 30},
+      "expected": {"ok": 27100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39200-0",
+      "description": "基本運賃 39200・割引率 0%",
+      "input": {"basicFare": 39200, "discountRate": 0},
+      "expected": {"ok": 39200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39200-5",
+      "description": "基本運賃 39200・割引率 5%",
+      "input": {"basicFare": 39200, "discountRate": 5},
+      "expected": {"ok": 37300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39200-10",
+      "description": "基本運賃 39200・割引率 10%",
+      "input": {"basicFare": 39200, "discountRate": 10},
+      "expected": {"ok": 35300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39200-20",
+      "description": "基本運賃 39200・割引率 20%",
+      "input": {"basicFare": 39200, "discountRate": 20},
+      "expected": {"ok": 31400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39200-30",
+      "description": "基本運賃 39200・割引率 30%",
+      "input": {"basicFare": 39200, "discountRate": 30},
+      "expected": {"ok": 27500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39250-0",
+      "description": "基本運賃 39250・割引率 0%",
+      "input": {"basicFare": 39250, "discountRate": 0},
+      "expected": {"ok": 39300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39250-5",
+      "description": "基本運賃 39250・割引率 5%",
+      "input": {"basicFare": 39250, "discountRate": 5},
+      "expected": {"ok": 37300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39250-10",
+      "description": "基本運賃 39250・割引率 10%",
+      "input": {"basicFare": 39250, "discountRate": 10},
+      "expected": {"ok": 35400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39250-20",
+      "description": "基本運賃 39250・割引率 20%",
+      "input": {"basicFare": 39250, "discountRate": 20},
+      "expected": {"ok": 31400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-39250-30",
+      "description": "基本運賃 39250・割引率 30%",
+      "input": {"basicFare": 39250, "discountRate": 30},
+      "expected": {"ok": 27500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42125-0",
+      "description": "基本運賃 42125・割引率 0%",
+      "input": {"basicFare": 42125, "discountRate": 0},
+      "expected": {"ok": 42200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42125-5",
+      "description": "基本運賃 42125・割引率 5%",
+      "input": {"basicFare": 42125, "discountRate": 5},
+      "expected": {"ok": 40100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42125-10",
+      "description": "基本運賃 42125・割引率 10%",
+      "input": {"basicFare": 42125, "discountRate": 10},
+      "expected": {"ok": 38000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42125-20",
+      "description": "基本運賃 42125・割引率 20%",
+      "input": {"basicFare": 42125, "discountRate": 20},
+      "expected": {"ok": 33700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42125-30",
+      "description": "基本運賃 42125・割引率 30%",
+      "input": {"basicFare": 42125, "discountRate": 30},
+      "expected": {"ok": 29500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42400-0",
+      "description": "基本運賃 42400・割引率 0%",
+      "input": {"basicFare": 42400, "discountRate": 0},
+      "expected": {"ok": 42400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42400-5",
+      "description": "基本運賃 42400・割引率 5%",
+      "input": {"basicFare": 42400, "discountRate": 5},
+      "expected": {"ok": 40300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42400-10",
+      "description": "基本運賃 42400・割引率 10%",
+      "input": {"basicFare": 42400, "discountRate": 10},
+      "expected": {"ok": 38200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42400-20",
+      "description": "基本運賃 42400・割引率 20%",
+      "input": {"basicFare": 42400, "discountRate": 20},
+      "expected": {"ok": 34000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42400-30",
+      "description": "基本運賃 42400・割引率 30%",
+      "input": {"basicFare": 42400, "discountRate": 30},
+      "expected": {"ok": 29700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42750-0",
+      "description": "基本運賃 42750・割引率 0%",
+      "input": {"basicFare": 42750, "discountRate": 0},
+      "expected": {"ok": 42800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42750-5",
+      "description": "基本運賃 42750・割引率 5%",
+      "input": {"basicFare": 42750, "discountRate": 5},
+      "expected": {"ok": 40700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42750-10",
+      "description": "基本運賃 42750・割引率 10%",
+      "input": {"basicFare": 42750, "discountRate": 10},
+      "expected": {"ok": 38500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42750-20",
+      "description": "基本運賃 42750・割引率 20%",
+      "input": {"basicFare": 42750, "discountRate": 20},
+      "expected": {"ok": 34200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42750-30",
+      "description": "基本運賃 42750・割引率 30%",
+      "input": {"basicFare": 42750, "discountRate": 30},
+      "expected": {"ok": 30000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42900-0",
+      "description": "基本運賃 42900・割引率 0%",
+      "input": {"basicFare": 42900, "discountRate": 0},
+      "expected": {"ok": 42900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42900-5",
+      "description": "基本運賃 42900・割引率 5%",
+      "input": {"basicFare": 42900, "discountRate": 5},
+      "expected": {"ok": 40800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42900-10",
+      "description": "基本運賃 42900・割引率 10%",
+      "input": {"basicFare": 42900, "discountRate": 10},
+      "expected": {"ok": 38700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42900-20",
+      "description": "基本運賃 42900・割引率 20%",
+      "input": {"basicFare": 42900, "discountRate": 20},
+      "expected": {"ok": 34400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42900-30",
+      "description": "基本運賃 42900・割引率 30%",
+      "input": {"basicFare": 42900, "discountRate": 30},
+      "expected": {"ok": 30100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42980-0",
+      "description": "基本運賃 42980・割引率 0%",
+      "input": {"basicFare": 42980, "discountRate": 0},
+      "expected": {"ok": 43000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42980-5",
+      "description": "基本運賃 42980・割引率 5%",
+      "input": {"basicFare": 42980, "discountRate": 5},
+      "expected": {"ok": 40900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42980-10",
+      "description": "基本運賃 42980・割引率 10%",
+      "input": {"basicFare": 42980, "discountRate": 10},
+      "expected": {"ok": 38700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42980-20",
+      "description": "基本運賃 42980・割引率 20%",
+      "input": {"basicFare": 42980, "discountRate": 20},
+      "expected": {"ok": 34400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-42980-30",
+      "description": "基本運賃 42980・割引率 30%",
+      "input": {"basicFare": 42980, "discountRate": 30},
+      "expected": {"ok": 30100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-43960-0",
+      "description": "基本運賃 43960・割引率 0%",
+      "input": {"basicFare": 43960, "discountRate": 0},
+      "expected": {"ok": 44000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-43960-5",
+      "description": "基本運賃 43960・割引率 5%",
+      "input": {"basicFare": 43960, "discountRate": 5},
+      "expected": {"ok": 41800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-43960-10",
+      "description": "基本運賃 43960・割引率 10%",
+      "input": {"basicFare": 43960, "discountRate": 10},
+      "expected": {"ok": 39600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-43960-20",
+      "description": "基本運賃 43960・割引率 20%",
+      "input": {"basicFare": 43960, "discountRate": 20},
+      "expected": {"ok": 35200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-43960-30",
+      "description": "基本運賃 43960・割引率 30%",
+      "input": {"basicFare": 43960, "discountRate": 30},
+      "expected": {"ok": 30800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-44625-0",
+      "description": "基本運賃 44625・割引率 0%",
+      "input": {"basicFare": 44625, "discountRate": 0},
+      "expected": {"ok": 44700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-44625-5",
+      "description": "基本運賃 44625・割引率 5%",
+      "input": {"basicFare": 44625, "discountRate": 5},
+      "expected": {"ok": 42400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-44625-10",
+      "description": "基本運賃 44625・割引率 10%",
+      "input": {"basicFare": 44625, "discountRate": 10},
+      "expected": {"ok": 40200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-44625-20",
+      "description": "基本運賃 44625・割引率 20%",
+      "input": {"basicFare": 44625, "discountRate": 20},
+      "expected": {"ok": 35700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-44625-30",
+      "description": "基本運賃 44625・割引率 30%",
+      "input": {"basicFare": 44625, "discountRate": 30},
+      "expected": {"ok": 31300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-45500-0",
+      "description": "基本運賃 45500・割引率 0%",
+      "input": {"basicFare": 45500, "discountRate": 0},
+      "expected": {"ok": 45500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-45500-5",
+      "description": "基本運賃 45500・割引率 5%",
+      "input": {"basicFare": 45500, "discountRate": 5},
+      "expected": {"ok": 43300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-45500-10",
+      "description": "基本運賃 45500・割引率 10%",
+      "input": {"basicFare": 45500, "discountRate": 10},
+      "expected": {"ok": 41000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-45500-20",
+      "description": "基本運賃 45500・割引率 20%",
+      "input": {"basicFare": 45500, "discountRate": 20},
+      "expected": {"ok": 36400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-45500-30",
+      "description": "基本運賃 45500・割引率 30%",
+      "input": {"basicFare": 45500, "discountRate": 30},
+      "expected": {"ok": 31900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46400-0",
+      "description": "基本運賃 46400・割引率 0%",
+      "input": {"basicFare": 46400, "discountRate": 0},
+      "expected": {"ok": 46400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46400-5",
+      "description": "基本運賃 46400・割引率 5%",
+      "input": {"basicFare": 46400, "discountRate": 5},
+      "expected": {"ok": 44100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46400-10",
+      "description": "基本運賃 46400・割引率 10%",
+      "input": {"basicFare": 46400, "discountRate": 10},
+      "expected": {"ok": 41800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46400-20",
+      "description": "基本運賃 46400・割引率 20%",
+      "input": {"basicFare": 46400, "discountRate": 20},
+      "expected": {"ok": 37200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46400-30",
+      "description": "基本運賃 46400・割引率 30%",
+      "input": {"basicFare": 46400, "discountRate": 30},
+      "expected": {"ok": 32500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46750-0",
+      "description": "基本運賃 46750・割引率 0%",
+      "input": {"basicFare": 46750, "discountRate": 0},
+      "expected": {"ok": 46800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46750-5",
+      "description": "基本運賃 46750・割引率 5%",
+      "input": {"basicFare": 46750, "discountRate": 5},
+      "expected": {"ok": 44500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46750-10",
+      "description": "基本運賃 46750・割引率 10%",
+      "input": {"basicFare": 46750, "discountRate": 10},
+      "expected": {"ok": 42100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46750-20",
+      "description": "基本運賃 46750・割引率 20%",
+      "input": {"basicFare": 46750, "discountRate": 20},
+      "expected": {"ok": 37400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-46750-30",
+      "description": "基本運賃 46750・割引率 30%",
+      "input": {"basicFare": 46750, "discountRate": 30},
+      "expected": {"ok": 32800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47180-0",
+      "description": "基本運賃 47180・割引率 0%",
+      "input": {"basicFare": 47180, "discountRate": 0},
+      "expected": {"ok": 47200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47180-5",
+      "description": "基本運賃 47180・割引率 5%",
+      "input": {"basicFare": 47180, "discountRate": 5},
+      "expected": {"ok": 44900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47180-10",
+      "description": "基本運賃 47180・割引率 10%",
+      "input": {"basicFare": 47180, "discountRate": 10},
+      "expected": {"ok": 42500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47180-20",
+      "description": "基本運賃 47180・割引率 20%",
+      "input": {"basicFare": 47180, "discountRate": 20},
+      "expected": {"ok": 37800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47180-30",
+      "description": "基本運賃 47180・割引率 30%",
+      "input": {"basicFare": 47180, "discountRate": 30},
+      "expected": {"ok": 33100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47375-0",
+      "description": "基本運賃 47375・割引率 0%",
+      "input": {"basicFare": 47375, "discountRate": 0},
+      "expected": {"ok": 47400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47375-5",
+      "description": "基本運賃 47375・割引率 5%",
+      "input": {"basicFare": 47375, "discountRate": 5},
+      "expected": {"ok": 45100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47375-10",
+      "description": "基本運賃 47375・割引率 10%",
+      "input": {"basicFare": 47375, "discountRate": 10},
+      "expected": {"ok": 42700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47375-20",
+      "description": "基本運賃 47375・割引率 20%",
+      "input": {"basicFare": 47375, "discountRate": 20},
+      "expected": {"ok": 37900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47375-30",
+      "description": "基本運賃 47375・割引率 30%",
+      "input": {"basicFare": 47375, "discountRate": 30},
+      "expected": {"ok": 33200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47880-0",
+      "description": "基本運賃 47880・割引率 0%",
+      "input": {"basicFare": 47880, "discountRate": 0},
+      "expected": {"ok": 47900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47880-5",
+      "description": "基本運賃 47880・割引率 5%",
+      "input": {"basicFare": 47880, "discountRate": 5},
+      "expected": {"ok": 45500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47880-10",
+      "description": "基本運賃 47880・割引率 10%",
+      "input": {"basicFare": 47880, "discountRate": 10},
+      "expected": {"ok": 43100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47880-20",
+      "description": "基本運賃 47880・割引率 20%",
+      "input": {"basicFare": 47880, "discountRate": 20},
+      "expected": {"ok": 38400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-47880-30",
+      "description": "基本運賃 47880・割引率 30%",
+      "input": {"basicFare": 47880, "discountRate": 30},
+      "expected": {"ok": 33600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-48375-0",
+      "description": "基本運賃 48375・割引率 0%",
+      "input": {"basicFare": 48375, "discountRate": 0},
+      "expected": {"ok": 48400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-48375-5",
+      "description": "基本運賃 48375・割引率 5%",
+      "input": {"basicFare": 48375, "discountRate": 5},
+      "expected": {"ok": 46000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-48375-10",
+      "description": "基本運賃 48375・割引率 10%",
+      "input": {"basicFare": 48375, "discountRate": 10},
+      "expected": {"ok": 43600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-48375-20",
+      "description": "基本運賃 48375・割引率 20%",
+      "input": {"basicFare": 48375, "discountRate": 20},
+      "expected": {"ok": 38700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-48375-30",
+      "description": "基本運賃 48375・割引率 30%",
+      "input": {"basicFare": 48375, "discountRate": 30},
+      "expected": {"ok": 33900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49000-0",
+      "description": "基本運賃 49000・割引率 0%",
+      "input": {"basicFare": 49000, "discountRate": 0},
+      "expected": {"ok": 49000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49000-5",
+      "description": "基本運賃 49000・割引率 5%",
+      "input": {"basicFare": 49000, "discountRate": 5},
+      "expected": {"ok": 46600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49000-10",
+      "description": "基本運賃 49000・割引率 10%",
+      "input": {"basicFare": 49000, "discountRate": 10},
+      "expected": {"ok": 44100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49000-20",
+      "description": "基本運賃 49000・割引率 20%",
+      "input": {"basicFare": 49000, "discountRate": 20},
+      "expected": {"ok": 39200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49000-30",
+      "description": "基本運賃 49000・割引率 30%",
+      "input": {"basicFare": 49000, "discountRate": 30},
+      "expected": {"ok": 34300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49980-0",
+      "description": "基本運賃 49980・割引率 0%",
+      "input": {"basicFare": 49980, "discountRate": 0},
+      "expected": {"ok": 50000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49980-5",
+      "description": "基本運賃 49980・割引率 5%",
+      "input": {"basicFare": 49980, "discountRate": 5},
+      "expected": {"ok": 47500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49980-10",
+      "description": "基本運賃 49980・割引率 10%",
+      "input": {"basicFare": 49980, "discountRate": 10},
+      "expected": {"ok": 45000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49980-20",
+      "description": "基本運賃 49980・割引率 20%",
+      "input": {"basicFare": 49980, "discountRate": 20},
+      "expected": {"ok": 40000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-49980-30",
+      "description": "基本運賃 49980・割引率 30%",
+      "input": {"basicFare": 49980, "discountRate": 30},
+      "expected": {"ok": 35000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-50960-0",
+      "description": "基本運賃 50960・割引率 0%",
+      "input": {"basicFare": 50960, "discountRate": 0},
+      "expected": {"ok": 51000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-50960-5",
+      "description": "基本運賃 50960・割引率 5%",
+      "input": {"basicFare": 50960, "discountRate": 5},
+      "expected": {"ok": 48500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-50960-10",
+      "description": "基本運賃 50960・割引率 10%",
+      "input": {"basicFare": 50960, "discountRate": 10},
+      "expected": {"ok": 45900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-50960-20",
+      "description": "基本運賃 50960・割引率 20%",
+      "input": {"basicFare": 50960, "discountRate": 20},
+      "expected": {"ok": 40800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-50960-30",
+      "description": "基本運賃 50960・割引率 30%",
+      "input": {"basicFare": 50960, "discountRate": 30},
+      "expected": {"ok": 35700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-51400-0",
+      "description": "基本運賃 51400・割引率 0%",
+      "input": {"basicFare": 51400, "discountRate": 0},
+      "expected": {"ok": 51400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-51400-5",
+      "description": "基本運賃 51400・割引率 5%",
+      "input": {"basicFare": 51400, "discountRate": 5},
+      "expected": {"ok": 48900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-51400-10",
+      "description": "基本運賃 51400・割引率 10%",
+      "input": {"basicFare": 51400, "discountRate": 10},
+      "expected": {"ok": 46300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-51400-20",
+      "description": "基本運賃 51400・割引率 20%",
+      "input": {"basicFare": 51400, "discountRate": 20},
+      "expected": {"ok": 41200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-51400-30",
+      "description": "基本運賃 51400・割引率 30%",
+      "input": {"basicFare": 51400, "discountRate": 30},
+      "expected": {"ok": 36000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52360-0",
+      "description": "基本運賃 52360・割引率 0%",
+      "input": {"basicFare": 52360, "discountRate": 0},
+      "expected": {"ok": 52400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52360-5",
+      "description": "基本運賃 52360・割引率 5%",
+      "input": {"basicFare": 52360, "discountRate": 5},
+      "expected": {"ok": 49800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52360-10",
+      "description": "基本運賃 52360・割引率 10%",
+      "input": {"basicFare": 52360, "discountRate": 10},
+      "expected": {"ok": 47200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52360-20",
+      "description": "基本運賃 52360・割引率 20%",
+      "input": {"basicFare": 52360, "discountRate": 20},
+      "expected": {"ok": 41900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52360-30",
+      "description": "基本運賃 52360・割引率 30%",
+      "input": {"basicFare": 52360, "discountRate": 30},
+      "expected": {"ok": 36700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52400-0",
+      "description": "基本運賃 52400・割引率 0%",
+      "input": {"basicFare": 52400, "discountRate": 0},
+      "expected": {"ok": 52400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52400-5",
+      "description": "基本運賃 52400・割引率 5%",
+      "input": {"basicFare": 52400, "discountRate": 5},
+      "expected": {"ok": 49800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52400-10",
+      "description": "基本運賃 52400・割引率 10%",
+      "input": {"basicFare": 52400, "discountRate": 10},
+      "expected": {"ok": 47200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52400-20",
+      "description": "基本運賃 52400・割引率 20%",
+      "input": {"basicFare": 52400, "discountRate": 20},
+      "expected": {"ok": 42000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-52400-30",
+      "description": "基本運賃 52400・割引率 30%",
+      "input": {"basicFare": 52400, "discountRate": 30},
+      "expected": {"ok": 36700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53000-0",
+      "description": "基本運賃 53000・割引率 0%",
+      "input": {"basicFare": 53000, "discountRate": 0},
+      "expected": {"ok": 53000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53000-5",
+      "description": "基本運賃 53000・割引率 5%",
+      "input": {"basicFare": 53000, "discountRate": 5},
+      "expected": {"ok": 50400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53000-10",
+      "description": "基本運賃 53000・割引率 10%",
+      "input": {"basicFare": 53000, "discountRate": 10},
+      "expected": {"ok": 47700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53000-20",
+      "description": "基本運賃 53000・割引率 20%",
+      "input": {"basicFare": 53000, "discountRate": 20},
+      "expected": {"ok": 42400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53000-30",
+      "description": "基本運賃 53000・割引率 30%",
+      "input": {"basicFare": 53000, "discountRate": 30},
+      "expected": {"ok": 37100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53060-0",
+      "description": "基本運賃 53060・割引率 0%",
+      "input": {"basicFare": 53060, "discountRate": 0},
+      "expected": {"ok": 53100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53060-5",
+      "description": "基本運賃 53060・割引率 5%",
+      "input": {"basicFare": 53060, "discountRate": 5},
+      "expected": {"ok": 50500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53060-10",
+      "description": "基本運賃 53060・割引率 10%",
+      "input": {"basicFare": 53060, "discountRate": 10},
+      "expected": {"ok": 47800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53060-20",
+      "description": "基本運賃 53060・割引率 20%",
+      "input": {"basicFare": 53060, "discountRate": 20},
+      "expected": {"ok": 42500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53060-30",
+      "description": "基本運賃 53060・割引率 30%",
+      "input": {"basicFare": 53060, "discountRate": 30},
+      "expected": {"ok": 37200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53625-0",
+      "description": "基本運賃 53625・割引率 0%",
+      "input": {"basicFare": 53625, "discountRate": 0},
+      "expected": {"ok": 53700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53625-5",
+      "description": "基本運賃 53625・割引率 5%",
+      "input": {"basicFare": 53625, "discountRate": 5},
+      "expected": {"ok": 51000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53625-10",
+      "description": "基本運賃 53625・割引率 10%",
+      "input": {"basicFare": 53625, "discountRate": 10},
+      "expected": {"ok": 48300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53625-20",
+      "description": "基本運賃 53625・割引率 20%",
+      "input": {"basicFare": 53625, "discountRate": 20},
+      "expected": {"ok": 42900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-53625-30",
+      "description": "基本運賃 53625・割引率 30%",
+      "input": {"basicFare": 53625, "discountRate": 30},
+      "expected": {"ok": 37600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54180-0",
+      "description": "基本運賃 54180・割引率 0%",
+      "input": {"basicFare": 54180, "discountRate": 0},
+      "expected": {"ok": 54200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54180-5",
+      "description": "基本運賃 54180・割引率 5%",
+      "input": {"basicFare": 54180, "discountRate": 5},
+      "expected": {"ok": 51500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54180-10",
+      "description": "基本運賃 54180・割引率 10%",
+      "input": {"basicFare": 54180, "discountRate": 10},
+      "expected": {"ok": 48800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54180-20",
+      "description": "基本運賃 54180・割引率 20%",
+      "input": {"basicFare": 54180, "discountRate": 20},
+      "expected": {"ok": 43400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54180-30",
+      "description": "基本運賃 54180・割引率 30%",
+      "input": {"basicFare": 54180, "discountRate": 30},
+      "expected": {"ok": 38000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54880-0",
+      "description": "基本運賃 54880・割引率 0%",
+      "input": {"basicFare": 54880, "discountRate": 0},
+      "expected": {"ok": 54900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54880-5",
+      "description": "基本運賃 54880・割引率 5%",
+      "input": {"basicFare": 54880, "discountRate": 5},
+      "expected": {"ok": 52200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54880-10",
+      "description": "基本運賃 54880・割引率 10%",
+      "input": {"basicFare": 54880, "discountRate": 10},
+      "expected": {"ok": 49400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54880-20",
+      "description": "基本運賃 54880・割引率 20%",
+      "input": {"basicFare": 54880, "discountRate": 20},
+      "expected": {"ok": 44000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-54880-30",
+      "description": "基本運賃 54880・割引率 30%",
+      "input": {"basicFare": 54880, "discountRate": 30},
+      "expected": {"ok": 38500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-57400-0",
+      "description": "基本運賃 57400・割引率 0%",
+      "input": {"basicFare": 57400, "discountRate": 0},
+      "expected": {"ok": 57400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-57400-5",
+      "description": "基本運賃 57400・割引率 5%",
+      "input": {"basicFare": 57400, "discountRate": 5},
+      "expected": {"ok": 54600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-57400-10",
+      "description": "基本運賃 57400・割引率 10%",
+      "input": {"basicFare": 57400, "discountRate": 10},
+      "expected": {"ok": 51700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-57400-20",
+      "description": "基本運賃 57400・割引率 20%",
+      "input": {"basicFare": 57400, "discountRate": 20},
+      "expected": {"ok": 46000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-57400-30",
+      "description": "基本運賃 57400・割引率 30%",
+      "input": {"basicFare": 57400, "discountRate": 30},
+      "expected": {"ok": 40200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-58000-0",
+      "description": "基本運賃 58000・割引率 0%",
+      "input": {"basicFare": 58000, "discountRate": 0},
+      "expected": {"ok": 58000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-58000-5",
+      "description": "基本運賃 58000・割引率 5%",
+      "input": {"basicFare": 58000, "discountRate": 5},
+      "expected": {"ok": 55100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-58000-10",
+      "description": "基本運賃 58000・割引率 10%",
+      "input": {"basicFare": 58000, "discountRate": 10},
+      "expected": {"ok": 52200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-58000-20",
+      "description": "基本運賃 58000・割引率 20%",
+      "input": {"basicFare": 58000, "discountRate": 20},
+      "expected": {"ok": 46400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-58000-30",
+      "description": "基本運賃 58000・割引率 30%",
+      "input": {"basicFare": 58000, "discountRate": 30},
+      "expected": {"ok": 40600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-59360-0",
+      "description": "基本運賃 59360・割引率 0%",
+      "input": {"basicFare": 59360, "discountRate": 0},
+      "expected": {"ok": 59400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-59360-5",
+      "description": "基本運賃 59360・割引率 5%",
+      "input": {"basicFare": 59360, "discountRate": 5},
+      "expected": {"ok": 56400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-59360-10",
+      "description": "基本運賃 59360・割引率 10%",
+      "input": {"basicFare": 59360, "discountRate": 10},
+      "expected": {"ok": 53500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-59360-20",
+      "description": "基本運賃 59360・割引率 20%",
+      "input": {"basicFare": 59360, "discountRate": 20},
+      "expected": {"ok": 47500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-59360-30",
+      "description": "基本運賃 59360・割引率 30%",
+      "input": {"basicFare": 59360, "discountRate": 30},
+      "expected": {"ok": 41600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-60060-0",
+      "description": "基本運賃 60060・割引率 0%",
+      "input": {"basicFare": 60060, "discountRate": 0},
+      "expected": {"ok": 60100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-60060-5",
+      "description": "基本運賃 60060・割引率 5%",
+      "input": {"basicFare": 60060, "discountRate": 5},
+      "expected": {"ok": 57100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-60060-10",
+      "description": "基本運賃 60060・割引率 10%",
+      "input": {"basicFare": 60060, "discountRate": 10},
+      "expected": {"ok": 54100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-60060-20",
+      "description": "基本運賃 60060・割引率 20%",
+      "input": {"basicFare": 60060, "discountRate": 20},
+      "expected": {"ok": 48100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-60060-30",
+      "description": "基本運賃 60060・割引率 30%",
+      "input": {"basicFare": 60060, "discountRate": 30},
+      "expected": {"ok": 42100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64250-0",
+      "description": "基本運賃 64250・割引率 0%",
+      "input": {"basicFare": 64250, "discountRate": 0},
+      "expected": {"ok": 64300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64250-5",
+      "description": "基本運賃 64250・割引率 5%",
+      "input": {"basicFare": 64250, "discountRate": 5},
+      "expected": {"ok": 61100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64250-10",
+      "description": "基本運賃 64250・割引率 10%",
+      "input": {"basicFare": 64250, "discountRate": 10},
+      "expected": {"ok": 57900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64250-20",
+      "description": "基本運賃 64250・割引率 20%",
+      "input": {"basicFare": 64250, "discountRate": 20},
+      "expected": {"ok": 51400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64250-30",
+      "description": "基本運賃 64250・割引率 30%",
+      "input": {"basicFare": 64250, "discountRate": 30},
+      "expected": {"ok": 45000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64960-0",
+      "description": "基本運賃 64960・割引率 0%",
+      "input": {"basicFare": 64960, "discountRate": 0},
+      "expected": {"ok": 65000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64960-5",
+      "description": "基本運賃 64960・割引率 5%",
+      "input": {"basicFare": 64960, "discountRate": 5},
+      "expected": {"ok": 61800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64960-10",
+      "description": "基本運賃 64960・割引率 10%",
+      "input": {"basicFare": 64960, "discountRate": 10},
+      "expected": {"ok": 58500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64960-20",
+      "description": "基本運賃 64960・割引率 20%",
+      "input": {"basicFare": 64960, "discountRate": 20},
+      "expected": {"ok": 52000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-64960-30",
+      "description": "基本運賃 64960・割引率 30%",
+      "input": {"basicFare": 64960, "discountRate": 30},
+      "expected": {"ok": 45500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-65500-0",
+      "description": "基本運賃 65500・割引率 0%",
+      "input": {"basicFare": 65500, "discountRate": 0},
+      "expected": {"ok": 65500},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-65500-5",
+      "description": "基本運賃 65500・割引率 5%",
+      "input": {"basicFare": 65500, "discountRate": 5},
+      "expected": {"ok": 62300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-65500-10",
+      "description": "基本運賃 65500・割引率 10%",
+      "input": {"basicFare": 65500, "discountRate": 10},
+      "expected": {"ok": 59000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-65500-20",
+      "description": "基本運賃 65500・割引率 20%",
+      "input": {"basicFare": 65500, "discountRate": 20},
+      "expected": {"ok": 52400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-65500-30",
+      "description": "基本運賃 65500・割引率 30%",
+      "input": {"basicFare": 65500, "discountRate": 30},
+      "expected": {"ok": 45900},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71750-0",
+      "description": "基本運賃 71750・割引率 0%",
+      "input": {"basicFare": 71750, "discountRate": 0},
+      "expected": {"ok": 71800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71750-5",
+      "description": "基本運賃 71750・割引率 5%",
+      "input": {"basicFare": 71750, "discountRate": 5},
+      "expected": {"ok": 68200},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71750-10",
+      "description": "基本運賃 71750・割引率 10%",
+      "input": {"basicFare": 71750, "discountRate": 10},
+      "expected": {"ok": 64600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71750-20",
+      "description": "基本運賃 71750・割引率 20%",
+      "input": {"basicFare": 71750, "discountRate": 20},
+      "expected": {"ok": 57400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71750-30",
+      "description": "基本運賃 71750・割引率 30%",
+      "input": {"basicFare": 71750, "discountRate": 30},
+      "expected": {"ok": 50300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71960-0",
+      "description": "基本運賃 71960・割引率 0%",
+      "input": {"basicFare": 71960, "discountRate": 0},
+      "expected": {"ok": 72000},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71960-5",
+      "description": "基本運賃 71960・割引率 5%",
+      "input": {"basicFare": 71960, "discountRate": 5},
+      "expected": {"ok": 68400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71960-10",
+      "description": "基本運賃 71960・割引率 10%",
+      "input": {"basicFare": 71960, "discountRate": 10},
+      "expected": {"ok": 64800},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71960-20",
+      "description": "基本運賃 71960・割引率 20%",
+      "input": {"basicFare": 71960, "discountRate": 20},
+      "expected": {"ok": 57600},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-71960-30",
+      "description": "基本運賃 71960・割引率 30%",
+      "input": {"basicFare": 71960, "discountRate": 30},
+      "expected": {"ok": 50400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-73360-0",
+      "description": "基本運賃 73360・割引率 0%",
+      "input": {"basicFare": 73360, "discountRate": 0},
+      "expected": {"ok": 73400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-73360-5",
+      "description": "基本運賃 73360・割引率 5%",
+      "input": {"basicFare": 73360, "discountRate": 5},
+      "expected": {"ok": 69700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-73360-10",
+      "description": "基本運賃 73360・割引率 10%",
+      "input": {"basicFare": 73360, "discountRate": 10},
+      "expected": {"ok": 66100},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-73360-20",
+      "description": "基本運賃 73360・割引率 20%",
+      "input": {"basicFare": 73360, "discountRate": 20},
+      "expected": {"ok": 58700},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-73360-30",
+      "description": "基本運賃 73360・割引率 30%",
+      "input": {"basicFare": 73360, "discountRate": 30},
+      "expected": {"ok": 51400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-80360-0",
+      "description": "基本運賃 80360・割引率 0%",
+      "input": {"basicFare": 80360, "discountRate": 0},
+      "expected": {"ok": 80400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-80360-5",
+      "description": "基本運賃 80360・割引率 5%",
+      "input": {"basicFare": 80360, "discountRate": 5},
+      "expected": {"ok": 76400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-80360-10",
+      "description": "基本運賃 80360・割引率 10%",
+      "input": {"basicFare": 80360, "discountRate": 10},
+      "expected": {"ok": 72400},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-80360-20",
+      "description": "基本運賃 80360・割引率 20%",
+      "input": {"basicFare": 80360, "discountRate": 20},
+      "expected": {"ok": 64300},
+      "source": "java-oracle"
+    },
+    {
+      "id": "fare-80360-30",
+      "description": "基本運賃 80360・割引率 30%",
+      "input": {"basicFare": 80360, "discountRate": 30},
+      "expected": {"ok": 56300},
+      "source": "java-oracle"
+    }
+  ]
+}

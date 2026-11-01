@@ -14,3 +14,7 @@ __pycache__/
 
 # Python（uv）
 .venv/
+
+# Java オラクル（backlog f18c）
+tools/oracle/target/
+.agents/skills/spec-pivot/assets/java/conformance-kit/target/
