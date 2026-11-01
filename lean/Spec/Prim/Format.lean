@@ -26,6 +26,10 @@ def fmtIsoDate (d : Date) : String := s!"{padNat 4 d.year}-{padNat 2 d.month}-{p
 @[spec_doc "docs/spec/domain-model.md#書式"]
 def fmtTime (t : HourMinute) : String := s!"{padNat 2 t.hour}:{padNat 2 t.minute}"
 
+/-- 到着時刻の `HH:mm`（24 時以降はそのまま。例 `24:15`）。 -/
+@[spec_doc "docs/spec/domain-model.md#書式"]
+def fmtArrTime (t : ArrivalTime) : String := s!"{padNat 2 t.hour}:{padNat 2 t.minute}"
+
 /-- `yyyyMMddHHmmss` -/
 @[spec_doc "docs/spec/domain-model.md#書式"]
 def fmtTimestamp (dt : DateTime) : String :=

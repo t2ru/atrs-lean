@@ -60,6 +60,56 @@ theorem toMinutes_inj {a b : HourMinute} (h : a.toMinutes = b.toMinutes) : a = b
 
 end HourMinute
 
+/-- 到着時刻（出発日 0:00 からの時分。0:00〜47:59。`24:15` は翌日の 0:15）。
+便マスタの到着時刻だけに使う（ADR ce36）。 -/
+@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+structure ArrivalTime where
+  hour : Nat
+  minute : Nat
+  valid : hour ≤ 47 ∧ minute ≤ 59
+  deriving DecidableEq
+
+namespace ArrivalTime
+
+instance : Repr ArrivalTime where
+  reprPrec t _ := s!"{t.hour}:{t.minute}"
+
+/-- 到着時刻を作る。範囲外なら無し。 -/
+@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+def ofHm? (h m : Nat) : Option ArrivalTime := if hv : h ≤ 47 ∧ m ≤ 59 then some ⟨h, m, hv⟩ else none
+
+/-- 出発日 0:00 からの分数。 -/
+@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+def toMinutes (t : ArrivalTime) : Nat := t.hour * 60 + t.minute
+
+/-- 4 桁の数字列 `HHmm` を到着時刻に変換する。4 文字の数字列で、到着時刻の範囲内のものだけを受け付ける。 -/
+@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+def parseHHmm (s : String) : Option ArrivalTime :=
+  match s.toList with
+  | [a, b, c, d] => do
+    let h ← HourMinute.digitVal? a
+    let h' ← HourMinute.digitVal? b
+    let m ← HourMinute.digitVal? c
+    let m' ← HourMinute.digitVal? d
+    ofHm? (h * 10 + h') (m * 10 + m')
+  | _ => none
+
+/-- 同じ日の時分を到着時刻とみなす。 -/
+def ofHourMinute (t : HourMinute) : ArrivalTime := ⟨t.hour, t.minute, by have := t.valid; omega⟩
+
+theorem toMinutes_ofHourMinute (t : HourMinute) : (ofHourMinute t).toMinutes = t.toMinutes := rfl
+
+theorem toMinutes_lt (t : ArrivalTime) : t.toMinutes < 2880 := by
+  have := t.valid; unfold toMinutes; omega
+
+theorem toMinutes_inj {a b : ArrivalTime} (h : a.toMinutes = b.toMinutes) : a = b := by
+  obtain ⟨ah, am, av⟩ := a
+  obtain ⟨bh, bm, bv⟩ := b
+  simp only [toMinutes] at h
+  simp only [mk.injEq]; omega
+
+end ArrivalTime
+
 /-- 日時（暦日と時・分・秒）。 -/
 @[spec_doc "docs/spec/domain-model.md#datetime"]
 structure DateTime where

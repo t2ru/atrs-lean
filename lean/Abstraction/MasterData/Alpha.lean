@@ -42,7 +42,7 @@ def routeOfRow (r : RouteRow) : Option Route :=
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def flightMasterOfRow (f : FlightMasterRow) : Option FlightMaster :=
   (natOfInt4 f.routeNo).bind fun no => (hmOfStr f.departureTime.val).bind fun dt =>
-    (hmOfStr f.arrivalTime.val).map fun ar => ⟨⟨f.flightName.val⟩, no, dt, ar, f.craftType.val⟩
+    (arrOfStr f.arrivalTime.val).map fun ar => ⟨⟨f.flightName.val⟩, no, dt, ar, f.craftType.val⟩
 
 /-- `BOARDING_CLASS` の行（`BOARDING_CLASS_NAME` が `NULL` なら定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -131,7 +131,7 @@ theorem flightMasterOfRow_kernel : KernelIs flightMasterOfRow (undefOrEq flightM
   cases f; cases f'
   simp only [FlightMasterRow.mk.injEq] at *
   exact ⟨Subtype.ext h1.symm, natOfInt4_inj hno hno', Subtype.ext (inj_of_kernel hmOfStr_kernel hdt hdt'),
-    Subtype.ext (inj_of_kernel hmOfStr_kernel har har'), Subtype.ext h5.symm⟩
+    Subtype.ext (inj_of_kernel arrOfStr_kernel har har'), Subtype.ext h5.symm⟩
 
 @[obligation "ABS-048"]
 theorem boardingClassOfRow_kernel : KernelIs boardingClassOfRow (undefOrEq boardingClassOfRow) := by
@@ -316,7 +316,7 @@ def flightMaster (f : SourceModel.Model.FlightMaster) : Option Spec.MasterData.F
   let name ← f.flightName
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
-  let ar ← f.arrivalTime.bind hmOfStr
+  let ar ← f.arrivalTime.bind arrOfStr
   let ct ← f.plane.bind (·.craftType)
   pure ⟨⟨name⟩, no, dt, ar, ct⟩
 
@@ -432,7 +432,7 @@ theorem flightMaster_inj {f f' : SourceModel.Model.FlightMaster} {c : Spec.Maste
   simp only at hn hr hs ht hp hn' hr' hs' ht' hp'
   subst hn hr hs ht hp hn' hr' hs' ht' hp'
   simp only [flightMasterObs, Option.map_some, natOfJ32_inj e1 f1, inj_of_kernel hmOfStr_kernel e2 f2,
-    inj_of_kernel hmOfStr_kernel e3 f3]
+    inj_of_kernel arrOfStr_kernel e3 f3]
 
 theorem boardingClass_inj {b b' : SourceModel.Model.BoardingClass} {c : MasterData.BoardingClassInfo}
     (h : boardingClass b = some c) (h' : boardingClass b' = some c) : b = b' := by

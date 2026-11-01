@@ -39,13 +39,13 @@ structure Route where
   basicFare : Nat
   deriving DecidableEq, Repr
 
-/-- 便マスタ。到着時刻は出発と同じ日付の時刻として扱う。 -/
+/-- 便マスタ。到着時刻は出発日 0:00 からの時分で表す（翌日着は 24 時以降。ADR ce36）。 -/
 @[spec_doc "docs/spec/master-data.md#flightmaster"]
 structure FlightMaster where
   flightName : FlightName
   routeNo : Nat
   departureTime : HourMinute
-  arrivalTime : HourMinute
+  arrivalTime : ArrivalTime
   craftType : String
   deriving DecidableEq
 
@@ -180,9 +180,10 @@ def MD4 (md : MasterData) : Prop :=
 def MD5 (md : MasterData) : Prop :=
   md.flightMasters.Pairwise fun f g => f.routeNo = g.routeNo → f.departureTime ≠ g.departureTime
 
-/-- MD-6: 各便マスタで `departureTime ≤ arrivalTime`。 -/
+/-- MD-6: 各便マスタで `departureTime ≤ arrivalTime`（出発日 0:00 からの分数で比べる）。 -/
 @[spec_doc "docs/spec/master-data.md#不変条件spec"]
-def MD6 (md : MasterData) : Prop := ∀ f ∈ md.flightMasters, f.departureTime ≤ f.arrivalTime
+def MD6 (md : MasterData) : Prop :=
+  ∀ f ∈ md.flightMasters, f.departureTime.toMinutes ≤ f.arrivalTime.toMinutes
 
 /-- MD-7: 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、
 `discountRate ≤ childFareRate`、`passengerMinNum ≥ 1`。 -/

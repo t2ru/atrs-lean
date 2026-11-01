@@ -185,7 +185,8 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-024 | モデル外 | [セッションの Cookie 属性](http-contract.md#セッション)（規範節） | [Spec] は `HttpOnly` を付け、`Secure`・`SameSite` は配備環境で決める。[Source] は `HttpOnly` だけを付ける | — モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D024`） |
 | D-025 | モデル外 | [トランザクション](ports.md#トランザクション)（規範節）・[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) | [Spec] は状態変更の直列化可能性を要求する。[Source] は PostgreSQL の READ COMMITTED で動き、一般には直列化可能でない（会員情報変更の事例は D-013 としてモデルに写す） | — モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)） | — | — | 形式化していない（`claim_D025`） |
 | D-026 | 前提型（具体側の入力） | [REST API](http-contract.md#rest-apiapiv1) | [Source]（Jackson）は、JSON の文字列にある不対サロゲートのエスケープ（例 `"\ud800"`）を受け付け、不対サロゲートを含む文字列として処理する。[Spec] の文字列はスカラ値の列なので、その要求を `InvalidRequest` とする | `dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない | ABS-031, ABS-045 | ABS-126 | 未証明（Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手） |
-| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | ABS-001, ABS-002, ABS-004, ABS-026 | ABS-127 | 偽を証明済み（`need_D027`） |
+| D-027 | 前提型（具体側の入力） | [マスタ](master-data.md)・[設定](configuration.md) | [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻（到着時刻は翌日の 23:59 を超えるもの。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） | `dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | ABS-001, ABS-002, ABS-004, ABS-011, ABS-026 | ABS-127 | 偽を証明済み（`need_D027`） |
+| D-031 | 前提型 | [往復の便の検査](reservation.md)・[便マスタの到着時刻](master-data.md) | [Source] の往復の予約の検査（`validateFlightDepartureDateForRoundTripFlight`）は、往路便の到着時刻を `DateTimeFormatter("HHmm")` で読むので、到着時刻が 24:00 以降（翌日着。シードの NTT523・NTT528 の `2415`）の便では `DateTimeParseException` を投げる。[Spec] は到着時刻を出発日 0:00 からの時分で表し、往路便の到着日時を求められる （[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。空席照会は到着時刻を文字列として整形するだけなので、 この差異は起きない | `dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である | ABS-021, ABS-041 | ABS-131 | 未証明（Lean に述語がまだ無い。予約の `SourceModel` と R 課題が未着手） |
 <!-- END GENERATED: gaps-known -->
 
 ### 前提型の差異の影響
@@ -215,6 +216,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | D-021 | 中断 | 入力検証の合否が変わり、会員登録・会員情報変更の成否が変わる | 4e0e3dd1-d282-46e2-aa98-719853bc9fd2 |
 | D-026 | 中断 | [Source] は [Spec] が拒む要求を処理し、状態を変えうる | a89ec8f0-4d15-46a6-86fa-a640e4df0b44 |
 | D-027 | 中断 | [Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける | 25f7ef96-f77d-4ed8-973d-8cecc2a0f227, bbcce088-c475-4378-9cc6-e3d821acc0f5 |
+| D-031 | 中断 | 翌日着の便を往路とする往復の予約が、500 システムエラーになる | 0be7c5d4-01d9-43f4-a50d-227f174830f0, aedfeffc-3e82-46b1-b497-3d8b7808d068 |
 <!-- END GENERATED: gaps-impact -->
 
 ### [Spec] の前提の外での [Source] の振る舞い（差異ではない）
@@ -266,7 +268,7 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | ABS-006 | — | 取り消し。ピーク時期の参照 `peakTimeOn` の一致は ABS-026 に含めた（ID は再利用しない。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)） | — |
 | ABS-007 | L | 値域内で、[Source] の基本運賃は [Spec] に等しいか 1 小さく、1 小さいのは `x·ratio` が 100 で割り切れ、積算比率の因子が安全でないときに限る。値域全体での一致は成り立たない（反例は ABS-101。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。Lean: `Abstraction.Fare.BasicFareRun.runBasicFare_spec`（`calculateBasicFare` について。中身は `basicFare_src`） | D-001 |
 | ABS-010 | L | `isAvailableFareType` と SQL 条件 `beforeDayNum BETWEEN end AND start` の同値 | — |
-| ABS-011 | R | 空席照会 `searchFlight`: PRE（MD-5）と、運賃計算から引き継ぐ `dev_D001`・`dev_D002` の下で、[Source]（`LangSemantics.Sql` の照会＋Java の集約）の許されるすべての結果についてリファインする | D-001, D-002 |
+| ABS-011 | R | 空席照会 `searchFlight`: PRE（MD-5）と、運賃計算から引き継ぐ `dev_D001`・`dev_D002` の下で、[Source]（`LangSemantics.Sql` の照会＋Java の集約）の許されるすべての結果についてリファインする。具体側の入力は、マスタ・設定・照会の引数が [Spec] の型で表せること（D-027）を引き継ぐ | D-001, D-002, D-027 |
 | ABS-020 | L | [Source] の予約確定の前後で、全フライトの `vacantNum ≥ 0`。失敗時は `sequences` を除いて状態が変わらない（ABS-041 の正しさに使う） | — |
 | ABS-021 | R | 採番ポートの [Source] 実装（シーケンス）が、`dev_D009` の下で、[Spec] の採番の契約をリファインする | D-009 |
 | ABS-022 | L | `J` と INV の下で、[Source] の `e.ar.a0.L9002` に到達しない（各ユースケースの適用可能性に使う） | — |
@@ -304,7 +306,8 @@ R 課題ごとに、主定理と同じ機械・貼り合わせについて束 `M
 | ABS-121 | W | D-021 の証拠: `+10000/01/01`、`0000/01/01` で、解析結果が異なる | D-021 |
 | ABS-122 | W | D-022 の証拠: 単項目の違反が 2 件以上ある入力で、[Source] の許される順序の 1 つが [Spec] の列と異なり、`obs_D022` で対応する | D-022 |
 | ABS-126 | W | D-026 の証拠: `"\ud800"` を含む REST の要求で、[Source] は処理を続け、[Spec] は `InvalidRequest` を返す | D-026 |
-| ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB（到着時刻 `2415` の 2 行を除く）。Lean: `Abstraction.MasterData.need_D027`（前提を外すと入力の全域性が破れる）と `unknownBoardingClass_throws` | D-027 |
+| ABS-127 | W | D-027 の証拠: 未知の搭乗クラスコード `X` の行を持つ DB で、[Source] は起動時に `IllegalArgumentException` を投げる（[Spec] にはその入力が無い）。前提を満たす例はシードの DB。Lean: `Abstraction.MasterData.need_D027`（前提を外すと入力の全域性が破れる）と `unknownBoardingClass_throws` | D-027 |
+| ABS-131 | W | D-031 の証拠: 往路便を NTT523（到着時刻 `2415`）とする往復の予約で、[Source] は `DateTimeParseException`（500）、[Spec] は往路便の到着日時を翌日 0:15 として検査を続ける（backlog aedf） | D-031 |
 
 ABS-113 は廃止した（D-013 をモデル外に改めたため。ID は再利用しない）。
 

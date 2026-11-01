@@ -661,6 +661,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Gap.D031",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Gap.claim_D013",
       "layer": "Abstraction"
     },
@@ -902,6 +906,18 @@
     },
     {
       "name": "Abstraction.MasterData.Alpha.routeRowKer",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.arrOfHm?_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.arrOfStr",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.arrOfStr_kernel",
       "layer": "Abstraction"
     },
     {
@@ -4309,6 +4325,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Error.AtrsError",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.BasicFareInput.Pre",
       "layer": "Spec"
     },
@@ -4406,6 +4426,62 @@
     },
     {
       "name": "Spec.Fare.totalFareOfKeys",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.Criteria",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.FareTypeVacantInfo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.FlightVacantInfo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.availableOnDayNum",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.candidateLe",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.candidateOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.group",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.headerOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.isAvailableFareType",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.outOfPeriod",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchLimitDate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchPeriod",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.validateDepartureDate",
       "layer": "Spec"
     },
     {
@@ -4689,6 +4765,18 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Port.World",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.Inv",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.findAll",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Prim.Date",
       "layer": "Spec"
     },
@@ -4738,6 +4826,10 @@
     },
     {
       "name": "Spec.Prim.Date.ordinal",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Format.fmtArrTime",
       "layer": "Spec"
     },
     {
@@ -4822,6 +4914,22 @@
     },
     {
       "name": "Spec.Prim.Text.scalarLen",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Time.ArrivalTime",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Time.ArrivalTime.ofHm?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Time.ArrivalTime.parseHHmm",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Prim.Time.ArrivalTime.toMinutes",
       "layer": "Spec"
     },
     {
@@ -5123,6 +5231,16 @@
     },
     {
       "type": "gap",
+      "from": "Spec.FlightSearch.searchFlight",
+      "to": "D-001"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.FlightSearch.searchFlight",
+      "to": "D-002"
+    },
+    {
+      "type": "gap",
       "from": "Spec.MasterData.MD1",
       "to": "D-015"
     },
@@ -5337,6 +5455,11 @@
       "to": "D-030"
     },
     {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D031",
+      "to": "D-031"
+    },
+    {
       "type": "kernel",
       "from": "Abstraction.MasterData.Alpha.answerKer",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
@@ -5484,6 +5607,11 @@
     {
       "type": "obligation",
       "from": "Abstraction.MasterData.Alpha.routeOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.AlphaLeaf.arrOfStr_kernel",
       "to": "ABS-048"
     },
     {
@@ -6865,6 +6993,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Error.AtrsError",
+      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Fare.BasicFareInput.Pre",
       "to": "docs/spec/fare-calculation.md#基本運賃"
     },
@@ -6942,6 +7075,76 @@
       "type": "spec_doc",
       "from": "Spec.Fare.totalFareOfKeys",
       "to": "docs/spec/fare-calculation.md#合計金額"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.Criteria",
+      "to": "docs/spec/flight-search.md#シグネチャ"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.FareTypeVacantInfo",
+      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.FlightVacantInfo",
+      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.availableOnDayNum",
+      "to": "docs/spec/flight-search.md#運賃種別の予約可能判定"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.candidateLe",
+      "to": "docs/spec/flight-search.md#定義評価順"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.candidateOf",
+      "to": "docs/spec/flight-search.md#定義評価順"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.group",
+      "to": "docs/spec/flight-search.md#定義評価順"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.headerOf",
+      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.isAvailableFareType",
+      "to": "docs/spec/flight-search.md#運賃種別の予約可能判定"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.outOfPeriod",
+      "to": "docs/spec/flight-search.md#照会可能期間"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.searchFlight",
+      "to": "docs/spec/flight-search.md#searchflight"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.searchLimitDate",
+      "to": "docs/spec/flight-search.md#照会可能期間"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.searchPeriod",
+      "to": "docs/spec/flight-search.md#照会画面の初期値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.validateDepartureDate",
+      "to": "docs/spec/flight-search.md#照会可能期間"
     },
     {
       "type": "spec_doc",
@@ -7275,6 +7478,21 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Port.World",
+      "to": "docs/spec/ports.md#world抽象状態"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.Inv",
+      "to": "docs/spec/ports.md#world抽象状態"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.findAll",
+      "to": "docs/spec/ports.md#flightrepository"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Prim.Date",
       "to": "docs/spec/domain-model.md#date"
     },
@@ -7337,6 +7555,11 @@
       "type": "spec_doc",
       "from": "Spec.Prim.Date.ordinal",
       "to": "docs/spec/domain-model.md#date"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Format.fmtArrTime",
+      "to": "docs/spec/domain-model.md#書式"
     },
     {
       "type": "spec_doc",
@@ -7442,6 +7665,26 @@
       "type": "spec_doc",
       "from": "Spec.Prim.Text.scalarLen",
       "to": "docs/spec/input-validation.md#文字クラス"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Time.ArrivalTime",
+      "to": "docs/spec/domain-model.md#arrivaltime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Time.ArrivalTime.ofHm?",
+      "to": "docs/spec/domain-model.md#arrivaltime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Time.ArrivalTime.parseHHmm",
+      "to": "docs/spec/domain-model.md#arrivaltime"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Prim.Time.ArrivalTime.toMinutes",
+      "to": "docs/spec/domain-model.md#arrivaltime"
     },
     {
       "type": "spec_doc",
@@ -7571,6 +7814,11 @@
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.Alpha.routeOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.AlphaLeaf.arrOfStr",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -9315,7 +9563,7 @@
       "definition": "Spec.Seed.flightMasters",
       "locator": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
       "hash": "ce88990bf3547005",
-      "merkle": "13a991beda948a28",
+      "merkle": "1dd782b8ed3125ff",
       "checks": [
         "seed-lean"
       ]

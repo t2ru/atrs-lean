@@ -40,7 +40,6 @@ unsafe def conformanceTests : IO Unit := do
   for (dir, layer, ops) in [("spec/fare", "Spec", Tests.ConformanceFare.specOps), ("shared/fare", "Spec", Tests.ConformanceFare.specOps),
       ("source-model/fare", "SourceModel", Tests.ConformanceFare.sourceOps), ("shared/fare", "SourceModel", Tests.ConformanceFare.sourceOps),
       ("shared/master-data", "Spec", Tests.ConformanceMaster.specOps),
-      ("source-model/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps),
       ("shared/master-data", "SourceModel", Tests.ConformanceMaster.sourceOps)] do
     report s!"{dir} ({layer})" (← ConformanceKit.Runner.runDirFx ops layer env.contains root (root / dir))
 

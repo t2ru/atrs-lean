@@ -8,7 +8,7 @@ import Trace
 シードのマスタ・設定（`conformance/fixtures/master-data.json`・`config.json`）の [Spec] の値。
 `tools/conformance/seed_lean.py` が生成する。手で編集しない。
 上流: release/5.11.0.RELEASE / f4bfbf0615eb91805546c9c780d4761be92ce17e。行の順はシードの順。
-`outsideSpec` の行（到着時刻 2415 の便マスタ 2 行。[Spec] の値域の外）は除く（ADR 8f18。backlog 0be7 で [Spec] を改める）。
+`outsideSpec` の行（[Spec] の値域の外の時刻。上流のシードには無い）は除く（ADR 8f18・ADR ce36）。
 各表の `@[source]` は上流のシードの文（この変換の入力の出所）を指す。
 -/
 
@@ -157,6 +157,7 @@ def flightMasters0 : List FlightMaster := [
   ⟨⟨"NTT433"⟩, 12, ⟨19, 30, by decide⟩, ⟨21, 45, by decide⟩, "813"⟩,
   ⟨⟨"NTT463"⟩, 12, ⟨20, 15, by decide⟩, ⟨22, 45, by decide⟩, "863"⟩,
   ⟨⟨"NTT493"⟩, 12, ⟨21, 0, by decide⟩, ⟨23, 30, by decide⟩, "913"⟩,
+  ⟨⟨"NTT523"⟩, 12, ⟨21, 45, by decide⟩, ⟨24, 15, by decide⟩, "963"⟩,
   ⟨⟨"NTT016"⟩, 15, ⟨9, 0, by decide⟩, ⟨10, 10, by decide⟩, "116"⟩,
   ⟨⟨"NTT046"⟩, 15, ⟨9, 45, by decide⟩, ⟨10, 55, by decide⟩, "166"⟩,
   ⟨⟨"NTT076"⟩, 15, ⟨10, 30, by decide⟩, ⟨11, 40, by decide⟩, "216"⟩,
@@ -192,6 +193,7 @@ def flightMasters0 : List FlightMaster := [
   ⟨⟨"NTT438"⟩, 17, ⟨19, 40, by decide⟩, ⟨21, 45, by decide⟩, "818"⟩,
   ⟨⟨"NTT468"⟩, 17, ⟨20, 25, by decide⟩, ⟨22, 45, by decide⟩, "868"⟩,
   ⟨⟨"NTT498"⟩, 17, ⟨21, 10, by decide⟩, ⟨23, 30, by decide⟩, "918"⟩,
+  ⟨⟨"NTT528"⟩, 17, ⟨21, 55, by decide⟩, ⟨24, 15, by decide⟩, "968"⟩,
   ⟨⟨"NTT019"⟩, 18, ⟨9, 0, by decide⟩, ⟨10, 5, by decide⟩, "119"⟩,
   ⟨⟨"NTT049"⟩, 18, ⟨9, 45, by decide⟩, ⟨10, 50, by decide⟩, "169"⟩,
   ⟨⟨"NTT079"⟩, 18, ⟨10, 30, by decide⟩, ⟨11, 35, by decide⟩, "219"⟩,
@@ -201,12 +203,12 @@ def flightMasters0 : List FlightMaster := [
   ⟨⟨"NTT199"⟩, 18, ⟨13, 30, by decide⟩, ⟨14, 35, by decide⟩, "419"⟩,
   ⟨⟨"NTT229"⟩, 18, ⟨14, 15, by decide⟩, ⟨15, 20, by decide⟩, "469"⟩,
   ⟨⟨"NTT259"⟩, 18, ⟨15, 0, by decide⟩, ⟨16, 5, by decide⟩, "519"⟩,
-  ⟨⟨"NTT289"⟩, 18, ⟨15, 45, by decide⟩, ⟨16, 50, by decide⟩, "569"⟩,
-  ⟨⟨"NTT319"⟩, 18, ⟨16, 30, by decide⟩, ⟨17, 45, by decide⟩, "619"⟩,
-  ⟨⟨"NTT349"⟩, 18, ⟨17, 15, by decide⟩, ⟨18, 20, by decide⟩, "669"⟩
+  ⟨⟨"NTT289"⟩, 18, ⟨15, 45, by decide⟩, ⟨16, 50, by decide⟩, "569"⟩
 ]
 
 def flightMasters1 : List FlightMaster := [
+  ⟨⟨"NTT319"⟩, 18, ⟨16, 30, by decide⟩, ⟨17, 45, by decide⟩, "619"⟩,
+  ⟨⟨"NTT349"⟩, 18, ⟨17, 15, by decide⟩, ⟨18, 20, by decide⟩, "669"⟩,
   ⟨⟨"NTT379"⟩, 18, ⟨18, 0, by decide⟩, ⟨19, 5, by decide⟩, "719"⟩,
   ⟨⟨"NTT409"⟩, 18, ⟨18, 45, by decide⟩, ⟨19, 50, by decide⟩, "769"⟩,
   ⟨⟨"NTT439"⟩, 18, ⟨19, 30, by decide⟩, ⟨20, 35, by decide⟩, "819"⟩,
@@ -233,7 +235,7 @@ def flightMasters1 : List FlightMaster := [
   ⟨⟨"NTT531"⟩, 20, ⟨21, 45, by decide⟩, ⟨23, 35, by decide⟩, "971"⟩
 ]
 
-/-- `flightMasters`（124 行）。 -/
+/-- `flightMasters`（126 行）。 -/
 @[source "seed:00220_insert_flight_master.sql#FLIGHT_MASTER@ce88990bf3547005"]
 def flightMasters : List FlightMaster := flightMasters0 ++ flightMasters1
 

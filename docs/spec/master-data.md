@@ -45,9 +45,9 @@ sources:
 
 ### FlightMaster
 
-`flightName`, `routeNo`, `departureTime: HourMinute`, `arrivalTime: HourMinute`, `craftType`
+`flightName`, `routeNo`, `departureTime: HourMinute`, `arrivalTime: ArrivalTime`, `craftType`
 
-到着時刻は **同じ日付の時刻** として扱う（原典は日付を跨ぐ便を想定していない。`arrivalTime < departureTime` の便は [Spec] の不変条件で禁止する）。
+到着時刻は **出発日 0:00 からの時分** で表し、24 時以降は翌日着である（[domain-model.md](domain-model.md#arrivaltime)、[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。シードの NTT523（HND→OKA）・NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`arrivalTime < departureTime` の便は [Spec] の不変条件 MD-6 で禁止する。
 
 ### BoardingClass
 
@@ -79,7 +79,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 | MD-3 | 参照整合性（区間の空港・便マスタの区間・フライトの便名/搭乗クラス/運賃種別が存在する） | `null` による前提違反 |
 | MD-4 | ピーク時期の期間は互いに重ならない（`peakStartDate ≤ peakEndDate`） | 取得順（未規定）で最初に一致したもの（参考 [D-004](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
-| MD-6 | 各便マスタで `departureTime ≤ arrivalTime` | — |
+| MD-6 | 各便マスタで `departureTime ≤ arrivalTime`（出発日 0:00 からの分数で比べる） | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
 | MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字で、区切り行のコード `NOP` でない） | int32 の折り返し。空港コードに `-` があると区間のキーが衝突しうる。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる |
 
@@ -181,11 +181,9 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
-シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除く）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）。
+シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）。
 
-> **TODO(spec):** 便マスタ NTT523（HND→OKA）と NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`Spec.MasterData.FlightMaster.arrivalTime`（0:00〜23:59）では表せない。
-> - [Source] の `DateTimeFormatter("HHmm")` は `DateTimeParseException` を投げる（空席照会でこの便が結果に入るとき）。
-> - [Spec] で翌日着を表せるように改め、[Source] の例外を既知差異として登録する（[backlog 0be7](../backlog/0be7-flight-search-usecase.md)）。
-> - それまで fixture では、その 2 行に `outsideSpec` を付ける。`Spec` 用の読み込みは、その行を除く（ADR 8f18）。
+翌日着の便（NTT523・NTT528）について、[Source] の空席照会は到着時刻を文字列として整形するだけで（`DateTimeUtil.toFormatTimeString`。`2415` → `24:15`）、[Spec] と一致する。
+[Source] の `DateTimeFormatter("HHmm")` が `DateTimeParseException` を投げるのは、予約の往復便の検査で往路便がこの便のとき（`TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight`）で、既知差異 [D-031](abstraction.md#既知差異) である（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md) の暫定措置 `outsideSpec` は外した）。
 
 [^seed-fixed]: atrs-initdb/src/sqls/integration-test-postgres/00200〜00250_*.sql
