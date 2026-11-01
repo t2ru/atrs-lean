@@ -15,6 +15,8 @@ generated:
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。ただし「予約確定」の原子性・排他の要件は [ports.md](ports.md#トランザクション) の規範節に従う。
 
+> Lean の定義（backlog aedf の第 1 段）: `Spec.Ticket`（選択フライト・`validateFlightList`）、`Spec.UseCase.Reserve`（予約内容の組み立て・`validateReservation`・`reserveConfirm`・`reserve`・`confirmOp`・`reserveOp`）。抽象機械と SPEC 課題は第 2 段、抽象化の証明は第 3 段で置き、そのときに本書の該当節を informative に置き換える。
+
 予約は「フライト選択（B1 画面）→ 予約入力（B2）→ 確認 → 確定」の順に進む。画面遷移は [http-contract.md](http-contract.md)、入力検証は [input-validation.md](input-validation.md#予約入力b2) を参照。
 
 ## 選択フライト

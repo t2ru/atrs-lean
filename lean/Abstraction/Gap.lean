@@ -114,14 +114,18 @@ def D008 : Gap where
   rTasks := ["ABS-031", "ABS-045", "ABS-046"]
   backlog := ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2"]
 
-/-- [Source] のシーケンスは最大値の後に 1 へ循環し、使用済みの値を返しうる。また、予約フライト番号・搭乗者番号は、列が `INT` で、採番の `selectKey` が `resultType="Integer"` なので、シーケンスの最大値（999999999999・9999999999999）より前の 2,147,483,648 から採番・登録に失敗する。[Spec] は常に未使用の値を返し、値の空間は上限を持たない -/
+/-- [Source] のシーケンスは最大値の後に 1 へ循環し、使用済みの値を返しうる。[Spec] は常に未使用の値を返す。
+さらに、予約フライト番号・搭乗者番号の列（`RESERVE_FLIGHT_NO`・`PASSENGER_NO`）は `INT` で、`selectKey` は
+`resultType="Integer"` なので、シーケンスの値が 2,147,483,647 を超えると（シーケンスの最大値 999,999,999,999・
+9,999,999,999,999 より前に）JDBC の読み出しが失敗する（backlog aedf で範囲を広げ、ADR f786 でプロジェクトオーナーが承認した） -/
 @[gap_entry]
 def D009 : Gap where
   id := "D-009"
   kind := .preConcreteState
-  sites := [⟨"採番", "docs/spec/ports.md#idgenerator", ""⟩]
-  premise := "`dev_D009`: [Source] の各シーケンスが最大値に達しておらず、予約フライト番号・搭乗者番号のシーケンスの次の値が 2,147,483,647 以下である"
-  evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-109")
+  sites := [⟨"採番", "docs/spec/ports.md#idgenerator", ""⟩,
+    ⟨"予約の登録", "docs/spec/reservation.md#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
+  premise := "`dev_D009`: [Source] の各シーケンスの次の値が、会員番号・予約番号では最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下"
+  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel`（シーケンスと `selectKey`）は backlog aedf の第 1 段で写した。述語と R 課題は第 2・3 段" (some "ABS-109")
   rTasks := ["ABS-021", "ABS-031", "ABS-041", "ABS-042", "ABS-045"]
   impact := some (.abort, "使用済みの番号による挿入の失敗、既存の行との衝突、または int32 を超える番号での採番・挿入の失敗")
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068"]
@@ -181,7 +185,7 @@ def D014 : Gap where
   id := "D-014"
   kind := .preConcreteEnv
   sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩]
-  premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ"
+  premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ。予約確定では、`TicketReserveHelper.reserve` が予約日として読む今日と、`registerReservation` が予約フライトごとに `isAvailableFareType` で読む今日が同じ（述語は backlog aedf の第 2 段で置く）"
   deviations := [``Abstraction.FlightSearch.Alpha.dev_D014S]
   evidence := .refuted [``Abstraction.FlightSearch.need_D014]
   rTasks := ["ABS-011", "ABS-031", "ABS-041", "ABS-044", "ABS-045"]
@@ -388,7 +392,7 @@ def D031 : Gap where
   kind := .pre
   sites := [⟨"往復の便の検査", "docs/spec/reservation.md#validateflightlist", ""⟩, ⟨"便マスタの到着時刻", "docs/spec/master-data.md", ""⟩]
   premise := "`dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
-  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel` と R 課題が未着手" (some "ABS-131")
+  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel` は backlog aedf の第 1 段で写した。述語と R 課題は第 2・3 段" (some "ABS-131")
   rTasks := ["ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる（`2400` なら往路便の到着日時を 1 日早く検査する）")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]

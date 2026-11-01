@@ -44,7 +44,7 @@ Chosen option: "棚卸しの結果を登録簿に反映する（誤記は直し�
 
 ### 修正（判断を要しないもの）
 
-* D-031 の R 課題が `ABS-021`（採番ポート）になっていた誤りを、往復の便の検査を通る ABS-031・ABS-041・ABS-045 に直し、site を `reservation.md#validateflightlist` にした。課題表の差異列にも D-031 を足した。
+* D-031 の R 課題が `ABS-021`（採番ポート）になっていた誤りを、往復の便の検査を通る ABS-031・ABS-041・ABS-045 に直し、site を `reservation.md#validateflightlist` にした（予約の第 1 段の [ADR 4c45](4c45-reservation-stage1-shared-state-and-source-model.md) も、同じ修正を確認待ちとして入れていた。ここで承認とする）。課題表の差異列にも D-031 を足した。
 * D-032 の説明・前提が、存在しない欄 `groupingSeparator` を指していた。実際の前提 `dev_D032` は `formatSymbols = Symbols.ascii`（区切り文字・零の数字・負号）で、種類は具体側の環境である。
 * D-030 の証拠が数の定数を指していた。PRE の述語（`MD8`・`FareInput.Pre`）に直し、`MD8` などに印を付けた。割引率 > 100 では折り返しでなく `Assert` になることを書いた。
 * `Spec.Fare` と [fare-calculation.md](../spec/fare-calculation.md) が、搭乗クラス・運賃種別の存在を「PRE: MD-3」としていた。MD-3 は区間の空港と便マスタの区間だけを課すので、各操作の PRE と書き直した（PRE の外の振る舞いは D-035）。
@@ -69,7 +69,7 @@ Chosen option: "棚卸しの結果を登録簿に反映する（誤記は直し�
 | D-041 | 登録（前提型・具体側の入力・中断） | REST の JSON の `Integer` の欄に数字の文字列を渡しても、[Source] は受け付ける（原典実行の `tools/origin-run/http/postTicket.json`） |
 | REST の 201 の `"empty": false` | [Spec] を原典に合わせる | 外部の利用者が観測する API の形なので、差異にせず [http-contract.md](../spec/http-contract.md#post-apiv1ticket) の応答に加えた |
 | D-006 | 拡大 | 予約履歴レポートの一覧の並び（[Source] は UTF-16 の符号単位の順）も含め、前提にレポートの領域のファイル名を加える |
-| D-009 | 拡大 | 予約フライト番号・搭乗者番号は `INT` 列と `resultType="Integer"` なので、2,147,483,648 から失敗する。前提に「次の値が 2,147,483,647 以下」を加える |
+| D-009 | 拡大 | 予約フライト番号・搭乗者番号は `INT` 列と `resultType="Integer"` なので、2,147,483,648 から失敗する。前提に「次の値が 2,147,483,647 以下」を加える（[ADR 4c45](4c45-reservation-stage1-shared-state-and-source-model.md) が確認待ちで入れた同じ拡大を、ここで承認とする） |
 | D-020 | 拡大 | `?redo`・`?confirm` の再表示・`?backToSearch`（送られた `flightType` を使う）を含める |
 
 新しい前提型の差異の W 課題は ABS-138〜ABS-141 とし、課題表に行を足した。

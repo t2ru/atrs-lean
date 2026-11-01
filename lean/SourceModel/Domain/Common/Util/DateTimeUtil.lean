@@ -41,6 +41,22 @@ def toFormatDateString (localDate : JRef JLocalDate) : String :=
   | some d => d.formatYMD "/"
   | none => ""
 
+/-- `toLocalTime(timeString)`: `LocalTime.from(TIME_FORMATTER.parse(timeString))`（`HHmm`、SMART）。`null` なら
+`NullPointerException`。到着時刻 `2415` などの 24:00 より後の時刻は `DateTimeParseException`、`2400` は 0:00（既知差異 D-031）。 -/
+@[source "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalTime(String)@f681e7086ea22011",
+  "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER@b3ea6e972e16ec6a",
+  "lang:java#java.time.format.DateTimeFormatter@java-17", gap "D-031"]
+def toLocalTime (timeString : JRef String) : JResult JLocalTime := do
+  let s ← timeString.deref "text"
+  JLocalTime.parseHHmm s
+
+/-- `toLocalDateTime(localDate, timeString)`: `localDate.atTime(toLocalTime(timeString))`。 -/
+@[source "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalDateTime(LocalDate,String)@77b0547624f167eb", gap "D-031"]
+def toLocalDateTime (localDate : JRef JLocalDate) (timeString : JRef String) : JResult JLocalDateTime := do
+  let t ← toLocalTime timeString
+  let d ← localDate.deref "localDate"
+  return JLocalDateTime.atTime d t
+
 end DateTimeUtil
 
 end SourceModel.Domain.Common.Util

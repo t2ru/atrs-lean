@@ -6,6 +6,13 @@ import SourceModel.Domain.Common.Exception.AtrsBusinessException
 import SourceModel.Domain.Common.Masterdata.BoardingClassProvider
 import SourceModel.Domain.Common.Masterdata.PeakTimeProvider
 import SourceModel.Domain.Common.Util.FareUtil
+import SourceModel.Domain.Common.Util.DateTimeUtil
+import SourceModel.Domain.Common.Util.FareTypeUtil
+import SourceModel.Db.Tx
+import SourceModel.Domain.Model.Flight
+import SourceModel.Domain.Repository.Flight.FlightRepository
+import SourceModel.Domain.Service.B0.InvalidFlightException
+import SourceModel.Domain.Service.B2.TicketReserveErrorCode
 import SourceModel.Domain.Model.BoardingClass
 import SourceModel.Domain.Model.FareType
 import SourceModel.Domain.Model.PeakTime
@@ -108,6 +115,83 @@ def isAvailableFareType (fareType : JRef FareType) (depDate : JRef JLocalDate) (
   let startDate := d.minusDays s.val
   let endDate := d.minusDays e.val
   return java! !(today.isBefore(startDate) || today.isAfter(endDate))
+
+/-! ## 選択フライトの検証（予約が使う。backlog aedf）
+
+`validateFlightList` と、それが呼ぶ `existsFlight`・private の検査。フライトの存在の確認は Mapper の文 `exists` を実行する
+ので、状態の表に対する計算（`SourceModel.Db.Tx.DbM`）で書く。`InvalidFlightException` のメッセージは、原典ではフライトの
+`toString()` を連結するが、写しでは連結しない（メッセージの詳細は [Spec] の自由な選択 N-004 で、α が捨てる）。 -/
+
+open SourceModel.Db.Tx SourceModel.Domain.Repository.Flight SourceModel.Domain.Service.B2
+
+/-- `existsFlight(flight)`: 主キーのフライトがあるか（`flightRepository.exists`）。 -/
+@[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#existsFlight(Flight)@a4e50b127ec510cf",
+  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#existsFlight(Flight)@3a7ea0432fb7d108"]
+def existsFlight (flight : JRef Flight) : DbM Bool := do
+  let f ← lift (Assert.notNullValue flight "flight must not null.")
+  let fm ← lift (Assert.notNullValue f.flightMaster "flightMaster must not null.")
+  FlightRepository.exists f.departureDate fm.flightName f.boardingClass f.fareType
+
+/-- `validateFlightDepartureDateForRoundTripFlight`（private）: 往路便の到着日時に `reserveIntervalTime` 分を足した日時より、
+復路便の出発日時が前なら `AtrsBusinessException(E_AR_B2_2001)`。到着時刻は `DateTimeUtil.toLocalDateTime` で読む
+（24:00 より後なら `DateTimeParseException`。既知差異 D-031）。 -/
+@[gap "D-031"]
+def validateFlightDepartureDateForRoundTripFlight (reserveIntervalTime : J32) (outwardFlight homewardFlight : Flight) :
+    JResult Unit := do
+  let ofm ← outwardFlight.flightMaster.deref "flightMaster"
+  let outwardArriveDateTime ← DateTimeUtil.toLocalDateTime outwardFlight.departureDate ofm.arrivalTime
+  let reserveAvailableDateTime := outwardArriveDateTime.plusMinutes reserveIntervalTime.val
+  let hfm ← homewardFlight.flightMaster.deref "flightMaster"
+  let homewardDepartureDateTime ← DateTimeUtil.toLocalDateTime homewardFlight.departureDate hfm.departureTime
+  if java! homewardDepartureDateTime.isBefore(reserveAvailableDateTime) then
+    throw (AtrsBusinessException.new (TicketReserveErrorCode.code "e.ar.b2.2001"))
+
+/-- `validateFlightRouteForRoundTripFlight`（private）: 復路が往路の逆区間でなければ `InvalidFlightException`。 -/
+def validateFlightRouteForRoundTripFlight (outwardFlight homewardFlight : Flight) : JResult Unit := do
+  let ofm ← outwardFlight.flightMaster.deref "flightMaster"
+  let hfm ← homewardFlight.flightMaster.deref "flightMaster"
+  let outwardRoute ← ofm.route.deref "route"
+  let homewardRoute ← hfm.route.deref "route"
+  -- `!a.equals(b) || !c.equals(d)`: 受け手の `null` は `NullPointerException`、引数の `null` は `equals` が偽。`||` は短絡する
+  let oDep ← (← outwardRoute.departureAirport.deref "departureAirport").code.deref "code"
+  let hArr := (← homewardRoute.arrivalAirport.deref "arrivalAirport").code
+  if !(some oDep == hArr) then throw (InvalidFlightException.new "homeward route is not outward route reverse")
+  let oArr ← (← outwardRoute.arrivalAirport.deref "arrivalAirport").code.deref "code"
+  let hDep := (← homewardRoute.departureAirport.deref "departureAirport").code
+  if !(some oArr == hDep) then throw (InvalidFlightException.new "homeward route is not outward route reverse")
+
+/-- `validateFlightFareType`（private）: 片道なら往路が片道運賃、往復なら往路・復路が往復運賃。 -/
+def validateFlightFareType (flightList : List (JRef Flight)) : JResult Unit := do
+  let fareTypeCdOf (f : JRef Flight) : JResult (JRef Spec.Model.FareTypeCd) := do
+    let f ← f.deref "flight"
+    return (← f.fareType.deref "fareType").fareTypeCd
+  match flightList with
+  | [o] =>
+    let owFareTypeCd ← fareTypeCdOf o
+    if !FareTypeUtil.isOneWay owFareTypeCd then throw (InvalidFlightException.new "outward flight fareType is invalid")
+  | [o, h] =>
+    let owFareTypeCd ← fareTypeCdOf o
+    if !FareTypeUtil.isRoundTrip owFareTypeCd then throw (InvalidFlightException.new "outward flight fareType is invalid")
+    let hwFareTypeCd ← fareTypeCdOf h
+    if !FareTypeUtil.isRoundTrip hwFareTypeCd then throw (InvalidFlightException.new "homeward flight fareType is invalid")
+  | _ => throw (InvalidFlightException.new "flightList size must be between 1 and 2")
+
+/-- `validateFlightList(flightList)`: 往路の便マスタと存在、往復なら復路の便マスタと存在・搭乗間隔・逆区間、最後に運賃種別。 -/
+@[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateFlightList(List)@31235b0af5e54df0",
+  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateFlightList(List)@cab75bbff4478e82", gap "D-031"]
+def validateFlightList (reserveIntervalTime : J32) (flightList : JRef (List (JRef Flight))) : DbM Unit := do
+  let flights ← lift (Assert.notEmptyValue flightList "flightList must not empty.")
+  lift (Assert.isTrue (java! ⟪J32.ofInt flights.length⟫ <= 2) "flightList size must be 2 or less.")
+  let outwardFlight ← lift (Assert.notNullValue (← lift (JList.get flights 0)) "outwardFlight must not null.")
+  if outwardFlight.flightMaster.isNone then throw (InvalidFlightException.new "flightMaster is null :")
+  if !(← existsFlight (some outwardFlight)) then throw (InvalidFlightException.new "flight not found :")
+  if flights.length = 2 then
+    let homewardFlight ← lift (Assert.notNullValue (← lift (JList.get flights 1)) "homewardFlight must not null.")
+    if homewardFlight.flightMaster.isNone then throw (InvalidFlightException.new "flightMaster is null :")
+    if !(← existsFlight (some homewardFlight)) then throw (InvalidFlightException.new "flight not found :")
+    lift (validateFlightDepartureDateForRoundTripFlight reserveIntervalTime outwardFlight homewardFlight)
+    lift (validateFlightRouteForRoundTripFlight outwardFlight homewardFlight)
+  lift (validateFlightFareType flights)
 
 end TicketSharedServiceImpl
 

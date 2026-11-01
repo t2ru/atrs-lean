@@ -8,6 +8,9 @@ import LangSemantics.Java.String
 import LangSemantics.Java.Spring
 import LangSemantics.Java.DecimalFormat
 import LangSemantics.Java.JLocalDate
+import LangSemantics.Java.JLocalTime
+import LangSemantics.Java.JLocalDateTime
+import LangSemantics.Java.JList
 import LangSemantics.Java.HashMap
 import LangSemantics.Java.JLocalDate.Lemmas
 import LangSemantics.Java.JLocalDate.RoundTrip

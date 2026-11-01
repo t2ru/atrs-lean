@@ -34,6 +34,20 @@ def ROUND_TRIP_FARETYPES : List Spec.Model.FareTypeCd := [.RT, .SRT]
 def getFareTypeCdList (flightType : JRef Spec.Model.FlightType) : List Spec.Model.FareTypeCd :=
   if flightType = some .OW then ONE_WAY_FARETYPES else ROUND_TRIP_FARETYPES
 
+/-- `isRoundTrip(fareTypeCd)`: `ROUND_TRIP_FARETYPES.contains(fareTypeCd)`（`null` は偽）。 -/
+@[source "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isRoundTrip(FareTypeCd)@38d25dfb5555891f"]
+def isRoundTrip (fareTypeCd : JRef Spec.Model.FareTypeCd) : Bool :=
+  match fareTypeCd with
+  | some c => ROUND_TRIP_FARETYPES.contains c
+  | none => false
+
+/-- `isOneWay(fareTypeCd)`: `ONE_WAY_FARETYPES.contains(fareTypeCd)`（`null` は偽）。 -/
+@[source "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isOneWay(FareTypeCd)@5e37c894868f1832"]
+def isOneWay (fareTypeCd : JRef Spec.Model.FareTypeCd) : Bool :=
+  match fareTypeCd with
+  | some c => ONE_WAY_FARETYPES.contains c
+  | none => false
+
 end FareTypeUtil
 
 end SourceModel.Domain.Common.Util

@@ -1,0 +1,402 @@
+{
+  "operation": "reservation.validateFlightList",
+  "modelDef": [
+    "Spec.Ticket.validateFlightList",
+    "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList"
+  ],
+  "specRef": "docs/spec/reservation.md#validateflightlist",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "vfl-ow-ok",
+      "description": "片道（NTT001・片道運賃）。便マスタ・フライトがあり、運賃種別は片道運賃",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ]
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-rt-exact-interval",
+      "description": "仕様の例: 往路 HND→ITM 09:00–10:00、復路 ITM→HND 12:00 発（10:00 + 120 分 = 12:00 なので可）",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-rt-interval-short",
+      "description": "仕様の例: 復路 11:15 発（12:00 より前）→ e.ar.b2.2001",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT106",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT106",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2001",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-rt-homeward-previous-day",
+      "description": "仕様の例: 復路が往路の前日 → e.ar.b2.2001",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-10",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-10",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2001",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-rt-not-reverse",
+      "description": "復路が HND→ITM（往路の逆区間でない。搭乗間隔は可）→ InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT121",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT121",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-flight-not-found",
+      "description": "主キーのフライトが無い（2026-04-12 の NTT001・片道運賃）→ InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-12",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-unknown-flight-master",
+      "description": "便マスタに無い便名 → InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "XXX999",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-ow-fare-type-rt",
+      "description": "片道で運賃種別が往復運賃 → InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-rt-outward-fare-type-ow",
+      "description": "往復で往路の運賃種別が片道運賃 → InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vfl-homeward-not-found",
+      "description": "復路の主キーのフライトが無い（特別往復運賃）→ InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "SRT"
+          }
+        ]
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

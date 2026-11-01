@@ -17,11 +17,21 @@ import Trace
 
 namespace Spec.Nondet
 
-/-- N-001: 排他制御の失敗 `Conflict` が起きるか（環境）。起きると、採番以外の状態は変わらない（SPEC-004）。 -/
+/-- 失敗したユースケースの中で進んだ採番の数（会員・予約・予約フライト・搭乗者）。採番は失敗したトランザクションでも
+巻き戻らない（`docs/spec/ports.md#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
+structure SeqAdvance where
+  member : Nat := 0
+  reserve : Nat := 0
+  reserveFlight : Nat := 0
+  passenger : Nat := 0
+  deriving DecidableEq, Repr
+
+/-- N-001: 排他制御の失敗 `Conflict` が起きるか（環境）。起きると、採番以外の状態は変わらない（SPEC-004）。
+採番は、失敗するまでに進んだ数（`adv`）だけ進む。 -/
 @[nondet "N-001", spec_doc "docs/spec/ports.md#トランザクション"]
 inductive ConflictChoice where
   | none
-  | conflict
+  | conflict (adv : SeqAdvance := {})
   deriving DecidableEq, Repr
 
 /-- 標準の値: 衝突は起きない。 -/
@@ -31,7 +41,7 @@ def ConflictChoice.std : ConflictChoice := .none
 @[nondet "N-002", spec_doc "docs/spec/ports.md#トランザクション"]
 inductive IoFailureChoice where
   | none
-  | failure
+  | failure (adv : SeqAdvance := {})
   deriving DecidableEq, Repr
 
 /-- 標準の値: I/O は失敗しない。 -/

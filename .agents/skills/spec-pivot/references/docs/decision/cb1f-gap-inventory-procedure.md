@@ -39,7 +39,7 @@ Chosen option: "手順と観点を `guide/gap-inventory.md` に置き、検査�
 * 観点は G1〜G9（PRE の成分の結びつき、証拠の宣言、箇所の印、述語と欄、R 課題、箇所の参照、文書の引用、原典との突き合わせ、観測の形）とする。
 * 判断を要する候補は一件ずつ判断を求め、ライブラリの内部の挙動に拠る候補は原典実行で確かめる作業項目に回す。
 * 観点 G5（登録簿の R 課題と課題表の差異の列の一致）は検査にできるので、作業項目 [backlog 937d](../backlog/937d-rtasks-task-table-consistency-check.md) にした。
-* [workflow.md](../guide/workflow.md) から参照する。スキルの版を 0.24 にした。
+* [workflow.md](../guide/workflow.md) から参照する。スキルの版を 0.26 にした。
 
 ### Consequences
 

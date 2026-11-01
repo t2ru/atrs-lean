@@ -1,8 +1,16 @@
 # Directory Update Log
 
 ## 2026-11-01
-* **Creation**: [ADR cb1f](decision/cb1f-gap-inventory-procedure.md) で、差異の登録簿の棚卸しの手順と観点 G1〜G9 を [guide/gap-inventory.md](guide/gap-inventory.md) に置き、[guide/workflow.md](guide/workflow.md#未着手の可視化) と `SKILL.md` から参照した。登録簿の R 課題と課題表の差異の列の一致の検査を作業項目 [backlog 937d](backlog/937d-rtasks-task-table-consistency-check.md) にした。スキルの版を 0.24 にした。
+* **Creation**: [ADR cb1f](decision/cb1f-gap-inventory-procedure.md) で、差異の登録簿の棚卸しの手順と観点 G1〜G9 を [guide/gap-inventory.md](guide/gap-inventory.md) に置き、[guide/workflow.md](guide/workflow.md#未着手の可視化) と `SKILL.md` から参照した。登録簿の R 課題と課題表の差異の列の一致の検査を作業項目 [backlog 937d](backlog/937d-rtasks-task-table-consistency-check.md) にした。スキルの版を 0.26 にした。
   * 来歴: 適用先 ATRS の ADR f786（差異の棚卸し）。
+* **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt`（`Machine.Alt`・`Machine.Machine.Alt`・`Machine.Concrete.Alt`・`Machine.Glue.Alt`・`Machine.Refines.Alt`・`Machine.Preserves.Alt`、例と反例 `Test/Machine/Alt.lean`）を足し、[spec/architecture.md](spec/architecture.md) に並置の使い分けを書き、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.25 にした。
+  * `LangSemantics.Sql.Transaction.run`（取消。戻す成分は呼び出し側が決める）、`LangSemantics.Sql.Postgresql.PgTimestamp`（`TIMESTAMP` の列）。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。
+  * `LangSemantics.Java.JLocalTime`・`JLocalDateTime`（`DateTimeFormatter.ofPattern("HHmm")` の SMART 解決、`LocalDateTime` の `atTime`・`atStartOfDay`・`plusMinutes`・`isBefore`。JVM の表に 22 の文字列と分の加算・比較の行を足した）、`LangSemantics.Java.JList.get`、`StringUtils.hasLength`・`hasText`。[lang/java/semantics.md](lang/java/semantics.md) を改めた。
+  * 来歴: 適用先 ATRS の ADR 4c45（予約の第 1 段）。
+* **Creation**: [ADR b187](decision/b187-proven-csimp-for-evaluating-models.md) で、モデルの評価を速くする実装を、元の定義と等しいことの定理を付けた `@[csimp]` で与えることにした（定義は書き換えない）。スキルの版を 0.24 にした。
+  * `LangSemantics.Sql.Query.Bag.crossWhere`（条件を押し下げた入れ子ループの結合）と、`LangSemantics.Sql.QueryLemmas.filter_cross_split`・`select_cross_split` を足した。
+  * [lang/lean/rules.md](lang/lean/rules.md#書き方) に規則を足した。
+  * 来歴: 適用先 ATRS の ADR 9c1c（シードの DB を使う照合が CI で約 6 分かかっていた）。
 * **Creation**: [ADR 89f2](decision/89f2-layout-check-one-process-per-group.md) で、`layout-check`（`Trace.Layout.run`）のモジュールの組を、組ごとに別のプロセス（同じ実行ファイルを `--layout-group <i>` で起動したもの）で判定するようにした。親は環境を読み込まず、結果の JSON を `mergeGroups` で合わせる。メモリの最大は組 1 つ分になる。出力と呼び出しは変えていない（違反は終了コード 1、組の判定の失敗は 2）。スキルの版を 0.23 にした。
   * `Trace.Layout.Result` に範囲のモジュールとその検査数 `modules` を、`Result.collapse`・`GroupOut`・`mergeGroups`・`runGroup`・`runAll` を足し、`Item.toJson`・`Result.merge` を除いた。`trace-test` に合わせ方と JSON の往復の検査を足した。[lang/lean/trace-attributes.md](lang/lean/trace-attributes.md)・[lang/lean/rules.md](lang/lean/rules.md#モジュールと名前空間) を改めた。
   * 来歴: 適用先 ATRS の CI（組を足すと runner がメモリで止まった）。

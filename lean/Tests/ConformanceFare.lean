@@ -161,7 +161,8 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let svc ← srcSharedService fx.master
   let cfg ← decodeConfig fx.config
   let reserve : TicketReserveServiceImpl :=
-    { ticketSharedService := svc, adultPassengerMinAge := J32.ofInt cfg.adultPassengerMinAge,
+    { ticketSharedService := svc, representativeMinAge := J32.ofInt cfg.representativeMinAge,
+      adultPassengerMinAge := J32.ofInt cfg.adultPassengerMinAge,
       childFareRate := J32.ofInt cfg.childFareRate }
   return [
     ("fare.basicFare", fun i => do

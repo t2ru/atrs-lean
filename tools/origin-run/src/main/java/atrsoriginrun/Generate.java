@@ -37,6 +37,7 @@ final class Generate {
         g.basicFareAndFare();
         g.totalFare();
         g.searchFlight();
+        g.confirm();
     }
 
     static final class Gen {
@@ -268,6 +269,148 @@ final class Generate {
                         "照会可能期間の境界: 今日から " + k + " 日後（照会可能期間は " + limitDay + " 日後まで）"));
             }
             emit("flight-search/origin-run-searchFlight.json", doc);
+        }
+
+        /** 搭乗者の型: 名前・年齢・性別（予約代表者は 1 人目。{@code rep17} は代表者の年齢 17）。空の欄 {@code null} を挟むものもある。 */
+        record Mix(String id, String label, int repAge, Object[][] passengers) {}
+
+        static final List<Mix> MIXES = List.of(
+                new Mix("F30", "大人の女性 1 名", 30, new Object[][] {{"ハナコ", 30, "F"}}),
+                new Mix("M40-F8", "大人の男性 1 名と小児の女性 1 名", 40, new Object[][] {{"タロウ", 40, "M"}, {"ハナコ", 8, "F"}}),
+                new Mix("F30-F29", "大人の女性 2 名", 30, new Object[][] {{"ハナコ", 30, "F"}, {"サクラ", 29, "F"}}),
+                new Mix("F30-M31-F12", "大人 3 名（12 歳を含む）", 30, new Object[][] {{"ハナコ", 30, "F"}, {"タロウ", 31, "M"}, {"サクラ", 12, "F"}}),
+                new Mix("gap-F30-M5", "空の欄を挟む大人の女性 1 名と小児の男性 1 名", 30,
+                        new Object[][] {null, {"ハナコ", 30, "F"}, null, {"ジロウ", 5, "M"}}),
+                new Mix("six", "6 名（大人 2 名・小児 4 名、11 歳と 2 歳を含む）", 30, new Object[][] {{"ハナコ", 30, "F"}, {"タロウ", 30, "M"},
+                        {"ジロウ", 5, "M"}, {"サクラ", 8, "F"}, {"サブロウ", 11, "M"}, {"モモ", 2, "F"}}),
+                new Mix("rep17", "代表者 17 歳（大人の女性 1 名）", 17, new Object[][] {{"ハナコ", 17, "F"}}));
+
+        static ObjectNode reserveForm(Mix m) {
+            ObjectNode f = Json.obj();
+            f.put("repFamilyName", "デンデン");
+            Object[] rep = m.passengers()[0] != null ? m.passengers()[0] : m.passengers()[1];
+            f.put("repGivenName", (String) rep[0]);
+            f.put("repAge", m.repAge());
+            f.put("repGender", (String) rep[2]);
+            f.put("repTel1", "03");
+            f.put("repTel2", "1234");
+            f.put("repTel3", "5678");
+            f.put("repMail", "hanako@example.com");
+            f.putNull("repMembershipNumber");
+            ArrayNode ps = f.putArray("passengers");
+            for (int k = 0; k < 6; k++) {
+                ObjectNode p = ps.addObject();
+                Object[] x = k < m.passengers().length ? m.passengers()[k] : null;
+                if (x == null) continue;
+                p.put("familyName", "デンデン");
+                p.put("givenName", (String) x[0]);
+                p.put("age", (Integer) x[1]);
+                p.put("gender", (String) x[2]);
+            }
+            return f;
+        }
+
+        /** 選択フライトの FLIGHT の行（シードの値）。シードに無ければ null。 */
+        ObjectNode seedRow(ObjectNode sel) throws Exception {
+            LocalDate d = LocalDate.parse(sel.get("departureDate").asText());
+            for (JsonNode r : seedFlights(d, routeOf(sel.get("flightName").asText()))) {
+                if (r.get("flightName").asText().equals(sel.get("flightName").asText())
+                        && r.get("boardingClassCd").asText().equals(sel.get("boardingClassCd").asText())
+                        && r.get("fareTypeCd").asText().equals(sel.get("fareTypeCd").asText())) return (ObjectNode) r;
+            }
+            return null;
+        }
+
+        int routeOf(String flightName) {
+            for (JsonNode f : master.get("flightMasters")) if (f.get("flightName").asText().equals(flightName)) return f.get("routeNo").intValue();
+            throw new IllegalArgumentException(flightName);
+        }
+
+        /** 搭乗日・区間のシードの便のうち、便名の順で最初のもの（シードの FLIGHT はすべての便を持たない）。無ければ null。 */
+        String seededRepresentative(LocalDate d, int routeNo) throws Exception {
+            ArrayNode rows = seedFlights(d, routeNo);
+            return rows.isEmpty() ? null : rows.get(0).get("flightName").asText();
+        }
+
+        /** 片道・往復の選択フライト（往復の復路は逆区間の代表便の 2 日後）。シードに便が無い・逆区間の無い往復は null。 */
+        List<ObjectNode> trip(JsonNode route, LocalDate d, String cls, String ft, boolean roundTrip) throws Exception {
+            String out = seededRepresentative(d, route.get("routeNo").intValue());
+            if (out == null) return null;
+            List<ObjectNode> fs = new ArrayList<>();
+            fs.add(flight(out, d, cls, ft));
+            if (roundTrip) {
+                Integer rev = reverseRoute(route);
+                String back = rev == null ? null : seededRepresentative(d.plusDays(2), rev);
+                if (back == null) return null;
+                fs.add(flight(back, d.plusDays(2), cls, ft));
+            }
+            return fs;
+        }
+
+        ObjectNode confirmCase(List<ObjectNode> trip, Mix m, String id, String description) throws Exception {
+            ObjectNode in = Json.obj();
+            in.put("today", TODAY.toString());
+            ArrayNode rows = in.putArray("flights");
+            ArrayNode sels = in.putArray("selectFlights");
+            for (ObjectNode f : trip) {
+                ObjectNode row = seedRow(f);
+                if (row == null) return null;
+                rows.add(row);
+                ObjectNode s = sels.addObject();
+                s.put("depDate", f.get("departureDate").asText());
+                s.put("flightName", f.get("flightName").asText());
+                s.put("boardingClassCd", f.get("boardingClassCd").asText());
+                s.put("fareTypeCd", f.get("fareTypeCd").asText());
+            }
+            in.set("form", reserveForm(m));
+            return testCase(id, description, in);
+        }
+
+        static String tripLabel(List<ObjectNode> trip) {
+            StringBuilder b = new StringBuilder();
+            for (ObjectNode f : trip) {
+                if (b.length() > 0) b.append('-');
+                b.append(f.get("flightName").asText()).append('-').append(f.get("departureDate").asText());
+            }
+            return b + "-" + trip.get(0).get("boardingClassCd").asText() + "-" + trip.get(0).get("fareTypeCd").asText();
+        }
+
+        void confirm() throws Exception {
+            ObjectNode doc = header("reservation/confirm.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
+                    + "入力の flights は、選択フライトのシードの FLIGHT の行（00250 を投入日 2026-11-01 で展開）。今日は投入日。"
+                    + "区間 1 の代表便（シードにある便のうち便名の順で最初のもの。搭乗日 2026-11-11）の搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便の 2 日後）"
+                    + "× 搭乗者の型のすべてと、ほかの区間（シードに便のあるもの）の代表便（搭乗日 2026-12-26）の搭乗クラス・運賃種別・搭乗者の型の巡回",
+                    List.of("D-001", "D-002", "D-012"));
+            ArrayNode cases = doc.withArray("cases");
+            List<String[]> kinds = List.of(new String[] {"N", "OW"}, new String[] {"N", "RD1"}, new String[] {"N", "RD7"},
+                    new String[] {"N", "ED"}, new String[] {"N", "LD"}, new String[] {"N", "GD"}, new String[] {"S", "SOW"},
+                    new String[] {"S", "SRD"}, new String[] {"N", "RT"}, new String[] {"S", "SRT"});
+            JsonNode routes = master.get("routes");
+            JsonNode r1 = routes.get(0);
+            LocalDate d1 = TODAY.plusDays(10);
+            for (String[] k : kinds) {
+                List<ObjectNode> trip = trip(r1, d1, k[0], k[1], k[1].endsWith("RT"));
+                if (trip == null) continue;
+                for (Mix m : MIXES) {
+                    ObjectNode c = confirmCase(trip, m, "confirm-" + tripLabel(trip) + "-" + m.id(),
+                            String.join("・", k) + "・" + tripLabel(trip) + "・" + m.label());
+                    if (c != null) cases.add(c);
+                }
+            }
+            LocalDate peak = LocalDate.parse("2026-12-26");
+            int n = 0;
+            for (int r = 1; r < routes.size(); r++) {
+                String[] k = kinds.get(n % kinds.size());
+                Mix m = MIXES.get(n % MIXES.size());
+                List<ObjectNode> trip = trip(routes.get(r), peak, k[0], k[1], k[1].endsWith("RT"));
+                if (trip == null) continue;
+                ObjectNode c = confirmCase(trip, m, "confirm-" + tripLabel(trip) + "-" + m.id(),
+                        String.join("・", k) + "・" + tripLabel(trip) + "・" + m.label());
+                if (c == null) continue;
+                cases.add(c);
+                n++;
+            }
+            emit("reservation/origin-run-confirm.json", doc);
         }
 
         static ObjectNode searchCase(String id, JsonNode route, LocalDate dep, String cls, String type, ArrayNode rows, String description) {

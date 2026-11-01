@@ -186,7 +186,7 @@ structure Flight where
   vacantNum : Nat
   deriving DecidableEq
 
-/-- 搭乗者。採番される搭乗者番号は、予約の登録で決まる（`World` に置く）。 -/
+/-- 搭乗者。採番される搭乗者番号は、予約の登録で決まる（`PassengerRecord`）。 -/
 @[spec_doc "docs/spec/domain-model.md#passenger"]
 structure Passenger where
   familyName : String
@@ -196,13 +196,20 @@ structure Passenger where
   membershipNumber : Option MembershipNumber
   deriving DecidableEq
 
-/-- 予約フライト。往路・復路で同一の搭乗者列を持つ。 -/
+/-- 登録した搭乗者（採番した搭乗者番号を伴う）。 -/
+@[spec_doc "docs/spec/domain-model.md#passenger"]
+structure PassengerRecord where
+  passengerNo : Nat
+  passenger : Passenger
+  deriving DecidableEq
+
+/-- 予約フライト。往路・復路で同一の搭乗者列を持つ（搭乗者番号は予約フライトごとに採番する）。 -/
 @[spec_doc "docs/spec/domain-model.md#reserveflight"]
 structure ReserveFlight where
   reserveFlightNo : Nat
   reserveNo : ReserveNo
   flight : FlightKey
-  passengers : List Passenger
+  passengers : List PassengerRecord
   deriving DecidableEq
 
 /-- 予約。`reserveFlights` は長さ 1（片道）または 2（往復: 往路, 復路の順）。 -/

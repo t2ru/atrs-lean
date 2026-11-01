@@ -625,6 +625,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.FlightSearch.Alpha.noReservationState",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.FlightSearch.Alpha.vacantInfoOf",
       "layer": "Abstraction"
     },
@@ -634,6 +638,10 @@
     },
     {
       "name": "Abstraction.FlightSearch.Alpha.worldOfDb",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.worldOfDb_flights",
       "layer": "Abstraction"
     },
     {
@@ -2361,6 +2369,346 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.App.B2.B2Mapper.mapPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.B2Mapper.mapReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.age",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.familyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.gender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.givenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.isEmpty",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.membershipNumber",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.PassengerForm.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.paymentDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.reserveNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveCompleteOutputDto.totalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.ReserveConfirmOutputDto.totalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.flightType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.passengerFormList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repGender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repMail",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repMembershipNumber",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repTel1",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repTel2",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.repTel3",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.resetPassengersIndex",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveForm.selectFlightFormList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.badRequestClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.calculateTotalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.createReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.reserve",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.reserveConfirm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.reserveIntervalTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.ticketReserveService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqPassengerForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqPassengerForm.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqReserveCompleteOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqReserveCompleteOutputDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqReserveConfirmOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqReserveConfirmOutputDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqTicketReserveForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instDecidableEqTicketReserveForm.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprPassengerForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprPassengerForm.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprReserveCompleteOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprReserveCompleteOutputDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprReserveConfirmOutputDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprReserveConfirmOutputDto.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprTicketReserveForm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.App.B2.instReprTicketReserveForm.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.AtrsProperties.AtrsConfig",
       "layer": "SourceModel"
     },
@@ -2534,6 +2882,18 @@
     },
     {
       "name": "SourceModel.Db.FlightSeed.vacant2",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MemberSeed.memberLoginRows",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MemberSeed.memberRows",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MemberSeed.sqMember",
       "layer": "SourceModel"
     },
     {
@@ -2741,6 +3101,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Db.Schema.FlightDb.member",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.memberLogin",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Db.Schema.FlightDb.mk",
       "layer": "SourceModel"
     },
@@ -2758,6 +3126,38 @@
     },
     {
       "name": "SourceModel.Db.Schema.FlightDb.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.passenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.reservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.reserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.rollback",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.sqMember",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.sqPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.sqReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.FlightDb.sqReserveFlight",
       "layer": "SourceModel"
     },
     {
@@ -2917,6 +3317,194 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Db.Schema.MemberLoginRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.customerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.lastPassword",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.loginDateTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.loginFlg",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberLoginRow.password",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.address",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.birthday",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.creditNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.creditTerm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.creditTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.customerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.gender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.kanaFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.kanaGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.kanjiFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.kanjiGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.mail",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.tel",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.MemberRow.zipCode",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.age",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.customerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.familyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.gender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.givenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.passengerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.PassengerRow.reserveFlightNo",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Db.Schema.PeakTimeRow",
       "layer": "SourceModel"
     },
@@ -2998,6 +3586,126 @@
     },
     {
       "name": "SourceModel.Db.Schema.PlaneRow.sSeatNum",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repCustomerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repGender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repMail",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.repTel",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.reserveDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.reserveNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReservationRow.totalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.boardingClassCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.departureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.fareTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.reserveFlightNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.ReserveFlightRow.reserveNo",
       "layer": "SourceModel"
     },
     {
@@ -3121,6 +3829,30 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Db.Schema.instDecidableEqMemberLoginRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqMemberLoginRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqMemberRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqMemberRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqPassengerRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqPassengerRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Db.Schema.instDecidableEqPeakTimeRow",
       "layer": "SourceModel"
     },
@@ -3134,6 +3866,22 @@
     },
     {
       "name": "SourceModel.Db.Schema.instDecidableEqPlaneRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqReservationRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqReservationRow.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqReserveFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instDecidableEqReserveFlightRow.decEq",
       "layer": "SourceModel"
     },
     {
@@ -3209,6 +3957,30 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Db.Schema.instReprMemberLoginRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprMemberLoginRow.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprMemberRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprMemberRow.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprPassengerRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprPassengerRow.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Db.Schema.instReprPeakTimeRow",
       "layer": "SourceModel"
     },
@@ -3225,6 +3997,22 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Db.Schema.instReprReservationRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprReservationRow.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprReserveFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.instReprReserveFlightRow.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Db.Schema.instReprRouteRow",
       "layer": "SourceModel"
     },
@@ -3238,6 +4026,162 @@
     },
     {
       "name": "SourceModel.Db.Schema.sortCfg",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.sqMember",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.sqPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.sqReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Schema.sqReserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Seed.seedDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.DbM",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.clock",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.conflictAt",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.fixed",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.ioFailAt",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.Env.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.clockReads",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.db",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.env",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.St.sqlCalls",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.conflictClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.duplicateKeyClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.integrityClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.ioFailureClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.lift",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.now",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.query",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.runOn",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.sql",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.transactional",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.translate",
       "layer": "SourceModel"
     },
     {
@@ -3290,6 +4234,22 @@
     },
     {
       "name": "SourceModel.Domain.Common.Exception.AtrsBusinessException.new",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs_nil",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Logging.LogMessages.systemExceptionClass",
       "layer": "SourceModel"
     },
     {
@@ -3509,6 +4469,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalDateTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Common.Util.FareTypeUtil.ONE_WAY_FARETYPES",
       "layer": "SourceModel"
     },
@@ -3518,6 +4486,14 @@
     },
     {
       "name": "SourceModel.Domain.Common.Util.FareTypeUtil.getFareTypeCdList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Util.FareTypeUtil.isOneWay",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Common.Util.FareTypeUtil.isRoundTrip",
       "layer": "SourceModel"
     },
     {
@@ -3610,6 +4586,42 @@
     },
     {
       "name": "SourceModel.Domain.Model.BoardingClassCd.valueOf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.creditFirm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.creditTypeCd",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.CreditType.noConfusionType",
       "layer": "SourceModel"
     },
     {
@@ -3773,6 +4785,146 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Model.Gender.getCode",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Gender.valueOf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.address",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.birthday",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.creditNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.creditTerm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.creditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.gender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.kanaFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.kanaGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.kanjiFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.kanjiGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.mail",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.memberLogin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.membershipNumber",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.tel",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Member.zipCode",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.lastPassword",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.loginDateTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.loginFlg",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.MemberLogin.password",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Model.Passenger",
       "layer": "SourceModel"
     },
@@ -3794,6 +4946,10 @@
     },
     {
       "name": "SourceModel.Domain.Model.Passenger.givenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Passenger.member",
       "layer": "SourceModel"
     },
     {
@@ -3909,6 +5065,122 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Model.Reservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repFamilyName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repGender",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repGivenName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repMail",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repMember",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.repTel",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.reserveDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.reserveFlightList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.reserveNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.Reservation.totalFare",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.flight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.passengerList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.reserveFlightNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.ReserveFlight.reserveNo",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Model.Route",
       "layer": "SourceModel"
     },
@@ -3969,6 +5241,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Model.instDecidableEqCreditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqCreditType.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Model.instDecidableEqFareType",
       "layer": "SourceModel"
     },
@@ -3990,6 +5270,22 @@
     },
     {
       "name": "SourceModel.Domain.Model.instDecidableEqFlightMaster.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqMember",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqMember.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqMemberLogin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqMemberLogin.decEq",
       "layer": "SourceModel"
     },
     {
@@ -4017,6 +5313,22 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Model.instDecidableEqReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqReservation.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqReserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instDecidableEqReserveFlight.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Model.instDecidableEqRoute",
       "layer": "SourceModel"
     },
@@ -4038,6 +5350,14 @@
     },
     {
       "name": "SourceModel.Domain.Model.instReprBoardingClass.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprCreditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprCreditType.repr",
       "layer": "SourceModel"
     },
     {
@@ -4065,6 +5385,22 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Model.instReprMember",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprMember.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprMemberLogin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprMemberLogin.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Model.instReprPassenger",
       "layer": "SourceModel"
     },
@@ -4086,6 +5422,22 @@
     },
     {
       "name": "SourceModel.Domain.Model.instReprPlane.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprReservation.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprReserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Model.instReprReserveFlight.repr",
       "layer": "SourceModel"
     },
     {
@@ -4333,6 +5685,50 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.departureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.fareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.flightName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.Params",
       "layer": "SourceModel"
     },
@@ -4433,7 +5829,35 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.bindKey",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.existsRows",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMasterJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster_eq_join",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdateRows",
       "layer": "SourceModel"
     },
     {
@@ -4469,6 +5893,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instDecidableEqKeyParams",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instDecidableEqKeyParams.decEq",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instDecidableEqParams",
       "layer": "SourceModel"
     },
@@ -4501,6 +5933,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instReprKeyParams",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instReprKeyParams.repr",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.instReprParams",
       "layer": "SourceModel"
     },
@@ -4517,11 +5957,23 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.keyCond",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.sqlOf",
       "layer": "SourceModel"
     },
     {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.standardSort",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.update",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.updateRows",
       "layer": "SourceModel"
     },
     {
@@ -4545,7 +5997,15 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsJoin",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsOn",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRows_eq_join",
       "layer": "SourceModel"
     },
     {
@@ -4617,11 +6077,159 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.creditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.login",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.member",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.MemberResult.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.findOne",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.findOneRows",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.instDecidableEqMemberResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.instDecidableEqMemberResult.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.instReprMemberResult",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.instReprMemberResult.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.localDateOfTimestamp",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Member.MemberRepository.memberMap",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.findAll",
       "layer": "SourceModel"
     },
     {
       "name": "SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.peakTimeMap",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.convDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.convInt",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.convText",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassengerRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertRow",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.keyReadFailureClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextPassengerNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveFlightNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.notNull",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.readInteger",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.storeDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.storeInt",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.storeNullIf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Reservation.ReservationRepository.storeText",
       "layer": "SourceModel"
     },
     {
@@ -4681,6 +6289,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAllJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAll_eq_join",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Route.RouteRepository.instDecidableEqRouteResult",
       "layer": "SourceModel"
     },
@@ -4698,6 +6314,14 @@
     },
     {
       "name": "SourceModel.Domain.Repository.Route.RouteRepository.routeMap",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.InvalidFlightException.className",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.InvalidFlightException.new",
       "layer": "SourceModel"
     },
     {
@@ -4726,6 +6350,10 @@
     },
     {
       "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
       "layer": "SourceModel"
     },
     {
@@ -4766,6 +6394,22 @@
     },
     {
       "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightFareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightRouteForRoundTripFlight",
       "layer": "SourceModel"
     },
     {
@@ -5053,6 +6697,46 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.paymentDate",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveDto.reserveNo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl",
       "layer": "SourceModel"
     },
@@ -5070,6 +6754,10 @@
     },
     {
       "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.memberRepository",
       "layer": "SourceModel"
     },
     {
@@ -5093,7 +6781,59 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.representativeMinAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.sameAsMember",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.ticketSharedService",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateAndUpdateVacancy",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateFareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validatePassengerMemberInfo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateRepresentativeAge",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateRepresentativeMemberInfo",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.instDecidableEqTicketReserveDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.instDecidableEqTicketReserveDto.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.instReprTicketReserveDto",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Service.B2.instReprTicketReserveDto.repr",
       "layer": "SourceModel"
     },
     {
@@ -5973,6 +7713,310 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.ReserveQuery.Kind",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.confirm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.confirm.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.ctorElimType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.ofNat",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.ofNat_ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.reserve",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.Kind.reserve.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.input",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.kind",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.confirmed",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.confirmed.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.confirmed.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.confirmed.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.ctorElimType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.reserved",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.reserved.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.reserved.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.MOutputValue.reserved.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.badRequest",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.badRequest.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.business",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.business.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.business.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.business.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.conflict",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.conflict.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.ctorElimType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.ioFailure",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.ioFailure.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveError.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.config",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.db",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.env",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.form",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.mk",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.mk.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.mk.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.mk.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.ReserveInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.catchReserve",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.confirmBody",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.helperOf",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instDecidableEqKind",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instDecidableEqMOutputValue",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instDecidableEqMOutputValue.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instDecidableEqReserveError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instDecidableEqReserveError.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprKind",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprKind.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprMOutputValue",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprMOutputValue.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprReserveError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.instReprReserveError.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.reserveBody",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.reserveConcrete",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.runConfirm",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.runOp",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.ReserveQuery.runReserve",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.machine",
       "layer": "SourceModel"
     },
@@ -6429,6 +8473,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.PassengerRecord",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.PasswordHash",
       "layer": "Spec"
     },
@@ -6517,6 +8565,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Port.Sequences",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Port.World",
       "layer": "Spec"
     },
@@ -6529,7 +8581,43 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Port.World.existsFlight",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Port.World.findAll",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.findForUpdate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.findMember",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.insertReservation",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.nextPassengerNo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.nextReserveFlightNo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.nextReserveNo",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.reserveNoOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Port.World.updateVacantNum",
       "layer": "Spec"
     },
     {
@@ -6741,6 +8829,18 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Seed.Member.members",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Member.sequences",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.World.world",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Seed.airports",
       "layer": "Spec"
     },
@@ -6770,6 +8870,190 @@
     },
     {
       "name": "Spec.Seed.routes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.ResolvedFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.SelectFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.availableMinute",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.checkFareTypes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.checkFlight",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.checkInterval",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.checkReverse",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.departureMinute",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.resolve",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.validateFlightList",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.Draft",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.MInput",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.MInput.Pre",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.MOutputValue",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.Op",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.PassengerInput",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.PassengerInput.isEmpty",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.PassengerInput.toPassenger",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.Request",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.ReserveInput",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.ReserveResult",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.asInvalidRequest",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.buildDraft",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkFareTypeOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkFareTypes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkPassengerMembers",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkRepAge",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkRepMember",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.checkSelects",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.compactPassengers",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.confirmOp",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.memberNoOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.register",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserve",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveConfirm",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveMachine_initIs",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveOp",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveStep",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveStep_conflict",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveStep_failure",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.reserveStep_std",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.secureSeats",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.validateReservation",
       "layer": "Spec"
     }
   ],
@@ -6951,6 +9235,11 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.App.B2.TicketReserveHelper.reserve",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.AtrsProperties.AtrsConfig",
       "to": "D-027"
     },
@@ -6973,6 +9262,11 @@
       "type": "gap",
       "from": "SourceModel.Db.Schema.MasterDb",
       "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Db.Tx.now",
+      "to": "D-014"
     },
     {
       "type": "gap",
@@ -7036,6 +9330,41 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalDateTime",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextPassengerNo",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveFlightNo",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.readInteger",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare",
       "to": "D-001"
     },
@@ -7073,6 +9402,16 @@
       "type": "gap",
       "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate",
       "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "to": "D-031"
     },
     {
       "type": "gap",
@@ -7126,6 +9465,16 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateAndUpdateVacancy",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.FareQuery.BasicFareInput",
       "to": "D-027"
     },
@@ -7147,6 +9496,11 @@
     {
       "type": "gap",
       "from": "SourceModel.MasterQuery.SrcInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.ReserveQuery.ReserveInput",
       "to": "D-027"
     },
     {
@@ -7303,6 +9657,31 @@
       "type": "gap",
       "from": "Spec.Model.Range.maxMultiplicationRatio",
       "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Ticket.availableMinute",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Ticket.checkInterval",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.UseCase.Reserve.reserve",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.UseCase.Reserve.reserveOp",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.UseCase.Reserve.secureSeats",
+      "to": "D-014"
     },
     {
       "type": "gap_entry",
@@ -7885,10 +10264,129 @@
       "to": "SPEC-003"
     },
     {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveMachine_initIs",
+      "to": "SPEC-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "to": "SPEC-003"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveStep_conflict",
+      "to": "SPEC-004"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveStep_failure",
+      "to": "SPEC-004"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.UseCase.Reserve.reserveStep_std",
+      "to": "SPEC-008"
+    },
+    {
       "type": "source",
       "from": "SourceModel.App.B0.TicketHelper.toFlightList",
       "to": "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)",
       "hash": "3fef600108b03c6e"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.B2Mapper.mapPassenger",
+      "to": "dep:org.mapstruct:mapstruct#Mapper",
+      "hash": "mapstruct-1.6.3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.B2Mapper.mapPassenger",
+      "to": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(PassengerForm)",
+      "hash": "0685ad6f1c953274"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.B2Mapper.mapReservation",
+      "to": "dep:org.mapstruct:mapstruct#Mapper",
+      "hash": "mapstruct-1.6.3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.B2Mapper.mapReservation",
+      "to": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(TicketReserveForm,Reservation)",
+      "hash": "b1198d19edff71a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm.isEmpty",
+      "to": "dep:org.springframework:spring-core#StringUtils",
+      "hash": "spring-core-7.0.3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm.isEmpty",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()",
+      "hash": "4c989a582a1c8d97"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#<init>()",
+      "hash": "e8da8828068e2108"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "hash": "ce743698ff3529b4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm.resetPassengersIndex",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()",
+      "hash": "402fa38c7797fc36"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveHelper.createReservation",
+      "to": "lang:java#java.lang.String.format",
+      "hash": "java-17"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveHelper.reserve",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)",
+      "hash": "adcae9fef7b9df35"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveHelper.reserveConfirm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)",
+      "hash": "7b28499828937c4a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#validateFlightList(List)",
+      "hash": "d6700fbbefbc4997"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
+      "to": "java:jp.co.ntt.atrs.app.common.exception.BadRequestException#<init>(Exception)",
+      "hash": "e6ed9d4d70fd7b28"
     },
     {
       "type": "source",
@@ -8054,6 +10552,24 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Db.MemberSeed.memberLoginRows",
+      "to": "seed:00230_insert_member.sql#MEMBER_LOGIN",
+      "hash": "d692d2c1627b0945"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MemberSeed.memberRows",
+      "to": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MemberSeed.sqMember",
+      "to": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Db.Schema.AirportRow",
       "to": "ddl:00100_create_all_tables.sql#AIRPORT",
       "hash": "bf8ca7804ba932ce"
@@ -8099,6 +10615,12 @@
       "from": "SourceModel.Db.Schema.FareTypeRow",
       "to": "ddl:00100_create_all_tables.sql#PK_FARE_TYPE",
       "hash": "149b5d905d80158c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.FlightDb.rollback",
+      "to": "dep:org.springframework:spring-tx#Transactional",
+      "hash": "spring-tx-7.0.3"
     },
     {
       "type": "source",
@@ -8156,6 +10678,66 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Db.Schema.MemberLoginRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_MEMBER_LOGIN_1",
+      "hash": "1759f86c859d73ff"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.MemberLoginRow",
+      "to": "ddl:00100_create_all_tables.sql#MEMBER_LOGIN",
+      "hash": "c876b54c793bc20b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.MemberLoginRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_MEMBER_LOGIN",
+      "hash": "946bc5e00f703c39"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.MemberRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_MEMBER_1",
+      "hash": "f973f6fb19c6579a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.MemberRow",
+      "to": "ddl:00100_create_all_tables.sql#MEMBER",
+      "hash": "27ed37725641693d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.MemberRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_MEMBER",
+      "hash": "0ef1b6d6f5d103cb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.PassengerRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_PASSENGER_1",
+      "hash": "73e9ec7955ed6537"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.PassengerRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_PASSENGER_2",
+      "hash": "38e248347f807a22"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.PassengerRow",
+      "to": "ddl:00100_create_all_tables.sql#PASSENGER",
+      "hash": "798b3b804ed44e20"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.PassengerRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_PASSENGER",
+      "hash": "a65be50c47900082"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Db.Schema.PeakTimeRow",
       "to": "ddl:00100_create_all_tables.sql#PEAK_TIME",
       "hash": "2639ea660139925b"
@@ -8177,6 +10759,48 @@
       "from": "SourceModel.Db.Schema.PlaneRow",
       "to": "ddl:00100_create_all_tables.sql#PLANE",
       "hash": "31641da45eeb4327"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReservationRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_RESERVATION_1",
+      "hash": "dc02d22353059eb2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReservationRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_RESERVATION",
+      "hash": "bd7d930ed9b812f9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReservationRow",
+      "to": "ddl:00100_create_all_tables.sql#RESERVATION",
+      "hash": "b760349f34b7abf9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReserveFlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_1",
+      "hash": "3326d08660a32a50"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReserveFlightRow",
+      "to": "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_2",
+      "hash": "0fa426c3b4f30b61"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReserveFlightRow",
+      "to": "ddl:00100_create_all_tables.sql#PK_RESERVE_FLIGHT",
+      "hash": "61fc69db73a3d3f9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.ReserveFlightRow",
+      "to": "ddl:00100_create_all_tables.sql#RESERVE_FLIGHT",
+      "hash": "bbf4d320c62e6860"
     },
     {
       "type": "source",
@@ -8213,6 +10837,54 @@
       "from": "SourceModel.Db.Schema.RouteRow",
       "to": "ddl:00100_create_all_tables.sql#UK_ROUTE_1",
       "hash": "32f01bacba919d17"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.sqMember",
+      "to": "ddl:00100_create_all_tables.sql#SQ_MEMBER_1",
+      "hash": "fca537c311ef1688"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.sqMember",
+      "to": "ddl:00100_create_all_tables.sql#SQ_PASSENGER_1",
+      "hash": "331c9fe98f49d0a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.sqMember",
+      "to": "ddl:00100_create_all_tables.sql#SQ_RESERVATION_1",
+      "hash": "280c70c2218d134c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Schema.sqMember",
+      "to": "ddl:00100_create_all_tables.sql#SQ_RESERVE_FLIGHT_1",
+      "hash": "c7bb105cb9521b63"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Tx.now",
+      "to": "dep:org.terasoluna.gfw:terasoluna-gfw-common#ClockFactory.tick",
+      "hash": "terasoluna-gfw-common-5.11.0.RELEASE"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Tx.transactional",
+      "to": "dep:org.springframework:spring-tx#Transactional",
+      "hash": "spring-tx-7.0.3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Tx.translate",
+      "to": "dep:org.mybatis:mybatis-spring#MyBatisExceptionTranslator",
+      "hash": "mybatis-spring-4.0.0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.Tx.translate",
+      "to": "dep:org.springframework:spring-jdbc#SQLErrorCodeSQLExceptionTranslator",
+      "hash": "spring-jdbc-7.0.3"
     },
     {
       "type": "source",
@@ -8291,6 +10963,36 @@
       "from": "SourceModel.Domain.Common.Exception.AtrsBusinessException.new",
       "to": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID",
       "hash": "3d4b63a6702d11d1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs",
+      "to": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
+      "hash": "70bc401f3ab46d0d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "to": "dep:org.terasoluna.gfw:terasoluna-gfw-common#SystemException",
+      "hash": "terasoluna-gfw-common-5.11.0.RELEASE"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "to": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages#getCode()",
+      "hash": "da85740cb21790bb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "to": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages#getMessage(Object...)",
+      "hash": "a089f7300284d09d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "to": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages.E_AR_A0_L9002",
+      "hash": "53a1080bdf3ccc39"
     },
     {
       "type": "source",
@@ -8426,6 +11128,30 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalDateTime",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalDateTime(LocalDate,String)",
+      "hash": "77b0547624f167eb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalTime(String)",
+      "hash": "f681e7086ea22011"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER",
+      "hash": "b3ea6e972e16ec6a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "to": "lang:java#java.time.format.DateTimeFormatter",
+      "hash": "java-17"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Common.Util.FareTypeUtil.ONE_WAY_FARETYPES",
       "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES",
       "hash": "13a685de676dd6d0"
@@ -8459,6 +11185,18 @@
       "from": "SourceModel.Domain.Common.Util.FareTypeUtil.getFareTypeCdList",
       "to": "java:jp.co.ntt.atrs.domain.model.FlightType.RT",
       "hash": "3165be96f5833ae0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Util.FareTypeUtil.isOneWay",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isOneWay(FareTypeCd)",
+      "hash": "5e37c894868f1832"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Common.Util.FareTypeUtil.isRoundTrip",
+      "to": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isRoundTrip(FareTypeCd)",
+      "hash": "38d25dfb5555891f"
     },
     {
       "type": "source",
@@ -8888,6 +11626,30 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Model.Gender.getCode",
+      "to": "java:jp.co.ntt.atrs.domain.model.Gender#getCode()",
+      "hash": "a9f1cc11acd733ab"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Gender.getCode",
+      "to": "java:jp.co.ntt.atrs.domain.model.Gender.F",
+      "hash": "f67ab10ad4e4c531"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Gender.getCode",
+      "to": "java:jp.co.ntt.atrs.domain.model.Gender.M",
+      "hash": "08f271887ce94707"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Gender.valueOf",
+      "to": "dep:org.mybatis:mybatis#EnumTypeHandler",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Model.PeakTime",
       "to": "java:jp.co.ntt.atrs.domain.model.PeakTime#getMultiplicationRatio()",
       "hash": "0b4e159bab8a2bad"
@@ -9074,15 +11836,57 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.bindKey",
+      "to": "dep:org.mybatis:mybatis#EnumTypeHandler",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists(LocalDate,String,BoardingClass,FareType)",
+      "hash": "963eff23e19232bd"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.existsRows",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists",
+      "hash": "fe988ee9710d5e94"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster",
       "to": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster",
       "hash": "ebfbc030ba80f150"
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate(LocalDate,String,BoardingClass,FareType)",
+      "hash": "852c2d72ff703d07"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdateRows",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate",
+      "hash": "a0b73cb5abc18dbc"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap",
       "to": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria(VacantSeatSearchCriteriaDto)",
       "hash": "642c24ce08bfe364"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.update",
+      "to": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update(Flight)",
+      "hash": "3a289afa23fe78a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Flight.FlightRepository.updateRows",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update",
+      "hash": "de19197b9e62d467"
     },
     {
       "type": "source",
@@ -9140,9 +11944,111 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Repository.Member.MemberRepository.findOne",
+      "to": "java:jp.co.ntt.atrs.domain.repository.member.MemberRepository#findOne(String)",
+      "hash": "451a02e1a5c2ef0a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Member.MemberRepository.findOneRows",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.member.MemberRepository#findOne",
+      "hash": "0d19f186b308dbfd"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Member.MemberRepository.localDateOfTimestamp",
+      "to": "dep:org.postgresql:postgresql#TimestampUtils.toLocalDateTime",
+      "hash": "postgresql-42.7.9"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.findAll",
       "to": "sql:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll",
       "hash": "52311345757d8bde"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
+      "to": "dep:org.mybatis:mybatis#SelectKeyGenerator",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
+      "to": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert(Reservation)",
+      "hash": "3d5880d4f5b24ab0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
+      "to": "dep:org.mybatis:mybatis#SelectKeyGenerator",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
+      "to": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger(Passenger)",
+      "hash": "1ba685e68ed407bf"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassengerRow",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger",
+      "hash": "143c319a42242366"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
+      "to": "dep:org.mybatis:mybatis#SelectKeyGenerator",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight(ReserveFlight)",
+      "hash": "88ff643e818d213a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow",
+      "to": "dep:org.mybatis:mybatis#EnumTypeHandler",
+      "hash": "mybatis-3.5.19"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight",
+      "hash": "c6374f352f5e8516"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertRow",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert",
+      "hash": "24efe7b0cbd4877c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextPassengerNo",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger",
+      "hash": "143c319a42242366"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveFlightNo",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight",
+      "hash": "c6374f352f5e8516"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveNo",
+      "to": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert",
+      "hash": "24efe7b0cbd4877c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Repository.Reservation.ReservationRepository.readInteger",
+      "to": "dep:org.postgresql:postgresql#PgResultSet.getInt",
+      "hash": "postgresql-42.7.9"
     },
     {
       "type": "source",
@@ -9161,6 +12067,18 @@
       "from": "SourceModel.Domain.Repository.Route.RouteRepository.routeMap",
       "to": "java:jp.co.ntt.atrs.config.app.mybatis.MybatisConfig#configuration()",
       "hash": "81014029228aac4a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.InvalidFlightException.new",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.InvalidFlightException#<init>(String)",
+      "hash": "80edf1af3fd26cf2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.InvalidFlightException.new",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.InvalidFlightException.serialVersionUID",
+      "hash": "2d16bfba7652351b"
     },
     {
       "type": "source",
@@ -9191,6 +12109,18 @@
       "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
       "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)",
       "hash": "1e12eb714e2bc395"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#existsFlight(Flight)",
+      "hash": "3a7ea0432fb7d108"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#existsFlight(Flight)",
+      "hash": "a4e50b127ec510cf"
     },
     {
       "type": "source",
@@ -9227,6 +12157,18 @@
       "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate",
       "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)",
       "hash": "ab7abd9ac674d349"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateFlightList(List)",
+      "hash": "cab75bbff4478e82"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "to": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateFlightList(List)",
+      "hash": "31235b0af5e54df0"
     },
     {
       "type": "source",
@@ -9536,6 +12478,72 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode#code()",
+      "hash": "5fde806a365dc7a0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2001",
+      "hash": "48c863106106d000"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2002",
+      "hash": "cd7ca684671ce46f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2003",
+      "hash": "e38fa5a882084768"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2004",
+      "hash": "4e63e291bfee3d2a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2005",
+      "hash": "ddb39f02b8f2ef71"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2006",
+      "hash": "7f2e00f344361b5e"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2007",
+      "hash": "1ad572ad2b5e701d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2008",
+      "hash": "25e29d5a5f6f2214"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2009",
+      "hash": "9810cb0c99b4d473"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2010",
+      "hash": "d64487b413becec0"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
       "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)",
       "hash": "ca1a14757ce1cb33"
@@ -9545,6 +12553,30 @@
       "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
       "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)",
       "hash": "35bc5d27ed5f2ca9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#registerReservation(Reservation)",
+      "hash": "4df168e425feb579"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#registerReservation(Reservation)",
+      "hash": "14ec7266e29f86b3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#validateReservation(Reservation)",
+      "hash": "66cb03764db77def"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)",
+      "hash": "d94a3852f47a03d1"
     },
     {
       "type": "source",
@@ -9587,6 +12619,24 @@
       "from": "Spec.Seed.Flight.vacant2",
       "to": "seed:00250_insert_flight.sql#FLIGHT",
       "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Member.members",
+      "to": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Member.members",
+      "to": "seed:00230_insert_member.sql#MEMBER_LOGIN",
+      "hash": "d692d2c1627b0945"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Member.sequences",
+      "to": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7"
     },
     {
       "type": "source",
@@ -10118,6 +13168,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Model.PassengerRecord",
+      "to": "docs/spec/domain-model.md#passenger"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Model.PasswordHash",
       "to": "docs/spec/domain-model.md#コード値"
     },
@@ -10228,6 +13283,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Port.Sequences",
+      "to": "docs/spec/ports.md#idgenerator"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Port.World",
       "to": "docs/spec/ports.md#world抽象状態"
     },
@@ -10243,7 +13303,52 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Port.World.existsFlight",
+      "to": "docs/spec/ports.md#flightrepository"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Port.World.findAll",
+      "to": "docs/spec/ports.md#flightrepository"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.findForUpdate",
+      "to": "docs/spec/ports.md#flightrepository"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.findMember",
+      "to": "docs/spec/ports.md#memberrepository"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.insertReservation",
+      "to": "docs/spec/ports.md#reservationrepository"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.nextPassengerNo",
+      "to": "docs/spec/ports.md#idgenerator"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.nextReserveFlightNo",
+      "to": "docs/spec/ports.md#idgenerator"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.nextReserveNo",
+      "to": "docs/spec/ports.md#idgenerator"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.reserveNoOf",
+      "to": "docs/spec/ports.md#idgenerator"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.updateVacantNum",
       "to": "docs/spec/ports.md#flightrepository"
     },
     {
@@ -10477,6 +13582,211 @@
       "to": "docs/spec/domain-model.md#hourminute"
     },
     {
+      "type": "spec_doc",
+      "from": "Spec.Seed.World.world",
+      "to": "docs/spec/ports.md#world抽象状態"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.ResolvedFlight",
+      "to": "docs/spec/reservation.md#選択フライト"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.SelectFlight",
+      "to": "docs/spec/reservation.md#選択フライト"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.availableMinute",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.checkFareTypes",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.checkFlight",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.checkInterval",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.checkReverse",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.departureMinute",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.resolve",
+      "to": "docs/spec/reservation.md#選択フライト"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Ticket.validateFlightList",
+      "to": "docs/spec/reservation.md#validateflightlist"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.Draft",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.MInput",
+      "to": "docs/spec/reservation.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.MInput.Pre",
+      "to": "docs/spec/reservation.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.MOutputValue",
+      "to": "docs/spec/reservation.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.Op",
+      "to": "docs/spec/reservation.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.PassengerInput",
+      "to": "docs/spec/input-validation.md#予約入力b2"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.PassengerInput.isEmpty",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.PassengerInput.toPassenger",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.Request",
+      "to": "docs/spec/http-contract.md#b2-予約"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.ReserveInput",
+      "to": "docs/spec/input-validation.md#予約入力b2"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.ReserveResult",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.asInvalidRequest",
+      "to": "docs/spec/http-contract.md#b2-予約"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.buildDraft",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkFareTypeOf",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkFareTypes",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkPassengerMembers",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkRepAge",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkRepMember",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.checkSelects",
+      "to": "docs/spec/http-contract.md#b2-予約"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.compactPassengers",
+      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.confirmOp",
+      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.memberNoOf",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.register",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.reserve",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.reserveConfirm",
+      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.reserveMachine",
+      "to": "docs/spec/reservation.md"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.reserveOp",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.reserveStep",
+      "to": "docs/spec/ports.md#トランザクション"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.secureSeats",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.validateReservation",
+      "to": "docs/spec/reservation.md#validatereservation"
+    },
+    {
       "type": "std_abs",
       "from": "Abstraction.Fare.Alpha.aiBF",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
@@ -10664,6 +13974,106 @@
       "hash": "3fef600108b03c6e",
       "merkle": "7d72ca7baca2df70",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.B2Mapper.mapPassenger",
+      "locator": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(PassengerForm)",
+      "hash": "0685ad6f1c953274",
+      "merkle": "81d08c03b7b921a9",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.B2Mapper.mapReservation",
+      "locator": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(TicketReserveForm,Reservation)",
+      "hash": "b1198d19edff71a3",
+      "merkle": "5ec3b76535a6f546",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm.isEmpty",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()",
+      "hash": "4c989a582a1c8d97",
+      "merkle": "87157b82dfad4b5f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#<init>()",
+      "hash": "e8da8828068e2108",
+      "merkle": "4321afdc02ab33ed",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm.MAX_PASSENGERS_NUMBER",
+      "hash": "ce743698ff3529b4",
+      "merkle": "4321afdc02ab33ed",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm.resetPassengersIndex",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()",
+      "hash": "402fa38c7797fc36",
+      "merkle": "168c0b70c03416a8",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveHelper.reserve",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)",
+      "hash": "adcae9fef7b9df35",
+      "merkle": "6cb69e4b05c232d2",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveHelper.reserveConfirm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)",
+      "hash": "7b28499828937c4a",
+      "merkle": "a26d9c980a166521",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#validateFlightList(List)",
+      "hash": "d6700fbbefbc4997",
+      "merkle": "92886c855659fc1a",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
+      "locator": "java:jp.co.ntt.atrs.app.common.exception.BadRequestException#<init>(Exception)",
+      "hash": "e6ed9d4d70fd7b28",
+      "merkle": "92886c855659fc1a",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -10906,6 +14316,33 @@
       ]
     },
     {
+      "definition": "SourceModel.Db.MemberSeed.memberLoginRows",
+      "locator": "seed:00230_insert_member.sql#MEMBER_LOGIN",
+      "hash": "d692d2c1627b0945",
+      "merkle": "0dd7197e84c57d77",
+      "checks": [
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MemberSeed.memberRows",
+      "locator": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7",
+      "merkle": "85fa20993e1278d9",
+      "checks": [
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MemberSeed.sqMember",
+      "locator": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7",
+      "merkle": "6ef5c815f75874fa",
+      "checks": [
+        "pg-reservation-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Db.Schema.AirportRow",
       "locator": "ddl:00100_create_all_tables.sql#AIRPORT",
       "hash": "bf8ca7804ba932ce",
@@ -11081,6 +14518,126 @@
       ]
     },
     {
+      "definition": "SourceModel.Db.Schema.MemberLoginRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_MEMBER_LOGIN_1",
+      "hash": "1759f86c859d73ff",
+      "merkle": "9af31815523243dc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.MemberLoginRow",
+      "locator": "ddl:00100_create_all_tables.sql#MEMBER_LOGIN",
+      "hash": "c876b54c793bc20b",
+      "merkle": "9af31815523243dc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.MemberLoginRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_MEMBER_LOGIN",
+      "hash": "946bc5e00f703c39",
+      "merkle": "9af31815523243dc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.MemberRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_MEMBER_1",
+      "hash": "f973f6fb19c6579a",
+      "merkle": "22c598807d17247e",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.MemberRow",
+      "locator": "ddl:00100_create_all_tables.sql#MEMBER",
+      "hash": "27ed37725641693d",
+      "merkle": "22c598807d17247e",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.MemberRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_MEMBER",
+      "hash": "0ef1b6d6f5d103cb",
+      "merkle": "22c598807d17247e",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.PassengerRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_PASSENGER_1",
+      "hash": "73e9ec7955ed6537",
+      "merkle": "0cc05ccd763e1afc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.PassengerRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_PASSENGER_2",
+      "hash": "38e248347f807a22",
+      "merkle": "0cc05ccd763e1afc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.PassengerRow",
+      "locator": "ddl:00100_create_all_tables.sql#PASSENGER",
+      "hash": "798b3b804ed44e20",
+      "merkle": "0cc05ccd763e1afc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.PassengerRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_PASSENGER",
+      "hash": "a65be50c47900082",
+      "merkle": "0cc05ccd763e1afc",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Db.Schema.PeakTimeRow",
       "locator": "ddl:00100_create_all_tables.sql#PEAK_TIME",
       "hash": "2639ea660139925b",
@@ -11118,6 +14675,90 @@
       "checks": [
         "lake-test",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReservationRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_RESERVATION_1",
+      "hash": "dc02d22353059eb2",
+      "merkle": "034fdc3ebec29672",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReservationRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_RESERVATION",
+      "hash": "bd7d930ed9b812f9",
+      "merkle": "034fdc3ebec29672",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReservationRow",
+      "locator": "ddl:00100_create_all_tables.sql#RESERVATION",
+      "hash": "b760349f34b7abf9",
+      "merkle": "034fdc3ebec29672",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReserveFlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_1",
+      "hash": "3326d08660a32a50",
+      "merkle": "efa3526deee6f1e3",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReserveFlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_2",
+      "hash": "0fa426c3b4f30b61",
+      "merkle": "efa3526deee6f1e3",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReserveFlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#PK_RESERVE_FLIGHT",
+      "hash": "61fc69db73a3d3f9",
+      "merkle": "efa3526deee6f1e3",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.ReserveFlightRow",
+      "locator": "ddl:00100_create_all_tables.sql#RESERVE_FLIGHT",
+      "hash": "bbf4d320c62e6860",
+      "merkle": "efa3526deee6f1e3",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -11178,6 +14819,46 @@
       "checks": [
         "lake-test",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.sqMember",
+      "locator": "ddl:00100_create_all_tables.sql#SQ_MEMBER_1",
+      "hash": "fca537c311ef1688",
+      "merkle": "4a9cd1aec2c4a2c9",
+      "checks": [
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.sqMember",
+      "locator": "ddl:00100_create_all_tables.sql#SQ_PASSENGER_1",
+      "hash": "331c9fe98f49d0a3",
+      "merkle": "4a9cd1aec2c4a2c9",
+      "checks": [
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.sqMember",
+      "locator": "ddl:00100_create_all_tables.sql#SQ_RESERVATION_1",
+      "hash": "280c70c2218d134c",
+      "merkle": "4a9cd1aec2c4a2c9",
+      "checks": [
+        "pg-master-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.Schema.sqMember",
+      "locator": "ddl:00100_create_all_tables.sql#SQ_RESERVE_FLIGHT_1",
+      "hash": "c7bb105cb9521b63",
+      "merkle": "4a9cd1aec2c4a2c9",
+      "checks": [
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -11294,6 +14975,46 @@
       "hash": "3d4b63a6702d11d1",
       "merkle": "280691d66c8e733b",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs",
+      "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
+      "hash": "70bc401f3ab46d0d",
+      "merkle": "582c006074c02813",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "locator": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages#getCode()",
+      "hash": "da85740cb21790bb",
+      "merkle": "8291f1ac08ab1aaf",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "locator": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages#getMessage(Object...)",
+      "hash": "a089f7300284d09d",
+      "merkle": "8291f1ac08ab1aaf",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
+      "locator": "java:jp.co.ntt.atrs.domain.common.logging.LogMessages.E_AR_A0_L9002",
+      "hash": "53a1080bdf3ccc39",
+      "merkle": "8291f1ac08ab1aaf",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -11469,6 +15190,36 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalDateTime",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalDateTime(LocalDate,String)",
+      "hash": "77b0547624f167eb",
+      "merkle": "b28b0b241e959385",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalTime(String)",
+      "hash": "f681e7086ea22011",
+      "merkle": "58749a7bd158e9bb",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Util.DateTimeUtil.toLocalTime",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil.TIME_FORMATTER",
+      "hash": "b3ea6e972e16ec6a",
+      "merkle": "58749a7bd158e9bb",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Common.Util.FareTypeUtil.ONE_WAY_FARETYPES",
       "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil.ONE_WAY_FARETYPES",
       "hash": "13a685de676dd6d0",
@@ -11519,6 +15270,26 @@
       "hash": "3165be96f5833ae0",
       "merkle": "84d11fae4213fb69",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Util.FareTypeUtil.isOneWay",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isOneWay(FareTypeCd)",
+      "hash": "5e37c894868f1832",
+      "merkle": "5829185de10ab9dc",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Common.Util.FareTypeUtil.isRoundTrip",
+      "locator": "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#isRoundTrip(FareTypeCd)",
+      "hash": "38d25dfb5555891f",
+      "merkle": "7a0b1e3554d05209",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -12162,6 +15933,36 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Model.Gender.getCode",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Gender#getCode()",
+      "hash": "a9f1cc11acd733ab",
+      "merkle": "e546477be5a31e6b",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Gender.getCode",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Gender.F",
+      "hash": "f67ab10ad4e4c531",
+      "merkle": "e546477be5a31e6b",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Gender.getCode",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Gender.M",
+      "hash": "08f271887ce94707",
+      "merkle": "e546477be5a31e6b",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Model.PeakTime",
       "locator": "java:jp.co.ntt.atrs.domain.model.PeakTime#getMultiplicationRatio()",
       "hash": "0b4e159bab8a2bad",
@@ -12434,6 +16235,30 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists(LocalDate,String,BoardingClass,FareType)",
+      "hash": "963eff23e19232bd",
+      "merkle": "6e0f3c911ea3ff1e",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.existsRows",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists",
+      "hash": "fe988ee9710d5e94",
+      "merkle": "bf20e0b1a2d046d2",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster",
       "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findAllFlightMaster",
       "hash": "ebfbc030ba80f150",
@@ -12442,6 +16267,30 @@
         "lake-test",
         "pg-flight-sql",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate(LocalDate,String,BoardingClass,FareType)",
+      "hash": "852c2d72ff703d07",
+      "merkle": "720dcd02cf909e73",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdateRows",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate",
+      "hash": "a0b73cb5abc18dbc",
+      "merkle": "d5e9eecfba6a711e",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -12455,11 +16304,36 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.update",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update(Flight)",
+      "hash": "3a289afa23fe78a3",
+      "merkle": "4e6c6c673a80062a",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.updateRows",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#update",
+      "hash": "de19197b9e62d467",
+      "merkle": "8c3a5ebf1907b8d3",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-flight-sql",
+        "pg-reservation-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRows",
       "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
       "hash": "2fbe03024cd7d231",
-      "merkle": "a45f11a3b0b8de7a",
+      "merkle": "68e78e83bde02684",
       "checks": [
+        "java-origin-run",
         "lake-test",
         "pg-flight-sql"
       ]
@@ -12545,6 +16419,28 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Repository.Member.MemberRepository.findOne",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.member.MemberRepository#findOne(String)",
+      "hash": "451a02e1a5c2ef0a",
+      "merkle": "dc8de8f705f629c5",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Member.MemberRepository.findOneRows",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.member.MemberRepository#findOne",
+      "hash": "0d19f186b308dbfd",
+      "merkle": "106de59df159b79b",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.findAll",
       "locator": "sql:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll",
       "hash": "52311345757d8bde",
@@ -12552,6 +16448,105 @@
       "checks": [
         "lake-test",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert(Reservation)",
+      "hash": "3d5880d4f5b24ab0",
+      "merkle": "0a75d9e95a1ccf85",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger(Passenger)",
+      "hash": "1ba685e68ed407bf",
+      "merkle": "48a35350e131f9ec",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassengerRow",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger",
+      "hash": "143c319a42242366",
+      "merkle": "7f6e17fe881b02c6",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight(ReserveFlight)",
+      "hash": "88ff643e818d213a",
+      "merkle": "300353c95e2530e0",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight",
+      "hash": "c6374f352f5e8516",
+      "merkle": "34c1ec737827ecff",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertRow",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert",
+      "hash": "24efe7b0cbd4877c",
+      "merkle": "cf645a3b5c13f08d",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextPassengerNo",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger",
+      "hash": "143c319a42242366",
+      "merkle": "90ac03ce9d580a03",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveFlightNo",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight",
+      "hash": "c6374f352f5e8516",
+      "merkle": "834009f3760994a6",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveNo",
+      "locator": "sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert",
+      "hash": "24efe7b0cbd4877c",
+      "merkle": "f29f20d73af25ca6",
+      "checks": [
+        "java-origin-run",
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -12582,6 +16577,26 @@
       "checks": [
         "lake-test",
         "pg-master-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.InvalidFlightException.new",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.InvalidFlightException#<init>(String)",
+      "hash": "80edf1af3fd26cf2",
+      "merkle": "8dc66c030f20b176",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.InvalidFlightException.new",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.InvalidFlightException.serialVersionUID",
+      "hash": "2d16bfba7652351b",
+      "merkle": "8dc66c030f20b176",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
       ]
     },
     {
@@ -12626,6 +16641,26 @@
       "hash": "1e12eb714e2bc395",
       "merkle": "7e51df42fcd11cba",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#existsFlight(Flight)",
+      "hash": "3a7ea0432fb7d108",
+      "merkle": "f90afe0847d69f8e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#existsFlight(Flight)",
+      "hash": "a4e50b127ec510cf",
+      "merkle": "f90afe0847d69f8e",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -12680,6 +16715,26 @@
       "hash": "ab7abd9ac674d349",
       "merkle": "d4d41b9e1af4bc14",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateFlightList(List)",
+      "hash": "cab75bbff4478e82",
+      "merkle": "0359ef6654248936",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateFlightList(List)",
+      "hash": "31235b0af5e54df0",
+      "merkle": "0359ef6654248936",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -13107,11 +17162,122 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode#code()",
+      "hash": "5fde806a365dc7a0",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2001",
+      "hash": "48c863106106d000",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2002",
+      "hash": "cd7ca684671ce46f",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2003",
+      "hash": "e38fa5a882084768",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2004",
+      "hash": "4e63e291bfee3d2a",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2005",
+      "hash": "ddb39f02b8f2ef71",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2006",
+      "hash": "7f2e00f344361b5e",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2007",
+      "hash": "1ad572ad2b5e701d",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2008",
+      "hash": "25e29d5a5f6f2214",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2009",
+      "hash": "9810cb0c99b4d473",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2010",
+      "hash": "d64487b413becec0",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)",
       "hash": "ca1a14757ce1cb33",
-      "merkle": "e145b1684deb9dda",
+      "merkle": "700a6ed345c18d16",
       "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -13119,8 +17285,49 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)",
       "hash": "35bc5d27ed5f2ca9",
-      "merkle": "e145b1684deb9dda",
+      "merkle": "700a6ed345c18d16",
       "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#registerReservation(Reservation)",
+      "hash": "4df168e425feb579",
+      "merkle": "e143ae39d33fd29b",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#registerReservation(Reservation)",
+      "hash": "14ec7266e29f86b3",
+      "merkle": "e143ae39d33fd29b",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#validateReservation(Reservation)",
+      "hash": "66cb03764db77def",
+      "merkle": "95ba9ed8b9f149ea",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)",
+      "hash": "d94a3852f47a03d1",
+      "merkle": "95ba9ed8b9f149ea",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -13174,6 +17381,33 @@
       "locator": "seed:00250_insert_flight.sql#FLIGHT",
       "hash": "ebc1effd92f8d4a3",
       "merkle": "cda3e0e8febe5d53",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Member.members",
+      "locator": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7",
+      "merkle": "f6ef1ffc3b660a1c",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Member.members",
+      "locator": "seed:00230_insert_member.sql#MEMBER_LOGIN",
+      "hash": "d692d2c1627b0945",
+      "merkle": "f6ef1ffc3b660a1c",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Member.sequences",
+      "locator": "seed:00230_insert_member.sql#MEMBER",
+      "hash": "0fa5d725ee1debb7",
+      "merkle": "ba2e68c4f313b870",
       "checks": [
         "seed-lean"
       ]

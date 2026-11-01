@@ -12,7 +12,9 @@ Spring Framework の `org.springframework.util.Assert`。名前と引数の順�
   `x` を使う 2 つの文を、モデルで 1 つにしたものである（`let x ← Assert.notNullValue x m`）。
 - `Assert.hasText` は `null` でない文字列を受ける（`null` の場合は呼び出し側で `IllegalArgumentException` にする）。
 
-依存: `dep:org.springframework:spring-core#Assert`（版はプロジェクトの `@[source]` に書く）
+- `StringUtils.hasLength`・`StringUtils.hasText` は `null` を受け、偽を返す。
+
+依存: `dep:org.springframework:spring-core#Assert`・`dep:org.springframework:spring-core#StringUtils`（版はプロジェクトの `@[source]` に書く）
 -/
 
 namespace LangSemantics.Java.Spring
@@ -47,6 +49,18 @@ def Assert.notEmptyValue {α : Type} (collection : JRef (List α)) (message : St
 /-- `Assert.hasText(text, message)`: `Character.isWhitespace` でない文字を含む。 -/
 def Assert.hasText (text : String) (message : String) : JResult Unit :=
   Assert.isTrue (text.any fun c => !isJavaWhitespace c) message
+
+/-- `StringUtils.hasLength(str)`: `null` でなく、長さが 0 でない。 -/
+def StringUtils.hasLength (str : JRef String) : Bool :=
+  match str with
+  | some s => !s.isEmpty
+  | none => false
+
+/-- `StringUtils.hasText(str)`: `null` でなく、`Character.isWhitespace` でない文字を含む。 -/
+def StringUtils.hasText (str : JRef String) : Bool :=
+  match str with
+  | some s => s.any fun c => !isJavaWhitespace c
+  | none => false
 
 /-! ## 補題（証明で、検査を満たす場合の値に書き換えるためのもの） -/
 

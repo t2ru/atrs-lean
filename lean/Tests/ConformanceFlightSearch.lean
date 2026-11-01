@@ -51,6 +51,9 @@ def specCriteria (c : Json) : Except String Spec.FlightSearch.Criteria := do
 def specErrorJson : Spec.Error.AtrsError → Json
   | .business code _ => errorJson "business" code
   | .notFound code => errorJson "notFound" code
+  | .invalidRequest _ => errorJson "invalidRequest" ""
+  | .system code _ => errorJson "system" code
+  | .conflict _ => errorJson "conflict" ""
 
 def specInfoJson (v : Spec.FlightSearch.FlightVacantInfo) : Json :=
   Json.mkObj [("flightName", .str v.flightName.val), ("depAirportName", .str v.depAirportName),
@@ -74,7 +77,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
         (← decodeDate (← getStr i "today")))),
     ("flightSearch.searchFlight", fun i => do
       let flights ← (← getArr i "flights").mapM specFlight
-      let w : Spec.Port.World := ⟨flights⟩
+      let w : Spec.Port.World := { flights }
       if !decide w.Inv then throw "outside INV (duplicate flight key)"
       if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
       let r ← need (Spec.FlightSearch.searchFlight cfg md (← decodeDate (← getStr i "today")) (← specCriteria (← getObjVal i "criteria"))

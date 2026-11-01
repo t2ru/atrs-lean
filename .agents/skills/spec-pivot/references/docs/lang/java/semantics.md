@@ -42,6 +42,8 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 | `DecimalFormat.formatGrouped sep n` | `new DecimalFormat("###,###").format(n)` | 整数を 3 桁ごとに区切る。区切り文字は既定の書式ロケールによるので引数に取る（日本語・英語では `,`）。負の数は `-` を前に付ける |
 | `DecimalFormat.formatGroupedS sym n` | `new DecimalFormat("###,###", symbols).format(n)` | 書式の記号の組 `Symbols`（区切り文字・数字の 0・負の記号の文字列）で書式化する。数字は `zeroDigit` から数え、負の数は負の記号の文字列を前に付ける。`Symbols.ascii`（`,`・`0`・`-`）では `formatGrouped ','` に等しい（`formatGroupedS_ascii`） |
 | `JLocalDate` | `java.time.LocalDate` | 先発グレゴリオ暦の暦日。`plusDays`, `isBefore`, `isAfter`, `ChronoUnit.YEARS.between`（満年数）。通算日数との変換は双方向に逆（`toEpochDay_ofEpochDay`、妥当な暦日で `ofEpochDay_toEpochDay`） |
+| `JLocalTime`, `JLocalDateTime` | `java.time.LocalTime`, `LocalDateTime` | 時・分（秒は 0）。`JLocalTime.parseHHmm` は `LocalTime.from(DateTimeFormatter.ofPattern("HHmm").parse(s))`（SMART）で、ASCII の数字 4 文字に限る。`24:00` は 0:00 に解決し、ほかの 24 時台・25 時以上・60 分以上は `DateTimeParseException`。`localDate.atTime(t)`・`atStartOfDay()` は `JLocalDateTime.atTime d t`・`JLocalDateTime.atStartOfDay d` とし、`plusMinutes`・`isBefore` は通算の分で計算する（年の範囲を超える加算の `DateTimeException` は写さない） |
+| `JList.get` | `List.get(i)` | 範囲外は `IndexOutOfBoundsException` |
 | `JRef` | 参照の `null` | 参照型は `Option` で表す。`JRef.deref` は `null` で `NullPointerException` |
 | `JHashMap`, `JLinkedHashMap` | `HashMap`, `LinkedHashMap` | `put` は同じキーの値を置き換える（後勝ち）。`get` は無ければ `null`。`HashMap` の反復の順序は与えない。`LinkedHashMap` は挿入順で、同じキーの `put` は位置を保つ |
 
@@ -91,6 +93,8 @@ if java! d.isBefore(sysDate) || d.isAfter(limitDate) then …
 | `throw new E(…)`・`return` | `throw (E.new …)`・`return` |
 | `new C(…)` | `C.new …`（モデルのコンストラクタ） |
 | Spring の `Assert.isTrue(e, m)`・`Assert.notNull(x, m)`・`Assert.notEmpty(c, m)`・`Assert.hasText(s, m)` | `Assert.isTrue e m`・`Assert.notNull x m`・`Assert.notEmpty c m`・`Assert.hasText s m`（`LangSemantics.Java.Spring`） |
+| Spring の `StringUtils.hasLength(s)`・`StringUtils.hasText(s)` | `StringUtils.hasLength s`・`StringUtils.hasText s`（`null` は偽） |
+| `list.get(i)` | `← JList.get list i` |
 | `Assert.notNull(x, m)` の後で `x` を使う | `let x ← Assert.notNullValue x m`（`notEmpty` は `notEmptyValue`） |
 | 注入された依存（`@Inject`・`@Value`） | クラスの型の欄（`structure TicketSharedServiceImpl where boardingClassProvider : …`） |
 | インスタンスメソッド `c.m(a)` | `C.m c a`（ドット記法で `c.m a`） |

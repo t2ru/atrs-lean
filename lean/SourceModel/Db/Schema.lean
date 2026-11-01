@@ -117,12 +117,119 @@ structure FlightRow where
   vacantNum : Int4
   deriving DecidableEq, Repr
 
-/-- 状態の表の内容（いまは FLIGHT だけ）。[Spec] の `World` に対応する（ADR ce36）。列の型の範囲は [Spec] の型より広く
-（負の空席数など）、[Spec] の型で表せる状態に限ることは既知差異 D-027 の前提である（ADR cdb6）。 -/
+/-- `MEMBER`。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_MEMBER@0ef1b6d6f5d103cb", "ddl:00100_create_all_tables.sql#FK_MEMBER_1@f973f6fb19c6579a",
+  "ddl:00100_create_all_tables.sql#MEMBER@27ed37725641693d"]
+structure MemberRow where
+  customerNo : Varchar 10
+  kanjiFamilyName : Varchar 10
+  kanjiGivenName : Varchar 10
+  kanaFamilyName : Varchar 10
+  kanaGivenName : Varchar 10
+  birthday : PgDate
+  gender : Varchar 1
+  tel : Varchar 13
+  zipCode : Varchar 7
+  address : Varchar 60
+  mail : Varchar 256
+  creditNo : Varchar 16
+  creditTypeCd : Varchar 3
+  creditTerm : Varchar 5
+  deriving DecidableEq, Repr
+
+/-- `MEMBER_LOGIN`。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_MEMBER_LOGIN@946bc5e00f703c39", "ddl:00100_create_all_tables.sql#FK_MEMBER_LOGIN_1@1759f86c859d73ff",
+  "ddl:00100_create_all_tables.sql#MEMBER_LOGIN@c876b54c793bc20b"]
+structure MemberLoginRow where
+  customerNo : Varchar 10
+  password : Varchar 124
+  lastPassword : Option (Varchar 124)
+  loginDateTime : Option PgTimestamp
+  loginFlg : Bool
+  deriving DecidableEq, Repr
+
+/-- `RESERVATION`。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_RESERVATION@bd7d930ed9b812f9", "ddl:00100_create_all_tables.sql#FK_RESERVATION_1@dc02d22353059eb2",
+  "ddl:00100_create_all_tables.sql#RESERVATION@b760349f34b7abf9"]
+structure ReservationRow where
+  reserveNo : Varchar 10
+  reserveDate : PgDate
+  totalFare : Int4
+  repFamilyName : Varchar 10
+  repGivenName : Varchar 10
+  repAge : Int4
+  repGender : Varchar 1
+  repTel : Varchar 13
+  repMail : Varchar 256
+  repCustomerNo : Option (Varchar 10)
+  deriving DecidableEq, Repr
+
+/-- `RESERVE_FLIGHT`。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_RESERVE_FLIGHT@61fc69db73a3d3f9", "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_1@3326d08660a32a50",
+  "ddl:00100_create_all_tables.sql#FK_RESERVE_FLIGHT_2@0fa426c3b4f30b61", "ddl:00100_create_all_tables.sql#RESERVE_FLIGHT@bbf4d320c62e6860"]
+structure ReserveFlightRow where
+  reserveFlightNo : Int4
+  reserveNo : Varchar 10
+  departureDate : PgDate
+  flightName : Varchar 6
+  boardingClassCd : Varchar 1
+  fareTypeCd : Varchar 4
+  deriving DecidableEq, Repr
+
+/-- `PASSENGER`。 -/
+@[source "ddl:00100_create_all_tables.sql#PK_PASSENGER@a65be50c47900082", "ddl:00100_create_all_tables.sql#FK_PASSENGER_1@73e9ec7955ed6537",
+  "ddl:00100_create_all_tables.sql#FK_PASSENGER_2@38e248347f807a22", "ddl:00100_create_all_tables.sql#PASSENGER@798b3b804ed44e20"]
+structure PassengerRow where
+  passengerNo : Int4
+  reserveFlightNo : Int4
+  familyName : Varchar 10
+  givenName : Varchar 10
+  age : Int4
+  gender : Varchar 1
+  customerNo : Option (Varchar 10)
+  deriving DecidableEq, Repr
+
+/-- シーケンス（`CREATE SEQUENCE … CYCLE`）。 -/
+@[source "ddl:00100_create_all_tables.sql#SQ_MEMBER_1@fca537c311ef1688", "ddl:00100_create_all_tables.sql#SQ_RESERVATION_1@280c70c2218d134c",
+  "ddl:00100_create_all_tables.sql#SQ_RESERVE_FLIGHT_1@c7bb105cb9521b63", "ddl:00100_create_all_tables.sql#SQ_PASSENGER_1@331c9fe98f49d0a3"]
+def sqMember : LangSemantics.Sql.Sequence.SequenceDef := { name := "sq_member_1", maxValue := 9999999999, cycle := true }
+@[inherit_doc sqMember]
+def sqReservation : LangSemantics.Sql.Sequence.SequenceDef :=
+  { name := "sq_reservation_1", maxValue := 9999999999, cycle := true }
+@[inherit_doc sqMember]
+def sqReserveFlight : LangSemantics.Sql.Sequence.SequenceDef :=
+  { name := "sq_reserve_flight_1", maxValue := 999999999999, cycle := true }
+@[inherit_doc sqMember]
+def sqPassenger : LangSemantics.Sql.Sequence.SequenceDef :=
+  { name := "sq_passenger_1", maxValue := 9999999999999, cycle := true }
+
+/-- 状態の表とシーケンスの内容（FLIGHT・MEMBER・MEMBER_LOGIN・RESERVATION・RESERVE_FLIGHT・PASSENGER と、4 つの
+シーケンスの状態）。[Spec] の `World` に対応する（ADR ce36、backlog aedf）。列の型の範囲は [Spec] の型より広く
+（負の空席数など）、[Spec] の型で表せる状態に限ることは既知差異 D-027 の前提である（ADR cdb6）。
+シーケンスの状態は、トランザクションの取消で巻き戻らない。 -/
 @[gap "D-027"]
 structure FlightDb where
   flight : LangSemantics.Sql.Query.Bag FlightRow := []
+  member : LangSemantics.Sql.Query.Bag MemberRow := []
+  memberLogin : LangSemantics.Sql.Query.Bag MemberLoginRow := []
+  reservation : LangSemantics.Sql.Query.Bag ReservationRow := []
+  reserveFlight : LangSemantics.Sql.Query.Bag ReserveFlightRow := []
+  passenger : LangSemantics.Sql.Query.Bag PassengerRow := []
+  sqMember : LangSemantics.Sql.Sequence.SequenceState := none
+  sqReservation : LangSemantics.Sql.Sequence.SequenceState := none
+  sqReserveFlight : LangSemantics.Sql.Sequence.SequenceState := none
+  sqPassenger : LangSemantics.Sql.Sequence.SequenceState := none
   deriving DecidableEq, Repr
+
+namespace FlightDb
+
+/-- トランザクションの取消: 表は開始時の値に戻し、シーケンスは終了時の値のままにする。 -/
+@[source "dep:org.springframework:spring-tx#Transactional@spring-tx-7.0.3"]
+def rollback (start stop : FlightDb) : FlightDb :=
+  { start with sqMember := stop.sqMember, sqReservation := stop.sqReservation,
+               sqReserveFlight := stop.sqReserveFlight, sqPassenger := stop.sqPassenger }
+
+end FlightDb
 
 /-- マスタの表の内容（各表は行のバッグ）。列の型の範囲は [Spec] の型より広く、[Spec] の型で表せる内容に限ることは
 既知差異 D-027 の前提である（ADR c108）。 -/

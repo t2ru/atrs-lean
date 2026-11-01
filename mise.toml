@@ -35,7 +35,7 @@ description = "全数の検査（常時の段と、すべての変更時の段�
 depends = [
   "ci:fast",
   # 変更時の段（tools/ci/check-scopes.toml の [scopes]）
-  "lean:test-long", "lean:layout-check",
+  "lean:layout-check",
   "assets:trace-test", "assets:layout-check",
   "trace:self-test",
   "ci:pg-table", "ci:master-sql", "ci:java-origin-run",
@@ -119,11 +119,12 @@ run = "{{vars.py}} {{vars.okf}}/scripts/okf_check.py"
 # 適合テストの共有入力・シード
 
 [tasks."conformance:check"]
-description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed）が上流のシード・設定からの生成と一致する"
+description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed・Spec.Seed.Member・SourceModel.Db.MemberSeed）が上流のシード・設定からの生成と一致する"
 run = [
   "{{vars.py}} tools/conformance/master_fixture.py --check",
   "{{vars.py}} tools/conformance/seed_lean.py --check",
   "{{vars.py}} tools/conformance/flight_seed.py --check",
+  "{{vars.py}} tools/conformance/member_seed.py --check",
 ]
 
 [tasks."conformance:gen"]
@@ -132,10 +133,11 @@ run = [
   "{{vars.py}} tools/conformance/master_fixture.py",
   "{{vars.py}} tools/conformance/seed_lean.py",
   "{{vars.py}} tools/conformance/flight_seed.py",
+  "{{vars.py}} tools/conformance/member_seed.py",
 ]
 
 [tasks."conformance:master-sql"]
-description = "conformance: マスタの Mapper の文・コードリストの SQL と空席照会の文の PostgreSQL での結果（conformance/sql/）が最新である"
+description = "conformance: マスタの Mapper の文・コードリストの SQL・空席照会の文・予約が使う文の PostgreSQL での結果（conformance/sql/）が最新である"
 wait_for = ["assets:pg-table"]
 run = "tools/ci/master_sql.sh"
 
@@ -215,7 +217,7 @@ dir = "{{config_root}}/lean"
 run = "lake build"
 
 [tasks."lean:test"]
-description = "lean: lake test（適合テストベクタ・マスタの SQL の結果の照合。20 秒以上かかる節は lean:test-long）"
+description = "lean: lake test（適合テストベクタ・マスタと空席照会の SQL の結果の照合・暦日の全日・double の総当たり）"
 depends = ["lean:build"]
 dir = "{{config_root}}/lean"
 run = "lake test"
@@ -256,13 +258,6 @@ d = json.load(open(sys.argv[1]))
 print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_version"]))' {{vars.ci_out}}/trace-dump.json""",
 ]
 
-[tasks."lean:test-long"]
-description = "lean: 長い検査（暦日の全日・double の総当たり・シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果。lake exe long-tests。変更時の段）"
-depends = ["lean:build"]
-wait_for = ["lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump"]
-dir = "{{config_root}}/lean"
-run = "lake exe long-tests"
-
 # ---------------------------------------------------------------------------
 # 追跡（スキルの scripts/trace）
 
@@ -301,7 +296,7 @@ run = "{{vars.skill}}/scripts/trace/target/release/trace review --dump {{vars.ci
 
 [tasks."workspace:setup-file"]
 description = "workspace: ルートで lake setup-file（Lean LSP 用）"
-wait_for = ["assets:build", "assets:trace-test", "assets:layout-check", "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump", "lean:test-long"]
+wait_for = ["assets:build", "assets:trace-test", "assets:layout-check", "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump"]
 run = [
   "lake setup-file lean/Spec.lean > /dev/null",
   "lake setup-file lean/Tests/Main.lean > /dev/null",

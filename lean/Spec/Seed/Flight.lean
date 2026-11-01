@@ -566,6 +566,6 @@ def dayFlights (d : Date) (vs : List (List Nat)) : List Flight :=
   (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨⟨d, n, b, f⟩, v⟩
 
 /-- シードのフライト（`World` の初期状態）。 -/
-def world : Spec.Port.World := ⟨(days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i)⟩
+def world : Spec.Port.World := { flights := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i) }
 
 end Spec.Seed.Flight

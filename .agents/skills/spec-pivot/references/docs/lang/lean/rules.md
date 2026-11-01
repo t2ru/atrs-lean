@@ -115,6 +115,7 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
   - `structure`・`inductive`
   - `LangSemantics.<移植先>` の演算
 - `SourceModel` は移植元ソースの構造を、`TargetModel` は移植先ソースの構造（関数の分け方・評価順・エラーの返し方）を、そのまま写す。最適化を抽象化してはならない。抽象化は `Abstraction` / `Refinement` の仕事である。
+- 評価（適合テストベクタの実行）を速くするために、モデルの定義を書き換えてはならない。速い実装は別の定義とし、元の定義と等しいこと（無条件。リストなら並びも含めて）の定理を付けて `@[csimp]` で登録する（[ADR b187](../../decision/b187-proven-csimp-for-evaluating-models.md)）。SQL の写しの結合には `Bag.crossWhere` と `QueryLemmas.filter_cross_split` を使う。
 - `SourceModel` の式は、言語パックに式の構文があればそれで書く（Java は `java!`）。原典と同じ字面になり、展開した項は原始関数の項と同じである。
 - `LangSemantics` にはアプリ固有の型・用語を入れてはならない。言語仕様の該当節を docstring と `lang:` ロケータに書く。
 - 言語の例外・パニックは、`LangSemantics.<Lang>` の値として明示的に表す。Lean の `panic!` で表してはならない。

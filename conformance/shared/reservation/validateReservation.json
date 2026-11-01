@@ -1,0 +1,903 @@
+{
+  "operation": "reservation.validateReservation",
+  "modelDef": [
+    "Spec.UseCase.Reserve.validateReservation",
+    "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation"
+  ],
+  "specRef": "docs/spec/reservation.md#validatereservation",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "vr-ok",
+      "description": "代表者 30 歳・会員番号なし・搭乗者 1 名（片道運賃）→ 可",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-age-17",
+      "description": "代表者 17 歳 → e.ar.b2.2004（引数は representativeMinAge）",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 17,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2004",
+            "args": [
+              "18"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-age-18",
+      "description": "代表者 18 歳（ちょうど）→ 可",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 18,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-ld-male",
+      "description": "レディース割で男性の搭乗者 → e.ar.b2.2007",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "LD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2007",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-ld-female",
+      "description": "レディース割で女性だけ → 可",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "LD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-gd-two",
+      "description": "グループ割で 2 名（最少 3 名）→ e.ar.b2.2010（運賃種別名、最少人数）",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "GD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2010",
+            "args": [
+              "グループ割",
+              "3"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-gd-three",
+      "description": "グループ割で 3 名 → 可",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "GD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 8,
+              "gender": "M"
+            },
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-member-missing",
+      "description": "代表者の会員番号の会員がいない → e.ar.b2.2002",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": "0000000099",
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2002",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-member-mismatch",
+      "description": "代表者の会員番号の会員と氏名・性別が違う → e.ar.b2.2003",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          },
+          {
+            "membershipNumber": "0000000002",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "タロウ",
+            "gender": "M"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": "0000000002",
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2003",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-member-ok",
+      "description": "代表者が会員（氏名カナ・性別が一致）→ 可",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": "0000000001",
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-passenger-member-missing-position",
+      "description": "空の欄を詰めた後の 2 人目の会員番号の会員がいない → e.ar.b2.2005（位置 2）",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 8,
+              "gender": "M",
+              "membershipNumber": "0000000099"
+            },
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2005",
+            "args": [
+              "2"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-passenger-member-mismatch",
+      "description": "1 人目の会員番号の会員と氏名が違う → e.ar.b2.2006（位置 1）",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "F",
+              "membershipNumber": "0000000001"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2006",
+            "args": [
+              "1"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-order-age-first",
+      "description": "代表者 17 歳かつレディース割で男性 → 先に検査する年齢の e.ar.b2.2004",
+      "input": {
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "LD"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 17,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 30,
+              "gender": "M"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2004",
+            "args": [
+              "18"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rep-before-passenger",
+      "description": "代表者の会員照合（e.ar.b2.2003）は搭乗者の会員照合（e.ar.b2.2005）より先",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          },
+          {
+            "membershipNumber": "0000000002",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "タロウ",
+            "gender": "M"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": "0000000002",
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 8,
+              "gender": "M",
+              "membershipNumber": "0000000099"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2003",
+            "args": []
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-passenger-member-mismatch-compacted",
+      "description": "空の欄を詰めた後の 2 人目の会員と氏名が違う → e.ar.b2.2006（位置 2）",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          },
+          {
+            "membershipNumber": "0000000002",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "タロウ",
+            "gender": "M"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {},
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 5,
+              "gender": "F",
+              "membershipNumber": "0000000002"
+            },
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2006",
+            "args": [
+              "2"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "vr-rt-passenger-member-ok",
+      "description": "往復で、搭乗者が会員（同じ搭乗者列を往路・復路で照合）→ 可",
+      "input": {
+        "members": [
+          {
+            "membershipNumber": "0000000001",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "ハナコ",
+            "gender": "F"
+          },
+          {
+            "membershipNumber": "0000000002",
+            "kanaFamilyName": "デンデン",
+            "kanaGivenName": "タロウ",
+            "gender": "M"
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F",
+              "membershipNumber": "0000000001"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "タロウ",
+              "age": 5,
+              "gender": "M",
+              "membershipNumber": "0000000002"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": null
+      },
+      "source": "lean-spec"
+    }
+  ]
+}

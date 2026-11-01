@@ -1,12 +1,38 @@
 # Directory Update Log
 
+## 2026-11-02
+
+* **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
+  * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.25）。
+  * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
+  * 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。
+  * 会員のシードの生成器 `tools/conformance/member_seed.py` を置き、初期状態 `Spec.Seed.World`・`SourceModel.Db.Seed` を作った。
+  * 予約の SQL の差分実行（`tools/conformance/reservation_sql.py`・`conformance/sql/reservation.json`・`Tests.ReservationSql`・検査 `pg-reservation-sql`）を足した。制約の検査の順のずれ 4 件を、写しを直して解消した。[spec/conformance.md](spec/conformance.md)・[spec/assurance.md](spec/assurance.md) を改めた。
+  * [backlog/aedf](backlog/aedf-reservation-usecase.md) に第 2 段の結果を、[index.md](index.md) に ADR を足した。
+
 ## 2026-11-01
 
 * **Creation**: [ADR f786](decision/f786-gap-inventory-and-registry-fixes.md) で、[Spec] と [Source] の差異の登録簿（`lean/Abstraction/Gap.lean`）を、実装済みと未着手の全範囲で上流の原典と突き合わせて棚卸しした。
   * 誤りを直した: D-031 の R 課題（ABS-021 → ABS-031・ABS-041・ABS-045）、D-032 の前提の文（`formatSymbols`）、D-030 の証拠（PRE の述語）、「PRE: MD-3」の誤った注記（`Spec.Fare`・[spec/fare-calculation.md](spec/fare-calculation.md)）、欠けた `@[gap]` の印、仕様文書の D 番号の引用、[spec/assurance.md](spec/assurance.md) の被覆の例、[spec/errors-and-messages.md](spec/errors-and-messages.md) の表。
   * オーナーの判断で、D-034〜D-036（PRE の外）・D-037（モデル外）・D-038〜D-041（前提型。W 課題 ABS-138〜141）を登録し、D-006・D-009・D-020・D-030・D-033 と R 課題を広げた。REST の予約の応答の `"empty": false` は [Spec] を原典に合わせた（[spec/http-contract.md](spec/http-contract.md#post-apiv1ticket)）。[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md) の保留 2 件を承認した。
   * [spec/abstraction.md](spec/abstraction.md) の生成表と課題表、[spec/reservation.md](spec/reservation.md)・[spec/ports.md](spec/ports.md)・[spec/input-validation.md](spec/input-validation.md)・[spec/master-data.md](spec/master-data.md)・[spec/flight-search.md](spec/flight-search.md)・[spec/configuration.md](spec/configuration.md)・[spec/reservation-history-report.md](spec/reservation-history-report.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。
-  * 原典実行で確かめてから判断する候補を [backlog ceb8](backlog/ceb8-origin-run-checks-for-gap-candidates.md) にした。棚卸しの手順をスキルの [guide/gap-inventory.md](../.agents/skills/spec-pivot/references/docs/guide/gap-inventory.md) に置き（[スキルの ADR cb1f](../.agents/skills/spec-pivot/references/docs/decision/cb1f-gap-inventory-procedure.md)）、spec-pivot の版を 0.24 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+  * 原典実行で確かめてから判断する候補を [backlog ceb8](backlog/ceb8-origin-run-checks-for-gap-candidates.md) にした。棚卸しの手順をスキルの [guide/gap-inventory.md](../.agents/skills/spec-pivot/references/docs/guide/gap-inventory.md) に置き（[スキルの ADR cb1f](../.agents/skills/spec-pivot/references/docs/decision/cb1f-gap-inventory-procedure.md)）、spec-pivot の版を 0.26 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+* **Creation**: [ADR 4c45](decision/4c45-reservation-stage1-shared-state-and-source-model.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を 3 段に分け、第 1 段を行った（`doing`）。
+  * [Spec]: `Spec.Ticket`（選択フライトの解決と `validateFlightList`）、`Spec.UseCase.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）。`Spec.Port.World` に会員・予約・採番（`Sequences`）とポートの操作を、`Spec.Error.AtrsError` に `invalidRequest`・`system`・`conflict` を、`Spec.Model` に `PassengerRecord` を足した。
+  * [Source]: 原典のソースツリーの形で、`App.B2`（フォーム・`B2Mapper`・`TicketReserveHelper`）、`TicketSharedServiceImpl.validateFlightList`、`TicketReserveServiceImpl` の `validateReservation`・`registerReservation`（`findMember` は画面の初期値だけが使うので、HTTP の backlog a89e で写す）、`MemberRepository.findOne`・`ReservationRepository` の 3 つの insert・`FlightRepository` の `exists`・`findOneForUpdate`・`update`、モデルのクラスを写した。状態の表に会員・予約の表とシーケンスを足し、状態の表に対する計算 `SourceModel.Db.Tx`（Mapper の文・`@Transactional` の取消・Clock・実行環境）と、入口の計算 `SourceModel.ReserveQuery` を置いた。
+  * 共有ベクタ `conformance/shared/reservation/` の 47 件が `Spec` と `SourceModel` で通る（期待値は仕様の例と手計算）。[spec/conformance.md](spec/conformance.md) に操作を足した。
+  * Java の原典実行（`tools/origin-run`）に予約の操作を足した。47 件が原典と一致し、シードの範囲から予約確認の 76 件を採取した（`conformance/source-model/reservation/origin-run-confirm.json`）。原典の `TicketReserveServiceImpl` は Spring の `TransactionInterceptor` で包む。`trace/checks.json` の `java-origin-run` の範囲を広げた。[spec/assurance.md](spec/assurance.md) の移植元側の行と、暫定の限界（空席照会の α の定義域）を改めた。
+  * `trace/features.json` の Reserve・Member の `lean` を改め、`trace/upstream.json` に spring-tx・spring-jdbc・mybatis-spring・mapstruct を足した。
+  * 敵対的レビューの指摘と対応は ADR 4c45 に記した。
+  * 空席照会の α `worldOfDb` の定義域を、予約・会員の表とシーケンスが使われていない状態に限った（ABS-011 は通り続ける）。
+  * 登録簿: D-009 の範囲を INT の上限に広げた（確認待ち）。D-031 の R 課題を ABS-031・ABS-041・ABS-045 に直した（確認待ち）。D-014 に予約確定の Clock の読み出しを足した。
+  * スキルの側は [スキルの ADR a303](../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)（`Machine.alt` の方針、`LangSemantics.Sql.Transaction`、`PgTimestamp`、`JLocalTime`、`JList.get`、`StringUtils`）。スキルの版を 0.25 にした（[rules/atrs-porting.md](rules/atrs-porting.md)。main の 0.24 の後）。[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+* **Creation**: [ADR aaf8](decision/aaf8-drop-long-tests-tier.md) で、`lake test` の分割をやめ、長い検査の段 `long-tests`（mise の `lean:test-long`）を無くした。[ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) には追記だけを足した（層・範囲・選択の決定は変わらない）。
+  * シードの DB を使う SourceModel の照合が遅かった原因は、SourceModel の SQL の写し（`findAllFlightMaster`・`vacantSeatRows`・`RouteRepository.findAll`）が直積の全件（1 回で最大約 650 万組）を作ってから選び、ケースごとにそれを評価していたことだった。
+  * 条件を押し下げた結合が元の定義と等しいことを定理にし、`@[csimp]` でコンパイル後のコードだけを差し替えた（スキルの ADR b187、スキルの版 0.24）。定義・証明・検査の中身は変えていない。CI で 4 つの節が合わせて約 359 s から約 0.9 s になった。
+  * 残る暦日の全日と double の総当たり（CI で約 7 s）も `lake test` に戻し、`lean/Tests/Long.lean`・`LongMain.lean`、`long-tests` の実行ファイル、`lean:test-long`、その範囲（`tools/ci/check-scopes.toml`）、`trace/checks.json` の段、layout-check の組（5 組にした）を除いた。
+  * 廃止の後の CI（run 41320107059）で、`lake test` 全体は約 20 s（うち約 18 s は起動と、全日・総当たりの初期化での評価）だった。
+  * [rules/checks.md](rules/checks.md)・[rules/atrs-porting.md](rules/atrs-porting.md)・[spec/assurance.md](spec/assurance.md)・[spec/domain-model.md](spec/domain-model.md)・`AGENTS.md`・[index.md](index.md) を改めた。
 
 * **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
   * CI で 20 秒以上かかる段（`lean:test-long`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。

@@ -53,6 +53,13 @@ abbrev PgDate := {d : Int // dateMin ≤ d ∧ d ≤ dateMax}
 def date (epochDay : Int) : SqlResult PgDate :=
   if h : dateMin ≤ epochDay ∧ epochDay ≤ dateMax then .ok ⟨epochDay, h⟩ else .error .dateOutOfRange
 
+/-- `TIMESTAMP`（タイムゾーン無し）の値。1970-01-01 0:00 からのマイクロ秒で、範囲は紀元前 4713 年〜294276 年
+（`DATE` と同じ下限から、`294276-12-31 23:59:59.999999` まで）。 -/
+abbrev PgTimestamp := {us : Int // dateMin * 86400000000 ≤ us ∧ us ≤ 9224318015999999999}
+
+/-- `TIMESTAMP` の列の値を `SqlValue` に写す（比較に使う。マイクロ秒の整数）。 -/
+def PgTimestamp.toSql (t : PgTimestamp) : SqlValue := .int t.val
+
 /-- `VARCHAR(n)` の値（文字数が n 以下）。 -/
 abbrev Varchar (n : Nat) := {s : String // s.length ≤ n}
 

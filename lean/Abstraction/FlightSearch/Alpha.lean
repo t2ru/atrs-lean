@@ -37,9 +37,25 @@ def flightOfRow (r : FlightRow) : Option Flight := do
   let v ← natOfInt4 r.vacantNum
   pure ⟨⟨d, ⟨r.flightName.val⟩, bc, ft⟩, v⟩
 
-/-- FLIGHT 表（状態）。すべての行が写せるときに限って定義する。 -/
+/-- 予約・会員の表とシーケンスが、まだ使われていない（空席照会の α の定義域。予約の表を含む α は backlog aedf の
+第 2・3 段で置く）。 -/
+def noReservationState (fd : FlightDb) : Bool :=
+  fd.member.isEmpty && fd.memberLogin.isEmpty && fd.reservation.isEmpty && fd.reserveFlight.isEmpty &&
+    fd.passenger.isEmpty && fd.sqMember.isNone && fd.sqReservation.isNone && fd.sqReserveFlight.isNone && fd.sqPassenger.isNone
+
+/-- FLIGHT 表（状態）。すべての行が写せ、予約・会員の表とシーケンスが使われていないときに限って定義する。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def worldOfDb (fd : FlightDb) : Option Spec.Port.World := (fd.flight.mapM flightOfRow).map Spec.Port.World.mk
+def worldOfDb (fd : FlightDb) : Option Spec.Port.World :=
+  if noReservationState fd then (fd.flight.mapM flightOfRow).map fun fs => { flights := fs } else none
+
+theorem worldOfDb_flights {fd : FlightDb} {w : Spec.Port.World} (h : worldOfDb fd = some w) :
+    fd.flight.mapM flightOfRow = some w.flights := by
+  unfold worldOfDb at h
+  split at h
+  · simp only [Option.map_eq_some_iff] at h
+    obtain ⟨fs, hfs, rfl⟩ := h
+    exact hfs
+  · simp at h
 
 @[obligation "ABS-048"]
 theorem flightOfRow_kernel : KernelIs flightOfRow (undefOrEq flightOfRow) := by
@@ -60,11 +76,15 @@ theorem flightOfRow_kernel : KernelIs flightOfRow (undefOrEq flightOfRow) := by
 theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
   apply kernelIs_undefOrEq
   intro t t' w h h'
-  simp only [worldOfDb, Option.map_eq_some_iff] at h h'
-  obtain ⟨fs, hfs, rfl⟩ := h
-  obtain ⟨fs', hfs', he⟩ := h'
-  cases he
+  have hfs := worldOfDb_flights h
+  have hfs' := worldOfDb_flights h'
+  unfold worldOfDb at h h'
+  split at h' <;> split at h <;> try simp at h h'
+  rename_i h2 h1
   cases t; cases t'
+  simp only [noReservationState, Bool.and_eq_true, List.isEmpty_iff, Option.isNone_iff_eq_none] at h1 h2
+  obtain ⟨⟨⟨⟨⟨⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩ := h1
+  obtain ⟨⟨⟨⟨⟨⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩ := h2
   congr 1
   exact mapM_inj (fun _ _ _ hx hy => inj_of_kernel flightOfRow_kernel hx hy) hfs hfs'
 

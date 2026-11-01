@@ -1,0 +1,488 @@
+{
+  "operation": "reservation.confirm",
+  "modelDef": [
+    "Spec.UseCase.Reserve.confirmOp",
+    "SourceModel.ReserveQuery.runConfirm"
+  ],
+  "specRef": "docs/spec/reservation.md#予約確認reserveconfirm",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "fixtures": {
+    "master": "fixtures/master-data.json",
+    "config": "fixtures/config.json"
+  },
+  "cases": [
+    {
+      "id": "cf-ow-adult",
+      "description": "片道運賃・大人 1 名: 20600（基本運賃 20600、割引率 0%）",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "totalFare": 20600
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-rt-adult-child",
+      "description": "往復運賃・大人 1 名と小児 1 名: 1 便 19600 + floor(20600 × 55 / 100) = 30930、2 便で 61860 → 61900",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT136",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 5,
+              "gender": "M"
+            },
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "totalFare": 61900
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-compaction",
+      "description": "空の欄の間の大人 1 名と小児 1 名（片道）: 20600 + floor(20600 × 60 / 100) = 32960 → 33000",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {},
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {
+              "familyName": "デンデン",
+              "givenName": "ジロウ",
+              "age": 5,
+              "gender": "M"
+            },
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "totalFare": 33000
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-flight-list-business-is-invalid",
+      "description": "選択フライトの検証の Business（e.ar.b2.2001）は、予約確認では InvalidRequest",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          },
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT106",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          },
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT106",
+            "boardingClassCd": "N",
+            "fareTypeCd": "RT"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-flight-before-reservation",
+      "description": "選択フライトの検証（InvalidRequest）は予約内容の検証（代表者 17 歳）より先",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-12",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 17,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "invalidRequest"
+          }
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-special-seat",
+      "description": "特別席（加算 5000）・特別片道運賃・大人 1 名: 基本運賃 20600 + 5000 = 25600",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "S",
+            "fareTypeCd": "SOW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "S",
+            "fareTypeCd": "SOW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "totalFare": 25600
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-peak",
+      "description": "ピーク時期（2026-03-25、積算比率 140%）の片道運賃・大人 1 名: floor(20600 × 140 / 100) = 28840 → 28900",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-03-25",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-03-25",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 30,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "totalFare": 28900
+        }
+      },
+      "source": "lean-spec"
+    },
+    {
+      "id": "cf-rep-age-17",
+      "description": "代表者 17 歳 → e.ar.b2.2004",
+      "input": {
+        "flights": [
+          {
+            "departureDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW",
+            "vacantNum": 10
+          }
+        ],
+        "selectFlights": [
+          {
+            "depDate": "2026-04-11",
+            "flightName": "NTT001",
+            "boardingClassCd": "N",
+            "fareTypeCd": "OW"
+          }
+        ],
+        "form": {
+          "repFamilyName": "デンデン",
+          "repGivenName": "ハナコ",
+          "repAge": 17,
+          "repGender": "F",
+          "repTel1": "03",
+          "repTel2": "1234",
+          "repTel3": "5678",
+          "repMail": "hanako@example.com",
+          "repMembershipNumber": null,
+          "passengers": [
+            {
+              "familyName": "デンデン",
+              "givenName": "ハナコ",
+              "age": 30,
+              "gender": "F"
+            },
+            {},
+            {},
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "expected": {
+        "ok": {
+          "error": {
+            "kind": "business",
+            "code": "e.ar.b2.2004",
+            "args": [
+              "18"
+            ]
+          }
+        }
+      },
+      "source": "lean-spec"
+    }
+  ]
+}
