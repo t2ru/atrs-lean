@@ -38,7 +38,7 @@ end   = addDays(depDate, −fareType.rsrvAvailableEndDayNum)
 result = start ≤ today ≤ end
 ```
 
-これは `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum` と同値である（課題 [ABS-010](abstraction.md#証明課題)）。
+Lean の `Spec.FlightSearch.isAvailableFareType` は、次の日数の形で定義する（下の日付の形との同値は L 課題 ABS-010。backlog 0be7 の第 3 段）。これは `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum` と同値である（課題 [ABS-010](abstraction.md#証明課題)）。
 
 出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)`
 
@@ -52,7 +52,7 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
 ```
 
 `flights` はフライトの全件（[ports.md](ports.md) の `FlightRepository.findAll` 相当。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
-Lean では、MD-3 が破れて区間の空港名か搭乗クラスがマスタに無いとき（PRE の外）、結果を `none` とする。
+Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FLIGHT_1〜3）が破れて区間の空港名か搭乗クラスがマスタに無いとき（PRE の外）、結果を `none` とする。
 
 ### 事前条件
 
@@ -72,13 +72,13 @@ Lean では、MD-3 が破れて区間の空港名か搭乗クラスがマスタ�
    - `ft = fareTypeOf(f.fareTypeCd)` について `ft.rsrvAvailableEndDayNum ≤ beforeDayNum ≤ ft.rsrvAvailableStartDayNum`
    - **空席数 0 のフライトも含む**（除外しない）
 6. `cs` を整列キー `(fareTypeOf(f.fareTypeCd).displayOrder, flightMasterOf(f.flightName).departureTime)` の昇順に並べる。
-   - **[Spec]**: 同順位は `flightName` の昇順（MD-5 の下では同順位は生じない）。
+   - **[Spec]**: 同順位は `flightName` の昇順（MD-1・MD-2・MD-5 と `World` の主キーの一意性の下では同順位は生じない）。
    - **[Source]**: 同順位の順序は未規定（SQL の `ORDER BY` に含まれない）。
 7. `cs` が空なら `NotFound("e.ar.b1.2003")`。
 8. `b = basicFare(route.basicFare, boardingClassCd, depDate)`（全候補で共通）。
 9. グループ化: `cs` を先頭から走査し、**便マスタの出発時刻**（`departureTime`）をキーとして、キーの初出順にグループ `FlightVacantInfo` を作る。
    - グループの見出し項目は、そのキーで最初に現れたフライトから作る（下表）。
-   - 各フライト `f` について `fareTypes` に `f.fareTypeCd ↦ { fareTypeName, fare: fmtYen(fare(b, discountRate)), vacantNum: f.vacantNum }` を **挿入** する。同じキーが既にあれば値を置き換え、順序は最初の挿入位置のまま（[Source] の `LinkedHashMap.put`）。MD-5 の下ではグループ内の便は 1 つであり、置き換えは生じない。
+   - 各フライト `f` について `fareTypes` に `f.fareTypeCd ↦ { fareTypeName, fare: fmtYen(fare(b, discountRate)), vacantNum: f.vacantNum }` を **挿入** する。同じキーが既にあれば値を置き換え、順序は最初の挿入位置のまま（[Source] の `LinkedHashMap.put`）。MD-1・MD-2・MD-5 と `World` の主キーの一意性の下ではグループ内の便は 1 つであり、置き換えは生じない。
 10. グループの列を返す。
 
 ### 出力 FlightVacantInfo

@@ -101,7 +101,8 @@ def candidateOf (md : MasterData) (c : Criteria) (route : Route) (beforeDayNum :
   else none
 
 /-- 整列の順序: `(運賃種別の表示順, 便マスタの出発時刻, 便名)` の辞書式。
-便名は [Spec] の同順位の決め方で、MD-5 の下では同順位は生じない（[Source] は未規定）。 -/
+便名は [Spec] の同順位の決め方で、MD-1（運賃種別の表示順の一意性）・MD-2・MD-5 と `World.Inv` の下では
+同順位は生じない（[Source] は未規定）。 -/
 @[spec_doc "docs/spec/flight-search.md#定義評価順"]
 def candidateLe (a b : Candidate) : Bool :=
   a.fareType.displayOrder < b.fareType.displayOrder ||
@@ -148,7 +149,8 @@ def group (depName arrName : String) (b : Nat) (cs : List Candidate) : List Flig
   (cs.foldl step []).map (·.2)
 
 /-- 空席照会 `searchFlight`。`flights` はフライトの全件（`World.findAll`）。
-結果が `none` なのは PRE の外（MD-3 が破れ、照会の区間の空港名か搭乗クラスがマスタに無い）のときだけである。 -/
+結果が `none` なのは PRE の外（MD-3 か `World.RefMaster` が破れ、照会の区間の空港名か搭乗クラスがマスタに無い）
+のときだけである。 -/
 @[spec_doc "docs/spec/flight-search.md#searchflight", gap "D-001", "D-002"]
 def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) (flights : List Flight) :
     Option (Except AtrsError (List FlightVacantInfo)) :=

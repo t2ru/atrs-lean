@@ -312,7 +312,7 @@ structure SearchInput where
 
 /-- 起動時の読み込みと `searchFlight`（マスタの文の並び `mo`、空席照会の文の並べ方 `sortRows` を選んだとき）。
 状態の FLIGHT 表 `fd` は読むだけで変えない。backlog 0be7 の第 2 段の具体機械の 1 歩は、許される `mo`・`sortRows` の
-どれかでこれを実行する関係とする。 -/
+どれかでこれを実行する関係とする（`mo.Allowed ic.db` と `SortAllowed sortRows` を課す）。 -/
 def runSearchFlight (fd : SourceModel.Repository.Schema.FlightDb) (ic : SearchInput) (mo : SourceModel.MasterQuery.Order)
     (sortRows : List VacantSeatRow → List VacantSeatRow) : JResult (List FlightVacantInfoDto) := do
   let p ← SourceModel.MasterQuery.load mo

@@ -75,6 +75,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
       let flights ← (← getArr i "flights").mapM specFlight
       let w : Spec.Port.World := ⟨flights⟩
       if !decide w.Inv then throw "outside INV (duplicate flight key)"
+      if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
       let r ← need (Spec.FlightSearch.searchFlight cfg md (← decodeDate (← getStr i "today")) (← specCriteria (← getObjVal i "criteria"))
         w.findAll) "outside PRE"
       match r with

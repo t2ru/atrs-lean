@@ -8,7 +8,7 @@ import LangSemantics.Sql.Postgresql
 マスタの表と FLIGHT の表の行（`atrs-initdb/src/sqls/integration-test-postgres/00100_create_all_tables.sql`）。
 列の型は、処理系が許す範囲を持つ型で写す（ADR c108）: `INT` は `Int4`、`DATE` は `PgDate`、
 `VARCHAR(n)` は `Varchar n`、NOT NULL の無い列は `Option`。
-主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3 と `World` の不変条件が対応する）。
+主キー・一意制約・外部キーは、行の型には現れない（[Spec] の MD-1〜MD-3、`World.Inv`（主キー）・`World.RefMaster`（FK_FLIGHT）が対応する）。
 -/
 
 namespace SourceModel.Repository.Schema
