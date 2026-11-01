@@ -15,6 +15,17 @@ open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntL
 
 open LangSemantics.Java
 
+/-- enum の名前（`Enum.name()`。MyBatis の `EnumTypeHandler` が束縛する値）。原典の `BoardingClassCd` は定数名と
+`getCode()` が同じ。 -/
+def boardingClassCdName : Spec.Model.BoardingClassCd → String
+  | .N => "N" | .S => "S"
+
+/-- `FareTypeCd.getCode()`（定数名 `Enum.name()` と同じ）。 -/
+@[source "java:jp.co.ntt.atrs.domain.model.FareTypeCd#getCode()@3855e45998af62f8"]
+def fareTypeCdCode : Spec.Model.FareTypeCd → String
+  | .OW => "OW" | .RT => "RT" | .RD1 => "RD1" | .RD7 => "RD7" | .ED => "ED"
+  | .LD => "LD" | .GD => "GD" | .SOW => "SOW" | .SRT => "SRT" | .SRD => "SRD"
+
 /-- `Airport`。 -/
 @[source "java:jp.co.ntt.atrs.domain.model.Airport#getCode()@da85740cb21790bb",
   "java:jp.co.ntt.atrs.domain.model.Airport#getDisplayOrder()@15b3aeb33df2350d",

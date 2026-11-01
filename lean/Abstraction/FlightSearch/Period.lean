@@ -52,7 +52,7 @@ theorem isAvailableFareType_between (ft : SourceModel.Model.FareType) (s e : J32
 /-- 搭乗日の検査: [Source] の `validateDepatureDate` は、[Spec] の `outOfPeriod` が真のときだけ業務例外 2001 を投げる。 -/
 theorem validateDepatureDate_eq {cfg : Spec.Config} {limitDay : J32} (hL : limitDay.val = (cfg.limitDay : Int))
     {tJ dJ : JLocalDate} {T D : Date} (hT : dateOfJ tJ = some T) (hD : dateOfJ dJ = some D) :
-    SourceModel.FlightSearch.validateDepatureDate limitDay tJ (some dJ) =
+    SourceModel.FlightSearch.validateDepatureDate limitDay tJ tJ (some dJ) =
       if Spec.FlightSearch.outOfPeriod cfg T D = true then
         .error (SourceModel.FlightSearch.businessException (SourceModel.FlightSearch.errorCode "e.ar.b1.2001"))
       else .ok () := by

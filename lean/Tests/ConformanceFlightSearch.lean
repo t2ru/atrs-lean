@@ -127,7 +127,8 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
     | .error e => throw s!"load: {repr e}"
   return [
     ("flightSearch.validateDepartureDate", fun i => do
-      match SourceModel.FlightSearch.validateDepatureDate cfg.limitDay (← jdate (← getStr i "today"))
+      let t ← jdate (← getStr i "today")
+      match SourceModel.FlightSearch.validateDepatureDate cfg.limitDay t t
           (some (← jdate (← getStr i "depDate"))) with
       | .ok () => return .null
       | .error e => srcErrorJson e),
@@ -140,8 +141,9 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
       | .error e => throw s!"java exception: {repr e}"),
     ("flightSearch.searchFlight", fun i => do
       let fd : FlightDb := { flight := ← (← getArr i "flights").mapM flightRow }
+      let t ← jdate (← getStr i "today")
       let ic : SourceModel.FlightSearch.SearchInput :=
-        { db, config := cfg, today := ← jdate (← getStr i "today"), criteria := some (← srcCriteria (← getObjVal i "criteria")),
+        { db, config := cfg, today := t, sharedClock := (t, t), criteria := some (← srcCriteria (← getObjVal i "criteria")),
           groupingSeparator := ',' }
       match SourceModel.FlightSearch.runSearchFlight fd ic (SourceModel.MasterQuery.standardOrder db)
           SourceModel.Repository.Flight.standardSort with

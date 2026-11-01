@@ -13,8 +13,9 @@ import SourceModel.Repository.Mapping
 空席照会（B1）の原典（`TicketSearchServiceImpl.searchFlight`・`TicketSharedServiceImpl` の照会可能期間と
 運賃種別の予約可能判定・`FareTypeUtil`・`DateTimeUtil` の書式）の写し（backlog 0be7。ADR ce36）。
 
-- 今日の日付（`LocalDate.now(dateFactory.tick())`）は、1 つの値 `today` として受ける。原典は 1 回の照会で
-  Clock を 3 回読むので、この写しは D-014 の前提（各呼び出しが同じ日付を返す）の下のものである。
+- 今日の日付（`LocalDate.now(dateFactory.tick())`）は、Clock の読み出しごとに値として受ける。原典は 1 回の照会で
+  Clock を 3 回読む（`validateDepatureDate` の今日・`getSearchLimitDate` の今日・`searchFlight` の今日）。
+  3 つが同じ日付であることは D-014 の前提（`Abstraction.FlightSearch.Alpha.dev_D014S`）で、写しは仮定しない。
 - リポジトリ `FlightRepository.findByVacantSeatSearchCriteria` はポートとして関数で受ける。SQL の写しと、
   その許される並べ方は `SourceModel.Repository.Flight` にある。選んだ並べ方でポートを作るのは `repositoryOf`、
   起動時の読み込みと合わせて実行するのは `runSearchFlight` である。
@@ -101,17 +102,19 @@ def toFormatDateString (localDate : JRef JLocalDate) : String :=
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#getSearchLimitDate()@07352a31cf61634a", gap "D-014"]
 def getSearchLimitDate (limitDay : J32) (today : JLocalDate) : JLocalDate := today.plusDays limitDay.val
 
-/-- `validateDepatureDate(departureDate)`: `null` なら `IllegalArgumentException`。今日より前か、照会可能期間の
-末日より後なら `AtrsBusinessException(E_AR_B1_2001)`。 -/
+/-- `validateDepatureDate(departureDate)`: `null` なら `IllegalArgumentException`。今日 `sysDate` より前か、照会可能期間の
+末日（`getSearchLimitDate()`。その中で Clock を読み直した今日 `limitToday` から数える）より後なら
+`AtrsBusinessException(E_AR_B1_2001)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)@9b898d66ce284b6a",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)@ab7abd9ac674d349",
   gap "D-014"]
-def validateDepatureDate (limitDay : J32) (today : JLocalDate) (departureDate : JRef JLocalDate) : JResult Unit := do
+def validateDepatureDate (limitDay : J32) (sysDate limitToday : JLocalDate) (departureDate : JRef JLocalDate) :
+    JResult Unit := do
   let d ← match departureDate with
     | some d => pure d
     | none => throw (.illegalArgument "departureDate must not null.")
-  let limitDate := getSearchLimitDate limitDay today
-  if d.isBefore today || d.isAfter limitDate then throw (businessException (errorCode "e.ar.b1.2001"))
+  let limitDate := getSearchLimitDate limitDay limitToday
+  if d.isBefore sysDate || d.isAfter limitDate then throw (businessException (errorCode "e.ar.b1.2001"))
 
 /-- `isAvailableFareType(fareType, depDate)`: 予約可能期間の始まり `depDate − start`・終わり `depDate − end` の
 両端を含む範囲に今日があるか。`searchFlight` は呼ばない（同じ条件を SQL の `BETWEEN` で書く。ABS-010）。 -/
@@ -202,7 +205,7 @@ structure FlightVacantInfoDto where
 def FlightVacantInfoDto.addFareTypeVacantInfo (v : FlightVacantInfoDto) (fareTypeCd : JRef Spec.Model.FareTypeCd)
     (info : FareTypeVacantInfoDto) : JResult FlightVacantInfoDto := do
   let cd ← fareTypeCd.deref "fareTypeCd"
-  return { v with fareTypes := v.fareTypes.put cd.toCode info }
+  return { v with fareTypes := v.fareTypes.put (SourceModel.Model.fareTypeCdCode cd) info }
 
 /-! ## searchFlight（`TicketSearchServiceImpl`） -/
 
@@ -215,8 +218,10 @@ structure TicketSearchService where
   ticketSharedService : SourceModel.Fare.TicketSharedService := {}
   /-- `atrs.limitDay`（`TicketSharedServiceImpl`） -/
   limitDay : J32
-  /-- 今日の日付（`LocalDate.now(dateFactory.tick())`。D-014 の前提の下で 1 つの値） -/
+  /-- `searchFlight` の今日の日付（`LocalDate.now(dateFactory.tick())`） -/
   today : JLocalDate
+  /-- `TicketSharedServiceImpl` が読む今日の日付（`validateDepatureDate` の今日、`getSearchLimitDate` の今日。D-014） -/
+  sharedClock : JLocalDate × JLocalDate
   /-- 配備の環境: JVM の既定の書式ロケールの 3 桁区切りの文字（`DecimalFormat` が使う。D-032） -/
   groupingSeparator : Char
   /-- `FlightRepository.findByVacantSeatSearchCriteria` -/
@@ -236,7 +241,7 @@ def createFlightVacantInfo (flight : Flight) : JResult FlightVacantInfoDto := do
 /-- `createFlightVacantInfoList(flightList, basicFare)`（private）: 便マスタの出発時刻をキーに `LinkedHashMap` へまとめ、
 各フライトの運賃種別の空席情報を足す。値の列（挿入順）を返す。運賃の書式は `new DecimalFormat("###,###")`
 （区切り文字は既定の書式ロケールによる。配備の環境 `sep` として受ける。D-032）。 -/
-@[source "lang:java#java.text.DecimalFormat@java-17", "lang:java#java.util.LinkedHashMap@java-17", gap "D-032"]
+@[source "lang:java#java.text.DecimalFormat@java-17", "lang:java#java.util.LinkedHashMap@java-17", gap "D-005", "D-032"]
 def createFlightVacantInfoList (sep : Char) (flightList : List Flight) (basicFare : J32) : JResult (List FlightVacantInfoDto) := do
   let mut m : JLinkedHashMap (JRef String) FlightVacantInfoDto := {}
   for flight in flightList do
@@ -275,7 +280,7 @@ def searchFlight (svc : TicketSearchService) (searchCriteria : JRef TicketSearch
   let flightType ← match c.flightType with
     | some t => pure t
     | none => throw (.illegalArgument "flightType must not null.")
-  validateDepatureDate svc.limitDay svc.today (some depDate)
+  validateDepatureDate svc.limitDay svc.sharedClock.1 svc.sharedClock.2 (some depDate)
   let route ← match ← getRouteByAirportCd svc.routeProvider depAirportCd arrAirportCd with
     | some r => pure r
     | none => throw (businessException (errorCode "e.ar.b1.2002"))
@@ -315,6 +320,8 @@ structure SearchInput where
   db : SourceModel.Repository.Schema.MasterDb
   config : SourceModel.Config.AtrsConfig
   today : JLocalDate
+  /-- `TicketSharedServiceImpl` が読む今日の日付（D-014） -/
+  sharedClock : JLocalDate × JLocalDate
   criteria : JRef TicketSearchCriteriaDto
   /-- 配備の環境: 既定の書式ロケールの 3 桁区切りの文字（D-032） -/
   groupingSeparator : Char
@@ -329,7 +336,7 @@ def runSearchFlight (fd : SourceModel.Repository.Schema.FlightDb) (ic : SearchIn
   let svc : TicketSearchService :=
     { routeProvider := p.route, fareTypeProvider := p.fareType, flightMasterProvider := p.flightMaster,
       boardingClassProvider := p.boardingClass, ticketSharedService := p.shared, limitDay := ic.config.limitDay,
-      today := ic.today, groupingSeparator := ic.groupingSeparator, flightRepository := repositoryOf ic.db fd sortRows }
+      today := ic.today, sharedClock := ic.sharedClock, groupingSeparator := ic.groupingSeparator, flightRepository := repositoryOf ic.db fd sortRows }
   searchFlight svc ic.criteria
 
 end SourceModel.FlightSearch

@@ -24,6 +24,18 @@ import Abstraction.Fare.Loop
 import Abstraction.Fare.TotalFareRun
 import Abstraction.Fare
 import Abstraction.FlightSearch.Alpha
+import Abstraction.FlightSearch.Format
+import Abstraction.FlightSearch.Period
+import Abstraction.FlightSearch.Init
+import Abstraction.FlightSearch.Join
+import Abstraction.FlightSearch.Candidates
+import Abstraction.FlightSearch.Order
+import Abstraction.FlightSearch.Group
+import Abstraction.FlightSearch.Providers
+import Abstraction.FlightSearch.Run
+import Abstraction.FlightSearch.Witness
+import Abstraction.FlightSearch.Preserves
+import Abstraction.FlightSearch
 
 /-!
 # Abstraction
@@ -91,47 +103,58 @@ import Abstraction.FlightSearch.Alpha
 namespace Abstraction
 
 open Machine Abstraction.MasterData Abstraction.Fare Abstraction.MasterData.Preserves Abstraction.Fare.Preserves
+open Abstraction.FlightSearch Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Preserves
 open Abstraction.MasterData.Alpha Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha Abstraction.MasterData.QueryRun Machine.Sum
 
 /-- 抽象側の前提型の差異（各 R 課題の `restrict` の述語を並置したもの）。 -/
 def dev : Spec.Input → Prop :=
-  sumPred (fun _ => True) (sumPred dev_D001 (sumPred dev_D002 fun i => dev_D001T i ∧ dev_D002T i ∧ dev_D012 i))
+  sumPred (fun _ => True) (sumPred dev_D001 (sumPred dev_D002 (sumPred (fun i => dev_D001T i ∧ dev_D002T i ∧ dev_D012 i)
+    fun i => dev_D001S i ∧ dev_D002S i)))
 
 /-- 具体側の前提型の差異（D-027。各 R 課題の `Concrete.restrict` の述語を並置したもの）。 -/
 def devC : SourceModel.Input → Prop :=
-  sumPred dev_D027 (sumPred dev_D027BF (sumPred dev_D027F dev_D027TF))
+  sumPred dev_D027 (sumPred dev_D027BF (sumPred dev_D027F (sumPred dev_D027TF fun ic => dev_D027S ic ∧ dev_D014S ic ∧ dev_D032 ic)))
 
 /-- 貼り合わせ（各 R 課題の標準の貼り合わせを並置したもの）。 -/
-def glue := glueMQ.sum (glueBF.sum (glueF.sum glueTF))
+def glue := glueMQ.sum (glueBF.sum (glueF.sum (glueTF.sum glueFS)))
 
 /-- 環境の前提（各 R 課題の環境の前提を並置したもの）。 -/
-def env : Spec.Input → Prop := sumPred envMQ (sumPred envBF (sumPred envF envTF))
+def env : Spec.Input → Prop := sumPred envMQ (sumPred envBF (sumPred envF (sumPred envTF envFS)))
 
 /-- トップレベルの主定理（A preserves B）: 実装済みの範囲で、[Spec] は [Source] の振る舞いを空虚にせず保つ
 （`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提の必要性）。R 課題ごとの束 `*Preserves` を並置して示し、
 `Refines` を使わない。 -/
 theorem preserves :
     Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env :=
-  (queryPreserves.sum (basicFarePreserves.sum (farePreserves.sum totalFarePreserves))).congrPre rfl rfl rfl
+  (queryPreserves.sum (basicFarePreserves.sum (farePreserves.sum
+    (totalFarePreserves.sum searchPreserves.core)))).congrPre rfl rfl rfl
     (fun _ i => by
-      rcases i with i | i | i | i
+      rcases i with i | i | i | i | i
       · exact ⟨And.left, fun h => ⟨h, trivial⟩⟩
       · exact Iff.rfl
       · exact Iff.rfl
-      · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩)
-    rfl (fun i => by rcases i with i | i | i | i <;> exact Iff.rfl)
+      · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩
+      · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩)
+    rfl (fun i => by
+      rcases i with i | i | i | i | i
+      any_goals exact Iff.rfl
+      exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩)
 
 /-- トップレベルの主定理（B refines A）: 実装済みの範囲の [Source] は、差異の前提の下で [Spec] を B メソッドの意味で
 リファインする。R 課題ごとの主定理 `*Refines` を並置して示す（束 `preserves` を使わない）。 -/
 theorem refines : Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue :=
-  (queryRefines.sum (basicFareRefines.sum (fareRefines.sum totalFareRefines))).congrPre rfl rfl rfl
+  (queryRefines.sum (basicFareRefines.sum (fareRefines.sum (totalFareRefines.sum searchRefines)))).congrPre rfl rfl rfl
     (fun _ i => by
-      rcases i with i | i | i | i
+      rcases i with i | i | i | i | i
       · exact ⟨And.left, fun h => ⟨h, trivial⟩⟩
       · exact Iff.rfl
       · exact Iff.rfl
-      · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩)
-    rfl rfl (fun i => by rcases i with i | i | i | i <;> exact Iff.rfl)
+      · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩
+      · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩)
+    rfl rfl (fun i => by
+      rcases i with i | i | i | i | i
+      any_goals exact Iff.rfl
+      exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩)
 
 /-- トップレベルの主定理（A abstracts B = A preserves B ∧ B refines A）。系として、初期状態からの複数歩の模倣
 （`Machine.Abstracts.run_init`）と、[Source] の正常終了が実在すること（`Machine.Abstracts.exists_ok`）が成り立つ。 -/

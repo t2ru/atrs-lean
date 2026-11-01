@@ -4,7 +4,7 @@ title: "空席照会（B1）"
 description: "照会可能期間・運賃種別の予約可能判定・searchFlight を両モデルで実装し、ABS-010/011 を証明する。"
 tags: [backlog, spec, source-model, flight-search]
 id: "0be7c5d4-01d9-43f4-a50d-227f174830f0"
-state: doing
+state: done
 depends_on: ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "c7e8d83d-8d90-44fe-a6f5-de54b2efe811", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
