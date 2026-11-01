@@ -15,7 +15,7 @@ generated:
 
 ## 目的
 
-ATRS の Lean で、名前から定義の場所が分かり、機能の証明課題が 1 つのモジュールで読めるようにする（[スキルの ADR 1a30](../../.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md)）。
+ATRS の Lean で、名前から定義の場所が分かり、機能の証明課題が 1 つのモジュールで読めるようにする（[スキルの ADR 1a30](../../.agents/skills/spec-pivot/references/docs/decision/1a30-lean-module-namespace-layout.md)）。
 
 ## 範囲
 
@@ -40,5 +40,5 @@ ATRS の Lean で、名前から定義の場所が分かり、機能の証明課
 
 ## 参照
 
-- [スキルの ADR 1a30](../../.agents/skills/port-lang/references/docs/decision/1a30-lean-module-namespace-layout.md)、[スキルの backlog ce23](../../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md)
+- [スキルの ADR 1a30](../../.agents/skills/spec-pivot/references/docs/decision/1a30-lean-module-namespace-layout.md)、[スキルの backlog ce23](../../.agents/skills/spec-pivot/references/docs/backlog/ce23-lean-module-namespace-layout.md)
 - [rules/atrs-porting.md](../rules/atrs-porting.md#機能名層をまたいで共通)

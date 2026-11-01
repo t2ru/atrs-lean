@@ -23,7 +23,7 @@ Spec ←Refinement（Lean の定理: REF-NNN）─ TargetModel ─(生成: gen-v
 ```
 
 - **REF**: `TargetModel` が `Spec` を B メソッドの意味でリファインすることを示す。Lean の `Refinement` で **証明** する。
-- **SRC**: `TargetModel` と Rust ソースの一致を、決定論的な手段で **確認** する（スキル port-lang の [verification.md](../../.agents/skills/port-lang/references/docs/spec/verification.md) と [rust/verification.md](../../.agents/skills/port-lang/references/docs/lang/rust/verification.md)）。手段の届かない部分は [assurance.md](assurance.md#targetmodel--移植先ソース) に列挙する。
+- **SRC**: `TargetModel` と Rust ソースの一致を、決定論的な手段で **確認** する（スキル spec-pivot の [verification.md](../../.agents/skills/spec-pivot/references/docs/spec/verification.md) と [rust/verification.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/verification.md)）。手段の届かない部分は [assurance.md](assurance.md#targetmodel--移植先ソース) に列挙する。
 
 本書は、ATRS の課題の一覧と状況を定める。
 
@@ -146,6 +146,6 @@ Verus の `assume`・`admit`・`external_body`・`assume_specification`・`exter
 
 - 意思決定を記録する。
 - ここに、場所と理由を列挙する。
-- [assurance.md](assurance.md) に、限界として載せる（[rust/verification.md](../../.agents/skills/port-lang/references/docs/lang/rust/verification.md)）。
+- [assurance.md](assurance.md) に、限界として載せる（[rust/verification.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/verification.md)）。
 
 （現在なし）

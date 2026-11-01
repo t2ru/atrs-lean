@@ -13,7 +13,7 @@ import Refinement
 
 モデルの全定義（`trace-dump` の対象と同じ）が依存する公理を集め、`propext`, `Quot.sound`,
 `Classical.choice` 以外（`sorryAx`, `Lean.ofReduceBool`, 新規の `axiom` など）があれば失敗する
-（port-lang の `lang/lean/rules.md#全域性と安全性`）。`Tests` は対象にしない（`native_decide` を許すため）。
+（spec-pivot の `lang/lean/rules.md#全域性と安全性`）。`Tests` は対象にしない（`native_decide` を許すため）。
 -/
 
 namespace Tools.AxiomCheck

@@ -45,7 +45,7 @@ import Abstraction.FlightSearch
 汎用の補題（列・`mapM`・整列・結合・double の比較・汎用の核 `Machine.Kernel.undefOrEq`・機械の並置 `Machine.Sum`）は、
 スキルの assets にある。
 機能の証明課題（R・W・C 課題と付帯の義務、束 `Machine.Preserves`）は機能のモジュール（`Abstraction.Fare`・`Abstraction.MasterData`・`Abstraction.FlightSearch`）に、
-その補題は下位のモジュールに置く（port-lang の `lang/lean/rules.md#証明課題の配置`）。
+その補題は下位のモジュールに置く（spec-pivot の `lang/lean/rules.md#証明課題の配置`）。
 
 ## トップレベルの主定理（本ファイル）
 

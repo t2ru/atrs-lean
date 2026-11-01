@@ -108,5 +108,5 @@ generated:
 
 ## More Information
 
-* 実装の置き場所は、スキル port-lang の `assets/lean/Trace/Gap.lean` である（[ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)）。書き方は、スキルの [trace-attributes.md](../../.agents/skills/port-lang/references/docs/lang/lean/trace-attributes.md#ギャップの登録簿) にある。
+* 実装の置き場所は、スキル spec-pivot の `assets/lean/Trace/Gap.lean` である（[ADR 7fe4](../../.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)）。書き方は、スキルの [trace-attributes.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/trace-attributes.md#ギャップの登録簿) にある。
 * 作業項目: [backlog 114a](../backlog/114a-gap-attributes-and-trace-in-skill.md)

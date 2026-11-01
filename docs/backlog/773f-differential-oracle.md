@@ -21,7 +21,7 @@ generated:
 
 - 2 つの上流 commit を指定してそれぞれのハーネスを構築・実行する仕組み
 - ケースごとの出力差分の一覧（`trace/upgrade-impact.md` への入力）
-- [port-lang/upgrade.md](../../.agents/skills/port-lang/references/docs/guide/upgrade.md) の手順 4 の具体化
+- [spec-pivot/upgrade.md](../../.agents/skills/spec-pivot/references/docs/guide/upgrade.md) の手順 4 の具体化
 
 ## 対象外
 

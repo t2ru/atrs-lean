@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
-title: "スキル port-lang の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する"
-description: "スキル port-lang の文書が references/docs/ の OKF バンドルになり、スキル自身の意思決定記録・作業項目を持つようになったのに合わせ、ATRS の docs/ にあった純粋にスキルの記録（ADR 6 件・backlog 2 件）を移す。ID の道具は ATRS とスキルを 1 つの ID 空間で検査する。"
+title: "スキル spec-pivot の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する"
+description: "スキル spec-pivot の文書が references/docs/ の OKF バンドルになり、スキル自身の意思決定記録・作業項目を持つようになったのに合わせ、ATRS の docs/ にあった純粋にスキルの記録（ADR 6 件・backlog 2 件）を移す。ID の道具は ATRS とスキルを 1 つの ID 空間で検査する。"
 tags: [adr, skill, documentation]
 id: "50f9e6a4-01c6-4f4a-93b3-07a4303a9b77"
 status: stable
@@ -13,11 +13,11 @@ generated:
   at: 2026-10-31T19:40:00+09:00
 ---
 
-# スキル port-lang の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する
+# スキル spec-pivot の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する
 
 ## Context and Problem Statement
 
-スキル port-lang の文書を `references/docs/` に移し、OKF v0.2 のバンドルにした。スキル自身の意思決定記録・作業項目は `references/docs/{decision,backlog}` で持つ（[スキルの ADR 87b9](../../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)）。
+スキル spec-pivot の文書を `references/docs/` に移し、OKF v0.2 のバンドルにした。スキル自身の意思決定記録・作業項目は `references/docs/{decision,backlog}` で持つ（[スキルの ADR 87b9](../../.agents/skills/spec-pivot/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)）。
 これまで ATRS の `docs/decision`・`docs/backlog` には、ATRS の記録と、アプリに依存しないスキルの記録が混ざっていた。
 [ADR f4e1](f4e1-extract-porting-method-as-agent-skill.md) は、ATRS にも影響するスキルの改訂について、ATRS の ADR を作ることを求めている。
 この ADR では、ATRS 側で何を移し、移した記録をどう参照するかを決める。
@@ -42,8 +42,8 @@ Chosen option: "純粋にスキルの記録だけを `git mv` で移す。ATRS �
 
 | 種類 | 項目 | 移す先 |
 | --- | --- | --- |
-| ADR | [edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)、[7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)、[6edf](../../.agents/skills/port-lang/references/docs/decision/6edf-lean-package-under-skill-assets-lean.md)、[0b83](../../.agents/skills/port-lang/references/docs/decision/0b83-porting-conditions-and-workflow.md)、[0eea](../../.agents/skills/port-lang/references/docs/decision/0eea-trace-tooling-unresolved-details.md)、[9cd9](../../.agents/skills/port-lang/references/docs/decision/9cd9-rehash-diff-impact-details.md) | `.agents/skills/port-lang/references/docs/decision/` |
-| backlog | [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md)、[a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) | `.agents/skills/port-lang/references/docs/backlog/` |
+| ADR | [edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)、[7fe4](../../.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)、[6edf](../../.agents/skills/spec-pivot/references/docs/decision/6edf-lean-package-under-skill-assets-lean.md)、[0b83](../../.agents/skills/spec-pivot/references/docs/decision/0b83-porting-conditions-and-workflow.md)、[0eea](../../.agents/skills/spec-pivot/references/docs/decision/0eea-trace-tooling-unresolved-details.md)、[9cd9](../../.agents/skills/spec-pivot/references/docs/decision/9cd9-rehash-diff-impact-details.md) | `.agents/skills/spec-pivot/references/docs/decision/` |
+| backlog | [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md)、[a936](../../.agents/skills/spec-pivot/references/docs/backlog/a936-lang-semantics-rust.md) | `.agents/skills/spec-pivot/references/docs/backlog/` |
 
 * ATRS の部分を含む記録は ATRS に残す。たとえば ADR c336・f4e1・01d4・0bd3・e2a4・70eb・9ac6・cc24、backlog f7b7・ae04・114a・38fb・ffdc・a8be・c7e8・d77c・0d1a がそれに当たる。後から分けて移してよい。そのときは `ids.py move` を使う。
 * ADR 3e1d は内容はスキルのものだが、[ADR 796c](796c-models-in-lean-and-sources-traced-at-both-ends.md) に置き換えられ、ATRS の仕様へのリンクを多く持つため、ATRS に残す。
@@ -88,6 +88,6 @@ Chosen option: "純粋にスキルの記録だけを `git mv` で移す。ATRS �
 
 ## More Information
 
-* [スキルの ADR 87b9](../../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)（スキル側の決定）、[スキルの backlog de90](../../.agents/skills/port-lang/references/docs/backlog/de90-skill-docs-okf-bundle-and-records.md)（作業）
+* [スキルの ADR 87b9](../../.agents/skills/spec-pivot/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)（スキル側の決定）、[スキルの backlog de90](../../.agents/skills/spec-pivot/references/docs/backlog/de90-skill-docs-okf-bundle-and-records.md)（作業）
 * [ADR f4e1](f4e1-extract-porting-method-as-agent-skill.md)（スキルへの切り出し）、[ADR a0f1](a0f1-documentation-format-okf-v0-2.md)（OKF）、[ADR f57e](f57e-uuid-ids-for-decisions-and-backlog.md)（UUID の ID）
-* スキルの保守の規則: [maintenance.md](../../.agents/skills/port-lang/references/docs/rules/maintenance.md)
+* スキルの保守の規則: [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md)

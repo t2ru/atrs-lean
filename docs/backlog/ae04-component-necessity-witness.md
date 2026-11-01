@@ -21,7 +21,7 @@ vacuity detection の考え方（[ADR 9ac6](../decision/9ac6-vacuity-literature-
 
 ## 範囲
 
-- スキル port-lang の `assets/lean/Machine/Adequacy.lean`: `always`・`anyOf`・`Covers`・`Covers₂`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always`
+- スキル spec-pivot の `assets/lean/Machine/Adequacy.lean`: `always`・`anyOf`・`Covers`・`Covers₂`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always`
 - `assets/lean/MachineTest/Adequacy.lean`: 反例 12（不要な差異）・13（環境の選択による吸収）と、前提型・観測型・環境の前提の必要性の正例
 - `lean/Trace/Obligation.lean`: G9（差異 ID ごとの必要性と被覆、ID は定数に 1 つ、`anyOf` の葉、R 課題の基底の環境の前提）と、必要性の形の `@[obligation]` を G0 の誤りにしない例外。JSON の `necessity`
 - テスト: `lean/Tests/ObligationFixture.lean`・`lean/Tests/Main.lean`

@@ -4,7 +4,7 @@ import Spec
 /-!
 # Tests.Conformance
 
-適合テストベクタ（`conformance/`）の実行器（スキル port-lang の `spec/conformance.md`）。
+適合テストベクタ（`conformance/`）の実行器（スキル spec-pivot の `spec/conformance.md`）。
 
 - ファイルの読み込み・形式の検査・`expected` の比較・共有入力・`modelDef` の選択は、スキルの `ConformanceKit` にある。
 - ここには、[Spec] の値の表現の読み取り（日付・時刻）と、`format.*` の操作の割当（`formatOps`）を置く。

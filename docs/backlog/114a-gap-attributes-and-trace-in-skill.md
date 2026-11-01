@@ -1,7 +1,7 @@
 ---
 type: Backlog Item
 title: "追跡属性をスキルへ移し、ギャップを Lean の属性で表す"
-description: "lean/Trace をスキル port-lang の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。"
+description: "lean/Trace をスキル spec-pivot の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。"
 tags: [backlog, lean, tooling, traceability]
 id: "114a8bdd-9aac-40c9-a364-048a59fa6224"
 state: done
@@ -15,12 +15,12 @@ generated:
 
 ## 目的
 
-追跡属性の仕組みはアプリに依存しないので、スキルに置く（[ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)）。
+追跡属性の仕組みはアプリに依存しないので、スキルに置く（[ADR 7fe4](../../.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)）。
 あわせて、[Spec] とモデルのギャップを Lean の属性で表し、機械で扱えるようにする（[ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)）。
 
 ## 範囲
 
-- スキル port-lang の `assets/lean/`
+- スキル spec-pivot の `assets/lean/`
   - `Trace/`（`lean/Trace` から移す）
   - `Trace/Gap.lean`（`Trace.Gap`・`@[gap_entry]`）、`Trace.Attr` の `@[gap]`
   - `trace-dump`・`obligation-check` の `gaps` と GK
@@ -58,7 +58,7 @@ generated:
 
 ## 参照
 
-- [ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)
+- [ADR 7fe4](../../.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)
 - [ADR cc24](../decision/cc24-gap-registry-as-lean-attributes.md)
 - [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)
 - [backlog ffdc](ffdc-trace-tooling.md)

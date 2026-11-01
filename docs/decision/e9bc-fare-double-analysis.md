@@ -103,6 +103,6 @@ Chosen option: "閉じた形の補題と因子の表で、差異が起きない�
 
 ## More Information
 
-* 補足（2026-10-31）: 本 ADR で「比較の定理（ATRS）」とした層（`Abstraction.Fare.Double` と `Factors` の因子の判定・`jd2i_factor`）は、アプリに依存しないので、スキルの `LangSemantics.Java.JDouble.Compare` に移した（[ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。決定は変わらない。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件・証拠が残る。
+* 補足（2026-10-31）: 本 ADR で「比較の定理（ATRS）」とした層（`Abstraction.Fare.Double` と `Factors` の因子の判定・`jd2i_factor`）は、アプリに依存しないので、スキルの `LangSemantics.Java.JDouble.Compare` に移した（[ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。決定は変わらない。ATRS の `Abstraction.Fare.Factors` には、因子の表と差異の条件・証拠が残る。
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)、[ADR e41d](e41d-exact-integer-arithmetic-in-abstract-model.md)
 * [abstraction.md](../spec/abstraction.md#既知差異)（D-001・D-002）、[fare-calculation.md](../spec/fare-calculation.md)

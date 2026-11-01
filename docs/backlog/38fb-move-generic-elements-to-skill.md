@@ -15,7 +15,7 @@ generated:
 
 ## 目的
 
-[ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md) のとおり、アプリに依存しない要素をスキルへ移す。
+[ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md) のとおり、アプリに依存しない要素をスキルへ移す。
 他のアプリへ移植するときに、写さずに使えるようにするためである。
 
 ## 範囲
@@ -53,6 +53,6 @@ generated:
 
 ## 参照
 
-- [ADR edc8](../../.agents/skills/port-lang/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)
+- [ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)
 - [ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)
 - [backlog 114a](114a-gap-attributes-and-trace-in-skill.md)

@@ -7,10 +7,10 @@ import Abstraction.FlightSearch
 # Abstraction.Gap
 
 [Spec] と [Source] のギャップの登録簿（正）。既知差異（前提型・観測型・モデル外）、[Spec] の PRE の外での [Source] の振る舞い、
-未確定の差異を、ID ごとに 1 つの宣言として置く（ADR cc24・port-lang の `references/docs/lang/lean/trace-attributes.md`）。
+未確定の差異を、ID ごとに 1 つの宣言として置く（ADR cc24・spec-pivot の `references/docs/lang/lean/trace-attributes.md`）。
 
 - 説明（`docs/spec/abstraction.md` の表の「差異」「振る舞い」「状況」の列）は docstring に書く。
-- `docs/spec/abstraction.md` の 4 つの表は、`trace manifest`（port-lang の `scripts/trace`）がここから生成する。表を手で直してはならない。
+- `docs/spec/abstraction.md` の 4 つの表は、`trace manifest`（spec-pivot の `scripts/trace`）がここから生成する。表を手で直してはならない。
 - 前提型・観測型の述語・成分（`dev_DNNN`・`obs_DNNN`）は、各機能の `Abstraction.<機能>` に `@[deviation]` を付けて置く。
 - ギャップが生じる `Spec`・`SourceModel` の定義には、`@[gap "D-NNN"]` を付ける（検査 TR-K）。
 -/

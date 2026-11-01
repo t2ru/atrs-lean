@@ -77,5 +77,5 @@ Chosen option: "JSON のテストベクタ", because JSON はほぼ全言語で�
 
 ## More Information
 
-* [spec/conformance.md](../spec/conformance.md), [port-lang/verification.md](../../.agents/skills/port-lang/references/docs/spec/verification.md)
+* [spec/conformance.md](../spec/conformance.md), [spec-pivot/verification.md](../../.agents/skills/spec-pivot/references/docs/spec/verification.md)
 * `shared/` の `modelDef` の配列、共有入力の生成器、`source-model/` の暫定の期待値は [ADR 8f18](8f18-fare-source-model-and-shared-vectors.md) で補った

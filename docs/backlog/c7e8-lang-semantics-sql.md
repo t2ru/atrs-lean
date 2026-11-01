@@ -13,7 +13,7 @@ generated:
 
 # LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論
 
-> 2026-10-29: スキル port-lang の assets に、LangSemantics.Sql と LangSemantics.Sql.Postgresql の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Sql.lean](../../.agents/skills/port-lang/assets/lean/LangSemantics/Sql.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
+> 2026-10-29: スキル spec-pivot の assets に、LangSemantics.Sql と LangSemantics.Sql.Postgresql の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Sql.lean](../../.agents/skills/spec-pivot/assets/lean/LangSemantics/Sql.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
 
 ## 目的
 
@@ -38,7 +38,7 @@ generated:
 
 ## 結果
 
-- assets（`.agents/skills/port-lang/assets/lean/`）
+- assets（`.agents/skills/spec-pivot/assets/lean/`）
   - `LangSemantics/Sql/Query.lean`
     - `Bag.bagEq` を両方向の個数の比較に改め、順列（`List.Perm`）と同値であることを示した（`bagEq_iff_perm`）
     - 許される順列の一意性を証明した。比較が行の上で反対称・推移的で、比較が等しい行は同じ行（キーが単射）なら、許される順列はただ 1 つ（`isAllowedOrder_unique`）

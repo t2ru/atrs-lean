@@ -4,7 +4,7 @@ import Trace.Layout
 # Tools.LayoutCheck
 
 `lake exe layout-check`（ATRS）。`Spec`・`SourceModel`・`Abstraction`・`TargetModel`・`Refinement`・`Tests`・`Tools` の
-全宣言が、モジュール名の下にあることを確かめる（port-lang の `Trace.Layout`、`lang/lean/rules.md#モジュールと名前空間`）。
+全宣言が、モジュール名の下にあることを確かめる（spec-pivot の `Trace.Layout`、`lang/lean/rules.md#モジュールと名前空間`）。
 スキルの assets（`LangSemantics`・`Machine`・`Trace`・`ConformanceKit`）は、スキル側の `layout-check` が確かめる。
 `--json` で結果を JSON で出す。
 -/

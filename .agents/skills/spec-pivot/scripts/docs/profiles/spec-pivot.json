@@ -1,0 +1,78 @@
+{
+  "note": "スキル spec-pivot の文書のバンドル（references/docs）の規則（references/docs/rules/maintenance.md）。scripts/docs/okf_check.py が読む",
+  "okf_version": true,
+  "index_complete": true,
+  "common": {
+    "required": [
+      "title",
+      "description",
+      "tags"
+    ],
+    "quoted": [
+      "title",
+      "description"
+    ],
+    "title_heading": true
+  },
+  "rules": [
+    {
+      "match": "**/README.md",
+      "type": "Overview"
+    },
+    {
+      "match": "decision/*.md",
+      "type": "Architecture Decision Record",
+      "kind": "adr",
+      "required": [
+        "id",
+        "decision_status",
+        "date",
+        "decision-makers"
+      ],
+      "sections": [
+        "Context and Problem Statement",
+        "Decision Drivers",
+        "Considered Options",
+        "Decision Outcome",
+        "More Information"
+      ],
+      "outcome_markers": [
+        "Chosen option",
+        "採択"
+      ]
+    },
+    {
+      "match": "backlog/*.md",
+      "type": "Backlog Item",
+      "kind": "backlog",
+      "required": [
+        "id",
+        "state",
+        "depends_on"
+      ],
+      "sections": [
+        "目的",
+        "範囲",
+        "対象外",
+        "完了条件",
+        "参照"
+      ]
+    },
+    {
+      "match": "spec/*.md",
+      "type": "Specification"
+    },
+    {
+      "match": "rules/*.md",
+      "type": "Guideline"
+    },
+    {
+      "match": "guide/*.md",
+      "type": "Guide"
+    },
+    {
+      "match": "lang/**",
+      "type": "Reference"
+    }
+  ]
+}

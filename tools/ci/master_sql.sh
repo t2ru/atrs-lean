@@ -11,4 +11,4 @@ if ! { [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/p
   if [ -n "${CI:-}" ]; then echo "PostgreSQL not available (required in CI)" >&2; exit 1; fi
   echo "PostgreSQL not found: skipped"; exit 2
 fi
-.agents/skills/port-lang/scripts/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py --check --expect-version "$pgver"
+.agents/skills/spec-pivot/scripts/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py --check --expect-version "$pgver"

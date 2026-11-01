@@ -14,7 +14,7 @@
    "name": "langSemantics",
    "manifestFile": "lake-manifest.json",
    "inherited": false,
-   "dir": "./.agents/skills/port-lang/assets/lean",
+   "dir": "./.agents/skills/spec-pivot/assets/lean",
    "copy": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/batteries",

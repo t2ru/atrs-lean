@@ -20,7 +20,7 @@ generated:
 
 ## 範囲
 
-- スキル port-lang の `assets/lean/Machine/Adequacy.lean`
+- スキル spec-pivot の `assets/lean/Machine/Adequacy.lean`
   - `Machine.ofChoice`・`FreeFrame`・`InitIs`、`Refines.Pinned`・`NoFaultReachable`、`Glue.ofStd`、`Machine.TotalUnder`・`Refines.EnvWitness`、`Refines.InitSurj`、`Refines.StateSafe`・`StateSafeConcrete`、`Nontrivial`・`Nontrivial₂`、`KernelIs`
   - 定理 `Refines.complete`（1 歩の可換式）・`Refines.run`（複数歩の模倣）・`Refines.congr`
 - `assets/lean/MachineTest/Adequacy.lean`: 抜け道ごとの反例と正例。公理を `MachineTest/Axioms.lean` で固定する
@@ -55,4 +55,4 @@ generated:
 
 - [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)
 - [ADR 01d4](../decision/01d4-b-method-refinement-and-explicit-deviations.md)
-- [backlog 1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md)
+- [backlog 1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md)

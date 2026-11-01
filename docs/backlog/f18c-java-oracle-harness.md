@@ -39,4 +39,4 @@ generated:
 
 ## 参照
 
-- [port-lang/java/harness.md](../../.agents/skills/port-lang/references/docs/lang/java/harness.md)
+- [spec-pivot/java/harness.md](../../.agents/skills/spec-pivot/references/docs/lang/java/harness.md)

@@ -126,7 +126,7 @@ R 課題で使う差異の ID ごとに、**その差異を外した R 課題の
 * 環境の前提の必要性は、SPEC-006 に含める。
   * PRE が INV の下で全域な入口の機械は、環境の前提を置かず `TotalUnder A always` と、`always` についての `EnvWitness` を示す。このとき、`@[env_pre]` も必要性も要らない。
   * 環境の前提の必要性は、R 課題の基底の機械についてだけ求める。R 課題と関係の無い機械で示しても、通らない。
-* Lean（スキル port-lang の `assets/lean/Machine/Adequacy.lean`）には、次を置く。
+* Lean（スキル spec-pivot の `assets/lean/Machine/Adequacy.lean`）には、次を置く。
   * `always`
   * 証人から否定を導く補題: `Refines.not_of_error`（正常終了しない）、`Refines.not_of_stuck`（結果を持たない）、`Refines.not_of_mismatch`（正しさが破れる）、`Refines.Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always`
   * 被覆 `Covers`・`Covers₂`、観測型の成分の和 `anyOf`
@@ -152,7 +152,7 @@ R 課題で使う差異の ID ごとに、**その差異を外した R 課題の
 
 * 形は `#guard` か定理とする。
 * 許す例（Usefulness・Provability）に加えて、拒む例（Correctness。`¬ step s i s' o`、PRE の外）も書く。
-* 方法はスキルの [conformance.md](../../.agents/skills/port-lang/references/docs/spec/conformance.md) と [spec-documents.md](../../.agents/skills/port-lang/references/docs/rules/spec-documents.md) に置き、各機能の `Spec` を作る backlog 項目で適用する。
+* 方法はスキルの [conformance.md](../../.agents/skills/spec-pivot/references/docs/spec/conformance.md) と [spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md) に置き、各機能の `Spec` を作る backlog 項目で適用する。
 
 ### 保証の限界の変更（[spec/assurance.md](../spec/assurance.md)）
 

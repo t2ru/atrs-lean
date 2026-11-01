@@ -1,10 +1,10 @@
 {
-  "note": "port-lang のスキルの道具（.agents/skills/port-lang/scripts）が読む、ATRS 固有の設定（port-lang の references/docs/spec/traceability.md#プロジェクトの設定）",
-  "skill": ".agents/skills/port-lang",
+  "note": "spec-pivot のスキルの道具（.agents/skills/spec-pivot/scripts）が読む、ATRS 固有の設定（spec-pivot の references/docs/spec/traceability.md#プロジェクトの設定）",
+  "skill": ".agents/skills/spec-pivot",
   "lean": {
     "roots": [
       "lean",
-      ".agents/skills/port-lang/assets/lean"
+      ".agents/skills/spec-pivot/assets/lean"
     ]
   },
   "languages": {
@@ -41,17 +41,17 @@
     "kinds": {
       "adr": [
         "docs/decision",
-        ".agents/skills/port-lang/references/docs/decision"
+        ".agents/skills/spec-pivot/references/docs/decision"
       ],
       "backlog": [
         "docs/backlog",
-        ".agents/skills/port-lang/references/docs/backlog"
+        ".agents/skills/spec-pivot/references/docs/backlog"
       ]
     },
     "isolated": [
       {
-        "bundle": ".agents/skills/port-lang/references/docs",
-        "root": ".agents/skills/port-lang"
+        "bundle": ".agents/skills/spec-pivot/references/docs",
+        "root": ".agents/skills/spec-pivot"
       }
     ],
     "registers": [
@@ -71,10 +71,10 @@
       "AGENTS.md",
       "docs/",
       "trace/",
-      ".agents/skills/port-lang/references/docs/"
+      ".agents/skills/spec-pivot/references/docs/"
     ],
     "check_skip": [
-      ".agents/skills/port-lang/scripts/ci/fixtures/",
+      ".agents/skills/spec-pivot/scripts/ci/fixtures/",
       "tools/docs/legacy-ids.json",
       "trace/source-inventory.json",
       "trace/target-inventory.json",
@@ -88,7 +88,7 @@
     ]
   },
   "okf": {
-    "note": "port-lang の scripts/docs/okf_check.py が検査する OKF v0.2 のバンドルとリンク（port-lang の references/docs/rules/maintenance.md#バンドルの検査）",
+    "note": "spec-pivot の scripts/docs/okf_check.py が検査する OKF v0.2 のバンドルとリンク（spec-pivot の references/docs/rules/maintenance.md#バンドルの検査）",
     "bundles": [
       {
         "root": "docs",
@@ -180,8 +180,8 @@
         }
       },
       {
-        "root": ".agents/skills/port-lang/references/docs",
-        "profile": ".agents/skills/port-lang/scripts/docs/profiles/port-lang.json"
+        "root": ".agents/skills/spec-pivot/references/docs",
+        "profile": ".agents/skills/spec-pivot/scripts/docs/profiles/spec-pivot.json"
       }
     ],
     "links": {
@@ -194,7 +194,7 @@
       "absolute": false
     },
     "skip": [
-      ".agents/skills/port-lang/scripts/ci/fixtures/"
+      ".agents/skills/spec-pivot/scripts/ci/fixtures/"
     ]
   }
 }

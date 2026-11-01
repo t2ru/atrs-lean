@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "docs/ とスキルのバンドルを okf_check.py で検査し、CI の一括検査に入れる"
-description: "ATRS の docs/ とスキル port-lang の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。"
+description: "ATRS の docs/ とスキル spec-pivot の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。"
 tags: [adr, documentation, okf, ci]
 id: "920d9c0e-d4cb-4c40-8c59-df278da4aa77"
 status: stable
@@ -19,7 +19,7 @@ generated:
 
 [ADR a0f1](a0f1-documentation-format-okf-v0-2.md) は、`docs/` を OKF v0.2 のバンドルとし、frontmatter と `type`、`docs/index.md` の網羅をスクリプトで検査すると定めた。この検査はまだ無かった（[backlog ddbd](../backlog/ddbd-okf-bundle-lint.md)）。
 `ids.py check` は ID と、ADR・backlog へのリンクだけを見ており、一般の相対リンクと見出しアンカーは検査していなかった。
-アプリに依存しない検査の道具は、スキルに `scripts/docs/okf_check.py` として置いた（[スキルの ADR 330e](../../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)）。ATRS は、どの規則で何を検査するかを決める必要がある。
+アプリに依存しない検査の道具は、スキルに `scripts/docs/okf_check.py` として置いた（[スキルの ADR 330e](../../.agents/skills/spec-pivot/references/docs/decision/330e-okf-bundle-check-tool.md)）。ATRS は、どの規則で何を検査するかを決める必要がある。
 
 ## Decision Drivers
 
@@ -39,7 +39,7 @@ Chosen option: "規約どおりの規則で検査し、`tools/ci/lean.sh` から
 
 ### 検査する範囲
 
-* バンドル: `docs/`（規則は `trace/project.json` の `okf.bundles`）と、スキルの `references/docs/`（規則はスキルの `scripts/docs/profiles/port-lang.json`）。
+* バンドル: `docs/`（規則は `trace/project.json` の `okf.bundles`）と、スキルの `references/docs/`（規則はスキルの `scripts/docs/profiles/spec-pivot.json`）。
 * リンク: `AGENTS.md`・`CLAUDE.md`・`docs/`・`.agents/` の Markdown。スキルの道具の違反例（`scripts/ci/fixtures/`）は除く。`/` で始まるリンクは違反とする（[documentation.md](../rules/documentation.md#リンク)）。
 
 ### `docs/` の規則
@@ -88,7 +88,7 @@ Chosen option: "規約どおりの規則で検査し、`tools/ci/lean.sh` から
 
 ## More Information
 
-* 道具の決定: [スキルの ADR 330e](../../.agents/skills/port-lang/references/docs/decision/330e-okf-bundle-check-tool.md)（検査の符号、YAML の部分集合、設定の形）
+* 道具の決定: [スキルの ADR 330e](../../.agents/skills/spec-pivot/references/docs/decision/330e-okf-bundle-check-tool.md)（検査の符号、YAML の部分集合、設定の形）
 * [ADR a0f1](a0f1-documentation-format-okf-v0-2.md) の Confirmation を実装する（置き換えない）。
-* 作業: [backlog ddbd](../backlog/ddbd-okf-bundle-lint.md)、[スキルの backlog a49c](../../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md)
+* 作業: [backlog ddbd](../backlog/ddbd-okf-bundle-lint.md)、[スキルの backlog a49c](../../.agents/skills/spec-pivot/references/docs/backlog/a49c-okf-bundle-check-tool.md)
 * 規約: [documentation.md](../rules/documentation.md#okf-v02)、[decision-records.md](../rules/decision-records.md)、[backlog.md](../rules/backlog.md)

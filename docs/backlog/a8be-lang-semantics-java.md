@@ -13,7 +13,7 @@ generated:
 
 # LangSemantics.Java: Java 基本型の意味論
 
-> 2026-10-29: スキル port-lang の assets に、LangSemantics.Java の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Java.lean](../../.agents/skills/port-lang/assets/lean/LangSemantics/Java.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
+> 2026-10-29: スキル spec-pivot の assets に、LangSemantics.Java の初版（core のみ、`#guard` 検査付き、Lean 4.35.0 でビルド済み）がある（[Java.lean](../../.agents/skills/spec-pivot/assets/lean/LangSemantics/Java.lean)）。`lean/` はそれを Lake の依存として取り込む（`lean/LangSemantics/` には写さない）。本項目は、ATRS で不足する演算と検査を **assets 側に** 追加する作業として行う。
 
 ## 目的
 
@@ -43,7 +43,7 @@ generated:
 
 ## 結果
 
-- assets（`.agents/skills/port-lang/assets/`）
+- assets（`.agents/skills/spec-pivot/assets/`）
   - `LangSemantics/Java/JDouble.lean`: 定理を追加した。
     - `jdLit_0_01_bits`: `jdLit "0.01"` のビット表現が `0x3F847AE147AE147B`
     - `jd2i_1430_30`: 1430 円・30% の例が 1000

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Lean 側の検査を一括で実行する（CI とローカルで共通。backlog be49・455f・1ae4・a8be・f7b7・c7e8・ffdc・25f7・114a・ddbd）。
-# 汎用の道具はスキル port-lang の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
+# 汎用の道具はスキル spec-pivot の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
 #   tools/ci/lean.sh
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-skill=.agents/skills/port-lang
+skill=.agents/skills/spec-pivot
 scripts="$skill/scripts"
 
 step() { printf '\n== %s\n' "$*"; }
@@ -104,7 +104,7 @@ step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L、TR-G・TR-N）"
 step "workspace: ルートで lake setup-file（Lean LSP 用）"
 lake setup-file lean/Spec.lean > /dev/null
 lake setup-file lean/Tests/Main.lean > /dev/null
-lake setup-file .agents/skills/port-lang/assets/lean/LangSemantics.lean > /dev/null
-lake setup-file .agents/skills/port-lang/assets/lean/Machine.lean > /dev/null
+lake setup-file .agents/skills/spec-pivot/assets/lean/LangSemantics.lean > /dev/null
+lake setup-file .agents/skills/spec-pivot/assets/lean/Machine.lean > /dev/null
 
 step "OK"

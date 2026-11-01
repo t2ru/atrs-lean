@@ -120,7 +120,7 @@ generated:
 
 ## More Information
 
-* [ADR cc24](cc24-gap-registry-as-lean-attributes.md)・[スキルの ADR 7fe4](../../.agents/skills/port-lang/references/docs/decision/7fe4-move-trace-attributes-to-skill.md) の続きである。
+* [ADR cc24](cc24-gap-registry-as-lean-attributes.md)・[スキルの ADR 7fe4](../../.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md) の続きである。
 * 必要性と被覆は [ADR 9ac6](9ac6-vacuity-literature-necessity-and-mutation.md)、空虚化を防ぐ義務は [ADR 70eb](70eb-refinement-non-vacuity-obligations.md) による。
 * 書き方は、スキルの `references/lean/trace-attributes.md#証明の状態evidence` にある。
 * 作業項目: [backlog c27d](../backlog/c27d-gap-evidence-states.md)

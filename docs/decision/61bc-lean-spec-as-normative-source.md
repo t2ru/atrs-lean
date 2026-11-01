@@ -48,7 +48,7 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 
 ### docs/spec に置くもの
 
-`docs/spec` の各節は、次のいずれかとして冒頭で区分を明示する（[port-lang/spec-documents.md](../../.agents/skills/port-lang/references/docs/rules/spec-documents.md)）。
+`docs/spec` の各節は、次のいずれかとして冒頭で区分を明示する（[spec-pivot/spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md)）。
 
 | 区分 | 内容 | 例 |
 | --- | --- | --- |
