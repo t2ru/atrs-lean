@@ -38,7 +38,7 @@ generated:
 
 [Source] の追加の振る舞い: 手順 4 の更新件数が 1 でなければ `System("e.ar.a0.L9002")`。リポジトリの契約（[Spec] の前提）の下では到達しないため、差異ではない（[abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) の D-010、補題 ABS-022）。
 
-> **TODO(spec):** [Source] で手順 4 が実際に行われるかを Java オラクルで確認する。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない可能性がある（`w/config/web/SpringSecurityConfig.java`）。出ないなら、画面ログインでは `loginDateTime`・`loginFlg` が更新されないので、既知差異として登録し、R 課題 ABS-043 の仮定（または成分）と W 課題を置く。出るなら、[abstraction.md](abstraction.md#未確定の差異) の未確定の差異から消す（[backlog f18c](../backlog/f18c-java-oracle-harness.md)、[backlog 44f8](../backlog/44f8-authentication-usecases.md)）。
+[Source] は手順 4 を行わない（既知差異 [D-028](abstraction.md#既知差異)。観測型）。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない（`w/config/web/SpringSecurityConfig.java`）。Java オラクルで、画面ログインの成功の前後で `MEMBER_LOGIN` の `LOGIN_DATE_TIME`・`LOGIN_FLG` が変わらないことを確かめた。一方、REST の HTTP Basic 認証では、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使うので、成功のたびに更新される（`tools/oracle/http/login.json`。[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。R 課題 ABS-043・ABS-045 の成分 `obs_D028` と W 課題 ABS-128 は [backlog 44f8](../backlog/44f8-authentication-usecases.md) で置く。
 
 出典: atrs-web/.../app/common/security/AtrsUsernamePasswordAuthenticationFilter.java, atrs-domain/.../service/a1/AtrsUserDetailsService.java, AuthLoginServiceImpl.java, atrs-domain/.../common/security/AtrsAuthenticationSuccessListener.java
 

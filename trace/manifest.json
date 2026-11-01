@@ -1441,10 +1441,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Gap.claim_D028",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.MasterData.Alpha.AnswerOf.boardingClass",
       "layer": "Abstraction"
     },
@@ -6906,11 +6902,6 @@
       "type": "gap",
       "from": "Abstraction.Gap.claim_D025",
       "to": "D-025"
-    },
-    {
-      "type": "gap",
-      "from": "Abstraction.Gap.claim_D028",
-      "to": "D-028"
     },
     {
       "type": "gap",

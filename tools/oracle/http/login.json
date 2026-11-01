@@ -1,0 +1,51 @@
+{
+  "operation": "http.login",
+  "modelDef": null,
+  "specRef": "docs/spec/authentication.md#ログインlogin",
+  "note": "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（authentication.md の TODO、D-028）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java オラクルが原典から採取した（tools/oracle の HttpOracle。手で編集しない）。",
+  "upstream": {
+    "release": "release/5.11.0.RELEASE",
+    "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
+  },
+  "cases": [
+    {
+      "id": "login-success",
+      "description": "正しいパスワードでの画面ログイン（会員 0000000001）。前後の MEMBER_LOGIN の行を観測する",
+      "now": "2026-11-03T10:00:00",
+      "input": {
+        "requests": [{"method": "GET", "path": "/auth/login"}, {"method": "POST", "path": "/auth/dologin", "form": [["membershipNumber", "0000000001"], ["password", "aaaaa11111"], ["_csrf", "{{_csrf}}"]]}],
+        "observe": "memberLogin:0000000001"
+      },
+      "expected": {
+        "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"], ["set-cookie", "JSESSIONID=…; Path=/atrs; HttpOnly"]], "htmlHasCsrfToken": true}, {"status": 302, "headers": [["location", "/atrs/"]]}], "after": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}}
+      },
+      "source": "java-oracle"
+    },
+    {
+      "id": "login-wrongPassword",
+      "description": "誤ったパスワード（過去のパスワード）での画面ログイン（会員 0000000001）。前後の MEMBER_LOGIN の行を観測する",
+      "now": "2026-11-03T10:00:00",
+      "input": {
+        "requests": [{"method": "GET", "path": "/auth/login"}, {"method": "POST", "path": "/auth/dologin", "form": [["membershipNumber", "0000000001"], ["password", "aaaaa00000"], ["_csrf", "{{_csrf}}"]]}],
+        "observe": "memberLogin:0000000001"
+      },
+      "expected": {
+        "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"], ["set-cookie", "JSESSIONID=…; Path=/atrs; HttpOnly"]], "htmlHasCsrfToken": true}, {"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"]], "htmlHasCsrfToken": true}], "after": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}}
+      },
+      "source": "java-oracle"
+    },
+    {
+      "id": "login-restBasic",
+      "description": "REST の HTTP Basic 認証（正しい資格情報。会員 0000000001）。前後の MEMBER_LOGIN の行を観測する（画面ログインとの比較のため）",
+      "now": "2026-11-03T10:00:00",
+      "input": {
+        "requests": [{"method": "GET", "path": "/api/v1/flight", "query": [["flightType", "OW"], ["depAirportCd", "HND"], ["arrAirportCd", "ITM"], ["depDate", "2026/11/04"], ["boardingClassCd", "N"]], "headers": [["Authorization", "Basic MDAwMDAwMDAwMTphYWFhYTExMTEx"]]}],
+        "observe": "memberLogin:0000000001"
+      },
+      "expected": {
+        "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "application/json;charset=utf-8"]], "jsonArraySize": 18}], "after": {"loginDateTime": "2026-11-03T00:00", "loginFlg": true}}
+      },
+      "source": "java-oracle"
+    }
+  ]
+}

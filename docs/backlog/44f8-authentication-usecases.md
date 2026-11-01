@@ -22,7 +22,7 @@ generated:
 - `Spec.UseCase.Auth`, `SourceModel.UseCase.Auth`
 - 事前検査の境界（会員番号の長さ 9/10/11、パスワードの長さ 7/8/20/21）のベクタ
 - R 課題 ABS-043（認証のユースケース）。D-006 の W 課題 ABS-106 は [backlog 4e0e](4e0e-member-usecases-and-input-validation.md) で示す
-- 未確定の差異「ログイン時の状態更新」の確定（[abstraction.md](../spec/abstraction.md#未確定の差異)）
+- ログイン時の状態更新の既知差異 D-028（観測型。[backlog f18c](f18c-java-oracle-harness.md) の Java オラクルで確かめた。[abstraction.md](../spec/abstraction.md#既知差異)）の成分 `obs_D028` と W 課題 ABS-128
 
 ## 対象外
 
@@ -33,7 +33,7 @@ generated:
 - [ ] [authentication.md](../spec/authentication.md) の全手順がベクタで確認できる
 - [ ] ABS-043 と、認証の SPEC-001〜SPEC-004 を証明した
 - [ ] 認証の `source-model/` ベクタが Java オラクルと一致する
-- [ ] ログイン時の状態更新を Java オラクルで確かめた。差異があれば D-NNN と W 課題を登録・証明し、無ければ未確定の差異の表から消した
+- [ ] ログイン時の状態更新の差異 D-028（画面ログインで更新しない・REST の Basic 認証で更新する）の成分 `obs_D028` を R 課題 ABS-043 に置き、W 課題 ABS-128 を証明した
 
 ## 参照
 

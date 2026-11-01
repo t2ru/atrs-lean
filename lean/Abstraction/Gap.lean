@@ -341,17 +341,17 @@ def D027 : Gap where
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5"]
 
-/-- D-028 の主張（形式化していない。証明も公理も持たない）: [Source] は、認証イベントが発行されない構成では、ログイン時に `loginDateTime`・`loginFlg` を更新しない可能性がある。認証のモデルがまだ無いので、命題として書けない -/
-@[gap "D-028"] opaque claim_D028 : Prop
-
-/-- [Source] で更新されない可能性がある（認証イベントが発行されない構成）。オラクルで確かめた結果に応じて、D-0NN（前提型または観測型）として登録するか、差異が無いことを本表から消す -/
+/-- [Source] の画面ログイン（`POST /auth/dologin`）は、ログイン状態（`loginDateTime`・`loginFlg`）を更新しない。状態を更新する `AtrsAuthenticationSuccessListener` は `AuthenticationSuccessEvent` を受けるが、画面ログインのフィルタが使う`authenticationManager`（`new ProviderManager(authProvider)`）にはイベント発行者が無く、イベントが出ないためである。一方、REST の HTTP Basic 認証は、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使うので、成功のたびに`loginDateTime := today`・`loginFlg := true` に更新する。[Spec] は画面ログインで更新し、REST の要求では更新しない。Java オラクルで確かめた（`tools/oracle/http/login.json`。backlog f18c） -/
 @[gap_entry]
 def D028 : Gap where
   id := "D-028"
-  kind := .undetermined
-  sites := [⟨"ログイン時の状態更新", "docs/spec/authentication.md#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩]
-  evidence := .unformalized ``claim_D028 "[backlog 44f8](../backlog/44f8-authentication-usecases.md) の完了条件"
-  backlog := ["44f89eb1-e59a-4573-8129-7b0c1d4699bb"]
+  kind := .observational
+  sites := [⟨"ログイン時の状態更新", "docs/spec/authentication.md#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩,
+    ⟨"REST の認証", "docs/spec/http-contract.md#rest-apiapiv1", ""⟩]
+  premise := "`obs_D028`（予定）: 貼り合わせで、会員のログイン状態（`loginDateTime`・`loginFlg`）を対応させない"
+  evidence := .pending "Lean に成分がまだ無い。認証の `SourceModel` と R 課題が未着手" (some "ABS-128")
+  rTasks := ["ABS-043", "ABS-045"]
+  backlog := ["44f89eb1-e59a-4573-8129-7b0c1d4699bb", "a89ec8f0-4d15-46a6-86fa-a640e4df0b44"]
 
 /-- コードが区切り行と同じ `NOP` の空港があると、`LinkedHashMap` の同じキーへの `put` で、区切り行の表示がその空港の名前に置き換わり、空港の行は現れない -/
 @[gap_entry]

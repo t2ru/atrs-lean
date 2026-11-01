@@ -12,8 +12,9 @@ import java.util.List;
 /**
  * 原典のシードの SQL（atrs-initdb/src/sqls/integration-test-postgres）を、新しいデータベースに投入する。
  * 投入日に依存する値は、投入日 2026-11-01 で展開する（ADR 9ee4。tools/conformance/master_sql.py と同じ置き換え）:
- * 00240 の {@code current_timestamp} を {@code TIMESTAMP '2026-11-01 00:00:00'}、00250 の {@code current_date} を
- * {@code DATE '2026-11-01'} にする。原典のファイルは書き換えない（読んだ文字列を置き換える）。
+ * 00230 の {@code localtimestamp}（会員の最終ログイン日時）と 00240 の {@code current_timestamp} を
+ * {@code TIMESTAMP '2026-11-01 00:00:00'}、00250 の {@code current_date} を {@code DATE '2026-11-01'} にする。
+ * 原典のファイルは書き換えない（読んだ文字列を置き換える）。
  */
 final class SeedDb {
     private SeedDb() {}
@@ -36,6 +37,7 @@ final class SeedDb {
             c.setAutoCommit(true);
             for (String f : files) {
                 String sql = Files.readString(dir.resolve(f), StandardCharsets.UTF_8);
+                if (f.startsWith("00230")) sql = replaceOnce(sql, f, "localtimestamp", "TIMESTAMP '" + LOAD_DATE + " 00:00:00'");
                 if (f.startsWith("00240")) sql = replaceOnce(sql, f, "current_timestamp", "TIMESTAMP '" + LOAD_DATE + " 00:00:00'");
                 if (f.startsWith("00250")) sql = replaceOnce(sql, f, "current_date", "DATE '" + LOAD_DATE + "'");
                 try (Statement s = c.createStatement()) {

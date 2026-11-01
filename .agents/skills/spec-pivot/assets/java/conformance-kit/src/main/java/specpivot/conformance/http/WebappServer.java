@@ -23,6 +23,13 @@ import java.util.Map;
  * </ul>
  */
 public final class WebappServer implements AutoCloseable {
+    /** Tomcat のログ（java.util.logging）は警告より重いものだけにする（参照を持って、設定が回収されないようにする）。 */
+    private static final java.util.logging.Logger TOMCAT_LOG = java.util.logging.Logger.getLogger("org.apache");
+
+    static {
+        TOMCAT_LOG.setLevel(java.util.logging.Level.SEVERE);
+    }
+
     private final Tomcat tomcat;
     private final String contextPath;
 
