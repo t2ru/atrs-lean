@@ -50,7 +50,7 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.M
   cases sq with
   | routeOf dep arr =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
-    obtain ⟨ans, he, ha⟩ := hrq ⟨dep⟩ ⟨arr⟩ hq.1 hq.2
+    obtain ⟨ans, he, ha⟩ := hrq ⟨dep⟩ ⟨arr⟩ (AirportCd.hasText_of_wellFormed hq.1) (AirportCd.hasText_of_wellFormed hq.2)
     exact ⟨_, by simp only [he, ok_bind]; rfl, ha⟩
   | flightMasterOf name =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq

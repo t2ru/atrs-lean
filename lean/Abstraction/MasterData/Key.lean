@@ -23,4 +23,17 @@ theorem makeCacheKey_inj {dep arr dep' arr' : String} (h : '-' ∉ dep.toList) (
   obtain ⟨h1, h2⟩ := append_sep_inj h h' this
   exact ⟨String.toList_inj.mp h1, String.toList_inj.mp h2⟩
 
+/-- 片方の区間の出発・到着の空港コードが `-` を含まなければ、キーが等しいもう片方も `-` を含まず、空港コードが等しい
+（キー `dep ++ "-" ++ arr` の `-` はちょうど 1 つ）。照会の空港コードの形を課さないときに使う。 -/
+theorem makeCacheKey_inj' {dep arr dep' arr' : String} (h : '-' ∉ dep.toList) (ha : '-' ∉ arr.toList)
+    (e : makeCacheKey dep arr = makeCacheKey dep' arr') : dep = dep' ∧ arr = arr' := by
+  have e' := congrArg (fun s => (String.toList s).count '-') e
+  simp only [makeCacheKey, String.toList_append, List.count_append] at e'
+  have c1 : dep.toList.count '-' = 0 := List.count_eq_zero.mpr h
+  have c2 : arr.toList.count '-' = 0 := List.count_eq_zero.mpr ha
+  have hm : ("-" : String).toList.count '-' = 1 := by decide
+  rw [c1, c2, hm] at e'
+  have c3 : dep'.toList.count '-' = 0 := by omega
+  exact makeCacheKey_inj h (List.count_eq_zero.mp c3) e
+
 end Abstraction.MasterData.Key
