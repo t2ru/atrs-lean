@@ -1,6 +1,7 @@
 import Abstraction.FlightSearch.Run
 import Abstraction.FlightSearch.Init
 import Abstraction.FlightSearch.Witness
+import Abstraction.FlightSearch.Preserves
 
 /-!
 # Abstraction.FlightSearch
@@ -11,7 +12,8 @@ import Abstraction.FlightSearch.Witness
 
 namespace Abstraction.FlightSearch
 open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.FlightSearch.Order
-  Abstraction.FlightSearch.Init Abstraction.FlightSearch.Witness Abstraction.MasterData.QueryRun Machine
+  Abstraction.FlightSearch.Init Abstraction.FlightSearch.Witness Abstraction.FlightSearch.Preserves
+  Abstraction.MasterData.QueryRun Machine
 open SourceModel.FlightSearchQuery
 
 /-- R 課題 ABS-011: 空席照会。[Spec] の `searchMachine`（D-001・D-002 の前提で PRE を強める）は、具体機械
@@ -67,11 +69,63 @@ theorem need_D032 :
     (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
     ⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [hoc]; rfl⟩
-  simp only [Prod.mk.injEq] at hc
+  simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
   obtain ⟨-, rfl⟩ := hc
   rcases ho with ho | ho
   · rw [hα] at ho
     exact answer_ne_dot (Option.some.inj ho).symm
   · exact ho
+
+/-- 具体側の 1 歩は状態を変えない。 -/
+theorem step_state {t : SourceModel.Repository.Schema.FlightDb} {ic : SourceModel.FlightSearch.SearchInput}
+    {t' : SourceModel.Repository.Schema.FlightDb} {oc : SearchOutput} (h : searchConcrete.step t ic (.ok (t', oc))) :
+    t' = t := by
+  obtain ⟨mo, sr, -, -, he⟩ := h
+  revert he
+  cases catchBusiness (SourceModel.FlightSearch.runSearchFlight t ic mo sr) with
+  | error e => intro he; cases he
+  | ok o =>
+    intro he
+    change Except.ok (t', oc) = Except.ok (t, o) at he
+    cases he; rfl
+
+/-- ABS-011 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。基底が `ofChoice` なので `ch = some chFS`、
+「出力のみ」の具体側の差異 D-032 の層を `outsC` に置く。 -/
+@[obligation "ABS-011"]
+theorem searchPreserves :
+    Machine.Preserves ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
+      ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS Spec.Seed.Flight.world envFS (some chFS) []
+      [⟨searchConcrete.restrict dev_D027S, dev_D032⟩] where
+  sound := (Spec.FlightSearch.searchMachine_sound.restrictState _).restrictState _
+  initIs := Spec.FlightSearch.searchMachine_initIs
+  initSurj := searchRefines_initSurj
+  total _ _ _ h := ⟨⟨⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2⟩
+  envWitness := ⟨icFS ',', iaFS, ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, aiS_icFS_comma,
+    envFS_iaFS⟩
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaFSbad) wFS_inv
+    fun h => Spec.EnvPre.badMasterData_not_env ⟨h.1.1.1, h.1.1.2.1⟩
+  pinned c hc s t ic ia t' oc hi hJ ha hp hd hs := by
+    cases hc
+    obtain ⟨s', oa, ⟨x, hx⟩, hJ', ho⟩ := searchRefines.correct s t ic ia t' oc hi hJ ha hp hd hs
+    refine ⟨(), ?_⟩
+    change glueFS.J (Spec.FlightSearch.searchStep s ia ((), ())).1 t' ∧
+      glueFS.αo oc (Spec.FlightSearch.searchStep s ia ((), ())).2
+    obtain ⟨⟨⟩, ⟨⟩⟩ := x
+    rw [hx]
+    exact ⟨hJ', ho⟩
+  noFault c hc ic ia hd ha := by
+    cases hc
+    exact ⟨ic, hd, ha, rfl⟩
+  freeFrame c hc := by
+    cases hc
+    intro _ _ _ x y
+    cases x; cases y; rfl
+  stateSafeC l hl := by
+    simp only [List.mem_singleton] at hl
+    subst hl
+    intro s t ic ia t' oc _ hJ _ _ _ _ hs
+    have := step_state hs
+    subst this
+    exact ⟨s, _, ⟨((), ()), rfl⟩, hJ⟩
 
 end Abstraction.FlightSearch

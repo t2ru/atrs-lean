@@ -181,6 +181,13 @@ theorem aoS_kernel : KernelIs aoS (undefOrEq aoS) := by
     | (rw [← h'] at h; cases h; rfl)
     | (rw [← h'] at h; cases h; done)
 
+/-- 具体側の入力の環境（[Spec] の選択の環境は `Unit` なので、どの入力も標準の環境 `()`）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def ceFS (_ : SourceModel.FlightSearch.SearchInput) : Unit := ()
+
+@[obligation "ABS-048"]
+theorem ceFS_kernel : KernelIs ceFS (fun _ _ => True) := fun _ _ => by simp [ceFS]
+
 /-- 空席照会の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は課さない）。 -/
 abbrev glueFS := Machine.Glue.ofStd worldOfDb (fun _ => True) aiS aoS
 
