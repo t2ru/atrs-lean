@@ -9,7 +9,7 @@ okf_version: "0.2"
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の ATRS での置き場所・命名・状態・テンプレートと作成基準。形式と道具はスキル work-records に従う。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。コミットの単位とメッセージの規則。
+* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。PR は draft で作り、人間のレビューを求める段で ready にする。コミットの単位とメッセージの規則。
 
 # Decisions
 
@@ -73,6 +73,7 @@ okf_version: "0.2"
 * [Java の原典実行の構成（ドメイン層と HTTP レベル）と、REST の日付・ログイン時の状態更新の確認](decision/81da-java-origin-run-domain-and-http.md) - backlog f18c の Java の原典実行を、原典を複写してビルドしたものに対して動かす。ドメイン層は DI コンテナを起動せずに原典の MyBatis とサービスを組み立て、運賃計算・空席照会のベクタを照合し、シードの範囲のベクタを採取する。HTTP レベルは、原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・report.dir だけを差し替える。REST の LocalDate は yyyy-MM-dd であり、画面ログインは MEMBER_LOGIN を更新せず REST の Basic 認証は更新することを確かめ、D-028 を観測型の既知差異にした。f18c の依存から a8ef を外す。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える（ATRS）](decision/18ca-rename-oracle-to-origin-run.md) - Java の原典を実行して期待値を採取・照合する手段を「原典実行」（識別子 origin-run）と呼び替え、ATRS の文書・既存の ADR と作業項目の本文・ベクタの source の値・道具（tools/origin-run、tools/ci/java_origin_run.sh、mise の origin-run:*）をそろえる。改名しない規約の backlog のファイル名（f18c・773f）は残す。
 * [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
+* [PR は draft で作り、人間のレビューを求める段で ready にする](decision/8bb7-pr-draft-until-review-ready.md) - 自分で作ったブランチの PR は draft で作成し、作業が終わって確認と CI が通り、作成者の側で残る作業が無くなって人間にレビューを求める段になったら、作成者が draft から ready for review に変える。レビューで大きな作業が差し戻されたら draft に戻してよい。マージはプロジェクトオーナーが行う。
 
 # Specification
 

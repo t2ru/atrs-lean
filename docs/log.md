@@ -2,6 +2,8 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 8bb7](decision/8bb7-pr-draft-until-review-ready.md) で、PR を draft で作り、人間にレビューを求める段（作業の完了・確認と CI の通過・作成者の側で残る作業が無いこと）で作成者が ready for review に変える規則を定めた。[rules/version-control.md](rules/version-control.md)・[rules/README.md](rules/README.md)・[index.md](index.md)・`AGENTS.md` を改めた。
+
 * **Creation**: [ADR 625d](decision/625d-adopt-okf-bundle-and-work-records-skills.md) と [backlog 2ba8](backlog/2ba8-split-okf-and-records-skills.md)（完了）で、スキル spec-pivot から移植に関係の無い文書の道具と規則を、汎用のスキル [okf-bundle](../.agents/skills/okf-bundle/SKILL.md)（OKF のバンドルとリンクの検査・文書の移動）と [work-records](../.agents/skills/work-records/SKILL.md)（ADR・backlog の形式と ID）に分けた。スキルの側は [スキルの ADR 22b4](../.agents/skills/spec-pivot/references/docs/decision/22b4-split-okf-and-records-skills.md)。spec-pivot の版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
   * 設定を `trace/project.json` の `okf`・`ids` から、ルートの `.okf.json`・`.work-records.json` に移した。`trace/features.json` の backlog の欄は `id_fields` で宣言した。ADR・backlog の形の検査（状態・選択肢・採択の行・完了条件）は `ids.py check` に移った。
   * 旧番号からの書き換えと登録簿の旧番号の検査を、ATRS の `tools/docs/legacy_ids.py` に移した（mise の `docs:ids`）。
