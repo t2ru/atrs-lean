@@ -1,7 +1,9 @@
+import ConformanceKit
+
 /-!
 # Tests.Report
 
-`lake test`（`Tests.Main`）と総当たりの検査（`Tests.Exhaustive`）が共有する、結果の表示と失敗の数え上げ。
+`lake test`（`Tests.Main`）と長い検査（`Tests.Long`）が共有する、結果の表示と失敗の数え上げ。
 節ごとの経過時間を表示し、検査の層（常時の段・変更時の段）の分類の根拠にする（`docs/rules/checks.md`）。
 -/
 
@@ -23,6 +25,13 @@ def timed (label : String) (act : IO Unit) : IO Unit := do
   act
   let t1 ← IO.monoMsNow
   IO.println s!"  time {label}: {t1 - t0} ms"
+
+/-- 適合テストベクタのディレクトリの照合の結果を表示する（ファイルが無いことも失敗とする）。 -/
+def reportConformance (label : String) (results : Array ConformanceKit.Runner.FileResult) : IO Unit := do
+  check s!"conformance: {label}: files found" (!results.isEmpty)
+  for r in results do
+    for f in r.failures do IO.eprintln s!"    {label}/{r.path.fileName.getD ""}: {f}"
+    check s!"conformance: {label}/{r.path.fileName.getD ""} ({r.passed} cases)" (r.failures.isEmpty && r.passed > 0)
 
 /-- 結果の要約を表示し、終了コードを返す。 -/
 def finish : IO UInt32 := do

@@ -60,6 +60,7 @@ require langSemantics from "../.agents/skills/spec-pivot/assets/lean"
   root := `Tests.Main
   supportInterpreter := true
 
-/-- 総当たりの検査（暦日の全日・double）のドライバ。関係する変更があったときと全数の検査でだけ実行する（`docs/rules/checks.md`）。 -/
-@[default_target] lean_exe exhaustive where
-  root := `Tests.Exhaustive
+/-- 長い検査（暦日の全日・double の総当たり・シードの DB を使う照合）のドライバ。関係する変更があったときと全数の検査でだけ実行する（`docs/rules/checks.md`）。 -/
+@[default_target] lean_exe «long-tests» where
+  root := `Tests.LongMain
+  supportInterpreter := true

@@ -3,13 +3,13 @@ import Spec.Prim.Date
 /-!
 # Tests.DateExhaustive
 
-暦日の全日の検査（`lake exe exhaustive`。`Spec` の土台、backlog 591d）。
+暦日の全日の検査（`Tests.Long` が実行する。`lake exe long-tests`。`Spec` の土台、backlog 591d）。
 
 - `dateExhaustive`: 0001-01-01〜9999-12-31 の全日について、`ofOrdinal?` が値を返し（取りこぼしが無い）、
   翌日が年月日の繰り上がりの規則どおりであることを確かめる（`Spec.Prim.Date` の冒頭を参照）。
 
 365 万日を回すため、`lake test` から分け、関係する変更があったときと全数の検査でだけ実行する（`docs/rules/checks.md`）。
-`Spec.Prim.Date` だけを import し、変更の範囲（`tools/ci/check-scopes.toml` の `lean_roots`）を狭く保つ。
+`Spec.Prim.Date` だけを import する。
 -/
 
 open Spec.Prim

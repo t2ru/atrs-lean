@@ -18,7 +18,7 @@ generated:
 | 層 | タスク | 中身 |
 | --- | --- | --- |
 | 常時の段 | `ci:fast` | どの変更でも実行する短い段。文書（`docs:*`）、上流の版、共有入力とシード、静的検査（`static:*`。層の設定の整合 `static:check-scopes` を含む）、JVM の表、Lean のビルド・`lake test`・公理・義務・trace-dump、追跡の検査（`trace:build`・`trace:manifest`・`trace:check`・`trace:review`）、ルートの `lake setup-file` |
-| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:exhaustive`（暦日の全日・double の総当たり）、`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run` |
+| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:test-long`（`lake test` から分けた長い節。シードの DB を使う SourceModel の照合・空席照会の SQL の結果・暦日の全日・double の総当たり）、`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run` |
 | 全数 | `ci` | 常時の段と、すべての変更時の段 |
 
 選択実行 `mise run check` は、常時の段と、変更に関係する変更時の段を実行する。何を実行するかは `mise run check:list` で事前に見られる。選ぶのは `tools/ci/select_checks.py` である。
@@ -48,7 +48,8 @@ generated:
 - 範囲は、その段の結果を変えうるファイルをすべて覆うように、保守的に書く（迷えば広く）。
   - Lean の段は、なるべく `lean_roots` で書く（入口のモジュールから `import` をたどった閉包。依存が変わっても追従する）。宣言の全体を見る段（`layout-check` など）は glob で書く。
   - 段が読むデータ・生成器・スクリプトを `paths` に書く。
-  - 段を重くしている検査は、入口のモジュールを分け、その import を必要なものに絞る（`Tests.Exhaustive` が `Spec.Prim.Date` と `LangSemantics.Java` だけに依存するように）。
+  - 段を重くしている検査は、入口のモジュールを分け、その import を必要なものに絞る（`Tests.Long` は使う検査のモジュールだけを import し、`Tests` 全体を import しない）。
+  - Lean の実行ファイルを足すときは、`main` だけを置く入口と、`main` を持たない本体に分ける。layout-check は本体を既存の組で読む（組を増やすと、環境の分だけメモリが増える。CI の runner は 8 GB）。
 - すべての glob とモジュールは、実在のファイルに当たらなければならない（`static:check-scopes`）。改名したら範囲も直す。
 - 範囲の漏れは PR では検出されず、全数で検出される。この限界は [assurance.md](../spec/assurance.md#追跡の道具) にある。
 

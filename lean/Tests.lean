@@ -12,7 +12,7 @@ import Tests.TicketChecks
 # Tests
 
 テスト。`lake test` は `Tests.Main`（実行ファイル `tests`）を実行する。
-総当たりの検査（`Tests.DateExhaustive`・`Tests.JavaDouble`）は実行ファイル `exhaustive`（`Tests.Exhaustive`）が実行し、ここでは import しない
-（閉じた項がモジュールの初期化で評価され、`lake test` の時間に戻らないようにする。`docs/rules/checks.md`）。
+長い検査（`Tests.Long`。暦日の全日・double の総当たり・シードの DB を使う照合）は実行ファイル `long-tests`（`Tests.LongMain`）が実行する。
+`Tests.DateExhaustive`・`Tests.JavaDouble`・`Tests.Long` は、ここでは import しない（`docs/rules/checks.md`）。
 `native_decide`・`bv_decide` はここでだけ使ってよい（spec-pivot の `lang/lean/rules.md`）。
 -/

@@ -3,8 +3,8 @@
 ## 2026-11-01
 
 * **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
-  * CI で 20 秒以上かかる段（`lean:exhaustive`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。
-  * 暦日の全日の検査と double の総当たりを `lake test` から実行ファイル `exhaustive`（`lean/Tests/Exhaustive.lean`・`DateExhaustive.lean`）に分けた。`lake test` の各節は経過時間を表示する（`Tests.Report`）。`trace/checks.json` に `lean-exhaustive` を足した。
+  * CI で 20 秒以上かかる段（`lean:test-long`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。
+  * `lake test` から 20 秒以上かかる節（シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果・暦日の全日・double の総当たり）を実行ファイル `long-tests`（`lean/Tests/Long.lean`・`LongMain.lean`）に分けた。layout-check の組は増やさない（組を足すと CI の runner のメモリが尽きた）。`lake test` の各節は経過時間を表示する（`Tests.Report`）。`trace/checks.json` で `lean:test` を実行する検査は `lean:test-long` も実行する。
   * `.github/workflows/lean.yml` の起動を `pull_request`・main への `push`・週次・手動にし、PR の二重起動をやめた。
   * [rules/version-control.md](rules/version-control.md)・[rules/backlog.md](rules/backlog.md)・[rules/README.md](rules/README.md)・[rules/atrs-porting.md](rules/atrs-porting.md)、[spec/assurance.md](spec/assurance.md)・[spec/domain-model.md](spec/domain-model.md)、`AGENTS.md`、[index.md](index.md)・[backlog/README.md](backlog/README.md) を改めた。
 
