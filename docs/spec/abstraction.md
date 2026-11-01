@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T23:00:00+09:00
+  at: 2026-11-01T19:00:00+09:00
 ---
 
 # 抽象化証明課題（Abstraction）

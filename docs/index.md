@@ -70,6 +70,7 @@ okf_version: "0.2"
 * [空席照会の第 2 段: 状態を読むだけの機械、シードのフライトの生成と展開しない証明、業務例外を出力の値にすること、SQL の差分実行](decision/cdb6-flight-search-stage2-machines-seed-sql.md) - backlog 0be7 の第 2 段の設計を決める。空席照会の抽象機械は選択を持たない Machine.ofChoice で状態を変えない 1 歩とし、初期状態はシード 00250 の生成の形から作り、主キーの一意性と参照整合性を展開せずに証明する。具体機械は FLIGHT 表を状態とし、業務例外を出力の値として受ける。findByVacantSeatSearchCriteria は PostgreSQL で全件を投入して実行し、条件の押し下げを定理で示したうえで照合する。D-027 の範囲を状態の表 FLIGHT に広げる。
 * [スキルの名前を port-lang から spec-pivot に改め、ATRS のパスと参照を張り直す](decision/fa26-rename-skill-to-spec-pivot.md) - スキルの ADR cfad で方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改めた。ATRS では、スキルのパス（Lake の require・lake-manifest・CI・trace/project.json・trace/checks.json・tools/ci）と文書の参照を新しい名前に張り直す。ADR f4e1 のほかの決定は変えない。
 * [検査・生成を mise のタスクで実行し、Python を mise が入れる uv で実行する](decision/44a0-mise-tasks-and-uv-for-tools.md) - 一括検査 tools/ci/lean.sh を廃止し、各段をルートの mise.toml のタスクに分ける。一括検査は mise run ci とし、CI・trace/checks.json・規約もタスクを呼ぶ。mise が管理する道具は uv だけとし、Python の道具は uv run python -I で実行する（版は .python-version・pyproject.toml）。Lean は elan、Java・Rust・PostgreSQL は従来どおり。
+* [Java オラクルの構成（ドメイン層と HTTP レベル）と、REST の日付・ログイン時の状態更新の確認](decision/81da-java-oracle-harness-domain-and-http.md) - backlog f18c の Java オラクルを、原典を複写してビルドしたものに対して動かす。ドメイン層は DI コンテナを起動せずに原典の MyBatis とサービスを組み立て、運賃計算・空席照会のベクタを照合し、シードの範囲のベクタを採取する。HTTP レベルは、原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・report.dir だけを差し替える。REST の LocalDate は yyyy-MM-dd であり、画面ログインは MEMBER_LOGIN を更新せず REST の Basic 認証は更新することを確かめ、D-028 を観測型の既知差異にした。f18c の依存から a8ef を外す。
 
 # Specification
 

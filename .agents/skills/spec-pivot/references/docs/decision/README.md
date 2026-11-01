@@ -32,3 +32,4 @@ generated:
 | 1f75 | [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](1f75-java-expression-syntax-and-spring-assert.md) | accepted | 2026-11-01 |
 | 8a3c | [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](8a3c-mirror-layout-check-and-review-view.md) | accepted | 2026-11-01 |
 | 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |
+| 7d3a | [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルのオラクルの方法を言語パックに書く](7d3a-java-conformance-kit-and-http-oracle-method.md) | accepted | 2026-11-01 |

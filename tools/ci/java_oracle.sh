@@ -27,12 +27,16 @@ mvn=(mvn -B -q ${MAVEN_SETTINGS:+-s "$MAVEN_SETTINGS"})
 tools/oracle/build-upstream.sh
 "${mvn[@]}" -f .agents/skills/spec-pivot/assets/java/conformance-kit/pom.xml install
 "${mvn[@]}" -f tools/oracle/pom.xml package
-cp="tools/oracle/target/atrs-oracle.jar:$(cat tools/oracle/target/classpath.txt)"
+repo="$PWD"
+cp="$repo/tools/oracle/target/atrs-oracle.jar:$(cat tools/oracle/target/classpath.txt)"
+# 原典が内蔵する ActiveMQ Artemis は、作業ディレクトリの data/ に journal を書く。リポジトリを汚さないよう一時ディレクトリで動かす
+work="$(mktemp -d)"
+trap 'rm -rf "$work"' EXIT
 run() {
-  WITH_POSTGRES_TCP=1 .agents/skills/spec-pivot/scripts/ci/with_postgres.sh \
+  (cd "$work" && WITH_POSTGRES_TCP=1 "$repo/.agents/skills/spec-pivot/scripts/ci/with_postgres.sh" \
     java -Duser.timezone=Asia/Tokyo -Duser.language=ja -Duser.country=JP -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 \
-      -Dstderr.encoding=UTF-8 -Dlogback.configurationFile=tools/oracle/src/main/resources/oracle-logback.xml \
-      -cp "$cp" atrsoracle.Main "$PWD" "$@"
+      -Dstderr.encoding=UTF-8 -Dlogback.configurationFile="$repo/tools/oracle/src/main/resources/oracle-logback.xml" \
+      -cp "$cp" atrsoracle.Main "$repo" "$@")
 }
 case "$mode" in
   domain|http) run "$mode" "$@" ;;

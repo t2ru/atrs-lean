@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-11-01T19:00:00+09:00
 ---
 
 # 認証（A0/A1/A2）

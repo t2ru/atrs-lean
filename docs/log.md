@@ -2,6 +2,14 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 81da](decision/81da-java-oracle-harness-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java オラクル）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
+  * ドメイン層: 原典を複写してビルドし（`tools/oracle/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/oracle/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/oracle-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-oracle` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。
+  * HTTP レベル: 原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・`report.dir` だけを差し替える。採取結果は `tools/oracle/http/`。
+  * [spec/http-contract.md](spec/http-contract.md#rest-apiapiv1) の TODO を解消した（`LocalDate` は `"yyyy-MM-dd"`）。[spec/authentication.md](spec/authentication.md#ログインlogin) の TODO を解消し、D-028 を観測型の既知差異にした（画面ログインは状態を更新せず、REST の Basic 認証は更新する。[spec/abstraction.md](spec/abstraction.md#既知差異) は生成。W 課題 ABS-128 を足し、ABS-043・ABS-045 の差異に D-028 を足した）。[backlog 44f8](backlog/44f8-authentication-usecases.md) の範囲と完了条件を合わせた。
+  * [spec/assurance.md](spec/assurance.md) の移植元側の行と付録（オラクルの対象外と範囲）、[spec/conformance.md](spec/conformance.md) を改めた。
+  * 道具: mise の `oracle:domain`・`oracle:http`・`oracle:gen`・`ci:java-oracle`、`tools/ci/java_oracle.sh`、`trace/checks.json` の `java-oracle`。CI は `~/.m2` をキャッシュする。
+  * スキルの側は [スキルの ADR 7d3a](../.agents/skills/spec-pivot/references/docs/decision/7d3a-java-conformance-kit-and-http-oracle-method.md)（`assets/java/conformance-kit`、HTTP レベルのオラクルの方法、`with_postgres.sh` の `WITH_POSTGRES_TCP`）。スキルの版を 0.21 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
+
 * **Creation**: [ADR 44a0](decision/44a0-mise-tasks-and-uv-for-tools.md) で、一括検査 `tools/ci/lean.sh` を廃止し、各段をルートの `mise.toml` のタスクに分けた（一括検査は `mise run ci`）。mise が管理する道具は uv だけとし、Python の道具を `uv run python -I` で実行するようにした（`.python-version`・`pyproject.toml`・`uv.lock`）。
   * `.github/workflows/lean.yml` は mise を入れて `mise run ci` を実行する。`trace/checks.json` の各段はタスクを呼ぶ。終了コード 2（飛ばした）の読み替えは `tools/ci/skippable.sh` に移した。
   * スキルの側は [スキルの ADR 8cb7](../.agents/skills/spec-pivot/references/docs/decision/8cb7-run-python-tools-with-uv.md)（uv だけ。mise は求めない）。スキルの版を 0.20 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
