@@ -2,6 +2,14 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 3 段の設計を決め、0be7 を完了した（`done`）。
+  * R 課題 ABS-011（`Abstraction.FlightSearch.searchRefines`）と束 `searchPreserves`、L 課題 ABS-010、W 課題 ABS-114（`need_D014`）・ABS-132（`need_D032`）を証明した。
+  * トップレベルの主定理 `Abstraction.refines`・`preserves`・`abstracts` に空席照会を加えた。
+  * [spec/flight-search.md](spec/flight-search.md#事前条件) の PRE を改めた。`World.RefMaster` を外し、照会の搭乗クラスがマスタにあることと、便マスタの便名が空白でないことを課す。
+  * 差異 D-033（PRE の外）を登録した。D-014・D-032 を具体側の入力の述語にし、偽を証明済みにした（[spec/abstraction.md](spec/abstraction.md#既知差異) は生成）。
+  * `trace/features.json` の FlightSearch を 0be7 の範囲に絞った。
+  * スキルの版を 0.17 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
+
 * **Creation**: [ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 2 段の設計を決め、完了した。
   * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Repository.FlightSeed` を置いた。
   * [Spec] に `Spec.Seed.FlightProps`（主キーの一意性・参照整合性）、抽象機械 `Spec.FlightSearch.searchMachine` と SPEC 課題を置いた。

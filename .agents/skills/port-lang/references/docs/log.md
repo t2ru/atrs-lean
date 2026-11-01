@@ -1,6 +1,11 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Update**: 適用先の R 課題（SQL の結合・整列と、`LinkedHashMap` への畳み込みを含むもの）の証明に使う汎用の補題を足した。スキルの版を 0.17 にした。
+  * `LangSemantics.Sql`: `Truth.holds_or`・`inList_text_holds`・`SqlValue.eq_date_holds`・`Collation.codepoint_ne_gt`・`Collation.codepoint_eq`（`Core`）、結合の補題 `filter_cross_opt`・`filterMap_cross`・`filterMap_unique`（`QueryLemmas`）。
+  * `LangSemantics.Core`: `mapM_perm`・`mapM_pairwise`（`MapM`）、`rel_of_pairwise_symm`（`List`）。
+  * `LangSemantics.Java`: `JHashMap` の `get`・`put` と項目ごとの写し `pairAlpha` の可換性 `get_alpha`・`put_alpha`（`HashMap`。キーの写しが単射のとき）、`for` の模倣 `forIn_map_sim`（`ResultLemmas`）、`J64.val_ofInt_of_inRange`（`Int`）。
+  * 来歴: 適用先 ATRS の空席照会の第 3 段（R 課題 ABS-011。ATRS の ADR 0b0c）。
 
 * **Update**: `LangSemantics.Sql.QueryLemmas` に条件の押し下げの補題 `cross_filter_left`・`select_filter_of_imp` を、`LangSemantics.Java.JLocalDate.RoundTrip` に妥当な暦日での `ofEpochDay (toEpochDay x) = x`（400 年の周期の全日をカーネルで確かめる）を、`Machine.Kernel` に `mapM_inj` を足した。スキルの版を 0.16 にした。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。来歴: 適用先 ATRS の空席照会の第 2 段（PostgreSQL での差分実行で、FLIGHT の全件の直積を避ける）。
 

@@ -133,4 +133,16 @@ theorem searchPreserves :
     subst this
     exact ⟨s, _, ⟨((), ()), rfl⟩, hJ⟩
 
+/-- ABS-011 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、状態を変えず、出力の像は
+[Spec] の `answer`。 -/
+theorem searchRefines_commutes {t : SourceModel.Repository.Schema.FlightDb} {w : Spec.Port.World}
+    (hw : worldOfDb t = some w) (hinv : w.Inv) {ic : SourceModel.FlightSearch.SearchInput}
+    {ia : Spec.FlightSearch.SearchInput} (hα : aiS ic = some ia) (hv : envFS ia) (h14 : dev_D014S ic)
+    (h32 : dev_D032 ic) :
+    ∀ r, searchConcrete.step t ic r → ∃ oc, r = .ok (t, oc) ∧ aoS oc = some (Spec.FlightSearch.answer w ia) := by
+  intro r ⟨mo, sr, hmo, hsr, hr⟩
+  obtain ⟨⟨hc, hm⟩, hb, hd, ha, hn, h1, h2⟩ := hv
+  obtain ⟨oc, hoc, hα'⟩ := Run.run_spec hw hinv hα ⟨hc, hm, hb, hd, ha, hn⟩ h1 h2 h14 h32 hmo hsr
+  exact ⟨oc, by rw [hr, hoc]; rfl, hα'⟩
+
 end Abstraction.FlightSearch
