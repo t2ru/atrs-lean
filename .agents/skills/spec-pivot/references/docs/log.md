@@ -1,6 +1,13 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Update**: [ADR 22b4](decision/22b4-split-okf-and-records-skills.md) で、移植に関係の無い文書の道具と規則を、別のスキル okf-bundle・work-records に分けた。スキルの版を 0.22 にした。
+  * `scripts/docs/okf_check.py`・`scripts/docs/docmv.py`・`scripts/ci/fixtures/okf/` をスキル okf-bundle に、`scripts/docs/ids.py` をスキル work-records に移した。`scripts/docs/` は無くなった。
+  * 道具の設定を、`trace/project.json` の `okf`・`ids` から、適用先のルートの `.okf.json`・`.work-records.json` に移した。[spec/traceability.md](spec/traceability.md#プロジェクトの設定) の表から `ids`・`okf` を除いた。
+  * このバンドルの規則（プロファイル）を `scripts/docs/profiles/spec-pivot.json` から `references/okf-profile.json` に移した。記録の形の検査（プロファイルの `kind`）は work-records の `ids.py check` に移った。
+  * [rules/maintenance.md](rules/maintenance.md) を、このバンドルに固有の事項（構成・置き場所・持ち出せること・分担）に絞った。形式・記録の書き方は両スキルの規則に従う。`SKILL.md`・`scripts/README.md`・[guide/workflow.md](guide/workflow.md#記録と中断への備え)・`scripts/trace/src/project.rs` のコメントを合わせた。
+  * 既存の記録（ADR 330e・748c・87b9、作業項目 de90・a49c・97a7）は、来歴としてこのバンドルに残した。
+  * 来歴: 適用先 ATRS のオーナーの依頼（ATRS の ADR 625d・backlog 2ba8）。
 * **Update**: [ADR 288a](decision/288a-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた。ベクタの `source` は `<移植元>-origin-run`。言語パック・方法の文書・既存の ADR と作業項目の本文・この変更履歴をそろえた（版 0.21 に含める）。来歴: 適用先 ATRS の ADR 18ca。
 * **Creation**: [ADR 7d3a](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) で、Java の原典実行の道具 `assets/java/conformance-kit/`（Maven）を置いた。スキルの版を 0.21 にした。
   * `Json`・`Op`・`Runner`（照合・期待値の採取・`--check`）、`Reflect`（注入）、`http.HttpCapture`（要求の送信と応答の採取・正規化）、`http.WebappServer`（web.xml のままの webapp を組み込み Tomcat で起動）。

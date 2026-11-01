@@ -7,7 +7,7 @@ okf_version: "0.2"
 * [作業規約（rules）](rules/README.md) - 作業規約の索引と、規約・文書間の優先順位。
 * [ATRS での spec-pivot スキルの適用](rules/atrs-porting.md) - 言語間移植の方法（スキル spec-pivot）を ATRS に適用するときの固有事項。言語ペア、リポジトリ配置、機能名、型、依存フレームワーク、追従中の上流、ATRS で採った値。
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
-* [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
+* [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の ATRS での置き場所・命名・状態・テンプレートと作成基準。形式と道具はスキル work-records に従う。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
 * [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。コミットの単位とメッセージの規則。
 
@@ -72,6 +72,7 @@ okf_version: "0.2"
 * [検査・生成を mise のタスクで実行し、Python を mise が入れる uv で実行する](decision/44a0-mise-tasks-and-uv-for-tools.md) - 一括検査 tools/ci/lean.sh を廃止し、各段をルートの mise.toml のタスクに分ける。一括検査は mise run ci とし、CI・trace/checks.json・規約もタスクを呼ぶ。mise が管理する道具は uv だけとし、Python の道具は uv run python -I で実行する（版は .python-version・pyproject.toml）。Lean は elan、Java・Rust・PostgreSQL は従来どおり。
 * [Java の原典実行の構成（ドメイン層と HTTP レベル）と、REST の日付・ログイン時の状態更新の確認](decision/81da-java-origin-run-domain-and-http.md) - backlog f18c の Java の原典実行を、原典を複写してビルドしたものに対して動かす。ドメイン層は DI コンテナを起動せずに原典の MyBatis とサービスを組み立て、運賃計算・空席照会のベクタを照合し、シードの範囲のベクタを採取する。HTTP レベルは、原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・report.dir だけを差し替える。REST の LocalDate は yyyy-MM-dd であり、画面ログインは MEMBER_LOGIN を更新せず REST の Basic 認証は更新することを確かめ、D-028 を観測型の既知差異にした。f18c の依存から a8ef を外す。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える（ATRS）](decision/18ca-rename-oracle-to-origin-run.md) - Java の原典を実行して期待値を採取・照合する手段を「原典実行」（識別子 origin-run）と呼び替え、ATRS の文書・既存の ADR と作業項目の本文・ベクタの source の値・道具（tools/origin-run、tools/ci/java_origin_run.sh、mise の origin-run:*）をそろえる。改名しない規約の backlog のファイル名（f18c・773f）は残す。
+* [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
 
 # Specification
 
@@ -137,10 +138,13 @@ okf_version: "0.2"
 * [ギャップの証明の状態を Lean で表す](backlog/c27d-gap-evidence-states.md) - Trace.Gap に証明の状態 Evidence を足し、obligation-check（GK）で裏付けの宣言と照合する。ATRS の登録簿の 30 件に状態を与え、否定の定理と opaque の主張に @[gap] を付け、生成する表に証明の状態の列を足す。
 * [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](backlog/76a6-source-side-adequacy-gate.md) - 運賃計算・マスタの読み込みの R 課題を義務の束 Machine.Adequate に束ね、機能を並置した Spec.machine・SourceModel.machine についてトップレベルの Machine.Refines・Machine.Adequate を Abstraction.lean に示す。移植元側の追跡の検査を、移植元側の作業項目の完了で失敗扱いにする（側ごとの段階導入）。
 * [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](backlog/cb23-adequate-to-preserves-abstracts.md) - 義務の束 Machine.Adequate を、B メソッドのリファインメント Machine.Refines（B refines A）と、空虚化を防ぐ意味的な義務のすべての束 Machine.Preserves（A preserves B。Refines を含まない）、その組 Machine.Abstracts（A abstracts B）に分ける。スキルの定義・検査と、ATRS のトップレベルの主定理・R 課題ごとの束を書き換える。
+* [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](backlog/2ba8-split-okf-and-records-skills.md) - スキル spec-pivot から、移植に関係の無い OKF のバンドルの管理と ADR・backlog の管理を、汎用のスキル okf-bundle・work-records に分け、ATRS の設定と検査を移す。
 
 # Skill
 
 * [スキル spec-pivot の文書の索引](../.agents/skills/spec-pivot/references/docs/index.md) - スキル spec-pivot の OKF バンドル（方法の文書・言語パック・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
+* [スキル okf-bundle の文書の索引](../.agents/skills/okf-bundle/references/docs/index.md) - スキル okf-bundle の OKF バンドル（OKF のバンドルの書き方と検査の規則・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
+* [スキル work-records の文書の索引](../.agents/skills/work-records/references/docs/index.md) - スキル work-records の OKF バンドル（ADR・backlog の書き方と検査の規則・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
 
 # Log
 

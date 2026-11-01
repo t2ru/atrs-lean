@@ -6,10 +6,12 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T20:10:00+09:00
+  at: 2026-11-01T20:40:00+09:00
 ---
 
 # バックログ規約
+
+作業項目の形式（ID・ファイル名・参照・状態・節）と道具は、スキル [work-records](../../.agents/skills/work-records/SKILL.md) の [records.md](../../.agents/skills/work-records/references/docs/rules/records.md) に従う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。本書は、ATRS での当てはめと完了の定義を書く。
 
 ## ファイル
 
@@ -17,10 +19,10 @@ generated:
 docs/backlog/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- 命名規則は ADR と同じ（ID は UUID v4、ファイル名の先頭は ID の先頭 4 文字、英小文字スラッグ、改名・削除しない。[decision-records.md](decision-records.md#ファイル名)）。`uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py new backlog <slug>` が ID とファイル名を出す。
-- `id`・`depends_on` と、`trace/features.json`・登録簿の backlog の列には ID 全体を、本文の参照には先頭 4 文字を書く（[documentation.md](documentation.md#リンク)）。
+- 命名規則は ADR と同じ（ID は UUID v4、ファイル名の先頭は ID の先頭 4 文字、英小文字スラッグ、改名・削除しない。[decision-records.md](decision-records.md#ファイル名)）。`uv run python -I .agents/skills/work-records/scripts/ids.py new backlog <slug>` が ID とファイル名を出す。
+- `id`・`depends_on` と、`trace/features.json`（`.work-records.json` の `id_fields`）・登録簿の backlog の列には ID 全体を、本文の参照には先頭 4 文字を書く（[documentation.md](documentation.md#リンク)）。
 - 索引 [docs/backlog/README.md](../backlog/README.md) の表（ID の列は先頭 4 文字）と [docs/index.md](../index.md) を常に最新に保つ。
-- アプリに依存しない作業（スキル spec-pivot の道具・Lean のライブラリ・方法の文書）は、スキルの [`references/docs/backlog/`](../../.agents/skills/spec-pivot/references/docs/backlog/README.md) に置く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。採番は `ids.py new backlog <slug> --dir .agents/skills/spec-pivot/references/docs/backlog`。ATRS の項目は `depends_on` でスキルの項目を指してよいが、スキルの項目は ATRS の項目を指さない。
+- アプリに依存しない作業（スキル spec-pivot の道具・Lean のライブラリ・方法の文書）は、スキルの [`references/docs/backlog/`](../../.agents/skills/spec-pivot/references/docs/backlog/README.md) に置く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書の道具の作業は、スキル okf-bundle・work-records の `references/docs/backlog/` に置く。採番は `ids.py new backlog <slug> --dir <スキル>/references/docs/backlog`。ATRS の項目は `depends_on` でスキルの項目を指してよいが、スキルの項目は ATRS の項目を指さない。
 
 ## 項目の形式
 
@@ -68,7 +70,7 @@ generated:
 | `done` | 完了条件をすべて満たした |
 | `dropped` | 取りやめ。理由を本文に書く |
 
-- 節（`目的`・`範囲`・`対象外`・`完了条件`・`参照`。この順。間に別の節を足してよい）と `state` の値、`done` の項目の完了条件が埋まっていることは、`okf_check.py` が検査する（[documentation.md](documentation.md#検査)）。
+- 節（`目的`・`範囲`・`対象外`・`完了条件`・`参照`。この順。間に別の節を足してよい）は `okf_check.py` が、`state` の値と `done` の項目の完了条件が埋まっていることは `ids.py check` が検査する（[documentation.md](documentation.md#検査)）。
 - `depends_on` の項目が `done` になるまで着手してはならない（仕様の調査など、依存しない部分を先行する場合は範囲を分割した新項目を作る）。
 
 ## 完了の定義（Definition of Done）

@@ -1,0 +1,8 @@
+{
+  "kinds": {"adr": "docs/decision", "backlog": "docs/backlog"},
+  "isolated": [{"bundle": "skill/docs", "root": "skill"}],
+  "id_fields": [{"file": "features.json", "keys": ["backlog"], "kind": "backlog"}],
+  "outcome_markers": ["Chosen option", "採択"],
+  "check_roots": ["README.md", "docs/", "skill/"],
+  "uuid_roots": ["docs/"]
+}
