@@ -141,7 +141,8 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
     ("flightSearch.searchFlight", fun i => do
       let fd : FlightDb := { flight := ← (← getArr i "flights").mapM flightRow }
       let ic : SourceModel.FlightSearch.SearchInput :=
-        { db, config := cfg, today := ← jdate (← getStr i "today"), criteria := some (← srcCriteria (← getObjVal i "criteria")) }
+        { db, config := cfg, today := ← jdate (← getStr i "today"), criteria := some (← srcCriteria (← getObjVal i "criteria")),
+          groupingSeparator := ',' }
       match SourceModel.FlightSearch.runSearchFlight fd ic (SourceModel.MasterQuery.standardOrder db)
           SourceModel.Repository.Flight.standardSort with
       | .ok vs => return .arr (vs.map srcInfoJson).toArray
