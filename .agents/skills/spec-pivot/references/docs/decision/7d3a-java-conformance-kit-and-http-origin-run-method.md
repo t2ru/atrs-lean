@@ -1,8 +1,8 @@
 ---
 type: Architecture Decision Record
-title: "Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルのオラクルの方法を言語パックに書く"
-description: "Java のオラクルに共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルのオラクル（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。"
-tags: [adr, skill, java, oracle, conformance]
+title: "Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く"
+description: "Java の原典実行に共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。"
+tags: [adr, skill, java, origin-run, conformance]
 id: "7d3ae887-b827-4a9c-a13e-087e5bb09adc"
 status: stable
 decision_status: accepted
@@ -13,11 +13,11 @@ generated:
   at: 2026-11-01T19:00:00+09:00
 ---
 
-# Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルのオラクルの方法を言語パックに書く
+# Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く
 
 ## Context and Problem Statement
 
-言語パック [lang/java/harness.md](../lang/java/harness.md) は、移植元のオラクル（原典を実行して `source-model/` の期待値を採取・照合する）の作り方を文章で示すだけで、道具を持っていなかった。適用先 ATRS で最初の Java オラクルを作るにあたり（ATRS の backlog f18c）、次のことが分かった。
+言語パック [lang/java/harness.md](../lang/java/harness.md) は、移植元の原典実行（原典を実行して `source-model/` の期待値を採取・照合する）の作り方を文章で示すだけで、道具を持っていなかった。適用先 ATRS で最初の Java の原典実行を作るにあたり（ATRS の backlog f18c）、次のことが分かった。
 
 * ベクタの読み書き、ケースの実行と期待値の比較、期待値の採取（`source` と `upstream` を付けて書き出す）、DI コンテナを起動せずにフィールドへ注入する補助は、アプリに依存しない。
 * Lean の実行器 `ConformanceKit.Runner` は、操作の結果を `expected.ok` と比べる（業務上の失敗は `ok` の中の値として書く）。Java の実行器も同じ約束でないと、同じベクタを両方に通せない。
@@ -29,14 +29,14 @@ generated:
 ## Decision Drivers
 
 * アプリに依存しない道具はスキルに置く（ATRS の ADR f4e1、[ADR edc8](edc8-skill-scripts-and-generic-lean-libraries.md)）
-* オラクルは原典を改変しない。差し替えた構成は保証の限界に載せる（[spec/verification.md](../spec/verification.md#保証の限界)）
+* 原典実行は原典を改変しない。差し替えた構成は保証の限界に載せる（[spec/verification.md](../spec/verification.md#保証の限界)）
 * Lean の実行器と同じベクタ・同じ比較で動く
 
 ## Considered Options
 
 * (A) conformance-kit を `assets/java/conformance-kit/` に Maven モジュールとして置き、HTTP は組み込み Tomcat で原典の web.xml を読む
 * (B) ハーネスを適用先に置くだけにし、スキルは文書だけにする
-* (C) HTTP レベルのオラクルを MockMvc で作る
+* (C) HTTP レベルの原典実行を MockMvc で作る
 
 ## Decision Outcome
 
@@ -50,7 +50,7 @@ Chosen option: "(A)", because 汎用の部分を次の移植で使い回せ、�
 | `Reflect` | フィールドへの注入（private・package-private を問わない）、引数の無いメソッドの呼び出し（`@PostConstruct`）、インタフェースの差し替え（割り当てていないメソッドは例外） |
 | `http.HttpCapture` | 要求（`method`・`path`・`query`・`headers`・`json`・`form`）を実際の HTTP で送り、応答を `{status, headers, json?}` に採取する。ヘッダは決めたものだけを小文字で残し、`Location` のホスト・ポートと `;jsessionid`、`Set-Cookie` の値を正規化する。Cookie はオブジェクトごと。転送は追わない |
 | `http.WebappServer` | 原典の web.xml のままの webapp を、組み込み Tomcat で 127.0.0.1 の空いているポートに起動する。クラスは使う側のクラスパスから読む。Tomcat の既定の web.xml（JSP・DefaultServlet）は足さない。構成の差し替えは context-param を足して行い（例 Spring の `globalInitializerClasses`）、web.xml に同じ名前があれば起動を止める |
-| harness.md | 組み立ての既定に「DB を起動できるなら、Provider は原典のリポジトリで読む（fixture と DB の一致を別の検査で確かめる）」を加える。ORM の一次キャッシュをケースごとに消すこと、HTTP レベルのオラクルの方法（起動・差し替え・採取・正規化・保証の限界に載せるもの）を書く |
+| harness.md | 組み立ての既定に「DB を起動できるなら、Provider は原典のリポジトリで読む（fixture と DB の一致を別の検査で確かめる）」を加える。ORM の一次キャッシュをケースごとに消すこと、HTTP レベルの原典実行の方法（起動・差し替え・採取・正規化・保証の限界に載せるもの）を書く |
 | `with_postgres.sh` | 環境変数 `WITH_POSTGRES_TCP=1` で、一時クラスタを 127.0.0.1 の空いているポートでも待ち受けさせ、`PGHOST`・`PGPORT` を渡す |
 
 ### Consequences
@@ -79,5 +79,5 @@ Chosen option: "(A)", because 汎用の部分を次の移植で使い回せ、�
 
 ## More Information
 
-* 来歴: 適用先 ATRS の ADR 81da（Java オラクルの構成と、REST の日付・ログイン時の状態更新の確認）。
+* 来歴: 適用先 ATRS の ADR 81da（Java の原典実行の構成と、REST の日付・ログイン時の状態更新の確認）。
 * [lang/java/harness.md](../lang/java/harness.md)、[spec/conformance.md](../spec/conformance.md)、[lang/sql/dialects/postgresql/harness.md](../lang/sql/dialects/postgresql/harness.md)

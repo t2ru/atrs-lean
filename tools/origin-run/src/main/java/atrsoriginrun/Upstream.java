@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import specpivot.conformance.Json;
@@ -15,7 +15,7 @@ final class Upstream {
 
     /** 複写してビルドした原典（build-upstream.sh）。webapp の docBase に使う。 */
     static Path built(Path repo) {
-        return repo.resolve("tools/oracle/target/upstream");
+        return repo.resolve("tools/origin-run/target/upstream");
     }
 
     /** ベクタの {@code upstream}（{@code {"release", "commit"}}）。 */

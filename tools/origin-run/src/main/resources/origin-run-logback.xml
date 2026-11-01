@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- オラクルのログ設定（原典の atrs-env の logback.xml の代わりに、java_oracle.sh が -Dlogback.configurationFile で指定する）。
+<!-- 原典実行のログ設定（原典の atrs-env の logback.xml の代わりに、java_origin_run.sh が -Dlogback.configurationFile で指定する）。
      原典のログは振る舞いの観測に使わないので、原典と TERASOLUNA のログは出さず、ほかは WARN 以上だけを標準エラーに出す。 -->
 <configuration>
   <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">

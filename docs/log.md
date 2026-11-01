@@ -2,13 +2,14 @@
 
 ## 2026-11-01
 
-* **Creation**: [ADR 81da](decision/81da-java-oracle-harness-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java オラクル）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
-  * ドメイン層: 原典を複写してビルドし（`tools/oracle/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/oracle/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/oracle-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-oracle` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。
-  * HTTP レベル: 原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・`report.dir` だけを差し替える。採取結果は `tools/oracle/http/`。
+* **Update**: [ADR 18ca](decision/18ca-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた（DBMS の Oracle と紛れるため）。文書・既存の ADR と作業項目の本文・この変更履歴・ベクタの `source`（`java-origin-run`）・道具（`tools/origin-run/`・`tools/ci/java_origin_run.sh`・mise の `origin-run:*`・`trace/checks.json`）をそろえた。backlog f18c・773f のファイル名は残した。スキルの側は [スキルの ADR 288a](../.agents/skills/spec-pivot/references/docs/decision/288a-rename-oracle-to-origin-run.md)（スキルの版 0.21 に含める）。
+* **Creation**: [ADR 81da](decision/81da-java-origin-run-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java の原典実行）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
+  * ドメイン層: 原典を複写してビルドし（`tools/origin-run/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/origin-run/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/origin-run-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-origin-run` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。
+  * HTTP レベル: 原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・`report.dir` だけを差し替える。採取結果は `tools/origin-run/http/`。
   * [spec/http-contract.md](spec/http-contract.md#rest-apiapiv1) の TODO を解消した（`LocalDate` は `"yyyy-MM-dd"`）。[spec/authentication.md](spec/authentication.md#ログインlogin) の TODO を解消し、D-028 を観測型の既知差異にした（画面ログインは状態を更新せず、REST の Basic 認証は更新する。[spec/abstraction.md](spec/abstraction.md#既知差異) は生成。W 課題 ABS-128 を足し、ABS-043・ABS-045 の差異に D-028 を足した）。[backlog 44f8](backlog/44f8-authentication-usecases.md) の範囲と完了条件を合わせた。
-  * [spec/assurance.md](spec/assurance.md) の移植元側の行と付録（オラクルの対象外と範囲）、[spec/conformance.md](spec/conformance.md) を改めた。
-  * 道具: mise の `oracle:domain`・`oracle:http`・`oracle:gen`・`ci:java-oracle`、`tools/ci/java_oracle.sh`、`trace/checks.json` の `java-oracle`。CI は `~/.m2` をキャッシュする。
-  * スキルの側は [スキルの ADR 7d3a](../.agents/skills/spec-pivot/references/docs/decision/7d3a-java-conformance-kit-and-http-oracle-method.md)（`assets/java/conformance-kit`、HTTP レベルのオラクルの方法、`with_postgres.sh` の `WITH_POSTGRES_TCP`）。スキルの版を 0.21 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
+  * [spec/assurance.md](spec/assurance.md) の移植元側の行と付録（原典実行の対象外と範囲）、[spec/conformance.md](spec/conformance.md) を改めた。
+  * 道具: mise の `origin-run:domain`・`origin-run:http`・`origin-run:gen`・`ci:java-origin-run`、`tools/ci/java_origin_run.sh`、`trace/checks.json` の `java-origin-run`。CI は `~/.m2` をキャッシュする。
+  * スキルの側は [スキルの ADR 7d3a](../.agents/skills/spec-pivot/references/docs/decision/7d3a-java-conformance-kit-and-http-origin-run-method.md)（`assets/java/conformance-kit`、HTTP レベルの原典実行の方法、`with_postgres.sh` の `WITH_POSTGRES_TCP`）。スキルの版を 0.21 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
 
 * **Creation**: [ADR 44a0](decision/44a0-mise-tasks-and-uv-for-tools.md) で、一括検査 `tools/ci/lean.sh` を廃止し、各段をルートの `mise.toml` のタスクに分けた（一括検査は `mise run ci`）。mise が管理する道具は uv だけとし、Python の道具を `uv run python -I` で実行するようにした（`.python-version`・`pyproject.toml`・`uv.lock`）。
   * `.github/workflows/lean.yml` は mise を入れて `mise run ci` を実行する。`trace/checks.json` の各段はタスクを呼ぶ。終了コード 2（飛ばした）の読み替えは `tools/ci/skippable.sh` に移した。
@@ -41,7 +42,7 @@
   * 敵対的レビューの指摘に対応した（[ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md#more-information)）。PRE の空港コードを「空白でない」に改め、D-027 の箇所と範囲の説明を補い、差分実行が `bind` と `flight-map` の値も確かめるようにし、シードの解析を厳密にし、照合の条件を 15 にした。
 
 * **Creation**: [ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md)（空席照会）を 3 段に分け、第 1 段の設計を決めた。0be7 に着手した（`doing`）。
-  * Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。
+  * Java の原典実行との一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。
   * 便マスタの到着時刻を `Spec.Prim.Time.ArrivalTime`（出発日 0:00 からの時分。24 時以降を許す）にした。fixture の `outsideSpec` を外し、`Spec.Seed` に NTT523・NTT528 を含めた。[ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md) に補足を書いた。`flightMasterOf` の 2415 の例を `shared/master-data` に移した。
   * `DateTimeParseException` は空席照会でなく予約の往復便の検査で起きることを確かめ、既知差異 D-031（W 課題 ABS-131）を登録した。[spec/master-data.md](spec/master-data.md) の誤りを直した。
   * [spec/domain-model.md](spec/domain-model.md#arrivaltime)、[spec/master-data.md](spec/master-data.md)、[spec/abstraction.md](spec/abstraction.md#証明課題)（ABS-011・ABS-127・ABS-131、D-027 の範囲）、[spec/conformance.md](spec/conformance.md)、[spec/assurance.md](spec/assurance.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
@@ -142,7 +143,7 @@
   * スキル port-lang の SKILL.md（版 0.5）・`architecture.md`・`traceability.md`（TR-K）・`lean/trace-attributes.md`（ギャップの登録簿）・`spec-documents.md`・`lean/rules.md`・`workflow.md`
   * [AGENTS.md](../AGENTS.md)
 * **Add**: [ADR e9bc](decision/e9bc-fare-double-analysis.md)（運賃計算の double の誤差を定理で確定し、D-001・D-002 の前提を正確な条件で書く）。
-* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 1 段を終えた（`doing`）。3 段に分け、Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、`depends_on` から f18c を外した。double・BigDecimal の補題（スキルの `LangSemantics.Java.DoubleLemmas`・`bdCeilHundredUp_val`）と、基本運賃・運賃の差異の条件（`Abstraction.Fare`）を証明した。
+* **Update**: [backlog bbcc](backlog/bbcc-fare-abstraction-proofs.md) の第 1 段を終えた（`doing`）。3 段に分け、Java の原典実行との一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、`depends_on` から f18c を外した。double・BigDecimal の補題（スキルの `LangSemantics.Java.DoubleLemmas`・`bdCeilHundredUp_val`）と、基本運賃・運賃の差異の条件（`Abstraction.Fare`）を証明した。
 * **Update**: 次の文書を改めた。
   * [spec/abstraction.md](spec/abstraction.md)（D-001・D-002 の内容と前提、ABS-006 の取り消し、ABS-007・ABS-101）
   * [spec/fare-calculation.md](spec/fare-calculation.md)（基本運賃・運賃の差異の条件）
@@ -343,7 +344,7 @@
   * [spec/refinement.md](spec/refinement.md): REF-009・SRC-010 を加え、Verus の禁止構文を広げた。
   * [spec/assurance.md](spec/assurance.md): `#[verifier::external]` の一覧、規範節ごとの行、活性の限界、追跡の道具、付録を加えた。
   * ADR c336・01d4・0bd3・e2a4・e56e: モデル外の差異の位置づけ、前提の 2 つの形、`bv_decide` の禁止、`model_prelude.rs`、TR-T1 の生成物の扱い、`xml:`・`seed:`、改名の検査、実行環境の失敗と活性の限界を加えた。
-  * ADR 659f・578b・e10f に補足（訂正）を加えた。ADR e10f では、差分オラクルで入力を除外しないことにした。
+  * ADR 659f・578b・e10f に補足（訂正）を加えた。ADR e10f では、差分の原典実行で入力を除外しないことにした。
   * スキル: 原典の事後条件を仮定にする抜け道、方言の差を無名の前提にする記述をなくした。
 * **Creation**: backlog [9c04](backlog/9c04-rust-external-adapters.md)（DB・ファイル・時計のアダプタ）を作った。backlog の依存（f18c への依存、ac71 → 4e0e）と担当（REF-008、SRC-005/007/008）を整え、ffdc と 455f の循環を解いた。
 * **Update**: 敵対的レビューの 3 回目の指摘を解消した。
@@ -373,7 +374,7 @@
 * **Creation**: [rules/atrs-porting.md](rules/atrs-porting.md)（スキルの ATRS への適用）を追加した。
 * **Update**: [spec/conformance.md](spec/conformance.md)・[spec/traceability.md](spec/traceability.md)・[spec/refinement.md](spec/refinement.md) を ATRS 固有の内容に絞った。ADR・backlog・spec の、移動した規約へのリンクを張り替えた。
 
-* **Creation**: [ADR 796c](decision/796c-models-in-lean-and-sources-traced-at-both-ends.md)（モデルと証明をすべて Lean に置き、`TargetModel` を Lean のモデル、Rust を移植先ソースとする）、[ADR 81ab](decision/81ab-cross-language-traceability.md)（両端の追跡: ロケータ・モデル側注釈・確認済みハッシュ・TR 検査）、[ADR 3f36](decision/3f36-following-upstream-releases.md)（上流の版上げ追従・差分オラクル）を作成した。
+* **Creation**: [ADR 796c](decision/796c-models-in-lean-and-sources-traced-at-both-ends.md)（モデルと証明をすべて Lean に置き、`TargetModel` を Lean のモデル、Rust を移植先ソースとする）、[ADR 81ab](decision/81ab-cross-language-traceability.md)（両端の追跡: ロケータ・モデル側注釈・確認済みハッシュ・TR 検査）、[ADR 3f36](decision/3f36-following-upstream-releases.md)（上流の版上げ追従・差分の原典実行）を作成した。
 * **Deprecation**: [ADR 3e1d](decision/3e1d-language-neutral-top-level-namespaces.md) と [ADR dd0f](decision/dd0f-rust-as-target-language.md) を ADR 796c で置き換えた。
 * **Creation**: 規約 [port-lang/upgrade.md](../.agents/skills/spec-pivot/references/docs/guide/upgrade.md)（版上げ手順、draft）を追加した。
 * **Update**: [port-lang/lean/rules.md](../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md)・[port-lang/rust/layout.md](../.agents/skills/spec-pivot/references/docs/lang/rust/layout.md)・porting・testing・version-control・spec-writing・documentation を新構成と追跡注釈に合わせて改訂した。

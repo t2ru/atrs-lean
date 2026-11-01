@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -21,11 +21,11 @@ final class SeedDb {
 
     static final String LOAD_DATE = "2026-11-01";
 
-    /** マスタだけ（FLIGHT・MEMBER は空）。ドメイン層のオラクルがケースごとに FLIGHT を入れる。 */
+    /** マスタだけ（FLIGHT・MEMBER は空）。ドメイン層の原典実行がケースごとに FLIGHT を入れる。 */
     static final List<String> MASTER = List.of("00100_create_all_tables.sql", "00200_insert_fixed_value.sql",
             "00210_insert_route.sql", "00220_insert_flight_master.sql", "00240_insert_peak_time.sql");
 
-    /** シードのすべて（会員・フライトを含む）。HTTP レベルのオラクルと、空席照会の入力の採取に使う。 */
+    /** シードのすべて（会員・フライトを含む）。HTTP レベルの原典実行と、空席照会の入力の採取に使う。 */
     static final List<String> FULL = List.of("00100_create_all_tables.sql", "00200_insert_fixed_value.sql",
             "00210_insert_route.sql", "00220_insert_flight_master.sql", "00230_insert_member.sql",
             "00240_insert_peak_time.sql", "00250_insert_flight.sql");

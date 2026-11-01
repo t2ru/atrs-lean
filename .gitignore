@@ -15,6 +15,6 @@ __pycache__/
 # Python（uv）
 .venv/
 
-# Java オラクル（backlog f18c）
-tools/oracle/target/
+# Java の原典実行（backlog f18c）
+tools/origin-run/target/
 .agents/skills/spec-pivot/assets/java/conformance-kit/target/

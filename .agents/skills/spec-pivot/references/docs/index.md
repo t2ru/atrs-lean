@@ -19,7 +19,7 @@ okf_version: "0.2"
 
 * [移植の手順](guide/process.md) - 機能単位で進める移植の手順 1〜10 と、各手順の成果物・次へ進む条件・完了の定義。
 * [作業の進め方（既定）](guide/workflow.md) - 人と AI エージェントがこの方法で移植を進めるときの既定の進め方: 評価・判断の記録・検査ゲート・敵対的レビュー。
-* [版上げへの追従](guide/upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分オラクル、証明のグラフに沿った影響の洗い出し。
+* [版上げへの追従](guide/upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分の原典実行、証明のグラフに沿った影響の洗い出し。
 * [言語パックの構成と追加のしかた](guide/adding-a-language.md) - 言語パックの 6 ファイルの構成と、新しい言語・SQL 方言を追加するときの手順。
 
 # Language: Java
@@ -28,7 +28,7 @@ okf_version: "0.2"
 * [Java: フレームワーク・ランタイムの効果](lang/java/frameworks.md) - Java のフレームワーク・ランタイムが与える効果と、モデルへの写し方・dep: ロケータ。
 * [Java: ソースの構成と Lean 名前空間の対応](lang/java/layout.md) - Java のソースの構成と、Lean の名前空間の対応。
 * [Java: ロケータとインベントリ](lang/java/locators.md) - Java のロケータの文法とインベントリの作り方。
-* [Java: ベクタの実行（オラクル／照合）](lang/java/harness.md) - Java のコードに適合テストベクタを当てるハーネス（オラクル／照合）の作り方。
+* [Java: ベクタの実行（原典実行／照合）](lang/java/harness.md) - Java のコードに適合テストベクタを当てるハーネス（原典実行／照合）の作り方。
 * [Java: 検証器](lang/java/verification.md) - Java のソースとモデルの一致を確かめる決定論的な手段と、その保証の限界。
 
 # Language: SQL
@@ -49,7 +49,7 @@ okf_version: "0.2"
 * [Rust: ランタイム・クレートの効果](lang/rust/frameworks.md) - Rust のランタイム・クレートが与える効果と、モデルへの写し方・dep: ロケータ。
 * [Rust: ソースの構成と Lean 名前空間の対応](lang/rust/layout.md) - Rust のクレートの構成と、Lean の名前空間・Verus の写しの対応。
 * [Rust: ロケータとインベントリ](lang/rust/locators.md) - Rust のロケータの文法とインベントリの作り方。
-* [Rust: ベクタの実行（照合／オラクル）](lang/rust/harness.md) - Rust のコードに適合テストベクタを当てるテスト（照合／オラクル）の作り方。
+* [Rust: ベクタの実行（照合／原典実行）](lang/rust/harness.md) - Rust のコードに適合テストベクタを当てるテスト（照合／原典実行）の作り方。
 * [Rust: 検証器（Verus・Kani）](lang/rust/verification.md) - Rust のソースとモデルの一致を確かめる検証器（Verus・Kani）と、その保証の限界。
 
 # Language: Lean
@@ -60,7 +60,8 @@ okf_version: "0.2"
 # Decisions
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
-* [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルのオラクルの方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-oracle-method.md) - Java のオラクルに共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルのオラクル（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
+* [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) - Java の原典実行に共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
+* [「オラクル」を「原典実行」（origin-run）と呼び替える](decision/288a-rename-oracle-to-origin-run.md) - 移植元のプログラムを実行して期待値を採取・照合する手段を、DBMS の Oracle と紛れない「原典実行」（識別子 origin-run）と呼ぶ。新旧 2 版を比べるものは「差分の原典実行」とする。ベクタの source の値は <移植元>-origin-run、道具のディレクトリ・クラス名もこれにそろえる。
 * [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](decision/1f75-java-expression-syntax-and-spring-assert.md) - 移植元のモデルの式を、原典の Java の式と同じ字面で書けるよう、LangSemantics.Java に式の構文 java!（JLS の優先順位・数値昇格・リテラルの型・キャスト・短絡評価・例外を投げうる式）を置く。展開した項は原始関数を手で書いた項と構文として同じで、証明は変えない。あわせて Spring の Assert を同じ名前で置き、原典の語彙とモデルの語彙の対応表を言語パックに書く。
 * [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](decision/8a3c-mirror-layout-check-and-review-view.md) - 移植元のモデルのモジュールを原典のクラスと 1 対 1 にする規則を言語パックに置き、プロジェクトの設定 source.mirror で有効にする。配置・名前・引数・欄の対応を trace check の TR-M で検査し、原典とモデルを並べた静的な HTML を trace review で生成する。trace-dump は宣言の引数・欄・行の範囲を出力する。
 * [スキル spec-pivot の Lean パッケージを assets/lean/ に置く](decision/6edf-lean-package-under-skill-assets-lean.md) - スキル spec-pivot の assets 直下にあった Lake パッケージ langSemantics（LangSemantics・Machine とその検査）を assets/lean/ に移し、assets の下を資産の種類ごとに分ける。Lean 以外の資産（assets/verus/ など）は assets/lean/ の外に置く。

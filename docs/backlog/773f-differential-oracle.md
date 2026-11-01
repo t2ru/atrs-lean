@@ -1,7 +1,7 @@
 ---
 type: Backlog Item
-title: "差分オラクル（新旧 2 版の振る舞い比較）"
-description: "Java オラクルハーネスを拡張し、source-model ベクタの全入力を新旧 2 版の上流で実行して出力の差分を取る。"
+title: "差分の原典実行（新旧 2 版の振る舞い比較）"
+description: "Java の原典実行ハーネスを拡張し、source-model ベクタの全入力を新旧 2 版の上流で実行して出力の差分を取る。"
 tags: [backlog, java, oracle, upstream, testing]
 id: "773f2c47-5a43-4da9-9c16-b9f36bfe5765"
 state: todo
@@ -11,7 +11,7 @@ generated:
   at: 2026-10-29T22:24:48+09:00
 ---
 
-# 差分オラクル（新旧 2 版の振る舞い比較）
+# 差分の原典実行（新旧 2 版の振る舞い比較）
 
 ## 目的
 

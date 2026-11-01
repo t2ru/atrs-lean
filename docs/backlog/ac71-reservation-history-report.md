@@ -34,7 +34,7 @@ generated:
 
 - [ ] CSV のベクタ（CRLF、引用、日付書式）が両モデルで通る
 - [ ] ABS-025・ABS-044 と SPEC 課題を証明し、TR-D が通る（D-006 の W 課題は [backlog 4e0e](4e0e-member-usecases-and-input-validation.md)）
-- [ ] レポートの `source-model/` ベクタが Java オラクルと一致する
+- [ ] レポートの `source-model/` ベクタが Java の原典実行と一致する
 
 ## 参照
 

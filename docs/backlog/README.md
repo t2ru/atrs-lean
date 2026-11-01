@@ -28,7 +28,7 @@ generated:
 | ac71 | [予約履歴レポート（D1）](ac71-reservation-history-report.md) | todo | [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
 | 4b0e | [Rust: インメモリアダプタとシードデータ](4b0e-in-memory-adapters-and-seed-data.md) | todo | [9c1b](9c1b-rust-usecases-core.md), [ffdc](ffdc-trace-tooling.md) |
 | a8ef | [適合テストベクタの生成と検査（Lean 側）](a8ef-conformance-vector-format-and-generator.md) | todo | [25f7](25f7-fare-calculation-both-models.md) |
-| f18c | [Java オラクルハーネス](f18c-java-oracle-harness.md) | done | — |
+| f18c | [Java の原典実行ハーネス](f18c-java-oracle-harness.md) | done | — |
 | a89e | [Rust: HTTP 契約アダプタ](a89e-http-contract-adapter.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 31da | [第二言語での移植試行](31da-second-language-portability-pilot.md) | dropped | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
 | c7e8 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](c7e8-lang-semantics-sql.md) | done | [be49](be49-lean-project-scaffold.md) |
@@ -41,7 +41,7 @@ generated:
 | 26c5 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](26c5-target-model-usecases-and-refinement.md) | todo | [eff6](eff6-target-model-fare-and-refinement.md), [0be7](0be7-flight-search-usecase.md), [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [44f8](44f8-authentication-usecases.md), [ac71](ac71-reservation-history-report.md), [ffdc](ffdc-trace-tooling.md) |
 | ffdc | [追跡の道具（tools/trace）](ffdc-trace-tooling.md) | done | [be49](be49-lean-project-scaffold.md), [455f](455f-upstream-submodule-and-inventory.md) |
 | 455f | [上流の submodule 化と版の宣言](455f-upstream-submodule-and-inventory.md) | done | — |
-| 773f | [差分オラクル（新旧 2 版の振る舞い比較）](773f-differential-oracle.md) | todo | [f18c](f18c-java-oracle-harness.md), [455f](455f-upstream-submodule-and-inventory.md) |
+| 773f | [差分の原典実行（新旧 2 版の振る舞い比較）](773f-differential-oracle.md) | todo | [f18c](f18c-java-oracle-harness.md), [455f](455f-upstream-submodule-and-inventory.md) |
 | d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](../../.agents/skills/spec-pivot/references/docs/backlog/a936-lang-semantics-rust.md) |
 | 9c04 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](9c04-rust-external-adapters.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [c7e8](c7e8-lang-semantics-sql.md), [ffdc](ffdc-trace-tooling.md) |
 | f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md) |

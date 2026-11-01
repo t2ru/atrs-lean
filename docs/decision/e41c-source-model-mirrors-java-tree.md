@@ -17,7 +17,7 @@ generated:
 
 ## Context and Problem Statement
 
-`SourceModel` と原典の一致は、決定論的な手段（ベクタ・オラクル・差分実行）で確かめる（[ADR c336](c336-foundational-principles.md) の原則 1）。
+`SourceModel` と原典の一致は、決定論的な手段（ベクタ・原典実行・差分実行）で確かめる（[ADR c336](c336-foundational-principles.md) の原則 1）。
 それとは別に、人が Lean と Java を見比べて「正しく写していそうだ」と確かめられることは、手段の届かない部分（[assurance.md](../spec/assurance.md)）の検討や、
 レビュー・版上げの差分の確認に要る。これまでの `SourceModel` には、次の妨げがあった。
 

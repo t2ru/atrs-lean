@@ -1,4 +1,4 @@
-package atrsoracle;
+package atrsoriginrun;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,17 +20,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * HTTP レベルのオラクル（backlog f18c）。Spring を起動した原典（組み込み Tomcat に、原典の web.xml のままの webapp を載せる）に
- * 要求を送り、応答をベクタの形で採取して {@code tools/oracle/http/*.json} に書く（{@code SourceModel.Http} ができるまで
+ * HTTP レベルの原典実行（backlog f18c）。Spring を起動した原典（組み込み Tomcat に、原典の web.xml のままの webapp を載せる）に
+ * 要求を送り、応答をベクタの形で採取して {@code tools/origin-run/http/*.json} に書く（{@code SourceModel.Http} ができるまで
  * {@code conformance/} の外に置く。backlog 4e0e・a89e で移す）。
  *
  * <p>ケースは要求の列（{@code input.requests}）で、同じ HTTP セッション（Cookie）で順に送る。要求の値 {@code "{{_csrf}}"} は、
  * 直前の応答の HTML の CSRF トークンで置き換える。DB を観測するケースは、要求の前後の表の行（{@code observe}）を期待値に含める。</p>
  */
-final class HttpOracle {
-    private HttpOracle() {}
+final class HttpOriginRun {
+    private HttpOriginRun() {}
 
-    static final String DB = "atrs_oracle_http";
+    static final String DB = "atrs_origin_run_http";
     static final String CONTEXT = "/atrs";
     /** 原典の時計（{@code dateFactory}）の時刻。投入日と違う日にして、ログイン日時の更新を観測できるようにする。 */
     static final String NOW = "2026-11-03T10:00:00";
@@ -40,24 +40,24 @@ final class HttpOracle {
 
     static void run(Path repo, boolean write, List<String> problems) throws Exception {
         SeedDb.load(repo, DB, SeedDb.FULL);
-        System.setProperty("oracle.now", NOW);
-        System.setProperty(OracleContextInitializer.PREFIX + "database.url", Pg.url(DB));
-        System.setProperty(OracleContextInitializer.PREFIX + "database.username", Pg.props().getProperty("user"));
-        System.setProperty(OracleContextInitializer.PREFIX + "database.password", Pg.props().getProperty("password", ""));
-        // 作業ディレクトリ（java_oracle.sh の一時ディレクトリ）の下
-        System.setProperty(OracleContextInitializer.PREFIX + "report.dir", Files.createDirectories(Path.of("report")).toAbsolutePath().toString());
+        System.setProperty("originrun.now", NOW);
+        System.setProperty(OriginRunContextInitializer.PREFIX + "database.url", Pg.url(DB));
+        System.setProperty(OriginRunContextInitializer.PREFIX + "database.username", Pg.props().getProperty("user"));
+        System.setProperty(OriginRunContextInitializer.PREFIX + "database.password", Pg.props().getProperty("password", ""));
+        // 作業ディレクトリ（java_origin_run.sh の一時ディレクトリ）の下
+        System.setProperty(OriginRunContextInitializer.PREFIX + "report.dir", Files.createDirectories(Path.of("report")).toAbsolutePath().toString());
         Path docBase = Upstream.built(repo).resolve("atrs-web/src/main/webapp");
         try (WebappServer server = WebappServer.start(docBase, CONTEXT,
-                Map.of("globalInitializerClasses", OracleContextInitializer.class.getName()))) {
+                Map.of("globalInitializerClasses", OriginRunContextInitializer.class.getName()))) {
             for (ObjectNode doc : List.of(ticket(repo), login(repo))) {
                 for (JsonNode c : doc.withArray("cases")) {
                     ((ObjectNode) c).set("expected", Json.ok(exchange(server, c)));
                     ((ObjectNode) c).put("source", Generate.SOURCE);
                 }
                 String file = doc.remove("file").asText();
-                String p = Runner.saveOrCompare(repo.resolve("tools/oracle/http").resolve(file), doc, FLAT, write);
+                String p = Runner.saveOrCompare(repo.resolve("tools/origin-run/http").resolve(file), doc, FLAT, write);
                 if (p != null) problems.add(p);
-                System.out.println("  " + (write ? "wrote" : (p == null ? "ok   " : "FAIL ")) + " tools/oracle/http/" + file + " ("
+                System.out.println("  " + (write ? "wrote" : (p == null ? "ok   " : "FAIL ")) + " tools/origin-run/http/" + file + " ("
                         + doc.get("cases").size() + " cases)");
                 findings(doc);
             }
@@ -67,7 +67,7 @@ final class HttpOracle {
     static ObjectNode doc(Path repo, String file, String operation, String specRef, String note) {
         ObjectNode d = Runner.header(operation, Json.F.nullNode(), specRef, Upstream.version(repo), null,
                 note + " SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。"
-                        + "Java オラクルが原典から採取した（tools/oracle の HttpOracle。手で編集しない）。");
+                        + "Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。");
         d.put("file", file);
         return d;
     }

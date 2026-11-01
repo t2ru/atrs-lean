@@ -287,7 +287,7 @@ def D023 : Gap where
   id := "D-023"
   kind := .outOfModel
   sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩, ⟨"ADR 9ee4", "docs/decision/9ee4-clock-timezone-and-fixture-base-date.md", ""⟩]
-  premise := "— モデル外（各モデルは「今日」を入力として受け取る。オラクルは JST で実行する。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
+  premise := "— モデル外（各モデルは「今日」を入力として受け取る。原典実行は JST で実行する。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D023 ""
 
 /-- D-024 の主張（形式化していない。証明も公理も持たない）: [Source] のセッションの Cookie は `HttpOnly` だけを持ち、[Spec] の配備環境で決める属性（`Secure`・`SameSite`）と異なりうる。Cookie の属性はどのモデルにも現れないので、命題として書けない -/
@@ -341,7 +341,7 @@ def D027 : Gap where
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5"]
 
-/-- [Source] の画面ログイン（`POST /auth/dologin`）は、ログイン状態（`loginDateTime`・`loginFlg`）を更新しない。状態を更新する `AtrsAuthenticationSuccessListener` は `AuthenticationSuccessEvent` を受けるが、画面ログインのフィルタが使う`authenticationManager`（`new ProviderManager(authProvider)`）にはイベント発行者が無く、イベントが出ないためである。一方、REST の HTTP Basic 認証は、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使うので、成功のたびに`loginDateTime := today`・`loginFlg := true` に更新する。[Spec] は画面ログインで更新し、REST の要求では更新しない。Java オラクルで確かめた（`tools/oracle/http/login.json`。backlog f18c） -/
+/-- [Source] の画面ログイン（`POST /auth/dologin`）は、ログイン状態（`loginDateTime`・`loginFlg`）を更新しない。状態を更新する `AtrsAuthenticationSuccessListener` は `AuthenticationSuccessEvent` を受けるが、画面ログインのフィルタが使う`authenticationManager`（`new ProviderManager(authProvider)`）にはイベント発行者が無く、イベントが出ないためである。一方、REST の HTTP Basic 認証は、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使うので、成功のたびに`loginDateTime := today`・`loginFlg := true` に更新する。[Spec] は画面ログインで更新し、REST の要求では更新しない。Java の原典実行で確かめた（`tools/origin-run/http/login.json`。backlog f18c） -/
 @[gap_entry]
 def D028 : Gap where
   id := "D-028"

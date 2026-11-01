@@ -702,7 +702,7 @@ theorem usesClaim (h : claim920) : claim920 := h
 /-- 未確定の宣言。 -/
 @[gap_entry] def gD921 : Gap :=
   { id := "D-921", kind := .undetermined, sites := [⟨"例", "docs/spec/example.md#base", ""⟩],
-    evidence := .unformalized ``claim921 "オラクルで確かめる" }
+    evidence := .unformalized ``claim921 "原典実行で確かめる" }
 
 /-- PRE の外の振る舞いの宣言（前提の述語には印がある）。 -/
 @[gap_entry] def gD922 : Gap :=

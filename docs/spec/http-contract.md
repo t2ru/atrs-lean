@@ -167,13 +167,13 @@ generated:
 要求の JSON の文字列に不対サロゲートのエスケープ（例 `"\ud800"`）があれば、**[Spec]** は `InvalidRequest` とする（文字列はスカラ値の列であるため）。[Source] は受け付けて処理を続ける（既知差異 [D-026](abstraction.md#既知差異)）。
 
 - 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。ただし `Authorization` ヘッダの資格情報が誤っていれば 401（`WWW-Authenticate: Basic realm="Realm"`。本文は定めない。`X-Requested-With: XMLHttpRequest` 付きならヘッダも本文も無い 401）。
-  [Source] は、Basic 認証が成功するたびに会員のログイン状態を更新する（`loginDateTime := today`・`loginFlg := true`）。[Spec] は REST の要求でログイン状態を変えない（既知差異 [D-028](abstraction.md#既知差異)。Java オラクルで確かめた。`tools/oracle/http/login.json`）。
+  [Source] は、Basic 認証が成功するたびに会員のログイン状態を更新する（`loginDateTime := today`・`loginFlg := true`）。[Spec] は REST の要求でログイン状態を変えない（既知差異 [D-028](abstraction.md#既知差異)。Java の原典実行で確かめた。`tools/origin-run/http/login.json`）。
 - 前処理（空白除去）無し（[input-validation.md](input-validation.md#前処理)）。
 - 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[flight-search.md](flight-search.md#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。
 
 根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して JSON 変換に使う。原典は Jackson 3 と Jackson 2 の両方を依存に持ち、`ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印（配列・数値）として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
 
-原典での確認（[Source]）: Java オラクルで、`POST /api/v1/ticket` の要求の `depDate` を `"yyyy-MM-dd"` で送ると予約され、応答の `paymentDate`・`selectFlightResourceList[].depDate` も `"yyyy-MM-dd"` になることを確かめた。`"yyyy/MM/dd"` の `depDate` は Jackson 3 の `LocalDate` の読み取りで失敗し、400（`ApiError` の `e.ar.fw.9999`）になる（`tools/oracle/http/postTicket.json`。[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。
+原典での確認（[Source]）: Java の原典実行で、`POST /api/v1/ticket` の要求の `depDate` を `"yyyy-MM-dd"` で送ると予約され、応答の `paymentDate`・`selectFlightResourceList[].depDate` も `"yyyy-MM-dd"` になることを確かめた。`"yyyy/MM/dd"` の `depDate` は Jackson 3 の `LocalDate` の読み取りで失敗し、400（`ApiError` の `e.ar.fw.9999`）になる（`tools/origin-run/http/postTicket.json`。[backlog f18c](../backlog/f18c-java-oracle-harness.md)）。
 
 ### GET /api/v1/flight
 

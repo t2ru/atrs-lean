@@ -67,15 +67,15 @@ jobs:
           restore-keys: |
             lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-
 
-      # Java オラクル（backlog f18c）の Maven の依存。原典のビルド物（jp/co/ntt/atrs）は毎回作り直すので除く
-      - name: Cache Maven (Java oracle)
+      # Java の原典実行（backlog f18c）の Maven の依存。原典のビルド物（jp/co/ntt/atrs）は毎回作り直すので除く
+      - name: Cache Maven (Java origin run)
         uses: actions/cache@v4
         with:
           path: |
             ~/.m2/repository
             !~/.m2/repository/jp/co/ntt/atrs
             !~/.m2/repository/dev/spec-pivot
-          key: m2-${{ runner.os }}-${{ hashFiles('trace/upstream.json', 'tools/oracle/pom.xml', '.agents/skills/spec-pivot/assets/java/conformance-kit/pom.xml') }}
+          key: m2-${{ runner.os }}-${{ hashFiles('trace/upstream.json', 'tools/origin-run/pom.xml', '.agents/skills/spec-pivot/assets/java/conformance-kit/pom.xml') }}
           restore-keys: |
             m2-${{ runner.os }}-
 

@@ -16,9 +16,9 @@ import java.util.stream.Stream;
  * ベクタのファイルを、操作の割当（operation → {@link Op}）で実行する（references/docs/lang/java/harness.md）。
  *
  * <ul>
- * <li>{@link #check}: 各ケースの結果を {@code expected.ok} と比べる（オラクルとして [Source] のベクタを確かめる）。</li>
+ * <li>{@link #check}: 各ケースの結果を {@code expected.ok} と比べる（原典実行として [Source] のベクタを確かめる）。</li>
  * <li>{@link #fill}: 入力だけのケースの {@code expected} を埋め、{@code source} と {@code upstream} を付けた文書を返す
- * （オラクルが期待値を採取する）。</li>
+ * （原典実行が期待値を採取する）。</li>
  * </ul>
  */
 public final class Runner {

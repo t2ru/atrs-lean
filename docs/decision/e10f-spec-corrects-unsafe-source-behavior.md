@@ -54,12 +54,12 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
 ### Consequences
 
 * Good, because 移植先は安全で決定的な振る舞いだけを実装すればよい
-* Bad, because 差分オラクルでこれらの入力を使うと差が出るので、前提を満たさない入力として除外する必要がある
+* Bad, because 差分の原典実行でこれらの入力を使うと差が出るので、前提を満たさない入力として除外する必要がある
 
 ### Confirmation
 
 * `http` と `validation` の適合テストベクタに、各差異の境界例（外部 URL の `redirectTo`、`"1e1"`、`0000/01/01` など）を `spec/` 側の期待値で置く。
-* 差分オラクル（[backlog 773f](../backlog/773f-differential-oracle.md)）は、既知差異の前提を満たさない入力を比較対象から外す。
+* 差分の原典実行（[backlog 773f](../backlog/773f-differential-oracle.md)）は、既知差異の前提を満たさない入力を比較対象から外す。
 
 ## Pros and Cons of the Options
 
@@ -82,4 +82,4 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
   * 差異の証拠（W 課題）
   
   課題は [spec/abstraction.md](../spec/abstraction.md#証明課題) を参照。
-* （補足 2026-10-30・訂正）Consequences と Confirmation にある「差分オラクルで既知差異の前提を満たさない入力を外す」は誤りである。差分オラクルは新旧 2 版の原典どうしを比べるので、`Spec` との差異は関係しない。差分オラクルでは入力を除外しない。前提を満たさない入力を除くのは、[Source] と [Spec] を比べる場合（`spec/` のベクタと `source-model/` のベクタの対応づけ）だけである。
+* （補足 2026-10-30・訂正）Consequences と Confirmation にある「差分の原典実行で既知差異の前提を満たさない入力を外す」は誤りである。差分の原典実行は新旧 2 版の原典どうしを比べるので、`Spec` との差異は関係しない。差分の原典実行では入力を除外しない。前提を満たさない入力を除くのは、[Source] と [Spec] を比べる場合（`spec/` のベクタと `source-model/` のベクタの対応づけ）だけである。

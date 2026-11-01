@@ -1,9 +1,10 @@
 # Directory Update Log
 
 ## 2026-11-01
-* **Creation**: [ADR 7d3a](decision/7d3a-java-conformance-kit-and-http-oracle-method.md) で、Java のオラクルの道具 `assets/java/conformance-kit/`（Maven）を置いた。スキルの版を 0.21 にした。
+* **Update**: [ADR 288a](decision/288a-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた。ベクタの `source` は `<移植元>-origin-run`。言語パック・方法の文書・既存の ADR と作業項目の本文・この変更履歴をそろえた（版 0.21 に含める）。来歴: 適用先 ATRS の ADR 18ca。
+* **Creation**: [ADR 7d3a](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) で、Java の原典実行の道具 `assets/java/conformance-kit/`（Maven）を置いた。スキルの版を 0.21 にした。
   * `Json`・`Op`・`Runner`（照合・期待値の採取・`--check`）、`Reflect`（注入）、`http.HttpCapture`（要求の送信と応答の採取・正規化）、`http.WebappServer`（web.xml のままの webapp を組み込み Tomcat で起動）。
-  * [lang/java/harness.md](lang/java/harness.md) に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルのオラクルの方法と道具を書いた。`SKILL.md`・`scripts/README.md` を合わせた。
+  * [lang/java/harness.md](lang/java/harness.md) に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行の方法と道具を書いた。`SKILL.md`・`scripts/README.md` を合わせた。
   * `scripts/ci/with_postgres.sh`: `WITH_POSTGRES_TCP=1` で一時クラスタを 127.0.0.1 でも待ち受けさせる（JDBC 用）。
   * 来歴: 適用先 ATRS の ADR 81da（backlog f18c）。
 * **Creation**: [ADR 8cb7](decision/8cb7-run-python-tools-with-uv.md) で、Python の道具をシステムの `python3` でなく `uv run python -I` で実行するようにした。スキルの版を 0.20 にした。

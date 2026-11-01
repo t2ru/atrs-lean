@@ -1,7 +1,7 @@
 ---
 type: Reference
-title: "Java: ベクタの実行（オラクル／照合）"
-description: "Java のコードに適合テストベクタを当てるハーネス（オラクル／照合）の作り方。"
+title: "Java: ベクタの実行（原典実行／照合）"
+description: "Java のコードに適合テストベクタを当てるハーネス（原典実行／照合）の作り方。"
 tags: [java, language-pack, conformance]
 status: stable
 generated:
@@ -9,7 +9,7 @@ generated:
   at: 2026-11-01T19:00:00+09:00
 ---
 
-# Java: ベクタの実行（オラクル／照合）
+# Java: ベクタの実行（原典実行／照合）
 
 `conformance/` のベクタを Java のコードに対して実行する小さなプログラム（ハーネス）を作る。
 
@@ -22,16 +22,16 @@ generated:
 - 「今日」は、原典が注入できる `Clock` があればそれで固定する。無ければ実行環境の時計を固定する（例: `-Duser.timezone` と時計を差し替えるエージェント）。固定できない操作は、ハーネスの対象外とする。その操作は、プロジェクトの保証の限界の文書に載せる（[verification.md](../../spec/verification.md#保証の限界)）。
 - JSON の読み書きは、ベクタの値の表現（[conformance.md](../../spec/conformance.md#値の表現)）に合わせる。
 
-## 移植元として: オラクル
+## 移植元として: 原典実行
 
-- `source-model/` の期待値を原典から採取する（`source: "java-oracle"`、`upstream` に版を記録する）。
+- `source-model/` の期待値を原典から採取する（`source: "java-origin-run"`、`upstream` に版を記録する）。
 - 採取した値と Lean `SourceModel` の値が一致しなければ、`SourceModel` 側の不具合とみなす。
-- **差分オラクル**（版上げ時）: 旧版と新版の原典を別々のクラスパスで構築し、同じ入力を流して出力を比べる。結果はケースごとの差分一覧として出し、[upgrade.md](../../guide/upgrade.md) の手順 5 に渡す。
+- **差分の原典実行**（版上げ時）: 旧版と新版の原典を別々のクラスパスで構築し、同じ入力を流して出力を比べる。結果はケースごとの差分一覧として出し、[upgrade.md](../../guide/upgrade.md) の手順 5 に渡す。
 - 同じ commit を新旧に指定して差分 0 になること、を最初の確認にする。
 
-## 移植元として: HTTP レベルのオラクル
+## 移植元として: HTTP レベルの原典実行
 
-フレームワークの暗黙の処理（入力の変換・Bean Validation・認証と認可・JSON の変換・エラーページ・テンプレートの書式）は、ドメイン層のオラクルでは観測できない。原典の webapp を起動し、HTTP の要求を送って応答を採取する。
+フレームワークの暗黙の処理（入力の変換・Bean Validation・認証と認可・JSON の変換・エラーページ・テンプレートの書式）は、ドメイン層の原典実行では観測できない。原典の webapp を起動し、HTTP の要求を送って応答を採取する。
 
 - **起動**: 原典の配備記述子（web.xml）を変えずに読み、サーブレットコンテナで起動する（組み込み Tomcat など）。DispatcherServlet・フィルタの並び・エラーページを原典のまま動かすためである。モックの DispatcherServlet（MockMvc など）は、web.xml を読まないので使わない。
 - **差し替え**: DB の接続先・出力先・時計など、ハーネスが決める構成だけを、web.xml の外から足す（Spring なら context-param `globalInitializerClasses` の `ApplicationContextInitializer`。環境のプロパティは `PropertySourcesPlaceholderConfigurer` の設定ファイルより優先される）。差し替えた構成は、プロジェクトの保証の限界の文書に載せる。
@@ -41,7 +41,7 @@ generated:
 
 ## 道具: conformance-kit
 
-`assets/java/conformance-kit/`（Maven。`dev.spec-pivot:conformance-kit`。Java 17。[ADR 7d3a](../../decision/7d3a-java-conformance-kit-and-http-oracle-method.md)）が、上の共通の部分を持つ。プロジェクトは、操作の割当（`operation` → `Op`）と原典の組み立てを書く。
+`assets/java/conformance-kit/`（Maven。`dev.spec-pivot:conformance-kit`。Java 17。[ADR 7d3a](../../decision/7d3a-java-conformance-kit-and-http-origin-run-method.md)）が、上の共通の部分を持つ。プロジェクトは、操作の割当（`operation` → `Op`）と原典の組み立てを書く。
 
 | クラス | 役割 |
 | --- | --- |
@@ -51,7 +51,7 @@ generated:
 | `http.HttpCapture` | 要求の送信と応答の採取・正規化（Cookie はオブジェクトごと。転送は追わない） |
 | `http.WebappServer` | web.xml のままの webapp を、組み込み Tomcat で 127.0.0.1 に起動する（context-param を足せる。web.xml にある名前は拒む） |
 
-DB を使うオラクルは、`scripts/ci/with_postgres.sh` を `WITH_POSTGRES_TCP=1` で使う（JDBC は Unix ソケットに接続できないため）。
+DB を使う原典実行は、`scripts/ci/with_postgres.sh` を `WITH_POSTGRES_TCP=1` で使う（JDBC は Unix ソケットに接続できないため）。
 
 ## 移植先として: 照合
 

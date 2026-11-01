@@ -47,8 +47,8 @@ generated:
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
 | `trace/` | 版の宣言・インベントリ・manifest。スキルの道具が読む ATRS の設定 `trace/project.json`（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ADR と backlog の置き場所。スキルの [traceability.md](../../.agents/skills/spec-pivot/references/docs/spec/traceability.md#プロジェクトの設定)） |
-| `.agents/skills/spec-pivot/scripts/` | スキルの道具（[ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の道具。Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../../.agents/skills/spec-pivot/references/docs/decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../../.agents/skills/spec-pivot/references/docs/decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元のオラクル・Verus・Kani など）は、`checks.json` に登録する |
-| `tools/` | ATRS 固有の道具。`ci/master_sql.sh`、`ci/java_oracle.sh`・`oracle/`（Java オラクル。原典を複写してビルドし、ドメイン層と HTTP レベルで実行する。[ADR 81da](../decision/81da-java-oracle-harness-domain-and-http.md)）、`ci/skippable.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表） |
+| `.agents/skills/spec-pivot/scripts/` | スキルの道具（[ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の道具。Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../../.agents/skills/spec-pivot/references/docs/decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../../.agents/skills/spec-pivot/references/docs/decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元の原典実行・Verus・Kani など）は、`checks.json` に登録する |
+| `tools/` | ATRS 固有の道具。`ci/master_sql.sh`、`ci/java_origin_run.sh`・`origin-run/`（Java の原典実行。原典を複写してビルドし、ドメイン層と HTTP レベルで実行する。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)）、`ci/skippable.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表） |
 
 ## 追従中の上流
 
@@ -133,7 +133,7 @@ generated:
 | 検査ゲート | `mise run ci`（ルートの `mise.toml` のタスク。[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）と CI。追跡は `trace check`、ハッシュの更新は `trace rehash` |
 | 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
 | 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） |
-| 画面の確認 | HTTP レベルのオラクルとベクタで行う。HTML の構造は範囲外（ADR 84bf）。ブラウザでの操作の流れのテストは、現時点では採らない |
+| 画面の確認 | HTTP レベルの原典実行とベクタで行う。HTML の構造は範囲外（ADR 84bf）。ブラウザでの操作の流れのテストは、現時点では採らない |
 | 記録 | 作業状態は [docs/backlog/](../backlog/README.md)、判断は ADR、文書の変更は [docs/log.md](../log.md)。git の運用は [version-control.md](version-control.md) |
 
 ## ATRS で採った値
@@ -150,7 +150,7 @@ generated:
 Spring の版上げで `StringTrimmerEditor.setAsText` が `trim()` から `strip()` に変わった、と仮定する。
 
 1. インベントリ差分: `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` が「版の変化」になる。ATRS 本体のコードは不変。
-2. 差分オラクル: 全角空白（U+3000）で始まる氏名を入力するベクタで、旧版は「全角カタカナでない」エラー、新版は合格になり、差分が出る。
+2. 差分の原典実行: 全角空白（U+3000）で始まる氏名を入力するベクタで、旧版は「全角カタカナでない」エラー、新版は合格になり、差分が出る。
 3. 影響一覧: 入力検証の前処理（`SourceModel.Validation.trimInput`）→ ABS-046（入力検証のリファインメント）→ `Spec.Validation` が出る。
 4. 判断: 業務の意図は変わらないので `Spec` は維持する。次の 3 つを行う。
    - `SourceModel` の前処理を直す。

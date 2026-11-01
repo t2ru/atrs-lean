@@ -55,7 +55,7 @@ Chosen option: "検査の登録を `trace/checks.json` に置き、下表のと�
 | 検査の登録 | `trace/checks.json`（手で書く）。検査ごとに `id`・`description`・`steps`・`covers` を持つ。<br>- `steps`: 作業ディレクトリ（`cwd`。リポジトリからの相対）と `argv` の並び<br>- `covers`: `names`（Lean の名前の glob）と `vectors`（適合テストベクタのファイルの glob） |
 | 覆う定義 | `names` に当たる定義と、`vectors` に当たるファイルの `modelDef` から参照をたどって届く定義（参照の閉包） |
 | 合格 | `steps` をこの順に実行し、すべての終了コードが 0 であること。処理系が無いので飛ばした場合（`tools/ci/jvm_table.sh`・`pg_table.sh` の終了コード 2）は不合格とする |
-| 最初の登録 | 次の 3 つ。Verus・Kani・移植元のオラクル・SQL の差分実行は、それぞれの backlog が登録する。<br>- `lake-test`: 適合テストベクタの照合<br>- `jvm-table`: `LangSemantics.Java.*` を覆う<br>- `pg-table`: `LangSemantics.Sql.*` を覆う |
+| 最初の登録 | 次の 3 つ。Verus・Kani・移植元の原典実行・SQL の差分実行は、それぞれの backlog が登録する。<br>- `lake-test`: 適合テストベクタの照合<br>- `jvm-table`: `LangSemantics.Java.*` を覆う<br>- `pg-table`: `LangSemantics.Sql.*` を覆う |
 | `rehash` の対象 | `@[source]`・`@[target]` の各組（定義, ロケータ）のうち、次のどれかに当たるもの。<br>- ハッシュ（`dep:`・`lang:` は版）がインベントリ・宣言と違う<br>- 本文ハッシュと Merkle の組に、合格の記録が無い<br>- ロケータが `renames.json` の `old` に当たり、`new` がインベントリにある |
 | `rehash` の手順 | 次の順に行う。<br>1. 対象を覆う検査を、それぞれ 1 回だけ実行する。<br>2. 覆う検査がすべて合格した組について、注釈を書き換え、manifest に記録（定義・ロケータ・本文ハッシュ・Merkle・合格した検査の ID）を書く。<br>3. manifest と、`traceability.md` の生成区画を作り直す。<br>覆う検査が無い組、合格しなかった組、解決できない注釈が 1 つでもあれば、終了コードを 1 にする。`--dry-run` は、対象と覆う検査を表示するだけで、何も実行しない |
 | 注釈の書き換え | `trace-dump` の各定義に `module` を出力する。`rehash` は、そのモジュールのファイル（`lean/` と、スキルの `assets/lean/`）の中で、文字列 `"<ロケータ>@<旧>"` を `"<ロケータ>@<新>"` に置き換える。同じ文字列を注釈に持つ定義が同じモジュールに複数ある場合は、それらがすべて合格したときだけ置き換える。置き換えなかった定義は、記録もしない。Merkle は属性を含まないので、書き換えで変わらない |

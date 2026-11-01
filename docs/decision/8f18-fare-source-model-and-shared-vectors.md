@@ -28,7 +28,7 @@ generated:
 * 原典の列挙型（`BoardingClassCd`・`FareTypeCd`）と `HashMap` の写し方
 * `shared/` のベクタ（複数のモデルで同じ期待値）の `modelDef`。今の形式は 1 つの名前しか持てない。
 * ベクタのマスタ・設定の入力（`fixtures`）の作り方
-* `source-model/` の期待値の出所。Java のオラクル（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）はまだ無い。
+* `source-model/` の期待値の出所。Java の原典実行（[backlog f18c](../backlog/f18c-java-oracle-harness.md)）はまだ無い。
 * 上流のシードの便マスタにある、到着時刻 `2415`（翌日 0:15）の 2 行。`Spec` の時刻（0:00〜23:59）では表せない。
 
 ## Decision Drivers
@@ -55,7 +55,7 @@ Chosen option: "下表のとおり決める", because 方針（マスタは入�
 | `HashMap` | `LangSemantics.Java.HashMap.JHashMap` を足す。範囲は `put`（後勝ちの置き換え）・`get`（無ければ null）・`containsKey`・`size` に限る。キーの等しさは `DecidableEq` で、enum・String の `equals` に一致する。反復の順序は与えない |
 | 共有ベクタの `modelDef` | `shared/` のベクタでは、`modelDef` を、モデルごとの名前の配列にしてよい（例 `["Spec.Fare.fare", "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare"]`）。実行器は、実行するモデルの層の名前を選ぶ。TR-R と `trace/checks.json` の `vectors` は、配列の各要素を扱う |
 | 共有入力 | `conformance/fixtures/master-data.json`・`config.json` を、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す。<br>- 投入日は 2026-11-01、ピーク時期は 2026・2027 年（ADR 9ee4）。<br>- 行の順はシードの順。[Source] のキャッシュは、この順に `put`・`add` して作る。<br>- CI は `--check` で最新であることを確かめる |
-| `source-model/` の期待値 | Java のオラクル（backlog f18c）ができるまでは、仕様の例の表の [Source] の値を使う（`source: "lean-source-model"`、`upstream` を必須とする）。double の式は、`Tests.JavaDouble`（ネイティブの double）と JVM の表で突き合わせ済みである。backlog f18c で `java-oracle` の値に置き換える |
+| `source-model/` の期待値 | Java の原典実行（backlog f18c）ができるまでは、仕様の例の表の [Source] の値を使う（`source: "lean-source-model"`、`upstream` を必須とする）。double の式は、`Tests.JavaDouble`（ネイティブの double）と JVM の表で突き合わせ済みである。backlog f18c で `java-origin-run` の値に置き換える |
 | 翌日着の便（暫定） | 到着時刻 `2415` の 2 行（NTT523・NTT528）は、fixture に上流どおり残し、`outsideSpec` を付ける。`Spec` 用の読み込みは、その行を除く。`SourceModel` 用の読み込みは除かない。<br>- [Spec] で翌日着を表せるように改め、[Source] の `DateTimeParseException` を既知差異として登録するのは [backlog 0be7](../backlog/0be7-flight-search-usecase.md) である（プロジェクトオーナーの決定）。<br>- 運賃の計算は到着時刻を使わないので、0004 には影響しない |
 
 ### Consequences

@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
-title: "空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java オラクルの完了条件を f18c に移す"
-description: "backlog 0be7（空席照会）を 3 段に分け、第 1 段の設計を決める。フライトは抽象状態 World の成分とし、空席照会は状態を読むだけの操作とする。便マスタの到着時刻は出発日 0:00 からの時分（24 時以降を許す）で表し、fixture の outsideSpec を外す。[Source] の DateTimeParseException は予約（B2）の往復便の検査で起きるので、D-031 として登録する。Java オラクルとの一致の完了条件を backlog f18c に移す。"
+title: "空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java の原典実行の完了条件を f18c に移す"
+description: "backlog 0be7（空席照会）を 3 段に分け、第 1 段の設計を決める。フライトは抽象状態 World の成分とし、空席照会は状態を読むだけの操作とする。便マスタの到着時刻は出発日 0:00 からの時分（24 時以降を許す）で表し、fixture の outsideSpec を外す。[Source] の DateTimeParseException は予約（B2）の往復便の検査で起きるので、D-031 として登録する。Java の原典実行との一致の完了条件を backlog f18c に移す。"
 tags: [adr, spec, source-model, flight-search, world, master-data]
 id: "ce36fa1e-e227-4754-93ec-cbc59247e79c"
 status: stable
@@ -13,7 +13,7 @@ generated:
   at: 2026-11-01T10:00:00+09:00
 ---
 
-# 空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java オラクルの完了条件を f18c に移す
+# 空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java の原典実行の完了条件を f18c に移す
 
 ## Context and Problem Statement
 
@@ -24,7 +24,7 @@ generated:
 
 着手の前に、次の 4 つを決める必要があった。
 
-1. 0be7 は `depends_on` に backlog f18c（Java オラクル。todo）を持つ。規約（[backlog.md](../rules/backlog.md)）では、このままでは着手できない。
+1. 0be7 は `depends_on` に backlog f18c（Java の原典実行。todo）を持つ。規約（[backlog.md](../rules/backlog.md)）では、このままでは着手できない。
 2. フライトを機械の状態とするか、入力とするか。
 3. 上流のシードの便マスタのうち NTT523・NTT528 は到着時刻が `2415`（翌日 0:15）で、[Spec] の `HourMinute`（0:00〜23:59）で表せない。[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md) は暫定措置として fixture に `outsideSpec` を付け、解消を 0be7 に委ねていた。
 4. 作業の分け方。
@@ -45,18 +45,18 @@ generated:
 
 * フライト: (a) `World` の状態の成分とし、空席照会は状態を読むだけの 1 歩とする、(b) マスタと同じく入力の成分とする
 * 到着時刻: (a) 出発日 0:00 からの時分（24 時以降を許す）、(b) 時分と翌日の印の組
-* オラクル: (a) 完了条件を f18c へ移して着手する、(b) 先に a8ef・f18c を済ませる
+* 原典実行: (a) 完了条件を f18c へ移して着手する、(b) 先に a8ef・f18c を済ませる
 
 ## Decision Outcome
 
-Chosen option: "フライト (a)・到着時刻 (a)・オラクル (a)", because 文書（ports.md の `World`、REF-001）の位置づけと一致し、空席照会（B1）は到着時刻について Spec=Source になり、オラクルを待たずに段ごとに検査ゲートを通せるからである（プロジェクトオーナーの決定）。
+Chosen option: "フライト (a)・到着時刻 (a)・原典実行 (a)", because 文書（ports.md の `World`、REF-001）の位置づけと一致し、空席照会（B1）は到着時刻について Spec=Source になり、原典実行を待たずに段ごとに検査ゲートを通せるからである（プロジェクトオーナーの決定）。
 
 ### 決定
 
 | 項目 | 決定 |
 | --- | --- |
 | 段の分け方 | 0be7 を 3 段に分ける。<br>- 第 1 段: `Spec.FlightSearch` と `SourceModel.FlightSearch`（SQL の `Bag` 式を含む）の関数、`Spec.Port.World`、到着時刻の表し方、共有ベクタ。<br>- 第 2 段: 初期状態（シード 00250 の展開）、FLIGHT 表を含む PostgreSQL での差分実行、`Spec`・`SourceModel` の機械と SPEC 課題。<br>- 第 3 段: L 課題 ABS-010・R 課題 ABS-011 と、トップレベルの主定理への統合 |
-| Java オラクル | 0be7 の完了条件「`source-model/` ベクタが Java オラクルと一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外す。期待値は、f18c までは仕様の例から取る（[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md) と同じ） |
+| Java の原典実行 | 0be7 の完了条件「`source-model/` ベクタが Java の原典実行と一致する」を [backlog f18c](../backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外す。期待値は、f18c までは仕様の例から取る（[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md) と同じ） |
 | フライト | `Spec.Port.World` を置き、いまの成分は `flights : List Flight` だけとする。INV は主キー（出発日・便名・搭乗クラス・運賃種別）の一意性である。空席照会は、状態を変えずに `flights` を読む操作とする（機械は第 2 段）。[Source] の状態は FLIGHT 表 `FlightDb` で、マスタの表 `MasterDb` は入力のままとする。予約（[backlog aedf](../backlog/aedf-reservation-usecase.md)）と状態を共有する機械の合成は、aedf で決める |
 | 関数の形 | `Spec.FlightSearch.searchFlight` は、設定・マスタ・今日の日付・照会条件・フライトの全件を引数に取る（[flight-search.md](../spec/flight-search.md#シグネチャ)）。`SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight` は、読み込んだ Provider・設定・今日の日付・照会条件と、Mapper の文の結果の並び（許される順序の 1 つ）を引数に取る |
 | 今日の日付 | 入力の成分とする（[ports.md](../spec/ports.md#clock)）。[Source] は 1 回の照会で Clock を 3 回読むが、モデルは 1 つの値で写し、箇所に `@[gap "D-014"]` を付ける（D-014 の前提「Clock の各呼び出しが同じ日付を返す」の下での写し） |
@@ -92,5 +92,5 @@ Chosen option: "フライト (a)・到着時刻 (a)・オラクル (a)", because
   * `2400` は SMART の解決で例外にならず、当日 0:00 と読まれる → D-031 の説明を直した（前提は変わらない）。
   * 同順位・置き換えが起きない根拠は MD-5 だけでなく MD-1・MD-2・`World.Inv` も要る → 説明を直した。第 2 段の具体機械の 1 歩には `mo.Allowed ic.db` と `SortAllowed sortRows` を課す。
   * 確かめて正しかったもの: 例外の評価順、期間の判定の同値、候補の条件と SQL の結合の同値（MD-2 の下）、`ORDER BY` の同順位が生じないこと、グループ化、到着時刻の書式、ベクタの期待値（独立に再計算して一致）。
-* [ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)（翌日着の便の暫定措置）、[ADR e9bc](e9bc-fare-double-analysis.md)（オラクルの完了条件を f18c に移した前例）、[ADR c108](c108-master-data-source-model-and-spec-fixes.md)（Mapper の文の `Bag` 式と許される並び）、[ADR 5fcb](5fcb-sql-semantics-for-source-repositories.md)、[ADR 97f9](97f9-persistence-and-transaction-semantics.md)
+* [ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)（翌日着の便の暫定措置）、[ADR e9bc](e9bc-fare-double-analysis.md)（原典実行の完了条件を f18c に移した前例）、[ADR c108](c108-master-data-source-model-and-spec-fixes.md)（Mapper の文の `Bag` 式と許される並び）、[ADR 5fcb](5fcb-sql-semantics-for-source-repositories.md)、[ADR 97f9](97f9-persistence-and-transaction-semantics.md)
 * [flight-search.md](../spec/flight-search.md)、[master-data.md](../spec/master-data.md)、[ports.md](../spec/ports.md)、[abstraction.md](../spec/abstraction.md#既知差異)（D-014・D-027・D-031）

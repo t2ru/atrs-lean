@@ -2,7 +2,7 @@
   "operation": "http.postTicket",
   "modelDef": null,
   "specRef": "docs/spec/http-contract.md#rest-apiapiv1",
-  "note": "REST の日付の JSON 表現の確認（http-contract.md の TODO。本文は atrs-selenium の RestAPITest に倣う）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java オラクルが原典から採取した（tools/oracle の HttpOracle。手で編集しない）。",
+  "note": "REST の日付の JSON 表現の確認（http-contract.md の TODO。本文は atrs-selenium の RestAPITest に倣う）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
@@ -18,7 +18,7 @@
       "expected": {
         "ok": {"responses": [{"status": 201, "headers": [["content-type", "application/json;charset=utf-8"]], "json": {"flightType": "OW", "passengerResourceList": [{"age": 44, "empty": false, "familyName": "デンデン", "gender": "F", "givenName": "ハナコ", "membershipNumber": "0000000001"}], "paymentDate": "2026-11-04", "repAge": 44, "repFamilyName": "デンデン", "repGender": "F", "repGivenName": "ハナコ", "repMail": "xxxxxx@ntt.co.jp", "repMembershipNumber": "0000000001", "repTel1": "111", "repTel2": "1111", "repTel3": "1111", "reserveNo": "0000000001", "selectFlightResourceList": [{"boardingClassCd": "N", "depDate": "2026-11-04", "fareTypeCd": "OW", "flightName": "NTT001"}], "totalFare": 20600}}]}
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     },
     {
       "id": "postTicket-slashDate",
@@ -30,7 +30,7 @@
       "expected": {
         "ok": {"responses": [{"status": 400, "headers": [["content-type", "application/json"]], "json": {"code": "e.ar.fw.9999", "message": "<h2>ご迷惑をおかけして申し訳ありません。</h2><p>エラーが発生しました。<br>お手数ですが、しばらく時間をおいてから再アクセスするか、お問い合わせください。</p>"}}]}
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     }
   ]
 }

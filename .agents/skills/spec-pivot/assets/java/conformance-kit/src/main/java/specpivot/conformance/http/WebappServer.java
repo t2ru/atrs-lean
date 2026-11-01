@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * web.xml を持つ webapp を、組み込み Tomcat で起動する（HTTP レベルのオラクル。references/docs/lang/java/harness.md）。
+ * web.xml を持つ webapp を、組み込み Tomcat で起動する（HTTP レベルの原典実行。references/docs/lang/java/harness.md）。
  *
  * <ul>
  * <li>web.xml は原典のまま読む（ContextConfig）。クラスは webapp の WEB-INF でなく、ハーネスのクラスパスから読む

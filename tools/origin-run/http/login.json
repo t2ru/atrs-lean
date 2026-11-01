@@ -2,7 +2,7 @@
   "operation": "http.login",
   "modelDef": null,
   "specRef": "docs/spec/authentication.md#ログインlogin",
-  "note": "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（authentication.md の TODO、D-028）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java オラクルが原典から採取した（tools/oracle の HttpOracle。手で編集しない）。",
+  "note": "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（authentication.md の TODO、D-028）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
@@ -19,7 +19,7 @@
       "expected": {
         "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"], ["set-cookie", "JSESSIONID=…; Path=/atrs; HttpOnly"]], "htmlHasCsrfToken": true}, {"status": 302, "headers": [["location", "/atrs/"]]}], "after": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}}
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     },
     {
       "id": "login-wrongPassword",
@@ -32,7 +32,7 @@
       "expected": {
         "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"], ["set-cookie", "JSESSIONID=…; Path=/atrs; HttpOnly"]], "htmlHasCsrfToken": true}, {"status": 200, "headers": [["content-type", "text/html;charset=UTF-8"]], "htmlHasCsrfToken": true}], "after": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}}
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     },
     {
       "id": "login-restBasic",
@@ -45,7 +45,7 @@
       "expected": {
         "ok": {"before": {"loginDateTime": "2026-11-01T00:00", "loginFlg": false}, "responses": [{"status": 200, "headers": [["content-type", "application/json;charset=utf-8"]], "jsonArraySize": 18}], "after": {"loginDateTime": "2026-11-03T00:00", "loginFlg": true}}
       },
-      "source": "java-oracle"
+      "source": "java-origin-run"
     }
   ]
 }
