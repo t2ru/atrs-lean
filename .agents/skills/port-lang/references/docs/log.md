@@ -5,6 +5,7 @@
   * `LangSemantics.Sql`: `Truth.holds_or`・`inList_text_holds`・`SqlValue.eq_date_holds`・`Collation.codepoint_ne_gt`・`Collation.codepoint_eq`（`Core`）、結合の補題 `filter_cross_opt`・`filterMap_cross`・`filterMap_unique`（`QueryLemmas`）。
   * `LangSemantics.Core`: `mapM_perm`・`mapM_pairwise`（`MapM`）、`rel_of_pairwise_symm`（`List`）。
   * `LangSemantics.Java`: `JHashMap` の `get`・`put` と項目ごとの写し `pairAlpha` の可換性 `get_alpha`・`put_alpha`（`HashMap`。キーの写しが単射のとき）、`for` の模倣 `forIn_map_sim`（`ResultLemmas`）、`J64.val_ofInt_of_inRange`（`Int`）。
+  * `LangSemantics.Java.DecimalFormat`: 書式の記号の組 `Symbols`（区切り文字・数字の 0・負の記号の文字列）と、それによる書式 `formatGroupedS`・`formatJ32S`、ASCII の記号で `formatGrouped` に等しいこと `formatGroupedS_ascii`。JVM との突き合わせ表に、6 つのロケール（ja-JP・de-DE・fr-FR・th-TH-u-nu-thai・ar-EG・fa-IR）の行を足した（記号は JVM から取る）。[lang/java/semantics.md](lang/java/semantics.md#演算名前は仕様文書でも共通に使う) を改めた。
   * 来歴: 適用先 ATRS の空席照会の第 3 段（R 課題 ABS-011。ATRS の ADR 0b0c）。
 
 * **Update**: `LangSemantics.Sql.QueryLemmas` に条件の押し下げの補題 `cross_filter_left`・`select_filter_of_imp` を、`LangSemantics.Java.JLocalDate.RoundTrip` に妥当な暦日での `ofEpochDay (toEpochDay x) = x`（400 年の周期の全日をカーネルで確かめる）を、`Machine.Kernel` に `mapM_inj` を足した。スキルの版を 0.16 にした。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。来歴: 適用先 ATRS の空席照会の第 2 段（PostgreSQL での差分実行で、FLIGHT の全件の直積を避ける）。

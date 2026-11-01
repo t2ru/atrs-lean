@@ -26,7 +26,7 @@
       "lean": ["FlightSearch", "FlightSearchQuery", "Repository.Flight", "Repository.FlightSeed", "Repository.Schema.FlightRow", "Repository.Schema.FlightDb", "Repository.Mapping.flight"],
       "tasks": ["ABS-010", "ABS-011", "ABS-114", "ABS-132"],
       "locators": [
-        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{isAvailableFareType,getSearchLimitDate,validateDepatureDate}*",
+        "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService{,Impl}#{getSearchLimitDate,validateDepatureDate}*",
         "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil{#getFareTypeCdList*,.ONE_WAY_FARETYPES,.ROUND_TRIP_FARETYPES}",
         "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil{#toFormatDateString*,#toFormatTimeString*,.DATE_FORMATTER,.TIME_FORMATTER}",
         "java:jp.co.ntt.atrs.domain.model.FlightType*",
@@ -59,7 +59,7 @@
         "java:jp.co.ntt.atrs.domain.repository.reservation.*",
         "sql:jp.co.ntt.atrs.domain.repository.reservation.*",
         "java:jp.co.ntt.atrs.domain.common.util.FareTypeUtil#{isOneWay,isRoundTrip}*",
-        "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocal*",
+        "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#{toLocalDate(LocalDateTime),toLocalDateTime*,toLocalTime*}",
         "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#{exists,findOneForUpdate,update}*",
         "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#{exists,findOneForUpdate,update}",
         "rust:atrs::reservation::*"
@@ -74,6 +74,7 @@
       "lean": ["UseCase.Member"],
       "tasks": ["ABS-024", "ABS-034", "ABS-042"],
       "locators": [
+        "java:jp.co.ntt.atrs.domain.common.util.DateTimeUtil#toLocalDate(String)",
         "java:jp.co.ntt.atrs.domain.model.{Member,MemberLogin,Gender,CreditType}*",
         "ddl:00100_create_all_tables.sql#{MEMBER,MEMBER_LOGIN,PK_MEMBER,PK_MEMBER_LOGIN,FK_MEMBER_1,FK_MEMBER_LOGIN_1,SQ_MEMBER_1}",
         "seed:00230_insert_member.sql#*",

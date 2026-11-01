@@ -65,7 +65,7 @@ theorem need_D032 :
       ((searchConcrete.restrict dev_D027S).restrict dev_D014S) glueFS := fun h => by
   obtain ⟨oc, hoc, hα⟩ := run_icFS_dot
   obtain ⟨hd1, hd2⟩ := iaFS_devs
-  obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS (icFS '.') iaFS fdFS oc wFS_inv
+  obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS (icFS symDot) iaFS fdFS oc wFS_inv
     (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [hoc]; rfl⟩
@@ -76,22 +76,22 @@ theorem need_D032 :
     exact answer_ne_dot (Option.some.inj ho).symm
   · exact ho
 
-/-- W 課題 ABS-114（D-014 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。照会の途中で日付をまたぎ、
-`TicketSharedServiceImpl` の読む今日の日付だけが進むと、[Source] は搭乗日を照会可能期間の外として業務例外 `e.ar.b1.2001`
-を返し、[Spec] は空席情報を返す（`Witness`）。 -/
+/-- W 課題 ABS-114（D-014 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。照会の途中で日付をまたぐ
+（共有サービスが 1970-01-01 を読んだ後、`searchFlight` が 1970-01-02 を読む）と、[Source] は照会可能期間の検査を通り、
+予約可能期間に入らないので `e.ar.b1.2003` を返す。[Spec]（今日は 1970-01-02）は `e.ar.b1.2001` を返す（`Witness`）。 -/
 @[obligation "ABS-114", gap "D-014"]
 theorem need_D014 :
     ¬ Refines ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
       ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS := fun h => by
-  obtain ⟨hd1, hd2⟩ := iaFS_devs
-  obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS icFS14 iaFS fdFS (.error (.business "e.ar.b1.2001")) wFS_inv
-    (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS14 ⟨⟨iaFS_pre, hd1⟩, hd2⟩
+  obtain ⟨hd1, hd2⟩ := iaFS14_devs
+  obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS icFS14 iaFS14 fdFS (.error (.notFound "e.ar.b1.2003"))
+    wFS_inv (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS14 ⟨⟨iaFS14_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS14]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [run_icFS14]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
   obtain ⟨-, rfl⟩ := hc
   rcases ho with ho | ho
-  · exact answer_ok _ (Option.some.inj ho).symm
+  · exact answer_ne14 (Option.some.inj ho).symm
   · exact ho
 
 /-- ABS-011 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。基底が `ofChoice` なので `ch = some chFS`、
@@ -105,7 +105,7 @@ theorem searchPreserves :
   initIs := Spec.FlightSearch.searchMachine_initIs
   initSurj := searchRefines_initSurj
   total _ _ _ h := ⟨⟨⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2⟩
-  envWitness := ⟨icFS ',', iaFS, ⟨⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, rfl⟩, aiS_icFS_comma,
+  envWitness := ⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, iaFS, ⟨⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, rfl⟩, aiS_icFS_comma,
     envFS_iaFS⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaFSbad) wFS_inv
     fun h => Spec.EnvPre.badMasterData_not_env ⟨h.1.1.1, h.1.1.2.1⟩

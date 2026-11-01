@@ -26,21 +26,21 @@ abbrev VMap := JLinkedHashMap (JRef String) FlightVacantInfoDto
 /-! ## 畳み込みの本体 -/
 
 /-- `createFlightVacantInfoList` の `for` の本体（`rfl` で原典の写しに等しい）。 -/
-def body (sep : Char) (bf : J32) (flight : SourceModel.Model.Flight) (m : VMap) : JResult (ForInStep VMap) := do
+def body (sep : LangSemantics.Java.DecimalFormat.Symbols) (bf : J32) (flight : SourceModel.Model.Flight) (m : VMap) : JResult (ForInStep VMap) := do
   let fm ← flight.flightMaster.deref "flightMaster"
   let departureTime := fm.departureTime
   let jp : FlightVacantInfoDto → JResult (ForInStep VMap) := fun vacantInfo => do
     let ft ← flight.fareType.deref "fareType"
     let d ← ft.discountRate.deref "discountRate"
     let fare ← SourceModel.Fare.calculateFare bf d
-    let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32 sep fare), flight.vacantNum⟩
+    let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32S sep fare), flight.vacantNum⟩
     let v ← vacantInfo.addFareTypeVacantInfo ft.fareTypeCd info
     pure (ForInStep.yield (m.put departureTime v))
   match m.get departureTime with
   | some v => do let vacantInfo ← pure v; jp vacantInfo
   | none => do let vacantInfo ← createFlightVacantInfo flight; jp vacantInfo
 
-theorem createFlightVacantInfoList_eq (sep : Char) (fl : List SourceModel.Model.Flight) (bf : J32) :
+theorem createFlightVacantInfoList_eq (sep : LangSemantics.Java.DecimalFormat.Symbols) (fl : List SourceModel.Model.Flight) (bf : J32) :
     createFlightVacantInfoList sep fl bf =
       (forIn fl ({} : VMap) (body sep bf)) >>= fun m => pure (m.entries.map (·.2)) := rfl
 
@@ -123,7 +123,7 @@ theorem mapM_snd {κ υ κ' υ' : Type} {ka : κ → Option κ'} {va : υ → Op
 /-! ## 1 歩 -/
 
 /-- フライト（Provider で詰め直した値）が候補 `X` の写しで、運賃の計算と書式が [Spec] に一致する。 -/
-structure FlightOk (sep : Char) (bf : J32) (b : Nat) (depName arrName : String) (fl : SourceModel.Model.Flight) (X : Candidate) :
+structure FlightOk (sep : LangSemantics.Java.DecimalFormat.Symbols) (bf : J32) (b : Nat) (depName arrName : String) (fl : SourceModel.Model.Flight) (X : Candidate) :
     Prop where
   fm : ∃ fm r da aa dt art, fl.flightMaster = some fm ∧ fm.flightName = some X.flight.key.flightName.val ∧
     fm.departureTime = some dt ∧ hmOfStr dt = some X.master.departureTime ∧ fm.arrivalTime = some art ∧
@@ -134,10 +134,10 @@ structure FlightOk (sep : Char) (bf : J32) (b : Nat) (depName arrName : String) 
   ft : ∃ ft dr fv, fl.fareType = some ft ∧ ft.fareTypeCd = some X.flight.key.fareTypeCd ∧
     ft.fareTypeName = some X.fareType.fareTypeName ∧ ft.discountRate = some dr ∧
     SourceModel.Fare.calculateFare bf dr = .ok fv ∧
-    DecimalFormat.formatJ32 sep fv = fmtYen (Spec.Fare.fare b X.fareType.discountRate)
+    DecimalFormat.formatJ32S sep fv = fmtYen (Spec.Fare.fare b X.fareType.discountRate)
   vacant : ∃ v, fl.vacantNum = some v ∧ natOfJ32 v = some X.flight.vacantNum
 
-theorem header_ok {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {fl : SourceModel.Model.Flight} {X : Candidate}
+theorem header_ok {sep : LangSemantics.Java.DecimalFormat.Symbols} {bf : J32} {b : Nat} {depName arrName : String} {fl : SourceModel.Model.Flight} {X : Candidate}
     (h : FlightOk sep bf b depName arrName fl X) :
     ∃ hdr, createFlightVacantInfo fl = .ok hdr ∧ vacantInfoOf hdr = some (headerOf depName arrName X) := by
   obtain ⟨fm, r, da, aa, dt, art, hfm, hn, hdt, hdt', hat, hat', hr, hda, hdn, haa, han⟩ := h.fm
@@ -153,7 +153,7 @@ theorem header_ok {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
     rfl
 
 /-- 1 歩: 状態が写しで結ばれていれば、本体は例外を投げず、次の状態も写しで結ばれる。 -/
-theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {fl : SourceModel.Model.Flight} {X : Candidate}
+theorem body_step {sep : LangSemantics.Java.DecimalFormat.Symbols} {bf : J32} {b : Nat} {depName arrName : String} {fl : SourceModel.Model.Flight} {X : Candidate}
     (h : FlightOk sep bf b depName arrName fl X) {m : VMap} {gs : List (HourMinute × FlightVacantInfo)}
     (hR : m.entries.mapM (pairAlpha kaT vacantInfoOf) = some gs) :
     ∃ m', body sep bf fl m = .ok (.yield m') ∧
@@ -164,7 +164,7 @@ theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
   obtain ⟨hdr0, hhdr, hhdr'⟩ := header_ok h
   have hk : kaT fm.departureTime = some X.master.departureTime := by simp only [kaT, hdt, Option.bind_some, hdt']
   -- 運賃種別の空席情報
-  let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32 sep fv), fl.vacantNum⟩
+  let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32S sep fv), fl.vacantNum⟩
   have hinfo : ftVal info = some (Spec.FlightSearch.fareTypeInfoOf b X) := by
     simp only [info, ftVal, hftn, hfmt, hv, hv', Option.bind_eq_bind, Option.bind_some, Option.pure_def]
     rfl
@@ -186,7 +186,7 @@ theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
         let ft ← fl.fareType.deref "fareType"
         let d ← ft.discountRate.deref "discountRate"
         let fare ← SourceModel.Fare.calculateFare bf d
-        let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32 sep fare), fl.vacantNum⟩
+        let info : FareTypeVacantInfoDto := ⟨ft.fareTypeName, some (DecimalFormat.formatJ32S sep fare), fl.vacantNum⟩
         let v ← vi.addFareTypeVacantInfo ft.fareTypeCd info
         pure (ForInStep.yield (m.put fm.departureTime v)) : JResult (ForInStep VMap)) = .ok (.yield m') ∧
         m'.entries.mapM (pairAlpha kaT vacantInfoOf) = some (insertOrdered gs X.master.departureTime
@@ -214,7 +214,7 @@ theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
 
 /-- 畳み込み全体: 各フライトが `FlightOk` なら、`createFlightVacantInfoList` は例外を投げず、結果の写しは
 [Spec] の `group`。 -/
-theorem group_spec {ρ : Type} {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} (o : List ρ)
+theorem group_spec {ρ : Type} {sep : LangSemantics.Java.DecimalFormat.Symbols} {bf : J32} {b : Nat} {depName arrName : String} (o : List ρ)
     (E : ρ → SourceModel.Model.Flight) (C : ρ → Candidate) (h : ∀ r ∈ o, FlightOk sep bf b depName arrName (E r) (C r)) :
     ∃ ds, createFlightVacantInfoList sep (o.map E) bf = .ok ds ∧
       ds.mapM vacantInfoOf = some (group depName arrName b (o.map C)) := by

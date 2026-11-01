@@ -221,14 +221,15 @@ theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : Li
 theorem candidateOf_cond {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight}
     {X : Candidate} (h : candidateOf md c route bdn F = some X) :
     X.flight = F ∧ md.flightMasterOf F.key.flightName = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType ∧
-      F.key.departureDate = c.depDate ∧ X.master.routeNo = route.routeNo ∧ F.key.boardingClassCd = c.boardingClassCd := by
+      F.key.departureDate = c.depDate ∧ X.master.routeNo = route.routeNo ∧ F.key.boardingClassCd = c.boardingClassCd ∧
+      F.key.fareTypeCd ∈ fareTypesFor c.flightType := by
   unfold candidateOf at h
   simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at h
   obtain ⟨fm, hfm, ft, hft, h⟩ := h
   split at h
   · rename_i hc
     cases h
-    exact ⟨rfl, hfm, hft, hc.1, hc.2.1, hc.2.2.1⟩
+    exact ⟨rfl, hfm, hft, hc.1, hc.2.1, hc.2.2.1, hc.2.2.2.1⟩
   · cases h
 
 /-- MD-1（運賃種別の表示順の一意性）・MD-5（同じ区間の便マスタの出発時刻の一意性）・`World.Inv`（フライトの主キーの
@@ -239,8 +240,8 @@ theorem noTie_cands {cfg : Spec.Config} {md : Spec.MasterData} (hv : md.Valid cf
   intro X hX Y hY hdo hdt
   obtain ⟨F, hF, hFX⟩ := List.mem_filterMap.mp hX
   obtain ⟨G, hG, hGY⟩ := List.mem_filterMap.mp hY
-  obtain ⟨eX, fmX, ftX, dX, rX, bX⟩ := candidateOf_cond hFX
-  obtain ⟨eY, fmY, ftY, dY, rY, bY⟩ := candidateOf_cond hGY
+  obtain ⟨eX, fmX, ftX, dX, rX, bX, -⟩ := candidateOf_cond hFX
+  obtain ⟨eY, fmY, ftY, dY, rY, bY, -⟩ := candidateOf_cond hGY
   -- 運賃種別
   have hft : X.fareType = Y.fareType :=
     LangSemantics.Core.List.inj_of_nodup_map hv.md1.2.2.2.2.2.2.2.2.2.2.1 (List.mem_of_find?_eq_some ftX)

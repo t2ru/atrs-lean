@@ -15,19 +15,22 @@ open Abstraction.Fare.TotalAlpha Abstraction.FlightSearch.Alpha Abstraction.Mast
 open SourceModel.FlightSearch SourceModel.FlightSearchQuery SourceModel.Repository.Schema Spec.Prim.Text
   LangSemantics.Core.List
 
+/-- 区切り文字が `.` の記号（ドイツ語など）。 -/
+def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-"⟩
+
 /-- マスタの DB。 -/
 def dbFS : MasterDb := dbTF ⟨100000, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩
 
 /-- FLIGHT 表（1970-01-01 の NTT001・N・OW、空席 10）。 -/
 def fdFS : FlightDb := ⟨[⟨⟨0, by decide⟩, ⟨"NTT001", by decide⟩, ⟨"N", by decide⟩, ⟨"OW", by decide⟩, ⟨10, by decide⟩⟩]⟩
 
-/-- 配備の環境の区切り文字 `sep` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
-def icFS (sep : Char) : SearchInput :=
+/-- 配備の環境の書式の記号 `sym` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
+def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
   { db := dbFS, config := SourceModel.Config.upstreamConfig, today := ⟨1970, 1, 1⟩,
     sharedClock := (⟨1970, 1, 1⟩, ⟨1970, 1, 1⟩),
     criteria := some { flightType := some .OW, departureAirportCd := some "HND", arrivalAirportCd := some "ITM",
                        depDate := some ⟨1970, 1, 1⟩, boardingClassCd := some .N },
-    groupingSeparator := sep }
+    formatSymbols := sym }
 
 /-- マスタの [Spec] の写し。 -/
 def mdFS : Spec.MasterData :=
@@ -45,7 +48,7 @@ def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, 
 /-- [Spec] の状態。 -/
 def wFS : Spec.Port.World := ⟨[⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩]⟩
 
-theorem aiS_icFS : aiS (icFS '.') = some iaFS := by decide
+theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 
 theorem worldOfDb_fdFS : worldOfDb fdFS = some wFS := rfl
 
@@ -63,13 +66,13 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
     intro a ha
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
     rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
-  · intro fm hfm
+  · intro _ _ fm hfm _
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at hfm
     subst hfm
     exact hN
 
 theorem iaFS_devs : dev_D001S iaFS ∧ dev_D002S iaFS := by
-  refine ⟨fun r hr => ?_, fun r b hr hb ft hft => ?_⟩
+  refine ⟨fun r hr _ => ?_, fun r b hr _ hb ft hft _ => ?_⟩
   · have : r = ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ := by
       have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ :=
         by decide
@@ -101,9 +104,9 @@ def vDot : Spec.FlightSearch.FlightVacantInfo :=
 
 /-- 区切り文字 `.` での [Source] の 1 歩（許される並びの 1 つ）の結果の写しは `vDot` の 1 件。 -/
 theorem run_icFS_dot :
-    ∃ oc, catchBusiness (runSearchFlight fdFS (icFS '.') (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
+    ∃ oc, catchBusiness (runSearchFlight fdFS (icFS symDot) (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
       Abstraction.FlightSearch.Order.mergeSortRows) = .ok oc ∧ aoS oc = some (.ok [vDot]) := by
-  have h : (match catchBusiness (runSearchFlight fdFS (icFS '.') (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
+  have h : (match catchBusiness (runSearchFlight fdFS (icFS symDot) (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
       Abstraction.FlightSearch.Order.mergeSortRows) with
       | .ok oc => match aoS oc with
         | some (.ok l) => l == [vDot]
@@ -132,18 +135,33 @@ theorem answer_ne_dot : Spec.FlightSearch.answer wFS iaFS ≠ .ok [vDot] := by
 
 /-! ## W 課題 ABS-114（D-014 の必要性）の証人 -/
 
-/-- `TicketSharedServiceImpl` の読む今日の日付だけが 1 日進んだ入力（照会の途中で日付をまたいだ）。 -/
-def icFS14 : SearchInput := { icFS ',' with sharedClock := (⟨1970, 1, 2⟩, ⟨1970, 1, 2⟩) }
+/-- 1970-01-02。 -/
+def day1 : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
-theorem aiS_icFS14 : aiS icFS14 = some iaFS := by decide
+/-- 照会の途中で日付をまたいだ入力: `TicketSharedServiceImpl` が読む今日（`validateDepatureDate`・`getSearchLimitDate`）は
+1970-01-01、その後に `searchFlight` が読む今日は 1970-01-02（Clock は進むだけ）。 -/
+def icFS14 : SearchInput := { icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with today := ⟨1970, 1, 2⟩ }
 
-/-- [Source] の 1 歩の結果は業務例外 `e.ar.b1.2001`（搭乗日が `validateDepatureDate` の今日より前）。 -/
+/-- `icFS14` の [Spec] の入力（今日は 1970-01-02）。 -/
+def iaFS14 : Spec.FlightSearch.SearchInput := { iaFS with today := day1 }
+
+theorem aiS_icFS14 : aiS icFS14 = some iaFS14 := by decide
+
+theorem iaFS14_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS14 := iaFS_pre
+
+/-- 搭乗日が照会可能期間の外なので、D-001・D-002 の前提は空虚に成り立つ。 -/
+theorem iaFS14_devs : dev_D001S iaFS14 ∧ dev_D002S iaFS14 := by
+  have hop : Spec.FlightSearch.outOfPeriod iaFS14.cfg iaFS14.today iaFS14.criteria.depDate = true := by decide
+  exact ⟨fun _ _ h => absurd h (by rw [hop]; decide), fun _ _ _ h => absurd h (by rw [hop]; decide)⟩
+
+/-- [Source] の 1 歩の結果は `FlightNotFoundException`（`e.ar.b1.2003`）: 照会可能期間の検査は共有サービスの今日で
+通り、`beforeDayNum = daysBetween(1970-01-02, 1970-01-01) = −1` は予約可能期間に入らない。 -/
 theorem run_icFS14 :
     catchBusiness (runSearchFlight fdFS icFS14 (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
-      Abstraction.FlightSearch.Order.mergeSortRows) = .ok (.error (.business "e.ar.b1.2001")) := by
+      Abstraction.FlightSearch.Order.mergeSortRows) = .ok (.error (.notFound "e.ar.b1.2003")) := by
   have h : (match catchBusiness (runSearchFlight fdFS icFS14 (Abstraction.MasterData.QueryRun.mergeOrder dbFS)
       Abstraction.FlightSearch.Order.mergeSortRows) with
-      | .ok (.error (.business c)) => c == "e.ar.b1.2001"
+      | .ok (.error (.notFound c)) => c == "e.ar.b1.2003"
       | _ => false) = true := by
     simp only [runSearchFlight, SourceModel.FlightSearch.searchFlight, SourceModel.MasterData.getRouteByAirportCd,
       SourceModel.MasterData.getFlightMaster, assertHasText_eq]
@@ -153,24 +171,24 @@ theorem run_icFS14 :
     rw [hc, beq_iff_eq.mp h]
   · cases h
 
-/-- [Spec] の出力は業務例外ではない。 -/
-theorem answer_ok : ∀ e, Spec.FlightSearch.answer wFS iaFS ≠ .error e := by
-  have h : (match Spec.FlightSearch.answer wFS iaFS with
-      | .ok _ => true
-      | .error _ => false) = true := by decide +kernel
-  intro e he
-  rw [he] at h
+/-- [Spec] の出力は `NotFound` ではない（搭乗日が今日より前なので `Business("e.ar.b1.2001")`）。 -/
+theorem answer_ne14 : Spec.FlightSearch.answer wFS iaFS14 ≠ .error (.notFound "e.ar.b1.2003") := by
+  have h : (match Spec.FlightSearch.answer wFS iaFS14 with
+      | .error (.notFound _) => false
+      | _ => true) = true := by decide +kernel
+  intro e
+  rw [e] at h
   cases h
 
 /-! ## 差異の述語の非自明性（G8） -/
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D032_nontrivial : Nontrivial dev_D032 :=
-  ⟨⟨icFS ',', rfl⟩, ⟨icFS '.', by unfold dev_D032; decide⟩⟩
+  ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, rfl⟩, ⟨icFS symDot, by unfold dev_D032; decide⟩⟩
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D027S_nontrivial : Nontrivial dev_D027S :=
-  ⟨⟨icFS ',', by unfold dev_D027S; decide⟩, ⟨{ icFS ',' with criteria := none }, by unfold dev_D027S; decide⟩⟩
+  ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, by unfold dev_D027S; decide⟩, ⟨{ icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with criteria := none }, by unfold dev_D027S; decide⟩⟩
 
 /-- D-001 の前提を破るマスタ: 区間の運賃 100 円・積算比率 29%（`100·29` は 100 で割り切れ、29 は安全でない）。 -/
 def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
@@ -182,20 +200,20 @@ def mdFS1430 : Spec.MasterData :=
 open Machine.Preserves (Nontrivial) in
 theorem dev_D001S_nontrivial : Nontrivial dev_D001S := by
   refine ⟨⟨iaFS, iaFS_devs.1⟩, ⟨{ iaFS with md := mdFS29 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩ (by decide)
+  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩ (by decide) (by decide)
   revert this
   decide
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D002S_nontrivial : Nontrivial dev_D002S := by
   refine ⟨⟨iaFS, iaFS_devs.2⟩, ⟨{ iaFS with md := mdFS1430 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩ 1430 (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
-    (by simp [mdFS1430])
+  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩ 1430 (by decide) (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
+    (by simp [mdFS1430]) (by decide)
   revert this
   decide
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D014S_nontrivial : Nontrivial dev_D014S :=
-  ⟨⟨icFS ',', rfl⟩, ⟨icFS14, by unfold dev_D014S; decide⟩⟩
+  ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, rfl⟩, ⟨icFS14, by unfold dev_D014S; decide⟩⟩
 
 end Abstraction.FlightSearch.Witness
