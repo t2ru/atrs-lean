@@ -6,7 +6,7 @@ tags: [rules, backlog]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:40:00+09:00
+  at: 2026-11-01T22:30:00+09:00
 ---
 
 # バックログ規約
@@ -79,7 +79,7 @@ generated:
 
 - 完了条件のチェックボックスがすべて埋まっている。
 - 関係する spec・ADR・[traceability.md](../spec/traceability.md) が更新されている。
-- Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
+- 全数の検査 `mise run ci`（[checks.md](checks.md)。変更時の段を含む）が通る。Lean を変更した場合、`lake build` と `lake test` が成功し、`sorry`・新規 `axiom`・証明中の `native_decide`・`bv_decide` が無い。
 - 基本原則（[ADR c336](../decision/c336-foundational-principles.md)）を満たす。項目が扱う機能について、次をすべて満たす。
   - R 課題・W 課題と、関係する `Spec` 自身の課題（SPEC-NNN）が証明されている。R 課題は束（`Machine.Preserves`。同じ課題 ID。`InitSurj`・`Pinned`・出力のみの差異の `StateSafe` などを成分に持つ）を、W 課題は両向きの例を含む（[ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)）。
   - 機能の R 課題の主定理と束が、トップレベルの主定理（`Abstraction.refines`・`Abstraction.preserves`・`Refinement.refines`・`Refinement.preserves`）の並置に入っている（`Spec.machine`・`SourceModel.machine`・`TargetModel.machine` に機能の機械を加える。[ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)）。

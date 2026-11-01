@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:40:00+09:00
+  at: 2026-11-01T22:30:00+09:00
 ---
 
 # ATRS での spec-pivot スキルの適用
@@ -41,7 +41,7 @@ generated:
 | パス | 内容 |
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets/lean`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
-| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が一括検査。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
+| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
 | `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
@@ -130,7 +130,7 @@ generated:
 | --- | --- |
 | 評価 | 済み。範囲は [ADR 84bf](../decision/84bf-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 455f](../backlog/455f-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
 | 判断を記録する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、スキルの既定の例に加えて、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
-| 検査ゲート | `mise run ci`（ルートの `mise.toml` のタスク。[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）と CI。追跡は `trace check`、ハッシュの更新は `trace rehash` |
+| 検査ゲート | `mise run check`（選択実行）・`mise run ci`（全数）。ルートの `mise.toml` のタスク（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）と CI。実行の時点は [checks.md](checks.md)。追跡は `trace check`、ハッシュの更新は `trace rehash` |
 | 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
 | 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） |
 | 画面の確認 | HTTP レベルの原典実行とベクタで行う。HTML の構造は範囲外（ADR 84bf）。ブラウザでの操作の流れのテストは、現時点では採らない |

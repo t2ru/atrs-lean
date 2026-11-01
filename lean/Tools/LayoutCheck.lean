@@ -9,9 +9,11 @@ import Trace.Layout
 `--json` で結果を JSON で出す。
 -/
 
-/-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。 -/
+/-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。
+組ごとに環境を読み込み、解放しないので、組を増やすとメモリが増える（CI の runner は 8 GB）。`main` だけを置く入口
+（`Tests.LongMain`）は組に入れない。 -/
 def Tools.LayoutCheck.groups : Array (Array Lean.Name) :=
-  #[#[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement, `Tests, `Tools.LayoutCheck],
+  #[#[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement, `Tests, `Tests.Long, `Tools.LayoutCheck],
     #[`Tests.Main], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
 
 unsafe def main (args : List String) : IO UInt32 :=
