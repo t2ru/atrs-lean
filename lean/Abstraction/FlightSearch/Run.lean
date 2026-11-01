@@ -191,4 +191,190 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
         by have := r.result.vacantNum.property.2; simp only [J32.maxValue]; omega⟩]
       exact natOfInt4_eq_some.mp hvn
 
+/-! ## 畳み込みまで -/
+
+/-- 正常終了の値（例外なら既定値）。 -/
+def okD {α : Type} (d : α) : JResult α → α
+  | .ok a => a
+  | .error _ => d
+
+theorem mapM_ok_of {β γ : Type} (l : List β) (f : β → JResult γ) (d : γ) (h : ∀ x ∈ l, ∃ y, f x = .ok y) :
+    l.mapM f = .ok (l.map fun x => okD d (f x)) := by
+  apply mapM_ok
+  intro x hx
+  obtain ⟨y, hy⟩ := h x hx
+  rw [hy]; rfl
+
+/-- 詰め直しと畳み込み: 各行で詰め直しが例外を投げず `FlightOk` なら、業務例外にならず、写しは [Spec] の `group`。 -/
+theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Model.Flight → JResult SourceModel.Model.Flight)
+    (M : ρ → SourceModel.Model.Flight) (C : ρ → Candidate) {bf : J32} {b : Nat} {dn an : String}
+    (h : ∀ r ∈ o, ∃ E, F (M r) = .ok E ∧ Abstraction.FlightSearch.Group.FlightOk ',' bf b dn an E (C r)) :
+    ∃ oc, SourceModel.FlightSearchQuery.catchBusiness
+        ((o.map M).mapM F >>= fun fl => SourceModel.FlightSearch.createFlightVacantInfoList ',' fl bf) = .ok oc ∧
+      aoS oc = some (.ok (group dn an b (o.map C))) := by
+  have hm : (o.map M).mapM F = .ok (o.map fun r => okD {} (F (M r))) := by
+    rw [mapM_ok_of (o.map M) F {} (fun x hx => by
+      obtain ⟨r, hr, rfl⟩ := List.mem_map.mp hx
+      obtain ⟨E, hE, -⟩ := h r hr
+      exact ⟨E, hE⟩), List.map_map]
+    rfl
+  obtain ⟨ds, hds, hα⟩ := Abstraction.FlightSearch.Group.group_spec (sep := ',') (bf := bf) (b := b) (depName := dn)
+    (arrName := an) o (fun r => okD {} (F (M r))) C (fun r hr => by
+      obtain ⟨E, hE, hok⟩ := h r hr
+      simp only [hE, okD]; exact hok)
+  refine ⟨.ok ds, ?_, ?_⟩
+  · rw [hm, ok_bind, hds]; rfl
+  · simp only [aoS, hα, Option.map_some]
+
+/-! ## 1 歩 -/
+
+/-- 具体側の 1 歩: D-027（入力の像がある）・PRE・D-001・D-002・D-032 の下で、どの許される並びでも、
+`catchBusiness (runSearchFlight …)` は例外を投げず、結果の写しは [Spec] の `answer`。 -/
+theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
+    {ic : SourceModel.FlightSearch.SearchInput} {i : Spec.FlightSearch.SearchInput} (hα : aiS ic = some i)
+    (hp : SearchInput.Pre w i) (h1 : dev_D001S i) (h2 : dev_D002S i) (h32 : dev_D032 ic)
+    {mo : SourceModel.MasterQuery.Order} (hmo : mo.Allowed ic.db) {sortRows : List VacantSeatRow → List VacantSeatRow}
+    (hs : SortAllowed sortRows) :
+    ∃ oc, SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearch.runSearchFlight fd ic mo sortRows) = .ok oc ∧
+      aoS oc = some (answer w i) := by
+  simp only [aiS, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hα
+  obtain ⟨cfg, hcfg, md, hm, T, hT, c, hc, rfl⟩ := hα
+  obtain ⟨tc, htc, hcrit⟩ := hc
+  simp only [criteriaOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hcrit
+  obtain ⟨D, hD, bc, hbc, dep, hdep, arr, harr, ft, hft, rfl⟩ := hcrit
+  obtain ⟨dj, hdj, hDj⟩ := hD
+  obtain ⟨hcv, hv, hbsome, hdepT, harrT, hfn⟩ := hp
+  simp only at hcv hv hbsome hdepT harrT hfn h1 h2
+  obtain ⟨p, hl, hpt, hrq, hbcq, hftq, hfmq⟩ := Abstraction.FlightSearch.Providers.load_fs hm hv hmo
+  simp only [SourceModel.FlightSearch.runSearchFlight, hl, ok_bind, SourceModel.FlightSearch.searchFlight, htc, hdj, hbc,
+    hdep, harr, hft, pure_bind, Option.getD_some]
+  have hL : ic.config.limitDay.val = (cfg.limitDay : Int) := by
+    simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hcfg
+    obtain ⟨ld, hld, _, _, _, _, _, _, _, _, _, _, rfl⟩ := hcfg
+    exact natOfJ32_eq_some.mp hld
+  rw [assertHasText_ok hdepT, assertHasText_ok harrT, ok_bind, ok_bind,
+    Abstraction.FlightSearch.Period.validateDepatureDate_eq hL hT hDj]
+  -- [Spec] の側
+  have hans : answer w ⟨cfg, md, T, ⟨D, bc, ⟨dep⟩, ⟨arr⟩, ft⟩⟩ =
+      (searchFlight cfg md T ⟨D, bc, ⟨dep⟩, ⟨arr⟩, ft⟩ w.findAll).getD (.ok []) := rfl
+  rw [hans]
+  unfold searchFlight validateDepartureDate
+  cases hop : outOfPeriod cfg T D
+  · simp only [Bool.false_eq_true, ↓reduceIte, ok_bind]
+    obtain ⟨ans, hget, hansα⟩ := hrq ⟨dep⟩ ⟨arr⟩ hdepT harrT
+    rw [hget, ok_bind]
+    cases hro : md.routeOf ⟨dep⟩ ⟨arr⟩ with
+    | none =>
+      rw [hro] at hansα
+      cases ans with
+      | some rr =>
+        simp only [answerOf?, AnswerOf.opt, Option.map_map, Option.map_eq_some_iff] at hansα
+        obtain ⟨x, -, hx⟩ := hansα
+        simp at hx
+      | none =>
+        refine ⟨.error (.business "e.ar.b1.2002"), ?_, rfl⟩
+        rfl
+    | some route =>
+      rw [hro] at hansα
+      cases ans with
+      | none => simp [answerOf?, AnswerOf.opt] at hansα
+      | some rr =>
+      simp only [answerOf?, AnswerOf.opt, Option.map_map, Option.map_eq_some_iff, Function.comp,
+        Spec.MasterQuery.Answer.route.injEq, Option.some.injEq] at hansα
+      obtain ⟨x, hx, rfl⟩ := hansα
+      simp only [AnswerOf.route, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+        Option.some.injEq] at hx
+      obtain ⟨no, hno, bfr, hbfr, dc, hdc, ac, hac, rfl⟩ := hx
+      obtain ⟨bfJ, hbfJ, hbfJv⟩ := hbfr
+      obtain ⟨da, hda, hdac⟩ := hdc
+      obtain ⟨aa, haa, haac⟩ := hac
+      simp only
+      -- 区間の空港コードは照会のもの
+      have hrc := List.find?_some hro
+      simp only [Bool.and_eq_true, beq_iff_eq, AirportCd.mk.injEq] at hrc
+      obtain ⟨rfl, rfl⟩ := hrc
+      have hroutem := List.mem_of_find?_eq_some hro
+      -- 束縛する値
+      have hbdn := Abstraction.FlightSearch.Period.beforeDayNum_val hT hDj
+      have hparams : bind (⟨some bc, some dj, some rr, some (J64.ofInt (ic.today.daysBetween dj)),
+          some (SourceModel.FlightSearch.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
+          paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D) := by
+        simp only [SourceModel.Repository.Flight.bind, sqlOf, paramsOf, hda, hdac, haa, haac, Option.bind_some, Option.getD_some,
+          getFareTypeCdList_eq, hbdn, (dateOfJ_eq_some hDj).2]
+      -- 基本運賃
+      obtain ⟨bcM, hbcM⟩ := Option.isSome_iff_exists.mp hbsome
+      obtain ⟨bJ, e, hgetb, -, hex, heval⟩ := Abstraction.Fare.Load.boardingClass_of_answer (by rw [hbcq, hbcM]; rfl)
+      have hbcMm := List.mem_of_find?_eq_some hbcM
+      have hX : bfr + bcM.extraCharge ≤ 10000000 := hv.md8.2.1 _ hroutem bcM hbcMm
+      have hdev := h1 _ hro
+      unfold Abstraction.Fare.Alpha.dev_D001 at hdev
+      simp only [hbcM] at hdev
+      obtain ⟨v, hcalc, hvv⟩ := Abstraction.Fare.Loop.calculateBasicFare_eq hm hv hmo.2.2.2.2.1 hpt hgetb hex heval
+        (natOfJ32_eq_some.mp hbfJv) hDj hX hdev
+      have hbasic : Spec.Fare.basicFare md bfr bc D =
+          some ((bfr + bcM.extraCharge) * md.multiplicationRatioOn D / 100) := by
+        simp only [Spec.Fare.basicFare, hbcM, Option.map_some]
+      have hratio := Abstraction.Fare.BasicFareRun.ratioOn_le hv.md8 D
+      have hbmax : (bfr + bcM.extraCharge) * md.multiplicationRatioOn D / 100 ≤ Range.maxBasicFare := by
+        have := Nat.mul_le_mul hX hratio
+        show _ ≤ 100000000
+        omega
+      -- 空港名
+      obtain ⟨⟨a1, ha1, hc1⟩, ⟨a2, ha2, hc2⟩⟩ := hv.md3.1 _ hroutem
+      have hdn' : (airportName? md ⟨dc⟩).isSome := by
+        unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a1, ha1, by simp [hc1]⟩
+      have han' : (airportName? md ⟨ac⟩).isSome := by
+        unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a2, ha2, by simp [hc2]⟩
+      obtain ⟨dn, hdn⟩ := Option.isSome_iff_exists.mp hdn'
+      obtain ⟨an, han⟩ := Option.isSome_iff_exists.mp han'
+      -- 文の結果
+      obtain ⟨hcs, hok⟩ := repo_spec hm hv hw hinv hro (Date.daysBetween T D) hs (c := ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩)
+      have hd2 := h2 _ _ hro hbasic
+      have hrepo : SourceModel.FlightSearch.repositoryOf ic.db fd sortRows
+          (⟨some bc, some dj, some rr, some (J64.ofInt (ic.today.daysBetween dj)),
+            some (SourceModel.FlightSearch.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
+          .ok ((sortRows (vacantSeatRows ic.db fd (paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D)))).map
+            fun r => okD {} (SourceModel.Repository.Mapping.flight r.result)) := by
+        unfold SourceModel.FlightSearch.repositoryOf
+        rw [hparams]
+        apply mapM_ok_of
+        intro r hr
+        obtain ⟨X, hX, hrX⟩ := hok r hr
+        obtain ⟨F0, hF0, -⟩ := row_ok hm hv hro hfn hbcq hftq hfmq hbcM hdn han hvv hbmax hd2 hrX hX
+        exact ⟨F0, hF0⟩
+      rw [hrepo, ok_bind]
+      generalize sortRows (vacantSeatRows ic.db fd (paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D))) = o
+        at hcs hok
+      cases o with
+      | nil =>
+        simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at hcs
+        refine ⟨.error (.notFound "e.ar.b1.2003"), ?_, ?_⟩
+        · rfl
+        · simp only [Spec.Port.World.findAll, ← hcs, List.isEmpty_nil, ↓reduceIte, Option.getD_some]
+          rfl
+      | cons r0 os =>
+        obtain ⟨X0, -, hX0, -, -⟩ := hok r0 (List.mem_cons_self ..)
+        have hsorted := mapM_eq_map_getD X0 hcs
+        obtain ⟨Y, Ys, -, -, hYs⟩ := mapM_some_cons hcs
+        have hne : (List.map (fun r => okD {} (SourceModel.Repository.Mapping.flight r.result)) (r0 :: os)).isEmpty =
+          false := rfl
+        rw [hne]
+        simp only [Bool.false_eq_true, ↓reduceIte, hbfJ, JRef.deref, ok_bind, hcalc, show ic.groupingSeparator = ',' from h32]
+        simp only [Spec.Port.World.findAll]
+        have hne2 : ((w.flights.filterMap (candidateOf md ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ ⟨no, ⟨dc⟩, ⟨ac⟩, bfr⟩
+            (Date.daysBetween T D))).mergeSort candidateLe).isEmpty = false := by rw [hYs]; rfl
+        simp only [hne2, Bool.false_eq_true, ↓reduceIte, hbasic, hdn, han, Option.bind_eq_bind,
+          Option.bind_some, Option.pure_def, Option.getD_some]
+        rw [hsorted]
+        refine tail_ok (r0 :: os) _ _ (fun r => (candOfRow md r).getD X0) ?_
+        intro r hr
+        obtain ⟨X, hX, hrX⟩ := hok r hr
+        obtain ⟨F0, hF0, E, hE, hfok⟩ := row_ok hm hv hro hfn hbcq hftq hfmq hbcM hdn han hvv hbmax hd2 hrX hX
+        refine ⟨E, ?_, by simp only [hrX.1, Option.getD_some]; exact hfok⟩
+        rw [hF0, ← hE]
+        simp only [okD, enrich, JRef.deref, pure_bind]
+        rfl
+  · refine ⟨.error (.business "e.ar.b1.2001"), ?_, rfl⟩
+    simp only [↓reduceIte]
+    rfl
 end Abstraction.FlightSearch.Run
