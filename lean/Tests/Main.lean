@@ -1,5 +1,6 @@
 import Trace.Dump
 import Tests
+import Tests.Report
 
 /-!
 # Tests.Main
@@ -8,22 +9,15 @@ import Tests
 
 - 適合テストベクタ（`../conformance/`）を実行する（`Tests.Conformance`・`Tests.ConformanceFare`・`Tests.ConformanceMaster`）。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。
 - マスタの Mapper の文・コードリストの SQL の、PostgreSQL との差分実行の結果（`Tests.MasterSql`）。
-- 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
-- 運賃計算の double 式の、ソフトモデルとネイティブ `Float` の突き合わせ（`Tests.JavaDouble`）。
+- 空席照会の文の、PostgreSQL との差分実行の結果（`Tests.FlightSql`）。
+
+暦日の全日の検査と double の総当たりは、数分かかるため実行ファイル `exhaustive`（`Tests.Exhaustive`）に分けた。
+実行の時点は `docs/rules/checks.md`。節ごとの経過時間を表示する（`Tests.Report.timed`）。
 -/
 
-open Lean Trace.Dump
+open Lean Trace.Dump Tests.Report
 
 namespace Tests.Main
-
-/-- 失敗した検査の数。 -/
-initialize failures : IO.Ref Nat ← IO.mkRef 0
-
-def check (label : String) (ok : Bool) : IO Unit := do
-  if ok then IO.println s!"  ok   {label}"
-  else
-    IO.eprintln s!"  FAIL {label}"
-    failures.modify (· + 1)
 
 /-- 適合テストベクタを実行する。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。 -/
 unsafe def conformanceTests : IO Unit := do
@@ -84,34 +78,12 @@ def flightSqlTests : IO Unit := do
   | .error e => check s!"flight SQL: {e}" false
   | .ok rs => for (id, ok, info) in rs do check s!"flight SQL: {id} ({info})" ok
 
-/-- 暦日の全日の検査。 -/
-def dateTests : IO Unit := do
-  IO.println "date (0001-01-01 .. 9999-12-31)"
-  let (bad, n) := Tests.SpecChecks.dateExhaustive
-  unless bad.isEmpty do IO.eprintln s!"    failed ordinals: {bad}"
-  check s!"date: ofOrdinal? round trip and successor ({n} days)" bad.isEmpty
-
-/-- double のソフトモデルとネイティブ `Float` の突き合わせ。 -/
-def javaDoubleTests : IO Unit := do
-  IO.println "java double (soft model vs native Float, fare expressions)"
-  let r := Tests.JavaDouble.run
-  for b in r.bad do IO.eprintln s!"    mismatch: {b}"
-  check s!"java double: bit-exact ({r.count} cases)" r.bad.isEmpty
-
 end Tests.Main
 
 open Tests.Main
 
 unsafe def main : IO UInt32 := do
-  dateTests
-  javaDoubleTests
-  conformanceTests
-  masterSqlTests
-  flightSqlTests
-  let n ← failures.get
-  if n == 0 then
-    IO.println "all tests passed"
-    return 0
-  else
-    IO.eprintln s!"{n} test(s) failed"
-    return 1
+  timed "conformance" conformanceTests
+  timed "master SQL" masterSqlTests
+  timed "flight search SQL" flightSqlTests
+  finish

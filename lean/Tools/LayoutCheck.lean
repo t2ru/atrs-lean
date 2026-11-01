@@ -12,7 +12,7 @@ import Trace.Layout
 /-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。 -/
 def Tools.LayoutCheck.groups : Array (Array Lean.Name) :=
   #[#[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement, `Tests, `Tools.LayoutCheck],
-    #[`Tests.Main], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
+    #[`Tests.Main], #[`Tests.Exhaustive], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
 
 unsafe def main (args : List String) : IO UInt32 :=
   Trace.Layout.run "layout-check" Tools.LayoutCheck.groups

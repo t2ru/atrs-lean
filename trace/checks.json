@@ -20,6 +20,12 @@
         "SourceModel.Config.App.AtrsCodeListConfig.*CodeListRows", "SourceModel.AtrsProperties.*"] }
     },
     {
+      "id": "lean-exhaustive",
+      "description": "総当たりの検査（暦日の全日の ofOrdinal? と翌日の規則、運賃計算の double 式のソフトモデルとネイティブ Float のビット単位の突き合わせ。lake exe exhaustive）",
+      "steps": [{ "cwd": ".", "argv": ["mise", "run", "lean:exhaustive"] }],
+      "covers": { "names": ["Spec.Prim.Date.*", "LangSemantics.Java.DoubleOps.*"] }
+    },
+    {
       "id": "jvm-table",
       "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [

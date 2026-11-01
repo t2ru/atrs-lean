@@ -55,6 +55,7 @@ generated:
 | 9ed8 | [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](9ed8-atrs-module-namespace-layout.md) | done | [ce23](../../.agents/skills/spec-pivot/references/docs/backlog/ce23-lean-module-namespace-layout.md) |
 | cb23 | [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](cb23-adequate-to-preserves-abstracts.md) | done | [76a6](76a6-source-side-adequacy-gate.md), [9ed8](9ed8-atrs-module-namespace-layout.md) |
 | 2ba8 | [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](2ba8-split-okf-and-records-skills.md) | done | [ddbd](ddbd-okf-bundle-lint.md) |
+| 7d08 | [検査の層を分け、長い段を関係する変更があったときだけ実行する](7d08-change-scoped-checks.md) | doing | — |
 
 ## 推奨する着手順
 
