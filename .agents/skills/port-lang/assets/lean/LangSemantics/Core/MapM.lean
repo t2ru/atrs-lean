@@ -114,4 +114,38 @@ theorem mapM_length {α β : Type} {g : α → Option β} : ∀ {xs : List α} {
     obtain ⟨y, -, ys', hys, rfl⟩ := h
     simp only [List.length_cons, mapM_length hys]
 
+/-- 並べ替えた列の写し: 写しが定義される列の並べ替えも写せて、写しは元の写しの並べ替え。 -/
+theorem mapM_perm {f : α → Option β} {l l' : List α} (hp : l.Perm l') {m : List β} (h : l'.mapM f = some m) :
+    ∃ m', l.mapM f = some m' ∧ m'.Perm m := by
+  induction hp generalizing m with
+  | nil => exact ⟨m, h, List.Perm.refl _⟩
+  | cons x _ ih =>
+    obtain ⟨b, t, hb, ht, rfl⟩ := mapM_some_cons h
+    obtain ⟨t', ht', hpt⟩ := ih ht
+    exact ⟨b :: t', by simp only [List.mapM_cons, hb, ht', Option.pure_def, Option.bind_eq_bind, Option.bind_some],
+      hpt.cons b⟩
+  | swap x y l =>
+    obtain ⟨b, t, hb, ht, rfl⟩ := mapM_some_cons h
+    obtain ⟨c, u, hc, hu, rfl⟩ := mapM_some_cons ht
+    exact ⟨c :: b :: u, by simp only [List.mapM_cons, hb, hc, hu, Option.pure_def, Option.bind_eq_bind,
+      Option.bind_some], List.Perm.swap b c u⟩
+  | trans _ _ ih1 ih2 =>
+    obtain ⟨m2, h2, hp2⟩ := ih2 h
+    obtain ⟨m1, h1, hp1⟩ := ih1 h2
+    exact ⟨m1, h1, hp1.trans hp2⟩
+
+/-- 写しの整列: 元の列が「写しが `S` を満たす」関係で整列していれば、写しは `S` で整列している。 -/
+theorem mapM_pairwise {f : α → Option β} {S : β → β → Prop} :
+    ∀ {l : List α} {m : List β}, l.mapM f = some m →
+      l.Pairwise (fun a b => ∀ x y, f a = some x → f b = some y → S x y) → m.Pairwise S
+  | [], m, h, _ => by
+    simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; exact List.Pairwise.nil
+  | a :: l, m, h, hp => by
+    obtain ⟨b, t, hb, ht, rfl⟩ := mapM_some_cons h
+    obtain ⟨ha, hl⟩ := List.pairwise_cons.mp hp
+    refine List.Pairwise.cons ?_ (mapM_pairwise ht hl)
+    intro y hy
+    obtain ⟨a', ha', hfa'⟩ := mapM_some_mem' ht hy
+    exact ha a' ha' b y hb hfa'
+
 end LangSemantics.Core.MapM
