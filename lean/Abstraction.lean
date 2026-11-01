@@ -39,6 +39,8 @@ import Abstraction.FlightSearch.Preserves
 import Abstraction.FlightSearch
 import Abstraction.Reserve.Alpha
 import Abstraction.Reserve.Port
+import Abstraction.Reserve.Member
+import Abstraction.Reserve.Providers
 
 /-!
 # Abstraction

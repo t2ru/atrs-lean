@@ -66,7 +66,7 @@ theorem need_D032 :
   obtain ⟨oc, hoc, hα⟩ := run_icFS_dot
   obtain ⟨hd1, hd2⟩ := iaFS_devs
   obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS (icFS symDot) iaFS fdFS oc wFS_inv
-    (Or.inl ⟨worldOfDb_fdFS, icW_of_reservation_nil rfl⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
+    (Or.inl ⟨worldOfDb_fdFS, icW_of_nil rfl rfl⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [hoc]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
@@ -85,7 +85,7 @@ theorem need_D014 :
       ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS := fun h => by
   obtain ⟨hd1, hd2⟩ := iaFS14_devs
   obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS icFS14 iaFS14 fdFS (.error (.notFound "e.ar.b1.2003"))
-    wFS_inv (Or.inl ⟨worldOfDb_fdFS, icW_of_reservation_nil rfl⟩) aiS_icFS14 ⟨⟨iaFS14_pre, hd1⟩, hd2⟩
+    wFS_inv (Or.inl ⟨worldOfDb_fdFS, icW_of_nil rfl rfl⟩) aiS_icFS14 ⟨⟨iaFS14_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS14]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [run_icFS14]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc

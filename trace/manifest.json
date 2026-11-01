@@ -2189,6 +2189,42 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Member.findOneRows_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.findOneRows_world",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.mapM_map_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.memberMap_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.membersOf_find",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.membersOf_numbers",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.nodup_map_comp",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.nodup_map_val",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Member.sameAsMember_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Port.existsRows_eq",
       "layer": "Abstraction"
     },
@@ -2225,11 +2261,19 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Providers.flightMaster_codes",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Providers.flightMaster_none",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.World.Alpha.IcW",
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.World.Alpha.KeysBelow",
+      "name": "Abstraction.World.Alpha.KeysOk",
       "layer": "Abstraction"
     },
     {
@@ -2261,7 +2305,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.World.Alpha.icW_of_reservation_nil",
+      "name": "Abstraction.World.Alpha.icW_of_nil",
       "layer": "Abstraction"
     },
     {

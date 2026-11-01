@@ -325,12 +325,12 @@ inductive MOutputValue where
 /-- 予約の機械の出力。 -/
 abbrev MOutput := Except AtrsError MOutputValue
 
-/-- PRE: 設定・マスタが妥当で、要求が入力検証の長さと桁を満たし（`Request.Valid`）、会員のカード種別がマスタにあり
-（`World.MemberRefMaster`）、操作の標準の結果が定まる（選択フライトが 1〜2 件、空でない搭乗者欄が姓・名・年齢・性別を
+/-- PRE: 設定・マスタが妥当で、要求が入力検証の長さと桁を満たし（`Request.Valid`）、フライトの便名・搭乗クラス・運賃種別と
+会員のカード種別がマスタにあり（`World.RefMaster`・`World.MemberRefMaster`）、操作の標準の結果が定まる（選択フライトが 1〜2 件、空でない搭乗者欄が姓・名・年齢・性別を
 持ち、少なくとも 1 欄あり、マスタに便・区間・運賃種別がある）。 -/
 @[spec_doc "docs/spec/reservation.md"]
 def MInput.Pre (w : World) (i : MInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ i.req.Valid ∧ w.MemberRefMaster i.md ∧
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ i.req.Valid ∧ w.RefMaster i.md ∧ w.MemberRefMaster i.md ∧
     match i.op with
     | .confirm => (confirmOp i.cfg i.md w i.req).isSome = true
     | .reserve => (reserveOp i.cfg i.md i.today w i.req).isSome = true

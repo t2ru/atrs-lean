@@ -452,15 +452,15 @@ theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
 
 /-! ## 具体側の不変条件 -/
 
-/-- 使用済みの番号が、採番の次の値より小さい: 予約番号は次の予約番号より小さい番号の書式、予約フライト番号・搭乗者番号は
-次の値より小さい。 -/
-def KeysBelow (w : Spec.Port.World) : Prop :=
-  ∀ r ∈ w.reservations, (∃ n, n < w.sequences.reserve ∧ r.reserveNo = Spec.Port.World.reserveNoOf n) ∧
+/-- 主キーの性質: 会員は会員番号で一意（PK_MEMBER）。使用済みの番号は採番の次の値より小さい（予約番号は次の予約番号より
+小さい番号の書式、予約フライト番号・搭乗者番号は次の値より小さい）。 -/
+def KeysOk (w : Spec.Port.World) : Prop :=
+  (w.members.map (·.membershipNumber)).Nodup ∧ ∀ r ∈ w.reservations, (∃ n, n < w.sequences.reserve ∧ r.reserveNo = Spec.Port.World.reserveNoOf n) ∧
     ∀ f ∈ r.reserveFlights, f.reserveFlightNo < w.sequences.reserveFlight ∧
       ∀ p ∈ f.passengers, p.passengerNo < w.sequences.passenger
 
-/-- 具体側の不変条件: α の像で、使用済みの番号が採番の次の値より小さい（主キーの一意性に使う。ADR ca17）。 -/
-def IcW (fd : FlightDb) : Prop := ∀ w, worldOfDb fd = some w → KeysBelow w
+/-- 具体側の不変条件: α の像で、主キーの性質 `KeysOk` が成り立つ（主キーの一意性に使う。ADR ca17）。 -/
+def IcW (fd : FlightDb) : Prop := ∀ w, worldOfDb fd = some w → KeysOk w
 
 theorem reservations_nil {fd : FlightDb} {w : Spec.Port.World} (hr : fd.reservation = [])
     (h : worldOfDb fd = some w) : w.reservations = [] := by
@@ -472,9 +472,15 @@ theorem reservations_nil {fd : FlightDb} {w : Spec.Port.World} (hr : fd.reservat
     exact h3.symm
   · cases h3
 
-/-- 予約の表が空なら、具体側の不変条件を満たす。 -/
-theorem icW_of_reservation_nil {fd : FlightDb} (hr : fd.reservation = []) : IcW fd := fun w h r hm => by
-  rw [reservations_nil hr h] at hm
-  cases hm
+/-- 会員・予約の表が空なら、具体側の不変条件を満たす。 -/
+theorem icW_of_nil {fd : FlightDb} (hm : fd.member = []) (hr : fd.reservation = []) : IcW fd := fun w h => by
+  refine ⟨?_, fun r hr' => ?_⟩
+  · have h2 := (worldOfDb_eq_some.mp h).2.1
+    rw [hm] at h2
+    cases e : fd.memberLogin <;> rw [e] at h2 <;> simp [membersOf] at h2
+    rw [h2]
+    exact List.nodup_nil
+  · rw [reservations_nil hr h] at hr'
+    cases hr'
 
 end Abstraction.World.Alpha

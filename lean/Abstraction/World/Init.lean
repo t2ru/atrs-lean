@@ -133,7 +133,7 @@ theorem worldOfDb_seed : worldOfDb SourceModel.Db.Seed.seedDb = some Spec.Seed.W
 theorem icW_seed : IcW SourceModel.Db.Seed.seedDb := fun w h => by
   rw [worldOfDb_seed] at h
   cases h
-  intro r hr
+  refine ⟨by decide, fun r hr => ?_⟩
   simp [Spec.Seed.World.world] at hr
 
 end Abstraction.World.Init
