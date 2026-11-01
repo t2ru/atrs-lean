@@ -62,11 +62,11 @@ def sqlOf {α : Type} (f : α → SqlValue) : JRef α → SqlValue
 /-- 束縛（MyBatis の `#{…}` の評価と型ハンドラ）。 -/
 @[source "dep:org.mybatis:mybatis#EnumTypeHandler@mybatis-3.5.19"]
 def bind (c : VacantSeatSearchCriteriaDto) : Params where
-  fareTypeList := (c.fareTypeList.getD []).map fun t => .text t.toCode
+  fareTypeList := (c.fareTypeList.getD []).map fun t => .text (SourceModel.Model.fareTypeCdCode t)
   depAirportCd := sqlOf .text ((c.route.bind (·.departureAirport)).bind (·.code))
   arrAirportCd := sqlOf .text ((c.route.bind (·.arrivalAirport)).bind (·.code))
   depDate := sqlOf (fun d => .date d.toEpochDay) c.depDate
-  boardingClass := sqlOf (fun b => .text b.toCode) c.boardingClass
+  boardingClass := sqlOf (fun b => .text (SourceModel.Model.boardingClassCdName b)) c.boardingClass
   beforeDayNum := sqlOf (fun n => .int n.val) c.beforeDayNum
 
 /-- `SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd` の列。 -/

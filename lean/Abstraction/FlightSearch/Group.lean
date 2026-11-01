@@ -168,10 +168,11 @@ theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
   have hinfo : ftVal info = some (Spec.FlightSearch.fareTypeInfoOf b X) := by
     simp only [info, ftVal, hftn, hfmt, hv, hv', Option.bind_eq_bind, Option.bind_some, Option.pure_def]
     rfl
-  have hcd : ftCdOf X.flight.key.fareTypeCd.toCode = some X.flight.key.fareTypeCd := FareTypeCd.ofCode?_toCode _
+  have hcd : ftCdOf (SourceModel.Model.fareTypeCdCode X.flight.key.fareTypeCd) = some X.flight.key.fareTypeCd := by
+    rw [fareTypeCdCode_eq]; exact FareTypeCd.ofCode?_toCode _
   -- グループを更新した値の写し
   have hupd : ∀ (vi : FlightVacantInfoDto) (g : FlightVacantInfo), vacantInfoOf vi = some g →
-      vacantInfoOf { vi with fareTypes := vi.fareTypes.put X.flight.key.fareTypeCd.toCode info } =
+      vacantInfoOf { vi with fareTypes := vi.fareTypes.put (SourceModel.Model.fareTypeCdCode X.flight.key.fareTypeCd) info } =
         some { g with fareTypes := insertOrdered g.fareTypes X.flight.key.fareTypeCd (Spec.FlightSearch.fareTypeInfoOf b X) } := by
     intro vi g hg
     obtain ⟨h1, h2⟩ := vacantInfoOf_fields hg
@@ -191,7 +192,7 @@ theorem body_step {sep : Char} {bf : J32} {b : Nat} {depName arrName : String} {
         m'.entries.mapM (pairAlpha kaT vacantInfoOf) = some (insertOrdered gs X.master.departureTime
           { g with fareTypes := insertOrdered g.fareTypes X.flight.key.fareTypeCd (Spec.FlightSearch.fareTypeInfoOf b X) }) := by
     intro vi g hg
-    refine ⟨m.put fm.departureTime { vi with fareTypes := vi.fareTypes.put X.flight.key.fareTypeCd.toCode info }, ?_, ?_⟩
+    refine ⟨m.put fm.departureTime { vi with fareTypes := vi.fareTypes.put (SourceModel.Model.fareTypeCdCode X.flight.key.fareTypeCd) info }, ?_, ?_⟩
     · simp only [hft, hdr, deref_some, hfv, FlightVacantInfoDto.addFareTypeVacantInfo, hftc, ok_bind, pure_bind]
       rfl
     · rw [insertOrdered_eq_put]

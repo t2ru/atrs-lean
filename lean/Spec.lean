@@ -46,20 +46,22 @@ import Spec.EnvPre
 
 namespace Spec
 
-/-- トップレベルの抽象機械の状態（各機能の状態の積）。 -/
-abbrev State := Unit × Unit × Unit × Unit
+/-- トップレベルの抽象機械の状態（各機能の状態の積。空席照会だけが状態 `World` を持つ）。 -/
+abbrev State := Unit × Unit × Unit × Unit × Port.World
 
-/-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額。 -/
-abbrev Input := (Config × MasterData × MasterQuery.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput
+/-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額、空席照会。 -/
+abbrev Input := (Config × MasterData × MasterQuery.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput ⊕
+  FlightSearch.SearchInput
 
 /-- トップレベルの抽象機械の出力。 -/
-abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat
+abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat ⊕ FlightSearch.SearchOutput
 
 /-- トップレベルの抽象機械: 実装済みの範囲の機能の機械を並置したもの。 -/
 def machine : Machine.Machine State Input Output :=
-  MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum Fare.totalFareMachine))
+  MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum
+    (Fare.totalFareMachine.sum FlightSearch.searchMachine)))
 
-/-- 初期状態（fixture の 1 点）。 -/
-def init : State := ((), (), (), ())
+/-- 初期状態（fixture の 1 点。空席照会の状態はシードのフライト）。 -/
+def init : State := ((), (), (), (), Seed.Flight.world)
 
 end Spec

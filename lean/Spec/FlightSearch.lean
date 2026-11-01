@@ -135,7 +135,9 @@ def headerOf (depName arrName : String) (x : Candidate) : FlightVacantInfo where
   boardingClassCd := x.flight.key.boardingClassCd
   fareTypes := []
 
-/-- 運賃種別ごとの空席情報（基本運賃 `b` から）。 -/
+/-- 運賃種別ごとの空席情報（基本運賃 `b` から）。運賃の表示は `fmtYen`（3 桁区切りは `,`。[Source] は配備の環境の
+既定の書式ロケールによる。D-032）。 -/
+@[gap "D-032"]
 def fareTypeInfoOf (b : Nat) (x : Candidate) : FareTypeVacantInfo :=
   ⟨x.fareType.fareTypeName, fmtYen (Fare.fare b x.fareType.discountRate), x.flight.vacantNum⟩
 

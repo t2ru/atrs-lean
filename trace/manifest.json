@@ -541,6 +541,74 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.FlightSearch.Alpha.aiS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.aoS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.aoS_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.boardingClassCdName_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.ceFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.ceFSKer",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.ceFS_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.criteriaOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.criteriaOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.dev_D001S",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.dev_D002S",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.dev_D014S",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.dev_D027S",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.dev_D032",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.fareTypeCdCode_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.fareTypeInfoOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.fareTypeInfoOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.FlightSearch.Alpha.flightOfRow",
       "layer": "Abstraction"
     },
@@ -549,7 +617,643 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.FlightSearch.Alpha.glueFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.vacantInfoOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.vacantInfoOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.FlightSearch.Alpha.worldOfDb",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.worldOfDb_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.RowOk",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.RowRel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.bc_toCode_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.candOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.candidateOf_parts",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.cond_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.fareTypeOfRow_fields",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.fareTypeOf_find",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.flightMasterOfRow_dep",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.flightMasterOf_find",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.inList_codes_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.paramsOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.resultOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.routeOfRow_no",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.routeOf_find",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.rowAt_rel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.rowFlight",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.rowOk_of_rel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.rows_cands",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Candidates.toCode_contains",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.arr_eq_hhmm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.beq_mod",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.dateOfJ_fields",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.daysInMonth_nat",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.formatGrouped_comma",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.formatJ32_comma",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.group3_comma",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.hhmm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.hhmm_table",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.hm_eq_hhmm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.isLeapYear_nat",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.toFormatDateString_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.toFormatTimeString_arr",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.toFormatTimeString_hm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Format.toOption_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.bc",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.date",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.fm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.ft",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.mk",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.FlightOk.vacant",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.VMap",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.body",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.body_step",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.createFlightVacantInfoList_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.deref_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.fareTypeInfoOf_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.ftCdOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.ftVal",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.group_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.group_spec",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.gstep",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.header_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.insertOrdered_eq_put",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.kaT",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.kaT_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.mapM_snd",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.pickG",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.pickG_eq_get",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Group.vacantInfoOf_fields",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.FS.cells",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.FS.dayRows_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.SF.cells",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.SF.dayFlights_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.cellOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.cells_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.cells_map0",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.cells_map1",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.cells_map2",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.days_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.mapM_day",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.mapM_days",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Init.worldOfDb_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Join.map_filter_eq_filterMap",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Join.routeKey",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Join.rowAt",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Join.text_eq_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Join.vacantSeatRows_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.NoTie",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.candidateLe_refl",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.candidateLe_total",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.candidateLe_trans",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.candidateOf_cond",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.char_eq_iff",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.char_lt_iff",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.digit_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.hm_le_iff",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.hm_parts",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.key_cmp",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.key_le",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.mergeSortRows",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.noTie_cands",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.sortAllowed_mergeSortRows",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Order.sorted_cands",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Period.beforeDayNum_val",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Period.between_int_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Period.isAvailableFareType_between",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Period.le_int_holds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Period.validateDepatureDate_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.aiS_icFS_comma",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.chFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.envFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.envFS_iaFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.iaFSbad",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Preserves.step_state",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Providers.airportName_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Providers.fareType_of_answer'",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Providers.flightMasterOfRow_arr",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Providers.flightMaster_full",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Providers.load_fs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.enrich",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.fareTypeCodes_nodup",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.find?_routeNo",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.flightNames_nodup",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.getFareTypeCdList_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.mapM_ok_of",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.okD",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.repo_spec",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.routeKeys_nodup",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.row_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.run_spec",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Run.tail_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.aiS_icFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.aiS_icFS14",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.answer_ne_dot",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.answer_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.assertHasText_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dbFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dev_D001S_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dev_D002S_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dev_D014S_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dev_D027S_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.dev_D032_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.fdFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.hasText_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.iaFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.iaFS_devs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.iaFS_pre",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.icFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.icFS14",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.mdFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.mdFS1430",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.mdFS29",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.run_icFS14",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.run_icFS_dot",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.vDot",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.wFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.wFS_inv",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Witness.worldOfDb_fdFS",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.need_D014",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.need_D032",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.searchPreserves",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.searchRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.searchRefines_initSurj",
       "layer": "Abstraction"
     },
     {
@@ -678,6 +1382,10 @@
     },
     {
       "name": "Abstraction.Gap.D032",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D033",
       "layer": "Abstraction"
     },
     {
@@ -1114,6 +1822,10 @@
     },
     {
       "name": "Abstraction.MasterData.Key.makeCacheKey_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Key.makeCacheKey_inj'",
       "layer": "Abstraction"
     },
     {
@@ -2089,6 +2801,10 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FlightSearch.SearchInput.groupingSeparator",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FlightSearch.SearchInput.mk",
       "layer": "SourceModel"
     },
@@ -2106,6 +2822,10 @@
     },
     {
       "name": "SourceModel.FlightSearch.SearchInput.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.SearchInput.sharedClock",
       "layer": "SourceModel"
     },
     {
@@ -2185,6 +2905,10 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FlightSearch.TicketSearchService.groupingSeparator",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FlightSearch.TicketSearchService.limitDay",
       "layer": "SourceModel"
     },
@@ -2210,6 +2934,10 @@
     },
     {
       "name": "SourceModel.FlightSearch.TicketSearchService.routeProvider",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.TicketSearchService.sharedClock",
       "layer": "SourceModel"
     },
     {
@@ -3553,6 +4281,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Model.boardingClassCdName",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Model.fareTypeCdCode",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Model.instDecidableEqAirport",
       "layer": "SourceModel"
     },
@@ -3973,11 +4709,19 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Flight.vacantSeatCond",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Flight.vacantSeatDirs",
       "layer": "SourceModel"
     },
     {
       "name": "SourceModel.Repository.Flight.vacantSeatKey",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatProj",
       "layer": "SourceModel"
     },
     {
@@ -5357,6 +6101,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.FlightSearch.FlightNamesHaveText",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.FlightSearch.FlightVacantInfo",
       "layer": "Spec"
     },
@@ -5374,6 +6122,10 @@
     },
     {
       "name": "Spec.FlightSearch.candidateOf",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.fareTypeInfoOf",
       "layer": "Spec"
     },
     {
@@ -6004,6 +6756,31 @@
     },
     {
       "type": "deviation",
+      "from": "Abstraction.FlightSearch.Alpha.dev_D001S",
+      "to": "D-001"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.FlightSearch.Alpha.dev_D002S",
+      "to": "D-002"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.FlightSearch.Alpha.dev_D014S",
+      "to": "D-014"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.FlightSearch.Alpha.dev_D027S",
+      "to": "D-027"
+    },
+    {
+      "type": "deviation",
+      "from": "Abstraction.FlightSearch.Alpha.dev_D032",
+      "to": "D-032"
+    },
+    {
+      "type": "deviation",
       "from": "Abstraction.MasterData.Alpha.dev_D027",
       "to": "D-027"
     },
@@ -6066,6 +6843,16 @@
       "type": "gap",
       "from": "Abstraction.Fare.need_D012",
       "to": "D-012"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.FlightSearch.need_D014",
+      "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.FlightSearch.need_D032",
+      "to": "D-032"
     },
     {
       "type": "gap",
@@ -6155,6 +6942,11 @@
     {
       "type": "gap",
       "from": "SourceModel.FlightSearch.createFlightVacantInfoList",
+      "to": "D-005"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.createFlightVacantInfoList",
       "to": "D-032"
     },
     {
@@ -6181,6 +6973,11 @@
       "type": "gap",
       "from": "SourceModel.FlightSearch.searchFlight",
       "to": "D-014"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.FlightSearch.searchFlight",
+      "to": "D-033"
     },
     {
       "type": "gap",
@@ -6241,6 +7038,16 @@
       "type": "gap",
       "from": "Spec.Fare.flightTotalOfKey",
       "to": "D-012"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.FlightSearch.FlightNamesHaveText",
+      "to": "D-033"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.FlightSearch.fareTypeInfoOf",
+      "to": "D-032"
     },
     {
       "type": "gap",
@@ -6478,6 +7285,16 @@
       "to": "D-032"
     },
     {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D033",
+      "to": "D-033"
+    },
+    {
+      "type": "kernel",
+      "from": "Abstraction.FlightSearch.Alpha.ceFSKer",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
       "type": "kernel",
       "from": "Abstraction.MasterData.Alpha.answerKer",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
@@ -6574,8 +7391,63 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.aoS_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.ceFS_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.criteriaOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.fareTypeInfoOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.FlightSearch.Alpha.flightOfRow_kernel",
       "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.vacantInfoOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.worldOfDb_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.Period.isAvailableFareType_between",
+      "to": "ABS-010"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.need_D014",
+      "to": "ABS-114"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.need_D032",
+      "to": "ABS-132"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.searchPreserves",
+      "to": "ABS-011"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.FlightSearch.searchRefines",
+      "to": "ABS-011"
     },
     {
       "type": "obligation",
@@ -8024,6 +8896,12 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Model.fareTypeCdCode",
+      "to": "java:jp.co.ntt.atrs.domain.model.FareTypeCd#getCode()",
+      "hash": "3855e45998af62f8"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
       "to": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)",
       "hash": "da10cbbc34c14874"
@@ -8713,6 +9591,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.FlightSearch.FlightNamesHaveText",
+      "to": "docs/spec/flight-search.md#事前条件"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.FlightSearch.FlightVacantInfo",
       "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
     },
@@ -9388,7 +10271,37 @@
     },
     {
       "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.aiS",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.aoS",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.ceFS",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.criteriaOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.fareTypeInfoOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
       "from": "Abstraction.FlightSearch.Alpha.flightOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.vacantInfoOf",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -10057,7 +10970,7 @@
       "definition": "SourceModel.FlightSearch.FlightVacantInfoDto.addFareTypeVacantInfo",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightVacantInfoDto#addFareTypeVacantInfo(FareTypeCd,FareTypeVacantInfoDto)",
       "hash": "1c016d6655a35b9a",
-      "merkle": "f188afc024bd3697",
+      "merkle": "c91af0f6fda40716",
       "checks": [
         "lake-test"
       ]
@@ -10354,7 +11267,7 @@
       "definition": "SourceModel.FlightSearch.searchFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)",
       "hash": "aebd2fb115cd02fc",
-      "merkle": "18c4e4b8b4af43df",
+      "merkle": "e26997404ec34a47",
       "checks": [
         "lake-test"
       ]
@@ -10363,7 +11276,7 @@
       "definition": "SourceModel.FlightSearch.searchFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)",
       "hash": "75061ffc6ae02ecb",
-      "merkle": "18c4e4b8b4af43df",
+      "merkle": "e26997404ec34a47",
       "checks": [
         "lake-test"
       ]
@@ -10408,7 +11321,7 @@
       "definition": "SourceModel.FlightSearch.validateDepatureDate",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)",
       "hash": "9b898d66ce284b6a",
-      "merkle": "78d72a514327974f",
+      "merkle": "3467b431037201f5",
       "checks": [
         "lake-test"
       ]
@@ -10417,7 +11330,7 @@
       "definition": "SourceModel.FlightSearch.validateDepatureDate",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)",
       "hash": "ab7abd9ac674d349",
-      "merkle": "78d72a514327974f",
+      "merkle": "3467b431037201f5",
       "checks": [
         "lake-test"
       ]
@@ -11296,6 +12209,15 @@
       ]
     },
     {
+      "definition": "SourceModel.Model.fareTypeCdCode",
+      "locator": "java:jp.co.ntt.atrs.domain.model.FareTypeCd#getCode()",
+      "hash": "3855e45998af62f8",
+      "merkle": "4d21fd7677a9ddb6",
+      "checks": [
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Repository.Flight.VacantSeatSearchCriteriaDto",
       "locator": "java:jp.co.ntt.atrs.domain.repository.flight.VacantSeatSearchCriteriaDto#<init>(LocalDate,Route,BoardingClassCd,Long,List)",
       "hash": "da10cbbc34c14874",
@@ -11371,9 +12293,10 @@
       "definition": "SourceModel.Repository.Flight.vacantSeatRows",
       "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
       "hash": "2fbe03024cd7d231",
-      "merkle": "d3f87ba666f809ac",
+      "merkle": "e2b45409a848c7c7",
       "checks": [
-        "lake-test"
+        "lake-test",
+        "pg-flight-sql"
       ]
     },
     {

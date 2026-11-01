@@ -36,4 +36,17 @@ def chFS : Machine.Preserves.Choice Spec.Port.World Spec.FlightSearch.SearchInpu
     SourceModel.FlightSearch.SearchInput :=
   ⟨Unit, Unit, Spec.Port.World × Spec.FlightSearch.SearchOutput, searchStep, ceFS, (), fun r => r⟩
 
+/-- 具体側の 1 歩は状態を変えない。 -/
+theorem step_state {t : SourceModel.Repository.Schema.FlightDb} {ic : SourceModel.FlightSearch.SearchInput}
+    {t' : SourceModel.Repository.Schema.FlightDb} {oc : SourceModel.FlightSearchQuery.SearchOutput} (h : SourceModel.FlightSearchQuery.searchConcrete.step t ic (.ok (t', oc))) :
+    t' = t := by
+  obtain ⟨mo, sr, -, -, he⟩ := h
+  revert he
+  cases SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearch.runSearchFlight t ic mo sr) with
+  | error e => intro he; cases he
+  | ok o =>
+    intro he
+    change Except.ok (t', oc) = Except.ok (t, o) at he
+    cases he; rfl
+
 end Abstraction.FlightSearch.Preserves

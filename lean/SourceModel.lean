@@ -50,13 +50,15 @@ open LangSemantics.Java.Int LangSemantics.Java.Exception
 
 
 /-- トップレベルの具体機械の入力（`Spec.Input` と同じ並び）。 -/
-abbrev Input := MasterQuery.SrcInput ⊕ FareQuery.BasicFareInput ⊕ FareQuery.FareInput ⊕ FareQuery.TotalFareInput
+abbrev Input := MasterQuery.SrcInput ⊕ FareQuery.BasicFareInput ⊕ FareQuery.FareInput ⊕ FareQuery.TotalFareInput ⊕
+  FlightSearch.SearchInput
 
 /-- トップレベルの具体機械の出力。 -/
-abbrev Output := MasterQuery.SrcAnswer ⊕ J32 ⊕ J32 ⊕ J32
+abbrev Output := MasterQuery.SrcAnswer ⊕ J32 ⊕ J32 ⊕ J32 ⊕ FlightSearchQuery.SearchOutput
 
 /-- トップレベルの具体機械: 実装済みの範囲の機能の具体機械を並置したもの。 -/
-def machine : Machine.Concrete (Unit × Unit × Unit × Unit) Input Output JThrow :=
-  MasterQuery.queryConcrete.sum (FareQuery.basicFareConcrete.sum (FareQuery.fareConcrete.sum FareQuery.totalFareConcrete))
+def machine : Machine.Concrete (Unit × Unit × Unit × Unit × Repository.Schema.FlightDb) Input Output JThrow :=
+  MasterQuery.queryConcrete.sum (FareQuery.basicFareConcrete.sum (FareQuery.fareConcrete.sum
+    (FareQuery.totalFareConcrete.sum FlightSearchQuery.searchConcrete)))
 
 end SourceModel

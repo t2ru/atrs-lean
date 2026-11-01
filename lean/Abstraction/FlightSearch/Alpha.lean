@@ -185,8 +185,12 @@ theorem aoS_kernel : KernelIs aoS (undefOrEq aoS) := by
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def ceFS (_ : SourceModel.FlightSearch.SearchInput) : Unit := ()
 
+/-- `ceFS` の核: どの入力も同一視する。 -/
+@[kernel "docs/spec/abstraction.md#抽象化関数-α"]
+def ceFSKer (_ _ : SourceModel.FlightSearch.SearchInput) : Prop := True
+
 @[obligation "ABS-048"]
-theorem ceFS_kernel : KernelIs ceFS (fun _ _ => True) := fun _ _ => by simp [ceFS]
+theorem ceFS_kernel : KernelIs ceFS ceFSKer := fun _ _ => by simp [ceFS, ceFSKer]
 
 /-- 空席照会の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は課さない）。 -/
 abbrev glueFS := Machine.Glue.ofStd worldOfDb (fun _ => True) aiS aoS
@@ -197,6 +201,11 @@ abbrev glueFS := Machine.Glue.ofStd worldOfDb (fun _ => True) aiS aoS
 状態の表 FLIGHT が表せることは、貼り合わせの部分写像 `worldOfDb` で表す（表せない状態は `World` と結ばれない）。 -/
 @[deviation "D-027"]
 def dev_D027S (ic : SourceModel.FlightSearch.SearchInput) : Prop := (aiS ic).isSome = true
+
+/-- D-014（空席照会）: `TicketSharedServiceImpl` が読む今日の日付（`validateDepatureDate`・`getSearchLimitDate`）が、
+`searchFlight` の今日の日付と同じ（1 回の照会の中で Clock が日付をまたがない）。 -/
+@[deviation "D-014"]
+def dev_D014S (ic : SourceModel.FlightSearch.SearchInput) : Prop := ic.sharedClock = (ic.today, ic.today)
 
 /-- D-032: 配備の環境の既定の書式ロケールの 3 桁区切りの文字が `,`。 -/
 @[deviation "D-032"]
@@ -215,5 +224,12 @@ def dev_D002S (i : Spec.FlightSearch.SearchInput) : Prop :=
   ∀ r b, i.md.routeOf i.criteria.depAirportCd i.criteria.arrAirportCd = some r →
     Spec.Fare.basicFare i.md r.basicFare i.criteria.boardingClassCd i.criteria.depDate = some b →
     ∀ ft ∈ i.md.fareTypes, Abstraction.Fare.Alpha.dev_D002 ⟨b, ft.discountRate⟩
+
+/-! ## enum の名前 -/
+
+theorem fareTypeCdCode_eq (t : FareTypeCd) : SourceModel.Model.fareTypeCdCode t = t.toCode := by cases t <;> rfl
+
+theorem boardingClassCdName_eq (b : BoardingClassCd) : SourceModel.Model.boardingClassCdName b = b.toCode := by
+  cases b <;> rfl
 
 end Abstraction.FlightSearch.Alpha

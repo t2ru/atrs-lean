@@ -17,25 +17,25 @@ open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.Fli
 open SourceModel.FlightSearchQuery
 
 /-- R 課題 ABS-011: 空席照会。[Spec] の `searchMachine`（D-001・D-002 の前提で PRE を強める）は、具体機械
-`searchConcrete`（D-027・D-032 の前提で入力を制限する）に、標準の貼り合わせ `glueFS`（状態は `worldOfDb`）で
+`searchConcrete`（D-027・D-014・D-032 の前提で入力を制限する）に、標準の貼り合わせ `glueFS`（状態は `worldOfDb`）で
 リファインされる。 -/
 @[obligation "ABS-011"]
 theorem searchRefines :
     Refines ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS where
+      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS where
   init t ht := ⟨Spec.Seed.Flight.world, rfl, Or.inl ⟨by rw [ht]; exact worldOfDb_seed, trivial⟩⟩
-  input_total := Glue.ofStd_input_total fun _ hd => hd.1.2
+  input_total := Glue.ofStd_input_total fun _ hd => hd.1.1.2
   applicable s t ic ia hinv hJ hα hpre hd := by
     obtain ⟨⟨hp, h1⟩, h2⟩ := hpre
     have hw : worldOfDb t = some s := by
       rcases hJ with ⟨h, -⟩ | h
       · exact h
       · exact h.elim
-    obtain ⟨oc, hoc, -⟩ := run_spec hw hinv hα hp h1 h2 hd.2 (mergeOrder_allowed ic.db)
+    obtain ⟨oc, hoc, -⟩ := run_spec hw hinv hα hp h1 h2 hd.1.2 hd.2 (mergeOrder_allowed ic.db)
       sortAllowed_mergeSortRows
     refine ⟨⟨_, mergeOrder ic.db, mergeSortRows, mergeOrder_allowed ic.db, sortAllowed_mergeSortRows, rfl⟩,
       fun e ⟨mo, sr, hmo, hsr, he⟩ => ?_⟩
-    obtain ⟨oc', hoc', -⟩ := run_spec hw hinv hα hp h1 h2 hd.2 hmo hsr
+    obtain ⟨oc', hoc', -⟩ := run_spec hw hinv hα hp h1 h2 hd.1.2 hd.2 hmo hsr
     rw [hoc'] at he
     cases he
   correct s t ic ia t' oc hinv hJ hα hpre hd hs := by
@@ -45,7 +45,7 @@ theorem searchRefines :
       · exact h
       · exact h.elim
     obtain ⟨mo, sr, hmo, hsr, he⟩ := hs
-    obtain ⟨oc', hoc', hα'⟩ := run_spec hw hinv hα hp h1 h2 hd.2 hmo hsr
+    obtain ⟨oc', hoc', hα'⟩ := run_spec hw hinv hα hp h1 h2 hd.1.2 hd.2 hmo hsr
     rw [hoc'] at he
     simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
     obtain ⟨rfl, rfl⟩ := he
@@ -54,7 +54,7 @@ theorem searchRefines :
 /-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
 theorem searchRefines_initSurj :
     Refines.InitSurj ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS :=
+      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS :=
   fun s hs => ⟨SourceModel.Repository.FlightSeed.seedFlightDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, trivial⟩⟩
 
 /-- W 課題 ABS-132（D-032 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。配備の環境の区切り文字が `.` のとき、
@@ -62,12 +62,12 @@ theorem searchRefines_initSurj :
 @[obligation "ABS-132", gap "D-032"]
 theorem need_D032 :
     ¬ Refines ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      (searchConcrete.restrict dev_D027S) glueFS := fun h => by
+      ((searchConcrete.restrict dev_D027S).restrict dev_D014S) glueFS := fun h => by
   obtain ⟨oc, hoc, hα⟩ := run_icFS_dot
   obtain ⟨hd1, hd2⟩ := iaFS_devs
   obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS (icFS '.') iaFS fdFS oc wFS_inv
     (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
-    ⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩
+    ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [hoc]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
   obtain ⟨-, rfl⟩ := hc
@@ -76,31 +76,36 @@ theorem need_D032 :
     exact answer_ne_dot (Option.some.inj ho).symm
   · exact ho
 
-/-- 具体側の 1 歩は状態を変えない。 -/
-theorem step_state {t : SourceModel.Repository.Schema.FlightDb} {ic : SourceModel.FlightSearch.SearchInput}
-    {t' : SourceModel.Repository.Schema.FlightDb} {oc : SearchOutput} (h : searchConcrete.step t ic (.ok (t', oc))) :
-    t' = t := by
-  obtain ⟨mo, sr, -, -, he⟩ := h
-  revert he
-  cases catchBusiness (SourceModel.FlightSearch.runSearchFlight t ic mo sr) with
-  | error e => intro he; cases he
-  | ok o =>
-    intro he
-    change Except.ok (t', oc) = Except.ok (t, o) at he
-    cases he; rfl
+/-- W 課題 ABS-114（D-014 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。照会の途中で日付をまたぎ、
+`TicketSharedServiceImpl` の読む今日の日付だけが進むと、[Source] は搭乗日を照会可能期間の外として業務例外 `e.ar.b1.2001`
+を返し、[Spec] は空席情報を返す（`Witness`）。 -/
+@[obligation "ABS-114", gap "D-014"]
+theorem need_D014 :
+    ¬ Refines ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
+      ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS := fun h => by
+  obtain ⟨hd1, hd2⟩ := iaFS_devs
+  obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS icFS14 iaFS fdFS (.error (.business "e.ar.b1.2001")) wFS_inv
+    (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS14 ⟨⟨iaFS_pre, hd1⟩, hd2⟩
+    ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS14]; rfl⟩, rfl⟩
+    ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [run_icFS14]; rfl⟩
+  simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
+  obtain ⟨-, rfl⟩ := hc
+  rcases ho with ho | ho
+  · exact answer_ok _ (Option.some.inj ho).symm
+  · exact ho
 
 /-- ABS-011 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。基底が `ofChoice` なので `ch = some chFS`、
 「出力のみ」の具体側の差異 D-032 の層を `outsC` に置く。 -/
 @[obligation "ABS-011"]
 theorem searchPreserves :
     Machine.Preserves ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS Spec.Seed.Flight.world envFS (some chFS) []
-      [⟨searchConcrete.restrict dev_D027S, dev_D032⟩] where
+      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS Spec.Seed.Flight.world envFS (some chFS) []
+      [⟨(searchConcrete.restrict dev_D027S).restrict dev_D014S, dev_D032⟩] where
   sound := (Spec.FlightSearch.searchMachine_sound.restrictState _).restrictState _
   initIs := Spec.FlightSearch.searchMachine_initIs
   initSurj := searchRefines_initSurj
   total _ _ _ h := ⟨⟨⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2⟩
-  envWitness := ⟨icFS ',', iaFS, ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, aiS_icFS_comma,
+  envWitness := ⟨icFS ',', iaFS, ⟨⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, rfl⟩, aiS_icFS_comma,
     envFS_iaFS⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaFSbad) wFS_inv
     fun h => Spec.EnvPre.badMasterData_not_env ⟨h.1.1.1, h.1.1.2.1⟩

@@ -228,11 +228,11 @@ theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Model.Flight → JRes
 
 /-! ## 1 歩 -/
 
-/-- 具体側の 1 歩: D-027（入力の像がある）・PRE・D-001・D-002・D-032 の下で、どの許される並びでも、
+/-- 具体側の 1 歩: D-027（入力の像がある）・PRE・D-001・D-002・D-014・D-032 の下で、どの許される並びでも、
 `catchBusiness (runSearchFlight …)` は例外を投げず、結果の写しは [Spec] の `answer`。 -/
 theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     {ic : SourceModel.FlightSearch.SearchInput} {i : Spec.FlightSearch.SearchInput} (hα : aiS ic = some i)
-    (hp : SearchInput.Pre w i) (h1 : dev_D001S i) (h2 : dev_D002S i) (h32 : dev_D032 ic)
+    (hp : SearchInput.Pre w i) (h1 : dev_D001S i) (h2 : dev_D002S i) (h14 : dev_D014S ic) (h32 : dev_D032 ic)
     {mo : SourceModel.MasterQuery.Order} (hmo : mo.Allowed ic.db) {sortRows : List VacantSeatRow → List VacantSeatRow}
     (hs : SortAllowed sortRows) :
     ∃ oc, SourceModel.FlightSearchQuery.catchBusiness (SourceModel.FlightSearch.runSearchFlight fd ic mo sortRows) = .ok oc ∧
@@ -247,7 +247,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
   simp only at hcv hv hbsome hdepT harrT hfn h1 h2
   obtain ⟨p, hl, hpt, hrq, hbcq, hftq, hfmq⟩ := Abstraction.FlightSearch.Providers.load_fs hm hv hmo
   simp only [SourceModel.FlightSearch.runSearchFlight, hl, ok_bind, SourceModel.FlightSearch.searchFlight, htc, hdj, hbc,
-    hdep, harr, hft, pure_bind, Option.getD_some]
+    hdep, harr, hft, pure_bind, Option.getD_some, show ic.sharedClock = (ic.today, ic.today) from h14]
   have hL : ic.config.limitDay.val = (cfg.limitDay : Int) := by
     simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hcfg
     obtain ⟨ld, hld, _, _, _, _, _, _, _, _, _, _, rfl⟩ := hcfg
@@ -300,7 +300,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
           some (SourceModel.FlightSearch.getFareTypeCdList (some ft))⟩ : VacantSeatSearchCriteriaDto) =
           paramsOf ⟨D, bc, ⟨dc⟩, ⟨ac⟩, ft⟩ dc ac (Date.daysBetween T D) := by
         simp only [SourceModel.Repository.Flight.bind, sqlOf, paramsOf, hda, hdac, haa, haac, Option.bind_some, Option.getD_some,
-          getFareTypeCdList_eq, hbdn, (dateOfJ_eq_some hDj).2]
+          getFareTypeCdList_eq, hbdn, (dateOfJ_eq_some hDj).2, fareTypeCdCode_eq, boardingClassCdName_eq]
       -- 基本運賃
       obtain ⟨bcM, hbcM⟩ := Option.isSome_iff_exists.mp hbsome
       obtain ⟨bJ, e, hgetb, -, hex, heval⟩ := Abstraction.Fare.Load.boardingClass_of_answer (by rw [hbcq, hbcM]; rfl)
