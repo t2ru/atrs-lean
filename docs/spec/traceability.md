@@ -131,7 +131,7 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 346 件。`trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 348 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
@@ -177,6 +177,9 @@ pub fn basic_fare(...) -> (r: u64)
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant0` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant1` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant2` | `ebc1effd92f8d4a3` | pg-flight-sql |
+| `seed:00230_insert_member.sql#MEMBER_LOGIN` | `SourceModel.Db.MemberSeed.memberLoginRows` | `d692d2c1627b0945` | pg-reservation-sql |
+| `seed:00230_insert_member.sql#MEMBER` | `SourceModel.Db.MemberSeed.memberRows` | `0fa5d725ee1debb7` | pg-reservation-sql |
+| `seed:00230_insert_member.sql#MEMBER` | `SourceModel.Db.MemberSeed.sqMember` | `0fa5d725ee1debb7` | pg-reservation-sql |
 | `ddl:00100_create_all_tables.sql#AIRPORT` | `SourceModel.Db.Schema.AirportRow` | `bf8ca7804ba932ce` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#PK_AIRPORT` | `SourceModel.Db.Schema.AirportRow` | `33090112cf970113` | lake-test, pg-master-sql |
 | `ddl:00100_create_all_tables.sql#BOARDING_CLASS` | `SourceModel.Db.Schema.BoardingClassRow` | `74a735596ef8e4ee` | lake-test, pg-master-sql |
@@ -411,15 +414,15 @@ pub fn basic_fare(...) -> (r: u64)
 | `dep:org.postgresql:postgresql#TimestampUtils.toLocalDateTime` | `SourceModel.Domain.Repository.Member.MemberRepository.localDateOfTimestamp` | `postgresql-42.7.9` | java-origin-run, lake-test |
 | `sql:jp.co.ntt.atrs.domain.repository.peaktime.PeakTimeRepository#findAll` | `SourceModel.Domain.Repository.Peaktime.PeakTimeRepository.findAll` | `52311345757d8bde` | lake-test, pg-master-sql |
 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insert` | `mybatis-3.5.19` | java-origin-run, lake-test |
-| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert(Reservation)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insert` | `3d5880d4f5b24ab0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert(Reservation)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insert` | `3d5880d4f5b24ab0` | java-origin-run, lake-test, pg-reservation-sql |
 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger` | `mybatis-3.5.19` | java-origin-run, lake-test |
-| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger(Passenger)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger` | `1ba685e68ed407bf` | java-origin-run, lake-test |
-| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassengerRow` | `143c319a42242366` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger(Passenger)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger` | `1ba685e68ed407bf` | java-origin-run, lake-test, pg-reservation-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassengerRow` | `143c319a42242366` | java-origin-run, lake-test, pg-reservation-sql |
 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight` | `mybatis-3.5.19` | java-origin-run, lake-test |
-| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight(ReserveFlight)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight` | `88ff643e818d213a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight(ReserveFlight)` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight` | `88ff643e818d213a` | java-origin-run, lake-test, pg-reservation-sql |
 | `dep:org.mybatis:mybatis#EnumTypeHandler` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow` | `mybatis-3.5.19` | （なし） |
-| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow` | `c6374f352f5e8516` | java-origin-run, lake-test |
-| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertRow` | `24efe7b0cbd4877c` | java-origin-run, lake-test |
+| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlightRow` | `c6374f352f5e8516` | java-origin-run, lake-test, pg-reservation-sql |
+| `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.insertRow` | `24efe7b0cbd4877c` | java-origin-run, lake-test, pg-reservation-sql |
 | `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertPassenger` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.nextPassengerNo` | `143c319a42242366` | java-origin-run, lake-test |
 | `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insertReserveFlight` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveFlightNo` | `c6374f352f5e8516` | java-origin-run, lake-test |
 | `sql:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert` | `SourceModel.Domain.Repository.Reservation.ReservationRepository.nextReserveNo` | `24efe7b0cbd4877c` | java-origin-run, lake-test |
@@ -519,6 +522,9 @@ pub fn basic_fare(...) -> (r: u64)
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant0` | `ebc1effd92f8d4a3` | seed-lean |
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant1` | `ebc1effd92f8d4a3` | seed-lean |
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant2` | `ebc1effd92f8d4a3` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.members` | `0fa5d725ee1debb7` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER_LOGIN` | `Spec.Seed.Member.members` | `d692d2c1627b0945` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.sequences` | `0fa5d725ee1debb7` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#AIRPORT` | `Spec.Seed.airports` | `e5f2a74a341d1ab1` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#BOARDING_CLASS` | `Spec.Seed.boardingClasses` | `0c0030e40bed7655` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#CREDIT_TYPE` | `Spec.Seed.creditTypes` | `5cac07149240715c` | seed-lean |

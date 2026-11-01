@@ -89,11 +89,12 @@ run = "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py"
 # 適合テストの共有入力・シード
 
 [tasks."conformance:check"]
-description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed）が上流のシード・設定からの生成と一致する"
+description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed・Spec.Seed.Member・SourceModel.Db.MemberSeed）が上流のシード・設定からの生成と一致する"
 run = [
   "{{vars.py}} tools/conformance/master_fixture.py --check",
   "{{vars.py}} tools/conformance/seed_lean.py --check",
   "{{vars.py}} tools/conformance/flight_seed.py --check",
+  "{{vars.py}} tools/conformance/member_seed.py --check",
 ]
 
 [tasks."conformance:gen"]
@@ -102,10 +103,11 @@ run = [
   "{{vars.py}} tools/conformance/master_fixture.py",
   "{{vars.py}} tools/conformance/seed_lean.py",
   "{{vars.py}} tools/conformance/flight_seed.py",
+  "{{vars.py}} tools/conformance/member_seed.py",
 ]
 
 [tasks."conformance:master-sql"]
-description = "conformance: マスタの Mapper の文・コードリストの SQL と空席照会の文の PostgreSQL での結果（conformance/sql/）が最新である"
+description = "conformance: マスタの Mapper の文・コードリストの SQL・空席照会の文・予約が使う文の PostgreSQL での結果（conformance/sql/）が最新である"
 wait_for = ["assets:pg-table"]
 run = "tools/ci/master_sql.sh"
 

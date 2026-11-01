@@ -49,6 +49,8 @@ import SourceModel.Domain.Service.B1.TicketSearchServiceImpl
 import SourceModel.FlightSearchQuery
 import SourceModel.ReserveQuery
 import SourceModel.Db.FlightSeed
+import SourceModel.Db.MemberSeed
+import SourceModel.Db.Seed
 
 /-!
 # SourceModel

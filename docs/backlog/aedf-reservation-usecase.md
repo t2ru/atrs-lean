@@ -65,6 +65,19 @@ generated:
   - 採番の自由な選択（[Spec] の採番は未使用の任意の値を許すか）と、`Conflict`・I/O 失敗のときの採番の前進を、選択の型で表す方法
   - 空席照会の α の定義域の制限を外す
 
+## 第 2 段の結果
+
+2026-11-02 に完了した（[ADR ca17](../decision/ca17-reservation-stage2-machines-seed-nondet-advance.md)）。
+
+- スキルに、同じ状態の上の並置 `Machine.alt` 一式（`Refines.alt`・`Preserves.alt`）と、例・反例のテストを足した（版 0.22）。
+- 抽象機械 `Spec.UseCase.Reserve.reserveMachine`（選択の像。N-001・N-002・N-004）を置き、予約の SPEC-001・002・003・004・007・008 を証明した。
+- N-001・N-002 の選択の型に、失敗するまでに進んだ採番の数 `SeqAdvance` を持たせた（確認待ち）。
+- 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。業務例外・不正要求・I/O 失敗・排他の失敗を出力の値とする。
+- 会員のシードの生成器 `tools/conformance/member_seed.py` と、初期状態 `Spec.Seed.World.world`・`SourceModel.Db.Seed.seedDb` を置いた。
+- 予約の SQL を PostgreSQL での差分実行で照合した（`conformance/sql/reservation.json`・`Tests.ReservationSql`・検査 `pg-reservation-sql`）。
+- 完了条件のうち「予約の SPEC-001〜SPEC-004 を証明した」と「リポジトリの SQL の写しを PostgreSQL での差分実行で照合した」を満たした。
+- 第 3 段に申し送るもの: 空席照会の状態と初期状態を全表に広げること（全表の α と一体）、D-014 の述語、R 課題 ABS-020〜023・041・109・131 とトップレベルへの統合。
+
 ## 参照
 
 - [reservation.md](../spec/reservation.md)

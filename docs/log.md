@@ -1,5 +1,15 @@
 # Directory Update Log
 
+## 2026-11-02
+
+* **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
+  * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.22）。
+  * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
+  * 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。
+  * 会員のシードの生成器 `tools/conformance/member_seed.py` を置き、初期状態 `Spec.Seed.World`・`SourceModel.Db.Seed` を作った。
+  * 予約の SQL の差分実行（`tools/conformance/reservation_sql.py`・`conformance/sql/reservation.json`・`Tests.ReservationSql`・検査 `pg-reservation-sql`）を足した。制約の検査の順のずれ 4 件を、写しを直して解消した。[spec/conformance.md](spec/conformance.md)・[spec/assurance.md](spec/assurance.md) を改めた。
+  * [backlog/aedf](backlog/aedf-reservation-usecase.md) に第 2 段の結果を、[index.md](index.md) に ADR を足した。
+
 ## 2026-11-01
 
 * **Creation**: [ADR 4c45](decision/4c45-reservation-stage1-shared-state-and-source-model.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を 3 段に分け、第 1 段を行った（`doing`）。

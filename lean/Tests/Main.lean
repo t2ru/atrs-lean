@@ -8,6 +8,7 @@ import Tests
 
 - 適合テストベクタ（`../conformance/`）を実行する（`Tests.Conformance`・`Tests.ConformanceFare`・`Tests.ConformanceMaster`）。`Spec` は `spec/`・`shared/`、`SourceModel` は `source-model/`・`shared/`。
 - マスタの Mapper の文・コードリストの SQL の、PostgreSQL との差分実行の結果（`Tests.MasterSql`）。
+- 空席照会の文（`Tests.FlightSql`）と予約が使う文・シードの会員（`Tests.ReservationSql`）の、PostgreSQL との差分実行の結果。
 - 暦日の全日の検査（`Tests.SpecChecks.dateExhaustive`）。
 - 運賃計算の double 式の、ソフトモデルとネイティブ `Float` の突き合わせ（`Tests.JavaDouble`）。
 -/
@@ -87,6 +88,28 @@ def flightSqlTests : IO Unit := do
   | .error e => check s!"flight SQL: {e}" false
   | .ok rs => for (id, ok, info) in rs do check s!"flight SQL: {id} ({info})" ok
 
+/-- 予約が使う文の、PostgreSQL との差分実行（`conformance/sql/reservation.json`）と、シードの会員の照合。
+`knownMismatch` のあるケースは、モデルと異なると分かっているもので、実際に異なることを確かめる。 -/
+def reservationSqlTests : IO Unit := do
+  IO.println "reservation SQL (PostgreSQL results vs SourceModel.Domain.Repository.{Flight,Member,Reservation})"
+  let master ← match Json.parse (← IO.FS.readFile "../conformance/sql/master-data.json") with
+    | .ok d => pure d
+    | .error e => do check s!"master-data.json: {e}" false; return
+  let doc ← match Json.parse (← IO.FS.readFile "../conformance/sql/reservation.json") with
+    | .ok d => pure d
+    | .error e => do check s!"reservation.json: {e}" false; return
+  match Tests.ReservationSql.seedMatches doc with
+  | .error e => check s!"member seed: {e}" false
+  | .ok rs => for (label, ok) in rs do check s!"member seed vs PostgreSQL: {label}" ok
+  match Tests.ReservationSql.run master doc with
+  | .error e => check s!"reservation SQL: {e}" false
+  | .ok rs =>
+    for (id, ok, info, known) in rs do
+      if known then
+        check s!"reservation SQL: {id} (known mismatch, expected to differ: {info})" (!ok)
+      else
+        check s!"reservation SQL: {id} ({info})" ok
+
 /-- 暦日の全日の検査。 -/
 def dateTests : IO Unit := do
   IO.println "date (0001-01-01 .. 9999-12-31)"
@@ -111,6 +134,7 @@ unsafe def main : IO UInt32 := do
   conformanceTests
   masterSqlTests
   flightSqlTests
+  reservationSqlTests
   let n ← failures.get
   if n == 0 then
     IO.println "all tests passed"

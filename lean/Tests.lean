@@ -5,6 +5,7 @@ import Tests.ConformanceFlightSearch
 import Tests.ConformanceReservation
 import Tests.MasterSql
 import Tests.FlightSql
+import Tests.ReservationSql
 import Tests.SpecChecks
 import Tests.JavaDouble
 import Tests.TicketChecks

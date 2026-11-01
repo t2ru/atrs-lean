@@ -16,6 +16,8 @@ import Spec.Nondet
 import Spec.Seed
 import Spec.Seed.Flight
 import Spec.Seed.FlightProps
+import Spec.Seed.Member
+import Spec.Seed.World
 import Spec.EnvPre
 
 /-!

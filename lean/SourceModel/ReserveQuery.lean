@@ -8,6 +8,8 @@ import SourceModel.FareQuery
 import SourceModel.App.B0.TicketHelper
 import SourceModel.App.B2.TicketReserveForm
 import SourceModel.App.B2.TicketReserveHelper
+import SourceModel.Db.Seed
+import Machine
 
 /-!
 # SourceModel.ReserveQuery
@@ -20,7 +22,9 @@ import SourceModel.App.B2.TicketReserveHelper
 3. `TicketReserveHelper.validateFlightList`（失敗は `BadRequestException`）
 4. `TicketReserveHelper.reserveConfirm` または `TicketReserveHelper.reserve`
 
-状態は状態の表とシーケンス（`FlightDb`）、実行環境（Clock・障害の位置）は入力の成分である。具体機械は第 2 段で置く。
+状態は状態の表とシーケンス（`FlightDb`）、実行環境（Clock・障害の位置）は入力の成分である。具体機械 `reserveConcrete`
+（backlog aedf の第 2 段）は、業務例外・不正要求（`BadRequestException`）・I/O の失敗・排他の失敗を出力の値とし、
+それ以外の例外（前提違反・制約違反・更新件数の不一致など）を正常でない結果とする。
 -/
 
 namespace SourceModel.ReserveQuery
@@ -67,5 +71,65 @@ def runReserve (fd : FlightDb) (ic : ReserveInput) (mo : Order) : JResult Reserv
   match load mo with
   | .error e => (.error e, fd)
   | .ok p => runOn (reserveBody p ic) fd ic.env
+
+/-! ## 具体機械（backlog aedf の第 2 段） -/
+
+/-- 操作の種類: 予約確認（`POST ?confirm`）・予約確定（`POST`）。 -/
+inductive Kind where
+  | confirm
+  | reserve
+  deriving DecidableEq, Repr
+
+/-- 具体機械の入力。 -/
+structure MInput where
+  input : ReserveInput
+  kind : Kind
+
+/-- 具体機械の出力の値。 -/
+inductive MOutputValue where
+  | confirmed (o : ReserveConfirmOutputDto)
+  | reserved (o : ReserveCompleteOutputDto)
+  deriving DecidableEq, Repr
+
+/-- 出力の値とする例外: 業務例外（コードと引数）、不正要求、I/O の失敗、排他の失敗。 -/
+inductive ReserveError where
+  | business (code : String) (args : List String)
+  | badRequest
+  | ioFailure
+  | conflict
+  deriving DecidableEq, Repr
+
+/-- 具体機械の出力。 -/
+abbrev MOutput := Except ReserveError MOutputValue
+
+/-- 出力の値とする例外を、出力の値に変える。それ以外の例外は、そのまま例外とする。業務例外のメッセージは、
+コードと引数を改行でつないだもの（`AtrsBusinessException.newArgs`）。 -/
+def catchReserve (r : JResult MOutputValue) : JResult MOutput :=
+  match r with
+  | .ok v => .ok (.ok v)
+  | .error (.other cls msg) =>
+    if cls = SourceModel.Domain.Common.Exception.AtrsBusinessException.className then
+      match msg.splitOn "\n" with
+      | code :: args => .ok (.error (.business code args))
+      | [] => .ok (.error (.business msg []))
+    else if cls = TicketReserveHelper.badRequestClass then .ok (.error .badRequest)
+    else if cls = ioFailureClass then .ok (.error .ioFailure)
+    else if cls = conflictClass then .ok (.error .conflict)
+    else .error (.other cls msg)
+  | .error e => .error e
+
+/-- 1 歩の計算（並び `mo` を選んだとき）。 -/
+def runOp (fd : FlightDb) (ic : MInput) (mo : Order) : JResult MOutputValue × FlightDb :=
+  match ic.kind with
+  | .confirm => let (r, fd') := runConfirm fd ic.input mo; (r.map .confirmed, fd')
+  | .reserve => let (r, fd') := runReserve fd ic.input mo; (r.map .reserved, fd')
+
+/-- 予約の具体機械。状態は状態の表とシーケンス、初期状態はシードを投入した後の状態。1 歩は、Mapper の文の結果の
+許される並びのどれかで読み込み、操作を実行する。定義域: 予約確認では排他の失敗を起こさない（予約確認の文は行ロックを
+取らないので、排他の失敗は起きない）。 -/
+def reserveConcrete : Machine.Concrete FlightDb MInput MOutput JThrow where
+  Init t := t = SourceModel.Db.Seed.seedDb
+  Dom ic := ic.kind = .confirm → ic.input.env.conflictAt = none
+  step t ic r := ∃ mo, mo.Allowed ic.input.db ∧ r = (catchReserve (runOp t ic mo).1).map fun o => ((runOp t ic mo).2, o)
 
 end SourceModel.ReserveQuery

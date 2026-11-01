@@ -94,7 +94,7 @@
         "Domain.Repository",
         "Domain.Model.Reservation",
         "Domain.Model.ReserveFlight",
-        "Db.Tx",
+        "Db.Tx", "Db.MemberSeed", "Db.Seed",
         "Db.Schema.ReservationRow",
         "Db.Schema.ReserveFlightRow",
         "Db.Schema.PassengerRow",
