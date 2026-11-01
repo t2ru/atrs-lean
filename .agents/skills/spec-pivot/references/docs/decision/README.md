@@ -36,3 +36,4 @@ generated:
 | 288a | [「オラクル」を「原典実行」（origin-run）と呼び替える](288a-rename-oracle-to-origin-run.md) | accepted | 2026-11-01 |
 | 22b4 | [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](22b4-split-okf-and-records-skills.md) | accepted | 2026-11-01 |
 | 89f2 | [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](89f2-layout-check-one-process-per-group.md) | accepted | 2026-11-01 |
+| b187 | [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](b187-proven-csimp-for-evaluating-models.md) | accepted | 2026-11-01 |

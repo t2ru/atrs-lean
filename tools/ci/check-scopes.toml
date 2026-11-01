@@ -27,16 +27,9 @@ paths = [
   ".python-version",
 ]
 
-# 長い検査（lean/Tests/Long.lean）: 暦日の全日・double の総当たり・シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果
+# 長い検査（lean/Tests/Long.lean）: 暦日の全日・double の総当たり（データのファイルを読まない）
 [scopes."lean:test-long"]
 lean_roots = ["Tests.LongMain"]
-paths = [
-  "conformance/shared/master-data/**",
-  "conformance/shared/flight-search/**",
-  "conformance/source-model/flight-search/**",
-  "conformance/sql/**",
-  "conformance/fixtures/**",
-]
 
 # 宣言がモジュール名の下にあること（ATRS の Lean の全宣言が対象）
 [scopes."lean:layout-check"]
