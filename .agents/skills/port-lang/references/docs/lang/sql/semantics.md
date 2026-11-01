@@ -70,7 +70,7 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 | 列の値（方言の型） | 対応する `Spec` の値（表せない値には定義しない） | 定義域の上で単射なら `Machine.Kernel.undefOrEq` |
 | `NULL` | `Option.none` | なし |
 
-基本補題は assets の `LangSemantics.Sql.QueryLemmas`（結合 `filter_cross`、許される順列と `List.mergeSort` の一致 `allowed_map_eq_mergeSort`・`allowed_mergeSort_self`）にある。
+基本補題は assets の `LangSemantics.Sql.QueryLemmas`（結合 `filter_cross`、許される順列と `List.mergeSort` の一致 `allowed_map_eq_mergeSort`・`allowed_mergeSort_self`、条件の押し下げ `cross_filter_left`・`select_filter_of_imp`）にある。条件の押し下げは、大きな表の直積を、1 つの表だけで決まる条件で先に絞って評価するときに使う（評価の等しさは定理で示す）。
 
 ## 基本補題（用意するもの）
 

@@ -5,6 +5,7 @@ import LangSemantics.Sql.Postgresql
 import SourceModel.Model
 import SourceModel.Repository.Schema
 import SourceModel.Repository.MasterData
+import LangSemantics.Sql.QueryLemmas
 
 /-!
 # SourceModel.Repository.Flight
@@ -104,6 +105,30 @@ def vacantSeatRows (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeat
         ((SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).and
         (between collationC p.beforeDayNum ft.rsrvAvailableEndDayNum.toSql ft.rsrvAvailableStartDayNum.toSql)))))))))
       (Bag.cross (Bag.cross (Bag.cross fd.flight db.fareType) db.flightMaster) db.route))
+
+/-- FLIGHT の行だけで決まる条件（運賃種別の `IN`・出発日・搭乗クラス）。 -/
+def flightPre (p : Params) (f : FlightRow) : Bool :=
+  (inList collationC f.fareTypeCd.toSql p.fareTypeList).holds &&
+    (SqlValue.eq collationC f.departureDate.toSql p.depDate).holds &&
+    (SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).holds
+
+/-- 評価用: FLIGHT の行を `flightPre` で先に絞ってから同じ文を評価する（全件の直積を避ける。テストの差分実行に使う）。 -/
+def vacantSeatRowsOn (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeatRow :=
+  vacantSeatRows db ⟨fd.flight.filter (flightPre p)⟩ p
+
+/-- 条件の押し下げ: 先に絞っても、文の結果は変わらない。 -/
+theorem vacantSeatRows_eq_on (db : MasterDb) (fd : FlightDb) (p : Params) :
+    vacantSeatRows db fd p = vacantSeatRowsOn db fd p := by
+  unfold vacantSeatRowsOn vacantSeatRows
+  congr 1
+  rw [LangSemantics.Sql.QueryLemmas.cross_filter_left fd.flight db.fareType,
+    LangSemantics.Sql.QueryLemmas.cross_filter_left _ db.flightMaster,
+    LangSemantics.Sql.QueryLemmas.cross_filter_left _ db.route]
+  apply LangSemantics.Sql.QueryLemmas.select_filter_of_imp
+  intro t ht
+  simp only [Truth.holds_and, Bool.and_eq_true] at ht
+  simp only [flightPre, Bool.and_eq_true]
+  exact ⟨⟨ht.2.1, ht.2.2.2.2.2.2.1⟩, ht.2.2.2.2.2.2.2.1⟩
 
 /-- `ORDER BY ft.display_order ASC, fm.departure_time ASC` の整列キー。 -/
 def vacantSeatKey (r : VacantSeatRow) : List SqlValue := [r.displayOrder.toSql, r.departureTime.toSql]

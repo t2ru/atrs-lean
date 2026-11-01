@@ -15,6 +15,8 @@ import SourceModel.Ticket
 import SourceModel.FareQuery
 import SourceModel.Repository.Flight
 import SourceModel.FlightSearch
+import SourceModel.Repository.FlightSeed
+import SourceModel.FlightSearchQuery
 
 /-!
 # SourceModel
@@ -35,7 +37,9 @@ import SourceModel.FlightSearch
 | `SourceModel.Ticket` | 選択フライト情報からフライト情報を組み立てる部分（`TicketHelper.toFlightList`） |
 | `SourceModel.FareQuery` | 運賃計算の具体機械（ABS-001・ABS-002・ABS-004 の具体側） |
 | `SourceModel.Repository.Flight` | 空席照会の Mapper の文 `findByVacantSeatSearchCriteria`（SQL の写しと許される並び）。FLIGHT 表は状態 `FlightDb` |
-| `SourceModel.FlightSearch` | 空席照会（`TicketSearchServiceImpl.searchFlight`・照会可能期間・`FareTypeUtil`・`DateTimeUtil`）。具体機械は backlog 0be7 の第 2 段 |
+| `SourceModel.FlightSearch` | 空席照会（`TicketSearchServiceImpl.searchFlight`・照会可能期間・`FareTypeUtil`・`DateTimeUtil`） |
+| `SourceModel.Repository.FlightSeed` | シードの FLIGHT 表（状態の初期値。`tools/conformance/flight_seed.py` が生成） |
+| `SourceModel.FlightSearchQuery` | 空席照会の具体機械（ABS-011 の具体側。状態は FLIGHT 表、業務例外は出力の値） |
 
 トップレベルの具体機械 `SourceModel.machine` は、`Spec.machine` と同じ並びで、各機能の具体機械を並置したもの
 （`Machine.Concrete.sum`）である。`Abstraction` の主定理の具体側になる。
