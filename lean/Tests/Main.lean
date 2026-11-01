@@ -67,6 +67,23 @@ def masterSqlTests : IO Unit := do
   check "fixtures/config.json = SourceModel.Config.upstreamConfig"
     ((Tests.ConformanceMaster.srcConfig config).toOption == some SourceModel.Config.upstreamConfig)
 
+/-- 空席照会の文の、PostgreSQL との差分実行（`conformance/sql/flight-search.json`）と、シードの FLIGHT 表の照合。 -/
+def flightSqlTests : IO Unit := do
+  IO.println "flight search SQL (PostgreSQL results vs SourceModel.Repository.Flight)"
+  let master ← match Json.parse (← IO.FS.readFile "../conformance/sql/master-data.json") with
+    | .ok d => pure d
+    | .error e => do check s!"master-data.json: {e}" false; return
+  let doc ← match Json.parse (← IO.FS.readFile "../conformance/sql/flight-search.json") with
+    | .ok d => pure d
+    | .error e => do check s!"flight-search.json: {e}" false; return
+  let (n, h) := Tests.FlightSql.seedSummary
+  let seed := (doc.getObjVal? "flightSeed").toOption.getD .null
+  check s!"seedFlightDb = PostgreSQL FLIGHT after 00250 ({n} rows, hash)"
+    ((seed.getObjValAs? Nat "rows").toOption == some n && (seed.getObjValAs? Nat "polyHash").toOption == some h)
+  match Tests.FlightSql.run master doc with
+  | .error e => check s!"flight SQL: {e}" false
+  | .ok rs => for (id, ok, info) in rs do check s!"flight SQL: {id} ({info})" ok
+
 /-- 暦日の全日の検査。 -/
 def dateTests : IO Unit := do
   IO.println "date (0001-01-01 .. 9999-12-31)"
@@ -90,6 +107,7 @@ unsafe def main : IO UInt32 := do
   javaDoubleTests
   conformanceTests
   masterSqlTests
+  flightSqlTests
   let n ← failures.get
   if n == 0 then
     IO.println "all tests passed"

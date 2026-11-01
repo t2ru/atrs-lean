@@ -3,6 +3,7 @@ import Tests.ConformanceFare
 import Tests.ConformanceMaster
 import Tests.ConformanceFlightSearch
 import Tests.MasterSql
+import Tests.FlightSql
 import Tests.SpecChecks
 import Tests.JavaDouble
 import Tests.TicketChecks

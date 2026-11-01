@@ -24,9 +24,10 @@ python3 -I "$scripts/docs/docmv.py" --self-test
 step "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
 python3 -I "$scripts/docs/okf_check.py"
 
-step "conformance: 共有入力（fixtures/master-data.json・config.json）が上流のシード・設定からの生成と一致する"
+step "conformance: 共有入力（fixtures/master-data.json・config.json）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Repository.FlightSeed）が上流のシード・設定からの生成と一致する"
 python3 -I tools/conformance/master_fixture.py --check
 python3 -I tools/conformance/seed_lean.py --check
+python3 -I tools/conformance/flight_seed.py --check
 
 step "static: 静的検査の自己テスト（違反例を検出できること）"
 python3 -I "$scripts/ci/check_lean.py" --self-test
@@ -49,7 +50,7 @@ skippable "$scripts/ci/jvm_table.sh"
 step "assets/lean: PostgreSQL との突き合わせ表（Test/LangSemantics/PostgresqlDb.lean）が生成器の出力と一致する"
 skippable "$scripts/ci/pg_table.sh"
 
-step "conformance: マスタの Mapper の文・コードリストの SQL の PostgreSQL での結果（conformance/sql/master-data.json）が最新である"
+step "conformance: マスタの Mapper の文・コードリストの SQL と空席照会の文の PostgreSQL での結果（conformance/sql/master-data.json・flight-search.json）が最新である"
 skippable tools/ci/master_sql.sh
 
 step "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 Test.LangSemantics・Test.Machine・Test.Trace）"
