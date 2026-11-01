@@ -398,4 +398,15 @@ def D032 : Gap where
   impact := some (.outputOnly, "空席照会の運賃の表示だけが異なる")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
 
+/-- 空白の便名の便マスタが空席照会の結果に現れると、[Source] は `getFlightMaster` の `Assert.hasText` で
+`IllegalArgumentException` を投げる。[Spec] は PRE で除く -/
+@[gap_entry]
+def D033 : Gap where
+  id := "D-033"
+  kind := .outsidePre
+  sites := [⟨"空席照会の便マスタの参照", "docs/spec/flight-search.md#事前条件", ""⟩]
+  premise := "PRE `FlightNamesHaveText`（便マスタの便名が空白でない）"
+  evidence := .excludedBy [``Spec.FlightSearch.FlightNamesHaveText]
+  backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
+
 end Abstraction.Gap
