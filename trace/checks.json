@@ -3,10 +3,9 @@
   "checks": [
     {
       "id": "lake-test",
-      "description": "適合テストベクタの照合（Lean の Tests。lake test と lake exe long-tests）",
+      "description": "適合テストベクタの照合（Lean の Tests。lake test）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test-long"] }
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.App.B0.*"] }
     },
@@ -15,8 +14,7 @@
       "description": "マスタの Mapper の文・コードリストの SQL の PostgreSQL での差分実行（結果の再生成と lake test の Tests.MasterSql）",
       "steps": [
         { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test-long"] }
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["SourceModel.Db.Schema.*", "SourceModel.Domain.Repository.Route.*", "SourceModel.Domain.Repository.Boardingclass.*",
         "SourceModel.Domain.Repository.Faretype.*", "SourceModel.Domain.Repository.Peaktime.*",
@@ -46,8 +44,7 @@
       "description": "上流のシードから [Spec] のシードの値への変換（master_fixture.py・seed_lean.py の再生成との一致と、lake test のシードと PostgreSQL の照合）",
       "steps": [
         { "cwd": ".", "argv": ["mise", "run", "conformance:check"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test-long"] }
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["Spec.Seed.*"] }
     },
@@ -57,8 +54,7 @@
       "steps": [
         { "cwd": ".", "argv": ["uv", "run", "--quiet", "python", "-I", "tools/conformance/flight_seed.py", "--check"] },
         { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test-long"] }
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "names": ["SourceModel.Domain.Repository.Flight.*", "SourceModel.Db.FlightSeed.*",
         "SourceModel.Db.Schema.FlightRow", "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap"] }
@@ -90,8 +86,7 @@
       "description": "Java の原典実行（backlog f18c・aedf）: 運賃計算・空席照会・予約のベクタを原典で照合し、原典実行が生成したベクタ（source-model/*/origin-run-*.json）を再生成と突き合わせ、lake test で SourceModel と照合する",
       "steps": [
         { "cwd": ".", "argv": ["mise", "run", "origin-run:domain"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test-long"] }
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
       ],
       "covers": { "vectors": ["conformance/shared/fare/*.json", "conformance/source-model/fare/*.json",
         "conformance/shared/flight-search/*.json", "conformance/source-model/flight-search/*.json",

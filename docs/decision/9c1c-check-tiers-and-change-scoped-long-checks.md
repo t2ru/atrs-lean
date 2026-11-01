@@ -103,3 +103,4 @@ Chosen option: "3 層（常時の段・変更時の段・全数）に分け、�
 * 規則: [checks.md](../rules/checks.md)（実行の時点）、[version-control.md](../rules/version-control.md#コミット前の確認)、[backlog.md](../rules/backlog.md#完了の定義definition-of-done)
 * 作業: [backlog 7d08](../backlog/7d08-change-scoped-checks.md)
 * 補う記録: [ADR 44a0](44a0-mise-tasks-and-uv-for-tools.md)（タスクと一括検査 `ci`）
+* 追記（2026-11-01）: `lake test` の分割（実行ファイル `long-tests`・mise の `lean:test-long`）は、[ADR aaf8](aaf8-drop-long-tests-tier.md) で無くした。シードの DB を使う照合が遅かった原因（SQL の写しの結合が直積の全件を作っていた）を、証明付きの `@[csimp]` で除いた（[スキルの ADR b187](../../.agents/skills/spec-pivot/references/docs/decision/b187-proven-csimp-for-evaluating-models.md)）。前後の時間は ADR aaf8 にある。層・範囲・選択・CI の起動の決定は、この ADR のまま変わらない。

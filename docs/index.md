@@ -78,6 +78,7 @@ okf_version: "0.2"
 * [検査を常時の段・変更時の段・全数に分け、長い段は関係する変更があったときだけ実行する](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) - コミット前と PR の CI では、常時の段（ci:fast）と、変更に関係する変更時の段だけを実行する（mise run check）。CI で 20 秒以上かかる段は変更時の段とし、範囲（パスの glob と Lean の import の閉包）を tools/ci/check-scopes.toml に宣言する。main への push・週次・手動・backlog の完了・版上げでは全数（mise run ci）を実行する。lake test から 20 秒以上かかる節（シードの DB を使う SourceModel の照合と空席照会の SQL の結果、暦日の全日、double の総当たり）を実行ファイル long-tests に分け、CI の push と pull_request の二重起動をやめる。
 * [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
 * [PR は draft で作り、人間のレビューを求める段で ready にする](decision/8bb7-pr-draft-until-review-ready.md) - 自分で作ったブランチの PR は draft で作成し、作業が終わって確認と CI が通り、作成者の側で残る作業が無くなって人間にレビューを求める段になったら、作成者が draft から ready for review に変える。レビューで大きな作業が差し戻されたら draft に戻してよい。マージはプロジェクトオーナーが行う。
+* [lake test の分割をやめ、長い検査の段 long-tests を無くす](decision/aaf8-drop-long-tests-tier.md) - ADR 9c1c で lake test から実行ファイル long-tests（mise の lean:test-long）に分けた節を、すべて lake test に戻し、long-tests・lean:test-long・その範囲を無くす。シードの DB を使う SourceModel の照合と空席照会の SQL の結果は、遅い原因（SQL の写しの結合が直積の全件を作っていた）を証明付きの @[csimp] で除いて CI で 1 s 未満になり、残る暦日の全日と double の総当たりも CI で約 7 s で、どれも 20 秒の基準を下回るため。
 
 # Specification
 

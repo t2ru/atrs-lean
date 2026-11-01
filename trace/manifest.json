@@ -5809,6 +5809,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMasterJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster_eq_join",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
       "layer": "SourceModel"
     },
@@ -5953,7 +5961,15 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsJoin",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsOn",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRows_eq_join",
       "layer": "SourceModel"
     },
     {
@@ -6234,6 +6250,14 @@
     },
     {
       "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAll",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAllJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAll_eq_join",
       "layer": "SourceModel"
     },
     {
@@ -13759,16 +13783,6 @@
     },
     {
       "definition": "SourceModel.App.B2.B2Mapper.mapPassenger",
-      "locator": "dep:org.mapstruct:mapstruct#Mapper",
-      "hash": "mapstruct-1.6.3",
-      "merkle": "81d08c03b7b921a9",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.App.B2.B2Mapper.mapPassenger",
       "locator": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(PassengerForm)",
       "hash": "0685ad6f1c953274",
       "merkle": "81d08c03b7b921a9",
@@ -13779,29 +13793,9 @@
     },
     {
       "definition": "SourceModel.App.B2.B2Mapper.mapReservation",
-      "locator": "dep:org.mapstruct:mapstruct#Mapper",
-      "hash": "mapstruct-1.6.3",
-      "merkle": "5ec3b76535a6f546",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.App.B2.B2Mapper.mapReservation",
       "locator": "java:jp.co.ntt.atrs.app.b2.B2Mapper#map(TicketReserveForm,Reservation)",
       "hash": "b1198d19edff71a3",
       "merkle": "5ec3b76535a6f546",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.App.B2.PassengerForm.isEmpty",
-      "locator": "dep:org.springframework:spring-core#StringUtils",
-      "hash": "spring-core-7.0.3",
-      "merkle": "87157b82dfad4b5f",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -14233,17 +14227,6 @@
       ]
     },
     {
-      "definition": "SourceModel.Db.Schema.FlightDb.rollback",
-      "locator": "dep:org.springframework:spring-tx#Transactional",
-      "hash": "spring-tx-7.0.3",
-      "merkle": "de7cd02f365112c1",
-      "checks": [
-        "java-origin-run",
-        "lake-test",
-        "pg-master-sql"
-      ]
-    },
-    {
       "definition": "SourceModel.Db.Schema.FlightMasterRow",
       "locator": "ddl:00100_create_all_tables.sql#FK_FLIGHT_MASTER_1",
       "hash": "4daa481a0c253ad9",
@@ -14346,7 +14329,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14357,7 +14341,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14368,7 +14353,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14379,7 +14365,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14390,7 +14377,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14401,7 +14389,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14412,7 +14401,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14423,7 +14413,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14434,7 +14425,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14445,7 +14437,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14496,7 +14489,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14507,7 +14501,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14518,7 +14513,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14529,7 +14525,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14540,7 +14537,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14551,7 +14549,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14562,7 +14561,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14631,7 +14631,8 @@
       "hash": "fca537c311ef1688",
       "merkle": "4a9cd1aec2c4a2c9",
       "checks": [
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14640,7 +14641,8 @@
       "hash": "331c9fe98f49d0a3",
       "merkle": "4a9cd1aec2c4a2c9",
       "checks": [
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14649,7 +14651,8 @@
       "hash": "280c70c2218d134c",
       "merkle": "4a9cd1aec2c4a2c9",
       "checks": [
-        "pg-master-sql"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14658,47 +14661,8 @@
       "hash": "c7bb105cb9521b63",
       "merkle": "4a9cd1aec2c4a2c9",
       "checks": [
-        "pg-master-sql"
-      ]
-    },
-    {
-      "definition": "SourceModel.Db.Tx.now",
-      "locator": "dep:org.terasoluna.gfw:terasoluna-gfw-common#ClockFactory.tick",
-      "hash": "terasoluna-gfw-common-5.11.0.RELEASE",
-      "merkle": "4b1726e9f435590f",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Db.Tx.transactional",
-      "locator": "dep:org.springframework:spring-tx#Transactional",
-      "hash": "spring-tx-7.0.3",
-      "merkle": "060458a110064da9",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Db.Tx.translate",
-      "locator": "dep:org.mybatis:mybatis-spring#MyBatisExceptionTranslator",
-      "hash": "mybatis-spring-4.0.0",
-      "merkle": "4a07bac51876ca74",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Db.Tx.translate",
-      "locator": "dep:org.springframework:spring-jdbc#SQLErrorCodeSQLExceptionTranslator",
-      "hash": "spring-jdbc-7.0.3",
-      "merkle": "4a07bac51876ca74",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
+        "pg-master-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -14823,16 +14787,6 @@
       "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
       "hash": "70bc401f3ab46d0d",
       "merkle": "582c006074c02813",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Common.Logging.LogMessages.E_AR_A0_L9002",
-      "locator": "dep:org.terasoluna.gfw:terasoluna-gfw-common#SystemException",
-      "hash": "terasoluna-gfw-common-5.11.0.RELEASE",
-      "merkle": "8291f1ac08ab1aaf",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -16092,7 +16046,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16103,7 +16058,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16125,7 +16081,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16136,7 +16093,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16157,7 +16115,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16168,7 +16127,8 @@
       "checks": [
         "java-origin-run",
         "lake-test",
-        "pg-flight-sql"
+        "pg-flight-sql",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16269,7 +16229,8 @@
       "merkle": "dc8de8f705f629c5",
       "checks": [
         "java-origin-run",
-        "lake-test"
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16279,17 +16240,8 @@
       "merkle": "106de59df159b79b",
       "checks": [
         "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Repository.Member.MemberRepository.localDateOfTimestamp",
-      "locator": "dep:org.postgresql:postgresql#TimestampUtils.toLocalDateTime",
-      "hash": "postgresql-42.7.9",
-      "merkle": "1aa5e5e5e6c68e3f",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16304,16 +16256,6 @@
     },
     {
       "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
-      "locator": "dep:org.mybatis:mybatis#SelectKeyGenerator",
-      "hash": "mybatis-3.5.19",
-      "merkle": "5e9d8d7c3e6ceee5",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insert",
       "locator": "java:jp.co.ntt.atrs.domain.repository.reservation.ReservationRepository#insert(Reservation)",
       "hash": "3d5880d4f5b24ab0",
       "merkle": "0a75d9e95a1ccf85",
@@ -16321,16 +16263,6 @@
         "java-origin-run",
         "lake-test",
         "pg-reservation-sql"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertPassenger",
-      "locator": "dep:org.mybatis:mybatis#SelectKeyGenerator",
-      "hash": "mybatis-3.5.19",
-      "merkle": "bc3de5218a95c17d",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
       ]
     },
     {
@@ -16353,16 +16285,6 @@
         "java-origin-run",
         "lake-test",
         "pg-reservation-sql"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.insertReserveFlight",
-      "locator": "dep:org.mybatis:mybatis#SelectKeyGenerator",
-      "hash": "mybatis-3.5.19",
-      "merkle": "3895b3d88c1faa01",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
       ]
     },
     {
@@ -16405,7 +16327,8 @@
       "merkle": "90ac03ce9d580a03",
       "checks": [
         "java-origin-run",
-        "lake-test"
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16415,7 +16338,8 @@
       "merkle": "834009f3760994a6",
       "checks": [
         "java-origin-run",
-        "lake-test"
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {
@@ -16425,17 +16349,8 @@
       "merkle": "f29f20d73af25ca6",
       "checks": [
         "java-origin-run",
-        "lake-test"
-      ]
-    },
-    {
-      "definition": "SourceModel.Domain.Repository.Reservation.ReservationRepository.readInteger",
-      "locator": "dep:org.postgresql:postgresql#PgResultSet.getInt",
-      "hash": "postgresql-42.7.9",
-      "merkle": "b8944b2fb25cf300",
-      "checks": [
-        "java-origin-run",
-        "lake-test"
+        "lake-test",
+        "pg-reservation-sql"
       ]
     },
     {

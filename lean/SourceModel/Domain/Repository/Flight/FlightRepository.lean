@@ -70,6 +70,26 @@ def findAllFlightMaster (db : MasterDb) : Bag FlightMasterResult :=
         ((eqInt f.routeNo r.routeNo).and (eqText r.depAirportCd d.airportCd)).and (eqText r.arrAirportCd a.airportCd))
       (Bag.cross (Bag.cross (Bag.cross db.flightMaster db.route) db.airport) db.airport))
 
+/-- 評価用: `findAllFlightMaster` の条件を直積の各段に押し下げた形（入れ子ループの結合）。行の並びも含めて等しく
+（`findAllFlightMaster_eq_join`）、`@[csimp]` でコンパイル後のコードだけをこれに差し替える。意味論の定義は `findAllFlightMaster`。 -/
+def findAllFlightMasterJoin (db : MasterDb) : Bag FlightMasterResult :=
+  Bag.project (fun (((f, r), d), a) => ⟨f.flightName, f.departureTime, f.arrivalTime, f.craftType,
+      ⟨r.routeNo, r.basicFare, d.airportCd, d.airportName, a.airportCd, a.airportName⟩⟩)
+    (Bag.crossWhere (fun t a => (eqText t.1.2.arrAirportCd a.airportCd).holds)
+      (Bag.crossWhere (fun t d => (eqText t.2.depAirportCd d.airportCd).holds)
+        (Bag.crossWhere (fun f r => (eqInt f.routeNo r.routeNo).holds) db.flightMaster db.route) db.airport) db.airport)
+
+/-- `findAllFlightMaster` の評価用の実装（条件の押し下げ）。 -/
+@[csimp] theorem findAllFlightMaster_eq_join : @findAllFlightMaster = @findAllFlightMasterJoin := by
+  funext db
+  unfold findAllFlightMaster findAllFlightMasterJoin
+  rw [LangSemantics.Sql.QueryLemmas.select_cross_split _ _ _ (fun t => (eqInt t.1.1.routeNo t.1.2.routeNo).holds && (eqText t.1.2.depAirportCd t.2.airportCd).holds)
+        (fun t a => (eqText t.1.2.arrAirportCd a.airportCd).holds) (fun ⟨⟨_, _⟩, _⟩ _ => by simp [Truth.holds_and]),
+      LangSemantics.Sql.QueryLemmas.filter_cross_split _ _ _ (fun t => (eqInt t.1.routeNo t.2.routeNo).holds) (fun t d => (eqText t.2.depAirportCd d.airportCd).holds)
+        (fun ⟨_, _⟩ _ => rfl),
+      LangSemantics.Sql.QueryLemmas.filter_cross_split _ _ _ (fun _ => true) (fun f r => (eqInt f.routeNo r.routeNo).holds) (fun _ _ => by simp),
+      show db.flightMaster.filter (fun _ => true) = db.flightMaster from List.filter_eq_self.mpr fun _ _ => rfl]
+
 /-- 束縛変数の値（`#{criteria.…}` を SQL の値にしたもの）。 -/
 structure Params where
   fareTypeList : List SqlValue
@@ -143,6 +163,42 @@ def flightPre (p : Params) (f : FlightRow) : Bool :=
   (inList collationC f.fareTypeCd.toSql p.fareTypeList).holds &&
     (SqlValue.eq collationC f.departureDate.toSql p.depDate).holds &&
     (SqlValue.eq collationC f.boardingClassCd.toSql p.boardingClass).holds
+
+/-- 評価用: `vacantSeatRows` の条件を直積の各段に押し下げた形（入れ子ループの結合）。FLIGHT の行だけの条件（`flightPre`）、
+運賃種別との条件、便マスタとの条件、区間との条件の順に評価する。行の並びも含めて等しく（`vacantSeatRows_eq_join`）、
+`@[csimp]` でコンパイル後のコードだけをこれに差し替える。意味論の定義は `vacantSeatRows`。 -/
+def vacantSeatRowsJoin (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeatRow :=
+  Bag.project vacantSeatProj
+    (Bag.crossWhere (fun t r => ((eqInt t.2.routeNo r.routeNo).and
+          ((SqlValue.eq collationC r.depAirportCd.toSql p.depAirportCd).and
+          (SqlValue.eq collationC r.arrAirportCd.toSql p.arrAirportCd))).holds)
+      (Bag.crossWhere (fun t fm => (eqText t.1.flightName fm.flightName).holds)
+        (Bag.crossWhere (fun f ft => ((eqText f.fareTypeCd ft.fareTypeCd).and
+              (between collationC p.beforeDayNum ft.rsrvAvailableEndDayNum.toSql ft.rsrvAvailableStartDayNum.toSql)).holds)
+          (fd.flight.filter (flightPre p)) db.fareType) db.flightMaster) db.route)
+
+/-- `vacantSeatRows` の評価用の実装（条件の押し下げ）。 -/
+@[csimp] theorem vacantSeatRows_eq_join : @vacantSeatRows = @vacantSeatRowsJoin := by
+  funext db fd p
+  unfold vacantSeatRows vacantSeatRowsJoin
+  rw [LangSemantics.Sql.QueryLemmas.select_cross_split _ _ (vacantSeatCond p)
+      (fun t => (flightPre p t.1.1 && ((eqText t.1.1.fareTypeCd t.1.2.fareTypeCd).and
+          (between collationC p.beforeDayNum t.1.2.rsrvAvailableEndDayNum.toSql t.1.2.rsrvAvailableStartDayNum.toSql)).holds) &&
+        (eqText t.1.1.flightName t.2.flightName).holds)
+      (fun t r => ((eqInt t.2.routeNo r.routeNo).and
+          ((SqlValue.eq collationC r.depAirportCd.toSql p.depAirportCd).and
+          (SqlValue.eq collationC r.arrAirportCd.toSql p.arrAirportCd))).holds) ?h3,
+    LangSemantics.Sql.QueryLemmas.filter_cross_split _ _ _
+      (fun t => flightPre p t.1 && ((eqText t.1.fareTypeCd t.2.fareTypeCd).and
+          (between collationC p.beforeDayNum t.2.rsrvAvailableEndDayNum.toSql t.2.rsrvAvailableStartDayNum.toSql)).holds)
+      (fun t fm => (eqText t.1.flightName fm.flightName).holds) (fun _ _ => rfl),
+    LangSemantics.Sql.QueryLemmas.filter_cross_split _ _ _ (flightPre p)
+      (fun f ft => ((eqText f.fareTypeCd ft.fareTypeCd).and
+          (between collationC p.beforeDayNum ft.rsrvAvailableEndDayNum.toSql ft.rsrvAvailableStartDayNum.toSql)).holds)
+      (fun _ _ => rfl)]
+  case h3 =>
+    intro ⟨⟨f, ft⟩, fm⟩ r
+    simp only [vacantSeatCond, flightPre, Truth.holds_and, Bool.and_assoc, Bool.and_comm, Bool.and_left_comm]
 
 /-- 評価用: FLIGHT の行を `flightPre` で先に絞ってから同じ文を評価する（全件の直積を避ける。テストの差分実行に使う）。 -/
 def vacantSeatRowsOn (db : MasterDb) (fd : FlightDb) (p : Params) : Bag VacantSeatRow :=
