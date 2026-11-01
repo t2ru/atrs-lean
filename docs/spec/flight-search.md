@@ -15,7 +15,7 @@ generated:
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 >
-> 照会可能期間・運賃種別の予約可能判定・`searchFlight` は Lean [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) に形式化した（正。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。以下のそれらの定義は、Lean の非規範の要約である。[Source] の写しは [`SourceModel.FlightSearch`](../../lean/SourceModel/FlightSearch.lean)・[`SourceModel.Repository.Flight`](../../lean/SourceModel/Repository/Flight.lean)。適合テストベクタは `conformance/shared/flight-search/`。機械とリファインメント（ABS-010・ABS-011）は [backlog 0be7](../backlog/0be7-flight-search-usecase.md) の第 2・3 段で置く。
+> 照会可能期間・運賃種別の予約可能判定・`searchFlight` は Lean [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) に形式化した（正。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。以下のそれらの定義は、Lean の非規範の要約である。[Source] の写しは [`SourceModel.FlightSearch`](../../lean/SourceModel/FlightSearch.lean)・[`SourceModel.Repository.Flight`](../../lean/SourceModel/Repository/Flight.lean)。適合テストベクタは `conformance/shared/flight-search/`。抽象機械 `searchMachine`・具体機械 `SourceModel.FlightSearchQuery.searchConcrete` と、シードの初期状態は第 2 段で置いた（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。リファインメント（ABS-010・ABS-011）は [backlog 0be7](../backlog/0be7-flight-search-usecase.md) の第 3 段で置く。
 
 ## 照会可能期間
 

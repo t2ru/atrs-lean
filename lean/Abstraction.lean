@@ -23,6 +23,7 @@ import Abstraction.Fare.TotalAlpha
 import Abstraction.Fare.Loop
 import Abstraction.Fare.TotalFareRun
 import Abstraction.Fare
+import Abstraction.FlightSearch.Alpha
 
 /-!
 # Abstraction
@@ -84,6 +85,7 @@ import Abstraction.Fare
 | `Abstraction.Fare.BasicFareRun` | ABS-001・ABS-101 の補題、L 課題 ABS-007 `runBasicFare_spec` |
 | `Abstraction.Fare.Preserves` | ABS-001・ABS-002・ABS-004 の束 `Machine.Preserves` の部品: 環境の前提 `envBF`・`envF`・`envTF` と証人 |
 | `Abstraction.Fare` | 機能の証明課題: 束 `basicFarePreserves`・`farePreserves`・`totalFarePreserves` と 1 歩の可換式 `*Refines_commutes`、R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`・ABS-004 `totalFareRefines` と `InitSurj`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002`・ABS-112 `need_D012` |
+| `Abstraction.FlightSearch.Alpha` | 空席照会の状態の α（FLIGHT の行 `flightOfRow`・表 `worldOfDb`。D-027 の範囲）。R 課題 ABS-011 は backlog 0be7 の第 3 段 |
 -/
 
 namespace Abstraction

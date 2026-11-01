@@ -541,6 +541,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.FlightSearch.Alpha.flightOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.flightOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.FlightSearch.Alpha.worldOfDb",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Gap.D001",
       "layer": "Abstraction"
     },
@@ -2329,6 +2341,82 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FlightSearchQuery.BusinessError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.business",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.business.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.business.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.business.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.ctorElimType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.ctorIdx",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.noConfusionType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.notFound",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.notFound.inj",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.notFound.injEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.BusinessError.notFound.sizeOf_spec",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.SearchOutput",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.catchBusiness",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.instDecidableEqBusinessError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.instDecidableEqBusinessError.decEq",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.instReprBusinessError",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.instReprBusinessError.repr",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearchQuery.searchConcrete",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Input",
       "layer": "SourceModel"
     },
@@ -3801,6 +3889,10 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Repository.Flight.flightPre",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Repository.Flight.instDecidableEqFlightResult",
       "layer": "SourceModel"
     },
@@ -3882,6 +3974,50 @@
     },
     {
       "name": "SourceModel.Repository.Flight.vacantSeatRows",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatRowsOn",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.Flight.vacantSeatRows_eq_on",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.dayRows",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.days",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.names",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.pattern",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.seedFlightDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.slots",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.vacant0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.vacant1",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Repository.FlightSeed.vacant2",
       "layer": "SourceModel"
     },
     {
@@ -5217,6 +5353,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.FlightSearch.SearchInput.Pre",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.FlightSearch.availableOnDayNum",
       "layer": "Spec"
     },
@@ -5250,6 +5390,22 @@
     },
     {
       "name": "Spec.FlightSearch.searchLimitDate",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchMachine",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchMachine_initIs",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchMachine_run_step",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.FlightSearch.searchMachine_sound",
       "layer": "Spec"
     },
     {
@@ -5741,6 +5897,30 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Seed.Flight.days",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Flight.names",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Flight.slots",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Flight.vacant0",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Flight.vacant1",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Seed.Flight.vacant2",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Seed.airports",
       "layer": "Spec"
     },
@@ -6027,6 +6207,11 @@
     {
       "type": "gap",
       "from": "SourceModel.MasterQuery.SrcInput",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Repository.Schema.FlightDb",
       "to": "D-027"
     },
     {
@@ -6381,6 +6566,11 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.FlightSearch.Alpha.flightOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.MasterData.Alpha.airportOfRow_kernel",
       "to": "ABS-048"
     },
@@ -6552,6 +6742,26 @@
     {
       "type": "obligation",
       "from": "Spec.Fare.totalFareMachine_sound",
+      "to": "SPEC-003"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.FlightSearch.searchMachine_initIs",
+      "to": "SPEC-007"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.FlightSearch.searchMachine_run_step",
+      "to": "SPEC-001"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.FlightSearch.searchMachine_sound",
+      "to": "SPEC-002"
+    },
+    {
+      "type": "obligation",
+      "from": "Spec.FlightSearch.searchMachine_sound",
       "to": "SPEC-003"
     },
     {
@@ -7866,6 +8076,42 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.days",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.names",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.slots",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.vacant0",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.vacant1",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Repository.FlightSeed.vacant2",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Repository.Mapping.boardingClassCd",
       "to": "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()",
       "hash": "3855e45998af62f8"
@@ -8190,6 +8436,42 @@
     },
     {
       "type": "source",
+      "from": "Spec.Seed.Flight.days",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Flight.names",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Flight.slots",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Flight.vacant0",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Flight.vacant1",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "Spec.Seed.Flight.vacant2",
+      "to": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
       "from": "Spec.Seed.airports",
       "to": "seed:00200_insert_fixed_value.sql#AIRPORT",
       "hash": "e5f2a74a341d1ab1"
@@ -8428,6 +8710,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.FlightSearch.SearchInput.Pre",
+      "to": "docs/spec/flight-search.md#事前条件"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.FlightSearch.availableOnDayNum",
       "to": "docs/spec/flight-search.md#運賃種別の予約可能判定"
     },
@@ -8470,6 +8757,11 @@
       "type": "spec_doc",
       "from": "Spec.FlightSearch.searchLimitDate",
       "to": "docs/spec/flight-search.md#照会可能期間"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.FlightSearch.searchMachine",
+      "to": "docs/spec/flight-search.md#searchflight"
     },
     {
       "type": "spec_doc",
@@ -9084,6 +9376,16 @@
     {
       "type": "std_abs",
       "from": "Abstraction.Fare.TotalAlpha.keyOfForm",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.flightOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.FlightSearch.Alpha.worldOfDb",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -11067,6 +11369,60 @@
       ]
     },
     {
+      "definition": "SourceModel.Repository.FlightSeed.days",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "5506bef416f7b142",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.FlightSeed.names",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "afc66d19c5ae6281",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.FlightSeed.slots",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "63719aefd3803dd9",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.FlightSeed.vacant0",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "8a5a53d56ba702c5",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.FlightSeed.vacant1",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "b3580aa9a13023fb",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Repository.FlightSeed.vacant2",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "556bd839b54012a6",
+      "checks": [
+        "pg-flight-sql"
+      ]
+    },
+    {
       "definition": "SourceModel.Repository.Mapping.boardingClassCd",
       "locator": "java:jp.co.ntt.atrs.domain.model.BoardingClassCd#getCode()",
       "hash": "3855e45998af62f8",
@@ -11586,6 +11942,60 @@
       "merkle": "6f6595aee68f57d9",
       "checks": [
         "lake-test"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.days",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "33f8acefe1032063",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.names",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "7763e371a626c291",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.slots",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "40b16d02553ba35e",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.vacant0",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "e121e2e211615226",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.vacant1",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "8a7b04a48bf6b3d9",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "Spec.Seed.Flight.vacant2",
+      "locator": "seed:00250_insert_flight.sql#FLIGHT",
+      "hash": "ebc1effd92f8d4a3",
+      "merkle": "cda3e0e8febe5d53",
+      "checks": [
+        "seed-lean"
       ]
     },
     {

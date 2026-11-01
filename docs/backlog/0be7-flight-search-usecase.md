@@ -47,8 +47,8 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 - [x] [flight-search.md](../spec/flight-search.md) の例がベクタで通る
 - [ ] ABS-010, ABS-011 を証明した（ABS-011 は `Machine.Refines` の形。運賃計算の `dev_D001`・`dev_D002` を引き継ぐ）
-- [ ] 空席照会の SPEC-001 を証明した
-- [ ] SQL `findByVacantSeatSearchCriteria` の写しを PostgreSQL での差分実行で照合した
+- [x] 空席照会の SPEC-001 を証明した
+- [x] SQL `findByVacantSeatSearchCriteria` の写しを PostgreSQL での差分実行で照合した
 - [x] 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外し、D-031 を登録した
 
 ## 第 1 段の結果
@@ -62,8 +62,27 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 - ベクタ `conformance/shared/flight-search/` の 21 件が、`Spec` と `SourceModel` の両方で通る（期待値は仕様の例と手計算で確かめた。敵対的レビューで独立に再計算した）。
 - 完了条件のうち「flight-search.md の例がベクタで通る」と「翌日着の便を表し、D-031 を登録した」を満たした。残りは第 2・3 段で行う。
 
+## 第 2 段の結果
+
+2026-11-01 に完了した（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。
+
+- シード 00250 の生成器 `tools/conformance/flight_seed.py` を置いた。生成の形（121 日 × 便名 126 × 枠 10、空席数のパターン 3）のまま、`Spec.Seed.Flight` と `SourceModel.Repository.FlightSeed` を書き出す。
+- [Spec]:
+  - `world_inv`（主キーの一意性）と `world_refMaster` を、全件に展開せずに証明した。
+  - 抽象機械 `searchMachine`（選択を持たない `ofChoice`。状態を変えない）を置いた。
+  - `searchFlight_isSome` と SPEC-001・002・003・007 を証明した。
+- [Source]:
+  - 具体機械 `searchConcrete` を置いた。状態は FLIGHT 表、業務例外は出力の値で、1 歩は `mo.Allowed`・`SortAllowed` を課す。
+  - 条件の押し下げ `vacantSeatRows_eq_on` を証明した（スキルの補題 `cross_filter_left`・`select_filter_of_imp`。スキルの版 0.16）。
+- PostgreSQL での差分実行:
+  - 00250 を投入日で実行した FLIGHT 表を、生成器の展開（md5）と `seedFlightDb`（多項式ハッシュ）に照合した。
+  - `findByVacantSeatSearchCriteria` の 13 の条件の結果が、モデルの許される並びであることを確かめた（`conformance/sql/flight-search.json`、`Tests.FlightSql`、検査 `pg-flight-sql`）。
+- D-027 の範囲を状態の表に広げ、α `flightOfRow`・`worldOfDb` と核の定理（ABS-048）を置いた。
+- 第 3 段に申し送るもの: 初期状態の対応（`worldOfDb seedFlightDb = some world`）、ABS-010・ABS-011 とトップレベルへの統合、D-032 の述語。
+
 ## 参照
 
 - [flight-search.md](../spec/flight-search.md)
 - [ADR 5fcb](../decision/5fcb-sql-semantics-for-source-repositories.md)
 - [ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)
+- [ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)
