@@ -17,7 +17,7 @@ namespace Abstraction.FlightSearch.Order
 open Abstraction.MasterData.AlphaLeaf Abstraction.FlightSearch.Candidates Spec.FlightSearch Spec.Prim.Time
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Core.MapM
 
-open LangSemantics.Sql.Postgresql SourceModel.Repository.Flight SourceModel.Repository.MasterData
+open LangSemantics.Sql.Postgresql SourceModel.Repository.Flight SourceModel.Repository.MasterData Spec.MasterData Spec.Model
 
 /-! ## 4 桁の数字列の順序 -/
 
@@ -215,5 +215,57 @@ theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : Li
   apply htie a ha' b hb'
   · omega
   · apply HourMinute.toMinutes_inj; omega
+
+/-! ## 同順位の無さ -/
+
+theorem candidateOf_cond {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight}
+    {X : Candidate} (h : candidateOf md c route bdn F = some X) :
+    X.flight = F ∧ md.flightMasterOf F.key.flightName = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType ∧
+      F.key.departureDate = c.depDate ∧ X.master.routeNo = route.routeNo ∧ F.key.boardingClassCd = c.boardingClassCd := by
+  unfold candidateOf at h
+  simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at h
+  obtain ⟨fm, hfm, ft, hft, h⟩ := h
+  split at h
+  · rename_i hc
+    cases h
+    exact ⟨rfl, hfm, hft, hc.1, hc.2.1, hc.2.2.1⟩
+  · cases h
+
+/-- MD-1（運賃種別の表示順の一意性）・MD-5（同じ区間の便マスタの出発時刻の一意性）・`World.Inv`（フライトの主キーの
+一意性）の下で、照会の候補には同順位が無い。 -/
+theorem noTie_cands {cfg : Spec.Config} {md : Spec.MasterData} (hv : md.Valid cfg) {w : Spec.Port.World}
+    (hw : w.Inv) (c : Criteria) (route : Route) (bdn : Int) :
+    NoTie (w.flights.filterMap (candidateOf md c route bdn)) := by
+  intro X hX Y hY hdo hdt
+  obtain ⟨F, hF, hFX⟩ := List.mem_filterMap.mp hX
+  obtain ⟨G, hG, hGY⟩ := List.mem_filterMap.mp hY
+  obtain ⟨eX, fmX, ftX, dX, rX, bX⟩ := candidateOf_cond hFX
+  obtain ⟨eY, fmY, ftY, dY, rY, bY⟩ := candidateOf_cond hGY
+  -- 運賃種別
+  have hft : X.fareType = Y.fareType :=
+    LangSemantics.Core.List.inj_of_nodup_map hv.md1.2.2.2.2.2.2.2.2.2.2.1 (List.mem_of_find?_eq_some ftX)
+      (List.mem_of_find?_eq_some ftY) hdo
+  -- 便マスタ
+  have hsym : ∀ f g : Spec.MasterData.FlightMaster, (f.routeNo = g.routeNo → f.departureTime ≠ g.departureTime) →
+      (g.routeNo = f.routeNo → g.departureTime ≠ f.departureTime) := fun _ _ h e e' => h e.symm e'.symm
+  have hfm : X.master = Y.master := by
+    refine Classical.byContradiction fun hne => ?_
+    exact LangSemantics.Core.List.rel_of_pairwise_symm hsym hv.md5 (List.mem_of_find?_eq_some fmX)
+      (List.mem_of_find?_eq_some fmY) hne (by rw [rX, rY]) hdt
+  have nX := List.find?_some fmX
+  have nY := List.find?_some fmY
+  have cX := List.find?_some ftX
+  have cY := List.find?_some ftY
+  simp only [beq_iff_eq] at nX nY cX cY
+  -- フライト
+  have hk : F.key = G.key := by
+    show (⟨F.key.departureDate, F.key.flightName, F.key.boardingClassCd, F.key.fareTypeCd⟩ : FlightKey) =
+      ⟨G.key.departureDate, G.key.flightName, G.key.boardingClassCd, G.key.fareTypeCd⟩
+    rw [dX, dY, bX, bY, ← nX, ← nY, hfm, ← cX, ← cY, hft]
+  have hFG : F = G := LangSemantics.Core.List.inj_of_nodup_map hw hF hG hk
+  obtain ⟨xf, xm, xt⟩ := X
+  obtain ⟨yf, ym, yt⟩ := Y
+  simp only at eX eY hft hfm
+  rw [eX, eY, hFG, hft, hfm]
 
 end Abstraction.FlightSearch.Order

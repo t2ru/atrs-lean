@@ -32,6 +32,18 @@ theorem find?_perm {α : Type} {p : α → Bool} {l l' : List α} (hp : l.Perm l
       have hb : b ∈ l := hp.mem_iff.mpr (List.mem_of_find?_eq_some h')
       rw [hu a ha b hb hpa (List.find?_some h')]
 
+/-- 対称な関係で整列した列の、異なる 2 要素は関係を満たす。 -/
+theorem rel_of_pairwise_symm {α : Type} {R : α → α → Prop} (hs : ∀ a b, R a b → R b a) :
+    ∀ {l : List α}, l.Pairwise R → ∀ {a b : α}, a ∈ l → b ∈ l → a ≠ b → R a b
+  | [], _, _, _, ha, _, _ => by simp at ha
+  | x :: l, hl, a, b, ha, hb, hne => by
+    obtain ⟨hx, hl'⟩ := List.pairwise_cons.mp hl
+    rcases List.mem_cons.mp ha with rfl | ha' <;> rcases List.mem_cons.mp hb with rfl | hb'
+    · exact absurd rfl hne
+    · exact hx b hb'
+    · exact hs _ _ (hx a ha')
+    · exact rel_of_pairwise_symm hs hl' ha' hb' hne
+
 /-- キーが一意な列で、キーが等しい要素は同じ要素。 -/
 theorem inj_of_nodup_map {α κ : Type} {f : α → κ} {l : List α} (hnd : (l.map f).Nodup) {a b : α}
     (ha : a ∈ l) (hb : b ∈ l) (e : f a = f b) : a = b := by
