@@ -1,6 +1,10 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR b187](decision/b187-proven-csimp-for-evaluating-models.md) で、モデルの評価を速くする実装を、元の定義と等しいことの定理を付けた `@[csimp]` で与えることにした（定義は書き換えない）。スキルの版を 0.24 にした。
+  * `LangSemantics.Sql.Query.Bag.crossWhere`（条件を押し下げた入れ子ループの結合）と、`LangSemantics.Sql.QueryLemmas.filter_cross_split`・`select_cross_split` を足した。
+  * [lang/lean/rules.md](lang/lean/rules.md#書き方) に規則を足した。
+  * 来歴: 適用先 ATRS の ADR 9c1c（シードの DB を使う照合が CI で約 6 分かかっていた）。
 * **Creation**: [ADR 89f2](decision/89f2-layout-check-one-process-per-group.md) で、`layout-check`（`Trace.Layout.run`）のモジュールの組を、組ごとに別のプロセス（同じ実行ファイルを `--layout-group <i>` で起動したもの）で判定するようにした。親は環境を読み込まず、結果の JSON を `mergeGroups` で合わせる。メモリの最大は組 1 つ分になる。出力と呼び出しは変えていない（違反は終了コード 1、組の判定の失敗は 2）。スキルの版を 0.23 にした。
   * `Trace.Layout.Result` に範囲のモジュールとその検査数 `modules` を、`Result.collapse`・`GroupOut`・`mergeGroups`・`runGroup`・`runAll` を足し、`Item.toJson`・`Result.merge` を除いた。`trace-test` に合わせ方と JSON の往復の検査を足した。[lang/lean/trace-attributes.md](lang/lean/trace-attributes.md)・[lang/lean/rules.md](lang/lean/rules.md#モジュールと名前空間) を改めた。
   * 来歴: 適用先 ATRS の CI（組を足すと runner がメモリで止まった）。
