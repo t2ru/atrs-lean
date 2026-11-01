@@ -48,6 +48,12 @@ def cross {α β : Type} (a : Bag α) (b : Bag β) : Bag (α × β) := a.flatMap
 def innerJoin {α β : Type} (on : α → β → Truth) (a : Bag α) (b : Bag β) : Bag (α × β) :=
   (cross a b).filter (fun p => (on p.1 p.2).holds)
 
+/-- 評価用: 条件を組ごとに評価しながら取る直積（入れ子ループの結合）。左の行 `x` ごとに、右の行のうち `q x` を満たすものだけを
+並べる。直積を作ってから選ぶ `select`・`cross` と、行の並びも含めて等しい（`QueryLemmas.filter_cross_split`）。
+意味論の定義には使わず、評価を速くする実装（`@[csimp]`）に使う。 -/
+def crossWhere {α β : Type} (q : α → β → Bool) (a : Bag α) (b : Bag β) : Bag (α × β) :=
+  a.flatMap (fun x => (b.filter (q x)).map (x, ·))
+
 /-- `SELECT EXISTS (…)`。 -/
 def exists' {α : Type} (rows : Bag α) : Bool := !rows.isEmpty
 
