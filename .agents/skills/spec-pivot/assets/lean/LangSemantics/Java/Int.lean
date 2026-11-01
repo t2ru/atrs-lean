@@ -39,6 +39,9 @@ def j32mul (a b : J32) : J32 := a * b
 def jdiv32 (a b : J32) : JResult J32 :=
   if b = 0 then .error (.arithmetic "/ by zero") else .ok (BitVec.sdiv a b)
 
+/-- `-a`（int）。`-MIN_VALUE = MIN_VALUE`。 -/
+def j32neg (a : J32) : J32 := -a
+
 /-- `a % b`（int）。符号は被除数に従う。 -/
 def jrem32 (a b : J32) : JResult J32 :=
   if b = 0 then .error (.arithmetic "/ by zero") else .ok (BitVec.srem a b)
@@ -46,8 +49,11 @@ def jrem32 (a b : J32) : JResult J32 :=
 def j64add (a b : J64) : J64 := a + b
 def j64sub (a b : J64) : J64 := a - b
 def j64mul (a b : J64) : J64 := a * b
+def j64neg (a : J64) : J64 := -a
 def jdiv64 (a b : J64) : JResult J64 :=
   if b = 0 then .error (.arithmetic "/ by zero") else .ok (BitVec.sdiv a b)
+def jrem64 (a b : J64) : JResult J64 :=
+  if b = 0 then .error (.arithmetic "/ by zero") else .ok (BitVec.srem a b)
 
 /-- `int` の範囲に入る数学的整数か。 -/
 def J32.inRange (i : Int) : Bool := J32.minValue ≤ i && i ≤ J32.maxValue

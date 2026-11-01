@@ -114,7 +114,7 @@ def validateDepatureDate (limitDay : J32) (sysDate limitToday : JLocalDate) (dep
     | some d => pure d
     | none => throw (.illegalArgument "departureDate must not null.")
   let limitDate := getSearchLimitDate limitDay limitToday
-  if d.isBefore sysDate || d.isAfter limitDate then throw (businessException (errorCode "e.ar.b1.2001"))
+  if java! d.isBefore(sysDate) || d.isAfter(limitDate) then throw (businessException (errorCode "e.ar.b1.2001"))
 
 /-- `isAvailableFareType(fareType, depDate)`: 予約可能期間の始まり `depDate − start`・終わり `depDate − end` の
 両端を含む範囲に今日があるか。`searchFlight` は呼ばない（同じ条件を SQL の `BETWEEN` で書く。ABS-010）。 -/
@@ -132,7 +132,7 @@ def isAvailableFareType (fareType : JRef FareType) (depDate : JRef JLocalDate) (
   let e ← ft.rsrvAvailableEndDayNum.deref "rsrvAvailableEndDayNum"
   let startDate := d.minusDays s.val
   let endDate := d.minusDays e.val
-  return !(today.isBefore startDate || today.isAfter endDate)
+  return java! !(today.isBefore(startDate) || today.isAfter(endDate))
 
 /-! ## DTO -/
 

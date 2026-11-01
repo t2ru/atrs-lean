@@ -117,6 +117,9 @@ private def negSign : JDouble → JDouble
   | .inf s => .inf (!s)
   | .nan => .nan
 
+/-- `-a`（double）。符号だけを反転する（`-0.0`・`-∞` を作る。NaN は NaN）。 -/
+def neg (a : JDouble) : JDouble := negSign a
+
 /-- 有理数の加算（同符号・異符号を扱う）。結果がちょうど 0 になる場合は `none`。 -/
 private def addRat (a b : Rat') : Option Rat' :=
   let an := a.num * b.den

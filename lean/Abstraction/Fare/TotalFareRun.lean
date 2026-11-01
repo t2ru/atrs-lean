@@ -223,6 +223,7 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
       have hmul := j32mul_nat hvb hsub hd12
       obtain ⟨cp, hcp, hcpv⟩ := jdiv32_nat hmul
       rw [hcp, ok_bind]
+      simp only [pure_bind]
       -- 値
       have hlen : ic.passengers.length = ages.length := mapM_length hages
       rw [hlen]
