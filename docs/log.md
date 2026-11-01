@@ -2,6 +2,7 @@
 
 ## 2026-11-02
 
+* **Creation**: [ADR 1add](decision/1add-license-mit-or-apache-2-0.md) で、公開のライセンスを MIT OR Apache-2.0 のデュアルライセンスにした。ルートに `LICENSE-MIT`・`LICENSE-APACHE`・`NOTICE`（上流 ATRS の著作権・ライセンスと、上流から派生した部分の一覧）・`README.md` を置いた。`AGENTS.md`・[index.md](index.md) を改めた。
 * **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
   * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.25）。
   * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
