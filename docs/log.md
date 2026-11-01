@@ -7,7 +7,7 @@
   * [spec/abstraction.md](spec/abstraction.md) の α の表、[spec/assurance.md](spec/assurance.md) の暫定の行を改めた。`trace/features.json` の Reserve に `World` を足した。[index.md](index.md) に ADR を足した。
   * 3b（途中）: 予約の PRE を広げ（`Request.Valid`・`World.RefMaster`・`World.MemberRefMaster`）、予約の入出力の α・貼り合わせと、ポート・Provider・選択フライトの補題、Hoare 三つ組の枠組みを置いた。ADR ab93 と [backlog/aedf](backlog/aedf-reservation-usecase.md) に進み具合を記した。
   * 3b（途中）: 3c の前に検証の道具を整えた（プロジェクトオーナーの決定）。Hoare 三つ組と簡約のタクティク `java_estate_simp` をスキルの assets に置き（スキルの ADR cd90。スキルの版を 0.26 にした。[rules/atrs-porting.md](rules/atrs-porting.md)）、選択フライトの検証の対応 `Abstraction.Reserve.ValidateFlights` を示した。ABS-021・ABS-023 を L 課題に改め（プロジェクトオーナーの決定）、[spec/abstraction.md](spec/abstraction.md) の証明課題の表とポートの契約の段落、登録簿の D-009 の R 課題の欄を改めた。
-
+* **Creation**: [ADR 1add](decision/1add-license-mit-or-apache-2-0.md) で、公開のライセンスを MIT OR Apache-2.0 のデュアルライセンスにした。ルートに `LICENSE-MIT`・`LICENSE-APACHE`・`NOTICE`（上流 ATRS の著作権・ライセンスと、上流から派生した部分の一覧）・`README.md` を置いた。`AGENTS.md`・[index.md](index.md) を改めた。
 * **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
   * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.25）。
   * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
