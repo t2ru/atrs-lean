@@ -191,7 +191,7 @@ theorem answer_route {db : MasterDb} {r : RouteRow} {x : Route} (h : routeOfRow 
 
 theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (routeFindAll db)) :
-    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : AirportCd, dep.WellFormed → arr.WellFormed →
+    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : AirportCd, hasText dep.val = true → hasText arr.val = true →
       ∃ ans, getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
       answerOf? (.route ans) = some (.route (md.routeOf dep arr)) := by
   obtain ⟨ha, hrt, -⟩ := masterDataOf_eq_some.mp hm
@@ -203,8 +203,7 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
   refine ⟨(JHashMap.ofList (o.map fun r =>
     (makeCacheKey r.depAirportCd.val r.aarAirportCd.val, SourceModel.Repository.Mapping.route r))).get
       (makeCacheKey dep.val arr.val), ?_, ?_⟩
-  · simp only [getRouteByAirportCd, assertHasText_ok (AirportCd.hasText_of_wellFormed hdep),
-      assertHasText_ok (AirportCd.hasText_of_wellFormed harr)]
+  · simp only [getRouteByAirportCd, assertHasText_ok hdep, assertHasText_ok harr]
     rfl
   let key : RouteResult → String := fun res => makeCacheKey res.depAirportCd.val res.aarAirportCd.val
   let projR : RouteRow → RouteResult := fun r =>
@@ -235,12 +234,13 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
     refine find?_congr fun r hr => ?_
     rw [hkey r hr]
     have nd := AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hr).2.2.1
+    have nda := AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hr).2.2.2
     rw [Bool.eq_iff_iff]
     simp only [Bool.and_eq_true, beq_iff_eq]
     constructor
     · rintro ⟨rfl, rfl⟩; rfl
     · intro e
-      obtain ⟨e1, e2⟩ := makeCacheKey_inj nd (AirportCd.no_dash_of_wellFormed hdep) e
+      obtain ⟨e1, e2⟩ := makeCacheKey_inj' nd nda e
       exact ⟨by cases dep; simp only [AirportCd.mk.injEq] at *; exact e1,
         by cases arr; simp only [AirportCd.mk.injEq] at *; exact e2⟩
   rw [hspec]
