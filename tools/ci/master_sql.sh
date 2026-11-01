@@ -6,9 +6,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-pgver="$(python3 -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
+pgver="$(uv run --quiet python -I -c 'import json; print(json.load(open("trace/upstream.json"))["languages"]["postgresql"]["version"])')"
 if ! { [ -n "${PGHOST:-}" ] || command -v pg_config > /dev/null || ls /usr/lib/postgresql/*/bin/initdb > /dev/null 2>&1; }; then
   if [ -n "${CI:-}" ]; then echo "PostgreSQL not available (required in CI)" >&2; exit 1; fi
   echo "PostgreSQL not found: skipped"; exit 2
 fi
-.agents/skills/spec-pivot/scripts/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py --check --expect-version "$pgver"
+.agents/skills/spec-pivot/scripts/ci/with_postgres.sh uv run --quiet python -I tools/conformance/master_sql.py --check --expect-version "$pgver"

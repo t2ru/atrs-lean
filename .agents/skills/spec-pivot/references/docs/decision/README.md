@@ -31,3 +31,4 @@ generated:
 | cfad | [この方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改める](cfad-name-the-method-spec-pivot.md) | accepted | 2026-11-01 |
 | 1f75 | [Java の式の構文 java! と Spring の Assert を言語パックに置き、移植元のモデルを原典と同じ字面で書く](1f75-java-expression-syntax-and-spring-assert.md) | accepted | 2026-11-01 |
 | 8a3c | [移植元のモデルを原典のソースツリーの形に並べ、対応を TR-M で検査し、対照表を trace review で生成する](8a3c-mirror-layout-check-and-review-view.md) | accepted | 2026-11-01 |
+| 8cb7 | [スキルの Python の道具を uv で実行する](8cb7-run-python-tools-with-uv.md) | accepted | 2026-11-01 |

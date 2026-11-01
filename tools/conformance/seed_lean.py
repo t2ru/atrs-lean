@@ -9,8 +9,8 @@ backlog 0fdf: シードのマスタ・設定が入口の環境の前提（MD-1�
 付ける（backlog 76a6・ADR a41d）。シードから [Spec] の値への変換は本生成器の決定論的な変換で、`--check` が一致を確かめる。
 
 使い方:
-  python3 -I tools/conformance/seed_lean.py           # lean/Spec/Seed.lean を書く
-  python3 -I tools/conformance/seed_lean.py --check   # 生成物が最新であることを確かめる（CI）
+  uv run python -I tools/conformance/seed_lean.py           # lean/Spec/Seed.lean を書く
+  uv run python -I tools/conformance/seed_lean.py --check   # 生成物が最新であることを確かめる（CI）
 """
 import json
 import pathlib

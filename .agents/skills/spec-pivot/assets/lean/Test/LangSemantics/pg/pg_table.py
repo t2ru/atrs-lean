@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """LangSemantics.Sql と PostgreSQL の突き合わせ表の生成器。
 
-    python3 -I pg_table.py [--expect-version 16.15] > ../PostgresqlDb.lean
+    uv run python -I pg_table.py [--expect-version 16.15] > ../PostgresqlDb.lean
 
 接続先は psql の環境変数（PGHOST・PGPORT・PGUSER・PGDATABASE）で与える。データベースは照合順序 C・
 UTF8 で、セッションのタイムゾーンは UTC とする（references/docs/lang/sql/dialects/postgresql/harness.md）。
@@ -294,7 +294,7 @@ def main():
     line()
     line("**生成物（手で編集しない）。** `Test/LangSemantics/pg/pg_table.py` が PostgreSQL（照合順序 C・UTF8・UTC）で")
     line("計算した値と、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` の結果を突き合わせる。")
-    line("再生成: `python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`")
+    line("再生成: `uv run python -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`")
     line("-/")
     line()
     line("open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.Sequence")

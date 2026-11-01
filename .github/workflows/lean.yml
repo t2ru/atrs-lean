@@ -24,6 +24,8 @@ jobs:
       PGPORT: "5432"
       PGUSER: postgres
       PGDATABASE: postgres
+      # mise.toml のタスクと道具（uv）を信頼する（ADR 44a0）
+      MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -34,6 +36,19 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+
+      # 検査・生成のタスク（mise.toml）と、mise が管理する uv。Python は uv が .python-version に従って用意する（ADR 44a0）
+      - name: Set up mise (uv)
+        uses: jdx/mise-action@v2
+        with:
+          install: true
+          cache: true
+
+      - name: Cache uv
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: uv-${{ runner.os }}-${{ hashFiles('uv.lock', '.python-version') }}
 
       - name: Install elan
         run: |
@@ -64,7 +79,7 @@ jobs:
             cargo-${{ runner.os }}-
 
       - name: Lean checks
-        run: tools/ci/lean.sh
+        run: mise run ci
 
       - name: Upload the source/model review (trace review)
         if: always()

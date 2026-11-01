@@ -54,8 +54,8 @@ generated:
 `scripts/docs/okf_check.py` が、OKF のバンドルの形と Markdown のリンクを検査する（[ADR 330e](../decision/330e-okf-bundle-check-tool.md)）。
 
 ```bash
-python3 -I <skill>/scripts/docs/okf_check.py              # 違反で終了コード 1
-python3 -I <skill>/scripts/docs/okf_check.py --self-test  # 違反例を検出できることを確かめる
+uv run python -I <skill>/scripts/docs/okf_check.py              # 違反で終了コード 1
+uv run python -I <skill>/scripts/docs/okf_check.py --self-test  # 違反例を検出できることを確かめる
 ```
 
 | 検査 | 内容 |
@@ -103,10 +103,10 @@ MADR 4.0 の形で書く。節見出しは英語（`Context and Problem Statemen
 - 採番と検査には、スキルの `scripts/docs/ids.py` を使う（[scripts/README.md](../../../scripts/README.md)）。
 
   ```bash
-  python3 -I <skill>/scripts/docs/ids.py new adr <slug> --dir <skill>/references/docs/decision
-  python3 -I <skill>/scripts/docs/ids.py new backlog <slug> --dir <skill>/references/docs/backlog
-  python3 -I <skill>/scripts/docs/ids.py move <stem> <dir>   # 記録を適用先とスキルの間で移す
-  python3 -I <skill>/scripts/docs/ids.py check
+  uv run python -I <skill>/scripts/docs/ids.py new adr <slug> --dir <skill>/references/docs/decision
+  uv run python -I <skill>/scripts/docs/ids.py new backlog <slug> --dir <skill>/references/docs/backlog
+  uv run python -I <skill>/scripts/docs/ids.py move <stem> <dir>   # 記録を適用先とスキルの間で移す
+  uv run python -I <skill>/scripts/docs/ids.py check
   ```
 
 - 道具の設定は、適用先の `trace/project.json` の `ids` にある（[traceability.md](../spec/traceability.md#プロジェクトの設定)）。適用先の置き場所とスキルの置き場所を `ids.kinds` に並べ、ID の空間を 1 つにする。

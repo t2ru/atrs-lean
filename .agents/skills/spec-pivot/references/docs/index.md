@@ -76,6 +76,7 @@ okf_version: "0.2"
 * [義務の束 Machine.Adequate、機械の並置によるトップレベルの主定理、側ごとの段階導入](decision/ab9e-adequate-bundle-sum-and-side-staging.md) - R 課題ごとに、Refines と空虚化を防ぐ義務を Machine.Adequate に束ね、同じ課題 ID の @[obligation] で示す（GA・OB-A）。機能の機械を Machine.sum で並置し、トップレベルの Refines・Adequate を Abstraction.lean・Refinement.lean に置く。追跡の検査の段階導入を、指摘の側（移植元・移植先）の作業項目で判定する。
 * [adequate の廃止: A abstracts B = A preserves B ∧ B refines A](decision/6b4b-preserves-refines-abstracts.md) - 義務の束 Machine.Adequate を廃止し、B メソッドのリファインメント Machine.Refines（B refines A）と、R 課題の空虚化を防ぐ意味的な義務のすべてを束ねた Machine.Preserves（A preserves B。Refines を含まない）に分ける。両者の組を Machine.Abstracts（A abstracts B）とする。G6 は束の ch・outs を照合し、GA を GP、OB-A を OB-P に改める。並置と側ごとの段階導入は ADR ab9e から引き継ぐ。
 * [この方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改める](decision/cfad-name-the-method-spec-pivot.md) - Lean の正規仕様 Spec を軸に、移植元と移植先を両側からリファインメントで結ぶこの方法を Spec Pivot と名付ける。スキルの識別子（ディレクトリ名と frontmatter の name）を port-lang から spec-pivot に改める。
+* [スキルの Python の道具を uv で実行する](decision/8cb7-run-python-tools-with-uv.md) - scripts/ と assets/lean の Python の道具（標準ライブラリだけ）を、システムの python3 でなく uv run python -I で実行する。スキルのシェルの道具（pg_table.sh）もそう呼び、文書の使い方もそう書く。タスクの実行器（mise など）は適用先が選び、スキルは求めない。
 
 # Backlog
 

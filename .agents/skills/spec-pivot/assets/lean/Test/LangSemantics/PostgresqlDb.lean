@@ -5,7 +5,7 @@ import LangSemantics.Sql.Postgresql
 
 **生成物（手で編集しない）。** `Test/LangSemantics/pg/pg_table.py` が PostgreSQL（照合順序 C・UTF8・UTC）で
 計算した値と、`LangSemantics.Sql`・`LangSemantics.Sql.Postgresql` の結果を突き合わせる。
-再生成: `python3 -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`
+再生成: `uv run python -I Test/LangSemantics/pg/pg_table.py > Test/LangSemantics/PostgresqlDb.lean`
 -/
 
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.Sequence

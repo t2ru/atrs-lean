@@ -6,8 +6,8 @@
   （docs/spec/conformance.md、ADR 9ee4）。行の順はシードの順のまま（Provider の読み込み順の既定）。
 - config.json: 上流の atrs.properties の値を Spec.Config の欄名で書き出す。
 
-  python3 -I tools/conformance/master_fixture.py           # 書き出す
-  python3 -I tools/conformance/master_fixture.py --check   # 最新であることを確かめる
+  uv run python -I tools/conformance/master_fixture.py           # 書き出す
+  uv run python -I tools/conformance/master_fixture.py --check   # 最新であることを確かめる
 """
 import json
 import re

@@ -31,7 +31,7 @@ generated:
 ## コミット前の確認
 
 - `docs/` を変更した場合: frontmatter・[docs/index.md](../index.md)・[docs/log.md](../log.md) を更新し、OKF とリンクの検査（[backlog ddbd](../backlog/ddbd-okf-bundle-lint.md)）を通す。
-- Lean を変更した場合: `tools/ci/lean.sh`（`lake build`, `lake test`, `axiom-check`, `trace-dump`, 静的検査 `check_lean.py`, ルートの `lake setup-file` を一括で実行する）。
+- Lean を変更した場合: `mise run ci`（`lake build`, `lake test`, `axiom-check`, `trace-dump`, 静的検査 `check_lean.py`, ルートの `lake setup-file` を一括で実行する。段ごとには `mise run lean:test` など。一覧は `mise tasks`。[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）。
 - Rust を変更した場合: Verus の検証、`cargo kani`、`cargo test`（[spec-pivot/rust/verification.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/verification.md#品質)）。
 - Lean・Rust・上流を変更した場合: 追跡の検査 `trace check`（[ADR e2a4](../decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。インベントリ・manifest を再生成して一緒にコミットする。
 - 上流の版上げでは、旧版の最後のコミットに `upstream-<旧 release>` タグを付ける（[spec-pivot/upgrade.md](../../.agents/skills/spec-pivot/references/docs/guide/upgrade.md)）。

@@ -1,0 +1,245 @@
+# ATRS の検査・生成のタスク（ADR 44a0）。一括検査は `mise run ci`（CI とローカルで共通）。
+# 個別に `mise run <task>`、一覧は `mise tasks`。
+#
+# - mise が管理する道具は uv だけ。Python は uv で実行する（`uv run python -I`。版は .python-version・pyproject.toml）。
+#   Lean は elan（lean-toolchain）、Java・Rust・PostgreSQL は従来どおり。
+# - 汎用の道具はスキル spec-pivot の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
+# - `depends` は実際の依存、`wait_for` は同じ起動の中での直列化だけを表す（単独実行では引き込まない）。
+#   lake は同じパッケージの .lake を同時に書かないよう、`assets:*` → `lean:*` → `workspace:*` の順に直列にする。
+#   PostgreSQL を使う段（CI では同じサーバ）も直列にする。
+# - JDK・PostgreSQL を使う段（assets:jvm-table・assets:pg-table・conformance:master-sql）は、処理系が無ければ終了コード 2
+#   （「飛ばした」。ローカルだけ。CI では 1 になる）で失敗する。一括検査 `ci` は、これを tools/ci/skippable.sh で 0 に読み替える
+#   `ci:*` の段から呼ぶ。trace/checks.json（trace rehash）は飛ばさない側を呼ぶ。
+
+min_version = "2025.1.0"
+
+[tools]
+uv = "0.11.32"
+
+[vars]
+skill = ".agents/skills/spec-pivot"
+py = "uv run --quiet python -I"
+ci_out = "lean/.lake/ci"
+
+# ---------------------------------------------------------------------------
+# 一括検査
+
+[tasks.ci]
+description = "一括検査（CI とローカルで共通。旧 tools/ci/lean.sh）"
+depends = [
+  "check:upstream",
+  "docs:ids", "docs:self-test", "docs:okf",
+  "conformance:check",
+  "static:self-test", "static:lean",
+  "ci:jvm-table", "ci:pg-table", "ci:master-sql",
+  "assets:build", "assets:trace-test", "assets:layout-check",
+  "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump",
+  "trace:self-test", "trace:build", "trace:manifest", "trace:check", "trace:review",
+  "workspace:setup-file",
+]
+run = "echo OK"
+
+# 処理系が無ければ飛ばす段（`ci` から呼ぶ）
+
+[tasks."ci:jvm-table"]
+description = "assets:jvm-table（java が無ければ、ローカルでは飛ばす）"
+hide = true
+run = "tools/ci/skippable.sh {{vars.skill}}/scripts/ci/jvm_table.sh"
+
+[tasks."ci:pg-table"]
+description = "assets:pg-table（PostgreSQL が無ければ、ローカルでは飛ばす）"
+hide = true
+run = "tools/ci/skippable.sh {{vars.skill}}/scripts/ci/pg_table.sh"
+
+[tasks."ci:master-sql"]
+description = "conformance:master-sql（PostgreSQL が無ければ、ローカルでは飛ばす）"
+hide = true
+wait_for = ["ci:pg-table"]
+run = "tools/ci/skippable.sh tools/ci/master_sql.sh"
+
+# ---------------------------------------------------------------------------
+# 上流・文書
+
+[tasks."check:upstream"]
+description = "upstream: submodule の commit と trace/upstream.json の一致"
+run = "{{vars.py}} {{vars.skill}}/scripts/ci/check_upstream.py"
+
+[tasks."docs:ids"]
+description = "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
+run = "{{vars.py}} {{vars.skill}}/scripts/docs/ids.py check"
+
+[tasks."docs:self-test"]
+description = "docs: OKF バンドルとリンクの検査・文書の移動の道具の自己テスト（違反例を検出できること）"
+run = [
+  "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py --self-test",
+  "{{vars.py}} {{vars.skill}}/scripts/docs/docmv.py --self-test",
+]
+
+[tasks."docs:okf"]
+description = "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
+run = "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py"
+
+# ---------------------------------------------------------------------------
+# 適合テストの共有入力・シード
+
+[tasks."conformance:check"]
+description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed）が上流のシード・設定からの生成と一致する"
+run = [
+  "{{vars.py}} tools/conformance/master_fixture.py --check",
+  "{{vars.py}} tools/conformance/seed_lean.py --check",
+  "{{vars.py}} tools/conformance/flight_seed.py --check",
+]
+
+[tasks."conformance:gen"]
+description = "conformance: 共有入力と Lean のシードを上流のシード・設定から書き出す"
+run = [
+  "{{vars.py}} tools/conformance/master_fixture.py",
+  "{{vars.py}} tools/conformance/seed_lean.py",
+  "{{vars.py}} tools/conformance/flight_seed.py",
+]
+
+[tasks."conformance:master-sql"]
+description = "conformance: マスタの Mapper の文・コードリストの SQL と空席照会の文の PostgreSQL での結果（conformance/sql/）が最新である"
+wait_for = ["assets:pg-table"]
+run = "tools/ci/master_sql.sh"
+
+# ---------------------------------------------------------------------------
+# 静的検査
+
+[tasks."static:self-test"]
+description = "static: 静的検査・改名の道具・証明義務の突き合わせの自己テスト（違反例を検出できること）"
+run = [
+  "{{vars.py}} {{vars.skill}}/scripts/ci/check_lean.py --self-test",
+  "{{vars.py}} {{vars.skill}}/scripts/lean/rename.py --self-test",
+  "{{vars.py}} {{vars.skill}}/scripts/ci/check_obligations.py --self-test",
+]
+
+[tasks."static:lean"]
+description = "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
+run = "{{vars.py}} {{vars.skill}}/scripts/ci/check_lean.py"
+
+# ---------------------------------------------------------------------------
+# スキルの assets/lean
+
+[tasks."assets:jvm-table"]
+description = "assets/lean: JVM との突き合わせ表（Test/LangSemantics/JavaJvm.lean）が生成器の出力と一致する"
+run = "{{vars.skill}}/scripts/ci/jvm_table.sh"
+
+[tasks."assets:pg-table"]
+description = "assets/lean: PostgreSQL との突き合わせ表（Test/LangSemantics/PostgresqlDb.lean）が生成器の出力と一致する"
+run = "{{vars.skill}}/scripts/ci/pg_table.sh"
+
+[tasks."assets:build"]
+description = "assets/lean: lake build（LangSemantics・Machine・Trace と、その検査 Test.*）"
+dir = "{{config_root}}/.agents/skills/spec-pivot/assets/lean"
+run = "lake build"
+
+[tasks."assets:trace-test"]
+description = "assets/lean: trace-test（trace-dump・obligation-check・layout-check の処理をフィクスチャにかける）"
+depends = ["assets:build"]
+dir = "{{config_root}}/.agents/skills/spec-pivot/assets/lean"
+run = "lake exe trace-test"
+
+[tasks."assets:layout-check"]
+description = "assets/lean: layout-check（宣言がモジュール名の下にあること。NS-1）"
+depends = ["assets:build"]
+wait_for = ["assets:trace-test"]
+dir = "{{config_root}}/.agents/skills/spec-pivot/assets/lean"
+run = "lake exe layout-check"
+
+# ---------------------------------------------------------------------------
+# lean/（ATRS の Lean プロジェクト）
+
+[tasks."lean:build"]
+description = "lean: lake build"
+wait_for = ["assets:build", "assets:trace-test", "assets:layout-check"]
+dir = "{{config_root}}/lean"
+run = "lake build"
+
+[tasks."lean:test"]
+description = "lean: lake test（適合テストベクタ）"
+depends = ["lean:build"]
+dir = "{{config_root}}/lean"
+run = "lake test"
+
+[tasks."lean:axiom-check"]
+description = "lean: 公理の検査"
+depends = ["lean:build"]
+wait_for = ["lean:test"]
+dir = "{{config_root}}/lean"
+run = "lake exe axiom-check"
+
+[tasks."lean:layout-check"]
+description = "lean: layout-check（宣言がモジュール名の下にあること。NS-1）"
+depends = ["lean:build"]
+wait_for = ["lean:test", "lean:axiom-check"]
+dir = "{{config_root}}/lean"
+run = "lake exe layout-check"
+
+[tasks."lean:obligations"]
+description = "lean: obligation-check（R 課題の形と付帯の義務。TR-G）と文書の突き合わせ（TR-N）。結果は lean/.lake/ci/obligations.json"
+depends = ["lean:build"]
+wait_for = ["lean:test", "lean:axiom-check", "lean:layout-check"]
+run = [
+  "mkdir -p {{vars.ci_out}}",
+  "cd lean && lake exe obligation-check > ../{{vars.ci_out}}/obligations.json",
+  "{{vars.py}} {{vars.skill}}/scripts/ci/check_obligations.py {{vars.ci_out}}/obligations.json",
+]
+
+[tasks."lean:trace-dump"]
+description = "lean: trace-dump。結果は lean/.lake/ci/trace-dump.json"
+depends = ["lean:build"]
+wait_for = ["lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations"]
+run = [
+  "mkdir -p {{vars.ci_out}}",
+  "cd lean && lake exe trace-dump > ../{{vars.ci_out}}/trace-dump.json",
+  """{{vars.py}} -c 'import json, sys
+d = json.load(open(sys.argv[1]))
+print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_version"]))' {{vars.ci_out}}/trace-dump.json""",
+]
+
+# ---------------------------------------------------------------------------
+# 追跡（スキルの scripts/trace）
+
+[tasks."trace:self-test"]
+description = "trace: scripts/trace の自己テスト（違反例を検出できること）"
+dir = "{{config_root}}/.agents/skills/spec-pivot/scripts/trace"
+run = "cargo test --release --quiet"
+
+[tasks."trace:build"]
+description = "trace: scripts/trace のビルド"
+wait_for = ["trace:self-test"]
+dir = "{{config_root}}/.agents/skills/spec-pivot/scripts/trace"
+run = "cargo build --release --quiet"
+
+[tasks."trace:manifest"]
+description = "trace: インベントリ・manifest・traceability.md の生成区画が最新である"
+depends = ["trace:build", "lean:obligations", "lean:trace-dump"]
+run = [
+  "{{vars.skill}}/scripts/trace/target/release/trace inventory source --check",
+  "{{vars.skill}}/scripts/trace/target/release/trace inventory target --check",
+  "{{vars.skill}}/scripts/trace/target/release/trace manifest --dump {{vars.ci_out}}/trace-dump.json --obligations {{vars.ci_out}}/obligations.json --check",
+]
+
+[tasks."trace:check"]
+description = "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L/M、TR-G・TR-N）"
+depends = ["trace:build", "lean:obligations", "lean:trace-dump"]
+run = "{{vars.skill}}/scripts/trace/target/release/trace check --dump {{vars.ci_out}}/trace-dump.json --obligations {{vars.ci_out}}/obligations.json"
+
+[tasks."trace:review"]
+description = "trace: 原典とモデルの対照表（build/review/。生成物。CI の artifact）"
+depends = ["trace:build", "lean:trace-dump"]
+run = "{{vars.skill}}/scripts/trace/target/release/trace review --dump {{vars.ci_out}}/trace-dump.json"
+
+# ---------------------------------------------------------------------------
+# ルートの Lake ワークスペース
+
+[tasks."workspace:setup-file"]
+description = "workspace: ルートで lake setup-file（Lean LSP 用）"
+wait_for = ["assets:build", "assets:trace-test", "assets:layout-check", "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump"]
+run = [
+  "lake setup-file lean/Spec.lean > /dev/null",
+  "lake setup-file lean/Tests/Main.lean > /dev/null",
+  "lake setup-file .agents/skills/spec-pivot/assets/lean/LangSemantics.lean > /dev/null",
+  "lake setup-file .agents/skills/spec-pivot/assets/lean/Machine.lean > /dev/null",
+]

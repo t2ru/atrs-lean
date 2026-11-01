@@ -1,6 +1,9 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR 8cb7](decision/8cb7-run-python-tools-with-uv.md) で、Python の道具をシステムの `python3` でなく `uv run python -I` で実行するようにした。スキルの版を 0.20 にした。
+  * `scripts/ci/pg_table.sh`・`scripts/trace`（`check_obligations.py` の呼び出し）が uv で Python を呼ぶ。各道具の使い方の docstring、`assets/lean/Test/LangSemantics/pg/pg_table.py` とその生成物 `PostgresqlDb.lean` の再生成の手順、[rules/maintenance.md](rules/maintenance.md)・`SKILL.md`・`scripts/README.md` を改めた。
+  * 来歴: 適用先 ATRS の ADR 44a0（タスクの実行器は適用先が選ぶ）。
 * **Creation**: 移植元のモデルを人が原典と見比べられるようにした（[ADR 1f75](decision/1f75-java-expression-syntax-and-spring-assert.md)・[ADR 8a3c](decision/8a3c-mirror-layout-check-and-review-view.md)）。スキルの版を 0.19 にした。
   * `LangSemantics.Java.Expr`: Java の式の構文 `java!`（JLS の優先順位・数値昇格・リテラルの型・キャスト・短絡評価・例外を投げうる式）。展開した項は原始関数の項と構文として同じ（`Test.LangSemantics.JavaExpr`）。原始関数 `j32neg`・`j64neg`・`jrem64`・`JDouble.neg`・`jdneg` を足した。
   * `LangSemantics.Java.Spring`: Spring の `Assert`（`isTrue`・`notNull`・`notEmpty`・`hasText` と、値を返す `notNullValue`・`notEmptyValue`）。`LangSemantics.Java.Exception.jAssert` は削除した（`Assert.isTrue` に置き換える）。

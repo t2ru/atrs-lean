@@ -12,7 +12,7 @@
 - 文の SQL は、上流の Mapper の XML と AtrsCodeListConfig.java から抜き出したものをそのまま使う。
 - PostgreSQL への接続は .agents/skills/spec-pivot/scripts/ci/with_postgres.sh が与える（照合順序 C・UTF8・UTC）。
 
-  .agents/skills/spec-pivot/scripts/ci/with_postgres.sh python3 -I tools/conformance/master_sql.py [--check] [--expect-version 16.15]
+  .agents/skills/spec-pivot/scripts/ci/with_postgres.sh uv run python -I tools/conformance/master_sql.py [--check] [--expect-version 16.15]
 """
 import csv
 import hashlib

@@ -27,8 +27,8 @@ references/docs/rules/spec-documents.md#道具が読む見出しと値 が定め
 （スキル spec-pivot の spec/traceability.md）。
 
 使い方:
-  python3 -I <skill>/scripts/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる
-  python3 -I <skill>/scripts/ci/check_obligations.py --self-test                  # scripts/ci/fixtures/obligations の例で確かめる
+  uv run python -I <skill>/scripts/ci/check_obligations.py <obligation-check の JSON>   # 本番の文書と突き合わせる
+  uv run python -I <skill>/scripts/ci/check_obligations.py --self-test                  # scripts/ci/fixtures/obligations の例で確かめる
 """
 import json
 import pathlib

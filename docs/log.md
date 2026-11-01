@@ -2,6 +2,11 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR 44a0](decision/44a0-mise-tasks-and-uv-for-tools.md) で、一括検査 `tools/ci/lean.sh` を廃止し、各段をルートの `mise.toml` のタスクに分けた（一括検査は `mise run ci`）。mise が管理する道具は uv だけとし、Python の道具を `uv run python -I` で実行するようにした（`.python-version`・`pyproject.toml`・`uv.lock`）。
+  * `.github/workflows/lean.yml` は mise を入れて `mise run ci` を実行する。`trace/checks.json` の各段はタスクを呼ぶ。終了コード 2（飛ばした）の読み替えは `tools/ci/skippable.sh` に移した。
+  * スキルの側は [スキルの ADR 8cb7](../.agents/skills/spec-pivot/references/docs/decision/8cb7-run-python-tools-with-uv.md)（uv だけ。mise は求めない）。スキルの版を 0.20 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+  * `AGENTS.md`、[rules/atrs-porting.md](rules/atrs-porting.md)・[rules/version-control.md](rules/version-control.md)・[rules/documentation.md](rules/documentation.md)・[rules/decision-records.md](rules/decision-records.md)・[rules/backlog.md](rules/backlog.md)、[spec/traceability.md](spec/traceability.md)、[index.md](index.md) を改めた。完了済みの ADR・backlog の本文の `tools/ci/lean.sh` は来歴として残す。
+
 * **Creation**: [ADR e41c](decision/e41c-source-model-mirrors-java-tree.md) と [backlog cb06](backlog/cb06-source-model-review-aids.md)（完了）で、`SourceModel` を原典と見比べやすくした。スキルの版を 0.19 にした（[スキルの ADR 1f75](../.agents/skills/spec-pivot/references/docs/decision/1f75-java-expression-syntax-and-spring-assert.md)・[ADR 8a3c](../.agents/skills/spec-pivot/references/docs/decision/8a3c-mirror-layout-check-and-review-view.md)）。
   * `SourceModel` のモジュールを原典の Java のソースツリーと同じ形に並べた（改名の対応表 `tools/docs/lean-renames-mirror.json`）。`trace/features.json` の `lean`・`trace/checks.json` の `covers`・`trace/project.json` の `source.mirror` を改めた。
   * 式を `java!`、検査を `Assert.*` で書いた。TR-M の指摘で、原典と名前が食い違っていた欄（`fareTypeMap`）と引数を直した。

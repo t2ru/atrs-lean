@@ -2,8 +2,8 @@
 """文書のバンドルの中でファイル・ディレクトリを移し、リポジトリのリンクとパスの言及を張り直す（spec-pivot の道具。scripts/README.md）。
 
 使い方:
-  python3 -I <skill>/scripts/docs/docmv.py [--dry-run] --root <bundle> <old> <new> [<old> <new> ...]
-  python3 -I <skill>/scripts/docs/docmv.py --self-test
+  uv run python -I <skill>/scripts/docs/docmv.py [--dry-run] --root <bundle> <old> <new> [<old> <new> ...]
+  uv run python -I <skill>/scripts/docs/docmv.py --self-test
 
 `<old>`・`<new>` は `--root`（リポジトリのルートからの相対）からの相対パスである。ディレクトリはその下のファイルに
 展開する。いくつもの移動を 1 回で行い、移動元と移動先の両方が動くリンクも正しく張り直す。

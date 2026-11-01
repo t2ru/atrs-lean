@@ -39,8 +39,8 @@ YAML の部分集合（frontmatter）:
   - 使えないもの: フローのマッピング `{…}`、ブロックのスカラ `|`・`>`、複数行のプレーン、アンカー・別名・タグ、複数文書。
 
 使い方:
-  python3 -I <skill>/scripts/docs/okf_check.py              # 検査する（違反で終了コード 1）
-  python3 -I <skill>/scripts/docs/okf_check.py --self-test  # 違反例（scripts/ci/fixtures/okf/）を検出できることを確かめる
+  uv run python -I <skill>/scripts/docs/okf_check.py              # 検査する（違反で終了コード 1）
+  uv run python -I <skill>/scripts/docs/okf_check.py --self-test  # 違反例（scripts/ci/fixtures/okf/）を検出できることを確かめる
 """
 import datetime
 import json

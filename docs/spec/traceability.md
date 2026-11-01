@@ -59,7 +59,7 @@ ATRS が使うロケータの種別は次のとおり（文法は各言語パッ
 | 新旧のインベントリの分類（版上げの手順 3） | `trace diff --old git:<rev>`（`--side target` で移植先） |
 | 証明のグラフに沿った影響一覧（版上げの手順 5） | `trace impact --dump <trace-dump.json> --obligations <obligation-check.json> <ロケータ・Lean 名…>`（`--diff git:<rev>` で差分を起点にする） |
 
-CI（`tools/ci/lean.sh`）は、インベントリ・manifest・下の生成区画が最新であることと、`trace check` の誤りが 0 件であることを確かめる。
+CI（`mise run ci`）は、インベントリ・manifest・下の生成区画が最新であることと、`trace check` の誤りが 0 件であることを確かめる。
 
 ## 例: 運賃計算（基本運賃）
 
