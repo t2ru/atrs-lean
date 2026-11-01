@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "言語間移植の方法をアプリ非依存のスキル port-lang に切り出し、docs/ には ATRS 固有の情報を残す"
-description: "Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/port-lang に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。"
+description: "Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/spec-pivot に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。"
 tags: [adr, skill, porting, documentation]
 id: "f4e1419f-97dc-4629-b465-b90a88300568"
 status: stable
@@ -10,7 +10,7 @@ date: 2026-10-29
 decision-makers: プロジェクトオーナー
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:39:02+09:00
+  at: 2026-11-01T14:50:00+09:00
 sources:
   - id: agentskills
     resource: https://agentskills.io/specification
@@ -25,7 +25,7 @@ sources:
 方法の例は、層構成、正規仕様の置き方、追跡、版上げ、適合テスト、Lean・Rust の規約、Java/SQL の意味論の扱いである。
 方法の部分は、別のアプリケーション・別の言語ペアの移植にもそのまま使える。
 プロジェクトオーナーから次の 3 点の指示があった[^agentskills]。
-- 方法を Agent Skills 仕様のスキル `.agents/skills/port-lang/{SKILL.md,references}` に移す。
+- 方法を Agent Skills 仕様のスキル `.agents/skills/spec-pivot/{SKILL.md,references}` に移す。
 - 言語ごとの情報を `references/<lang>/` に置き、どの言語も移植元にも移植先にもなれる構成にする。
 - `docs/` には ATRS 特有の情報を残す。
 
@@ -50,7 +50,7 @@ Chosen option: "スキル `port-lang` に方法を切り出し、役割に依存
 
 | 情報 | 置き場所 |
 | --- | --- |
-| アプリにも言語にも依存しない方法（層、手順、仕様文書の書き方、言語中立性、ベクタの形式、追跡、版上げ、検証の使い分け） | `.agents/skills/port-lang/SKILL.md` と `references/*.md` |
+| アプリにも言語にも依存しない方法（層、手順、仕様文書の書き方、言語中立性、ベクタの形式、追跡、版上げ、検証の使い分け） | `.agents/skills/spec-pivot/SKILL.md` と `references/*.md` |
 | 言語固有の情報 | `references/<lang>/` |
 | 形式化言語 Lean の規約 | `references/lean/` |
 | ATRS 固有の仕様・決定・作業・運用規約、スキルの ATRS への適用（言語ペア、配置、機能名、型、必須の依存、上流の版） | `docs/`（適用は [docs/rules/atrs-porting.md](../rules/atrs-porting.md)） |
@@ -123,7 +123,8 @@ Chosen option: "スキル `port-lang` に方法を切り出し、役割に依存
 
 ## More Information
 
-* [port-lang の SKILL.md](../../.agents/skills/port-lang/SKILL.md), [atrs-porting.md](../rules/atrs-porting.md)
-* 補足（2026-10-31）: スキルの `references/` は `references/docs/`（OKF v0.2 のバンドル）に移った。本文の `references/*.md`・`references/<lang>/` は、今は `references/docs/` の下にある。スキル自身の意思決定記録・作業項目もそこに置き、純粋にスキルの ADR・backlog は ATRS から移した（[ADR 50f9](50f9-move-skill-records-to-skill-bundle.md)、[スキルの ADR 87b9](../../.agents/skills/port-lang/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)）。スキルの記録に限り、ATRS の記録を来歴としてリンク無しで挙げてよい。
+* スキルの名前は、[ADR fa26](fa26-rename-skill-to-spec-pivot.md) で `spec-pivot` に改めた（方法の名前は Spec Pivot）。
+* [port-lang の SKILL.md](../../.agents/skills/spec-pivot/SKILL.md), [atrs-porting.md](../rules/atrs-porting.md)
+* 補足（2026-10-31）: スキルの `references/` は `references/docs/`（OKF v0.2 のバンドル）に移った。本文の `references/*.md`・`references/<lang>/` は、今は `references/docs/` の下にある。スキル自身の意思決定記録・作業項目もそこに置き、純粋にスキルの ADR・backlog は ATRS から移した（[ADR 50f9](50f9-move-skill-records-to-skill-bundle.md)、[スキルの ADR 87b9](../../.agents/skills/spec-pivot/references/docs/decision/87b9-skill-docs-as-okf-bundle.md)）。スキルの記録に限り、ATRS の記録を来歴としてリンク無しで挙げてよい。
 
 [^agentskills]: Agent Skills Specification — `SKILL.md` の frontmatter（`name`, `description`, `compatibility`, `metadata`）、`references/` の段階的な読み込み、ファイル参照は 1 段まで。

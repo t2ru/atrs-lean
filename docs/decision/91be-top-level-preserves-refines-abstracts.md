@@ -22,7 +22,7 @@ generated:
 
 オーナーの依頼: 「adequate の語彙を廃止し、preserves と refine に分けたい。空虚化を防ぐ証明課題群は preserves とし、refines は含まないようできるか検討」「構造としては (A abstracts B) = (A preserves B) and (B refines A)」「B メソッドの Refines の意味と食い違っていないことも確認」「Refines と Preserves 外の証明課題が必要なら、それを含めた Abstracts 全体の定義もしてほしい」。
 
-アプリに依存しない部分（`Machine.Preserves`・`Machine.Abstracts` の定義、B メソッドとの照合、検査の改訂）は、[スキルの ADR 6b4b](../../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md) で決めた。この ADR は、ATRS のトップレベルの主定理と R 課題ごとの束の形を決める。
+アプリに依存しない部分（`Machine.Preserves`・`Machine.Abstracts` の定義、B メソッドとの照合、検査の改訂）は、[スキルの ADR 6b4b](../../.agents/skills/spec-pivot/references/docs/decision/6b4b-preserves-refines-abstracts.md) で決めた。この ADR は、ATRS のトップレベルの主定理と R 課題ごとの束の形を決める。
 
 ## Decision Drivers
 
@@ -82,5 +82,5 @@ theorem Abstraction.abstracts :
 ## More Information
 
 * 置き換える ADR: [ADR a41d](a41d-top-level-refines-adequate-and-source-side-gate.md)
-* [スキルの ADR 6b4b](../../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md)、[ADR 70eb](70eb-refinement-non-vacuity-obligations.md)
+* [スキルの ADR 6b4b](../../.agents/skills/spec-pivot/references/docs/decision/6b4b-preserves-refines-abstracts.md)、[ADR 70eb](70eb-refinement-non-vacuity-obligations.md)
 * [backlog cb23](../backlog/cb23-adequate-to-preserves-abstracts.md)

@@ -5,7 +5,7 @@ okf_version: "0.2"
 # Rules
 
 * [作業規約（rules）](rules/README.md) - 作業規約の索引と、規約・文書間の優先順位。
-* [ATRS での port-lang スキルの適用](rules/atrs-porting.md) - 言語間移植の方法（スキル port-lang）を ATRS に適用するときの固有事項。言語ペア、リポジトリ配置、機能名、型、依存フレームワーク、追従中の上流、ATRS で採った値。
+* [ATRS での spec-pivot スキルの適用](rules/atrs-porting.md) - 言語間移植の方法（スキル spec-pivot）を ATRS に適用するときの固有事項。言語ペア、リポジトリ配置、機能名、型、依存フレームワーク、追従中の上流、ATRS で採った値。
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
@@ -37,7 +37,7 @@ okf_version: "0.2"
 * [モデルと証明をすべて Lean に置き、移植元ソースと移植先ソースは両端で追跡する](decision/796c-models-in-lean-and-sources-traced-at-both-ends.md) - LangSemantics・SourceModel・Spec・Abstraction・TargetModel・Refinement を Lean に置き、Java 原典と Rust ソースはそれぞれのモデルとだけ追跡でつなぐ。ADR 3e1d・dd0f を置き換える。
 * [移植元ソース⇔SourceModel と TargetModel⇔移植先ソースを、ロケータ・モデル側注釈・本文ハッシュで追跡する](decision/81ab-cross-language-traceability.md) - 両端のトレースをロケータとモデル側の注釈で表し、確認済みハッシュで陳腐化を検出し、manifest 生成と TR 検査で網羅性と直接接続の禁止を機械的に保つ。
 * [移植元の版上げに追従する。SourceModel は最新版のみ保持し、差分オラクルで振る舞いの変化を検出する](decision/3f36-following-upstream-releases.md) - 上流を submodule で固定し、版上げ時はインベントリ差分と新旧 2 版の差分オラクルで影響を洗い出し、証明グラフに沿って各層を更新する。旧版は git タグで参照する。
-* [言語間移植の方法をアプリ非依存のスキル port-lang に切り出し、docs/ には ATRS 固有の情報を残す](decision/f4e1-extract-porting-method-as-agent-skill.md) - Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/port-lang に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。
+* [言語間移植の方法をアプリ非依存のスキル port-lang に切り出し、docs/ には ATRS 固有の情報を残す](decision/f4e1-extract-porting-method-as-agent-skill.md) - Lean を介した言語間移植の方法を Agent Skills 形式のスキル .agents/skills/spec-pivot に移し、言語ごとの情報を役割に依存しない言語パックとして references/<lang>/ に置く。
 * [メールアドレスの検証規則は Hibernate Validator の規則を IDN 変換抜きで書き下す](decision/ac33-email-validation-rule.md) - 制約 Email を Hibernate Validator 9.1 の AbstractEmailValidator・DomainNameUtil の規則として言語中立に定義し、IDN.toASCII だけを除外して既知差異 D-011 とする。
 * [入力検証エラーの並びは Spec でだけ定め、Source では順序不定の多重集合とする](decision/e24e-validation-error-ordering.md) - Bean Validation が順序を保証しないことを SourceModel に写し、Spec では単項目・相関・グローバルの順に並べる。抽象化では順序を無視して比較する。
 * [本番の Clock は Asia/Tokyo で今日を決め、fixture の投入日は 2026-11-01 に固定する](decision/9ee4-clock-timezone-and-fixture-base-date.md) - Clock ポートの本番アダプタが使うタイムゾーンと、投入日に依存するシードデータ（ピーク時期・フライト）を fixture にするときの基準日を定める。
@@ -60,13 +60,14 @@ okf_version: "0.2"
 * [Spec とモデルのギャップの登録簿を Lean の属性に置き、文書の表を生成する](decision/cc24-gap-registry-as-lean-attributes.md) - 既知差異（前提型・観測型・モデル外）、Spec の PRE の外での振る舞い、未確定の差異を、ID ごとの Lean の宣言（@[gap_entry]、型 Trace.Gap）として登録し、これを正とする。差異の生じる Spec・SourceModel・TargetModel の定義に箇所の印 @[gap] を付ける。文書の表は trace-dump から生成し、検査は Markdown の解析をやめて JSON から行う。
 * [[Spec] の非決定性の選択の型と、入口の環境の前提・シードの検査を決める](decision/cd33-spec-nondet-types-and-env-pre.md) - backlog 0fdf として、非決定性 N-001〜N-005 の選択の型（@[nondet]）の形、各機能の機械での組み合わせ方、入口の環境の前提（@[env_pre]）をマスタ・設定の妥当性に限ること、シードのマスタ・設定が前提を満たすことを生成したリテラルと真偽値の検査関数の定理で示すことを決める。
 * [ギャップの証明の状態を Lean の型で表し、公理・sorry を使わずに裏付けの宣言で示す](decision/6ab4-gap-evidence-states-without-axioms.md) - ギャップ（リファインメントの証明の中で証明できない部分）を axiom・sorry で仮定せず、登録簿 Trace.Gap に証明の状態 Evidence（偽を証明済み・被覆・未証明・形式化していない・PRE の外）を持たせ、状態を裏付ける宣言（否定の定理・被覆の定理・opaque の主張・前提の述語）に @[gap] を付けて obligation-check で照合する。
-* [スキル port-lang の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する](decision/50f9-move-skill-records-to-skill-bundle.md) - スキル port-lang の文書が references/docs/ の OKF バンドルになり、スキル自身の意思決定記録・作業項目を持つようになったのに合わせ、ATRS の docs/ にあった純粋にスキルの記録（ADR 6 件・backlog 2 件）を移す。ID の道具は ATRS とスキルを 1 つの ID 空間で検査する。
-* [docs/ とスキルのバンドルを okf_check.py で検査し、CI の一括検査に入れる](decision/920d-docs-bundle-check-in-ci.md) - ATRS の docs/ とスキル port-lang の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。
+* [スキル spec-pivot の決定と作業項目をスキルのバンドルへ移し、ATRS からはリンクで参照する](decision/50f9-move-skill-records-to-skill-bundle.md) - スキル spec-pivot の文書が references/docs/ の OKF バンドルになり、スキル自身の意思決定記録・作業項目を持つようになったのに合わせ、ATRS の docs/ にあった純粋にスキルの記録（ADR 6 件・backlog 2 件）を移す。ID の道具は ATRS とスキルを 1 つの ID 空間で検査する。
+* [docs/ とスキルのバンドルを okf_check.py で検査し、CI の一括検査に入れる](decision/920d-docs-bundle-check-in-ci.md) - ATRS の docs/ とスキル spec-pivot の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。
 * [実装済みの範囲のトップレベルの Refines・Adequate と、移植元側の段階導入](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) - Abstraction.lean のトップレベルに、機能を並置した Spec.machine と SourceModel.machine の Machine.Refines・Machine.Adequate を置き、R 課題ごとの義務の束から組み立てる。追跡の検査の段階導入を側ごとにし、運賃計算・マスタの移植元側を失敗扱いにする。移植元の項目の機能への振り直しと、ドメインモデルのアクセサ・DDL の制約・シード・設定の Bean の追跡の仕方を決める。
 * [トップレベルの主定理を refines・preserves・abstracts にする（adequate の廃止）](decision/91be-top-level-preserves-refines-abstracts.md) - Abstraction.lean・Refinement.lean のトップレベルの主定理を、B メソッドのリファインメント refines（B refines A）、空虚化を防ぐ意味的な義務の束 preserves（A preserves B。Refines を含まない）、その組 abstracts（A abstracts B）の 3 つにする。R 課題ごとの束は *Preserves とする。移植元側の段階導入とゲートは ADR a41d から引き継ぐ。ADR a41d を置き換える。
 * [空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java オラクルの完了条件を f18c に移す](decision/ce36-flight-search-stage1-world-and-arrival-time.md) - backlog 0be7（空席照会）を 3 段に分け、第 1 段の設計を決める。フライトは抽象状態 World の成分とし、空席照会は状態を読むだけの操作とする。便マスタの到着時刻は出発日 0:00 からの時分（24 時以降を許す）で表し、fixture の outsideSpec を外す。[Source] の DateTimeParseException は予約（B2）の往復便の検査で起きるので、D-031 として登録する。Java オラクルとの一致の完了条件を backlog f18c に移す。
 * [空席照会の第 3 段: R 課題 ABS-011 の証明の構成、PRE の改め、D-014・D-032 の具体側の入力、D-033 の登録、トップレベルへの統合](decision/0b0c-flight-search-stage3-abs011.md) - backlog 0be7 の第 3 段の設計を決める。R 課題 ABS-011（空席照会）を Machine.Refines の形で証明し、束 Machine.Preserves とトップレベルの主定理に加える。PRE の World.RefMaster を入力だけの条件に改め、空白の便名の便マスタを PRE の外（D-033）とする。D-032 の区切り文字と、D-014 の Clock の読み出しを具体側の入力に置き、W 課題 ABS-132・ABS-114 で必要性を示す。
 * [空席照会の第 2 段: 状態を読むだけの機械、シードのフライトの生成と展開しない証明、業務例外を出力の値にすること、SQL の差分実行](decision/cdb6-flight-search-stage2-machines-seed-sql.md) - backlog 0be7 の第 2 段の設計を決める。空席照会の抽象機械は選択を持たない Machine.ofChoice で状態を変えない 1 歩とし、初期状態はシード 00250 の生成の形から作り、主キーの一意性と参照整合性を展開せずに証明する。具体機械は FLIGHT 表を状態とし、業務例外を出力の値として受ける。findByVacantSeatSearchCriteria は PostgreSQL で全件を投入して実行し、条件の押し下げを定理で示したうえで照合する。D-027 の範囲を状態の表 FLIGHT に広げる。
+* [スキルの名前を port-lang から spec-pivot に改め、ATRS のパスと参照を張り直す](decision/fa26-rename-skill-to-spec-pivot.md) - スキルの ADR cfad で方法を Spec Pivot と名付け、スキルの名前を spec-pivot に改めた。ATRS では、スキルのパス（Lake の require・lake-manifest・CI・trace/project.json・trace/checks.json・tools/ci）と文書の参照を新しい名前に張り直す。ADR f4e1 のほかの決定は変えない。
 
 # Specification
 
@@ -75,7 +76,7 @@ okf_version: "0.2"
 * [保証の限界](spec/assurance.md) - ソース⇔モデルの一致を確かめる決定論的な手段と、手段の届かない部分（保証の限界）・信頼の基盤を境界ごとにすべて列挙する。
 * [認証（A0/A1/A2）](spec/authentication.md) - ログインの事前検査・資格情報の照合・ログイン状態の更新・ログアウト・セッションと権限。
 * [設定パラメータ](spec/configuration.md) - 業務規則に影響する設定値とその既定値。純粋関数には Config として明示的に渡す。
-* [適合テストベクタ（ATRS）](spec/conformance.md) - ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル port-lang に従う。
+* [適合テストベクタ（ATRS）](spec/conformance.md) - ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル spec-pivot に従う。
 * [ドメインモデル](spec/domain-model.md) - 型・列挙・値域・不変条件と、仕様全体で使う基本演算（除算・丸め・暦日・書式）の定義。
 * [エラーとメッセージ](spec/errors-and-messages.md) - エラーの分類、エラーコード一覧、日本語メッセージ文言、項目の表示名、引数置換規則。
 * [運賃計算](spec/fare-calculation.md) - 基本運賃・運賃（大人 1 名）・合計金額（大人・小児、往復）の計算と 100 円単位の切上げ。[Spec] は厳密整数、[Source] は Java の double/int32 意味論。
@@ -89,7 +90,7 @@ okf_version: "0.2"
 * [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - TargetModel が Spec を B メソッドの意味でリファインすることの証明課題 REF-NNN、移植先の既知差異 T-NNN、TargetModel ⇔ Rust ソースを決定論的に確認する課題 SRC-NNN（写しの生成・Verus・Kani・適合テスト）。
 * [予約履歴レポート（D1）](spec/reservation-history-report.md) - レポート作成要求の受付、非同期生成、CSV のバイト仕様、ファイル名、一覧と取得。
 * [予約（B0/B2）](spec/reservation.md) - 選択フライトの検証、予約内容の検証、予約確認、空席の確保と予約登録、会員情報による入力補完。
-* [追跡（トレーサビリティ）](spec/traceability.md) - ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル port-lang に従う。
+* [追跡（トレーサビリティ）](spec/traceability.md) - ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル spec-pivot に従う。
 
 # Backlog
 
@@ -125,7 +126,7 @@ okf_version: "0.2"
 * [Spec の非決定性の選択の型と入口の環境の前提](backlog/0fdf-spec-nondet-and-entry-env.md) - Spec の非決定性 N-001〜N-005 の選択の型（@[nondet]）と、入口の環境の前提（マスタ・設定の妥当性。@[env_pre]）を Lean に定義し、両向きの例とシードの妥当性を示す。入力の値域の前提は各機能の backlog で置く。
 * [名前付きの成分の必要性の義務と検査（G9）](backlog/ae04-component-necessity-witness.md) - ADR 9ac6 の成分の必要性（成分を外した R 課題の命題が偽であること）を、Machine.Adequacy の補題（always・not_of_error・not_of_mismatch・Pinned.not_of_mismatch・TotalUnder.not_always）、反例、obligation-check の G9、文書の W 課題・SPEC-006・保証の限界に反映する。
 * [名前付きの成分の変異テスト](backlog/0d1a-mutation-testing-of-named-components.md) - ADR 9ac6 の B。@[deviation]・@[env_pre]・FreeFrame の射影を仕様を強める向きに変異させて R 課題を作り直し、生き残った変異体（成分が必要以上に広い兆候）を処置の記録と突き合わせる道具を作る。
-* [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](backlog/114a-gap-attributes-and-trace-in-skill.md) - lean/Trace をスキル port-lang の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。
+* [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](backlog/114a-gap-attributes-and-trace-in-skill.md) - lean/Trace をスキル spec-pivot の assets/lean/Trace に移す。Spec と SourceModel のギャップ（既知差異・PRE の外・未確定）を @[gap_entry]（型 Trace.Gap）で登録し、箇所の印 @[gap] を付け、文書の表を生成し、検査を JSON から行う。
 * [アプリに依存しない道具・Lean のライブラリ・方法をスキルへ移す](backlog/38fb-move-generic-elements-to-skill.md) - tools/ の汎用の道具をスキルの scripts/ へ、Abstraction・Tests の汎用の Lean コードをスキルの assets へ移し、ATRS 固有の値を trace/project.json に集める。汎用の方法を文書でもスキルへ移し、スキルに紛れた ATRS 固有の記述を外す。
 * [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](backlog/9ed8-atrs-module-namespace-layout.md) - スキルの ADR 1a30 の規則（NS-1・TR-L）を ATRS の lean/ に適用する。layout-check の入口を置き、Spec・SourceModel・Abstraction・Tests・Tools の宣言をモジュール名の下へ改名し、運賃計算とマスタ参照の R・W・C 課題を Abstraction.Fare・Abstraction.MasterData に集め、文書・ベクタ・manifest を追従させる。
 * [ギャップの証明の状態を Lean で表す](backlog/c27d-gap-evidence-states.md) - Trace.Gap に証明の状態 Evidence を足し、obligation-check（GK）で裏付けの宣言と照合する。ATRS の登録簿の 30 件に状態を与え、否定の定理と opaque の主張に @[gap] を付け、生成する表に証明の状態の列を足す。
@@ -134,7 +135,7 @@ okf_version: "0.2"
 
 # Skill
 
-* [スキル port-lang の文書の索引](../.agents/skills/port-lang/references/docs/index.md) - スキル port-lang の OKF バンドル（方法の文書・言語パック・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
+* [スキル spec-pivot の文書の索引](../.agents/skills/spec-pivot/references/docs/index.md) - スキル spec-pivot の OKF バンドル（方法の文書・言語パック・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
 
 # Log
 

@@ -26,7 +26,7 @@ generated:
 
 ## 範囲
 
-- スキル port-lang（[スキルの ADR ab9e](../../.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)）
+- スキル spec-pivot（[スキルの ADR ab9e](../../.agents/skills/spec-pivot/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)）
   - `Machine.Adequate`（義務の束）と系 `run_init`・`exists_ok`、出力が関数で決まる機械の 1 歩の可換式 `Refines.complete_fun`
   - `Machine.Sum`（機械の並置と、`Refines.sum`・`Adequate.sum`・`Adequate.congrPre`）
   - obligation-check の GA と G3' の並置、`check_obligations.py` の OB-A、`trace check` の側ごとの段階導入と、束の閉包を TR-P に含めること、`--feature`・`--rule` の絞り込み

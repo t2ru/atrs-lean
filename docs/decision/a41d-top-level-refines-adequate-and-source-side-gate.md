@@ -39,7 +39,7 @@ generated:
   * 機能を並置した `Spec.machine`・`SourceModel.machine` について、`Machine.Refines`・`Machine.Adequate` を `Abstraction.lean` に置く（スキルの `Machine.Sum` で R 課題から組み立てる）
   * R 課題ごとの定理の一覧（連言）を置く
 * ゲート
-  * 側ごとの段階導入（[スキルの ADR ab9e](../../.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)）
+  * 側ごとの段階導入（[スキルの ADR ab9e](../../.agents/skills/spec-pivot/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)）
   * 現在の警告の集合を固定するラチェット
 * 移植元の項目のうち、実装済みの機能の glob に入っていた他の機能の項目
   * 機能の対応表の glob を細かくして、使う機能へ移す
@@ -104,6 +104,6 @@ Chosen option: "機能を並置したトップレベルの `Refines`・`Adequate
 
 ## More Information
 
-* [スキルの ADR ab9e](../../.agents/skills/port-lang/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)
+* [スキルの ADR ab9e](../../.agents/skills/spec-pivot/references/docs/decision/ab9e-adequate-bundle-sum-and-side-staging.md)
 * [ADR 70eb](70eb-refinement-non-vacuity-obligations.md)、[ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md)
 * [backlog 76a6](../backlog/76a6-source-side-adequacy-gate.md)

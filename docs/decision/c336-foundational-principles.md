@@ -71,7 +71,7 @@ Chosen option: "3 原則を最上位の原則とし、語を定義し、言語�
   * 固定シードの性質テスト
   * 有界モデル検査（Kani など）
 * 人や LLM の判断（レビュー、設計レビュー、目視の確認、判断に基づくハッシュの更新）は、一致の根拠にしてはならない。補助としてだけ使ってよい。
-* 一致の確認手段は、言語ごと・役割（移植元/移植先）ごとに、スキル port-lang の言語パック `verification.md` に規定する。各手段について **保証の限界**（どの入力・どの部分を保証しないか）を併記しなければならない。
+* 一致の確認手段は、言語ごと・役割（移植元/移植先）ごとに、スキル spec-pivot の言語パック `verification.md` に規定する。各手段について **保証の限界**（どの入力・どの部分を保証しないか）を併記しなければならない。
 * 本プロジェクトで実際に残る限界は、[spec/assurance.md](../spec/assurance.md) に境界ごとにすべて列挙する。列挙されていない限界があってはならない。
 * トレーサビリティは [ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md) の注釈と検査で保つ。
 
@@ -95,7 +95,7 @@ Chosen option: "3 原則を最上位の原則とし、語を定義し、言語�
 
 ### 優先関係
 
-* 本 ADR は、他のすべての ADR・規約（`docs/rules/`）・スキル port-lang に優先する。
+* 本 ADR は、他のすべての ADR・規約（`docs/rules/`）・スキル spec-pivot に優先する。
 * 本 ADR と矛盾する既存 ADR の決定は、次の ADR で置き換える。
 
 | 置き換える ADR | 置き換え先 |
@@ -139,4 +139,4 @@ Chosen option: "3 原則を最上位の原則とし、語を定義し、言語�
 
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md), [ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md), [ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md), [ADR e56e](e56e-conflict-as-spec-nondeterminism.md)
 * [spec/assurance.md](../spec/assurance.md)（保証の限界）
-* スキル port-lang: [SKILL.md](../../.agents/skills/port-lang/SKILL.md#原則), [verification.md](../../.agents/skills/port-lang/references/docs/spec/verification.md), [architecture.md](../../.agents/skills/port-lang/references/docs/spec/architecture.md#リファインメントb-メソッド)
+* スキル spec-pivot: [SKILL.md](../../.agents/skills/spec-pivot/SKILL.md#原則), [verification.md](../../.agents/skills/spec-pivot/references/docs/spec/verification.md), [architecture.md](../../.agents/skills/spec-pivot/references/docs/spec/architecture.md#リファインメントb-メソッド)

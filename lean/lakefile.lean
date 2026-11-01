@@ -4,18 +4,18 @@ open Lake DSL
 /-!
 ATRS の Lean プロジェクト（全モデルと証明）。
 
-- 依存は Batteries と、port-lang スキルの言語意味論モデル（`langSemantics`）だけとする（ADR 659f）。
+- 依存は Batteries と、spec-pivot スキルの言語意味論モデル（`langSemantics`）だけとする（ADR 659f）。
   `LangSemantics` には ATRS に固有の定義を足さないため、`lean/` に写さず Lake 依存として取り込む。
 - `Machine`（抽象機械とリファインメントの枠組み）と `Trace`（追跡属性・ギャップの登録簿と、trace-dump・obligation-check の本体）も、
   同じ `langSemantics` パッケージから取り込む。道具の入口（`Tools`）だけをここに置く。
-- 名前空間の依存の向きは port-lang の `scripts/ci/check_lean.py` で検査する。
+- 名前空間の依存の向きは spec-pivot の `scripts/ci/check_lean.py` で検査する。
 -/
 package atrs where
   leanOptions := #[⟨`autoImplicit, false⟩]
   testDriver := "tests"
 
 require batteries from git "https://github.com/leanprover-community/batteries" @ "v4.35.0"
-require langSemantics from "../.agents/skills/port-lang/assets/lean"
+require langSemantics from "../.agents/skills/spec-pivot/assets/lean"
 
 /-- 抽象モデル（正規仕様）。 -/
 @[default_target] lean_lib Spec
@@ -50,7 +50,7 @@ require langSemantics from "../.agents/skills/port-lang/assets/lean"
   root := `Tools.ObligationCheck
   supportInterpreter := true
 
-/-- 全宣言がモジュール名の下にあることの検査（port-lang の `Trace.Layout`）。 -/
+/-- 全宣言がモジュール名の下にあることの検査（spec-pivot の `Trace.Layout`）。 -/
 @[default_target] lean_exe «layout-check» where
   root := `Tools.LayoutCheck
   supportInterpreter := true

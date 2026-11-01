@@ -78,9 +78,9 @@ Chosen option: "Lean `TargetModel` から Verus の写しを生成し、Verus �
   * 手で編集してはならない。
   * 生成物はコミットする。CI で再生成し、差分が無いことを確認する。
   * 生成器は `lean/Tools/` に置く（[backlog d77c](../backlog/d77c-verus-mirror-generator.md)）。
-  * 生成器の入力は、`TargetModel` のうち `TargetModel.Adapter.*` を除いた公開定義である。生成器が受け付けるのは、書き方の部分集合だけである。部分集合は [port-lang/lean/rules.md](../../.agents/skills/port-lang/references/docs/lang/lean/rules.md#書き方) に一覧する。入力に部分集合の外の定義があれば、生成器は失敗しなければならない。
+  * 生成器の入力は、`TargetModel` のうち `TargetModel.Adapter.*` を除いた公開定義である。生成器が受け付けるのは、書き方の部分集合だけである。部分集合は [spec-pivot/lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#書き方) に一覧する。入力に部分集合の外の定義があれば、生成器は失敗しなければならない。
   * 生成器は、各操作の事前条件を写した `pre_<操作>` の spec 関数も出力する。各 `@[target]` の実行関数は、`requires pre_<操作>(..)` と `ensures r == model::<操作>(..)` を、ちょうどこの形で持たなければならない。この形は CI で検査する（`gen-verus --check-contracts`）。
-  * `LangSemantics.Rust` の各演算の Verus 版は、スキル port-lang の assets（`assets/verus/model_prelude.rs`）に置き、`rust/src/model_prelude.rs` に写す。各定義に `/// trace: models LangSemantics.Rust.… @<Merkle>` を付ける。対応の正しさは信頼の基盤であり、[spec/assurance.md](../spec/assurance.md) に載せる。
+  * `LangSemantics.Rust` の各演算の Verus 版は、スキル spec-pivot の assets（`assets/verus/model_prelude.rs`）に置き、`rust/src/model_prelude.rs` に写す。各定義に `/// trace: models LangSemantics.Rust.… @<Merkle>` を付ける。対応の正しさは信頼の基盤であり、[spec/assurance.md](../spec/assurance.md) に載せる。
 * `rust/src/proof/`: Verus の補題。
 * 業務機能: 純粋な部分と **インメモリのアダプタの状態遷移** は `verus!` の中に置く。`ensures` で `model/` との一致を述べ、Verus で全入力について証明する。インメモリのアダプタの状態を `Mutex` で包む薄い層は、`verus!` の外（`#[verifier::external]`）に置く。
 * DB・ファイル・時計・HTTP のアダプタは、`#[verifier::external]` とする。DB・ファイル・時計の振る舞いは `TargetModel.Adapter.*` に写す（DB は `LangSemantics.Sql` の式で写す）。`Refinement` で、それがポートの契約をリファインすることを証明する（REF-009）。HTTP のアダプタは `TargetModel.Http` に写し、REF-007 で扱う。Rust のアダプタと `TargetModel.Adapter.*` の一致は、次の 2 つで確認する。
@@ -89,7 +89,7 @@ Chosen option: "Lean `TargetModel` から Verus の写しを生成し、Verus �
 * `#[verifier::external]` を付けてよいのは、上の 2 種類（Mutex の層と、DB・ファイル・時計・HTTP のアダプタ）だけである。その一覧を [spec/assurance.md](../spec/assurance.md) に載せる。`assume`・`admit`・`external_body`・`assume_specification`・`external_fn_specification` は、使ってはならない。vstd は信頼の基盤とする。
 * `rust/kani/`: Kani のハーネス。`verus!` の外のコード（変換・JSON・HTTP の接続）を、有界に検査する。
 * `rust/tests/`: 適合テストと、DB・ファイル・HTTP のアダプタの結合テスト（固定フィクスチャ）。
-* 規約は [port-lang/rust/layout.md](../../.agents/skills/port-lang/references/docs/lang/rust/layout.md) に従う。
+* 規約は [spec-pivot/rust/layout.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/layout.md) に従う。
 
 ### 両端の一致の確認（決定論的な手段と限界）
 

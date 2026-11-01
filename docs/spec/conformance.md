@@ -1,7 +1,7 @@
 ---
 type: Specification
 title: "適合テストベクタ（ATRS）"
-description: "ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル port-lang に従う。"
+description: "ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル spec-pivot に従う。"
 tags: [spec, conformance, testing]
 status: draft
 spec_role: meta
@@ -15,7 +15,7 @@ generated:
 
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル port-lang の [conformance.md](../../.agents/skills/port-lang/references/docs/spec/conformance.md) に従う（[ADR dc3a](../decision/dc3a-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
+ディレクトリ構成・ファイル形式・値の表現・期待値の出所は、スキル spec-pivot の [conformance.md](../../.agents/skills/spec-pivot/references/docs/spec/conformance.md) に従う（[ADR dc3a](../decision/dc3a-conformance-test-vectors.md)）。本書は ATRS 固有の事項だけを定める。
 
 ## 機能区分（`<feature>`）
 

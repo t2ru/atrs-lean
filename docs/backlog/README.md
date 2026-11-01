@@ -12,18 +12,18 @@ generated:
 # バックログ
 
 運用は [rules/backlog.md](../rules/backlog.md)。状態は各項目の frontmatter の `state` が正である。
-アプリに依存しないスキル port-lang の作業項目（例: backlog 1ae4・a936）は、[スキルの backlog](../../.agents/skills/port-lang/references/docs/backlog/README.md) にある。下の表の依存の列からはリンクで指す（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
+アプリに依存しないスキル spec-pivot の作業項目（例: backlog 1ae4・a936）は、[スキルの backlog](../../.agents/skills/spec-pivot/references/docs/backlog/README.md) にある。下の表の依存の列からはリンクで指す（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
 
 | ID | 項目 | state | 依存 |
 | --- | --- | --- | --- |
 | be49 | [Lean プロジェクトの雛形と CI](be49-lean-project-scaffold.md) | done | — |
 | a8be | [LangSemantics.Java: Java 基本型の意味論](a8be-lang-semantics-java.md) | done | [be49](be49-lean-project-scaffold.md) |
 | 591d | [Spec: ドメイン型・基本演算・マスタデータ](591d-abstract-domain-types-and-master-data.md) | done | [be49](be49-lean-project-scaffold.md) |
-| 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | done | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
-| bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | done | [25f7](25f7-fare-calculation-both-models.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
-| 0be7 | [空席照会（B1）](0be7-flight-search-usecase.md) | done | [25f7](25f7-fare-calculation-both-models.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
-| aedf | [予約（B0/B2）](aedf-reservation-usecase.md) | todo | [0be7](0be7-flight-search-usecase.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
-| 4e0e | [会員（C1/C2）と入力検証](4e0e-member-usecases-and-input-validation.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [aedf](aedf-reservation-usecase.md), [ffdc](ffdc-trace-tooling.md) |
+| 25f7 | [運賃計算（Spec と SourceModel）](25f7-fare-calculation-both-models.md) | done | [a8be](a8be-lang-semantics-java.md), [591d](591d-abstract-domain-types-and-master-data.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| bbcc | [運賃計算の抽象化証明](bbcc-fare-abstraction-proofs.md) | done | [25f7](25f7-fare-calculation-both-models.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| 0be7 | [空席照会（B1）](0be7-flight-search-usecase.md) | done | [25f7](25f7-fare-calculation-both-models.md), [c7e8](c7e8-lang-semantics-sql.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| aedf | [予約（B0/B2）](aedf-reservation-usecase.md) | todo | [0be7](0be7-flight-search-usecase.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
+| 4e0e | [会員（C1/C2）と入力検証](4e0e-member-usecases-and-input-validation.md) | todo | [591d](591d-abstract-domain-types-and-master-data.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [f18c](f18c-java-oracle-harness.md), [aedf](aedf-reservation-usecase.md), [ffdc](ffdc-trace-tooling.md) |
 | 44f8 | [認証（A1/A2）](44f8-authentication-usecases.md) | todo | [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
 | ac71 | [予約履歴レポート（D1）](ac71-reservation-history-report.md) | todo | [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [f18c](f18c-java-oracle-harness.md), [ffdc](ffdc-trace-tooling.md) |
 | 4b0e | [Rust: インメモリアダプタとシードデータ](4b0e-in-memory-adapters-and-seed-data.md) | todo | [9c1b](9c1b-rust-usecases-core.md), [ffdc](ffdc-trace-tooling.md) |
@@ -32,18 +32,18 @@ generated:
 | a89e | [Rust: HTTP 契約アダプタ](a89e-http-contract-adapter.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [f18c](f18c-java-oracle-harness.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 31da | [第二言語での移植試行](31da-second-language-portability-pilot.md) | dropped | [a8ef](a8ef-conformance-vector-format-and-generator.md) |
 | c7e8 | [LangSemantics.Sql: SQL（PostgreSQL 部分集合）の意味論](c7e8-lang-semantics-sql.md) | done | [be49](be49-lean-project-scaffold.md) |
-| ddbd | [OKF バンドルとリンクの検査](ddbd-okf-bundle-lint.md) | done | [be49](be49-lean-project-scaffold.md), [a49c](../../.agents/skills/port-lang/references/docs/backlog/a49c-okf-bundle-check-tool.md) |
+| ddbd | [OKF バンドルとリンクの検査](ddbd-okf-bundle-lint.md) | done | [be49](be49-lean-project-scaffold.md), [a49c](../../.agents/skills/spec-pivot/references/docs/backlog/a49c-okf-bundle-check-tool.md) |
 | fb50 | [Rust プロジェクトの雛形、Verus と Kani の併用確認、CI](fb50-rust-project-scaffold.md) | todo | — |
 | ddb4 | [Rust: 運賃計算の移植先ソースと TargetModel の写し](ddb4-rust-spec-mirror-and-fare-core.md) | todo | [fb50](fb50-rust-project-scaffold.md), [eff6](eff6-target-model-fare-and-refinement.md), [d77c](d77c-verus-mirror-generator.md), [ffdc](ffdc-trace-tooling.md) |
 | 9c1b | [Rust: 空席照会・予約・会員・認証・レポートの移植先ソース](9c1b-rust-usecases-core.md) | todo | [ddb4](ddb4-rust-spec-mirror-and-fare-core.md), [26c5](26c5-target-model-usecases-and-refinement.md), [ffdc](ffdc-trace-tooling.md) |
-| eff6 | [TargetModel と Refinement: 運賃計算](eff6-target-model-fare-and-refinement.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [a8ef](a8ef-conformance-vector-format-and-generator.md), [a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
+| eff6 | [TargetModel と Refinement: 運賃計算](eff6-target-model-fare-and-refinement.md) | todo | [25f7](25f7-fare-calculation-both-models.md), [a8ef](a8ef-conformance-vector-format-and-generator.md), [a936](../../.agents/skills/spec-pivot/references/docs/backlog/a936-lang-semantics-rust.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md), [ffdc](ffdc-trace-tooling.md) |
 | 26c5 | [TargetModel と Refinement: 空席照会・予約・会員・認証・レポート](26c5-target-model-usecases-and-refinement.md) | todo | [eff6](eff6-target-model-fare-and-refinement.md), [0be7](0be7-flight-search-usecase.md), [aedf](aedf-reservation-usecase.md), [4e0e](4e0e-member-usecases-and-input-validation.md), [44f8](44f8-authentication-usecases.md), [ac71](ac71-reservation-history-report.md), [ffdc](ffdc-trace-tooling.md) |
 | ffdc | [追跡の道具（tools/trace）](ffdc-trace-tooling.md) | done | [be49](be49-lean-project-scaffold.md), [455f](455f-upstream-submodule-and-inventory.md) |
 | 455f | [上流の submodule 化と版の宣言](455f-upstream-submodule-and-inventory.md) | done | — |
 | 773f | [差分オラクル（新旧 2 版の振る舞い比較）](773f-differential-oracle.md) | todo | [f18c](f18c-java-oracle-harness.md), [455f](455f-upstream-submodule-and-inventory.md) |
-| d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](../../.agents/skills/port-lang/references/docs/backlog/a936-lang-semantics-rust.md) |
+| d77c | [Lean TargetModel から Verus の写しを生成する道具](d77c-verus-mirror-generator.md) | todo | [be49](be49-lean-project-scaffold.md), [a936](../../.agents/skills/spec-pivot/references/docs/backlog/a936-lang-semantics-rust.md) |
 | 9c04 | [Rust: DB・ファイル・時計のアダプタと TargetModel.Adapter](9c04-rust-external-adapters.md) | todo | [4b0e](4b0e-in-memory-adapters-and-seed-data.md), [c7e8](c7e8-lang-semantics-sql.md), [ffdc](ffdc-trace-tooling.md) |
-| f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](../../.agents/skills/port-lang/references/docs/backlog/1ae4-machine-refinement-framework.md) |
+| f7b7 | [リファインメントの空虚化を防ぐ義務と検査](f7b7-refinement-non-vacuity.md) | done | [be49](be49-lean-project-scaffold.md), [1ae4](../../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md) |
 | 0fdf | [Spec の非決定性の選択の型と入口の環境の前提](0fdf-spec-nondet-and-entry-env.md) | done | [591d](591d-abstract-domain-types-and-master-data.md), [f7b7](f7b7-refinement-non-vacuity.md) |
 | ae04 | [名前付きの成分の必要性の義務と検査（G9）](ae04-component-necessity-witness.md) | done | [f7b7](f7b7-refinement-non-vacuity.md) |
 | 0d1a | [名前付きの成分の変異テスト](0d1a-mutation-testing-of-named-components.md) | todo | [bbcc](bbcc-fare-abstraction-proofs.md), [ae04](ae04-component-necessity-witness.md) |
@@ -51,7 +51,7 @@ generated:
 | 38fb | [アプリに依存しない道具・Lean のライブラリ・方法をスキルへ移す](38fb-move-generic-elements-to-skill.md) | done | [114a](114a-gap-attributes-and-trace-in-skill.md) |
 | 114a | [追跡属性をスキルへ移し、ギャップを Lean の属性で表す](114a-gap-attributes-and-trace-in-skill.md) | done | [ffdc](ffdc-trace-tooling.md), [ae04](ae04-component-necessity-witness.md) |
 | 76a6 | [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](76a6-source-side-adequacy-gate.md) | done | [25f7](25f7-fare-calculation-both-models.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
-| 9ed8 | [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](9ed8-atrs-module-namespace-layout.md) | done | [ce23](../../.agents/skills/port-lang/references/docs/backlog/ce23-lean-module-namespace-layout.md) |
+| 9ed8 | [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](9ed8-atrs-module-namespace-layout.md) | done | [ce23](../../.agents/skills/spec-pivot/references/docs/backlog/ce23-lean-module-namespace-layout.md) |
 | cb23 | [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](cb23-adequate-to-preserves-abstracts.md) | done | [76a6](76a6-source-side-adequacy-gate.md), [9ed8](9ed8-atrs-module-namespace-layout.md) |
 
 ## 推奨する着手順
@@ -69,4 +69,4 @@ fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
 原典との照合: f18c → 各機能（aedf・4e0e・44f8・ac71・a89e。bbcc・0be7 の照合は f18c の完了条件に移した）、f18c → 773f
 ```
 
-`*` はスキル port-lang の作業項目である（[スキルの backlog](../../.agents/skills/port-lang/references/docs/backlog/README.md)）。
+`*` はスキル spec-pivot の作業項目である（[スキルの backlog](../../.agents/skills/spec-pivot/references/docs/backlog/README.md)）。

@@ -42,4 +42,4 @@ generated:
 ## 参照
 
 - [ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md), [ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)
-- [refinement.md](../spec/refinement.md), [ports.md](../spec/ports.md), [port-lang/sql/verification.md](../../.agents/skills/port-lang/references/docs/lang/sql/verification.md)
+- [refinement.md](../spec/refinement.md), [ports.md](../spec/ports.md), [spec-pivot/sql/verification.md](../../.agents/skills/spec-pivot/references/docs/lang/sql/verification.md)

@@ -5,7 +5,7 @@ import Abstraction.MasterData.QueryRun
 # Abstraction.MasterData
 
 マスタ・設定・コードリストの参照の証明課題（R・W・C 課題と、R 課題の付帯の義務）。補題・α・差異の述語は下位のモジュールに置く
-（port-lang の `lang/lean/rules.md#証明課題の配置`）。
+（spec-pivot の `lang/lean/rules.md#証明課題の配置`）。
 -/
 
 namespace Abstraction.MasterData

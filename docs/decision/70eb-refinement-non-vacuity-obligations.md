@@ -60,7 +60,7 @@ B メソッドでも同じで、仕様の妥当性は証明の外で確かめる
 
 Chosen option: "選択の像としての `Spec`・環境の固定・標準の貼り合わせ・入口の全域性などの付帯の義務と、検査 TR-G・TR-N・TR-V を課す", because 上の抜け道のうち、機械的に塞げるものをすべて Lean の義務と CI の検査で塞げるため。あわせて、塞げない部分（仕様の妥当性・成分の広さ・活性）を限界として明示できる。
 
-### 義務（Lean: スキル port-lang の `assets/lean/Machine/Adequacy.lean`）
+### 義務（Lean: スキル spec-pivot の `assets/lean/Machine/Adequacy.lean`）
 
 | 対象 | 義務 | Lean | 塞ぐ抜け道 |
 | --- | --- | --- | --- |

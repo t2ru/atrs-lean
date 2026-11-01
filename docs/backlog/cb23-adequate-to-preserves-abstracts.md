@@ -16,13 +16,13 @@ generated:
 ## 目的
 
 義務の束 `Machine.Adequate` は、リファインメントと空虚化を防ぐ義務の一部を混ぜていた。語が主張を表さず、R 課題の主定理と重複し、束の外にも空虚化を防ぐ義務が残っていた。
-これを `(A abstracts B) = (A preserves B) ∧ (B refines A)` の構造に改める（[ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)、[スキルの ADR 6b4b](../../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md)）。
+これを `(A abstracts B) = (A preserves B) ∧ (B refines A)` の構造に改める（[ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)、[スキルの ADR 6b4b](../../.agents/skills/spec-pivot/references/docs/decision/6b4b-preserves-refines-abstracts.md)）。
 
 ## 範囲
 
-- スキル port-lang
+- スキル spec-pivot
   - `Machine.Preserves`（条件付きの成分 `pinned`・`noFault`・`freeFrame`・`stateSafe`・`stateSafeC` を含む）・`Machine.Abstracts` と、その並置・系。モジュールの改名（`Machine.Preserves.Pred`・`Machine.{Machine,Glue,Refines}.Preserves`・`Machine.{Machine,Concrete}.Run`）
-  - B メソッドの証明義務との照合（[architecture.md](../../.agents/skills/port-lang/references/docs/spec/architecture.md#具体機械とリファインメント)）
+  - B メソッドの証明義務との照合（[architecture.md](../../.agents/skills/spec-pivot/references/docs/spec/architecture.md#具体機械とリファインメント)）
   - obligation-check の G6（束の `ch`・`outs` の照合）・GP、`check_obligations.py` の OB-P、`scripts/trace` の `preserves`、検査のフィクスチャ
 - ATRS
   - R 課題ごとの束 `queryPreserves`・`basicFarePreserves`・`farePreserves`・`totalFarePreserves`
@@ -47,5 +47,5 @@ generated:
 ## 参照
 
 - [ADR 91be](../decision/91be-top-level-preserves-refines-abstracts.md)
-- [スキルの ADR 6b4b](../../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md)
+- [スキルの ADR 6b4b](../../.agents/skills/spec-pivot/references/docs/decision/6b4b-preserves-refines-abstracts.md)
 - [backlog 76a6](76a6-source-side-adequacy-gate.md)、[backlog 9ed8](9ed8-atrs-module-namespace-layout.md)

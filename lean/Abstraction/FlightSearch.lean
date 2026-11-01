@@ -7,7 +7,7 @@ import Abstraction.FlightSearch.Preserves
 # Abstraction.FlightSearch
 
 空席照会の証明課題（R 課題 ABS-011 と、その付帯の義務・W 課題）。補題・α・差異の述語は下位のモジュールに置く
-（port-lang の `lang/lean/rules.md#証明課題の配置`）。
+（spec-pivot の `lang/lean/rules.md#証明課題の配置`）。
 -/
 
 namespace Abstraction.FlightSearch

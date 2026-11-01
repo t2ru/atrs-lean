@@ -7,7 +7,7 @@ on:
 jobs:
   lean:
     runs-on: ubuntu-latest
-    # SQL の差分実行に使う PostgreSQL（版は trace/upstream.json。設定は port-lang の lang/sql/dialects/postgresql/harness.md）
+    # SQL の差分実行に使う PostgreSQL（版は trace/upstream.json。設定は spec-pivot の lang/sql/dialects/postgresql/harness.md）
     services:
       postgres:
         image: postgres:16.15
@@ -47,19 +47,19 @@ jobs:
             ~/.elan/toolchains
             .lake
             lean/.lake
-            .agents/skills/port-lang/assets/lean/.lake
+            .agents/skills/spec-pivot/assets/lean/.lake
           key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-${{ github.sha }}
           restore-keys: |
             lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-
 
-      - name: Cache Cargo (port-lang scripts/trace)
+      - name: Cache Cargo (spec-pivot scripts/trace)
         uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            .agents/skills/port-lang/scripts/trace/target
-          key: cargo-${{ runner.os }}-${{ hashFiles('.agents/skills/port-lang/scripts/trace/Cargo.lock') }}
+            .agents/skills/spec-pivot/scripts/trace/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('.agents/skills/spec-pivot/scripts/trace/Cargo.lock') }}
           restore-keys: |
             cargo-${{ runner.os }}-
 

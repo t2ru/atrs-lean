@@ -11,7 +11,7 @@ import Refinement
 
 `lake exe trace-dump [--module <M>]… [--root <R>]…`
 
-全定義の層・追跡属性・Merkle ハッシュ・参照を JSON で標準出力へ書く（port-lang の `lang/lean/trace-attributes.md`）。
+全定義の層・追跡属性・Merkle ハッシュ・参照を JSON で標準出力へ書く（spec-pivot の `lang/lean/trace-attributes.md`）。
 
 - 既定では、モデルの全モジュール（`Machine`, `Spec`, `SourceModel`, `Abstraction`, `TargetModel`, `Refinement`）を読む。
   `--module` を与えると、そのモジュールだけを読む。
