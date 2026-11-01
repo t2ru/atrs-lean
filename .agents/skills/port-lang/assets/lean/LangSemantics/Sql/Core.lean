@@ -55,6 +55,10 @@ def holds : Truth → Bool
 
 @[simp] theorem holds_ofBool (b : Bool) : (ofBool b).holds = b := by cases b <;> rfl
 
+/-- `OR` の採否は、両方の採否の論理和（`UNKNOWN` は偽として扱う）。 -/
+@[simp] theorem holds_or (a b : Truth) : (a.or b).holds = (a.holds || b.holds) := by
+  cases a <;> cases b <;> rfl
+
 end Truth
 
 /-- 文字列の照合順序（方言・設定のパラメータ）。 -/
@@ -95,6 +99,12 @@ theorem SqlValue.eq_int_holds (coll : Collation) (a b : Int) :
   simp only [SqlValue.eq, SqlValue.compareWith, SqlValue.cmp, Truth.holds_ofBool]
   rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, Int.compare_eq_eq]
 
+/-- 日付の等号の採否は、通算日数の等しさ。 -/
+theorem SqlValue.eq_date_holds (coll : Collation) (a b : Int) :
+    (SqlValue.eq coll (.date a) (.date b)).holds = (a == b) := by
+  simp only [SqlValue.eq, SqlValue.compareWith, SqlValue.cmp, Truth.holds_ofBool]
+  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, Int.compare_eq_eq]
+
 /-- `x BETWEEN lo AND hi` ≡ `x >= lo AND x <= hi`。 -/
 def between (coll : Collation) (x lo hi : SqlValue) : Truth :=
   (SqlValue.le coll lo x).and (SqlValue.le coll x hi)
@@ -102,6 +112,20 @@ def between (coll : Collation) (x lo hi : SqlValue) : Truth :=
 /-- `x IN (v1, …)`。一致が無く NULL を含めば `UNKNOWN`。 -/
 def inList (coll : Collation) (x : SqlValue) (vs : List SqlValue) : Truth :=
   vs.foldl (fun acc v => acc.or (SqlValue.eq coll x v)) .false
+
+/-- 符号位置の照合で、文字列の `IN` の採否は、列にその文字列があるか。 -/
+theorem inList_text_holds (a : String) (vs : List String) :
+    (inList Collation.codepoint (.text a) (vs.map .text)).holds = vs.contains a := by
+  unfold inList
+  suffices h : ∀ acc : Truth, ((vs.map SqlValue.text).foldl (fun acc v => acc.or (SqlValue.eq Collation.codepoint (.text a) v)) acc).holds =
+      (acc.holds || vs.contains a) by
+    rw [h]; rfl
+  induction vs with
+  | nil => intro acc; simp
+  | cons v vs ih =>
+    intro acc
+    simp only [List.map_cons, List.foldl_cons, ih, Truth.holds_or, SqlValue.eq_text_holds, List.contains_cons]
+    rw [Bool.or_assoc]
 
 /-- `x IS NULL`。 -/
 def isNull (x : SqlValue) : Truth := Truth.ofBool (x == .null)
