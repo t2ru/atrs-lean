@@ -144,7 +144,7 @@ def sourceOps (fx : Fixtures) : Except String (List (String × Op)) := do
       let t ← jdate (← getStr i "today")
       let ic : SourceModel.FlightSearch.SearchInput :=
         { db, config := cfg, today := t, sharedClock := (t, t), criteria := some (← srcCriteria (← getObjVal i "criteria")),
-          groupingSeparator := ',' }
+          formatSymbols := LangSemantics.Java.DecimalFormat.Symbols.ascii }
       match SourceModel.FlightSearch.runSearchFlight fd ic (SourceModel.MasterQuery.standardOrder db)
           SourceModel.Repository.Flight.standardSort with
       | .ok vs => return .arr (vs.map srcInfoJson).toArray

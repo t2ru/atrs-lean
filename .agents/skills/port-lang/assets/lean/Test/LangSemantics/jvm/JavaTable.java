@@ -50,6 +50,13 @@ public class JavaTable {
         return "'" + (c == '\'' ? "\\'" : String.valueOf(c)) + "'";
     }
 
+    /** Lean の文字リテラル（エスケープは lit と同じ規則）。 */
+    static String charLit(char c) {
+        if (c == '\'' || c == '\\') return "'\\" + c + "'";
+        if (c < 0x20 || c == 0x7f) return String.format("'\\x%02x'", (int) c);
+        return "'" + c + "'";
+    }
+
     static String intLit(long v) { return v < 0 ? "(" + v + ")" : String.valueOf(v); }
 
     static String bits(double d) {
@@ -140,6 +147,19 @@ public class JavaTable {
         long[] ns = {0, 1, 12, 123, 1234, 12345, 123456, 1234567, 20600, 18600, 2147483647L, -1, -1234, -2147483648L};
         line("-- new DecimalFormat(\"###,###\").format(n)（Locale.JAPAN。区切り文字 ','）");
         for (long n : ns) line("#guard formatGrouped ',' " + intLit(n) + " == " + lit(f.format(n)));
+        // 記号（区切り文字・数字の 0・負の接頭辞）を JVM のロケールから取る。負の接頭辞は format(-1) から「1」を除いたもの
+        String[] tags = {"ja-JP", "de-DE", "fr-FR", "th-TH-u-nu-thai", "ar-EG", "fa-IR"};
+        long[] ms = {0, 7, 1234, 20600, 2147483647L, -1, -1234};
+        for (String tag : tags) {
+            DecimalFormatSymbols sy = DecimalFormatSymbols.getInstance(Locale.forLanguageTag(tag));
+            DecimalFormat g = new DecimalFormat("###,###", sy);
+            String one = String.valueOf((char) (sy.getZeroDigit() + 1));
+            String m1 = g.format(-1);
+            String minus = m1.substring(0, m1.length() - one.length());
+            String sym = "⟨" + charLit(sy.getGroupingSeparator()) + ", " + charLit(sy.getZeroDigit()) + ", " + lit(minus) + "⟩";
+            line("-- new DecimalFormat(\"###,###\", DecimalFormatSymbols.getInstance(" + tag + "))");
+            for (long n : ms) line("#guard formatGroupedS " + sym + " " + intLit(n) + " == " + lit(g.format(n)));
+        }
     }
 
     static void localDate() {

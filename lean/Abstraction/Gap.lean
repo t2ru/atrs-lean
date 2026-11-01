@@ -26,7 +26,7 @@ def D001 : Gap where
   id := "D-001"
   kind := .pre
   sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
-  premise := "`dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）"
+  premise := "`dev_D001`（`Abstraction.Fare`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の区間・搭乗クラス・搭乗日に課す（`dev_D001S`）"
   deviations := [``Abstraction.Fare.Alpha.dev_D001, ``Abstraction.Fare.TotalAlpha.dev_D001T,
     ``Abstraction.FlightSearch.Alpha.dev_D001S]
   evidence := .refuted [``Abstraction.Fare.need_D001]
@@ -40,7 +40,7 @@ def D002 : Gap where
   id := "D-002"
   kind := .pre
   sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
-  premise := "`dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）"
+  premise := "`dev_D002`（`Abstraction.Fare`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の基本運賃と、照会の片道・往復の運賃種別のすべての割引率に課す（`dev_D002S`。候補に現れない運賃種別にも課す十分条件）"
   deviations := [``Abstraction.Fare.Alpha.dev_D002, ``Abstraction.Fare.TotalAlpha.dev_D002T,
     ``Abstraction.FlightSearch.Alpha.dev_D002S]
   evidence := .refuted [``Abstraction.Fare.need_D002]
@@ -178,7 +178,7 @@ def D014 : Gap where
   id := "D-014"
   kind := .preConcreteEnv
   sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩]
-  premise := "`dev_D014`: 1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す。空席照会では `dev_D014S`（`TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ）"
+  premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ"
   deviations := [``Abstraction.FlightSearch.Alpha.dev_D014S]
   evidence := .refuted [``Abstraction.FlightSearch.need_D014]
   rTasks := ["ABS-011", "ABS-031", "ABS-041", "ABS-044", "ABS-045"]
@@ -405,13 +405,13 @@ def D032 : Gap where
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
 
 /-- 空白の便名の便マスタが空席照会の結果に現れると、[Source] は `getFlightMaster` の `Assert.hasText` で
-`IllegalArgumentException` を投げる。[Spec] は PRE で除く -/
+`IllegalArgumentException` を投げる。[Spec] は PRE で除く（照会の区間の便マスタに限る） -/
 @[gap_entry]
 def D033 : Gap where
   id := "D-033"
   kind := .outsidePre
   sites := [⟨"空席照会の便マスタの参照", "docs/spec/flight-search.md#事前条件", ""⟩]
-  premise := "PRE `FlightNamesHaveText`（便マスタの便名が空白でない）"
+  premise := "PRE `FlightNamesHaveText`（照会の区間の便マスタの便名が空白でない）"
   evidence := .excludedBy [``Spec.FlightSearch.FlightNamesHaveText]
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
 

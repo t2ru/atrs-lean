@@ -222,8 +222,8 @@ structure TicketSearchService where
   today : JLocalDate
   /-- `TicketSharedServiceImpl` が読む今日の日付（`validateDepatureDate` の今日、`getSearchLimitDate` の今日。D-014） -/
   sharedClock : JLocalDate × JLocalDate
-  /-- 配備の環境: JVM の既定の書式ロケールの 3 桁区切りの文字（`DecimalFormat` が使う。D-032） -/
-  groupingSeparator : Char
+  /-- 配備の環境: JVM の既定の書式ロケールの書式の記号（`DecimalFormat` が使う区切り文字・数字・負の記号。D-032） -/
+  formatSymbols : DecimalFormat.Symbols
   /-- `FlightRepository.findByVacantSeatSearchCriteria` -/
   flightRepository : VacantSeatSearchCriteriaDto → JResult (List Flight)
 
@@ -240,9 +240,9 @@ def createFlightVacantInfo (flight : Flight) : JResult FlightVacantInfoDto := do
 
 /-- `createFlightVacantInfoList(flightList, basicFare)`（private）: 便マスタの出発時刻をキーに `LinkedHashMap` へまとめ、
 各フライトの運賃種別の空席情報を足す。値の列（挿入順）を返す。運賃の書式は `new DecimalFormat("###,###")`
-（区切り文字は既定の書式ロケールによる。配備の環境 `sep` として受ける。D-032）。 -/
+（書式の記号は既定の書式ロケールによる。配備の環境 `sym` として受ける。D-032）。 -/
 @[source "lang:java#java.text.DecimalFormat@java-17", "lang:java#java.util.LinkedHashMap@java-17", gap "D-005", "D-032"]
-def createFlightVacantInfoList (sep : Char) (flightList : List Flight) (basicFare : J32) : JResult (List FlightVacantInfoDto) := do
+def createFlightVacantInfoList (sym : DecimalFormat.Symbols) (flightList : List Flight) (basicFare : J32) : JResult (List FlightVacantInfoDto) := do
   let mut m : JLinkedHashMap (JRef String) FlightVacantInfoDto := {}
   for flight in flightList do
     let fm ← flight.flightMaster.deref "flightMaster"
@@ -253,7 +253,7 @@ def createFlightVacantInfoList (sep : Char) (flightList : List Flight) (basicFar
     let ft ← flight.fareType.deref "fareType"
     let fare ← SourceModel.Fare.calculateFare basicFare (← ft.discountRate.deref "discountRate")
     let info : FareTypeVacantInfoDto :=
-      ⟨ft.fareTypeName, some (DecimalFormat.formatJ32 sep fare), flight.vacantNum⟩
+      ⟨ft.fareTypeName, some (DecimalFormat.formatJ32S sym fare), flight.vacantNum⟩
     -- 原典は、取り出した（または作って入れた）同じオブジェクトを更新する。ここでは更新した値を同じキーで置き直す
     m := m.put departureTime (← vacantInfo.addFareTypeVacantInfo ft.fareTypeCd info)
   return m.entries.map (·.2)
@@ -304,7 +304,7 @@ def searchFlight (svc : TicketSearchService) (searchCriteria : JRef TicketSearch
   let basicFareOfRoute ← route.basicFare.deref "basicFare"
   let basicFare ← SourceModel.Fare.calculateBasicFare svc.ticketSharedService basicFareOfRoute (some boardingClassCd)
     (some depDate)
-  createFlightVacantInfoList svc.groupingSeparator flightList basicFare
+  createFlightVacantInfoList svc.formatSymbols flightList basicFare
 
 /-! ## リポジトリのポートと実行 -/
 
@@ -323,8 +323,8 @@ structure SearchInput where
   /-- `TicketSharedServiceImpl` が読む今日の日付（D-014） -/
   sharedClock : JLocalDate × JLocalDate
   criteria : JRef TicketSearchCriteriaDto
-  /-- 配備の環境: 既定の書式ロケールの 3 桁区切りの文字（D-032） -/
-  groupingSeparator : Char
+  /-- 配備の環境: 既定の書式ロケールの書式の記号（D-032） -/
+  formatSymbols : DecimalFormat.Symbols
   deriving DecidableEq, Repr
 
 /-- 起動時の読み込みと `searchFlight`（マスタの文の並び `mo`、空席照会の文の並べ方 `sortRows` を選んだとき）。
@@ -336,7 +336,7 @@ def runSearchFlight (fd : SourceModel.Repository.Schema.FlightDb) (ic : SearchIn
   let svc : TicketSearchService :=
     { routeProvider := p.route, fareTypeProvider := p.fareType, flightMasterProvider := p.flightMaster,
       boardingClassProvider := p.boardingClass, ticketSharedService := p.shared, limitDay := ic.config.limitDay,
-      today := ic.today, sharedClock := ic.sharedClock, groupingSeparator := ic.groupingSeparator, flightRepository := repositoryOf ic.db fd sortRows }
+      today := ic.today, sharedClock := ic.sharedClock, formatSymbols := ic.formatSymbols, flightRepository := repositoryOf ic.db fd sortRows }
   searchFlight svc ic.criteria
 
 end SourceModel.FlightSearch

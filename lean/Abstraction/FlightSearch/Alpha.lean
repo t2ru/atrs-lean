@@ -209,25 +209,33 @@ def dev_D014S (ic : SourceModel.FlightSearch.SearchInput) : Prop := ic.sharedClo
 
 /-- D-032: 配備の環境の既定の書式ロケールの 3 桁区切りの文字が `,`。 -/
 @[deviation "D-032"]
-def dev_D032 (ic : SourceModel.FlightSearch.SearchInput) : Prop := ic.groupingSeparator = ','
+def dev_D032 (ic : SourceModel.FlightSearch.SearchInput) : Prop :=
+  ic.formatSymbols = LangSemantics.Java.DecimalFormat.Symbols.ascii
 
-/-- D-001（空席照会）: 照会の区間の運賃・搭乗クラス・搭乗日の基本運賃について、`dev_D001` が成り立つ。 -/
+/-- D-001（空席照会）: 搭乗日が照会可能期間の内で、照会の区間があるとき、区間の運賃・搭乗クラス・搭乗日の基本運賃に
+ついて `dev_D001` が成り立つ（基本運賃を計算しない経路には課さない）。 -/
 @[deviation "D-001"]
 def dev_D001S (i : Spec.FlightSearch.SearchInput) : Prop :=
   ∀ r, i.md.routeOf i.criteria.depAirportCd i.criteria.arrAirportCd = some r →
+    Spec.FlightSearch.outOfPeriod i.cfg i.today i.criteria.depDate = false →
     Abstraction.Fare.Alpha.dev_D001 ⟨i.cfg, i.md, r.basicFare, i.criteria.boardingClassCd, i.criteria.depDate⟩
 
-/-- D-002（空席照会）: 照会の基本運賃と、マスタの各運賃種別の割引率について、`dev_D002` が成り立つ
-（候補に現れる運賃種別だけでなく、すべての運賃種別に課す十分条件）。 -/
+/-- D-002（空席照会）: 搭乗日が照会可能期間の内で、照会の区間があるとき、照会の基本運賃と、照会の片道・往復の
+運賃種別（`fareTypesFor`）の割引率について、`dev_D002` が成り立つ。候補に現れない運賃種別（予約可能期間の外・
+フライトの無いもの）にも課す十分条件である。 -/
 @[deviation "D-002"]
 def dev_D002S (i : Spec.FlightSearch.SearchInput) : Prop :=
   ∀ r b, i.md.routeOf i.criteria.depAirportCd i.criteria.arrAirportCd = some r →
+    Spec.FlightSearch.outOfPeriod i.cfg i.today i.criteria.depDate = false →
     Spec.Fare.basicFare i.md r.basicFare i.criteria.boardingClassCd i.criteria.depDate = some b →
-    ∀ ft ∈ i.md.fareTypes, Abstraction.Fare.Alpha.dev_D002 ⟨b, ft.discountRate⟩
+    ∀ ft ∈ i.md.fareTypes, ft.fareTypeCd ∈ fareTypesFor i.criteria.flightType →
+      Abstraction.Fare.Alpha.dev_D002 ⟨b, ft.discountRate⟩
 
 /-! ## enum の名前 -/
 
 theorem fareTypeCdCode_eq (t : FareTypeCd) : SourceModel.Model.fareTypeCdCode t = t.toCode := by cases t <;> rfl
+
+theorem fareTypeCdName_eq (t : FareTypeCd) : SourceModel.Model.fareTypeCdName t = t.toCode := by cases t <;> rfl
 
 theorem boardingClassCdName_eq (b : BoardingClassCd) : SourceModel.Model.boardingClassCdName b = b.toCode := by
   cases b <;> rfl

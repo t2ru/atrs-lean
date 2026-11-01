@@ -9,6 +9,7 @@
   * 差異 D-033（PRE の外）を登録した。D-014・D-032 を具体側の入力の述語にし、偽を証明済みにした（[spec/abstraction.md](spec/abstraction.md#既知差異) は生成）。
   * `trace/features.json` の FlightSearch を 0be7 の範囲に絞った。
   * スキルの版を 0.17 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
+  * 敵対的レビューの指摘に対応した（[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md#more-information)）。D-032 の環境を書式の記号の組にし、ABS-114 の証人を単調な Clock にし、`dev_D001S`・`dev_D002S` と `FlightNamesHaveText` を絞った。
 
 * **Creation**: [ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md) の第 2 段の設計を決め、完了した。
   * シード 00250 の生成器 `tools/conformance/flight_seed.py` と、生成物 `Spec.Seed.Flight`・`SourceModel.Repository.FlightSeed` を置いた。

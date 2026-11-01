@@ -18,9 +18,9 @@ open Machine Spec Spec.EnvPre Spec.FlightSearch Spec.Prim.Text Abstraction.Fligh
 def envFS (i : Spec.FlightSearch.SearchInput) : Prop :=
   masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
     hasText i.criteria.depAirportCd.val = true ∧ hasText i.criteria.arrAirportCd.val = true ∧
-    FlightNamesHaveText i.md ∧ dev_D001S i ∧ dev_D002S i
+    FlightNamesHaveText i.md i.criteria ∧ dev_D001S i ∧ dev_D002S i
 
-theorem aiS_icFS_comma : aiS (icFS ',') = some iaFS := by decide
+theorem aiS_icFS_comma : aiS (icFS LangSemantics.Java.DecimalFormat.Symbols.ascii) = some iaFS := by decide
 
 theorem envFS_iaFS : envFS iaFS := by
   obtain ⟨hc, hv, hb, hd, ha, hn⟩ := iaFS_pre

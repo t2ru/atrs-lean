@@ -154,10 +154,10 @@ def group (depName arrName : String) (b : Nat) (cs : List Candidate) : List Flig
     insertOrdered gs key g
   (cs.foldl step []).map (·.2)
 
-/-- 空席照会 `searchFlight`。`flights` はフライトの全件（`World.findAll`）。
+/-- 空席照会 `searchFlight`。`flights` はフライトの全件（`World.findAll`）。今日の日付 `today` は 1 回だけ読んだ値（D-014）。
 結果が `none` なのは PRE の外（MD-3 か `World.RefMaster` が破れ、照会の区間の空港名か搭乗クラスがマスタに無い）
 のときだけである。 -/
-@[spec_doc "docs/spec/flight-search.md#searchflight", gap "D-001", "D-002"]
+@[spec_doc "docs/spec/flight-search.md#searchflight", gap "D-001", "D-002", "D-014"]
 def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) (flights : List Flight) :
     Option (Except AtrsError (List FlightVacantInfo)) :=
   match validateDepartureDate cfg today c.depDate with
@@ -192,17 +192,17 @@ structure SearchInput where
 /-- 空席照会の出力。 -/
 abbrev SearchOutput := Except AtrsError (List FlightVacantInfo)
 
-/-- 便マスタの便名が空白でない（[Source] の `FlightMasterProvider.getFlightMaster` の `Assert.hasText` に当たる）。
-空白の便名の便マスタが照会の結果に現れると、[Source] は `IllegalArgumentException` を投げる（D-033。PRE の外）。 -/
+/-- 照会の区間の便マスタの便名が空白でない（[Source] の `FlightMasterProvider.getFlightMaster` の `Assert.hasText` に
+当たる）。空白の便名の便マスタが照会の結果に現れると、[Source] は `IllegalArgumentException` を投げる（D-033。PRE の外）。
+結果に現れうるのは照会の区間の便マスタだけなので、その便マスタに限って課す。 -/
 @[spec_doc "docs/spec/flight-search.md#事前条件", gap "D-033"]
-def FlightNamesHaveText (md : MasterData) : Prop :=
-  ∀ fm ∈ md.flightMasters, Text.hasText fm.flightName.val = true
-
-instance (md : MasterData) : Decidable (FlightNamesHaveText md) := by unfold FlightNamesHaveText; infer_instance
+def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
+  ∀ r, md.routeOf c.depAirportCd c.arrAirportCd = some r →
+    ∀ fm ∈ md.flightMasters, fm.routeNo = r.routeNo → Text.hasText fm.flightName.val = true
 
 /-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
-照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件で、入力検証を通過していれば
-満たされる。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
+照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件である（照会条件の条件は、
+入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
 （搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 0b0c）。
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
@@ -210,7 +210,7 @@ instance (md : MasterData) : Decidable (FlightNamesHaveText md) := by unfold Fli
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
     Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true ∧
-    FlightNamesHaveText i.md
+    FlightNamesHaveText i.md i.criteria
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
 def answer (w : Port.World) (i : SearchInput) : SearchOutput :=

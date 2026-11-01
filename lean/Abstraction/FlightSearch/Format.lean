@@ -34,6 +34,10 @@ theorem formatJ32_comma {x : LangSemantics.Java.Int.J32} {n : Nat} (h : x.val = 
     formatJ32 ',' x = fmtYen n := by
   simp only [formatJ32, h, formatGrouped_comma]
 
+theorem formatJ32S_ascii {x : LangSemantics.Java.Int.J32} {n : Nat} (h : x.val = (n : Int)) :
+    formatJ32S Symbols.ascii x = fmtYen n := by
+  simp only [formatJ32S, Symbols.ascii, formatGroupedS_ascii, h, formatGrouped_comma]
+
 /-- 時分の 4 桁の文字列（`HHmm`）。 -/
 def hhmm (h m : Nat) : String := padNat 2 h ++ padNat 2 m
 

@@ -136,7 +136,9 @@ def env : Spec.Input → Prop := sumPred envMQ (sumPred envBF (sumPred envF (sum
 
 /-- トップレベルの主定理（A preserves B）: 実装済みの範囲で、[Spec] は [Source] の振る舞いを空虚にせず保つ
 （`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提の必要性）。R 課題ごとの束 `*Preserves` を並置して示し、
-`Refines` を使わない。 -/
+`Refines` を使わない。並置 `Preserves.sum` は全 R 課題に共通の 6 成分の束を並べるので、基底が `ofChoice` の R 課題（ABS-011）は、
+条件付きの成分（`pinned`・`noFault`・`freeFrame`・`stateSafeC`）を忘れた束 `searchPreserves.core` を並置する。条件付きの成分は、
+機能の束 `Abstraction.FlightSearch.searchPreserves` で示す。 -/
 theorem preserves :
     Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env :=
   (queryPreserves.sum (basicFarePreserves.sum (farePreserves.sum
