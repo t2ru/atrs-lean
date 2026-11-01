@@ -1,8 +1,18 @@
 name: lean
 
+# 検査の層と実行の時点は docs/rules/checks.md。PR は選択実行（常時の段と、変更に関係する変更時の段）、
+# main への push・週次・手動は全数（mise run ci）。PR のブランチへの push は pull_request だけで検査する（二重に起動しない）。
 on:
-  push:
   pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "41 17 * * 6"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   lean:
@@ -27,9 +37,11 @@ jobs:
       # mise.toml のタスクと道具（uv）を信頼する（ADR 44a0）
       MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
     steps:
+      # 選択実行は merge-base からの変更を見るため、履歴をすべて取る
       - uses: actions/checkout@v4
         with:
           submodules: true
+          fetch-depth: 0
 
       - name: Set up Java (upstream uses Java 17)
         uses: actions/setup-java@v4
@@ -90,13 +102,15 @@ jobs:
           restore-keys: |
             cargo-${{ runner.os }}-
 
-      - name: Lean checks
-        # [mem] の行は、20 秒ごとのメモリの使用量（runner は 8 GB。止まったときの診断のため）
+      - name: Checks (selected by the changes on PRs, all otherwise)
+        env:
+          CHECK_BASE: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}
+        # [mem] の行は、20 秒ごとのメモリの使用量（runner が止まったときの診断のため）
         run: |
           ( while sleep 20; do echo "[mem] $(date -u +%T) $(free -m | awk 'NR==2{print $3 " / " $2 " MB used"}')"; done ) &
           mon=$!
           trap 'kill $mon 2> /dev/null || true' EXIT
-          mise run ci
+          if [ -n "$CHECK_BASE" ]; then mise run check; else mise run ci; fi
 
       # 計測だけの段（スキルの ADR 89f2 の確認）。layout-check を単独で 1 秒ごとの [mem] とともに動かす。数値を記録したら外す
       - name: Layout-check peak memory (diagnostic, ADR 89f2)

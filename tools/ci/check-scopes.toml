@@ -1,0 +1,88 @@
+# 検査の層と、変更時の段の範囲（docs/rules/checks.md、ADR は同規約から参照）。tools/ci/select_checks.py が読む。
+#
+# - 常時の段は mise.toml の `ci:fast`、全数は `ci`。`ci` の depends は `ci:fast` の depends と下の [scopes] の段に、重ならずに分かれる
+#   （select_checks.py check-config が検査する。段を足したら、どちらかに必ず入れる）。
+# - [scopes."<段>"] は、その段を実行する変更の範囲。変更されたファイルが paths の glob か、lean_roots の import の閉包に当たれば実行する。
+#   - paths: リポジトリからの相対の glob。`**` は任意の深さ（0 段を含む）、`*` と `?` は 1 段の中だけに当たる。
+#   - lean_roots: Lean のモジュール名。`import` をたどった閉包のファイル（lean_dirs の下にあるもの）を範囲に加える。
+#   範囲は保守的に書く（迷えば広く）。すべての glob とモジュールは、実在のファイルに当たらなければならない（check-config）。
+# - [full] の paths に当たる変更があれば、全数を実行する（検査の設定・道具の版・上流の版の変更）。
+
+lean_dirs = ["lean", ".agents/skills/spec-pivot/assets/lean"]
+
+[full]
+paths = [
+  "mise.toml",
+  "tools/ci/check-scopes.toml",
+  "tools/ci/select_checks.py",
+  ".github/workflows/**",
+  "**/lean-toolchain",
+  "**/lakefile.lean",
+  "**/lake-manifest.json",
+  ".gitmodules",
+  "upstream/atrs",
+  "trace/upstream.json",
+  "pyproject.toml",
+  "uv.lock",
+  ".python-version",
+]
+
+# 長い検査（lean/Tests/Long.lean）: 暦日の全日・double の総当たり・シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果
+[scopes."lean:test-long"]
+lean_roots = ["Tests.LongMain"]
+paths = [
+  "conformance/shared/master-data/**",
+  "conformance/shared/flight-search/**",
+  "conformance/source-model/flight-search/**",
+  "conformance/sql/**",
+  "conformance/fixtures/**",
+]
+
+# 宣言がモジュール名の下にあること（ATRS の Lean の全宣言が対象）
+[scopes."lean:layout-check"]
+paths = ["lean/**/*.lean"]
+lean_roots = ["Trace.Layout"]
+
+# スキルの assets/lean の宣言の配置（assets の全宣言が対象）
+[scopes."assets:layout-check"]
+paths = [".agents/skills/spec-pivot/assets/lean/**/*.lean"]
+
+# trace-dump・obligation-check・layout-check の処理のフィクスチャ
+[scopes."assets:trace-test"]
+paths = [".agents/skills/spec-pivot/assets/lean/Test/Trace/**"]
+lean_roots = ["Test.Trace.Main"]
+
+# 追跡の CLI（Rust）の自己テスト
+[scopes."trace:self-test"]
+paths = [".agents/skills/spec-pivot/scripts/trace/**"]
+
+# SQL の言語意味論の、PostgreSQL との突き合わせ表の再生成
+[scopes."ci:pg-table"]
+paths = [
+  ".agents/skills/spec-pivot/assets/lean/Test/LangSemantics/pg/**",
+  ".agents/skills/spec-pivot/assets/lean/Test/LangSemantics/PostgresqlDb.lean",
+  ".agents/skills/spec-pivot/scripts/ci/pg_table.sh",
+  ".agents/skills/spec-pivot/scripts/ci/with_postgres.sh",
+]
+
+# マスタ・コードリスト・空席照会の SQL の、PostgreSQL での差分実行の結果の再生成
+[scopes."ci:master-sql"]
+paths = [
+  "tools/ci/master_sql.sh",
+  "tools/conformance/**",
+  "conformance/sql/**",
+  "conformance/fixtures/**",
+  ".agents/skills/spec-pivot/scripts/ci/with_postgres.sh",
+]
+
+# Java の原典実行（ドメイン層・HTTP レベル）
+[scopes."ci:java-origin-run"]
+paths = [
+  "tools/ci/java_origin_run.sh",
+  "tools/origin-run/**",
+  ".agents/skills/spec-pivot/assets/java/conformance-kit/**",
+  ".agents/skills/spec-pivot/scripts/ci/with_postgres.sh",
+  "conformance/shared/**",
+  "conformance/source-model/**",
+  "conformance/fixtures/**",
+]

@@ -6,7 +6,7 @@ tags: [rules, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:40:00+09:00
+  at: 2026-11-01T22:30:00+09:00
 ---
 
 # 作業規約（rules）
@@ -24,6 +24,7 @@ generated:
 | [decision-records.md](decision-records.md) | `docs/decision/` | MADR 4.0（スキル work-records）、置き場所、いつ ADR を書くか |
 | [atrs-porting.md](atrs-porting.md) | ATRS の移植 | スキル spec-pivot の適用: 言語ペア、配置、機能名、型、必須の依存、上流の版、採った値 |
 | [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい（draft で作り、人間のレビューを求める段で ready にする） |
+| [checks.md](checks.md) | 検査（`mise.toml`・CI） | 常時の段・変更時の段・全数の層と、コミット前・PR・main・定期・節目に実行するもの。長い段は関係する変更があったときだけ |
 | [backlog.md](backlog.md) | `docs/backlog/` | 項目形式・状態（スキル work-records）、置き場所、完了の定義（DoD） |
 
 ## 優先順位
