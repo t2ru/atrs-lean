@@ -114,7 +114,7 @@ def getPeakTime (p : PeakTimeProvider) (depLocalDate : JRef JLocalDate) : JResul
     | pt :: rest => do
       let s ← pt.peakStartDate.deref "peakStartDate"
       let e ← pt.peakEndDate.deref "peakEndDate"
-      if !(d.isBefore s || d.isAfter e) then pure (some pt) else go rest
+      if java! !(d.isBefore(s) || d.isAfter(e)) then pure (some pt) else go rest
   go p.peakTimeList
 
 /-- `getFareType`: 無ければ `null`。 -/

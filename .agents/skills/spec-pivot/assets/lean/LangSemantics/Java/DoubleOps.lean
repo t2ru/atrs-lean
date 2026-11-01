@@ -19,6 +19,8 @@ def jdadd (a b : JDouble) : JDouble := JDouble.add a b
 def jdsub (a b : JDouble) : JDouble := JDouble.sub a b
 def jdmul (a b : JDouble) : JDouble := JDouble.mul a b
 def jddiv (a b : JDouble) : JDouble := JDouble.div a b
+/-- `-a`（double）。 -/
+def jdneg (a : JDouble) : JDouble := JDouble.neg a
 /-- `(int) d`。 -/
 def jd2i (d : JDouble) : J32 := JDouble.toJ32 d
 /-- `(long) d`。 -/

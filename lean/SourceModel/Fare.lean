@@ -38,14 +38,14 @@ def getMultiplicationRatio (svc : TicketSharedService) (departureDate : JRef JLo
   gap "D-001", "D-030"]
 def calculateBasicFare (svc : TicketSharedService) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.Model.BoardingClassCd)
     (depDate : JRef JLocalDate) : JResult J32 := do
-  jAssert (decide (basicFareOfRoute.val ≥ 0)) "basicFareOfRoute must be 0 or higher."
+  jAssert (java! basicFareOfRoute >= 0) "basicFareOfRoute must be 0 or higher."
   jAssert boardingClassCd.isSome "boardingClassCd must not null."
   jAssert depDate.isSome "depDate must not null."
   let boardingClass ← (← getBoardingClass svc.boardingClassProvider boardingClassCd).deref "boardingClass"
   let boardingClassFare ← boardingClass.extraCharge.deref "extraCharge"
   let multiplicationRatio ← getMultiplicationRatio svc depDate
-  return jd2i (jdmul (jd (j32add basicFareOfRoute boardingClassFare).val)
-    (jdmul (jd multiplicationRatio.val) (jdLit "0.01")))
+  let basicFare := java! (int) ((basicFareOfRoute + boardingClassFare) * (multiplicationRatio * 0.01))
+  return basicFare
 
 /-- `FareUtil.ceilFare`: `new BigDecimal(fare).setScale(-2, RoundingMode.UP).intValue()`（0 から遠ざかる向きの切上げ）。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.util.FareUtil.CEIL_FARE_SCALE@cd0475f0dda7e5e1",
@@ -56,10 +56,10 @@ def ceilFare (fare : J32) : J32 := bdCeilHundredUp fare
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)@1e12eb714e2bc395",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e", gap "D-002"]
 def calculateFare (basicFare discountRate : J32) : JResult J32 := do
-  jAssert (decide (basicFare.val ≥ 0)) "basicFare must be 0 or higher."
-  jAssert (decide (discountRate.val ≥ 0)) "discountRate must be 0 or higher."
-  jAssert (decide (discountRate.val ≤ 100)) "discountRate must be 100 or less."
-  let fare := jd2i (jdmul (jd basicFare.val) (jdsub (jd 1) (jdmul (jd discountRate.val) (jdLit "0.01"))))
+  jAssert (java! basicFare >= 0) "basicFare must be 0 or higher."
+  jAssert (java! discountRate >= 0) "discountRate must be 0 or higher."
+  jAssert (java! discountRate <= 100) "discountRate must be 100 or less."
+  let fare := java! (int) (basicFare * (1 - (discountRate * 0.01)))
   return ceilFare fare
 
 /-- `TicketReserveServiceImpl` が受ける設定（`@Value`）と、使うサービス。 -/
@@ -90,8 +90,8 @@ def calculateTotalFare (svc : TicketReserveService) (flightList : JRef (List (JR
       | some p => pure p
       | none => throw (.illegalArgument "passenger must not null.")
     let age ← passenger.age.deref "age"
-    if age.val < svc.adultPassengerMinAge.val then childNum := j32add childNum (J32.ofInt 1)
-  let adultNum := j32sub (J32.ofInt passengers.length) childNum
+    if java! age < svc.adultPassengerMinAge then childNum := java! childNum + 1
+  let adultNum := java! ⟪J32.ofInt passengers.length⟫ - childNum
   let mut totalFare : J32 := J32.ofInt 0
   for flight in flights do
     let flight ← match flight with
@@ -105,9 +105,8 @@ def calculateTotalFare (svc : TicketReserveService) (flightList : JRef (List (JR
     let fareType ← flight.fareType.deref "fareType"
     let discountRate ← fareType.discountRate.deref "discountRate"
     let boardingFare ← calculateFare baseFare discountRate
-    let childPart ← jdiv32 (j32mul baseFare (j32sub svc.childFareRate discountRate)) (J32.ofInt 100)
-    let fare := j32add (j32mul boardingFare adultNum) (j32mul childPart childNum)
-    totalFare := j32add totalFare fare
+    let fare ← java! boardingFare * adultNum + baseFare * (svc.childFareRate - discountRate) / 100 * childNum
+    totalFare := java! totalFare + fare
   return ceilFare totalFare
 
 /-- D-002 の例: 基本運賃 1430 円・割引率 30% で 1000 円（[Spec] は 1100 円）。 -/
