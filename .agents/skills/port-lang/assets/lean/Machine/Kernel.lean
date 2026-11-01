@@ -11,6 +11,7 @@ import Machine.Preserves.Pred
   obligation-check の G7 は、この形を `@[kernel]` の定数と同じく受け付ける。
 - `kernelIs_undefOrEq`: 定義域の上で単射な部分写像の核は `undefOrEq`。
 - `inj_of_kernel`: 核の定理から、定義域の上の単射性を取り出す。
+- `mapM_inj`: 定義域の上で単射な部分写像を列の各要素に施す `List.mapM` も、定義域の上で単射（表を行ごとに写す α の核に使う）。
 -/
 
 namespace Machine.Kernel
@@ -38,5 +39,25 @@ theorem inj_of_kernel {α β : Type} {f : α → Option β} (hk : KernelIs f (un
   rcases (hk x y).mp (hx.trans hy.symm) with ⟨h, _⟩ | h
   · rw [hx] at h; cases h
   · exact h
+
+/-- 定義域の上で単射な部分写像を列の各要素に施す `List.mapM` も、定義域の上で単射。 -/
+theorem mapM_inj {α β : Type} {f : α → Option β} (h : ∀ x y b, f x = some b → f y = some b → x = y) :
+    ∀ {xs ys : List α} {bs : List β}, xs.mapM f = some bs → ys.mapM f = some bs → xs = ys
+  | [], [], _, _, _ => rfl
+  | [], _ :: _, bs, hx, hy => by
+    simp only [List.mapM_nil, List.mapM_cons, Option.pure_def, Option.some.injEq, Option.bind_eq_bind,
+      Option.bind_eq_some_iff] at hx hy
+    obtain ⟨_, _, _, _, rfl⟩ := hy; cases hx
+  | _ :: _, [], bs, hx, hy => by
+    simp only [List.mapM_nil, List.mapM_cons, Option.pure_def, Option.some.injEq, Option.bind_eq_bind,
+      Option.bind_eq_some_iff] at hx hy
+    obtain ⟨_, _, _, _, rfl⟩ := hx; cases hy
+  | x :: xs, y :: ys, bs, hx, hy => by
+    simp only [List.mapM_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_eq_some_iff,
+      Option.some.injEq] at hx hy
+    obtain ⟨b, hb, bs', hbs', rfl⟩ := hx
+    obtain ⟨c, hc, cs', hcs', he⟩ := hy
+    obtain ⟨rfl, rfl⟩ := List.cons.inj he
+    rw [h x y _ hb hc, mapM_inj h hbs' hcs']
 
 end Machine.Kernel
