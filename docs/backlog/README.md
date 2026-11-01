@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:40:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # バックログ
@@ -56,6 +56,7 @@ generated:
 | cb23 | [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](cb23-adequate-to-preserves-abstracts.md) | done | [76a6](76a6-source-side-adequacy-gate.md), [9ed8](9ed8-atrs-module-namespace-layout.md) |
 | 2ba8 | [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](2ba8-split-okf-and-records-skills.md) | done | [ddbd](ddbd-okf-bundle-lint.md) |
 | 7d08 | [検査の層を分け、長い段を関係する変更があったときだけ実行する](7d08-change-scoped-checks.md) | done | — |
+| ceb8 | [差異の候補を HTTP レベルの原典実行で確かめる](ceb8-origin-run-checks-for-gap-candidates.md) | todo | [f18c](f18c-java-oracle-harness.md) |
 
 ## 推奨する着手順
 

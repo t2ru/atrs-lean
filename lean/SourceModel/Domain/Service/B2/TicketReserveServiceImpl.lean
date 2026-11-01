@@ -39,7 +39,7 @@ namespace TicketReserveServiceImpl
 /-- `calculateTotalFare`: 小児の人数を数え、フライトごとに `boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum`
 を左から int で計算して合計し、最後に `FareUtil.ceilFare` で 100 円単位に切り上げる。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)@35bc5d27ed5f2ca9",
-  "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)@ca1a14757ce1cb33", gap "D-003", "D-012"]
+  "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)@ca1a14757ce1cb33", gap "D-003", "D-012", "D-030", "D-035"]
 def calculateTotalFare (svc : TicketReserveServiceImpl) (flightList : JRef (List (JRef Flight)))
     (passengerList : JRef (List (JRef Passenger))) : JResult J32 := do
   let flights ← Assert.notEmptyValue flightList "flightList must not empty."

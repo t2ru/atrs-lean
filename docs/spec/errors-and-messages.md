@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 sources:
   - id: messages
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-web/src/main/resources/i18n/atrs-messages_ja.properties
@@ -53,8 +53,6 @@ sources:
 | --- | --- | --- |
 | `NotNull`, `NotEmpty` | {0}を入力してください。 | 表示名 |
 | `NotNull`（選択項目: `gender`, `repGender`, `boardingClassCd`, `flightType`, `outwardFlight`, `homewardFlight`） | {0}を選択してください。 | 表示名 |
-
-`NotEmpty` には項目別の文言が無く、選択項目（`depAirportCd`, `arrAirportCd`, `creditTypeCd`, `creditMonth`, `creditYear`）でも「{0}を入力してください。」になる（例「出発空港を入力してください。」）。`ExistInCodeList` は未入力を合格とするので、`NotEmpty` と重ねて報告されることは無い。
 | `Size` | {0} は {2} 文字以上 {1} 文字以下でなければなりません。 | 表示名, max, min |
 | `FixedLength` | {0} は {1} 文字でなければなりません。 | 表示名, n |
 | `Min` | {0}は{1}以上の値を入力してください。 | 表示名, n |
@@ -69,6 +67,8 @@ sources:
 | `typeMismatch`（Integer） | {0}は半角数字ではありません。 | 表示名 |
 | `typeMismatch`（Date） | {0}に正しい日付を入力してください。 | 表示名 |
 | `typeMismatch`（Gender, BoardingClassCd, FlightType） | {0}を選択してください。 | 表示名 |
+
+`NotEmpty` には項目別の文言が無く、選択項目（`depAirportCd`, `arrAirportCd`, `creditTypeCd`, `creditMonth`, `creditYear`）でも「{0}を入力してください。」になる（例「出発空港を入力してください。」）。`ExistInCodeList` は未入力を合格とするので、`NotEmpty` と重ねて報告されることは無い。
 
 REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery.flightType`, `passengerResource.gender`, `selectFlightResource.boardingClassCd`, `ticketReserveResource.repGender`, `ticketReserveResource.flightType`）は「{0}を入力してください。」。
 

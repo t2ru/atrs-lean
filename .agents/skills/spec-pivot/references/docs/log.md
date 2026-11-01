@@ -1,6 +1,8 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR cb1f](decision/cb1f-gap-inventory-procedure.md) で、差異の登録簿の棚卸しの手順と観点 G1〜G9 を [guide/gap-inventory.md](guide/gap-inventory.md) に置き、[guide/workflow.md](guide/workflow.md#未着手の可視化) と `SKILL.md` から参照した。登録簿の R 課題と課題表の差異の列の一致の検査を作業項目 [backlog 937d](backlog/937d-rtasks-task-table-consistency-check.md) にした。スキルの版を 0.24 にした。
+  * 来歴: 適用先 ATRS の ADR f786（差異の棚卸し）。
 * **Creation**: [ADR 89f2](decision/89f2-layout-check-one-process-per-group.md) で、`layout-check`（`Trace.Layout.run`）のモジュールの組を、組ごとに別のプロセス（同じ実行ファイルを `--layout-group <i>` で起動したもの）で判定するようにした。親は環境を読み込まず、結果の JSON を `mergeGroups` で合わせる。メモリの最大は組 1 つ分になる。出力と呼び出しは変えていない（違反は終了コード 1、組の判定の失敗は 2）。スキルの版を 0.23 にした。
   * `Trace.Layout.Result` に範囲のモジュールとその検査数 `modules` を、`Result.collapse`・`GroupOut`・`mergeGroups`・`runGroup`・`runAll` を足し、`Item.toJson`・`Result.merge` を除いた。`trace-test` に合わせ方と JSON の往復の検査を足した。[lang/lean/trace-attributes.md](lang/lean/trace-attributes.md)・[lang/lean/rules.md](lang/lean/rules.md#モジュールと名前空間) を改めた。
   * 来歴: 適用先 ATRS の CI（組を足すと runner がメモリで止まった）。

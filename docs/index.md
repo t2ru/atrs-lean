@@ -76,6 +76,7 @@ okf_version: "0.2"
 * [検査を常時の段・変更時の段・全数に分け、長い段は関係する変更があったときだけ実行する](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) - コミット前と PR の CI では、常時の段（ci:fast）と、変更に関係する変更時の段だけを実行する（mise run check）。CI で 20 秒以上かかる段は変更時の段とし、範囲（パスの glob と Lean の import の閉包）を tools/ci/check-scopes.toml に宣言する。main への push・週次・手動・backlog の完了・版上げでは全数（mise run ci）を実行する。lake test から 20 秒以上かかる節（シードの DB を使う SourceModel の照合と空席照会の SQL の結果、暦日の全日、double の総当たり）を実行ファイル long-tests に分け、CI の push と pull_request の二重起動をやめる。
 * [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
 * [PR は draft で作り、人間のレビューを求める段で ready にする](decision/8bb7-pr-draft-until-review-ready.md) - 自分で作ったブランチの PR は draft で作成し、作業が終わって確認と CI が通り、作成者の側で残る作業が無くなって人間にレビューを求める段になったら、作成者が draft から ready for review に変える。レビューで大きな作業が差し戻されたら draft に戻してよい。マージはプロジェクトオーナーが行う。
+* [SourceModel と Spec の差異の棚卸し: 登録簿の修正、D-034〜D-041 の登録、既存の差異の拡大](decision/f786-gap-inventory-and-registry-fixes.md) - 実装済み（マスタ・運賃・空席照会）と未着手（予約・会員・認証・レポート・HTTP）の全範囲で、上流の Java と Lean のモデル・仕様文書を登録簿 Abstraction.Gap と突き合わせた。誤記・古い記述・印の不足を直し、PRE の外の振る舞い D-034〜D-036、モデル外 D-037、前提型 D-038〜D-041 を登録し、D-006・D-009・D-020・D-030・D-033 と rTasks を広げた。REST の予約の応答の empty の欄は Spec を原典に合わせた。ADR 0b0c の保留 2 件を承認した。
 
 # Specification
 
@@ -143,6 +144,7 @@ okf_version: "0.2"
 * [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](backlog/cb23-adequate-to-preserves-abstracts.md) - 義務の束 Machine.Adequate を、B メソッドのリファインメント Machine.Refines（B refines A）と、空虚化を防ぐ意味的な義務のすべての束 Machine.Preserves（A preserves B。Refines を含まない）、その組 Machine.Abstracts（A abstracts B）に分ける。スキルの定義・検査と、ATRS のトップレベルの主定理・R 課題ごとの束を書き換える。
 * [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](backlog/2ba8-split-okf-and-records-skills.md) - スキル spec-pivot から、移植に関係の無い OKF のバンドルの管理と ADR・backlog の管理を、汎用のスキル okf-bundle・work-records に分け、ATRS の設定と検査を移す。
 * [検査の層を分け、長い段を関係する変更があったときだけ実行する](backlog/7d08-change-scoped-checks.md) - コミット前と PR の CI を、常時の段と変更に関係する長い段だけにし（mise run check）、全数（mise run ci）を main への push・週次・節目に実行する。範囲の宣言と選択の道具、lake test の総当たりの分割、CI の起動の整理、実行の時点の規約を置く。
+* [差異の候補を HTTP レベルの原典実行で確かめる](backlog/ceb8-origin-run-checks-for-gap-candidates.md) - 差異の棚卸し（ADR f786）で保留にした、ライブラリの内部の挙動に拠る差異の候補を、HTTP レベルの Java の原典実行で採取して確かめ、差異・Spec の修正・見送りを判断する。
 
 # Skill
 

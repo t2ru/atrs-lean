@@ -2,6 +2,12 @@
 
 ## 2026-11-01
 
+* **Creation**: [ADR f786](decision/f786-gap-inventory-and-registry-fixes.md) で、[Spec] と [Source] の差異の登録簿（`lean/Abstraction/Gap.lean`）を、実装済みと未着手の全範囲で上流の原典と突き合わせて棚卸しした。
+  * 誤りを直した: D-031 の R 課題（ABS-021 → ABS-031・ABS-041・ABS-045）、D-032 の前提の文（`formatSymbols`）、D-030 の証拠（PRE の述語）、「PRE: MD-3」の誤った注記（`Spec.Fare`・[spec/fare-calculation.md](spec/fare-calculation.md)）、欠けた `@[gap]` の印、仕様文書の D 番号の引用、[spec/assurance.md](spec/assurance.md) の被覆の例、[spec/errors-and-messages.md](spec/errors-and-messages.md) の表。
+  * オーナーの判断で、D-034〜D-036（PRE の外）・D-037（モデル外）・D-038〜D-041（前提型。W 課題 ABS-138〜141）を登録し、D-006・D-009・D-020・D-030・D-033 と R 課題を広げた。REST の予約の応答の `"empty": false` は [Spec] を原典に合わせた（[spec/http-contract.md](spec/http-contract.md#post-apiv1ticket)）。[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md) の保留 2 件を承認した。
+  * [spec/abstraction.md](spec/abstraction.md) の生成表と課題表、[spec/reservation.md](spec/reservation.md)・[spec/ports.md](spec/ports.md)・[spec/input-validation.md](spec/input-validation.md)・[spec/master-data.md](spec/master-data.md)・[spec/flight-search.md](spec/flight-search.md)・[spec/configuration.md](spec/configuration.md)・[spec/reservation-history-report.md](spec/reservation-history-report.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。
+  * 原典実行で確かめてから判断する候補を [backlog ceb8](backlog/ceb8-origin-run-checks-for-gap-candidates.md) にした。棚卸しの手順をスキルの [guide/gap-inventory.md](../.agents/skills/spec-pivot/references/docs/guide/gap-inventory.md) に置き（[スキルの ADR cb1f](../.agents/skills/spec-pivot/references/docs/decision/cb1f-gap-inventory-procedure.md)）、spec-pivot の版を 0.24 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+
 * **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
   * CI で 20 秒以上かかる段（`lean:test-long`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。
   * `lake test` から 20 秒以上かかる節（シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果・暦日の全日・double の総当たり）を実行ファイル `long-tests`（`lean/Tests/Long.lean`・`LongMain.lean`）に分けた。layout-check の組は増やさない（組を足すと CI の runner のメモリが尽きた）。`lake test` の各節は経過時間を表示する（`Tests.Report`）。`trace/checks.json` で `lean:test` を実行する検査は `lean:test-long` も実行する。

@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:40:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # スキルの作業項目
@@ -22,3 +22,4 @@ generated:
 | a49c | [OKF バンドルとリンクの検査の道具](a49c-okf-bundle-check-tool.md) | done | [de90](de90-skill-docs-okf-bundle-and-records.md) |
 | 97a7 | [スキルの文書を spec/・rules/・guide/・lang/ に分ける](97a7-skill-docs-category-directories.md) | done | [a49c](a49c-okf-bundle-check-tool.md) |
 | ce23 | [Lean の宣言をモジュール名の下に置く規則と検査](ce23-lean-module-namespace-layout.md) | done | — |
+| 937d | [登録簿の R 課題と課題表の差異の列の一致を検査する](937d-rtasks-task-table-consistency-check.md) | todo | — |

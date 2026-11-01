@@ -20,6 +20,7 @@ okf_version: "0.2"
 * [移植の手順](guide/process.md) - 機能単位で進める移植の手順 1〜10 と、各手順の成果物・次へ進む条件・完了の定義。
 * [作業の進め方（既定）](guide/workflow.md) - 人と AI エージェントがこの方法で移植を進めるときの既定の進め方: 評価・判断の記録・検査ゲート・敵対的レビュー。
 * [版上げへの追従](guide/upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分の原典実行、証明のグラフに沿った影響の洗い出し。
+* [差異の棚卸し](guide/gap-inventory.md) - Spec とモデル（SourceModel・TargetModel）の差異の登録簿が、実装と原典の両方に合っているかを、全範囲で確かめる手順と観点の一覧。
 * [言語パックの構成と追加のしかた](guide/adding-a-language.md) - 言語パックの 6 ファイルの構成と、新しい言語・SQL 方言を追加するときの手順。
 
 # Language: Java
@@ -61,6 +62,7 @@ okf_version: "0.2"
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
 * [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](decision/89f2-layout-check-one-process-per-group.md) - layout-check（Trace.Layout.run）は、モジュールの組ごとに環境を読み込んで解放しないため、メモリが組の数に比例して増えていた。組ごとに同じ実行ファイルを子プロセスとして起動して判定し、親は結果の JSON を合わせるだけにする。Environment.freeRegions による解放は採らない。
+* [差異の登録簿の棚卸しの手順を方法の文書に置く](decision/cb1f-gap-inventory-procedure.md) - 差異の登録簿が実装と原典に合っているかを全範囲で確かめる棚卸しの手順と観点（G1〜G9）を、guide/gap-inventory.md に置く。登録簿の R 課題と課題表の一致の検査は作業項目にする。
 * [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](decision/22b4-split-okf-and-records-skills.md) - 移植に関係の無い文書の道具（okf_check.py・docmv.py・ids.py）と規則を、スキル spec-pivot から汎用のスキル okf-bundle（OKF のバンドル）と work-records（ADR・作業項目）に分け、設定を trace/project.json から専用のファイル .okf.json・.work-records.json に移し、移植に固有の検査を一般化する。
 * [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) - Java の原典実行に共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える](decision/288a-rename-oracle-to-origin-run.md) - 移植元のプログラムを実行して期待値を採取・照合する手段を、DBMS の Oracle と紛れない「原典実行」（識別子 origin-run）と呼ぶ。新旧 2 版を比べるものは「差分の原典実行」とする。ベクタの source の値は <移植元>-origin-run、道具のディレクトリ・クラス名もこれにそろえる。
@@ -91,3 +93,4 @@ okf_version: "0.2"
 * [OKF バンドルとリンクの検査の道具](backlog/a49c-okf-bundle-check-tool.md) - OKF v0.2 の適合条件、バンドルのプロファイルの規則、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具 scripts/docs/okf_check.py を作り、このバンドルの規則をプロファイルにする。
 * [Lean の宣言をモジュール名の下に置く規則と検査](backlog/ce23-lean-module-namespace-layout.md) - 宣言の完全名をモジュール名の下に限る規則（NS-1）と証明課題の配置（TR-L）を定め、検査の道具 layout-check・TR-L・改名の道具 rename.py を作り、スキルの assets の宣言を書き換える。
 * [スキルの文書を spec/・rules/・guide/・lang/ に分ける](backlog/97a7-skill-docs-category-directories.md) - references/docs の方法の文書を spec/・rules/・guide/ に、言語パックを lang/<lang>/ に移し、type・プロファイル・索引を改める。移動とリンクの張り直しの道具 scripts/docs/docmv.py を作る。
+* [登録簿の R 課題と課題表の差異の列の一致を検査する](backlog/937d-rtasks-task-table-consistency-check.md) - trace check に、ギャップの登録簿の rTasks と、課題表（証明課題の一覧）の各 R 課題の「差異」の列とが一致することの検査を足す。

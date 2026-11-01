@@ -25,13 +25,14 @@ structure RouteProvider where
 
 namespace RouteProvider
 
-/-- `RouteProvider.makeCacheKey`（private）: `"[出発空港コード]-[到着空港コード]"`。 -/
+/-- `RouteProvider.makeCacheKey`（private）: `"[出発空港コード]-[到着空港コード]"`。`-` を含む空港コードでは、別の組とキーが重なる（D-034・D-036）。 -/
+@[gap "D-034", "D-036"]
 def makeCacheKey (departureAirportCd arrivalAirportCd : String) : String :=
   departureAirportCd ++ "-" ++ arrivalAirportCd
 
 /-- `RouteProvider.load()`: 出発・到着の空港コードのキーで `put` する（後勝ち）。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#load()@ce13818ba91368aa",
-  "java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()@3cd8d3e7f6409637", gap "D-015"]
+  "java:jp.co.ntt.atrs.domain.repository.route.RouteRepository#findAll()@3cd8d3e7f6409637", gap "D-015", "D-036"]
 def load (rows : List RouteResult) : JResult RouteProvider := do
   let mut m : JHashMap String Route := {}
   for r in rows.map SourceModel.Domain.Repository.Route.RouteRepository.routeMap do
@@ -42,7 +43,7 @@ def load (rows : List RouteResult) : JResult RouteProvider := do
 
 /-- `RouteProvider.getRouteByAirportCd`: 両方の空港コードが `hasText` でなければ `IllegalArgumentException`。無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)@4266ccb1fdc24df9",
-  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3"]
+  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3", gap "D-034"]
 def getRouteByAirportCd (p : RouteProvider) (departureAirportCd arrivalAirportCd : String) : JResult (JRef Route) := do
   Assert.hasText departureAirportCd "departureAirportCd must have some text."
   Assert.hasText arrivalAirportCd "arrivalAirportCd must have some text."

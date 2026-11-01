@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T18:24:54+09:00
+  at: 2026-11-01T23:30:00+09:00
 sources:
   - id: seed-fixed
     resource: https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql
@@ -76,20 +76,20 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 | --- | --- | --- |
 | MD-1 | 各キーは一意。各マスタの `displayOrder` も一意（原典の DB 制約 `DISPLAY_ORDER INT NOT NULL UNIQUE` と同じ） | `HashMap` への後勝ち上書き。`displayOrder` の重複は DB が拒む |
 | MD-2 | `(depAirportCd, arrAirportCd)` は区間間で一意。`depAirportCd ≠ arrAirportCd` | 後勝ち上書き |
-| MD-3 | 参照整合性（区間の空港・便マスタの区間・フライトの便名/搭乗クラス/運賃種別が存在する） | `null` による前提違反 |
+| MD-3 | 参照整合性（区間の空港・便マスタの区間。フライトの便名/搭乗クラス/運賃種別の存在は `World` の不変条件、運賃計算の入力が指すマスタの存在は各操作の PRE で課す） | `null` による前提違反（運賃計算の入力の場合は参考 [D-035](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
 | MD-4 | ピーク時期の期間は互いに重ならない（`peakStartDate ≤ peakEndDate`） | 取得順（未規定）で最初に一致したもの（参考 [D-004](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime`（出発日 0:00 からの分数で比べる） | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
-| MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字で、区切り行のコード `NOP` でない） | int32 の折り返し。空港コードに `-` があると区間のキーが衝突しうる。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる |
+| MD-8 | [domain-model.md](domain-model.md#値域) の値域（空港コードは英大文字 3 文字で、区切り行のコード `NOP` でない） | int32 の折り返し（参考 [D-030](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。空港コードに `-` があると区間のキーが衝突しうる（参考 [D-036](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる（参考 [D-029](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
 
-マスタは不変の入力であり（[ports.md](ports.md#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005）は差異ではなく、参考として [abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
+マスタは不変の入力であり（[ports.md](ports.md#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005、MD-8 は D-029・D-030・D-036）は差異ではなく、参考として [abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 
 ## 参照関数
 
 **[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。
 
-参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed` で、便名は空白でない（[文字クラス](input-validation.md#文字クラス) の `hasText`。原典の `Assert.hasText`））である。
+参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed` で、便名は空白でない（[文字クラス](input-validation.md#文字クラス) の `hasText`。原典の `Assert.hasText`））である。引数がこれを満たさないときの [Source] の振る舞い（`Assert.hasText` の例外、`-` を含む空港コードでのキャッシュのキーの衝突）は、参考 [D-034](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。
 
 機械の答えのうち、搭乗クラスと運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）である。表示順を観測するのはコードリストの問い合わせだけとする（原典の参照の結果にも表示順は無い。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
 

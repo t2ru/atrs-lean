@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T08:12:23+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 設定パラメータ
@@ -53,6 +53,6 @@ Lean: `Spec.Config.initialPassengersNumber` ほか。
 
 [Spec] は次を前提とする（[Source] では検査しない）。Lean: `Spec.Config.Valid`。運賃種別の条件は `Spec.MasterData.MD7` で課す。
 
-- `childFareRate ≤ 100`
+- `childFareRate ≤ 100`（破れた場合、[Source] の合計金額の途中計算は int32 で折り返しうる。参考 [D-030](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
 - すべての運賃種別について `discountRate ≤ childFareRate`（[fare-calculation.md](fare-calculation.md#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）
 - `adultPassengerMinAge ≤ representativeMinAge`

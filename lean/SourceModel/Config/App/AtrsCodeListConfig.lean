@@ -50,7 +50,7 @@ def creditTypeCodeListRows (db : MasterDb) : Bag CreditTypeRow := db.creditType
 
 /-- `JdbcCodeList.retrieveMap`: 各行の（値の列, 表示の列）。どちらかが `null` なら飛ばす。 -/
 @[source "java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#jdbcTemplateForCodeList()@7719b7cc8cb21bb3",
-  "dep:org.terasoluna.gfw:terasoluna-gfw-common#JdbcCodeList.retrieveMap@terasoluna-gfw-common-5.11.0.RELEASE"]
+  "dep:org.terasoluna.gfw:terasoluna-gfw-common#JdbcCodeList.retrieveMap@terasoluna-gfw-common-5.11.0.RELEASE", gap "D-015"]
 def jdbcCodeList (rows : List (Option String × Option String)) : Entries :=
   (rows.foldl (fun (m : JLinkedHashMap String String) r =>
     match r with
@@ -58,6 +58,7 @@ def jdbcCodeList (rows : List (Option String × Option String)) : Entries :=
     | _ => m) {}).entries
 
 /-- `CL_AIRPORT`。 -/
+@[gap "D-029"]
 def CL_AIRPORT (rows : List AirportRow) : Entries :=
   AirportCodeList.afterPropertiesSet {} (rows.map fun r => (some r.airportCd.val, some r.airportName.val, some (J32.ofInt r.displayOrder.val)))
 
