@@ -67,6 +67,26 @@ abbrev Collation := String → String → Ordering
 /-- Unicode スカラ値の辞書順（UTF-8 のバイト順と一致する。PostgreSQL の `C` 照合）。 -/
 def Collation.codepoint : Collation := fun a b => compare a b
 
+/-- 符号位置の照合で「より大きくない」は、文字列の `≤`。 -/
+theorem Collation.codepoint_ne_gt (a b : String) : Collation.codepoint a b ≠ .gt ↔ a ≤ b := by
+  show compareOfLessAndEq a b ≠ .gt ↔ a ≤ b
+  unfold compareOfLessAndEq
+  by_cases h : a < b
+  · simp only [h, ↓reduceIte]; exact ⟨fun _ => String.lt_asymm h, fun _ => by decide⟩
+  · by_cases e : a = b
+    · subst e; simp
+    · simp only [h, e, ↓reduceIte]
+      exact ⟨fun h' => absurd rfl h', fun h' => absurd (String.le_antisymm h' (String.not_lt.mp h)) e⟩
+
+/-- 符号位置の照合で「等しい」は、文字列の等しさ。 -/
+theorem Collation.codepoint_eq (a b : String) : Collation.codepoint a b = .eq ↔ a = b := by
+  show compareOfLessAndEq a b = .eq ↔ a = b
+  unfold compareOfLessAndEq
+  by_cases h : a < b
+  · simp only [h, ↓reduceIte]
+    exact ⟨fun h' => absurd h' (by decide), fun e => absurd h (e ▸ String.lt_irrefl a)⟩
+  · by_cases e : a = b <;> simp [h, e]
+
 /-- 非 NULL の値どうしの比較。型が異なる場合は `none`（方言が暗黙の変換を与える）。 -/
 def SqlValue.cmp (coll : Collation) : SqlValue → SqlValue → Option Ordering
   | .int a, .int b => some (compare a b)

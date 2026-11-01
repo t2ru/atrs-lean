@@ -175,4 +175,75 @@ theorem rowAt_rel {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db =
       · exact absurd h2 h1
       · exact .none
 
+/-! ## 結果の行から候補へ -/
+
+/-- 結果の列から FLIGHT の行を作り直す。 -/
+def rowFlight (r : FlightResult) : FlightRow :=
+  ⟨r.departureDate, r.flightName, r.boardingClassCd, r.fareTypeCd, r.vacantNum⟩
+
+/-- 結果の行の α: フライトの行の写しと、その便名・運賃種別のマスタの組（[Spec] の候補の形）。 -/
+def candOfRow (md : Spec.MasterData) (row : VacantSeatRow) : Option Candidate := do
+  let F ← flightOfRow (rowFlight row.result)
+  let fm ← md.flightMasterOf F.key.flightName
+  let ft ← md.fareTypeOf F.key.fareTypeCd
+  pure ⟨F, fm, ft⟩
+
+/-- 結果の行が候補 `X` に写り、整列キーの列が `X` の運賃種別の表示順・便マスタの出発時刻の写しである。 -/
+def RowOk (md : Spec.MasterData) (row : VacantSeatRow) (X : Candidate) : Prop :=
+  candOfRow md row = some X ∧ natOfInt4 row.displayOrder = some X.fareType.displayOrder ∧
+    hmOfStr row.departureTime.val = some X.master.departureTime
+
+theorem candidateOf_parts {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight} {X : Candidate}
+    (h : candidateOf md c route bdn F = some X) :
+    X.flight = F ∧ md.flightMasterOf F.key.flightName = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType := by
+  unfold candidateOf at h
+  simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at h
+  obtain ⟨fm, hfm, ft, hft, h⟩ := h
+  split at h
+  · cases h; exact ⟨rfl, hfm, hft⟩
+  · cases h
+
+theorem rowOk_of_rel {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {f : FlightRow} {F : Flight}
+    {row : VacantSeatRow} {X : Candidate} (hr : RowRel f row X) (hX : candidateOf md c route bdn F = some X) :
+    RowOk md row X := by
+  obtain ⟨h1, h2, h3, h4⟩ := hr
+  obtain ⟨e1, e2, e3⟩ := candidateOf_parts hX
+  subst e1
+  refine ⟨?_, h3, h4⟩
+  have : rowFlight row.result = f := by rw [h1]; rfl
+  simp only [candOfRow, this, h2, Option.bind_eq_bind, Option.bind_some, e2, e3, Option.pure_def]
+
+/-- 列の対応: FLIGHT の行の列の写しが `fs` なら、文の結果の行の列（`rowAt` で絞ったもの）は、`candOfRow` で
+[Spec] の候補の列（`candidateOf` で絞ったもの）に写り、各行は `RowOk`。 -/
+theorem rows_cands {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
+    {dep arr : String} {route : Route} (hroute : md.routeOf ⟨dep⟩ ⟨arr⟩ = some route) (bdn : Int)
+    {fl : List FlightRow} {fs : List Flight} (h : fl.mapM flightOfRow = some fs) :
+    (fl.filterMap (rowAt db (paramsOf c dep arr bdn) dep arr)).mapM (candOfRow md) =
+        some (fs.filterMap (candidateOf md c route bdn)) ∧
+      ∀ row ∈ fl.filterMap (rowAt db (paramsOf c dep arr bdn) dep arr),
+        ∃ X ∈ fs.filterMap (candidateOf md c route bdn), RowOk md row X := by
+  induction fl generalizing fs with
+  | nil => simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; simp
+  | cons f fl ih =>
+    simp only [List.mapM_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_eq_some_iff,
+      Option.some.injEq] at h
+    obtain ⟨F, hF, fs', hfs', rfl⟩ := h
+    obtain ⟨ih1, ih2⟩ := ih hfs'
+    have hrel := rowAt_rel hm hroute bdn (c := c) hF
+    rw [List.filterMap_cons, List.filterMap_cons]
+    generalize hro : rowAt db (paramsOf c dep arr bdn) dep arr f = ro at hrel ⊢
+    generalize hco : candidateOf md c route bdn F = co at hrel ⊢
+    cases hrel with
+    | none => exact ⟨ih1, ih2⟩
+    | some hr =>
+      rename_i row X
+      have hok := rowOk_of_rel hr hco
+      refine ⟨?_, ?_⟩
+      · simp only [List.mapM_cons, hok.1, ih1, Option.pure_def, Option.bind_eq_bind, Option.bind_some]
+      · intro r hr'
+        rcases List.mem_cons.mp hr' with rfl | hr'
+        · exact ⟨X, List.mem_cons_self .., hok⟩
+        · obtain ⟨Y, hY, hok'⟩ := ih2 r hr'
+          exact ⟨Y, List.mem_cons_of_mem _ hY, hok'⟩
+
 end Abstraction.FlightSearch.Candidates
