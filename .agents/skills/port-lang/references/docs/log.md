@@ -2,7 +2,7 @@
 
 ## 2026-11-01
 
-* **Update**: `LangSemantics.Sql.QueryLemmas` に条件の押し下げの補題 `cross_filter_left`・`select_filter_of_imp` を足した。スキルの版を 0.16 にした。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。来歴: 適用先 ATRS の空席照会の第 2 段（PostgreSQL での差分実行で、FLIGHT の全件の直積を避ける）。
+* **Update**: `LangSemantics.Sql.QueryLemmas` に条件の押し下げの補題 `cross_filter_left`・`select_filter_of_imp` を、`LangSemantics.Java.JLocalDate.RoundTrip` に妥当な暦日での `ofEpochDay (toEpochDay x) = x`（400 年の周期の全日をカーネルで確かめる）を、`Machine.Kernel` に `mapM_inj` を足した。スキルの版を 0.16 にした。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。来歴: 適用先 ATRS の空席照会の第 2 段（PostgreSQL での差分実行で、FLIGHT の全件の直積を避ける）。
 
 * **Update**: `LangSemantics.Java` に `String.substring`（`jSubstring`・`jSubstringFrom`。UTF-16 の位置と補助文字の扱いの補題 `charsBeforeUtf16_bmp`）と、`DecimalFormat` の 3 桁区切りの整数の書式（`LangSemantics.Java.DecimalFormat.formatGrouped`）を足した。JVM との突き合わせ表（`Test/LangSemantics/JavaJvm.lean`。生成器 `jvm/JavaTable.java`）に行を足した。スキルの版を 0.15 にした。
   * [lang/java/semantics.md](lang/java/semantics.md#演算名前は仕様文書でも共通に使う) を改めた。
