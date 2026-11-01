@@ -14,6 +14,7 @@ ABS-011 の補題: `createFlightVacantInfoList`（便マスタの出発時刻を
 -/
 
 namespace Abstraction.FlightSearch.Group
+open Abstraction.World.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Format
 open Spec.FlightSearch Spec.Prim Spec.Prim.Time Spec.Prim.Format
   Spec.Model Machine.Kernel

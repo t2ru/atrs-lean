@@ -2,6 +2,10 @@
 
 ## 2026-11-02
 
+* **Creation**: [ADR ab93](decision/ab93-reservation-stage3-world-alpha-and-abs041.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 3 段を始めた（小段 3a〜3d）。
+  * 3a: 状態の α `worldOfDb` を全表（会員・予約・シーケンス）に広げて `Abstraction.World.Alpha` に置き、具体側の不変条件 `IcW` を足した。空席照会の初期状態を、シードを投入した後の `World`・状態の表に揃え、ABS-011 を新しい貼り合わせで通した。初期状態の対応は `Abstraction.World.Init`。
+  * [spec/abstraction.md](spec/abstraction.md) の α の表、[spec/assurance.md](spec/assurance.md) の暫定の行を改めた。`trace/features.json` の Reserve に `World` を足した。[index.md](index.md) に ADR を足した。
+
 * **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
   * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.25）。
   * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。

@@ -54,6 +54,7 @@
       },
       "lean": ["Ticket",
         "UseCase.Reserve",
+        "World",
         "ReserveQuery",
         "App.B0",
         "App.B2",

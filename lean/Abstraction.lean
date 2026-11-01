@@ -23,10 +23,11 @@ import Abstraction.Fare.TotalAlpha
 import Abstraction.Fare.Loop
 import Abstraction.Fare.TotalFareRun
 import Abstraction.Fare
+import Abstraction.World.Alpha
 import Abstraction.FlightSearch.Alpha
 import Abstraction.FlightSearch.Format
 import Abstraction.FlightSearch.Period
-import Abstraction.FlightSearch.Init
+import Abstraction.World.Init
 import Abstraction.FlightSearch.Join
 import Abstraction.FlightSearch.Candidates
 import Abstraction.FlightSearch.Order
@@ -98,10 +99,11 @@ import Abstraction.FlightSearch
 | `Abstraction.Fare.BasicFareRun` | ABS-001・ABS-101 の補題、L 課題 ABS-007 `runBasicFare_spec` |
 | `Abstraction.Fare.Preserves` | ABS-001・ABS-002・ABS-004 の束 `Machine.Preserves` の部品: 環境の前提 `envBF`・`envF`・`envTF` と証人 |
 | `Abstraction.Fare` | 機能の証明課題: 束 `basicFarePreserves`・`farePreserves`・`totalFarePreserves` と 1 歩の可換式 `*Refines_commutes`、R 課題 ABS-001 `basicFareRefines`・ABS-002 `fareRefines`・ABS-004 `totalFareRefines` と `InitSurj`、C 課題 ABS-003 `fare_diff`、W 課題 ABS-101 `need_D001`・ABS-102 `need_D002`・ABS-112 `need_D012` |
-| `Abstraction.FlightSearch.Alpha` | 空席照会の α（FLIGHT の行・表、入力 `aiS`、出力 `aoS`、環境 `ceFS`）と核、貼り合わせ `glueFS`、差異の述語 `dev_D001S`・`dev_D002S`・`dev_D014S`・`dev_D027S`・`dev_D032` |
+| `Abstraction.World.Alpha` | 状態の表とシーケンスの α `worldOfDb`（FLIGHT・MEMBER・MEMBER_LOGIN・RESERVATION・RESERVE_FLIGHT・PASSENGER・シーケンス）と核、具体側の不変条件 `IcW`（空席照会と予約が共有する） |
+| `Abstraction.World.Init` | 初期状態の対応 `worldOfDb_seed`・`icW_seed` |
+| `Abstraction.FlightSearch.Alpha` | 空席照会の α（入力 `aiS`、出力 `aoS`、環境 `ceFS`）と核、貼り合わせ `glueFS`、差異の述語 `dev_D001S`・`dev_D002S`・`dev_D014S`・`dev_D027S`・`dev_D032` |
 | `Abstraction.FlightSearch.Format` | 書式の一致（3 桁区切り・時刻・日付） |
 | `Abstraction.FlightSearch.Period` | 照会可能期間の検査の一致、L 課題 ABS-010 `isAvailableFareType_between` |
-| `Abstraction.FlightSearch.Init` | 初期状態の対応 `worldOfDb_seed` |
 | `Abstraction.FlightSearch.Join` | 空席照会の文の結合と、FLIGHT の行ごとの評価 `rowAt` |
 | `Abstraction.FlightSearch.Candidates` | 行ごとの対応 `rowAt_rel`、結果の行の α `candOfRow`、列の対応 `rows_cands` |
 | `Abstraction.FlightSearch.Order` | `ORDER BY` と `mergeSort candidateLe`（`sorted_cands`）、同順位の無さ `noTie_cands`、許される並びの証人 `mergeSortRows` |

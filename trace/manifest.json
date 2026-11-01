@@ -613,19 +613,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.FlightSearch.Alpha.flightOfRow",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Alpha.flightOfRow_kernel",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.FlightSearch.Alpha.glueFS",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Alpha.noReservationState",
       "layer": "Abstraction"
     },
     {
@@ -634,18 +622,6 @@
     },
     {
       "name": "Abstraction.FlightSearch.Alpha.vacantInfoOf_kernel",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Alpha.worldOfDb",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Alpha.worldOfDb_flights",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Alpha.worldOfDb_kernel",
       "layer": "Abstraction"
     },
     {
@@ -894,58 +870,6 @@
     },
     {
       "name": "Abstraction.FlightSearch.Group.vacantInfoOf_fields",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.FS.cells",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.FS.dayRows_eq",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.SF.cells",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.SF.dayFlights_eq",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.cellOf",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.cells_map",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.cells_map0",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.cells_map1",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.cells_map2",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.days_map",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.mapM_day",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.mapM_days",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.FlightSearch.Init.worldOfDb_seed",
       "layer": "Abstraction"
     },
     {
@@ -2194,6 +2118,230 @@
     },
     {
       "name": "Abstraction.Prim.Date.toEpochDay_eq_epochDay",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.IcW",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.KeysBelow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.dateOfTimestamp",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.dateOfTimestamp_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.flatMap_congr'",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.flightOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.flightOfRow_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.flightsOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.genderOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.icW_of_reservation_nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.mapM_inj₂",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.mem_passengersOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.memberOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.memberOfRow_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.membersOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.membersOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.optDate",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.optDate_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.passengerOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.passengerOfRow_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.passengersOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.resOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.resOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reservationOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reservationOfRow_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reservationsOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reservationsOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reservations_nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightOfRow",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightOfRow_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.rfOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.rfOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.seqOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.seqOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.seqOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.sequencesOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.worldOfDb",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.worldOfDb_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.worldOfDb_flights",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.worldOfDb_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.FS.cells",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.FS.dayRows_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.SF.cells",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.SF.dayFlights_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.cellOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.cells_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.cells_map0",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.cells_map1",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.cells_map2",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.days_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.flights_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.icW_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.mapM_day",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.mapM_days",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.members_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Init.worldOfDb_seed",
       "layer": "Abstraction"
     },
     {
@@ -9814,17 +9962,7 @@
     },
     {
       "type": "obligation",
-      "from": "Abstraction.FlightSearch.Alpha.flightOfRow_kernel",
-      "to": "ABS-048"
-    },
-    {
-      "type": "obligation",
       "from": "Abstraction.FlightSearch.Alpha.vacantInfoOf_kernel",
-      "to": "ABS-048"
-    },
-    {
-      "type": "obligation",
-      "from": "Abstraction.FlightSearch.Alpha.worldOfDb_kernel",
       "to": "ABS-048"
     },
     {
@@ -9966,6 +10104,26 @@
       "type": "obligation",
       "from": "Abstraction.MasterData.queryRefines",
       "to": "ABS-026"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.World.Alpha.dateOfTimestamp_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.World.Alpha.flightOfRow_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.World.Alpha.seqOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.World.Alpha.worldOfDb_kernel",
+      "to": "ABS-048"
     },
     {
       "type": "obligation",
@@ -13642,17 +13800,7 @@
     },
     {
       "type": "std_abs",
-      "from": "Abstraction.FlightSearch.Alpha.flightOfRow",
-      "to": "docs/spec/abstraction.md#抽象化関数-α"
-    },
-    {
-      "type": "std_abs",
       "from": "Abstraction.FlightSearch.Alpha.vacantInfoOf",
-      "to": "docs/spec/abstraction.md#抽象化関数-α"
-    },
-    {
-      "type": "std_abs",
-      "from": "Abstraction.FlightSearch.Alpha.worldOfDb",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -13768,6 +13916,31 @@
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.natOfJ32",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.World.Alpha.dateOfTimestamp",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.World.Alpha.flightOfRow",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.World.Alpha.seqOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.World.Alpha.sequencesOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.World.Alpha.worldOfDb",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     }
   ],

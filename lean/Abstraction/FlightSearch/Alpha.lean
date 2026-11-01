@@ -5,6 +5,7 @@ import Spec.Port
 import Spec.FlightSearch
 import SourceModel.FlightSearchQuery
 import Abstraction.Fare.Alpha
+import Abstraction.World.Alpha
 
 /-!
 # Abstraction.FlightSearch.Alpha
@@ -12,81 +13,21 @@ import Abstraction.Fare.Alpha
 空席照会（R 課題 ABS-011）の標準の抽象化 α と、前提型の差異の述語（backlog 0be7 の第 2・3 段。
 `docs/spec/abstraction.md#抽象化関数-α`）。
 
-- 状態: FLIGHT 表の行を [Spec] のフライトに、表を `World` に写す（`flightOfRow`・`worldOfDb`）。
+- 状態: 状態の表とシーケンスを `World` に写す（`Abstraction.World.Alpha.worldOfDb`。予約と共有する）。
 - 入力: 設定・マスタは ABS-026 の `configOf`・`masterDataOf`、今日は `dateOfJ`、照会条件は空港コード・列挙・日付（`aiS`）。
   配備の環境（区切り文字）は抽象側に無い（D-032 の前提で固定する）。
 - 出力: 便ごとの空席情報（文字列はそのまま、空席数は `natOfJ32`、運賃種別のキーは `ftCdOf`）と業務例外（`aoS`）。
 
-FLIGHT の行の α はどれも部分写像で、[Spec] の型で表せない行
-（負の空席数、未知の搭乗クラス・運賃種別のコード、暦日の外の日付）には定義しない。これは既知差異 D-027 の範囲で、
-空席照会は状態を変えないので、シードの状態から到達する状態は定義域にある（初期状態の対応は第 3 段で示す）。
+状態の α は部分写像で、[Spec] の型で表せない状態（負の空席数、未知の搭乗クラス・運賃種別のコード、暦日の外の日付など）
+には定義しない（既知差異 D-027）。初期状態の対応は `Abstraction.World.Init.worldOfDb_seed`。
 -/
 
 namespace Abstraction.FlightSearch.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Spec.Model Machine.Kernel
 open Machine.Preserves (KernelIs)
+open Abstraction.World.Alpha
 
 open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
-
-/-- FLIGHT の行。 -/
-@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def flightOfRow (r : FlightRow) : Option Flight := do
-  let d ← dateOfPg r.departureDate
-  let bc ← bcCdOf r.boardingClassCd.val
-  let ft ← ftCdOf r.fareTypeCd.val
-  let v ← natOfInt4 r.vacantNum
-  pure ⟨⟨d, ⟨r.flightName.val⟩, bc, ft⟩, v⟩
-
-/-- 予約・会員の表とシーケンスが、まだ使われていない（空席照会の α の定義域。予約の表を含む α は backlog aedf の
-第 2・3 段で置く）。 -/
-def noReservationState (fd : FlightDb) : Bool :=
-  fd.member.isEmpty && fd.memberLogin.isEmpty && fd.reservation.isEmpty && fd.reserveFlight.isEmpty &&
-    fd.passenger.isEmpty && fd.sqMember.isNone && fd.sqReservation.isNone && fd.sqReserveFlight.isNone && fd.sqPassenger.isNone
-
-/-- FLIGHT 表（状態）。すべての行が写せ、予約・会員の表とシーケンスが使われていないときに限って定義する。 -/
-@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def worldOfDb (fd : FlightDb) : Option Spec.Port.World :=
-  if noReservationState fd then (fd.flight.mapM flightOfRow).map fun fs => { flights := fs } else none
-
-theorem worldOfDb_flights {fd : FlightDb} {w : Spec.Port.World} (h : worldOfDb fd = some w) :
-    fd.flight.mapM flightOfRow = some w.flights := by
-  unfold worldOfDb at h
-  split at h
-  · simp only [Option.map_eq_some_iff] at h
-    obtain ⟨fs, hfs, rfl⟩ := h
-    exact hfs
-  · simp at h
-
-@[obligation "ABS-048"]
-theorem flightOfRow_kernel : KernelIs flightOfRow (undefOrEq flightOfRow) := by
-  apply kernelIs_undefOrEq
-  intro r r' a h h'
-  simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨d, hd, bc, hbc, ft, hft, v, hv, rfl⟩ := h
-  obtain ⟨d', hd', bc', hbc', ft', hft', v', hv', h⟩ := h'
-  simp only [Flight.mk.injEq, FlightKey.mk.injEq, FlightName.mk.injEq] at h
-  obtain ⟨⟨rfl, h2, rfl, rfl⟩, rfl⟩ := h
-  cases r; cases r'
-  simp only [FlightRow.mk.injEq] at *
-  exact ⟨inj_of_kernel dateOfPg_kernel hd hd', Subtype.ext h2.symm,
-    Subtype.ext (inj_of_kernel bcCdOf_kernel hbc hbc'), Subtype.ext (inj_of_kernel ftCdOf_kernel hft hft'),
-    Abstraction.MasterData.Alpha.natOfInt4_inj hv hv'⟩
-
-@[obligation "ABS-048"]
-theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
-  apply kernelIs_undefOrEq
-  intro t t' w h h'
-  have hfs := worldOfDb_flights h
-  have hfs' := worldOfDb_flights h'
-  unfold worldOfDb at h h'
-  split at h' <;> split at h <;> try simp at h h'
-  rename_i h2 h1
-  cases t; cases t'
-  simp only [noReservationState, Bool.and_eq_true, List.isEmpty_iff, Option.isNone_iff_eq_none] at h1 h2
-  obtain ⟨⟨⟨⟨⟨⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩ := h1
-  obtain ⟨⟨⟨⟨⟨⟨⟨⟨rfl, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩, rfl⟩ := h2
-  congr 1
-  exact mapM_inj (fun _ _ _ hx hy => inj_of_kernel flightOfRow_kernel hx hy) hfs hfs'
 
 /-! ## 入力 -/
 
@@ -212,8 +153,8 @@ def ceFSKer (_ _ : SourceModel.FlightSearchQuery.SearchInput) : Prop := True
 @[obligation "ABS-048"]
 theorem ceFS_kernel : KernelIs ceFS ceFSKer := fun _ _ => by simp [ceFS, ceFSKer]
 
-/-- 空席照会の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は課さない）。 -/
-abbrev glueFS := Machine.Glue.ofStd worldOfDb (fun _ => True) aiS aoS
+/-- 空席照会の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は `IcW`。予約の貼り合わせと `J` が同じ）。 -/
+abbrev glueFS := Machine.Glue.ofStd worldOfDb IcW aiS aoS
 
 /-! ## 前提型の差異 -/
 

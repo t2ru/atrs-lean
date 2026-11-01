@@ -14,6 +14,7 @@ ABS-011 の補題: 空席照会の具体機械の 1 歩（`runSearchFlight` と 
 -/
 
 namespace Abstraction.FlightSearch.Run
+open Abstraction.World.Alpha
 open Spec.MasterData (Airport Route FlightMaster
   BoardingClass FareType)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Pre Abstraction.MasterData.Query

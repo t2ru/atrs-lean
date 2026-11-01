@@ -65,7 +65,7 @@ def machine : Machine.Machine State Input Output :=
   MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum
     (Fare.totalFareMachine.sum FlightSearch.searchMachine)))
 
-/-- 初期状態（fixture の 1 点。空席照会の状態はシードのフライト）。 -/
-def init : State := ((), (), (), (), Seed.Flight.world)
+/-- 初期状態（fixture の 1 点。空席照会の状態は、シードを投入した後の `World`）。 -/
+def init : State := ((), (), (), (), Seed.World.world)
 
 end Spec

@@ -1,5 +1,5 @@
 import Abstraction.FlightSearch.Run
-import Abstraction.FlightSearch.Init
+import Abstraction.World.Init
 import Abstraction.FlightSearch.Witness
 import Abstraction.FlightSearch.Preserves
 
@@ -11,7 +11,8 @@ import Abstraction.FlightSearch.Preserves
 -/
 
 namespace Abstraction.FlightSearch
-open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.FlightSearch.Order Abstraction.FlightSearch.Init
+open Abstraction.World.Alpha Abstraction.World.Init
+open Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Run Abstraction.FlightSearch.Order
   Abstraction.FlightSearch.Witness Abstraction.FlightSearch.Preserves Abstraction.MasterData.QueryRun Machine
 open SourceModel.FlightSearchQuery
 
@@ -22,7 +23,7 @@ open SourceModel.FlightSearchQuery
 theorem searchRefines :
     Refines ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
       (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS where
-  init t ht := ⟨Spec.Seed.Flight.world, rfl, Or.inl ⟨by rw [ht]; exact worldOfDb_seed, trivial⟩⟩
+  init t ht := ⟨Spec.Seed.World.world, rfl, Or.inl ⟨by rw [ht]; exact worldOfDb_seed, by rw [ht]; exact icW_seed⟩⟩
   input_total := Glue.ofStd_input_total fun _ hd => hd.1.1.2
   applicable s t ic ia hinv hJ hα hpre hd := by
     obtain ⟨⟨hp, h1⟩, h2⟩ := hpre
@@ -39,8 +40,8 @@ theorem searchRefines :
     cases he
   correct s t ic ia t' oc hinv hJ hα hpre hd hs := by
     obtain ⟨⟨hp, h1⟩, h2⟩ := hpre
-    have hw : worldOfDb t = some s := by
-      rcases hJ with ⟨h, -⟩ | h
+    obtain ⟨hw, hic⟩ : worldOfDb t = some s ∧ IcW t := by
+      rcases hJ with h | h
       · exact h
       · exact h.elim
     obtain ⟨mo, sr, hmo, hsr, he⟩ := hs
@@ -48,13 +49,13 @@ theorem searchRefines :
     rw [hoc'] at he
     simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
     obtain ⟨rfl, rfl⟩ := he
-    exact ⟨s, _, ⟨((), ()), rfl⟩, Or.inl ⟨hw, trivial⟩, Or.inl hα'⟩
+    exact ⟨s, _, ⟨((), ()), rfl⟩, Or.inl ⟨hw, hic⟩, Or.inl hα'⟩
 
 /-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
 theorem searchRefines_initSurj :
     Refines.InitSurj ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
       (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS :=
-  fun s hs => ⟨SourceModel.Db.FlightSeed.seedFlightDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, trivial⟩⟩
+  fun s hs => ⟨SourceModel.Db.Seed.seedDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, icW_seed⟩⟩
 
 /-- W 課題 ABS-132（D-032 の必要性。G9）: 前提を外すと、ABS-011 は成り立たない。配備の環境の区切り文字が `.` のとき、
 運賃 100,000 円の表示は、[Source] が `100.000`、[Spec] が `100,000` になる（`Witness`）。 -/
@@ -65,7 +66,7 @@ theorem need_D032 :
   obtain ⟨oc, hoc, hα⟩ := run_icFS_dot
   obtain ⟨hd1, hd2⟩ := iaFS_devs
   obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS (icFS symDot) iaFS fdFS oc wFS_inv
-    (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
+    (Or.inl ⟨worldOfDb_fdFS, icW_of_reservation_nil rfl⟩) aiS_icFS ⟨⟨iaFS_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [hoc]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
@@ -84,7 +85,7 @@ theorem need_D014 :
       ((searchConcrete.restrict dev_D027S).restrict dev_D032) glueFS := fun h => by
   obtain ⟨hd1, hd2⟩ := iaFS14_devs
   obtain ⟨s', oa, ⟨c, hc⟩, -, ho⟩ := h.correct wFS fdFS icFS14 iaFS14 fdFS (.error (.notFound "e.ar.b1.2003"))
-    wFS_inv (Or.inl ⟨worldOfDb_fdFS, trivial⟩) aiS_icFS14 ⟨⟨iaFS14_pre, hd1⟩, hd2⟩
+    wFS_inv (Or.inl ⟨worldOfDb_fdFS, icW_of_reservation_nil rfl⟩) aiS_icFS14 ⟨⟨iaFS14_pre, hd1⟩, hd2⟩
     ⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS14]; rfl⟩, rfl⟩
     ⟨mergeOrder dbFS, mergeSortRows, mergeOrder_allowed _, sortAllowed_mergeSortRows, by rw [run_icFS14]; rfl⟩
   simp only [Spec.FlightSearch.searchStep, Prod.mk.injEq] at hc
@@ -98,7 +99,7 @@ theorem need_D014 :
 @[obligation "ABS-011"]
 theorem searchPreserves :
     Machine.Preserves ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS Spec.Seed.Flight.world envFS (some chFS) []
+      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS Spec.Seed.World.world envFS (some chFS) []
       [⟨(searchConcrete.restrict dev_D027S).restrict dev_D014S, dev_D032⟩] where
   sound := (Spec.FlightSearch.searchMachine_sound.restrictState _).restrictState _
   initIs := Spec.FlightSearch.searchMachine_initIs

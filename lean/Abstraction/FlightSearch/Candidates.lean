@@ -14,6 +14,7 @@ ABS-011 の補題: FLIGHT の行ごとの結合の結果（`Join.rowAt`）と、
 -/
 
 namespace Abstraction.FlightSearch.Candidates
+open Abstraction.World.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.MasterData.Query
 open Abstraction.MasterData.Pre Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Join
 open LangSemantics.Sql.Core LangSemantics.Core.MapM Machine.Kernel Spec.Model

@@ -1,20 +1,21 @@
-import Abstraction.FlightSearch.Alpha
-import Spec.Seed.Flight
-import SourceModel.Db.FlightSeed
+import Abstraction.World.Alpha
+import Spec.Seed.World
+import SourceModel.Db.Seed
 
 /-!
-# Abstraction.FlightSearch.Init
+# Abstraction.World.Init
 
-ABS-011 の補題: シードの FLIGHT 表（[Source] の初期状態 `seedFlightDb`）は、α `worldOfDb` で、シードの
-`World`（[Spec] の初期状態 `Spec.Seed.Flight.world`）に写る。
+初期状態の対応（ABS-011・ABS-041 の INIT）: シードを投入した後の状態の表（[Source] の初期状態 `seedDb`）は、α `worldOfDb`
+で、シードを投入した後の `World`（[Spec] の初期状態 `Spec.Seed.World.world`）に写り、具体側の不変条件 `IcW` を満たす。
 
-両方とも生成器 `flight_seed.py` が同じ形（日付の列 × 便名の列 × 枠の列、空席数のパターン 3）で書き出すので、
+FLIGHT は、両方とも生成器 `flight_seed.py` が同じ形（日付の列 × 便名の列 × 枠の列、空席数のパターン 3）で書き出すので、
 日付の列（121 個）と、パターンごとの便名・枠・空席数の組（3 × 1260 個）をカーネルで照合し（`days_map`・`cells_map`）、
-全件（15 万行）には展開せずに、生成の形の上で合成する。
+全件（15 万行）には展開せずに、生成の形の上で合成する。MEMBER・MEMBER_LOGIN（7 行。生成器 `member_seed.py`）は
+カーネルで照合する。予約の表は空、シーケンスは会員だけが使われている。
 -/
 
-namespace Abstraction.FlightSearch.Init
-open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.FlightSearch.Alpha Spec.Model
+namespace Abstraction.World.Init
+open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.World.Alpha Spec.Model
 
 open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
 
@@ -112,11 +113,27 @@ theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = s
     rw [FS.dayRows_eq, mapM_day hd _ (cells_map k), SF.dayFlights_eq]
     rfl
 
-/-- 初期状態の対応: シードの FLIGHT 表は、シードの `World` に写る。 -/
-theorem worldOfDb_seed :
-    worldOfDb SourceModel.Db.FlightSeed.seedFlightDb = some Spec.Seed.Flight.world := by
-  have hn : noReservationState SourceModel.Db.FlightSeed.seedFlightDb = true := rfl
-  rw [worldOfDb, if_pos hn]
-  simp only [SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.Flight.world, mapM_days days_map 0, Option.map_some]
+/-- シードの FLIGHT 表は、シードのフライトに写る。 -/
+theorem flights_seed :
+    SourceModel.Db.Seed.seedDb.flight.mapM flightOfRow = some Spec.Seed.World.world.flights := by
+  simp only [SourceModel.Db.Seed.seedDb, SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.World.world,
+    Spec.Seed.Flight.world, mapM_days days_map 0]
 
-end Abstraction.FlightSearch.Init
+/-- シードの MEMBER・MEMBER_LOGIN は、シードの会員に写る。 -/
+theorem members_seed :
+    membersOf SourceModel.Db.MemberSeed.memberRows SourceModel.Db.MemberSeed.memberLoginRows =
+      some Spec.Seed.Member.members := by
+  decide +kernel
+
+/-- 初期状態の対応: シードを投入した後の状態の表は、シードを投入した後の `World` に写る。 -/
+theorem worldOfDb_seed : worldOfDb SourceModel.Db.Seed.seedDb = some Spec.Seed.World.world :=
+  worldOfDb_eq_some.mpr ⟨flights_seed, members_seed, rfl, rfl⟩
+
+/-- 初期状態は具体側の不変条件を満たす（予約が無い）。 -/
+theorem icW_seed : IcW SourceModel.Db.Seed.seedDb := fun w h => by
+  rw [worldOfDb_seed] at h
+  cases h
+  intro r hr
+  simp [Spec.Seed.World.world] at hr
+
+end Abstraction.World.Init

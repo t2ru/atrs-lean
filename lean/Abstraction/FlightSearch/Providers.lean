@@ -14,6 +14,7 @@ ABS-011 の補題: 起動時の読み込みで作られるキャッシュ（Prov
 -/
 
 namespace Abstraction.FlightSearch.Providers
+open Abstraction.World.Alpha
 open Spec.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)

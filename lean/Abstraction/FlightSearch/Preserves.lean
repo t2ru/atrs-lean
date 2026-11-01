@@ -11,6 +11,7 @@ ABS-011（空席照会）の束 `Machine.Preserves`（`Abstraction.FlightSearch.
 -/
 
 namespace Abstraction.FlightSearch.Preserves
+open Abstraction.World.Alpha
 open Machine Spec Spec.EnvPre Spec.FlightSearch
   Spec.Prim.Text Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Witness
 
