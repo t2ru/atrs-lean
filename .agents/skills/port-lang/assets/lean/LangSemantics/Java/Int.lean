@@ -59,6 +59,14 @@ theorem J32.val_ofInt_of_inRange (i : Int) (h : J32.minValue ≤ i ∧ i ≤ J32
   simp only [Nat.reducePow]
   split <;> omega
 
+/-- `long` の値域内では、`J64.ofInt` の値は元の整数。 -/
+theorem J64.val_ofInt_of_inRange (i : Int) (h : -9223372036854775808 ≤ i ∧ i ≤ 9223372036854775807) :
+    (J64.ofInt i).val = i := by
+  simp only [J64.ofInt, J64.val, BitVec.toInt_ofInt] at *
+  unfold Int.bmod
+  simp only [Nat.reducePow]
+  split <;> omega
+
 /-- 値域内では `int` の加算は数学的整数の加算と一致する。 -/
 theorem j32add_val_of_inRange (a b : J32)
     (h : J32.minValue ≤ a.val + b.val ∧ a.val + b.val ≤ J32.maxValue) :
