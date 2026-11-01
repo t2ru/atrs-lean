@@ -45,6 +45,92 @@ def ofList (xs : List (κ × υ)) : JHashMap κ υ :=
 
 end JHashMap
 
+/-! ## 写しとの可換性
+
+項目ごとの部分写像 `pairAlpha ka va`（キーを `ka`、値を `va` で写す）で項目の列を写すとき、キーの写しが単射なら、
+`get`・`put` は写しと可換である。 -/
+
+section Alpha
+variable {κ υ κ' υ' : Type} (ka : κ → Option κ') (va : υ → Option υ')
+
+/-- 項目の写し。 -/
+def pairAlpha (e : κ × υ) : Option (κ' × υ') := (ka e.1).bind fun k => (va e.2).map (k, ·)
+
+variable {ka va}
+
+theorem pairAlpha_some {e : κ × υ} {e' : κ' × υ'} (h : pairAlpha ka va e = some e') :
+    ka e.1 = some e'.1 ∧ va e.2 = some e'.2 := by
+  simp only [pairAlpha, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨k, hk, v, hv, rfl⟩ := h
+  exact ⟨hk, hv⟩
+
+variable [DecidableEq κ] [DecidableEq κ']
+
+theorem beq_alpha (hinj : ∀ a b x, ka a = some x → ka b = some x → a = b) {a k : κ} {a' k' : κ'}
+    (ha : ka a = some a') (hk : ka k = some k') : (a == k) = (a' == k') := by
+  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq]
+  constructor
+  · rintro rfl; rw [ha] at hk; exact Option.some.inj hk
+  · rintro rfl; exact hinj _ _ _ ha hk
+
+/-- `get` と写し: 写した表で写したキーを引いた結果は、元の結果の写し（無ければ無し）。 -/
+theorem get_alpha (hinj : ∀ a b x, ka a = some x → ka b = some x → a = b) :
+    ∀ {es : List (κ × υ)} {gs : List (κ' × υ')}, es.mapM (pairAlpha ka va) = some gs →
+    ∀ {k : κ} {k' : κ'}, ka k = some k' →
+      Option.Rel (fun v g => va v = some g) ((⟨es⟩ : JHashMap κ υ).get k) ((⟨gs⟩ : JHashMap κ' υ').get k')
+  | [], gs, h, _, _, _ => by
+    simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; exact .none
+  | e :: es, gs, h, k, k', hk => by
+    simp only [List.mapM_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_eq_some_iff,
+      Option.some.injEq] at h
+    obtain ⟨e', he, gs', hgs, rfl⟩ := h
+    obtain ⟨h1, h2⟩ := pairAlpha_some he
+    have hb := beq_alpha hinj h1 hk
+    simp only [JHashMap.get, List.find?_cons, hb]
+    cases (e'.1 == k')
+    · exact get_alpha hinj hgs hk
+    · exact .some h2
+
+/-- `put` と写し: 写した表に写したキーと値を `put` した結果は、元の `put` の結果の写し。 -/
+theorem put_alpha (hinj : ∀ a b x, ka a = some x → ka b = some x → a = b) {es : List (κ × υ)}
+    {gs : List (κ' × υ')} (h : es.mapM (pairAlpha ka va) = some gs) {k : κ} {k' : κ'} (hk : ka k = some k')
+    {v : υ} {g : υ'} (hv : va v = some g) :
+    ((⟨es⟩ : JHashMap κ υ).put k v).entries.mapM (pairAlpha ka va) = some ((⟨gs⟩ : JHashMap κ' υ').put k' g).entries := by
+  have hpk : pairAlpha ka va (k, v) = some (k', g) := by simp [pairAlpha, hk, hv]
+  -- 同じキーの有無は写しで変わらない
+  have hany : ∀ {es : List (κ × υ)} {gs : List (κ' × υ')}, es.mapM (pairAlpha ka va) = some gs →
+      (es.any fun e => e.1 == k) = (gs.any fun e => e.1 == k') := by
+    intro es
+    induction es with
+    | nil => intro gs h; simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; rfl
+    | cons e es ih =>
+      intro gs h
+      simp only [List.mapM_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_eq_some_iff,
+        Option.some.injEq] at h
+      obtain ⟨e', he, gs', hgs, rfl⟩ := h
+      simp only [List.any_cons, beq_alpha hinj (pairAlpha_some he).1 hk, ih hgs]
+  have hmap : ∀ {es : List (κ × υ)} {gs : List (κ' × υ')}, es.mapM (pairAlpha ka va) = some gs →
+      (es.map fun e => if e.1 == k then (k, v) else e).mapM (pairAlpha ka va) =
+        some (gs.map fun e => if e.1 == k' then (k', g) else e) := by
+    intro es
+    induction es with
+    | nil => intro gs h; simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; rfl
+    | cons e es ih =>
+      intro gs h
+      simp only [List.mapM_cons, Option.pure_def, Option.bind_eq_bind, Option.bind_eq_some_iff,
+        Option.some.injEq] at h
+      obtain ⟨e', he, gs', hgs, rfl⟩ := h
+      simp only [List.map_cons, List.mapM_cons, beq_alpha hinj (pairAlpha_some he).1 hk, ih hgs]
+      cases (e'.1 == k') <;> simp [he, hpk]
+  have happ : (es ++ [(k, v)]).mapM (pairAlpha ka va) = some (gs ++ [(k', g)]) := by
+    rw [List.mapM_append, h]; simp [hpk]
+  simp only [JHashMap.put, JHashMap.containsKey, hany h]
+  by_cases hc : (gs.any fun e => e.1 == k') = true
+  · simp only [hc, ↓reduceIte]; exact hmap h
+  · simp only [hc, ↓reduceIte, Bool.false_eq_true]; exact happ
+
+end Alpha
+
 /-- `java.util.LinkedHashMap`（挿入順）。`JHashMap` と同じ表し方で、反復の順序は `entries` の順と定める
 （同じキーの `put` は位置を保って値を置き換える。`LinkedHashMap` の既定の挿入順の動作に一致する）。 -/
 abbrev JLinkedHashMap (κ υ : Type) := JHashMap κ υ
