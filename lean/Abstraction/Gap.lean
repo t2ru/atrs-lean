@@ -177,7 +177,7 @@ def D014 : Gap where
   sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩]
   premise := "`dev_D014`: 1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-114")
-  rTasks := ["ABS-031", "ABS-041", "ABS-044", "ABS-045"]
+  rTasks := ["ABS-011", "ABS-031", "ABS-041", "ABS-044", "ABS-045"]
   impact := some (.abort, "日付をまたぐと、予約・レポートに記録される日付が変わりうる")
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 
@@ -368,8 +368,8 @@ def D030 : Gap where
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
 
 /-- [Source] の往復の予約の検査（`validateFlightDepartureDateForRoundTripFlight`）は、往路便の到着時刻を
-`DateTimeFormatter("HHmm")` で読むので、到着時刻が 24:00 以降（翌日着。シードの NTT523・NTT528 の `2415`）の便では
-`DateTimeParseException` を投げる。[Spec] は到着時刻を出発日 0:00 からの時分で表し、往路便の到着日時を求められる
+`DateTimeFormatter("HHmm")`（SMART）で読むので、到着時刻が 24:00 より後（翌日着。シードの NTT523・NTT528 の `2415`）の便では
+`DateTimeParseException` を投げる。`2400` は例外にならず、翌日 0:00 でなく当日 0:00 と読まれる（往路便の到着日時が 1 日早くなる）。[Spec] は到着時刻を出発日 0:00 からの時分で表し、往路便の到着日時を求められる
 （[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。空席照会は到着時刻を文字列として整形するだけなので、
 この差異は起きない -/
 @[gap_entry]
@@ -380,7 +380,7 @@ def D031 : Gap where
   premise := "`dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
   evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel` と R 課題が未着手" (some "ABS-131")
   rTasks := ["ABS-021", "ABS-041"]
-  impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる")
+  impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる（`2400` なら往路便の到着日時を 1 日早く検査する）")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 
 end Abstraction.Gap

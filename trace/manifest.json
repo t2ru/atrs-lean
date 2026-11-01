@@ -5545,6 +5545,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Port.World.RefMaster",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Port.World.findAll",
       "layer": "Spec"
     },
@@ -8802,6 +8806,11 @@
       "type": "spec_doc",
       "from": "Spec.Port.World.Inv",
       "to": "docs/spec/ports.md#world抽象状態"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Port.World.RefMaster",
+      "to": "docs/spec/master-data.md#不変条件spec"
     },
     {
       "type": "spec_doc",

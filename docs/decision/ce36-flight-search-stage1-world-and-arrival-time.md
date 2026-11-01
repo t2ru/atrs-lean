@@ -60,9 +60,9 @@ Chosen option: "フライト (a)・到着時刻 (a)・オラクル (a)", because
 | フライト | `Spec.Port.World` を置き、いまの成分は `flights : List Flight` だけとする。INV は主キー（出発日・便名・搭乗クラス・運賃種別）の一意性である。空席照会は、状態を変えずに `flights` を読む操作とする（機械は第 2 段）。[Source] の状態は FLIGHT 表 `FlightDb` で、マスタの表 `MasterDb` は入力のままとする。予約（[backlog aedf](../backlog/aedf-reservation-usecase.md)）と状態を共有する機械の合成は、aedf で決める |
 | 関数の形 | `Spec.FlightSearch.searchFlight` は、設定・マスタ・今日の日付・照会条件・フライトの全件を引数に取る（[flight-search.md](../spec/flight-search.md#シグネチャ)）。`SourceModel.FlightSearch.searchFlight` は、読み込んだ Provider・設定・今日の日付・照会条件と、Mapper の文の結果の並び（許される順序の 1 つ）を引数に取る |
 | 今日の日付 | 入力の成分とする（[ports.md](../spec/ports.md#clock)）。[Source] は 1 回の照会で Clock を 3 回読むが、モデルは 1 つの値で写し、箇所に `@[gap "D-014"]` を付ける（D-014 の前提「Clock の各呼び出しが同じ日付を返す」の下での写し） |
-| 到着時刻 | `Spec.Prim.Time.ArrivalTime` を置く。出発日 0:00 からの時分で、`hour < 48`・`minute ≤ 59`（翌日の 23:59 まで）。`HHmm` の 4 桁の数字列から読み（`parseArrHHmm`）、`HH:mm` で書く（`2415` → `24:15`。[Source] の `toFormatTimeString` と同じ）。MD-6 は分数で比べる。出発時刻は `HourMinute` のままとする。値域の外の文字列（例 `4815`・`2460`）は、引き続き D-027（α が定義されない）の範囲である |
+| 到着時刻 | `Spec.Prim.Time.ArrivalTime` を置く。出発日 0:00 からの時分で、`hour < 48`・`minute ≤ 59`（翌日の 23:59 まで）。`HHmm` の 4 桁の数字列から読み（`ArrivalTime.parseHHmm`）、`HH:mm` で書く（`2415` → `24:15`。[Source] の `toFormatTimeString` と同じ）。MD-6 は分数で比べる。出発時刻は `HourMinute` のままとする。値域の外の文字列（例 `4815`・`2460`）は、引き続き D-027（α が定義されない）の範囲である |
 | fixture | `master_fixture.py` は、到着時刻を `ArrivalTime` の値域で判定し、NTT523・NTT528 に `outsideSpec` を付けない。`Spec.Seed` と `Spec` 用の読み込みは、2 行を含む |
-| DateTimeParseException | 既知差異 D-031（前提型、[Source] の入力）として登録する。前提は「往復の予約で、往路便の到着時刻が 24:00 未満」。R 課題は ABS-021・ABS-041、W 課題は ABS-131 で、証明の状態は未証明（予約の `SourceModel` が未着手）とする。証明は aedf で行う |
+| DateTimeParseException | 既知差異 D-031（前提型、[Source] の入力）として登録する。前提は「往復の予約で、往路便の到着時刻が 24:00 未満」。24:00 より後は例外、`2400` は例外にならず当日 0:00 と読まれる（SMART の解決）。R 課題は ABS-021・ABS-041、W 課題は ABS-131 で、証明の状態は未証明（予約の `SourceModel` が未着手）とする。証明は aedf で行う |
 | 言語意味論 | `DecimalFormat("###,###")`・`String.substring`・`String.format("%s:%s")` に当たる最小の写しが無ければ、スキルの `LangSemantics.Java` に足す（アプリに依存しない） |
 
 ### Consequences
