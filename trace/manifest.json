@@ -2225,6 +2225,10 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.FlightSearch.businessExceptionClass",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.FlightSearch.createFlightVacantInfo",
       "layer": "SourceModel"
     },
@@ -2238,6 +2242,10 @@
     },
     {
       "name": "SourceModel.FlightSearch.flightNotFound",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.FlightSearch.flightNotFoundClass",
       "layer": "SourceModel"
     },
     {
@@ -10166,7 +10174,7 @@
       "definition": "SourceModel.FlightSearch.businessException",
       "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)",
       "hash": "70bc401f3ab46d0d",
-      "merkle": "ccf8ad730f17796b",
+      "merkle": "74d46cfc760ec27f",
       "checks": [
         "lake-test"
       ]
@@ -10175,7 +10183,7 @@
       "definition": "SourceModel.FlightSearch.businessException",
       "locator": "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID",
       "hash": "3d4b63a6702d11d1",
-      "merkle": "ccf8ad730f17796b",
+      "merkle": "74d46cfc760ec27f",
       "checks": [
         "lake-test"
       ]
@@ -10238,7 +10246,7 @@
       "definition": "SourceModel.FlightSearch.flightNotFound",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()",
       "hash": "a759c61b6ed17dc4",
-      "merkle": "51450d2b5e3d0efd",
+      "merkle": "7eec229c0601ace8",
       "checks": [
         "lake-test"
       ]
@@ -10247,7 +10255,7 @@
       "definition": "SourceModel.FlightSearch.flightNotFound",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException.serialVersionUID",
       "hash": "8c008f35f98c4bb6",
-      "merkle": "51450d2b5e3d0efd",
+      "merkle": "7eec229c0601ace8",
       "checks": [
         "lake-test"
       ]
@@ -10346,7 +10354,7 @@
       "definition": "SourceModel.FlightSearch.searchFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)",
       "hash": "aebd2fb115cd02fc",
-      "merkle": "db1122396aea39db",
+      "merkle": "18c4e4b8b4af43df",
       "checks": [
         "lake-test"
       ]
@@ -10355,7 +10363,7 @@
       "definition": "SourceModel.FlightSearch.searchFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)",
       "hash": "75061ffc6ae02ecb",
-      "merkle": "db1122396aea39db",
+      "merkle": "18c4e4b8b4af43df",
       "checks": [
         "lake-test"
       ]
@@ -10400,7 +10408,7 @@
       "definition": "SourceModel.FlightSearch.validateDepatureDate",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateDepatureDate(LocalDate)",
       "hash": "9b898d66ce284b6a",
-      "merkle": "44f182764982841c",
+      "merkle": "78d72a514327974f",
       "checks": [
         "lake-test"
       ]
@@ -10409,7 +10417,7 @@
       "definition": "SourceModel.FlightSearch.validateDepatureDate",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateDepatureDate(LocalDate)",
       "hash": "ab7abd9ac674d349",
-      "merkle": "44f182764982841c",
+      "merkle": "78d72a514327974f",
       "checks": [
         "lake-test"
       ]

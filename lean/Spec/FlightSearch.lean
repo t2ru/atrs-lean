@@ -190,12 +190,13 @@ structure SearchInput where
 /-- 空席照会の出力。 -/
 abbrev SearchOutput := Except AtrsError (List FlightVacantInfo)
 
-/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードの形
-（入力検証を通過していれば満たされる。[Source] の `Assert.hasText` に当たる）。 -/
+/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードが
+空白でない（[Source] の `Assert.hasText` に当たる。入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は
+課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる（[Source] も同じ）。 -/
 @[spec_doc "docs/spec/flight-search.md#事前条件"]
 def SearchInput.Pre (w : Port.World) (i : SearchInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ w.RefMaster i.md ∧ i.criteria.depAirportCd.WellFormed ∧
-    i.criteria.arrAirportCd.WellFormed
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ w.RefMaster i.md ∧ Text.hasText i.criteria.depAirportCd.val = true ∧
+    Text.hasText i.criteria.arrAirportCd.val = true
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
 def answer (w : Port.World) (i : SearchInput) : SearchOutput :=

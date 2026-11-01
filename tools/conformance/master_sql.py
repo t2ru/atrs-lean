@@ -126,7 +126,8 @@ def render_vacant_seat_sql(params):
 
 ONE_WAY = ["OW", "RD1", "RD7", "ED", "LD", "GD", "SOW", "SRD"]
 ROUND_TRIP = ["RT", "SRT"]
-# 空席照会の条件の一覧: (ID, 出発日, 出発空港, 到着空港, 搭乗クラス, beforeDayNum, 運賃種別の列)
+# 空席照会の条件の一覧: (ID, 出発日, 出発空港, 到着空港, 搭乗クラス, beforeDayNum, 運賃種別の列)。beforeDayNum は、
+# 今日を投入日〜期間の末日のどれかとしたときの、出発日までの日数（原典の照会で到達する組み合わせ）
 FLIGHT_CRITERIA = [
     ("first-HND-ITM-N-OW-0", "2026-11-01", "HND", "ITM", "N", 0, ONE_WAY),
     ("first-HND-ITM-N-RT-0", "2026-11-01", "HND", "ITM", "N", 0, ROUND_TRIP),
@@ -137,7 +138,9 @@ FLIGHT_CRITERIA = [
     ("d30-ITM-HND-N-OW-30", "2026-12-01", "ITM", "HND", "N", 30, ONE_WAY),
     ("d60-KIX-SPK-S-OW-60", "2026-12-31", "KIX", "SPK", "S", 60, ONE_WAY),
     ("d61-SPK-KIX-N-OW-61", "2027-01-01", "SPK", "KIX", "N", 61, ONE_WAY),
-    ("last-KIX-HND-N-RT-90", "2027-03-01", "KIX", "HND", "N", 90, ROUND_TRIP),
+    ("d90-KIX-HND-N-RT-90", "2027-01-30", "KIX", "HND", "N", 90, ROUND_TRIP),
+    ("d5-HND-ITM-S-RT-5", "2026-11-06", "HND", "ITM", "S", 5, ROUND_TRIP),
+    ("last-OKA-HND-N-OW-0", "2027-03-01", "OKA", "HND", "N", 0, ONE_WAY),
     ("emptyroute-HND-FUK-N-OW-5", "2026-11-06", "HND", "FUK", "N", 5, ONE_WAY),
     ("noflight-HND-ITM-N-OW-0", "2027-03-02", "HND", "ITM", "N", 0, ONE_WAY),
     ("noroute-HND-NGO-N-OW-5", "2026-11-06", "HND", "NGO", "N", 5, ONE_WAY),

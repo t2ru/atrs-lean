@@ -42,13 +42,22 @@ def fail(msg):
 
 def parse():
     """(日数, 枠の列, 便名の列, パターンごとの空席数の表) を返す。関数の形が想定と違えば止める。"""
-    text = SQL.read_text(encoding="utf-8")
+    raw = SQL.read_text(encoding="utf-8")
+    # 行末の `--` 以降の注釈を除いた文の列で、関数の形を確かめる（注釈にある別の期間の指定は効かない）
+    stmts = [ln.split("--", 1)[0].strip() for ln in raw.splitlines()]
+    stmts = [ln for ln in stmts if ln]
+    text = "\n".join(stmts)
     for needle in ["currentDate DATE := current_date;", "endDate DATE := current_date+120;", "i := 0;",
                    "WHILE currentDate <= endDate LOOP", "currentDate := currentDate + 1;", "i := i + 1;",
                    "SELECT C_FLIGHT();"]:
-        if needle not in text:
-            fail(f"unexpected shape of C_FLIGHT (missing {needle!r})")
-    days = 121
+        if stmts.count(needle) != 1:
+            fail(f"unexpected shape of C_FLIGHT ({needle!r} must appear exactly once outside comments)")
+    # ループの本体は、3 つの IF ブロックと日・番号の進め方だけ
+    loop = text[text.index("WHILE currentDate <= endDate LOOP"):text.index("END LOOP;")]
+    rest = BLOCK.sub("", loop).split("\n")
+    if [ln for ln in rest if ln] != ["WHILE currentDate <= endDate LOOP", "currentDate := currentDate + 1;", "i := i + 1;"]:
+        fail("unexpected statements in the loop of C_FLIGHT")
+    days = 121  # current_date から current_date + 120 まで（両端を含む）
     blocks = BLOCK.findall(text)
     if [int(k) for k, _ in blocks] != [0, 1, 2]:
         fail("expected three blocks mod(i, 3) = 0, 1, 2")

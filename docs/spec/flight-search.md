@@ -57,6 +57,7 @@ Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FL
 ### 事前条件
 
 - [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[input-validation.md](input-validation.md)）を通過していれば満たされる。
+- [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードが空白でないこと。空港コードの形（英大文字 3 文字）は課さない（形の違うコードは区間が無いので `e.ar.b1.2002`。[Source] も同じ）。
 
 ### 定義（評価順）
 

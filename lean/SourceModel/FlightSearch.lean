@@ -28,10 +28,16 @@ open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Rep
 
 /-! ## 業務例外 -/
 
+/-- 業務例外のクラス名。 -/
+def businessExceptionClass : String := "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException"
+
+/-- 照会結果 0 件の業務例外のクラス名。 -/
+def flightNotFoundClass : String := "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException"
+
 /-- `new AtrsBusinessException(code)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)@70bc401f3ab46d0d",
   "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID@3d4b63a6702d11d1"]
-def businessException (code : String) : JThrow := .other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" code
+def businessException (code : String) : JThrow := .other businessExceptionClass code
 
 /-- 空席照会のエラーコード（`TicketSearchErrorCode`）。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchErrorCode#code()@5fde806a365dc7a0",
@@ -45,7 +51,7 @@ def errorCode : String → String := id
 /-- `new FlightNotFoundException()`（`E_AR_B1_2003`）。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()@a759c61b6ed17dc4",
   "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException.serialVersionUID@8c008f35f98c4bb6"]
-def flightNotFound : JThrow := .other "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException" (errorCode "e.ar.b1.2003")
+def flightNotFound : JThrow := .other flightNotFoundClass (errorCode "e.ar.b1.2003")
 
 /-! ## `FareTypeUtil`・`DateTimeUtil` -/
 

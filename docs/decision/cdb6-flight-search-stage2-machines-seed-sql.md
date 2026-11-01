@@ -77,5 +77,15 @@ Chosen option: "機械 (a)・シード (a)・業務例外 (a)・差分実行 (a)
 
 ## More Information
 
+* 敵対的レビュー（第 2 段の完了前。独立したエージェント）の指摘と対応:
+  * PRE の空港コードの形（英大文字 3 文字）は、文書の事前条件より強く、使われていなかった → [Source] の `Assert.hasText` に当たる「空白でない」に改め、[flight-search.md](../spec/flight-search.md#事前条件) に書いた（形の違うコードは両方とも `e.ar.b1.2002`）。
+  * D-027 の登録簿の FLIGHT の部分が不十分だった → 箇所（`World`）を足し、初期状態の対応と FLIGHT の部分の証拠は第 3 段で示すと書いた。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像で表すと明記した。
+  * 検査 `pg-flight-sql` の対象と照合の中身がずれていた → `Tests.FlightSql` が、原典の条件 `VacantSeatSearchCriteriaDto` から `bind`（型ハンドラの写し）で束縛する値を作り、`flight-map` で写した値を PostgreSQL の列と比べるようにした。
+  * シードの解析が、注釈の中の文やループの余分な文を見逃しうる → 注釈を除いた文で、関数の形とループの本体を厳密に確かめるようにした。
+  * 照合の条件に到達しない組み合わせ（期間の末日に beforeDayNum 90）があり、S の往復が無かった → 条件を直して足した（15 の条件）。
+  * `catchBusiness` がクラス名を重ねて書いていた → `SourceModel.FlightSearch` の定数を使うようにした。
+  * マスタの並びを 1 歩ごとに選び直すこと（上からの近似）を、具体機械の説明に書いた。
+  * 第 3 段へ: `SortAllowed standardSort`（具体側の 1 歩が空でないこと）。`ORDER BY` の同順位は、シードでは（区間・出発時刻が一意なので）生じず、差分実行では確かめられない（同順位の扱いは `isAllowedOrder` の定義と c7e8 の PostgreSQL との突き合わせで確かめている）。
+  * 確かめて正しかったもの: シードの再現（日・パターン・行の順）、ハッシュの連鎖（PostgreSQL ⇔ 生成器 ⇔ `seedFlightDb`）、束縛の型、各行の 1 対 1 の対応と並べ替えの検査（0 行の条件も空虚でない）、条件の押し下げ、`world_inv`・`world_refMaster` の命題、`searchFlight_isSome`、`flightOfRow_kernel`。
 * [ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md)（第 1 段）、[ADR c108](c108-master-data-source-model-and-spec-fixes.md)（マスタの文の差分実行）、[ADR 9ee4](9ee4-clock-timezone-and-fixture-base-date.md)（投入日）、[ADR a4fa](a4fa-errors-as-values-with-stable-codes.md)
 * [backlog 0be7](../backlog/0be7-flight-search-usecase.md)、[spec/conformance.md](../spec/conformance.md)、[spec/abstraction.md](../spec/abstraction.md#既知差異)（D-027）

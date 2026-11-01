@@ -14,7 +14,8 @@ import Tests.MasterSql
   確かめる。こうして PostgreSQL の表と `seedFlightDb` が結ばれる。
 - 各条件: マスタの表（`master-data.json` の `tables`）と `seedFlightDb` から `vacantSeatRowsOn`（条件の押し下げ。
   `vacantSeatRows_eq_on` で `vacantSeatRows` に等しい）を評価し、PostgreSQL の結果の並びが許される並び
-  （`isAllowedOrder`）であること、列の値が一致すること、結果の写像 `flight-map` が例外を投げないことを確かめる。
+  （`isAllowedOrder`）であること、列の値が一致すること、結果の写像 `flight-map` が例外を投げず、写した値が列と一致することを
+  確かめる。束縛する値は、原典の条件 `VacantSeatSearchCriteriaDto` から `bind`（MyBatis の型ハンドラの写し）で作る。
 -/
 
 open Lean LangSemantics.Sql.Core LangSemantics.Sql.Postgresql LangSemantics.Sql.Query SourceModel.Repository.Schema
@@ -38,16 +39,26 @@ def seedSummary : Nat × Nat :=
   let rows := SourceModel.Repository.FlightSeed.seedFlightDb.flight
   (rows.length, rows.foldl (fun h r => polyHash h (canon r)) 0)
 
-def text (s : String) : SqlValue := .text s
-
-/-- 束縛した値（`params`）から `Params` を作る。 -/
-def params (p : Json) : Except String Params := do
+/-- 束縛した値（`params`）から、原典の `VacantSeatSearchCriteriaDto` を作る（`bind` が SQL の値にする）。 -/
+def criteria (p : Json) : Except String VacantSeatSearchCriteriaDto := do
   let d ← decodeDate (← getStr p "depDate")
-  return { fareTypeList := (← (← getArr p "fareTypeList").mapM fun j => do
-             match j with | .str s => pure (text s) | _ => throw "fareTypeList"),
-           depAirportCd := text (← getStr p "depAirportCd"), arrAirportCd := text (← getStr p "arrAirportCd"),
-           depDate := .date d.epochDay, boardingClass := text (← getStr p "boardingClass"),
-           beforeDayNum := .int (← getInt p "beforeDayNum") }
+  let ld ← need (LangSemantics.Java.JLocalDate.ofYMD? d.year d.month d.day) "depDate"
+  let bc ← need (Spec.Model.BoardingClassCd.ofCode? (← getStr p "boardingClass")) "boardingClass"
+  let fts ← (← getArr p "fareTypeList").mapM fun j => do
+    match j with
+    | .str s => need (Spec.Model.FareTypeCd.ofCode? s) s!"fare type {s}"
+    | _ => throw "fareTypeList"
+  return { boardingClass := some bc, depDate := some ld,
+           route := some { departureAirport := some { code := some (← getStr p "depAirportCd") },
+                           arrivalAirport := some { code := some (← getStr p "arrAirportCd") } },
+           beforeDayNum := some (LangSemantics.Java.Int.J64.ofInt (← getInt p "beforeDayNum")),
+           fareTypeList := some fts }
+
+/-- `flight-map` の結果を、結果の列の表し方にする。 -/
+def mappedRow (f : SourceModel.Model.Flight) : Row :=
+  [f.departureDate.map (·.formatYMD "-"), f.flightMaster.bind (·.flightName),
+   (f.fareType.bind (·.fareTypeCd)).map Spec.Model.FareTypeCd.toCode, f.vacantNum.map fun v => toString v.val,
+   (f.boardingClass.bind (·.boardingClassCd)).map Spec.Model.BoardingClassCd.toCode]
 
 /-- 結果の行の列（`departure_date, flight_name, fare_type_cd, vacant_num, boarding_class_cd`）。 -/
 def resultRow (r : VacantSeatRow) : Row :=
@@ -57,7 +68,7 @@ def resultRow (r : VacantSeatRow) : Row :=
 /-- 1 つの条件の照合: 許される並び・列の値・写像。 -/
 def checkStatement (db : MasterDb) (st : Json) : Except String (String × Bool × String) := do
   let id ← getStr st "id"
-  let p ← params (← st.getObjVal? "params")
+  let p := bind (← criteria (← st.getObjVal? "params"))
   let pg ← (← getArr st "rows").mapM rowOf
   let rows := vacantSeatRowsOn db SourceModel.Repository.FlightSeed.seedFlightDb p
   -- PostgreSQL の各行を、モデルの行（列の値が等しいもの。主キーの列を含むのでただ 1 つ）に戻す
@@ -66,7 +77,10 @@ def checkStatement (db : MasterDb) (st : Json) : Except String (String × Bool �
     | [x] => pure x
     | xs => throw s!"{id}: {r} matches {xs.length} model rows"
   let allowed := isAllowedOrder SourceModel.Repository.MasterData.sortCfg vacantSeatDirs vacantSeatKey rows o
-  let mapped := (o.mapM fun r => SourceModel.Repository.Mapping.flight r.result).toOption.isSome
+  -- 結果の写像 `flight-map` が例外を投げず、写した値が PostgreSQL の列と一致する
+  let mapped := match o.mapM fun r => SourceModel.Repository.Mapping.flight r.result with
+    | .ok fs => fs.map mappedRow == pg
+    | .error _ => false
   return (id, allowed && mapped && o.length == rows.length, s!"{pg.length} rows (model {rows.length}), ORDER BY")
 
 def run (master : Json) (doc : Json) : Except String (List (String × Bool × String)) := do

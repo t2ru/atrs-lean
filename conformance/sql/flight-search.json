@@ -3697,7 +3697,7 @@
    ]
   },
   {
-   "id": "last-KIX-HND-N-RT-90",
+   "id": "d90-KIX-HND-N-RT-90",
    "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
    "params": {
     "fareTypeList": [
@@ -3706,11 +3706,321 @@
     ],
     "depAirportCd": "KIX",
     "arrAirportCd": "HND",
-    "depDate": "2027-03-01",
+    "depDate": "2027-01-30",
     "boardingClass": "N",
     "beforeDayNum": 90
    },
-   "sql": "SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd FROM flight f, fare_type ft, flight_master fm, route r WHERE f.fare_type_cd = ft.fare_type_cd AND f.fare_type_cd IN ('RT','SRT') AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no AND r.dep_airport_cd = 'KIX' AND r.arr_airport_cd = 'HND' AND f.departure_date = DATE '2027-03-01' AND f.boarding_class_cd = 'N' AND CAST(90 AS bigint) BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num ORDER BY ft.display_order ASC, fm.departure_time ASC",
+   "sql": "SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd FROM flight f, fare_type ft, flight_master fm, route r WHERE f.fare_type_cd = ft.fare_type_cd AND f.fare_type_cd IN ('RT','SRT') AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no AND r.dep_airport_cd = 'KIX' AND r.arr_airport_cd = 'HND' AND f.departure_date = DATE '2027-01-30' AND f.boarding_class_cd = 'N' AND CAST(90 AS bigint) BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num ORDER BY ft.display_order ASC, fm.departure_time ASC",
+   "ordered": true,
+   "columns": [
+    "departure_date",
+    "flight_name",
+    "fare_type_cd",
+    "vacant_num",
+    "boarding_class_cd"
+   ],
+   "rows": [
+    [
+     "2027-01-30",
+     "NTT019",
+     "RT",
+     "48",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT049",
+     "RT",
+     "1",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT079",
+     "RT",
+     "52",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT109",
+     "RT",
+     "248",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT139",
+     "RT",
+     "194",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT169",
+     "RT",
+     "77",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT199",
+     "RT",
+     "366",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT229",
+     "RT",
+     "68",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT259",
+     "RT",
+     "178",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT289",
+     "RT",
+     "122",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT319",
+     "RT",
+     "113",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT349",
+     "RT",
+     "16",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT379",
+     "RT",
+     "22",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT409",
+     "RT",
+     "53",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT439",
+     "RT",
+     "110",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT469",
+     "RT",
+     "188",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT499",
+     "RT",
+     "39",
+     "N"
+    ],
+    [
+     "2027-01-30",
+     "NTT529",
+     "RT",
+     "100",
+     "N"
+    ]
+   ]
+  },
+  {
+   "id": "d5-HND-ITM-S-RT-5",
+   "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
+   "params": {
+    "fareTypeList": [
+     "RT",
+     "SRT"
+    ],
+    "depAirportCd": "HND",
+    "arrAirportCd": "ITM",
+    "depDate": "2026-11-06",
+    "boardingClass": "S",
+    "beforeDayNum": 5
+   },
+   "sql": "SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd FROM flight f, fare_type ft, flight_master fm, route r WHERE f.fare_type_cd = ft.fare_type_cd AND f.fare_type_cd IN ('RT','SRT') AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no AND r.dep_airport_cd = 'HND' AND r.arr_airport_cd = 'ITM' AND f.departure_date = DATE '2026-11-06' AND f.boarding_class_cd = 'S' AND CAST(5 AS bigint) BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num ORDER BY ft.display_order ASC, fm.departure_time ASC",
+   "ordered": true,
+   "columns": [
+    "departure_date",
+    "flight_name",
+    "fare_type_cd",
+    "vacant_num",
+    "boarding_class_cd"
+   ],
+   "rows": [
+    [
+     "2026-11-06",
+     "NTT001",
+     "SRT",
+     "15",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT031",
+     "SRT",
+     "11",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT061",
+     "SRT",
+     "24",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT091",
+     "SRT",
+     "13",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT121",
+     "SRT",
+     "1",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT151",
+     "SRT",
+     "15",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT181",
+     "SRT",
+     "22",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT211",
+     "SRT",
+     "18",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT241",
+     "SRT",
+     "2",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT271",
+     "SRT",
+     "2",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT301",
+     "SRT",
+     "0",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT331",
+     "SRT",
+     "3",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT361",
+     "SRT",
+     "20",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT391",
+     "SRT",
+     "4",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT421",
+     "SRT",
+     "26",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT451",
+     "SRT",
+     "8",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT481",
+     "SRT",
+     "13",
+     "S"
+    ],
+    [
+     "2026-11-06",
+     "NTT511",
+     "SRT",
+     "46",
+     "S"
+    ]
+   ]
+  },
+  {
+   "id": "last-OKA-HND-N-OW-0",
+   "locator": "sql:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findByVacantSeatSearchCriteria",
+   "params": {
+    "fareTypeList": [
+     "OW",
+     "RD1",
+     "RD7",
+     "ED",
+     "LD",
+     "GD",
+     "SOW",
+     "SRD"
+    ],
+    "depAirportCd": "OKA",
+    "arrAirportCd": "HND",
+    "depDate": "2027-03-01",
+    "boardingClass": "N",
+    "beforeDayNum": 0
+   },
+   "sql": "SELECT f.departure_date, f.flight_name, f.fare_type_cd, f.vacant_num, f.boarding_class_cd FROM flight f, fare_type ft, flight_master fm, route r WHERE f.fare_type_cd = ft.fare_type_cd AND f.fare_type_cd IN ('OW','RD1','RD7','ED','LD','GD','SOW','SRD') AND f.flight_name = fm.flight_name AND fm.route_no = r.route_no AND r.dep_airport_cd = 'OKA' AND r.arr_airport_cd = 'HND' AND f.departure_date = DATE '2027-03-01' AND f.boarding_class_cd = 'N' AND CAST(0 AS bigint) BETWEEN ft.rsrv_available_end_day_num AND ft.rsrv_available_start_day_num ORDER BY ft.display_order ASC, fm.departure_time ASC",
    "ordered": true,
    "columns": [
     "departure_date",
@@ -3722,128 +4032,128 @@
    "rows": [
     [
      "2027-03-01",
-     "NTT019",
-     "RT",
-     "48",
+     "NTT018",
+     "OW",
+     "66",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT049",
-     "RT",
-     "1",
+     "NTT048",
+     "OW",
+     "495",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT079",
-     "RT",
-     "52",
+     "NTT078",
+     "OW",
+     "67",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT109",
-     "RT",
-     "248",
+     "NTT108",
+     "OW",
+     "283",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT139",
-     "RT",
-     "194",
+     "NTT138",
+     "OW",
+     "127",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT169",
-     "RT",
-     "77",
+     "NTT168",
+     "OW",
+     "2",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT199",
-     "RT",
-     "366",
+     "NTT198",
+     "OW",
+     "176",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT229",
-     "RT",
-     "68",
+     "NTT228",
+     "OW",
+     "289",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT259",
-     "RT",
-     "178",
+     "NTT258",
+     "OW",
+     "285",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT289",
-     "RT",
-     "122",
+     "NTT288",
+     "OW",
+     "353",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT319",
-     "RT",
-     "113",
+     "NTT318",
+     "OW",
+     "27",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT349",
-     "RT",
-     "16",
+     "NTT348",
+     "OW",
+     "337",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT379",
-     "RT",
-     "22",
+     "NTT378",
+     "OW",
+     "451",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT409",
-     "RT",
-     "53",
+     "NTT408",
+     "OW",
+     "332",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT439",
-     "RT",
-     "110",
+     "NTT438",
+     "OW",
+     "17",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT469",
-     "RT",
-     "188",
+     "NTT468",
+     "OW",
+     "63",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT499",
-     "RT",
-     "39",
+     "NTT498",
+     "OW",
+     "287",
      "N"
     ],
     [
      "2027-03-01",
-     "NTT529",
-     "RT",
-     "100",
+     "NTT528",
+     "OW",
+     "421",
      "N"
     ]
    ]
