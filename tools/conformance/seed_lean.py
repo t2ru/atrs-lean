@@ -2,8 +2,8 @@
 """シードのマスタ・設定（conformance/fixtures の JSON）から、[Spec] の値のリテラル `lean/Spec/Seed.lean` を生成する。
 
 backlog 0fdf: シードのマスタ・設定が入口の環境の前提（MD-1〜MD-8 と設定の妥当性）を満たすことを、Lean の定理で
-示すために使う。行の順は JSON（シードの順）のまま。`outsideSpec` の行（到着時刻 2415 など。[Spec] の値域の外）は、
-`Tests.ConformanceFare` の読み込みと同じく除く（ADR 8f18、master-data.md の TODO(spec)。backlog 0be7 で [Spec] を改める）。
+示すために使う。行の順は JSON（シードの順）のまま。`outsideSpec` の行（[Spec] の値域の外の時刻。上流のシードには無い）は、
+`Tests.ConformanceFare` の読み込みと同じく除く（ADR 8f18・ADR ce36）。
 
 各表の定義には、上流のシードの文のロケータ（`seed:`。ハッシュは `trace/source-inventory.json` の値）を `@[source]` で
 付ける（backlog 76a6・ADR a41d）。シードから [Spec] の値への変換は本生成器の決定論的な変換で、`--check` が一致を確かめる。
@@ -100,7 +100,7 @@ def render() -> str:
         "シードのマスタ・設定（`conformance/fixtures/master-data.json`・`config.json`）の [Spec] の値。",
         "`tools/conformance/seed_lean.py` が生成する。手で編集しない。",
         f"上流: {md['upstream']['release']} / {md['upstream']['commit']}。行の順はシードの順。",
-        "`outsideSpec` の行（到着時刻 2415 の便マスタ 2 行。[Spec] の値域の外）は除く（ADR 8f18。backlog 0be7 で [Spec] を改める）。",
+        "`outsideSpec` の行（[Spec] の値域の外の時刻。上流のシードには無い）は除く（ADR 8f18・ADR ce36）。",
         "各表の `@[source]` は上流のシードの文（この変換の入力の出所）を指す。",
         "-/",
         "",

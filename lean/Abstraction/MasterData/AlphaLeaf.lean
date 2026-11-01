@@ -15,7 +15,8 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | `natOfInt4`・`natOfJ32` | `INT`・`int` | 負 |
 | `dateOfPg` | `DATE` | 1〜9999 年の外 |
 | `dateOfJ` | `LocalDate` | 正規でない値（月が 13 など）・1〜9999 年の外。通算日数で写す |
-| `hmOfStr` | `HHmm` の文字列 | 4 桁の数字でない・時分の範囲外（例: `2415`） |
+| `hmOfStr` | `HHmm` の文字列（出発時刻） | 4 桁の数字でない・時分の範囲外（例: `2415`） |
+| `arrOfStr` | `HHmm` の文字列（到着時刻。24 時以降を含む。ADR ce36） | 4 桁の数字でない・到着時刻の範囲外（例: `4815`） |
 | `dateOfSlash` | `yyyy/MM/dd` の文字列 | その形でない・妥当でない年月日 |
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
 -/
@@ -143,6 +144,40 @@ theorem hmOfStr_kernel : KernelIs hmOfStr (undefOrEq hmOfStr) := by
   obtain ⟨y1, f1, y2, f2, y3, f3, y4, f4, h'⟩ := hs'
   obtain ⟨g1, g2⟩ := ofHm?_eq_some h
   obtain ⟨k1, k2⟩ := ofHm?_eq_some h'
+  have := digitVal?_lt e1; have := digitVal?_lt e2; have := digitVal?_lt e3; have := digitVal?_lt e4
+  have := digitVal?_lt f1; have := digitVal?_lt f2; have := digitVal?_lt f3; have := digitVal?_lt f4
+  have q1 : x1 = y1 := by omega
+  have q2 : x2 = y2 := by omega
+  have q3 : x3 = y3 := by omega
+  have q4 : x4 = y4 := by omega
+  subst q1 q2 q3 q4
+  rw [digitVal?_inj e1 f1, digitVal?_inj e2 f2, digitVal?_inj e3 f3, digitVal?_inj e4 f4]
+
+/-- `HHmm` の到着時刻の文字列（[Spec] の `ArrivalTime.parseHHmm`。24 時以降を含む）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def arrOfStr (s : String) : Option ArrivalTime := ArrivalTime.parseHHmm s
+
+theorem arrOfHm?_eq_some {h m : Nat} {t : ArrivalTime} (e : ArrivalTime.ofHm? h m = some t) :
+    t.hour = h ∧ t.minute = m := by
+  unfold ArrivalTime.ofHm? at e
+  split at e
+  · cases e; exact ⟨rfl, rfl⟩
+  · cases e
+
+@[obligation "ABS-048"]
+theorem arrOfStr_kernel : KernelIs arrOfStr (undefOrEq arrOfStr) := by
+  apply kernelIs_undefOrEq
+  intro s s' t hs hs'
+  unfold arrOfStr ArrivalTime.parseHHmm at hs hs'
+  apply String.toList_inj.mp
+  split at hs <;> split at hs' <;> try simp at hs hs'
+  rename_i a b c d ha _ a' b' c' d' ha'
+  rw [ha, ha']
+  simp only [Option.bind_eq_some_iff] at hs hs'
+  obtain ⟨x1, e1, x2, e2, x3, e3, x4, e4, h⟩ := hs
+  obtain ⟨y1, f1, y2, f2, y3, f3, y4, f4, h'⟩ := hs'
+  obtain ⟨g1, g2⟩ := arrOfHm?_eq_some h
+  obtain ⟨k1, k2⟩ := arrOfHm?_eq_some h'
   have := digitVal?_lt e1; have := digitVal?_lt e2; have := digitVal?_lt e3; have := digitVal?_lt e4
   have := digitVal?_lt f1; have := digitVal?_lt f2; have := digitVal?_lt f3; have := digitVal?_lt f4
   have q1 : x1 = y1 := by omega

@@ -74,5 +74,6 @@ Chosen option: "下表のとおり決める", because 方針（マスタは入�
 
 ## More Information
 
+* 補足（2026-11-01）: 翌日着の便の暫定措置は [ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md) で解消した。[Spec] の到着時刻を 24 時以降も表せる型にし、fixture の `outsideSpec` を外した。`DateTimeParseException` は空席照会でなく予約（B2）の往復便の検査で起きるので、既知差異 D-031 として登録した。
 * [ADR dc3a](dc3a-conformance-test-vectors.md)、[ADR 9ee4](9ee4-clock-timezone-and-fixture-base-date.md)、[ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md)、[ADR 70eb](70eb-refinement-non-vacuity-obligations.md)
 * [backlog 25f7](../backlog/25f7-fare-calculation-both-models.md)、[backlog 0be7](../backlog/0be7-flight-search-usecase.md)、[backlog f18c](../backlog/f18c-java-oracle-harness.md)

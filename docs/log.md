@@ -1,5 +1,13 @@
 # Directory Update Log
 
+## 2026-11-01
+
+* **Creation**: [ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md)（空席照会）を 3 段に分け、第 1 段の設計を決めた。0be7 に着手した（`doing`）。
+  * Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。
+  * 便マスタの到着時刻を `Spec.Prim.Time.ArrivalTime`（出発日 0:00 からの時分。24 時以降を許す）にした。fixture の `outsideSpec` を外し、`Spec.Seed` に NTT523・NTT528 を含めた。[ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md) に補足を書いた。`flightMasterOf` の 2415 の例を `shared/master-data` に移した。
+  * `DateTimeParseException` は空席照会でなく予約の往復便の検査で起きることを確かめ、既知差異 D-031（W 課題 ABS-131）を登録した。[spec/master-data.md](spec/master-data.md) の誤りを直した。
+  * [spec/domain-model.md](spec/domain-model.md#arrivaltime)、[spec/master-data.md](spec/master-data.md)、[spec/abstraction.md](spec/abstraction.md#証明課題)（ABS-011・ABS-127・ABS-131、D-027 の範囲）、[spec/conformance.md](spec/conformance.md)、[spec/assurance.md](spec/assurance.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
+
 ## 2026-10-31
 
 * **Creation**: [ADR 91be](decision/91be-top-level-preserves-refines-abstracts.md) で、義務の束 `Machine.Adequate` の語を廃止し、トップレベルの主定理を `Abstraction.refines`（B refines A。B メソッドのリファインメント）・`Abstraction.preserves`（A preserves B。空虚化を防ぐ意味的な義務のすべて。`Refines` を含まない）・`Abstraction.abstracts`（A abstracts B）にした。[ADR a41d](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) を置き換えた（段階導入とゲートは引き継ぐ）。[backlog cb23](backlog/cb23-adequate-to-preserves-abstracts.md) を作り、完了した（`done`）。スキル側の決定は [スキルの ADR 6b4b](../.agents/skills/port-lang/references/docs/decision/6b4b-preserves-refines-abstracts.md)（スキルの版 0.14）。

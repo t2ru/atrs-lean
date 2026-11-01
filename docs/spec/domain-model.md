@@ -46,6 +46,11 @@ generated:
 - `HourMinute`: 時（0〜23）と分（0〜59）。分換算 `toMinutes`。
 - 原典の便マスタは時刻を 4 桁文字列 `HHmm`（例 `"0945"`）で持つ。`parseHHmm` は、4 文字の数字列で時分の範囲内のものだけを受け付ける。
 
+### ArrivalTime
+
+- `ArrivalTime`: 便マスタの到着時刻。出発日 0:00 からの時（0〜47）と分（0〜59）で、24 時以降は翌日着を表す（例 `24:15` は翌日 0:15。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。分換算 `toMinutes`。
+- `ArrivalTime.parseHHmm` は、4 文字の数字列で到着時刻の範囲内のものだけを受け付ける（上流のシードの `2415` を含む）。
+
 ### DateTime
 
 - `DateTime`: `Date` と時・分・秒。`toEpochMinutes` は 1970-01-01 0:00 からの分数。
@@ -60,6 +65,7 @@ generated:
 | `fmtDate` | `yyyy/MM/dd` | `2026/10/29` |
 | `fmtIsoDate` | `yyyy-MM-dd`（JSON・テストベクタ） | `2026-10-29` |
 | `fmtTime` | `HH:mm` | `09:45` |
+| `fmtArrTime` | `HH:mm`（到着時刻。24 時以降はそのまま） | `24:15` |
 | `fmtTimestamp` | `yyyyMMddHHmmss` | `20261029213809` |
 | `fmtYen` | 3 桁区切り（`###,###`） | `28,800` |
 | `fmtPaymentDate` | `MM月dd日(E)`。曜日は日本語の 1 文字、括弧は半角 | `11月10日(火)` |

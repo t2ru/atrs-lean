@@ -59,13 +59,14 @@ def values(s):
     return out
 
 
-# Spec.MasterData.FlightMaster の時刻（HourMinute: 0:00〜23:59）で表せない到着時刻（"2415" = 翌日 0:15）。
-# 行は上流どおり残し、Spec 用の読み込みだけが除く（ADR 8f18。Spec の改訂は backlog 0be7）。
-OUTSIDE_SPEC_ARRIVAL = "arrivalTime が 24 時以降（翌日着）。Spec の時刻で表せない（backlog 0be7 で Spec を改める。ADR 8f18）"
+# Spec.MasterData.FlightMaster の時刻で表せない時刻。出発時刻は HourMinute（0:00〜23:59）、到着時刻は
+# ArrivalTime（出発日 0:00 からの時分。0:00〜47:59。"2415" は翌日 0:15）。上流のシードには該当する行が無い。
+# 該当する行は上流どおり残し、Spec 用の読み込みだけが除く（ADR 8f18・ADR ce36）。
+OUTSIDE_SPEC_TIME = "時刻が Spec の値域（出発 0:00〜23:59、到着 0:00〜47:59）の外"
 
 
-def valid_hhmm(s):
-    return len(s) == 4 and s.isdigit() and int(s[:2]) <= 23 and int(s[2:]) <= 59
+def valid_hhmm(s, max_hour=23):
+    return len(s) == 4 and s.isdigit() and int(s[:2]) <= max_hour and int(s[2:]) <= 59
 
 
 def master_data():
@@ -80,8 +81,9 @@ def master_data():
             row = dict(zip(cols, values(m.group(3))))
             name, fields = TABLES[table]
             rec = {key: ty(row[col]) for col, key, ty in fields}
-            if table == "FLIGHT_MASTER" and not valid_hhmm(rec["arrivalTime"]):
-                rec["outsideSpec"] = OUTSIDE_SPEC_ARRIVAL
+            if table == "FLIGHT_MASTER" and not (valid_hhmm(rec["departureTime"])
+                                                 and valid_hhmm(rec["arrivalTime"], max_hour=47)):
+                rec["outsideSpec"] = OUTSIDE_SPEC_TIME
             md[name].append(rec)
     # ピーク時期: 関数 C_PEAK_TIME の 1 年分の INSERT を、投入年から PEAK_YEARS 年分に展開する
     text = (SQLS / "00240_insert_peak_time.sql").read_text(encoding="utf-8")

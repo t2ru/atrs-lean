@@ -7,6 +7,9 @@ import Spec.MasterData
 import Spec.CodeList
 import Spec.MasterQuery
 import Spec.Fare
+import Spec.Error
+import Spec.Port
+import Spec.FlightSearch
 import Spec.Nondet
 import Spec.Seed
 import Spec.EnvPre
@@ -29,6 +32,9 @@ import Spec.EnvPre
 | `Spec.CodeList` | コードリスト |
 | `Spec.MasterQuery` | マスタ・設定・コードリストの参照の抽象機械（SPEC 課題、ABS-026 の抽象側） |
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
+| `Spec.Error` | エラーの分類 `AtrsError`（いまは `Business`・`NotFound`） |
+| `Spec.Port` | 抽象状態 `World`（いまはフライト）と不変条件、ポートの操作 |
+| `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。機械は backlog 0be7 の第 2 段 |
 
 トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`）である。
 `Abstraction` の主定理 `Abstraction.refines`・`Abstraction.preserves` の抽象側になる。入口の機械（HTTP の画面・API、

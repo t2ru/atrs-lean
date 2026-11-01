@@ -41,6 +41,23 @@
         "ok": null
       },
       "source": "lean-spec"
+    },
+    {
+      "id": "flightMasterOf-2415",
+      "description": "到着時刻 2415（翌日 0:15 着）の便マスタ。[Spec] は到着時刻を出発日 0:00 からの時分で表す（ADR ce36）",
+      "input": {
+        "name": "NTT523"
+      },
+      "expected": {
+        "ok": {
+          "flightName": "NTT523",
+          "routeNo": 12,
+          "departureTime": "2145",
+          "arrivalTime": "2415",
+          "craftType": "963"
+        }
+      },
+      "source": "lean-source-model"
     }
   ]
 }

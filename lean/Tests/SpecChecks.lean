@@ -47,8 +47,9 @@ def itm : Airport := ⟨⟨"ITM"⟩, "大阪（伊丹）", 2⟩
 def route1 : Route := ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 25000⟩
 def route2 : Route := ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 25000⟩
 def hm (h m : Nat) (hv : h ≤ 23 ∧ m ≤ 59 := by decide) : HourMinute := ⟨h, m, hv⟩
-def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, hm 8 10, "B777"⟩
-def fm2 : FlightMaster := ⟨⟨"NTT002"⟩, 1, hm 9 0, hm 10 10, "B777"⟩
+def ah (h m : Nat) (hv : h ≤ 47 ∧ m ≤ 59 := by decide) : ArrivalTime := ⟨h, m, hv⟩
+def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, ah 8 10, "B777"⟩
+def fm2 : FlightMaster := ⟨⟨"NTT002"⟩, 1, hm 9 0, ah 10 10, "B777"⟩
 def ow : FareType := ⟨.OW, "片道運賃", 0, 90, 0, 1, 1⟩
 def gd : FareType := ⟨.GD, "グループ割", 30, 60, 1, 3, 7⟩
 def bcN : BoardingClass := ⟨.N, "一般席", 0, 1⟩
@@ -77,7 +78,9 @@ def sample : MasterData where
 -- MD-5: 同一区間で同じ出発時刻
 #guard !decide ({ sample with flightMasters := [fm1, { fm2 with departureTime := hm 7 0 }] }.MD5)
 -- MD-6: 到着が出発より前
-#guard !decide ({ sample with flightMasters := [{ fm1 with arrivalTime := hm 6 0 }] }.MD6)
+#guard !decide ({ sample with flightMasters := [{ fm1 with arrivalTime := ah 6 0 }] }.MD6)
+-- MD-6: 翌日着（24:15）は出発より後（ADR ce36）
+#guard decide ({ sample with flightMasters := [{ fm1 with departureTime := hm 21 45, arrivalTime := ah 24 15 }] }.MD6)
 -- MD-7: 割引率が小児運賃の比率を超える
 #guard !decide ({ sample with fareTypes := [{ ow with discountRate := 61 }] }.MD7 Config.default)
 -- MD-8: 基本運賃と加算料金の合計が値域を超える

@@ -64,6 +64,7 @@ okf_version: "0.2"
 * [docs/ とスキルのバンドルを okf_check.py で検査し、CI の一括検査に入れる](decision/920d-docs-bundle-check-in-ci.md) - ATRS の docs/ とスキル port-lang の references/docs/ を、スキルの道具 okf_check.py で検査する。ATRS の規則（ディレクトリごとの type・必須キー・ADR と backlog の必須の節・採択を示す行・索引の網羅・相対リンクとアンカー）を trace/project.json の okf に置き、tools/ci/lean.sh から実行する。frontmatter は YAML の部分集合で書く。
 * [実装済みの範囲のトップレベルの Refines・Adequate と、移植元側の段階導入](decision/a41d-top-level-refines-adequate-and-source-side-gate.md) - Abstraction.lean のトップレベルに、機能を並置した Spec.machine と SourceModel.machine の Machine.Refines・Machine.Adequate を置き、R 課題ごとの義務の束から組み立てる。追跡の検査の段階導入を側ごとにし、運賃計算・マスタの移植元側を失敗扱いにする。移植元の項目の機能への振り直しと、ドメインモデルのアクセサ・DDL の制約・シード・設定の Bean の追跡の仕方を決める。
 * [トップレベルの主定理を refines・preserves・abstracts にする（adequate の廃止）](decision/91be-top-level-preserves-refines-abstracts.md) - Abstraction.lean・Refinement.lean のトップレベルの主定理を、B メソッドのリファインメント refines（B refines A）、空虚化を防ぐ意味的な義務の束 preserves（A preserves B。Refines を含まない）、その組 abstracts（A abstracts B）の 3 つにする。R 課題ごとの束は *Preserves とする。移植元側の段階導入とゲートは ADR a41d から引き継ぐ。ADR a41d を置き換える。
+* [空席照会の第 1 段: フライトを World の状態とし、翌日着の到着時刻を表し、Java オラクルの完了条件を f18c に移す](decision/ce36-flight-search-stage1-world-and-arrival-time.md) - backlog 0be7（空席照会）を 3 段に分け、第 1 段の設計を決める。フライトは抽象状態 World の成分とし、空席照会は状態を読むだけの操作とする。便マスタの到着時刻は出発日 0:00 からの時分（24 時以降を許す）で表し、fixture の outsideSpec を外す。[Source] の DateTimeParseException は予約（B2）の往復便の検査で起きるので、D-031 として登録する。Java オラクルとの一致の完了条件を backlog f18c に移す。
 
 # Specification
 

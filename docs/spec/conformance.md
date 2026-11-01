@@ -43,7 +43,7 @@ generated:
 | `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[master-data.md](master-data.md#シードデータ) |
 | `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[configuration.md](configuration.md) |
 
-`master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。到着時刻 `2415` の便マスタ 2 行には `outsideSpec` が付く（[master-data.md](master-data.md)）。
+`master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。[Spec] の値域の外の時刻の便マスタには `outsideSpec` が付く（上流のシードには無い。到着時刻 `2415` は [Spec] の値域の内である。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
 
 マスタの Mapper の文とコードリストの SQL の PostgreSQL での結果は、`conformance/sql/master-data.json` にある（`tools/conformance/master_sql.py` が生成する。`lake test` の `Tests.MasterSql` が `SourceModel.Repository.*` と照合する。[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)）。
 

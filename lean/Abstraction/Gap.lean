@@ -322,7 +322,7 @@ def D026 : Gap where
   impact := some (.abort, "[Source] は [Spec] が拒む要求を処理し、状態を変えうる")
   backlog := ["a89ec8f0-4d15-46a6-86fa-a640e4df0b44"]
 
-/-- [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻 `2415`、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） -/
+/-- [Source] は、DB のマスタと注入された設定を起動時に読み込み、問い合わせの引数（`LocalDate` など）を受ける。値が [Spec] の型で表せないとき、[Source] は例外で起動しないか（未知の搭乗クラス・運賃種別のコード）、そのまま読み込む（`BOARDING_CLASS_NAME` の `NULL`、負の値・値域を超える値、`HHmm` で表せない時刻（到着時刻は翌日の 23:59 を超えるもの。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）、範囲外の日付、`yyyy/MM/dd` でない生年月日の下限など）。[Spec] はそれらを入力に取らない。列の型は処理系の範囲（`Int4`・`PgDate`・`Varchar n`）で写すので、範囲の違いもこの差異の前提で扱う（[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)） -/
 @[gap_entry]
 def D027 : Gap where
   id := "D-027"
@@ -331,7 +331,7 @@ def D027 : Gap where
   premise := "`dev_D027`（`Abstraction.MasterData`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）"
   deviations := [``Abstraction.MasterData.Alpha.dev_D027, ``Abstraction.Fare.Alpha.dev_D027BF, ``Abstraction.Fare.Alpha.dev_D027F, ``Abstraction.Fare.TotalAlpha.dev_D027TF]
   evidence := .refuted [``Abstraction.MasterData.need_D027]
-  rTasks := ["ABS-001", "ABS-002", "ABS-004", "ABS-026"]
+  rTasks := ["ABS-001", "ABS-002", "ABS-004", "ABS-011", "ABS-026"]
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5"]
 
@@ -366,5 +366,21 @@ def D030 : Gap where
   premise := "PRE（入力の値域・MD-8）"
   evidence := .excludedBy [``Spec.Model.Range.maxBasicFareWithCharge, ``Spec.Model.Range.maxMultiplicationRatio, ``Spec.Model.Range.maxDiscountRate]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
+
+/-- [Source] の往復の予約の検査（`validateFlightDepartureDateForRoundTripFlight`）は、往路便の到着時刻を
+`DateTimeFormatter("HHmm")` で読むので、到着時刻が 24:00 以降（翌日着。シードの NTT523・NTT528 の `2415`）の便では
+`DateTimeParseException` を投げる。[Spec] は到着時刻を出発日 0:00 からの時分で表し、往路便の到着日時を求められる
+（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。空席照会は到着時刻を文字列として整形するだけなので、
+この差異は起きない -/
+@[gap_entry]
+def D031 : Gap where
+  id := "D-031"
+  kind := .pre
+  sites := [⟨"往復の便の検査", "docs/spec/reservation.md", ""⟩, ⟨"便マスタの到着時刻", "docs/spec/master-data.md", ""⟩]
+  premise := "`dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
+  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel` と R 課題が未着手" (some "ABS-131")
+  rTasks := ["ABS-021", "ABS-041"]
+  impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる")
+  backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 
 end Abstraction.Gap

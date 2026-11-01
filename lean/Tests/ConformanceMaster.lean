@@ -28,6 +28,7 @@ open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime
 /-! ## 共通の JSON -/
 
 def hhmm (t : HourMinute) : String := padNat 2 t.hour ++ padNat 2 t.minute
+def arrHhmm (t : ArrivalTime) : String := padNat 2 t.hour ++ padNat 2 t.minute
 
 def codeListName (s : String) : Except String CodeListName :=
   match s with
@@ -44,7 +45,7 @@ def specAnswerJson : Spec.MasterQuery.Answer → Json
   | .route r => optJson (fun r => Json.mkObj [("routeNo", toJson r.routeNo), ("depAirportCd", .str r.depAirportCd.val),
       ("arrAirportCd", .str r.arrAirportCd.val), ("basicFare", toJson r.basicFare)]) r
   | .flightMaster f => optJson (fun f => Json.mkObj [("flightName", .str f.flightName.val), ("routeNo", toJson f.routeNo),
-      ("departureTime", .str (hhmm f.departureTime)), ("arrivalTime", .str (hhmm f.arrivalTime)),
+      ("departureTime", .str (hhmm f.departureTime)), ("arrivalTime", .str (arrHhmm f.arrivalTime)),
       ("craftType", .str f.craftType)]) f
   | .fareType f => optJson (fun f => Json.mkObj [("fareTypeCd", .str f.fareTypeCd.toCode), ("fareTypeName", .str f.fareTypeName),
       ("discountRate", toJson f.discountRate), ("rsrvAvailableStartDayNum", toJson f.rsrvAvailableStartDayNum),

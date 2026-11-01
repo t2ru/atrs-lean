@@ -32,6 +32,7 @@ generated:
 ## 完了条件
 
 - [ ] 運賃計算の [Source] ベクタが Java オラクルと一致する（[backlog bbcc](bbcc-fare-abstraction-proofs.md) から移した。[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）
+- [ ] 空席照会の [Source] ベクタ（`shared/flight-search`・`source-model/flight-search`）が Java オラクルと一致する（[backlog 0be7](0be7-flight-search-usecase.md) から移した。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）
 - [ ] http-contract.md と authentication.md の TODO(spec) を解消した
 - [ ] HTTP レベルのハーネスで、Spring を起動した原典に要求を送り、応答をベクタの形式で採取できる（`SourceModel.Http`・`SourceModel.Validation` との照合は、[backlog 4e0e](4e0e-member-usecases-and-input-validation.md)・[a89e](a89e-http-contract-adapter.md) で行う）
 - [ ] ハーネスの対象外とした操作と、ベクタの範囲を [assurance.md](../spec/assurance.md) に記載した

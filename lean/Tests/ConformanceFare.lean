@@ -36,14 +36,14 @@ def decodeMaster (j : Json) : Except String MasterData := do
   let routes ← (← getArr j "routes").mapM fun r => do
     return ({ routeNo := ← getNat r "routeNo", depAirportCd := ⟨← getStr r "depAirportCd"⟩, arrAirportCd := ⟨← getStr r "arrAirportCd"⟩,
               basicFare := ← getNat r "basicFare" } : Spec.MasterData.Route)
-  -- `outsideSpec` の行（到着時刻 2415 など。ADR 8f18）は Spec の値域の外なので除く
+  -- `outsideSpec` の行（Spec の値域の外の時刻。ADR 8f18・ADR ce36。上流のシードには無い）は除く
   let fms := (← getArr j "flightMasters").filter fun f => (f.getObjVal? "outsideSpec").toOption.isNone
   let flightMasters ← fms.mapM fun f => do
     let dep ← getStr f "departureTime"
     let arr ← getStr f "arrivalTime"
     return ({ flightName := ⟨← getStr f "flightName"⟩, routeNo := ← getNat f "routeNo",
               departureTime := ← need (HourMinute.parseHHmm dep) s!"time: {dep}",
-              arrivalTime := ← need (HourMinute.parseHHmm arr) s!"time: {arr}", craftType := ← getStr f "craftType" } : Spec.MasterData.FlightMaster)
+              arrivalTime := ← need (ArrivalTime.parseHHmm arr) s!"time: {arr}", craftType := ← getStr f "craftType" } : Spec.MasterData.FlightMaster)
   let boardingClasses ← (← getArr j "boardingClasses").mapM fun b => do
     return ({ boardingClassCd := ← boardingClassCd (← getStr b "boardingClassCd"), boardingClassName := ← getStr b "boardingClassName",
               extraCharge := ← getNat b "extraCharge", displayOrder := ← getNat b "displayOrder" } : Spec.MasterData.BoardingClass)
