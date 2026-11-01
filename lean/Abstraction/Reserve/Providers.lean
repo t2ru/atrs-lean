@@ -141,4 +141,33 @@ theorem flightMaster_none {db : MasterDb} {md : MasterData} (hm : masterDataOf d
     rw [hX] at e
     cases e
 
+/-- 予約が使う読み込みの性質: 搭乗クラス・運賃種別のキャッシュの答えと、便マスタの Provider の答え（無い場合は `null`、
+ある場合は便名・時刻・区間の空港コード）。 -/
+theorem load_res {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDataOf db = some md)
+    (hv : md.Valid cfg) {o : Order} (ho : o.Allowed db) :
+    ∃ p, load o = .ok p ∧
+      (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
+        some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
+      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
+        some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
+      (∀ name : FlightName, hasText name.val = true → md.flightMasterOf name = none →
+        FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok none) ∧
+      (∀ name : FlightName, hasText name.val = true →
+        ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
+        ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
+          fm.flightName = some name.val ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
+          fm.arrivalTime = some art ∧ arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧
+          r.departureAirport = some da ∧ da.code = some rt.depAirportCd.val ∧ r.arrivalAirport = some aa ∧
+          aa.code = some rt.arrAirportCd.val) := by
+  obtain ⟨-, -, -, hbcs, hfts, -⟩ := masterDataOf_eq_some.mp hm
+  obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
+  obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
+  obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
+  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
+  obtain ⟨fmp, hml, hmc⟩ := flightMaster_codes hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨fmp', hml', hmn⟩ := flightMaster_none hm hv.md1 hv.md3 hv.md8 hpf
+  rw [hml] at hml'
+  cases hml'
+  exact ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, fun cd => hbq cd, fun cd => hfq cd, hmn, hmc⟩
+
 end Abstraction.Reserve.Providers

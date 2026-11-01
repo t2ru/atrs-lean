@@ -77,6 +77,24 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 初期状態の対応 | `Abstraction.World.Init.worldOfDb_seed`（FLIGHT は生成の形の上で合成、会員はカーネルで照合）と `icW_seed`。旧 `Abstraction.FlightSearch.Init` を移した |
 | 予約・会員を含む状態の空席照会 | 暫定の制限（[assurance.md](../spec/assurance.md) の行）を外した。上流のシードの会員を投入した状態も α の定義域に入る |
 
+### 3b の決定（途中）
+
+| 項目 | 決定 |
+| --- | --- |
+| [Spec] の予約の PRE | 次を足す（[Spec] の修正）。<br>- `Request.Valid`: 入力検証の単項目制約のうち長さと桁、相関 1 の電話番号の長さの上限、選択フライトの便名が空白でないこと。原典の列の長さ（`VARCHAR(n)`）と `int` に収まることに使う<br>- `World.RefMaster`: フライトの便名・搭乗クラス・運賃種別がマスタにある。原典は存在の確認で搭乗クラス・運賃種別のコードを束縛するので、マスタに無いと `NULL` になり、[Spec] と結果が分かれる<br>- `World.MemberRefMaster`: 会員のカード種別がマスタにある。原典の会員の取得はカード種別の表と結合する |
+| 具体側の不変条件 | `IcW` の `KeysOk` に、会員番号の一意性（PK_MEMBER）を足す。会員の取得の文の結果を高々 1 行にするのに使う |
+| ABS-021・ABS-023 の種類 | R 課題から、ABS-041 の補題（L 課題）に改める案（プロジェクトオーナーの確認待ち）。ポートの実装は、予約の具体機械の中で使われ、単独の機械として外に出ない。R 課題にすると、ポートごとの機械と束 `Preserves` が要る |
+| 予約の入出力の α | `aiR`（設定・マスタ・Clock の最初の読み出し・選択フライト・予約フォーム・操作の種類）と `aoR`（核 `undefOrEq`）。不正要求の詳細は空文字に写し、[Spec] の詳細は自由な選択 N-004 で置き換える |
+| [Source] の計算の検証 | Hoare 三つ組の枠組み `Abstraction.Reserve.Hoare`（`EStateM` の逐次・分岐・例外・`for`）と、文の実行の規則 `Abstraction.Reserve.Tx`（障害の例外 `IsFault`）。Lean 4.35 の `Std.Do`（`mvcgen`）も使えることを確かめたが、原典のメソッドを展開すると `Assert` などの細部が検証条件に混ざるので、経路ごとの計算の形を先に示す |
+
+置いた補題（すべて `sorry` なし）:
+
+* `Abstraction.Reserve.Port`: FLIGHT の主キーの条件・`exists`・`findOneForUpdate`・`update` の行
+* `Abstraction.Reserve.Member`: `MemberRepository.findOne` の文の結果と `World.findMember`、`member-map` と会員の照合
+* `Abstraction.Reserve.Providers`: 便マスタの Provider の答え（区間の空港コード、無い場合の `null`）、予約が使う読み込みの性質 `load_res`
+* `Abstraction.Reserve.Flights`: 到着・出発時刻の解釈、搭乗間隔の検査（D-031 の前提）、運賃種別・逆区間の検査の対応 `AgreeV`
+* `Abstraction.Reserve.Select`: `toFlightList` が作るフライト情報の性質（便マスタの有無、存在の確認の文の結果、運賃種別のコード）
+
 ### Consequences
 
 * Good, because 空席照会と予約の貼り合わせの `J` が同じ定義になり、`Refines.alt`・`Preserves.alt` の仮定を満たせる

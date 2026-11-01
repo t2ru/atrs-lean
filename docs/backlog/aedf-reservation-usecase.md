@@ -78,6 +78,15 @@ generated:
 - 完了条件のうち「予約の SPEC-001〜SPEC-004 を証明した」と「リポジトリの SQL の写しを PostgreSQL での差分実行で照合した」を満たした。
 - 第 3 段に申し送るもの: 空席照会の状態と初期状態を全表に広げること（全表の α と一体）、D-014 の述語、R 課題 ABS-020〜023・041・109・131 とトップレベルへの統合。
 
+## 第 3 段の進み具合
+
+[ADR ab93](../decision/ab93-reservation-stage3-world-alpha-and-abs041.md) で小段 3a〜3d に分けた。
+
+* 3a（済）: 全表の α `worldOfDb`、具体側の不変条件 `IcW`、空席照会の初期状態の変更。ABS-011 とトップレベルの主定理は新しい貼り合わせで通る。
+* 3b（途中）: 予約の PRE に `Request.Valid`・`World.RefMaster`・`World.MemberRefMaster` を足した。予約の入出力の α と貼り合わせ、FLIGHT・会員・便マスタの Provider・選択フライトの補題、Hoare 三つ組の枠組みを置いた。差異の述語（D-009・D-014・D-031・D-027 と運賃計算の差異）、W 課題 ABS-109・ABS-131 は未着手。
+* 3c（未着手）: 予約の各メソッドの事前・事後条件と ABS-041、ABS-020・ABS-022。
+* 3d（未着手）: トップレベルへの統合と束。
+
 ## 参照
 
 - [reservation.md](../spec/reservation.md)
