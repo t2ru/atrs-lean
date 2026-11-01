@@ -190,13 +190,15 @@ structure SearchInput where
 /-- 空席照会の出力。 -/
 abbrev SearchOutput := Except AtrsError (List FlightVacantInfo)
 
-/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードが
-空白でない（[Source] の `Assert.hasText` に当たる。入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は
-課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる（[Source] も同じ）。 -/
+/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
+照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件で、入力検証を通過していれば
+満たされる。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
+（[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
+（搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 第 3 段）。 -/
 @[spec_doc "docs/spec/flight-search.md#事前条件"]
-def SearchInput.Pre (w : Port.World) (i : SearchInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ w.RefMaster i.md ∧ Text.hasText i.criteria.depAirportCd.val = true ∧
-    Text.hasText i.criteria.arrAirportCd.val = true
+def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
+    Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
 def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
@@ -211,7 +213,7 @@ def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
     (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
-  obtain ⟨_, hmd, href, _, _⟩ := h
+  obtain ⟨_, hmd, hbsome, _, _⟩ := h
   unfold searchFlight
   split
   · rfl
@@ -221,36 +223,16 @@ theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.
       simp only
       split
       · rfl
-      · rename_i hne
-        -- 候補が 1 つでもあれば、その搭乗クラスはマスタにある（RefMaster）
-        obtain ⟨x, hx⟩ := List.exists_mem_of_ne_nil
-          ((List.filterMap (candidateOf i.md i.criteria route (i.today.daysBetween i.criteria.depDate)) w.findAll).mergeSort
-            candidateLe) (fun h => hne (by rw [h]; rfl))
-        have hx' := (List.mergeSort_perm _ _).mem_iff.mp hx
-        rw [List.mem_filterMap] at hx'
-        obtain ⟨f, hf, hcf⟩ := hx'
-        unfold candidateOf at hcf
-        simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at hcf
-        obtain ⟨fm, _, ft, _, hcf⟩ := hcf
-        split at hcf
-        · rename_i hcond
-          obtain ⟨_, _, hbc, _, _⟩ := hcond
-          obtain ⟨_, ⟨b, hb, hbcd⟩, _⟩ := href f hf
-          have hbsome : (i.md.boardingClassOf i.criteria.boardingClassCd).isSome := by
-            unfold boardingClassOf
-            rw [List.find?_isSome]
-            exact ⟨b, hb, by simp [hbcd, hbc]⟩
-          have hroute' := List.mem_of_find?_eq_some hroute
-          obtain ⟨⟨a1, ha1, hc1⟩, ⟨a2, ha2, hc2⟩⟩ := hmd.md3.1 route hroute'
-          have hdep : (airportName? i.md route.depAirportCd).isSome := by
-            unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a1, ha1, by simp [hc1]⟩
-          have harr : (airportName? i.md route.arrAirportCd).isSome := by
-            unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a2, ha2, by simp [hc2]⟩
-          obtain ⟨bc, hbc'⟩ := Option.isSome_iff_exists.mp hbsome
-          obtain ⟨dn, hdn⟩ := Option.isSome_iff_exists.mp hdep
-          obtain ⟨an, han⟩ := Option.isSome_iff_exists.mp harr
-          simp [Fare.basicFare, hbc', hdn, han]
-        · cases hcf
+      · have hroute' := List.mem_of_find?_eq_some hroute
+        obtain ⟨⟨a1, ha1, hc1⟩, ⟨a2, ha2, hc2⟩⟩ := hmd.md3.1 route hroute'
+        have hdep : (airportName? i.md route.depAirportCd).isSome := by
+          unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a1, ha1, by simp [hc1]⟩
+        have harr : (airportName? i.md route.arrAirportCd).isSome := by
+          unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a2, ha2, by simp [hc2]⟩
+        obtain ⟨bc, hbc'⟩ := Option.isSome_iff_exists.mp hbsome
+        obtain ⟨dn, hdn⟩ := Option.isSome_iff_exists.mp hdep
+        obtain ⟨an, han⟩ := Option.isSome_iff_exists.mp harr
+        simp [Fare.basicFare, hbc', hdn, han]
 
 /-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
 @[obligation "SPEC-001"]
