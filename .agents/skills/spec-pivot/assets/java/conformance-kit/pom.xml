@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- spec-pivot の Java 用の適合テストの道具（references/docs/lang/java/harness.md）。アプリに依存しない。
+     版はプロジェクトのハーネスの dependencyManagement で上書きしてよい（原典と同じ版にそろえるため）。 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dev.spec-pivot</groupId>
+  <artifactId>conformance-kit</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+  <name>spec-pivot conformance kit (Java)</name>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jackson.version>2.20.2</jackson.version>
+    <tomcat.version>11.0.15</tomcat.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <!-- HTTP レベルのオラクルだけが使う（WebappServer）。使う側が自分の版で入れる -->
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+      <version>${tomcat.version}</version>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</project>

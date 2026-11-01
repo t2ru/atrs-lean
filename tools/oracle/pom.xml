@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ATRS の Java オラクル（backlog f18c）。原典を改変せずにビルドしたもの（build-upstream.sh）に依存する。
+     親は原典のルートの pom（jp.co.ntt.atrs:atrs）とし、依存の版を原典とそろえる。 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>jp.co.ntt.atrs</groupId>
+    <artifactId>atrs</artifactId>
+    <version>5.11.0.RELEASE</version>
+    <relativePath />
+  </parent>
+  <groupId>atrs-lean</groupId>
+  <artifactId>atrs-oracle</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+  <name>ATRS Java oracle</name>
+
+  <properties>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!-- 親の dependencyManagement は ${project.groupId}・${project.version} で原典のモジュールを指すので、ここでは版を明示する -->
+  <dependencies>
+    <dependency>
+      <groupId>dev.spec-pivot</groupId>
+      <artifactId>conformance-kit</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>jp.co.ntt.atrs</groupId>
+      <artifactId>atrs-web</artifactId>
+      <classifier>classes</classifier>
+      <version>5.11.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>jp.co.ntt.atrs</groupId>
+      <artifactId>atrs-domain</artifactId>
+      <version>5.11.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>jp.co.ntt.atrs</groupId>
+      <artifactId>atrs-env</artifactId>
+      <version>5.11.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <!-- HTTP レベルのオラクルのサーブレットコンテナ（原典が cargo で起動する Tomcat と同じ系列。trace/upstream.json） -->
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat.embed</groupId>
+      <artifactId>tomcat-embed-el</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>atrs-oracle</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>17</release>
+          <annotationProcessorPaths combine.self="override" />
+          <compilerArgs combine.self="override" />
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>classpath</id>
+            <phase>package</phase>
+            <goals><goal>build-classpath</goal></goals>
+            <configuration>
+              <outputFile>${project.build.directory}/classpath.txt</outputFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

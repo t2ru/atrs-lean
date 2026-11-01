@@ -56,6 +56,16 @@
       ],
       "covers": { "names": ["SourceModel.Domain.Repository.Flight.*", "SourceModel.Db.FlightSeed.*",
         "SourceModel.Db.Schema.FlightRow", "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap"] }
+    },
+    {
+      "id": "java-oracle",
+      "description": "Java オラクル（backlog f18c）: 運賃計算・空席照会のベクタを原典で照合し、オラクルが生成したベクタ（source-model/*/oracle-*.json）を再生成と突き合わせ、lake test で SourceModel と照合する",
+      "steps": [
+        { "cwd": ".", "argv": ["mise", "run", "oracle:domain"] },
+        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+      ],
+      "covers": { "vectors": ["conformance/shared/fare/*.json", "conformance/source-model/fare/*.json",
+        "conformance/shared/flight-search/*.json", "conformance/source-model/flight-search/*.json"] }
     }
   ]
 }
