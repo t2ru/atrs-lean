@@ -1,9 +1,9 @@
 ---
 name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
-compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。
+compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。スキルの文書・記録の保守と、適用先の文書の検査には、スキル okf-bundle（OKF のバンドル）と work-records（意思決定記録・作業項目）を使う。
 metadata:
-  version: "0.22"
+  version: "0.24"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -184,7 +184,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 ### 道具（scripts）
 
-`scripts/` は、追跡と検査の **そのまま使える道具** である（[scripts/README.md](scripts/README.md)）。追跡の CLI `scripts/trace`（Rust）、Lean の静的検査 `scripts/ci/check_lean.py`、課題一覧との突き合わせ `scripts/ci/check_obligations.py`、上流の版の検査、PostgreSQL・JVM の突き合わせ表の検査、意思決定記録・作業項目の ID の道具（任意）を持つ。
+`scripts/` は、追跡と検査の **そのまま使える道具** である（[scripts/README.md](scripts/README.md)）。追跡の CLI `scripts/trace`（Rust）、Lean の静的検査 `scripts/ci/check_lean.py`、課題一覧との突き合わせ `scripts/ci/check_obligations.py`、上流の版の検査、PostgreSQL・JVM の突き合わせ表の検査、Lean の名前の一括改名を持つ。文書（OKF のバンドル）と記録（意思決定記録・作業項目）の道具は、別のスキル okf-bundle・work-records にある。
 道具はアプリに依存せず、プロジェクト固有の値（移植元・移植先の配置、crate 名、文書のパス、言語の組、Lean のルート）を、プロジェクトの `trace/project.json` から読む（[traceability.md](references/docs/spec/traceability.md#プロジェクトの設定)）。プロジェクトの CI は、これらを一括検査のスクリプトから呼ぶ。
 
 処理系ごとに意味が異なる言語（例: SQL）は、`references/docs/lang/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。
@@ -218,7 +218,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 ## スキルの文書と記録
 
 `references/docs/` は OKF v0.2 の Knowledge Bundle である。索引は [references/docs/index.md](references/docs/index.md)、変更履歴は [log.md](references/docs/log.md) にある。
-文書は性格ごとに分けて置く: `spec/`（方法の規範: 構成・リファインメントと義務・追跡・ベクタの形式・検証）、`rules/`（書き方の規約: 仕様文書・このバンドルの保守）、`guide/`（手順と進め方）、`lang/<lang>/`（言語パック）。
+文書は性格ごとに分けて置く: `spec/`（方法の規範: 構成・リファインメントと義務・追跡・ベクタの形式・検証）、`rules/`（書き方の規約: 仕様文書・このバンドルの保守）、`guide/`（手順と進め方）、`lang/<lang>/`（言語パック）。バンドルの規則は [references/okf-profile.json](references/okf-profile.json) にある。
 スキル自身の意思決定記録は [references/docs/decision/](references/docs/decision/README.md)、作業項目は [references/docs/backlog/](references/docs/backlog/README.md) にある。
 アプリに依存しない判断・作業はここに記録し、適用先に固有の判断は適用先に記録する。
-スキルを保守するときの規則（frontmatter・ID・持ち出せること・適用先との分担）は、[references/docs/rules/maintenance.md](references/docs/rules/maintenance.md) にある。
+スキルを保守するときの規則（バンドルの構成・持ち出せること・適用先との分担）は、[references/docs/rules/maintenance.md](references/docs/rules/maintenance.md) にある。文書の形式と検査はスキル okf-bundle、記録の書き方・ID・検査はスキル work-records に従う。

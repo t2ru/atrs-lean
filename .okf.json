@@ -1,0 +1,113 @@
+{
+  "note": "スキル okf-bundle の scripts/okf_check.py が検査する OKF v0.2 のバンドルとリンク（okf-bundle の references/docs/rules/bundle.md#設定）",
+  "bundles": [
+    {
+      "root": "docs",
+      "profile": {
+        "okf_version": true,
+        "index_complete": true,
+        "common": {
+          "required": [
+            "title",
+            "description",
+            "tags"
+          ],
+          "quoted": [
+            "title",
+            "description"
+          ],
+          "title_heading": true
+        },
+        "rules": [
+          {
+            "match": "**/README.md",
+            "type": "Overview"
+          },
+          {
+            "match": "decision/*.md",
+            "type": "Architecture Decision Record",
+            "required": [
+              "id",
+              "decision_status",
+              "date",
+              "decision-makers"
+            ],
+            "sections": [
+              "Context and Problem Statement",
+              "Decision Drivers",
+              "Considered Options",
+              "Decision Outcome",
+              "More Information"
+            ]
+          },
+          {
+            "match": "backlog/*.md",
+            "type": "Backlog Item",
+            "required": [
+              "id",
+              "state",
+              "depends_on"
+            ],
+            "sections": [
+              "目的",
+              "範囲",
+              "対象外",
+              "完了条件",
+              "参照"
+            ]
+          },
+          {
+            "match": "spec/*.md",
+            "type": "Specification",
+            "required": [
+              "models",
+              "spec_role"
+            ],
+            "enum": {
+              "models": [
+                "spec",
+                "source",
+                "target"
+              ],
+              "spec_role": [
+                "normative",
+                "meta",
+                "draft",
+                "informative"
+              ]
+            }
+          },
+          {
+            "match": "rules/*.md",
+            "type": "Guideline"
+          }
+        ]
+      }
+    },
+    {
+      "root": ".agents/skills/spec-pivot/references/docs",
+      "profile": ".agents/skills/spec-pivot/references/okf-profile.json"
+    },
+    {
+      "root": ".agents/skills/okf-bundle/references/docs",
+      "profile": ".agents/skills/okf-bundle/references/okf-profile.json"
+    },
+    {
+      "root": ".agents/skills/work-records/references/docs",
+      "profile": ".agents/skills/work-records/references/okf-profile.json"
+    }
+  ],
+  "links": {
+    "roots": [
+      "AGENTS.md",
+      "CLAUDE.md",
+      "docs",
+      ".agents"
+    ],
+    "absolute": false
+  },
+  "skip": [
+    ".agents/skills/okf-bundle/scripts/fixtures/",
+    ".agents/skills/work-records/scripts/fixtures/"
+  ]
+}

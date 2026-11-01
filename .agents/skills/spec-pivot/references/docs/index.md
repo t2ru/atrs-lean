@@ -13,7 +13,7 @@ okf_version: "0.2"
 # Rules
 
 * [仕様文書の書き方](rules/spec-documents.md) - Spec で表現できない仕様を書く Markdown の仕様文書の区分・節構成・差異の表と、道具が読む見出しと値。
-* [スキルの文書の保守](rules/maintenance.md) - references/docs（OKF v0.2 のバンドル）の形式とその検査、意思決定記録と作業項目の書き方、ID の道具、持ち出せることの検査、適用先との分担。
+* [スキルの文書の保守](rules/maintenance.md) - references/docs（OKF v0.2 のバンドル）の構成と置き場所、スキル okf-bundle・work-records による形式と記録の検査、持ち出せること、適用先との分担。
 
 # Guide
 
@@ -60,6 +60,8 @@ okf_version: "0.2"
 # Decisions
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
+* [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](decision/89f2-layout-check-one-process-per-group.md) - layout-check（Trace.Layout.run）は、モジュールの組ごとに環境を読み込んで解放しないため、メモリが組の数に比例して増えていた。組ごとに同じ実行ファイルを子プロセスとして起動して判定し、親は結果の JSON を合わせるだけにする。Environment.freeRegions による解放は採らない。
+* [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](decision/22b4-split-okf-and-records-skills.md) - 移植に関係の無い文書の道具（okf_check.py・docmv.py・ids.py）と規則を、スキル spec-pivot から汎用のスキル okf-bundle（OKF のバンドル）と work-records（ADR・作業項目）に分け、設定を trace/project.json から専用のファイル .okf.json・.work-records.json に移し、移植に固有の検査を一般化する。
 * [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) - Java の原典実行に共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
 * [同じ状態を共有する機能の合成子 Machine.alt、トランザクションの取消、LocalTime・List.get・StringUtils・TIMESTAMP の写し](decision/a303-shared-state-machine-alt-and-transaction.md) - 状態の成分を共有する 2 つの機能の機械を、同じ状態の上で入力と出力を和にして並置する合成子 Machine.alt（と Concrete・Glue・Refines・Preserves.core の alt）を足す（実装は適用先の段に合わせる）。状態を変える移植元の計算のために、トランザクションの取消 LangSemantics.Sql.Transaction.run を置く。言語パックに java.time.LocalTime（HHmm の SMART 解決）・LocalDateTime、List.get、Spring の StringUtils、PostgreSQL の TIMESTAMP を足す。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える](decision/288a-rename-oracle-to-origin-run.md) - 移植元のプログラムを実行して期待値を採取・照合する手段を、DBMS の Oracle と紛れない「原典実行」（識別子 origin-run）と呼ぶ。新旧 2 版を比べるものは「差分の原典実行」とする。ベクタの source の値は <移植元>-origin-run、道具のディレクトリ・クラス名もこれにそろえる。

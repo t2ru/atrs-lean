@@ -6,7 +6,7 @@ tags: [lean, traceability]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:19:29+09:00
+  at: 2026-11-01T22:00:00+09:00
 ---
 
 # Lean の追跡属性と trace-dump
@@ -20,7 +20,7 @@ generated:
 | `Trace.Gap` | ギャップの登録簿（`Trace.Gap`・`@[gap_entry]`） |
 | `Trace.Dump` | `trace-dump` の本体 |
 | `Trace.Obligation` | `obligation-check` の本体（TR-G の Lean 側と GK） |
-| `Trace.Layout` | `layout-check` の本体（宣言がモジュール名の下にあること。[rules.md](rules.md#モジュールと名前空間)） |
+| `Trace.Layout` | `layout-check` の本体（宣言がモジュール名の下にあること。[rules.md](rules.md#モジュールと名前空間)）。モジュールの組は組ごとに別のプロセスで判定する（[ADR 89f2](../../decision/89f2-layout-check-one-process-per-group.md)） |
 
 道具の入口（`main`）は、モデルを import するプロジェクトの側に置く（例: `Tools/TraceDump.lean` が `Trace.Dump.loadEnv` と `Trace.Dump.dumpJson` を呼ぶ）。
 `assets/lean/` の `lake exe trace-test` は、`Test/Trace/` のフィクスチャで `trace-dump`・`obligation-check`・`layout-check` の処理を確かめる。

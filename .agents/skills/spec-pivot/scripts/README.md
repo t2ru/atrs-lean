@@ -5,6 +5,8 @@
 どの道具も、作業ディレクトリから上にたどって `trace/project.json` があるところをリポジトリのルートとする
 （`--repo <dir>` でも指定できる）。下の `<skill>` は、このスキルの置き場所である。
 
+文書（OKF のバンドルとリンク、文書の移動）と記録（意思決定記録・作業項目の ID）の道具は、別のスキル okf-bundle（`scripts/okf_check.py`・`scripts/docmv.py`）と work-records（`scripts/ids.py`）にある。設定も、それぞれのスキルの設定ファイル（`.okf.json`・`.work-records.json`）に置く。
+
 | 道具 | 内容 | 依存 |
 | --- | --- | --- |
 | `trace/`（Rust の crate） | 両端の追跡: インベントリ・manifest と生成区画・TR 検査（原典のソースツリーとの対応 TR-M を含む）・`rehash`・`diff`・`impact`・原典とモデルの対照表 `review`（[references/docs/spec/traceability.md](../references/docs/spec/traceability.md#道具)） | Cargo（tree-sitter-java・tree-sitter-rust・serde・sha2・roxmltree・globset）、`git` |
@@ -14,9 +16,6 @@
 | `ci/with_postgres.sh` | PostgreSQL に接続できる環境でコマンドを実行する（無ければ一時クラスタ。`WITH_POSTGRES_TCP=1` なら 127.0.0.1 でも待ち受け、`PGHOST`・`PGPORT` を渡す。[sql/dialects/postgresql/harness.md](../references/docs/lang/sql/dialects/postgresql/harness.md)） | PostgreSQL |
 | `ci/jvm_table.sh`・`ci/pg_table.sh` | `assets/lean/Test.LangSemantics` の JVM・PostgreSQL との突き合わせ表が、生成器の出力と一致することを確かめる。処理系が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2） | JDK / PostgreSQL |
 | `lean/rename.py` | Lean の宣言・モジュールの完全名を、対応表（`{旧: 新}`）からリポジトリのテキスト（`.lean`・`.md`・`.json` など）で一度に書き換える（`apply`）。旧い名前の残りを列挙する（`check`）。名前空間の接頭辞を書けば、その下もまとめて写る。`--self-test` で確かめる（[references/docs/lang/lean/rules.md](../references/docs/lang/lean/rules.md#モジュールと名前空間)） | Python 3（uv。標準ライブラリだけ）、`git` |
-| `docs/okf_check.py` | OKF v0.2 のバンドルの検査（frontmatter・`type`・`index.md`・`log.md`、プロファイルの規則、索引の網羅）と、Markdown の相対リンク・見出しアンカーの検査。設定は `trace/project.json` の `okf`、スキルのバンドルの規則は `docs/profiles/spec-pivot.json`。`--self-test` で `ci/fixtures/okf/` を確かめる（[references/docs/rules/maintenance.md](../references/docs/rules/maintenance.md#バンドルの検査)） | Python 3（uv。標準ライブラリだけ） |
-| `docs/docmv.py` | 文書のバンドルの中でファイル・ディレクトリを移し（`git mv`）、リポジトリの Markdown の相対リンクと、コード・設定を含むテキストの中のパスの言及（`<バンドルの末尾 2 成分>/<old>`）を一度に張り直す。いくつもの移動を 1 回で行う。コードの中のリンクの形は張り直さない。`--dry-run` で確かめてから実行する。リポジトリのルートは `git` で決める。`--self-test` で一時リポジトリの例を確かめる（[references/docs/rules/maintenance.md](../references/docs/rules/maintenance.md#frontmatter)） | Python 3（uv。標準ライブラリだけ）、`git` |
-| `docs/ids.py` | 任意。意思決定記録・作業項目の ID（UUID v4）の採番（`new`）・参照の検査（`check`）・置き場所の間の移動とリンクの張り直し（`move`）・旧番号からの書き換え（`migrate`）。置き場所は種類ごとに複数でよく（プロジェクトの `docs/` とスキルの `references/docs/`）、持ち出すバンドル（スキル）が外を指していないことも検査する。設定は `trace/project.json` の `ids`。スキルの記録の書き方は [references/docs/rules/maintenance.md](../references/docs/rules/maintenance.md) | Python 3（uv）、`git` |
 
 ## 使い方（リポジトリのルートで）
 
@@ -29,12 +28,11 @@ cargo build --release --manifest-path <skill>/scripts/trace/Cargo.toml
 <skill>/scripts/trace/target/release/trace review --dump /tmp/dump.json   # build/review/index.html（生成物）
 uv run python -I <skill>/scripts/ci/check_lean.py
 uv run python -I <skill>/scripts/ci/check_obligations.py /tmp/ob.json
-uv run python -I <skill>/scripts/docs/okf_check.py
 ```
 
 - `lake exe trace-dump`・`obligation-check`・`axiom-check` の入口（`main`）は、モデルを import するプロジェクトの側に置く。
   本体はスキルの `assets/lean/Trace`（`Trace.Dump`・`Trace.Obligation`）にある（[references/docs/lang/lean/trace-attributes.md](../references/docs/lang/lean/trace-attributes.md)）。
 - `lake exe layout-check`（宣言がモジュール名の下にあること）の本体は `assets/lean/Trace/Layout.lean`。入口は、スキルの assets（`assets/lean/Test/Trace/LayoutCheck.lean`）とプロジェクトの側（例: `lean/Tools/LayoutCheck.lean`）に置く。
-- 道具の自己テスト: `cargo test --release`（`scripts/trace` で）、`check_lean.py --self-test`、`check_obligations.py --self-test`、`okf_check.py --self-test`、`docmv.py --self-test`、`lean/rename.py --self-test`、`lake exe trace-test`（`assets/lean` で）。
+- 道具の自己テスト: `cargo test --release`（`scripts/trace` で）、`check_lean.py --self-test`、`check_obligations.py --self-test`、`lean/rename.py --self-test`、`lake exe trace-test`（`assets/lean` で）。
 - Python の道具は uv で実行する（`uv run python -I`。版は適用先の `.python-version`・`pyproject.toml` に従う。[ADR 8cb7](../references/docs/decision/8cb7-run-python-tools-with-uv.md)）。
 - CI は、これらをプロジェクトの一括検査（タスクの実行器やスクリプト。実行器は適用先が選ぶ）から呼ぶ。

@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T19:00:00+09:00
+  at: 2026-11-01T22:30:00+09:00
 ---
 
 # ATRS での spec-pivot スキルの適用
@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/docs/lang/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/docs/lang/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.22`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
+使うスキルの版: `metadata.version` = `0.24`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -41,12 +41,12 @@ generated:
 | パス | 内容 |
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets/lean`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
-| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が一括検査。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
+| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
 | `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
 | `conformance/` | 適合テストベクタ |
-| `trace/` | 版の宣言・インベントリ・manifest。スキルの道具が読む ATRS の設定 `trace/project.json`（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート・ADR と backlog の置き場所。スキルの [traceability.md](../../.agents/skills/spec-pivot/references/docs/spec/traceability.md#プロジェクトの設定)） |
+| `trace/` | 版の宣言・インベントリ・manifest。スキルの道具が読む ATRS の設定 `trace/project.json`（crate 名・移植元/移植先の配置・文書のパス・言語の組・Lean のルート。スキルの [traceability.md](../../.agents/skills/spec-pivot/references/docs/spec/traceability.md#プロジェクトの設定)） |
 | `.agents/skills/spec-pivot/scripts/` | スキルの道具（[ADR edc8](../../.agents/skills/spec-pivot/references/docs/decision/edc8-skill-scripts-and-generic-lean-libraries.md)）。`trace/`（追跡の道具。Rust。[backlog ffdc](../backlog/ffdc-trace-tooling.md)、[ADR 0eea](../../.agents/skills/spec-pivot/references/docs/decision/0eea-trace-tooling-unresolved-details.md)・[ADR 9cd9](../../.agents/skills/spec-pivot/references/docs/decision/9cd9-rehash-diff-impact-details.md)）。機能と backlog の対応表は `trace/features.json`、`rehash` が実行する検査の登録は `trace/checks.json`。決定論的な検査を足す backlog（移植元の原典実行・Verus・Kani など）は、`checks.json` に登録する |
 | `tools/` | ATRS 固有の道具。`ci/master_sql.sh`、`ci/java_origin_run.sh`・`origin-run/`（Java の原典実行。原典を複写してビルドし、ドメイン層と HTTP レベルで実行する。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)）、`ci/skippable.sh`、`conformance/`（共有入力と SQL の差分実行の生成器）、`docs/legacy-ids.json`（ADR・backlog の旧番号の対応表） |
 
@@ -130,7 +130,7 @@ generated:
 | --- | --- |
 | 評価 | 済み。範囲は [ADR 84bf](../decision/84bf-porting-scope.md) と `trace/out-of-scope.json`、インベントリは [backlog 455f](../backlog/455f-upstream-submodule-and-inventory.md)。適用の前提を欠く境界と、その代わりの扱いは [spec/assurance.md](../spec/assurance.md) にある |
 | 判断を記録する事項 | プロジェクトオーナーが判断し、ADR に記録する。AI が作業を止める条件は、スキルの既定の例に加えて、[decision-records.md](decision-records.md#いつ-adr-を書くか) の「ADR を書く」場合と、差異（`D-NNN`・`T-NNN`）・非決定性・範囲外の項目を登録簿に足す場合とする |
-| 検査ゲート | `mise run ci`（ルートの `mise.toml` のタスク。[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）と CI。追跡は `trace check`、ハッシュの更新は `trace rehash` |
+| 検査ゲート | `mise run check`（選択実行）・`mise run ci`（全数）。ルートの `mise.toml` のタスク（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)）と CI。実行の時点は [checks.md](checks.md)。追跡は `trace check`、ハッシュの更新は `trace rehash` |
 | 未着手の可視化 | コード単位は TR-S1。コード単位に現れない振る舞いは、仕様文書の草案節と backlog 項目の完了の定義で管理する |
 | 敵対的レビュー | 設計の段階と backlog 項目の完了の前に、独立したエージェントで行う。指摘と対応は、その ADR に記す（例: [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)） |
 | 画面の確認 | HTTP レベルの原典実行とベクタで行う。HTML の構造は範囲外（ADR 84bf）。ブラウザでの操作の流れのテストは、現時点では採らない |

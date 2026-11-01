@@ -7,9 +7,10 @@ okf_version: "0.2"
 * [作業規約（rules）](rules/README.md) - 作業規約の索引と、規約・文書間の優先順位。
 * [ATRS での spec-pivot スキルの適用](rules/atrs-porting.md) - 言語間移植の方法（スキル spec-pivot）を ATRS に適用するときの固有事項。言語ペア、リポジトリ配置、機能名、型、依存フレームワーク、追従中の上流、ATRS で採った値。
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
-* [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。
+* [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の ATRS での置き場所・命名・状態・テンプレートと作成基準。形式と道具はスキル work-records に従う。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。コミットの単位とメッセージの規則。
+* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。PR は draft で作り、人間のレビューを求める段で ready にする。コミットの単位とメッセージの規則。
+* [検査の実行規約](rules/checks.md) - 検査を常時の段・変更時の段・全数に分け、コミット前・push 前・PR・main・定期・節目のそれぞれで実行するものを決める。長い段は関係する変更があったときだけ実行し、範囲を tools/ci/check-scopes.toml に宣言する。
 
 # Decisions
 
@@ -74,6 +75,9 @@ okf_version: "0.2"
 * [予約の第 2 段: 抽象機械 reserveMachine と SPEC 課題、具体機械 reserveConcrete、会員のシード、失敗時の採番の前進](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) - backlog aedf の第 2 段の設計を決める。予約確認と予約確定を 1 つの抽象機械（選択の像。N-001・N-002・N-004）にし、Conflict は予約確定だけが返す。Conflict・I/O 失敗の選択に、失敗するまでに進んだ採番の数を持たせる（確認待ち）。具体機械は業務例外・不正要求・I/O 失敗・排他の失敗を出力の値とする。会員のシードを生成器で展開し、ログイン日時を投入日とみなす。空席照会の状態の型の変更と全表の α は第 3 段に回す。
 * [予約の第 1 段: 3 段の分け方、状態の共有、World と状態の表の拡張、予約の Spec と SourceModel の関数](decision/4c45-reservation-stage1-shared-state-and-source-model.md) - backlog aedf（予約）を 3 段に分ける。空席照会と予約が同じ World を共有するため、スキルに同じ状態の上の合成子を足す。World に会員・予約・採番を、SourceModel の状態の表に会員・予約の表とシーケンスを足す。予約の Spec（Spec.Ticket・Spec.UseCase.Reserve）と SourceModel（原典のソースツリーの形）の関数、共有ベクタ、Java の原典実行を第 1 段で置く。D-009 の範囲を INT の上限に広げる（確認待ち）。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える（ATRS）](decision/18ca-rename-oracle-to-origin-run.md) - Java の原典を実行して期待値を採取・照合する手段を「原典実行」（識別子 origin-run）と呼び替え、ATRS の文書・既存の ADR と作業項目の本文・ベクタの source の値・道具（tools/origin-run、tools/ci/java_origin_run.sh、mise の origin-run:*）をそろえる。改名しない規約の backlog のファイル名（f18c・773f）は残す。
+* [検査を常時の段・変更時の段・全数に分け、長い段は関係する変更があったときだけ実行する](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) - コミット前と PR の CI では、常時の段（ci:fast）と、変更に関係する変更時の段だけを実行する（mise run check）。CI で 20 秒以上かかる段は変更時の段とし、範囲（パスの glob と Lean の import の閉包）を tools/ci/check-scopes.toml に宣言する。main への push・週次・手動・backlog の完了・版上げでは全数（mise run ci）を実行する。lake test から 20 秒以上かかる節（シードの DB を使う SourceModel の照合と空席照会の SQL の結果、暦日の全日、double の総当たり）を実行ファイル long-tests に分け、CI の push と pull_request の二重起動をやめる。
+* [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
+* [PR は draft で作り、人間のレビューを求める段で ready にする](decision/8bb7-pr-draft-until-review-ready.md) - 自分で作ったブランチの PR は draft で作成し、作業が終わって確認と CI が通り、作成者の側で残る作業が無くなって人間にレビューを求める段になったら、作成者が draft から ready for review に変える。レビューで大きな作業が差し戻されたら draft に戻してよい。マージはプロジェクトオーナーが行う。
 
 # Specification
 
@@ -139,10 +143,14 @@ okf_version: "0.2"
 * [ギャップの証明の状態を Lean で表す](backlog/c27d-gap-evidence-states.md) - Trace.Gap に証明の状態 Evidence を足し、obligation-check（GK）で裏付けの宣言と照合する。ATRS の登録簿の 30 件に状態を与え、否定の定理と opaque の主張に @[gap] を付け、生成する表に証明の状態の列を足す。
 * [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](backlog/76a6-source-side-adequacy-gate.md) - 運賃計算・マスタの読み込みの R 課題を義務の束 Machine.Adequate に束ね、機能を並置した Spec.machine・SourceModel.machine についてトップレベルの Machine.Refines・Machine.Adequate を Abstraction.lean に示す。移植元側の追跡の検査を、移植元側の作業項目の完了で失敗扱いにする（側ごとの段階導入）。
 * [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](backlog/cb23-adequate-to-preserves-abstracts.md) - 義務の束 Machine.Adequate を、B メソッドのリファインメント Machine.Refines（B refines A）と、空虚化を防ぐ意味的な義務のすべての束 Machine.Preserves（A preserves B。Refines を含まない）、その組 Machine.Abstracts（A abstracts B）に分ける。スキルの定義・検査と、ATRS のトップレベルの主定理・R 課題ごとの束を書き換える。
+* [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](backlog/2ba8-split-okf-and-records-skills.md) - スキル spec-pivot から、移植に関係の無い OKF のバンドルの管理と ADR・backlog の管理を、汎用のスキル okf-bundle・work-records に分け、ATRS の設定と検査を移す。
+* [検査の層を分け、長い段を関係する変更があったときだけ実行する](backlog/7d08-change-scoped-checks.md) - コミット前と PR の CI を、常時の段と変更に関係する長い段だけにし（mise run check）、全数（mise run ci）を main への push・週次・節目に実行する。範囲の宣言と選択の道具、lake test の総当たりの分割、CI の起動の整理、実行の時点の規約を置く。
 
 # Skill
 
 * [スキル spec-pivot の文書の索引](../.agents/skills/spec-pivot/references/docs/index.md) - スキル spec-pivot の OKF バンドル（方法の文書・言語パック・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
+* [スキル okf-bundle の文書の索引](../.agents/skills/okf-bundle/references/docs/index.md) - スキル okf-bundle の OKF バンドル（OKF のバンドルの書き方と検査の規則・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
+* [スキル work-records の文書の索引](../.agents/skills/work-records/references/docs/index.md) - スキル work-records の OKF バンドル（ADR・backlog の書き方と検査の規則・スキル自身の意思決定記録と作業項目）。ATRS の外のバンドルで、ATRS の文書からはリンクで参照する。
 
 # Log
 

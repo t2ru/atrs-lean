@@ -57,7 +57,7 @@ generated:
 - [Source]: 原典のソースツリーの形で、予約の Web 層（`App.B2`）・サービス・リポジトリ・モデルのクラスを写した。状態の表に会員・予約の表とシーケンスを足した。状態の表に対する計算 `SourceModel.Db.Tx` で、Mapper の文・`@Transactional` の取消（シーケンスは戻さない）・Clock・実行環境の障害を写した。入口の計算は `SourceModel.ReserveQuery`。
 - 共有ベクタ `conformance/shared/reservation/` の 47 件が、`Spec` と `SourceModel` の両方で通る。期待値は仕様の例と手計算から取り、敵対的レビューで独立に再計算した。
 - Java の原典実行（`tools/origin-run`）が、47 件を原典で照合した。シードの範囲から予約確認の 76 件を原典から採取し（`conformance/source-model/reservation/origin-run-confirm.json`）、`SourceModel` と一致した。
-- スキルに `LangSemantics.Sql.Transaction`・`PgTimestamp`・`JLocalTime`・`JList.get`・`StringUtils` を足した（スキルの版 0.22。[スキルの ADR a303](../../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)）。
+- スキルに `LangSemantics.Sql.Transaction`・`PgTimestamp`・`JLocalTime`・`JList.get`・`StringUtils` を足した（スキルの版 0.24。[スキルの ADR a303](../../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)）。
 - 登録簿: D-009 の範囲を INT の上限に広げ、D-031 の R 課題の欄を直した（どちらもプロジェクトオーナーの確認待ち）。D-014 に予約確定の Clock の読み出しを足した。
 - 完了条件のうち「reservation.md の例がベクタで通る」と「`source-model/` ベクタが Java の原典実行と一致する」を、第 1 段の範囲で満たした。予約確定の採取ベクタと、残りの完了条件は第 2・3 段で行う。
 - 第 2 段に申し送るもの:
@@ -69,7 +69,7 @@ generated:
 
 2026-11-02 に完了した（[ADR ca17](../decision/ca17-reservation-stage2-machines-seed-nondet-advance.md)）。
 
-- スキルに、同じ状態の上の並置 `Machine.alt` 一式（`Refines.alt`・`Preserves.alt`）と、例・反例のテストを足した（版 0.22）。
+- スキルに、同じ状態の上の並置 `Machine.alt` 一式（`Refines.alt`・`Preserves.alt`）と、例・反例のテストを足した（版 0.24）。
 - 抽象機械 `Spec.UseCase.Reserve.reserveMachine`（選択の像。N-001・N-002・N-004）を置き、予約の SPEC-001・002・003・004・007・008 を証明した。
 - N-001・N-002 の選択の型に、失敗するまでに進んだ採番の数 `SeqAdvance` を持たせた（確認待ち）。
 - 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。業務例外・不正要求・I/O 失敗・排他の失敗を出力の値とする。

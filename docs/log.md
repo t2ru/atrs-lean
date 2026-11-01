@@ -3,7 +3,7 @@
 ## 2026-11-02
 
 * **Creation**: [ADR ca17](decision/ca17-reservation-stage2-machines-seed-nondet-advance.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md) の第 2 段を行った。
-  * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.22）。
+  * スキルに、同じ状態の上の並置 `Machine.alt` 一式を足した（スキルの ADR a303。版 0.24）。
   * 抽象機械 `Spec.UseCase.Reserve.reserveMachine` を置き、予約の SPEC-001・002・003・004・007・008 を証明した。N-001・N-002 の選択の型に、採番の前進 `SeqAdvance` を持たせた（確認待ち。[spec/abstraction.md](spec/abstraction.md) の表を直した）。
   * 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。
   * 会員のシードの生成器 `tools/conformance/member_seed.py` を置き、初期状態 `Spec.Seed.World`・`SourceModel.Db.Seed` を作った。
@@ -21,7 +21,19 @@
   * 敵対的レビューの指摘と対応は ADR 4c45 に記した。
   * 空席照会の α `worldOfDb` の定義域を、予約・会員の表とシーケンスが使われていない状態に限った（ABS-011 は通り続ける）。
   * 登録簿: D-009 の範囲を INT の上限に広げた（確認待ち）。D-031 の R 課題を ABS-031・ABS-041・ABS-045 に直した（確認待ち）。D-014 に予約確定の Clock の読み出しを足した。
-  * スキルの側は [スキルの ADR a303](../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)（`Machine.alt` の方針、`LangSemantics.Sql.Transaction`、`PgTimestamp`、`JLocalTime`、`JList.get`、`StringUtils`）。スキルの版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+  * スキルの側は [スキルの ADR a303](../.agents/skills/spec-pivot/references/docs/decision/a303-shared-state-machine-alt-and-transaction.md)（`Machine.alt` の方針、`LangSemantics.Sql.Transaction`、`PgTimestamp`、`JLocalTime`、`JList.get`、`StringUtils`）。スキルの版を 0.24 にした（[rules/atrs-porting.md](rules/atrs-porting.md)。main のスキルの分割の 0.23 の後）。[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+* **Creation**: [ADR 9c1c](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) と [backlog 7d08](backlog/7d08-change-scoped-checks.md) で、検査を常時の段（`ci:fast`）・変更時の段・全数（`ci`）に分け、実行の時点を規約 [rules/checks.md](rules/checks.md) にした。コミット前と PR の CI は選択実行 `mise run check`、main への push・週次・手動・backlog の完了・版上げは全数。
+  * CI で 20 秒以上かかる段（`lean:test-long`・`lean:layout-check`・`assets:trace-test`・`assets:layout-check`・`trace:self-test`・`ci:pg-table`・`ci:master-sql`・`ci:java-origin-run`）の範囲を `tools/ci/check-scopes.toml` に宣言し、`tools/ci/select_checks.py` が選ぶ。整合は `static:check-scopes` が検査する。
+  * `lake test` から 20 秒以上かかる節（シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果・暦日の全日・double の総当たり）を実行ファイル `long-tests`（`lean/Tests/Long.lean`・`LongMain.lean`）に分けた。layout-check の組は増やさない（組を足すと CI の runner のメモリが尽きた）。`lake test` の各節は経過時間を表示する（`Tests.Report`）。`trace/checks.json` で `lean:test` を実行する検査は `lean:test-long` も実行する。
+  * `.github/workflows/lean.yml` の起動を `pull_request`・main への `push`・週次・手動にし、PR の二重起動をやめた。検査の段で 20 秒ごとにメモリの使用量を出す（`[mem]`）。
+  * 測った結果: `lake test` は 384 s → 約 3 s、`long-tests` は約 216 s、全数は 531 s、runner のメモリの最大は 6.3 GB / 7.9 GB。
+  * [rules/version-control.md](rules/version-control.md)・[rules/backlog.md](rules/backlog.md)・[rules/README.md](rules/README.md)・[rules/atrs-porting.md](rules/atrs-porting.md)、[spec/assurance.md](spec/assurance.md)・[spec/domain-model.md](spec/domain-model.md)、`AGENTS.md`、[index.md](index.md)・[backlog/README.md](backlog/README.md) を改めた。
+* **Creation**: [ADR 8bb7](decision/8bb7-pr-draft-until-review-ready.md) で、PR を draft で作り、人間にレビューを求める段（作業の完了・確認と CI の通過・作成者の側で残る作業が無いこと）で作成者が ready for review に変える規則を定めた。[rules/version-control.md](rules/version-control.md)・[rules/README.md](rules/README.md)・[index.md](index.md)・`AGENTS.md` を改めた。
+* **Update**: `lake exe layout-check` のモジュールの組を、組ごとに別のプロセスで判定するようにした（[スキルの ADR 89f2](../.agents/skills/spec-pivot/references/docs/decision/89f2-layout-check-one-process-per-group.md)）。組ごとの環境を解放しないために CI の runner のメモリが上限に近づいていた（5 つの組で 7.4 GB / 7.9 GB）。メモリの最大は組 1 つ分になり、組を足してもメモリは増えない。これにより、メモリのために組から外していた入口 `Tests.LongMain`（`long-tests`）を 6 つ目の組として加えた（`lean/Tools/LayoutCheck.lean`）。spec-pivot の版を 0.23 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。CI の検査の段に、20 秒ごとのメモリの使用量の行（`[mem]`）を出すようにした。
+* **Creation**: [ADR 625d](decision/625d-adopt-okf-bundle-and-work-records-skills.md) と [backlog 2ba8](backlog/2ba8-split-okf-and-records-skills.md)（完了）で、スキル spec-pivot から移植に関係の無い文書の道具と規則を、汎用のスキル [okf-bundle](../.agents/skills/okf-bundle/SKILL.md)（OKF のバンドルとリンクの検査・文書の移動）と [work-records](../.agents/skills/work-records/SKILL.md)（ADR・backlog の形式と ID）に分けた。スキルの側は [スキルの ADR 22b4](../.agents/skills/spec-pivot/references/docs/decision/22b4-split-okf-and-records-skills.md)。spec-pivot の版を 0.22 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+  * 設定を `trace/project.json` の `okf`・`ids` から、ルートの `.okf.json`・`.work-records.json` に移した。`trace/features.json` の backlog の欄は `id_fields` で宣言した。ADR・backlog の形の検査（状態・選択肢・採択の行・完了条件）は `ids.py check` に移った。
+  * 旧番号からの書き換えと登録簿の旧番号の検査を、ATRS の `tools/docs/legacy_ids.py` に移した（mise の `docs:ids`）。
+  * [rules/documentation.md](rules/documentation.md)・[rules/decision-records.md](rules/decision-records.md)・[rules/backlog.md](rules/backlog.md)・[rules/README.md](rules/README.md)、`AGENTS.md`・`mise.toml`、[index.md](index.md)・[backlog/README.md](backlog/README.md) を改めた。完了済みの ADR・backlog の本文の旧パス（`scripts/docs/`）は来歴として残す。
 
 * **Update**: [ADR 18ca](decision/18ca-rename-oracle-to-origin-run.md) で、「オラクル」を「原典実行」（`origin-run`）と呼び替えた（DBMS の Oracle と紛れるため）。文書・既存の ADR と作業項目の本文・この変更履歴・ベクタの `source`（`java-origin-run`）・道具（`tools/origin-run/`・`tools/ci/java_origin_run.sh`・mise の `origin-run:*`・`trace/checks.json`）をそろえた。backlog f18c・773f のファイル名は残した。スキルの側は [スキルの ADR 288a](../.agents/skills/spec-pivot/references/docs/decision/288a-rename-oracle-to-origin-run.md)（スキルの版 0.21 に含める）。
 * **Creation**: [ADR 81da](decision/81da-java-origin-run-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java の原典実行）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。

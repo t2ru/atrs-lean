@@ -1,0 +1,17 @@
+# <ファイル> <メッセージの一部>
+docs/decision/0001-bad.md requires status deprecated
+docs/decision/0001-bad.md superseded_by is required
+docs/decision/0001-bad.md fewer than 2 options
+docs/decision/0001-bad.md Decision Outcome has no line
+docs/decision/abcd-Bad.md file name is not
+docs/backlog/0002-bad.md B1: state 'finished'
+docs/backlog/0002-bad.md B1: backlog items omit status
+docs/backlog/0003-done.md completion condition is unchecked
+docs/backlog/0004-deps.md file name prefix differs
+docs/backlog/0004-deps.md:8: UUID ffffffff-0000-4000-8000-000000000000
+docs/backlog/0004-deps.md depends_on 'ffffffff-0000-4000-8000-000000000000' is not a backlog id
+features.json 'eeeeeeee-0000-4000-8000-000000000000' is not a backlog id
+README.md ADR ffff: no such adr
+docs/note.md UUID 12345678-1234-4234-8234-123456789abc
+skill/docs/guide.md leaves skill
+skill/docs/guide.md refers to an item outside the bundle

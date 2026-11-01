@@ -1,0 +1,72 @@
+{
+  "note": "スキル work-records の scripts/ids.py（ADR・backlog の ID の採番・参照と記録の形の検査）の設定（work-records の references/docs/rules/records.md#設定）",
+  "kinds": {
+    "adr": [
+      "docs/decision",
+      ".agents/skills/spec-pivot/references/docs/decision",
+      ".agents/skills/okf-bundle/references/docs/decision",
+      ".agents/skills/work-records/references/docs/decision"
+    ],
+    "backlog": [
+      "docs/backlog",
+      ".agents/skills/spec-pivot/references/docs/backlog",
+      ".agents/skills/okf-bundle/references/docs/backlog",
+      ".agents/skills/work-records/references/docs/backlog"
+    ]
+  },
+  "isolated": [
+    {
+      "bundle": ".agents/skills/spec-pivot/references/docs",
+      "root": ".agents/skills/spec-pivot"
+    },
+    {
+      "bundle": ".agents/skills/okf-bundle/references/docs",
+      "root": ".agents/skills/okf-bundle"
+    },
+    {
+      "bundle": ".agents/skills/work-records/references/docs",
+      "root": ".agents/skills/work-records"
+    }
+  ],
+  "id_fields": [
+    {
+      "file": "trace/features.json",
+      "keys": [
+        "backlog"
+      ],
+      "kind": "backlog"
+    }
+  ],
+  "outcome_markers": [
+    "Chosen option",
+    "採択"
+  ],
+  "check_roots": [
+    "AGENTS.md",
+    "docs/",
+    "trace/",
+    "lean/",
+    "tools/",
+    ".agents/",
+    "conformance/"
+  ],
+  "uuid_roots": [
+    "AGENTS.md",
+    "docs/",
+    "trace/",
+    ".agents/skills/spec-pivot/references/docs/",
+    ".agents/skills/okf-bundle/references/docs/",
+    ".agents/skills/work-records/references/docs/"
+  ],
+  "check_skip": [
+    ".agents/skills/okf-bundle/scripts/fixtures/",
+    ".agents/skills/work-records/scripts/fixtures/",
+    "tools/docs/legacy-ids.json",
+    "trace/source-inventory.json",
+    "trace/target-inventory.json",
+    "trace/manifest.json"
+  ],
+  "exclude": [
+    "upstream/"
+  ]
+}

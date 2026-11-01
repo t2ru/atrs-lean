@@ -253,6 +253,29 @@ def layoutTests (env : Environment) : IO Unit := do
   check "violations: exactly 2" (vs.size == 2)
   check "E2: main at the root passes" (Trace.Layout.placedOk env `Test.Trace.LayoutFixture `main)
   check "NS-1: a name outside the module fails" (!Trace.Layout.placedOk env `Test.Trace.LayoutFixture `Test.Trace.x)
+  check "modules: the module in scope is listed with its count"
+    (r.modules.map (·.1) == #[`Test.Trace.LayoutFixture] && r.modules.all (·.2 == r.checked) && r.checked > 0)
+
+/-- 組ごとの結果の合わせ方（`Trace.Layout.mergeGroups`）と、子プロセスの結果の JSON を、手で作った結果で確かめる。 -/
+def layoutMergeTests : IO Unit := do
+  IO.println "layout-check (merging the module groups)"
+  let it (n m : String) : Trace.Layout.OutItem := { name := n, module := m }
+  let g0 : Trace.Layout.GroupOut :=
+    { modules := #[("A", 3), ("B", 2)], violations := #[it "A.x" "A"], exceptions := #[{ (it "B.y" "B") with reason := #["r"] }] }
+  let g1 : Trace.Layout.GroupOut :=
+    { modules := #[("A", 3), ("C", 4)], violations := #[it "A.x" "A", it "C.z" "C", it "C.w" "C"] }
+  let (r, checked) := Trace.Layout.mergeGroups #[g0, g1]
+  check "a module in two groups is counted once" (checked == 9)
+  check "items of a module come only from its first group, in order"
+    (r.violations.map (·.name) == #["A.x", "C.z", "C.w"])
+  check "exceptions are kept with their reasons"
+    (r.exceptions.map (·.name) == #["B.y"] && r.exceptions.map (·.reason) == #[#["r"]])
+  check "modules are listed once" (r.modules.map (·.1) == #["A", "B", "C"])
+  check "the group result survives a JSON round trip"
+    (match Trace.Layout.GroupOut.fromJson? (Json.parse g0.toJson.compress |>.toOption.getD Json.null) with
+     | .ok g => g.modules == g0.modules && g.violations.map (·.name) == #["A.x"] &&
+         g.exceptions.map (·.reason) == #[#["r"]]
+     | .error _ => false)
 
 /-- E1・E4 を assets の実際の定数で確かめる（型のモジュールの下位モジュールの補題、型名のモジュールのインスタンス）。 -/
 def layoutTypeTests (env : Environment) : IO Unit := do
@@ -273,6 +296,7 @@ open Test.Trace.Main
 
 unsafe def main : IO UInt32 := do
   merkleTests
+  layoutMergeTests
   let env ← loadEnv #[`Test.Trace.LayoutFixture]
   layoutTests env
   let env ← loadEnv #[`LangSemantics.Java]

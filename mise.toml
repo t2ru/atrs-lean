@@ -4,9 +4,13 @@
 # - mise が管理する道具は uv だけ。Python は uv で実行する（`uv run python -I`。版は .python-version・pyproject.toml）。
 #   Lean は elan（lean-toolchain）、Java・Rust・PostgreSQL は従来どおり。
 # - 汎用の道具はスキル spec-pivot の scripts/ にあり、ATRS 固有の設定（trace/project.json）を読む。
+#   文書の道具はスキル okf-bundle（設定 .okf.json）と work-records（設定 .work-records.json）にある（ADR 625d）。
 # - `depends` は実際の依存、`wait_for` は同じ起動の中での直列化だけを表す（単独実行では引き込まない）。
 #   lake は同じパッケージの .lake を同時に書かないよう、`assets:*` → `lean:*` → `workspace:*` の順に直列にする。
 #   PostgreSQL を使う段（CI では同じサーバ）も直列にする。
+# - 検査の層と実行の時点は docs/rules/checks.md。常時の段は `ci:fast`、全数は `ci`、選択実行は `check`（常時の段と、変更に関係する
+#   変更時の段。範囲は tools/ci/check-scopes.toml、選ぶのは tools/ci/select_checks.py）。`ci` の段は `ci:fast` か範囲のどちらかに必ず入れる
+#   （static:check-scopes が検査する）。
 # - JDK・PostgreSQL を使う段（assets:jvm-table・assets:pg-table・conformance:master-sql・origin-run:*）は、処理系が無ければ終了コード 2
 #   （「飛ばした」。ローカルだけ。CI では 1 になる）で失敗する。一括検査 `ci` は、これを tools/ci/skippable.sh で 0 に読み替える
 #   `ci:*` の段から呼ぶ。trace/checks.json（trace rehash）は飛ばさない側を呼ぶ。
@@ -18,26 +22,48 @@ uv = "0.11.32"
 
 [vars]
 skill = ".agents/skills/spec-pivot"
+okf = ".agents/skills/okf-bundle"
+records = ".agents/skills/work-records"
 py = "uv run --quiet python -I"
 ci_out = "lean/.lake/ci"
 
 # ---------------------------------------------------------------------------
-# 一括検査
+# 一括検査（docs/rules/checks.md）
 
 [tasks.ci]
-description = "一括検査（CI とローカルで共通。旧 tools/ci/lean.sh）"
+description = "全数の検査（常時の段と、すべての変更時の段。main への push・定期・backlog の完了・版上げ。旧 tools/ci/lean.sh）"
+depends = [
+  "ci:fast",
+  # 変更時の段（tools/ci/check-scopes.toml の [scopes]）
+  "lean:test-long", "lean:layout-check",
+  "assets:trace-test", "assets:layout-check",
+  "trace:self-test",
+  "ci:pg-table", "ci:master-sql", "ci:java-origin-run",
+]
+run = "echo OK"
+
+[tasks."ci:fast"]
+description = "常時の段（どの変更でも実行する、短い段）"
 depends = [
   "check:upstream",
   "docs:ids", "docs:self-test", "docs:okf",
   "conformance:check",
-  "static:self-test", "static:lean",
-  "ci:jvm-table", "ci:pg-table", "ci:master-sql", "ci:java-origin-run",
-  "assets:build", "assets:trace-test", "assets:layout-check",
-  "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump",
-  "trace:self-test", "trace:build", "trace:manifest", "trace:check", "trace:review",
+  "static:self-test", "static:lean", "static:check-scopes",
+  "ci:jvm-table",
+  "assets:build",
+  "lean:build", "lean:test", "lean:axiom-check", "lean:obligations", "lean:trace-dump",
+  "trace:build", "trace:manifest", "trace:check", "trace:review",
   "workspace:setup-file",
 ]
 run = "echo OK"
+
+[tasks.check]
+description = "選択実行: 常時の段と、変更に関係する変更時の段（コミット前。CHECK_BASE=origin/main で push 前・PR の CI。CHECK_FULL=1 で全数）"
+run = "{{vars.py}} tools/ci/select_checks.py run"
+
+[tasks."check:list"]
+description = "選択実行で実行する段と理由を表示する（実行はしない）"
+run = "{{vars.py}} tools/ci/select_checks.py list"
 
 # 処理系が無ければ飛ばす段（`ci` から呼ぶ）
 
@@ -71,19 +97,23 @@ description = "upstream: submodule の commit と trace/upstream.json の一致"
 run = "{{vars.py}} {{vars.skill}}/scripts/ci/check_upstream.py"
 
 [tasks."docs:ids"]
-description = "docs: ADR・backlog の ID・ファイル名・参照（ADR f57e）"
-run = "{{vars.py}} {{vars.skill}}/scripts/docs/ids.py check"
+description = "docs: ADR・backlog の ID・ファイル名・参照・記録の形（ADR f57e・ADR 625d）と、登録簿の旧番号"
+run = [
+  "{{vars.py}} {{vars.records}}/scripts/ids.py check",
+  "{{vars.py}} tools/docs/legacy_ids.py check",
+]
 
 [tasks."docs:self-test"]
-description = "docs: OKF バンドルとリンクの検査・文書の移動の道具の自己テスト（違反例を検出できること）"
+description = "docs: OKF バンドルとリンクの検査・文書の移動・ADR と backlog の検査の道具の自己テスト（違反例を検出できること）"
 run = [
-  "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py --self-test",
-  "{{vars.py}} {{vars.skill}}/scripts/docs/docmv.py --self-test",
+  "{{vars.py}} {{vars.okf}}/scripts/okf_check.py --self-test",
+  "{{vars.py}} {{vars.okf}}/scripts/docmv.py --self-test",
+  "{{vars.py}} {{vars.records}}/scripts/ids.py --self-test",
 ]
 
 [tasks."docs:okf"]
 description = "docs: OKF バンドル（frontmatter・type・索引・変更履歴・節）と、相対リンク・見出しアンカー（ADR 920d）"
-run = "{{vars.py}} {{vars.skill}}/scripts/docs/okf_check.py"
+run = "{{vars.py}} {{vars.okf}}/scripts/okf_check.py"
 
 # ---------------------------------------------------------------------------
 # 適合テストの共有入力・シード
@@ -137,7 +167,12 @@ run = [
   "{{vars.py}} {{vars.skill}}/scripts/ci/check_lean.py --self-test",
   "{{vars.py}} {{vars.skill}}/scripts/lean/rename.py --self-test",
   "{{vars.py}} {{vars.skill}}/scripts/ci/check_obligations.py --self-test",
+  "{{vars.py}} tools/ci/select_checks.py --self-test",
 ]
+
+[tasks."static:check-scopes"]
+description = "static: 検査の層の設定（tools/ci/check-scopes.toml）と mise.toml の整合（段の分類の漏れ・重なり、範囲の glob・モジュールの実在）"
+run = "{{vars.py}} tools/ci/select_checks.py check-config"
 
 [tasks."static:lean"]
 description = "static: sorry・axiom・native_decide・Float・partial 等と、名前空間の依存の向き"
@@ -182,7 +217,7 @@ dir = "{{config_root}}/lean"
 run = "lake build"
 
 [tasks."lean:test"]
-description = "lean: lake test（適合テストベクタ）"
+description = "lean: lake test（適合テストベクタ・マスタの SQL の結果の照合。20 秒以上かかる節は lean:test-long）"
 depends = ["lean:build"]
 dir = "{{config_root}}/lean"
 run = "lake test"
@@ -223,6 +258,13 @@ d = json.load(open(sys.argv[1]))
 print("trace-dump: %d definitions (Lean %s)" % (len(d["definitions"]), d["lean_version"]))' {{vars.ci_out}}/trace-dump.json""",
 ]
 
+[tasks."lean:test-long"]
+description = "lean: 長い検査（暦日の全日・double の総当たり・シードの DB を使う SourceModel の適合ベクタ・空席照会の SQL の結果。lake exe long-tests。変更時の段）"
+depends = ["lean:build"]
+wait_for = ["lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump"]
+dir = "{{config_root}}/lean"
+run = "lake exe long-tests"
+
 # ---------------------------------------------------------------------------
 # 追跡（スキルの scripts/trace）
 
@@ -261,7 +303,7 @@ run = "{{vars.skill}}/scripts/trace/target/release/trace review --dump {{vars.ci
 
 [tasks."workspace:setup-file"]
 description = "workspace: ルートで lake setup-file（Lean LSP 用）"
-wait_for = ["assets:build", "assets:trace-test", "assets:layout-check", "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump"]
+wait_for = ["assets:build", "assets:trace-test", "assets:layout-check", "lean:build", "lean:test", "lean:axiom-check", "lean:layout-check", "lean:obligations", "lean:trace-dump", "lean:test-long"]
 run = [
   "lake setup-file lean/Spec.lean > /dev/null",
   "lake setup-file lean/Tests/Main.lean > /dev/null",

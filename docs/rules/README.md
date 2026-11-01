@@ -6,13 +6,14 @@ tags: [rules, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T14:50:00+09:00
+  at: 2026-11-01T22:30:00+09:00
 ---
 
 # 作業規約（rules）
 
 本ディレクトリはこのリポジトリ（ATRS の移植）で作業する **人間・AI エージェントの双方** が従う **プロジェクトの運用規約** である。
 **言語間移植の方法 Spec Pivot**（層構成、Lean・Java・SQL・Rust の規約、追跡、版上げ、適合テスト）は、アプリに依存しないスキル [spec-pivot](../../.agents/skills/spec-pivot/SKILL.md) にある（[ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)）。ATRS への適用の固有事項は [atrs-porting.md](atrs-porting.md)。
+文書の形式と検査（OKF のバンドル）はスキル [okf-bundle](../../.agents/skills/okf-bundle/SKILL.md)、ADR・backlog の形式と ID はスキル [work-records](../../.agents/skills/work-records/SKILL.md) にある（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。本ディレクトリの規約は、その ATRS での当てはめと追加の事項を書く。
 [AGENTS.md](../../AGENTS.md) はここを入口として参照する。文書全体の索引は [docs/index.md](../index.md)。
 
 ## 規約一覧
@@ -20,10 +21,11 @@ generated:
 | ファイル | 対象 | 要点 |
 | --- | --- | --- |
 | [documentation.md](documentation.md) | すべての文書 | 日本語本文＋英語識別子、RFC 2119 用語、出典記法、リンク |
-| [decision-records.md](decision-records.md) | `docs/decision/` | MADR 4.0、`NNNN-<slug>.md`、状態遷移、置換手順 |
+| [decision-records.md](decision-records.md) | `docs/decision/` | MADR 4.0（スキル work-records）、置き場所、いつ ADR を書くか |
 | [atrs-porting.md](atrs-porting.md) | ATRS の移植 | スキル spec-pivot の適用: 言語ペア、配置、機能名、型、必須の依存、上流の版、採った値 |
-| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい |
-| [backlog.md](backlog.md) | `docs/backlog/` | 項目形式、状態、完了の定義（DoD） |
+| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい（draft で作り、人間のレビューを求める段で ready にする） |
+| [checks.md](checks.md) | 検査（`mise.toml`・CI） | 常時の段・変更時の段・全数の層と、コミット前・PR・main・定期・節目に実行するもの。長い段は関係する変更があったときだけ |
+| [backlog.md](backlog.md) | `docs/backlog/` | 項目形式・状態（スキル work-records）、置き場所、完了の定義（DoD） |
 
 ## 優先順位
 
@@ -32,7 +34,7 @@ generated:
 0. 基本原則（[ADR c336](../decision/c336-foundational-principles.md)）。どの文書も、これを弱めてはならない
 1. 状態が `accepted` の ADR（[docs/decision/](../decision/)）
 2. 本ディレクトリの規約（[atrs-porting.md](atrs-porting.md) を含む）
-3. スキル [spec-pivot](../../.agents/skills/spec-pivot/SKILL.md)
+3. スキル [spec-pivot](../../.agents/skills/spec-pivot/SKILL.md)・[okf-bundle](../../.agents/skills/okf-bundle/SKILL.md)・[work-records](../../.agents/skills/work-records/SKILL.md)
 4. 正規仕様（Lean の `Spec` と [docs/spec/](../spec/README.md) の規範節。[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）
 5. [AGENTS.md](../../AGENTS.md)
 6. backlog の記述

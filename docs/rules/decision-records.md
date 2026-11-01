@@ -1,17 +1,18 @@
 ---
 type: Guideline
 title: "意思決定記録（ADR）規約"
-description: "ADR（MADR 4.0 + OKF frontmatter）の命名・状態・テンプレート・作成基準。"
+description: "ADR（MADR 4.0 + OKF frontmatter）の ATRS での置き場所・命名・状態・テンプレートと作成基準。形式と道具はスキル work-records に従う。"
 tags: [rules, adr]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T20:10:00+09:00
+  at: 2026-11-01T20:40:00+09:00
 ---
 
 # 意思決定記録（ADR）規約
 
 設計上の判断はすべて `docs/decision/` に **MADR 4.0 形式** の ADR として記録する（[ADR d845](../decision/d845-record-architecture-decisions-with-madr.md)）。
+ADR の形式（ID・ファイル名・参照・状態・節）と道具は、スキル [work-records](../../.agents/skills/work-records/SKILL.md) の [records.md](../../.agents/skills/work-records/references/docs/rules/records.md) に従う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。本書は、ATRS での当てはめと追加の事項を書く。
 
 ## ファイル名
 
@@ -19,110 +20,41 @@ generated:
 docs/decision/<ID の先頭 4 文字>-<slug>.md
 ```
 
-- ID は UUID v4（小文字 16 進、ハイフン付きの 36 文字）。frontmatter の `id` に書く。`uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug>` が ID とファイル名を出す（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。
-- ファイル名の先頭は ID の先頭 4 文字。他の ADR と重なってもよい（slug で区別する）。
-- `<slug>` は英小文字・数字・ハイフンのみ。決定内容を表す短い句（例: `two-layer-model-java-faithful-and-abstract`）。
-- 一度採番したファイルは **改名・削除しない**。不要になった ADR は状態を変更する。
-- 本文での参照の書き方は [documentation.md](documentation.md#リンク)。ID 全体を書く箇所（`superseded_by` など）と先頭 4 文字を書く箇所を区別する。
-- 作成の順序はファイル名から分からない。`date` で追う。
+- ID は UUID v4（[ADR f57e](../decision/f57e-uuid-ids-for-decisions-and-backlog.md)）。`uv run python -I .agents/skills/work-records/scripts/ids.py new adr <slug>` が ID とファイル名を出す。
+- `<slug>` は決定内容を表す短い句（例: `two-layer-model-java-faithful-and-abstract`）。一度採番したファイルは改名・削除しない。
+- 本文での参照の書き方は [documentation.md](documentation.md#リンク)。
+- 設定は `.work-records.json`（ADR・backlog の置き場所、持ち出すバンドル、検査の範囲、`trace/features.json` の backlog の欄）。
 
 ## スキルの ADR
 
-アプリに依存しない判断（移植の方法、スキルの道具・Lean のライブラリ・構成）は、ATRS の `docs/decision/` ではなく、スキル spec-pivot の [`references/docs/decision/`](../../.agents/skills/spec-pivot/references/docs/decision/README.md) に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。書き方はスキルの [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md) に従う。
+アプリに依存しない判断は、ATRS の `docs/decision/` ではなく、スキルの `references/docs/decision/` に書く（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。
 
-- 採番は `uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py new adr <slug> --dir .agents/skills/spec-pivot/references/docs/decision`。ID の空間は ATRS と共通である。
-- スキルの ADR から ATRS の文書へはリンクを張らない。ATRS の記録は、来歴としてリンク無しで書く（「ATRS の ADR xxxx」）。
+| 判断 | 置き場所 |
+| --- | --- |
+| 移植の方法、spec-pivot の道具・Lean のライブラリ・構成 | スキル spec-pivot の [`references/docs/decision/`](../../.agents/skills/spec-pivot/references/docs/decision/README.md)（書き方はスキルの [maintenance.md](../../.agents/skills/spec-pivot/references/docs/rules/maintenance.md)） |
+| OKF のバンドルの形式・検査の道具 | スキル okf-bundle の [`references/docs/decision/`](../../.agents/skills/okf-bundle/references/docs/decision/README.md) |
+| ADR・backlog の形式・ID の道具 | スキル work-records の [`references/docs/decision/`](../../.agents/skills/work-records/references/docs/decision/README.md) |
+
+- 採番は `uv run python -I .agents/skills/work-records/scripts/ids.py new adr <slug> --dir <スキル>/references/docs/decision`。ID の空間は ATRS とスキルで共通である。
+- スキルの ADR から ATRS の文書へはリンクを張らない。ATRS の記録は、来歴としてリンク無しで書く（「ATRS の ADR xxxx」）。スキル同士も互いにリンクしない。
 - 判断が ATRS にも影響する場合は、ATRS 側にも ADR を書き、スキルの ADR へリンクする（[ADR f4e1](../decision/f4e1-extract-porting-method-as-agent-skill.md)）。
 - ATRS とスキルの両方にかかる既存の ADR を分けて移すときは、`ids.py move <stem> <dir>` でリンクを張り直す。
 
 ## 状態
 
-MADR の状態は frontmatter の **`decision_status`** に書く。OKF の `status` キーは文書のライフサイクルに予約されているため、MADR の値を書いてはならない（[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
+状態は frontmatter の `decision_status` に書き、OKF の `status` を対応させる（表はスキル work-records の [records.md](../../.agents/skills/work-records/references/docs/rules/records.md#意思決定記録adr)。[ADR a0f1](../decision/a0f1-documentation-format-okf-v0-2.md)）。
 
-| `decision_status` | 意味 | 遷移先 | OKF `status` |
-| --- | --- | --- | --- |
-| `proposed` | 提案中。実装はこれに依存してはならない | `accepted`, `rejected` | `draft` |
-| `accepted` | 採択済み。規範的 | `deprecated`, `superseded` | `stable` |
-| `rejected` | 不採択。記録として残す | — | `deprecated` |
-| `deprecated` | 廃止。代替なし | — | `deprecated` |
-| `superseded` | 後継 ADR に置換された。`superseded_by: "<後継の ID>"` を併記する | — | `deprecated` |
-
-- `accepted` の ADR の **決定内容** を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `decision_status: superseded` / `superseded_by: "<新 ADR の ID>"` / `status: deprecated` にし、新 ADR の「More Information」に旧 ADR へのリンクを書く。
-- 誤字修正・リンク修正・補足情報の追記は書き換えてよい。
-- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`uv run python -I .agents/skills/spec-pivot/scripts/docs/ids.py check` を通す。
+- `accepted` の ADR の決定内容を書き換えてはならない。変更するときは新しい ADR を作り、旧 ADR を `superseded` にする。誤字修正・リンク修正・補足情報の追記は書き換えてよい。
+- ADR を追加・置換したら [docs/index.md](../index.md) と [docs/log.md](../log.md) を更新し、`mise run docs:ids`（`ids.py check`）と `mise run docs:okf` を通す。
 
 ## テンプレート
 
-frontmatter は OKF v0.2 のキー（[documentation.md](documentation.md#okf-v02)）と MADR のキーを併せ持つ。
-節見出しは英語（MADR 準拠）、本文は日本語で書く。
-`Considered Options` は最低 2 つ、`Decision Outcome` には採択した選択肢と理由を書く。`Decision Outcome` には、`Chosen option: "…", because …` か `採択: …` で始まる行を置く。`Pros and Cons of the Options` は省いてよい。節と状態の対応は `okf_check.py` が検査する（[documentation.md](documentation.md#検査)）。
+雛形はスキル work-records の [assets/templates/adr.md](../../.agents/skills/work-records/assets/templates/adr.md)。ATRS では次のとおり当てはめる。
 
-```markdown
----
-type: Architecture Decision Record
-title: "<決定を表す短い題名>"
-description: "<1 文の要約>"
-tags: [adr, <分野>]
-id: "<UUID v4>"
-status: draft
-decision_status: proposed
-date: YYYY-MM-DD
-decision-makers: <名前またはロール>
-consulted: <任意>
-informed: <任意>
-generated:
-  by: <producer>/<version>
-  at: YYYY-MM-DDThh:mm:ss+09:00
-sources:
-  - id: <任意の ID>
-    resource: <URL またはパス>
----
-
-# <決定を表す短い題名>
-
-## Context and Problem Statement
-
-<背景と問題。2〜5 文。必要なら原典の出典を書く>
-
-## Decision Drivers
-
-* <判断基準 1>
-* <判断基準 2>
-
-## Considered Options
-
-* <選択肢 1>
-* <選択肢 2>
-
-## Decision Outcome
-
-Chosen option: "<選択肢 1>", because <理由>.
-
-### Consequences
-
-* Good, because <良い影響>
-* Bad, because <悪い影響>
-
-### Confirmation
-
-<この決定が守られていることをどう確認するか（レビュー、テスト、CI、証明など）>
-
-## Pros and Cons of the Options
-
-### <選択肢 1>
-
-* Good, because …
-* Bad, because …
-
-### <選択肢 2>
-
-* Good, because …
-* Bad, because …
-
-## More Information
-
-<関連 ADR、spec、backlog、外部資料へのリンク>
-```
+- frontmatter は OKF v0.2 のキー（[documentation.md](documentation.md#okf-v02)）と MADR のキーを併せ持つ。`generated.at` は `+09:00` のオフセットで書いてよい。
+- 節見出しは英語（MADR 準拠）、本文は日本語で書く。`Pros and Cons of the Options` は省いてよい。
+- `Decision Outcome` には、`Chosen option: "…", because …` か `採択: …` で始まる行を置く（`.work-records.json` の `outcome_markers`）。
+- `Context and Problem Statement` には、必要なら原典の出典（[documentation.md](documentation.md#出典移植元ロケータの記法)）を書く。
 
 ## いつ ADR を書くか
 

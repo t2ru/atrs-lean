@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T19:00:00+09:00
+  at: 2026-11-01T20:40:00+09:00
 ---
 
 # バックログ
@@ -54,6 +54,8 @@ generated:
 | 76a6 | [実装済みの範囲の抽象化検証（トップレベルの Refines・Adequate）と移植元側の段階導入](76a6-source-side-adequacy-gate.md) | done | [25f7](25f7-fare-calculation-both-models.md), [bbcc](bbcc-fare-abstraction-proofs.md), [ffdc](ffdc-trace-tooling.md) |
 | 9ed8 | [ATRS の Lean の宣言をモジュール名の下に置き、証明課題を機能のモジュールに集める](9ed8-atrs-module-namespace-layout.md) | done | [ce23](../../.agents/skills/spec-pivot/references/docs/backlog/ce23-lean-module-namespace-layout.md) |
 | cb23 | [adequate の廃止: Machine.Refines・Machine.Preserves・Machine.Abstracts への分割](cb23-adequate-to-preserves-abstracts.md) | done | [76a6](76a6-source-side-adequacy-gate.md), [9ed8](9ed8-atrs-module-namespace-layout.md) |
+| 2ba8 | [spec-pivot から OKF の管理と記録の管理を別のスキルに分ける](2ba8-split-okf-and-records-skills.md) | done | [ddbd](ddbd-okf-bundle-lint.md) |
+| 7d08 | [検査の層を分け、長い段を関係する変更があったときだけ実行する](7d08-change-scoped-checks.md) | done | — |
 
 ## 推奨する着手順
 
@@ -64,7 +66,7 @@ be49 ┬ a8be, c7e8 ─────────┐
      ├ 1ae4*（Machine）─ f7b7 ─ ae04 ┤
      ├ 591d ─ 25f7 ─ bbcc ─ 76a6 ├─ a8ef ─ eff6 ─ ddb4（Rust）
      ├ a936* ─ d77c（生成器）┘
-     └ ddbd（← a49c*）
+     └ ddbd（← a49c*）─ 2ba8（文書の道具を別のスキルへ）
 fb50（Rust 雛形・Verus/Kani 併用確認）は単独で先行可
 機能: 4e0e → 44f8、0be7 → aedf → ac71 → 26c5 → 9c1b → 4b0e → a89e、4b0e → 9c04
 原典との照合: f18c → 各機能（aedf・4e0e・44f8・ac71・a89e。bbcc・0be7 の照合は f18c の完了条件に移した）、f18c → 773f
