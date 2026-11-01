@@ -1,6 +1,9 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR 89f2](decision/89f2-layout-check-one-process-per-group.md) で、`layout-check`（`Trace.Layout.run`）のモジュールの組を、組ごとに別のプロセス（同じ実行ファイルを `--layout-group <i>` で起動したもの）で判定するようにした。親は環境を読み込まず、結果の JSON を `mergeGroups` で合わせる。メモリの最大は組 1 つ分になる。出力と呼び出しは変えていない（違反は終了コード 1、組の判定の失敗は 2）。スキルの版を 0.23 にした。
+  * `Trace.Layout.Result` に範囲のモジュールとその検査数 `modules` を、`Result.collapse`・`GroupOut`・`mergeGroups`・`runGroup`・`runAll` を足し、`Item.toJson`・`Result.merge` を除いた。`trace-test` に合わせ方と JSON の往復の検査を足した。[lang/lean/trace-attributes.md](lang/lean/trace-attributes.md)・[lang/lean/rules.md](lang/lean/rules.md#モジュールと名前空間) を改めた。
+  * 来歴: 適用先 ATRS の CI（組を足すと runner がメモリで止まった）。
 * **Update**: [ADR 22b4](decision/22b4-split-okf-and-records-skills.md) で、移植に関係の無い文書の道具と規則を、別のスキル okf-bundle・work-records に分けた。スキルの版を 0.22 にした。
   * `scripts/docs/okf_check.py`・`scripts/docs/docmv.py`・`scripts/ci/fixtures/okf/` をスキル okf-bundle に、`scripts/docs/ids.py` をスキル work-records に移した。`scripts/docs/` は無くなった。
   * 道具の設定を、`trace/project.json` の `okf`・`ids` から、適用先のルートの `.okf.json`・`.work-records.json` に移した。[spec/traceability.md](spec/traceability.md#プロジェクトの設定) の表から `ids`・`okf` を除いた。

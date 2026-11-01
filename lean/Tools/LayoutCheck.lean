@@ -10,11 +10,10 @@ import Trace.Layout
 -/
 
 /-- 読み込むモジュールの組。実行ファイルの入口は、どれも `main` を持つため組を分ける。
-組ごとに環境を読み込み、解放しないので、組を増やすとメモリが増える（CI の runner は 8 GB）。`main` だけを置く入口
-（`Tests.LongMain`）は組に入れない。 -/
+組は 1 つずつ別のプロセスで判定する（`Trace.Layout.run`）ので、組を増やすと時間は増えるが、メモリの最大は組 1 つ分のままである。 -/
 def Tools.LayoutCheck.groups : Array (Array Lean.Name) :=
   #[#[`Spec, `SourceModel, `Abstraction, `TargetModel, `Refinement, `Tests, `Tests.Long, `Tools.LayoutCheck],
-    #[`Tests.Main], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
+    #[`Tests.Main], #[`Tests.LongMain], #[`Tools.AxiomCheck], #[`Tools.ObligationCheck], #[`Tools.TraceDump]]
 
 unsafe def main (args : List String) : IO UInt32 :=
   Trace.Layout.run "layout-check" Tools.LayoutCheck.groups

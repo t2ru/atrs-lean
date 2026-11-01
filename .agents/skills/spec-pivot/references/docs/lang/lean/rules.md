@@ -6,7 +6,7 @@ tags: [lean]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:19:29+09:00
+  at: 2026-11-01T22:00:00+09:00
 ---
 
 # Lean プロジェクトの規約
@@ -89,7 +89,7 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
 - 複数の型を集めたモジュールでは、型もモジュール名の下に置く（`Spec/Model.lean` の `Spec.Model.FlightType`）。
 - 型の外から足すドット記法の補題は、型のモジュールの下位モジュールに置く（E1。`Machine/Refines/Preserves.lean` の `Machine.Refines.InitSurj`）。型を定義するモジュールに置けるものは、そこに置く。ドット記法を使うためだけの E3 は認めない（関数の形で呼べるため）。
 - 利用側は名前空間を `open` する。同じ短い名前がぶつかるときは、型だけを開く `open X (A B)` か、修飾した名前を使う。`namespace Test.X` の中の `open X` は `Test.X` を開くので、検査のモジュールでは `open` を `namespace` の前に置く。
-- 検査: `lake exe layout-check`（本体は `Trace.Layout`。入口はスキルの assets と適用先にある）。違反があれば失敗し、E3 の一覧を出す。改名は `scripts/lean/rename.py` で、対応表から一度に行う。
+- 検査: `lake exe layout-check`（本体は `Trace.Layout`。入口はスキルの assets と適用先にある。同時に読み込めないモジュールの組は、組ごとに別のプロセスで判定するので、組を増やしてもメモリの最大は組 1 つ分である。[ADR 89f2](../../decision/89f2-layout-check-one-process-per-group.md)）。違反があれば失敗し、E3 の一覧を出す。改名は `scripts/lean/rename.py` で、対応表から一度に行う。
 
 ## 証明課題の配置
 
