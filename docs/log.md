@@ -9,6 +9,7 @@
   * `findByVacantSeatSearchCriteria` を PostgreSQL で差分実行するようにした（`tools/conformance/master_sql.py`、`conformance/sql/flight-search.json`、`Tests.FlightSql`、`trace/checks.json` の `pg-flight-sql`）。
   * D-027 の範囲を状態の表 FLIGHT に広げ、α `Abstraction.FlightSearch.Alpha` を置いた。
   * スキルの版を 0.16 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[spec/conformance.md](spec/conformance.md)、[spec/flight-search.md](spec/flight-search.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md) を改めた。
+  * 敵対的レビューの指摘に対応した（[ADR cdb6](decision/cdb6-flight-search-stage2-machines-seed-sql.md#more-information)）。PRE の空港コードを「空白でない」に改め、D-027 の箇所と範囲の説明を補い、差分実行が `bind` と `flight-map` の値も確かめるようにし、シードの解析を厳密にし、照合の条件を 15 にした。
 
 * **Creation**: [ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md)（空席照会）を 3 段に分け、第 1 段の設計を決めた。0be7 に着手した（`doing`）。
   * Java オラクルとの一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。

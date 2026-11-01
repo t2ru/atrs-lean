@@ -9,7 +9,9 @@ import SourceModel.Repository.FlightSeed
 - 状態は FLIGHT 表 `FlightDb`。初期状態は、シードの投入後の表 `FlightSeed.seedFlightDb`。照会は状態を変えない。
 - 入力は、DB のマスタ・注入された設定・今日の日付・照会条件（`SourceModel.FlightSearch.SearchInput`）。
 - 1 歩は、マスタの文の許される並び `mo`（`Order.Allowed`）と、空席照会の文の許される並べ方 `sortRows`
-  （`SortAllowed`）のどれかで、起動時の読み込みと `searchFlight` を実行する関係とする。
+  （`SortAllowed`）のどれかで、起動時の読み込みと `searchFlight` を実行する関係とする。原典はマスタを起動時に 1 度だけ
+  読み込むが、この機械はマスタの並びを 1 歩ごとに選び直す。許す振る舞いが原典より多い（上からの近似）ので、
+  リファインメントの証明には安全である（マスタの参照・運賃計算の具体機械と同じ扱い）。
 - 業務例外（`AtrsBusinessException`・`FlightNotFoundException`）は、原典の画面・API が捕まえてメッセージに変える
   観測可能な結果なので、出力の値 `BusinessError` として受ける（ADR a4fa「エラーは値」）。それ以外の例外
   （前提違反・NPE など）は、例外の経路 `JThrow` に残す。
@@ -35,8 +37,10 @@ abbrev SearchOutput := Except BusinessError (List FlightVacantInfoDto)
 def catchBusiness (r : JResult (List FlightVacantInfoDto)) : JResult SearchOutput :=
   match r with
   | .ok v => .ok (.ok v)
-  | .error (.other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" code) => .ok (.error (.business code))
-  | .error (.other "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException" code) => .ok (.error (.notFound code))
+  | .error (.other cls code) =>
+    if cls = businessExceptionClass then .ok (.error (.business code))
+    else if cls = flightNotFoundClass then .ok (.error (.notFound code))
+    else .error (.other cls code)
   | .error e => .error e
 
 /-- 空席照会の具体機械。1 歩は、許される並びのどれかで照会し、状態を変えない。 -/
