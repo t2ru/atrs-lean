@@ -21,7 +21,7 @@ generated:
 
 - `mise.toml`: 常時の段 `ci:fast`、全数 `ci`、選択実行 `check`・`check:list`、`lean:test-long`、`static:check-scopes`。
 - `tools/ci/check-scopes.toml`（変更時の段の範囲と、全数にする変更）と `tools/ci/select_checks.py`（選択・整合の検査・自己テスト）。
-- `lean/`: `lake test` から 20 秒以上かかる節（シードの DB を使う SourceModel の照合・空席照会の SQL の結果・暦日の全日・double の総当たり）を、実行ファイル `long-tests`（`Tests.Long`・`Tests.LongMain`・`Tests.DateExhaustive`）に分け、`lake test` の各節に経過時間を表示する（`Tests.Report`）。layout-check の組は増やさない。`trace/checks.json` で `lean:test` を実行する検査に `lean:test-long` を足す。
+- `lean/`: `lake test` から 20 秒以上かかる節（暦日の全日・double の総当たり）を、実行ファイル `long-tests`（`Tests.Long`・`Tests.LongMain`・`Tests.DateExhaustive`）に分け、`lake test` の各節に経過時間を表示する（`Tests.Report`）。layout-check の組は増やさない。`trace/checks.json` で `lean:test` を実行する検査に `lean:test-long` を足す。シードの DB を使う SourceModel の照合・空席照会の SQL の結果は、はじめ `long-tests` に分けたが、SQL の写しの結合を証明付きの `@[csimp]` で速くして `lake test` に戻した（ADR 9c1c）。
 - `.github/workflows/lean.yml`: PR は選択実行、main への push・週次・手動は全数。全ブランチの push をやめ、PR の古い実行を取り消す。
 - 規約 [checks.md](../rules/checks.md) を置き、[version-control.md](../rules/version-control.md)・[backlog.md](../rules/backlog.md)・[README.md](../rules/README.md)・[atrs-porting.md](../rules/atrs-porting.md)・`AGENTS.md`・[assurance.md](../spec/assurance.md)・[domain-model.md](../spec/domain-model.md) を改める（[ADR 9c1c](../decision/9c1c-check-tiers-and-change-scoped-long-checks.md)）。
 

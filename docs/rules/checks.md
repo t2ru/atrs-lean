@@ -6,7 +6,7 @@ tags: [rules, ci, verification]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:30:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 検査の実行規約
@@ -18,7 +18,7 @@ generated:
 | 層 | タスク | 中身 |
 | --- | --- | --- |
 | 常時の段 | `ci:fast` | どの変更でも実行する短い段。文書（`docs:*`）、上流の版、共有入力とシード、静的検査（`static:*`。層の設定の整合 `static:check-scopes` を含む）、JVM の表、Lean のビルド・`lake test`・公理・義務・trace-dump、追跡の検査（`trace:build`・`trace:manifest`・`trace:check`・`trace:review`）、ルートの `lake setup-file` |
-| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:test-long`（`lake test` から分けた長い節。シードの DB を使う SourceModel の照合・空席照会の SQL の結果・暦日の全日・double の総当たり）、`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run` |
+| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:test-long`（`lake test` から分けた長い節。暦日の全日・double の総当たり）、`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run` |
 | 全数 | `ci` | 常時の段と、すべての変更時の段 |
 
 選択実行 `mise run check` は、常時の段と、変更に関係する変更時の段を実行する。何を実行するかは `mise run check:list` で事前に見られる。選ぶのは `tools/ci/select_checks.py` である。
@@ -49,6 +49,7 @@ generated:
   - Lean の段は、なるべく `lean_roots` で書く（入口のモジュールから `import` をたどった閉包。依存が変わっても追従する）。宣言の全体を見る段（`layout-check` など）は glob で書く。
   - 段が読むデータ・生成器・スクリプトを `paths` に書く。
   - 段を重くしている検査は、入口のモジュールを分け、その import を必要なものに絞る（`Tests.Long` は使う検査のモジュールだけを import し、`Tests` 全体を import しない）。
+  - 段を分ける前に、遅い原因を確かめる。モデルの評価が遅いなら、定義を書き換えずに、等しいことを証明した実装を `@[csimp]` で与えて速くできる（スキルの [lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#書き方)。シードの DB を使う照合はこうして `lake test` に戻した。[ADR 9c1c](../decision/9c1c-check-tiers-and-change-scoped-long-checks.md)）。
   - Lean の実行ファイルを足すときは、`main` だけを置く入口と、`main` を持たない本体に分ける。layout-check は本体を既存の組で読む（組を増やすと、環境の分だけメモリが増える。CI の runner は 8 GB）。
 - すべての glob とモジュールは、実在のファイルに当たらなければならない（`static:check-scopes`）。改名したら範囲も直す。
 - 範囲の漏れは PR では検出されず、全数で検出される。この限界は [assurance.md](../spec/assurance.md#追跡の道具) にある。
