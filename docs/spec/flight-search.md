@@ -92,7 +92,7 @@ Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FL
 | `arrTime` | `fmtArrTime(arrivalTime)`（翌日着は `24:15` のように 24 時以降で表す。[Source] の `toFormatTimeString` と同じ） |
 | `depDate` | `fmtDate(departureDate)`（`yyyy/MM/dd`） |
 | `boardingClassCd` | `boardingClassCd` |
-| `fareTypes` | 順序付き写像 `FareTypeCd ↦ { fareTypeName: String, fare: String, vacantNum: Nat }` |
+| `fareTypes`（`fare` は `fmtYen`。[Source] の区切り文字は既定の書式ロケールによる。既知差異 [D-032](abstraction.md#既知差異)） | 順序付き写像 `FareTypeCd ↦ { fareTypeName: String, fare: String, vacantNum: Nat }` |
 
 出力の順序の性質: 第 1 グループの並びは「最も表示順の小さい運賃種別を持つ便の出発時刻順」であり、単純な出発時刻順ではない。
 例えば片道照会で搭乗日が 10 日後なら、`OW`（表示順 1）は全便にあるので全グループが出発時刻順になる。一方、ある便に `OW` の行が無ければ、その便のグループは後ろに回る。

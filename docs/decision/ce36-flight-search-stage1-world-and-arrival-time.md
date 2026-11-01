@@ -84,5 +84,13 @@ Chosen option: "フライト (a)・到着時刻 (a)・オラクル (a)", because
 
 ## More Information
 
+* 敵対的レビュー（第 1 段の完了前。独立したエージェント）の指摘と対応:
+  * フライトがマスタに無い搭乗クラスなどを指すと、[Spec] は `none`、[Source] は NPE になり、「`none` は MD-3 が破れたときだけ」という説明が誤りだった → フライトの参照整合性 `Spec.Port.World.RefMaster`（FK_FLIGHT_1〜3）を置き、説明を直した。機械の PRE に入れるのは第 2 段。
+  * [Source] は 1 回の照会で Clock を 3 回読む → D-014 の R 課題に ABS-011 を加えた。
+  * 運賃の書式 `DecimalFormat("###,###")` の区切り文字は JVM の既定の書式ロケールによる → 既知差異 D-032（前提型・具体側の環境。W 課題 ABS-132）を登録した（プロジェクトオーナーの決定）。
+  * 状態の表 FLIGHT の値（負の空席数など）と、導出した日付（照会可能期間の末日が 9999-12-31 を超える場合）は D-027 の範囲の外 → 第 2 段で、FLIGHT の α（`FlightDb` → `World`）とともに D-027 の範囲を広げる（プロジェクトオーナーの決定）。
+  * `2400` は SMART の解決で例外にならず、当日 0:00 と読まれる → D-031 の説明を直した（前提は変わらない）。
+  * 同順位・置き換えが起きない根拠は MD-5 だけでなく MD-1・MD-2・`World.Inv` も要る → 説明を直した。第 2 段の具体機械の 1 歩には `mo.Allowed ic.db` と `SortAllowed sortRows` を課す。
+  * 確かめて正しかったもの: 例外の評価順、期間の判定の同値、候補の条件と SQL の結合の同値（MD-2 の下）、`ORDER BY` の同順位が生じないこと、グループ化、到着時刻の書式、ベクタの期待値（独立に再計算して一致）。
 * [ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)（翌日着の便の暫定措置）、[ADR e9bc](e9bc-fare-double-analysis.md)（オラクルの完了条件を f18c に移した前例）、[ADR c108](c108-master-data-source-model-and-spec-fixes.md)（Mapper の文の `Bag` 式と許される並び）、[ADR 5fcb](5fcb-sql-semantics-for-source-repositories.md)、[ADR 97f9](97f9-persistence-and-transaction-semantics.md)
 * [flight-search.md](../spec/flight-search.md)、[master-data.md](../spec/master-data.md)、[ports.md](../spec/ports.md)、[abstraction.md](../spec/abstraction.md#既知差異)（D-014・D-027・D-031）

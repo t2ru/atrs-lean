@@ -40,20 +40,27 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 | 段 | 内容 |
 | --- | --- |
 | 第 1 段 | `Spec.FlightSearch`・`SourceModel.FlightSearch`（SQL の `Bag` 式を含む）の関数、`Spec.Port.World`、到着時刻 `ArrivalTime`、D-031 の登録、共有ベクタ |
-| 第 2 段 | 初期状態（シード 00250 の展開）、FLIGHT 表を含む PostgreSQL での差分実行、`Spec`・`SourceModel` の機械と SPEC 課題 |
+| 第 2 段 | 初期状態（シード 00250 の展開）、FLIGHT 表を含む PostgreSQL での差分実行、`Spec`・`SourceModel` の機械と SPEC 課題。FLIGHT の α（`FlightDb` → `World`）と D-027 の範囲の拡大（状態の表の値・導出した日付）、PRE への `World.RefMaster`、具体機械の 1 歩の `mo.Allowed`・`SortAllowed`（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md) の敵対的レビュー） |
 | 第 3 段 | ABS-010・ABS-011 の証明と、トップレベルの主定理（`Abstraction.refines`・`preserves`・`abstracts`）への統合 |
 
 ## 完了条件
 
-- [ ] [flight-search.md](../spec/flight-search.md) の例がベクタで通る
+- [x] [flight-search.md](../spec/flight-search.md) の例がベクタで通る
 - [ ] ABS-010, ABS-011 を証明した（ABS-011 は `Machine.Refines` の形。運賃計算の `dev_D001`・`dev_D002` を引き継ぐ）
 - [ ] 空席照会の SPEC-001 を証明した
 - [ ] SQL `findByVacantSeatSearchCriteria` の写しを PostgreSQL での差分実行で照合した
-- [ ] 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外し、D-031 を登録した
+- [x] 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外し、D-031 を登録した
 
 ## 第 1 段の結果
 
-（第 1 段の完了時に記す）
+2026-11-01 に完了した（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
+
+- [Spec]: `ArrivalTime`（翌日着）、`Spec.Error`、`Spec.Port.World`（`Inv`・`RefMaster`）、`Spec.FlightSearch`（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。
+- [Source]: `SourceModel.Repository.Flight`（SQL の `Bag` 式と許される並べ方）、FLIGHT の行と `flight-map`、`SourceModel.FlightSearch`（`searchFlight`・`runSearchFlight`）。スキルの `LangSemantics.Java` に `String.substring` と `DecimalFormat` を足した（スキルの版 0.15）。
+- 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外した。ABS-026 の証明は、到着時刻の葉 `arrOfStr` で通る。
+- 既知差異: D-031（往復便の検査の `DateTimeParseException`）、D-032（運賃の書式の既定ロケール）を登録した。D-014・D-027 に ABS-011 を加えた。
+- ベクタ `conformance/shared/flight-search/` の 21 件が、`Spec` と `SourceModel` の両方で通る（期待値は仕様の例と手計算で確かめた。敵対的レビューで独立に再計算した）。
+- 完了条件のうち「flight-search.md の例がベクタで通る」と「翌日着の便を表し、D-031 を登録した」を満たした。残りは第 2・3 段で行う。
 
 ## 参照
 

@@ -227,8 +227,8 @@ def createFlightVacantInfo (flight : Flight) : JResult FlightVacantInfoDto := do
 
 /-- `createFlightVacantInfoList(flightList, basicFare)`（private）: 便マスタの出発時刻をキーに `LinkedHashMap` へまとめ、
 各フライトの運賃種別の空席情報を足す。値の列（挿入順）を返す。運賃の書式は `new DecimalFormat("###,###")`
-（既定の書式ロケールの区切り文字。日本語の配備では `,`）。 -/
-@[source "lang:java#java.text.DecimalFormat@java-17", "lang:java#java.util.LinkedHashMap@java-17"]
+（既定の書式ロケールの区切り文字。D-032 の前提の下で `,`）。 -/
+@[source "lang:java#java.text.DecimalFormat@java-17", "lang:java#java.util.LinkedHashMap@java-17", gap "D-032"]
 def createFlightVacantInfoList (flightList : List Flight) (basicFare : J32) : JResult (List FlightVacantInfoDto) := do
   let mut m : JLinkedHashMap (JRef String) FlightVacantInfoDto := {}
   for flight in flightList do
