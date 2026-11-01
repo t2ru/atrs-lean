@@ -93,7 +93,7 @@ Chosen option: "棚卸しの結果を登録簿に反映する（誤記は直し�
 * Good, because 実装済みの範囲で、`Spec` の PRE の各成分がどれかの D 番号（差異か PRE の外）に結びついた
 * Good, because 未着手の機能の着手時に、仮定に置くべき差異が登録簿と課題表にそろっている
 * Bad, because 登録の数が増え（D-041 まで）、未着手の機能の `pending` の指摘（TR-K・TR-D の段階導入）が増える
-* Bad, because ローカルで Lean を実行できない環境で作業したので、生成表は道具の出力の形を写して書き、CI の `trace:manifest --check` で確かめる
+* 生成表と `trace/manifest.json` は、作業の途中で Lean を使えなかったため生成器の規則を写して書いた。その後 Lean 4.35.0 を導入し、本物の `trace manifest --check` が一致を確かめた
 
 ### Confirmation
 
