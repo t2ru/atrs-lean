@@ -1,0 +1,62 @@
+atrs-lean
+Copyright (c) 2026 Tetsuya Takatsuru
+
+This repository is dual-licensed under either of
+
+  * Apache License, Version 2.0 (LICENSE-APACHE or
+    http://www.apache.org/licenses/LICENSE-2.0)
+  * MIT License (LICENSE-MIT or http://opensource.org/licenses/MIT)
+
+at your option.
+
+-------------------------------------------------------------------------------
+Third-party material
+-------------------------------------------------------------------------------
+
+This project formalizes and ports TERASOLUNA ATRS (Airline Ticket
+Reservation System), a sample application of the TERASOLUNA Server
+Framework for Java.
+
+  Upstream:  https://github.com/terasolunaorg/atrs
+  Copyright: Copyright(c) 2024 NTT Corporation.
+             Copyright(c) 2026 NTT DATA Group Corporation.
+  License:   Apache License, Version 2.0 (LICENSE-APACHE)
+
+1. upstream/atrs (git submodule)
+
+   The upstream source is referenced as a git submodule pinned to a
+   specific commit. It is NOT part of this repository's own work and is
+   NOT covered by the dual license above; it remains under its own
+   license (Apache License, Version 2.0) and copyright notices.
+
+2. Material derived from the upstream source
+
+   The following parts of this repository are derived from, translated
+   from, or generated from the upstream source, and are therefore
+   derivative works of TERASOLUNA ATRS:
+
+     * lean/SourceModel/        Lean models that mirror the upstream
+                                Java/SQL source (including Java
+                                expressions, SQL statements and names)
+     * conformance/fixtures/    shared inputs generated from the
+                                upstream seed data
+     * conformance/source-model/**/origin-run-*.json
+                                expected values recorded by running the
+                                upstream program
+     * tools/origin-run/http/   HTTP-level recordings of the upstream
+                                program
+     * trace/                   inventories and manifests that list and
+                                hash upstream files
+     * docs/spec/               excerpts and descriptions of the
+                                upstream behavior, messages and code lists
+
+   The original modifications and additions in these parts are offered
+   under the dual license above. When redistributing them, you must also
+   comply with the conditions of the Apache License, Version 2.0 that
+   apply to the upstream work (in particular Section 4: give recipients
+   a copy of the license, state that the files were modified, and retain
+   the upstream copyright and attribution notices).
+
+"TERASOLUNA" is a trademark or registered trademark of its respective
+owner. This project is not affiliated with or endorsed by NTT
+Corporation or NTT DATA Group Corporation.
