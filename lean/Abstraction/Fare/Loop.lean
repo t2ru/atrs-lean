@@ -26,6 +26,7 @@ open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java Spec Spec.Prim SourceModel.MasterData
+open LangSemantics.Java.Spring
   SourceModel.MasterQuery
 
 /-- 読み込んだ Provider での `calculateBasicFare`: D-001 の前提の下で、[Spec] の基本運賃 `X·C/100` を返す。 -/
@@ -52,9 +53,9 @@ theorem calculateBasicFare_eq {db : SourceModel.Repository.Schema.MasterDb} {cfg
   have hr : (b + ex) * c < 100 * 2 ^ 28 :=
     Nat.lt_of_le_of_lt (Nat.mul_le_mul hX hc1000) (by decide)
   refine ⟨jd2i (jdmul (jd ((b + ex : Nat) : Int)) (basicFactor c)), ?_, basicFare_src_eq' hc1000 (by omega) hr hdev⟩
-  simp only [SourceModel.Fare.calculateBasicFare, hshared]
-  simp only [jAssert, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
-    getBoardingClass, pure_bind, hget, JRef.deref, hex]
+  simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.Fare.calculateBasicFare, hshared]
+  simp only [Assert.isTrue, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
+    getBoardingClass, LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, hget, JRef.deref, hex]
   rw [hn]
   simp only [ok_bind, hadd, hc, basicFactor]
   rfl
@@ -63,10 +64,10 @@ theorem calculateBasicFare_eq {db : SourceModel.Repository.Schema.MasterDb} {cfg
 theorem calculateFare_ok {bJ rJ : J32} {b r : Nat} (hb : bJ.val = (b : Int)) (hr : rJ.val = (r : Int)) (hr100 : r ≤ 100) :
     SourceModel.Fare.calculateFare bJ rJ =
       .ok (bdCeilHundredUp (jd2i (jdmul (jd (b : Int)) (fareFactor r)))) := by
-  have e1 : jAssert (decide ((b : Int) ≥ 0)) "basicFare must be 0 or higher." = .ok () := by simp [jAssert]
-  have e2 : jAssert (decide ((r : Int) ≥ 0)) "discountRate must be 0 or higher." = .ok () := by simp [jAssert]
-  have e3 : jAssert (decide ((r : Int) ≤ 100)) "discountRate must be 100 or less." = .ok () := by
-    simp [jAssert]; omega
+  have e1 : Assert.isTrue (decide ((b : Int) ≥ 0)) "basicFare must be 0 or higher." = .ok () := by simp [Assert.isTrue]
+  have e2 : Assert.isTrue (decide ((r : Int) ≥ 0)) "discountRate must be 0 or higher." = .ok () := by simp [Assert.isTrue]
+  have e3 : Assert.isTrue (decide ((r : Int) ≤ 100)) "discountRate must be 100 or less." = .ok () := by
+    simp [Assert.isTrue]; omega
   simp only [SourceModel.Fare.calculateFare, hb, hr, e1, e2, e3, ok_bind, SourceModel.Fare.ceilFare, fareFactor]
   rfl
 

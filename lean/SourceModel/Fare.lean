@@ -13,7 +13,7 @@ Spring の `Assert` は `IllegalArgumentException`、参照の `null` と `Integ
 
 namespace SourceModel.Fare
 open LangSemantics.Java.DoubleOps
-open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
+open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Spring LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData
 
@@ -38,9 +38,9 @@ def getMultiplicationRatio (svc : TicketSharedService) (departureDate : JRef JLo
   gap "D-001", "D-030"]
 def calculateBasicFare (svc : TicketSharedService) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.Model.BoardingClassCd)
     (depDate : JRef JLocalDate) : JResult J32 := do
-  jAssert (java! basicFareOfRoute >= 0) "basicFareOfRoute must be 0 or higher."
-  jAssert boardingClassCd.isSome "boardingClassCd must not null."
-  jAssert depDate.isSome "depDate must not null."
+  Assert.isTrue (java! basicFareOfRoute >= 0) "basicFareOfRoute must be 0 or higher."
+  Assert.notNull boardingClassCd "boardingClassCd must not null."
+  Assert.notNull depDate "depDate must not null."
   let boardingClass ← (← getBoardingClass svc.boardingClassProvider boardingClassCd).deref "boardingClass"
   let boardingClassFare ← boardingClass.extraCharge.deref "extraCharge"
   let multiplicationRatio ← getMultiplicationRatio svc depDate
@@ -56,9 +56,9 @@ def ceilFare (fare : J32) : J32 := bdCeilHundredUp fare
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)@1e12eb714e2bc395",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e", gap "D-002"]
 def calculateFare (basicFare discountRate : J32) : JResult J32 := do
-  jAssert (java! basicFare >= 0) "basicFare must be 0 or higher."
-  jAssert (java! discountRate >= 0) "discountRate must be 0 or higher."
-  jAssert (java! discountRate <= 100) "discountRate must be 100 or less."
+  Assert.isTrue (java! basicFare >= 0) "basicFare must be 0 or higher."
+  Assert.isTrue (java! discountRate >= 0) "discountRate must be 0 or higher."
+  Assert.isTrue (java! discountRate <= 100) "discountRate must be 100 or less."
   let fare := java! (int) (basicFare * (1 - (discountRate * 0.01)))
   return ceilFare fare
 
@@ -70,33 +70,23 @@ structure TicketReserveService where
   /-- `atrs.childFareRate` -/
   childFareRate : J32
 
-/-- `Assert.notEmpty(list)`: `null` か空なら `IllegalArgumentException`。 -/
-def assertNotEmpty {α : Type} (xs : JRef (List α)) (message : String) : JResult (List α) :=
-  match xs with
-  | some (x :: rest) => pure (x :: rest)
-  | _ => throw (.illegalArgument message)
-
 /-- `calculateTotalFare`: 小児の人数を数え、フライトごとに `boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum`
 を左から int で計算して合計し、最後に `FareUtil.ceilFare` で 100 円単位に切り上げる。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)@35bc5d27ed5f2ca9",
   "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)@ca1a14757ce1cb33", gap "D-003", "D-012"]
 def calculateTotalFare (svc : TicketReserveService) (flightList : JRef (List (JRef Flight)))
     (passengerList : JRef (List (JRef Passenger))) : JResult J32 := do
-  let flights ← assertNotEmpty flightList "flightList must not empty."
-  let passengers ← assertNotEmpty passengerList "passengerList must not empty."
+  let flights ← Assert.notEmptyValue flightList "flightList must not empty."
+  let passengers ← Assert.notEmptyValue passengerList "passengerList must not empty."
   let mut childNum : J32 := J32.ofInt 0
   for passenger in passengers do
-    let passenger ← match passenger with
-      | some p => pure p
-      | none => throw (.illegalArgument "passenger must not null.")
+    let passenger ← Assert.notNullValue passenger "passenger must not null."
     let age ← passenger.age.deref "age"
     if java! age < svc.adultPassengerMinAge then childNum := java! childNum + 1
   let adultNum := java! ⟪J32.ofInt passengers.length⟫ - childNum
   let mut totalFare : J32 := J32.ofInt 0
   for flight in flights do
-    let flight ← match flight with
-      | some f => pure f
-      | none => throw (.illegalArgument "flight must not null.")
+    let flight ← Assert.notNullValue flight "flight must not null."
     let flightMaster ← flight.flightMaster.deref "flightMaster"
     let route ← flightMaster.route.deref "route"
     let routeBasicFare ← route.basicFare.deref "basicFare"

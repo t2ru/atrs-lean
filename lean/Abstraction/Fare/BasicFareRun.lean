@@ -15,6 +15,7 @@ open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java Spec LangSemantics.Core SourceModel.MasterData
+open LangSemantics.Java.Spring
   SourceModel.MasterQuery SourceModel.FareQuery
 
 /-- 積算比率は値域内（MD-8）。 -/
@@ -91,9 +92,9 @@ theorem runBasicFare_spec {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} 
     Nat.lt_of_le_of_lt (Nat.mul_le_mul hbx' hc1000) (by decide)
   have hX : X < 2 ^ 53 := by omega
   have hrun : runBasicFare ic o = .ok (jd2i (jdmul (jd (X : Int)) (basicFactor C))) := by
-    simp only [runBasicFare, hl, ok_bind, SourceModel.Fare.calculateBasicFare, hcd, hdj, hshared]
-    simp only [jAssert, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
-      getBoardingClass, pure_bind, hget, JRef.deref, hex]
+    simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, runBasicFare, hl, ok_bind, SourceModel.Fare.calculateBasicFare, hcd, hdj, hshared]
+    simp only [Assert.isTrue, hb, Option.isSome_some, decide_true, ite_true, ok_bind, Int.natCast_nonneg, ge_iff_le,
+      getBoardingClass, LangSemantics.Java.Spring.Assert.notNullValue_some, pure_bind, hget, JRef.deref, hex]
     rw [hn]
     simp only [ok_bind, hadd, hc, basicFactor]
     rfl

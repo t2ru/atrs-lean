@@ -24,6 +24,7 @@ import SourceModel.Repository.Mapping
 
 namespace SourceModel.FlightSearch
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.String LangSemantics.Java.HashMap
+  LangSemantics.Java.Spring
 
 open LangSemantics.Java SourceModel.Model SourceModel.MasterData SourceModel.Repository.Flight
 
@@ -110,9 +111,7 @@ def getSearchLimitDate (limitDay : J32) (today : JLocalDate) : JLocalDate := tod
   gap "D-014"]
 def validateDepatureDate (limitDay : J32) (sysDate limitToday : JLocalDate) (departureDate : JRef JLocalDate) :
     JResult Unit := do
-  let d ← match departureDate with
-    | some d => pure d
-    | none => throw (.illegalArgument "departureDate must not null.")
+  let d ← Assert.notNullValue departureDate "departureDate must not null."
   let limitDate := getSearchLimitDate limitDay limitToday
   if java! d.isBefore(sysDate) || d.isAfter(limitDate) then throw (businessException (errorCode "e.ar.b1.2001"))
 
@@ -122,12 +121,8 @@ def validateDepatureDate (limitDay : J32) (sysDate limitToday : JLocalDate) (dep
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)@c724cf20ebe62f82",
   gap "D-014"]
 def isAvailableFareType (fareType : JRef FareType) (depDate : JRef JLocalDate) (today : JLocalDate) : JResult Bool := do
-  let ft ← match fareType with
-    | some f => pure f
-    | none => throw (.illegalArgument "fareType must not null.")
-  let d ← match depDate with
-    | some d => pure d
-    | none => throw (.illegalArgument "depDate must not null.")
+  let ft ← Assert.notNullValue fareType "fareType must not null."
+  let d ← Assert.notNullValue depDate "depDate must not null."
   let s ← ft.rsrvAvailableStartDayNum.deref "rsrvAvailableStartDayNum"
   let e ← ft.rsrvAvailableEndDayNum.deref "rsrvAvailableEndDayNum"
   let startDate := d.minusDays s.val
@@ -261,25 +256,18 @@ def createFlightVacantInfoList (sym : DecimalFormat.Symbols) (flightList : List 
 /-- `searchFlight(searchCriteria)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)@aebd2fb115cd02fc",
   "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)@75061ffc6ae02ecb",
-  "dep:org.springframework:spring-core#Assert.notNull@spring-core-7.0.3", gap "D-001", "D-002", "D-014", "D-033"]
+  "dep:org.springframework:spring-core#Assert.notNull@spring-core-7.0.3",
+  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3", gap "D-001", "D-002", "D-014", "D-033"]
 def searchFlight (svc : TicketSearchService) (searchCriteria : JRef TicketSearchCriteriaDto) :
     JResult (List FlightVacantInfoDto) := do
-  let c ← match searchCriteria with
-    | some c => pure c
-    | none => throw (.illegalArgument "searchCriteria must not null.")
-  let depDate ← match c.depDate with
-    | some d => pure d
-    | none => throw (.illegalArgument "depDate must not null.")
-  let boardingClassCd ← match c.boardingClassCd with
-    | some b => pure b
-    | none => throw (.illegalArgument "boardingClassCd must not null.")
+  let c ← Assert.notNullValue searchCriteria "searchCriteria must not null."
+  let depDate ← Assert.notNullValue c.depDate "depDate must not null."
+  let boardingClassCd ← Assert.notNullValue c.boardingClassCd "boardingClassCd must not null."
   let depAirportCd := c.departureAirportCd.getD ""
-  assertHasText depAirportCd "depAirportCd must have some text."
+  Assert.hasText depAirportCd "depAirportCd must have some text."
   let arrAirportCd := c.arrivalAirportCd.getD ""
-  assertHasText arrAirportCd "arrAirportCd must have some text."
-  let flightType ← match c.flightType with
-    | some t => pure t
-    | none => throw (.illegalArgument "flightType must not null.")
+  Assert.hasText arrAirportCd "arrAirportCd must have some text."
+  let flightType ← Assert.notNullValue c.flightType "flightType must not null."
   validateDepatureDate svc.limitDay svc.sharedClock.1 svc.sharedClock.2 (some depDate)
   let route ← match ← getRouteByAirportCd svc.routeProvider depAirportCd arrAirportCd with
     | some r => pure r

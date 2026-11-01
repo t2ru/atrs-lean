@@ -12,14 +12,9 @@ import SourceModel.Repository.Mapping
 -/
 
 namespace SourceModel.MasterData
-open LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.String
+open LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.String LangSemantics.Java.Spring
 
 open LangSemantics.Java SourceModel.Model SourceModel.Repository.MasterData
-
-/-- Spring の `Assert.hasText`: `null` でなく、`Character.isWhitespace` でない文字を含む。 -/
-@[source "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3"]
-def assertHasText (s : String) (message : String) : JResult Unit :=
-  jAssert (s.any fun c => !isJavaWhitespace c) message
 
 /-- `BoardingClassProvider` のキャッシュ（`Map<BoardingClassCd, BoardingClass>`）。 -/
 structure BoardingClassProvider where
@@ -98,17 +93,13 @@ def FlightMasterProvider.load (rows : List FlightMasterResult) : JResult FlightM
 /-- `getBoardingClass`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)@363af6d3dd2e282d"]
 def getBoardingClass (p : BoardingClassProvider) (cd : JRef Spec.Model.BoardingClassCd) : JResult (JRef BoardingClass) := do
-  let cd ← match cd with
-    | some c => pure c
-    | none => throw (.illegalArgument "boardingClassCd must not null.")
+  let cd ← Assert.notNullValue cd "boardingClassCd must not null."
   return p.boardingClassCodeMap.get cd
 
 /-- `getPeakTime`: 取得順に走査し、`depLocalDate` を両端を含めて含む最初のピーク時期。無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)@1b19d6cad612b687", gap "D-004"]
 def getPeakTime (p : PeakTimeProvider) (depLocalDate : JRef JLocalDate) : JResult (JRef PeakTime) := do
-  let d ← match depLocalDate with
-    | some d => pure d
-    | none => throw (.illegalArgument "depLocalDate must not null.")
+  let d ← Assert.notNullValue depLocalDate "depLocalDate must not null."
   let rec go : List PeakTime → JResult (JRef PeakTime)
     | [] => pure none
     | pt :: rest => do
@@ -120,22 +111,22 @@ def getPeakTime (p : PeakTimeProvider) (depLocalDate : JRef JLocalDate) : JResul
 /-- `getFareType`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#getFareType(FareTypeCd)@8cca1518f179d5a0"]
 def getFareType (p : FareTypeProvider) (cd : JRef Spec.Model.FareTypeCd) : JResult (JRef FareType) := do
-  let cd ← match cd with
-    | some c => pure c
-    | none => throw (.illegalArgument "fareTypeCd must not null.")
+  let cd ← Assert.notNullValue cd "fareTypeCd must not null."
   return p.fareTypeCodeMap.get cd
 
 /-- `getRouteByAirportCd`: 両方の空港コードが `hasText` でなければ `IllegalArgumentException`。無ければ `null`。 -/
-@[source "java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)@4266ccb1fdc24df9"]
+@[source "java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)@4266ccb1fdc24df9",
+  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3"]
 def getRouteByAirportCd (p : RouteProvider) (departureAirportCd arrivalAirportCd : String) : JResult (JRef Route) := do
-  assertHasText departureAirportCd "departureAirportCd must have some text."
-  assertHasText arrivalAirportCd "arrivalAirportCd must have some text."
+  Assert.hasText departureAirportCd "departureAirportCd must have some text."
+  Assert.hasText arrivalAirportCd "arrivalAirportCd must have some text."
   return p.routeMap.get (makeCacheKey departureAirportCd arrivalAirportCd)
 
 /-- `getFlightMaster`: 便名が `hasText` でなければ `IllegalArgumentException`。無ければ `null`。 -/
-@[source "java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#getFlightMaster(String)@73525e4cbaf2e787"]
+@[source "java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#getFlightMaster(String)@73525e4cbaf2e787",
+  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3"]
 def getFlightMaster (p : FlightMasterProvider) (flightName : String) : JResult (JRef FlightMaster) := do
-  assertHasText flightName "flightName must have some text."
+  Assert.hasText flightName "flightName must have some text."
   return p.flightMasterMap.get flightName
 
 end SourceModel.MasterData

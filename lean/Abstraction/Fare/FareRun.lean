@@ -13,6 +13,7 @@ open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.ResultLemmas
 
 open LangSemantics.Java SourceModel.FareQuery
+open LangSemantics.Java.Spring
 
 /-- 入力の像があり PRE を満たすとき、`calculateFare` は例外を投げず、double の式の値を返す。 -/
 theorem calculateFare_eq {ic : FareInput} {i : Spec.Fare.FareInput} (h : aiF ic = some i) (hp : i.Pre) :
@@ -22,10 +23,10 @@ theorem calculateFare_eq {ic : FareInput} {i : Spec.Fare.FareInput} (h : aiF ic 
   obtain ⟨b, hb, r, hr, rfl⟩ := h
   rw [natOfJ32_eq_some] at hb hr
   have hr100 : r ≤ 100 := hp.2
-  have e1 : jAssert (decide ((b : Int) ≥ 0)) "basicFare must be 0 or higher." = .ok () := by simp [jAssert]
-  have e2 : jAssert (decide ((r : Int) ≥ 0)) "discountRate must be 0 or higher." = .ok () := by simp [jAssert]
-  have e3 : jAssert (decide ((r : Int) ≤ 100)) "discountRate must be 100 or less." = .ok () := by
-    simp [jAssert]; omega
+  have e1 : Assert.isTrue (decide ((b : Int) ≥ 0)) "basicFare must be 0 or higher." = .ok () := by simp [Assert.isTrue]
+  have e2 : Assert.isTrue (decide ((r : Int) ≥ 0)) "discountRate must be 0 or higher." = .ok () := by simp [Assert.isTrue]
+  have e3 : Assert.isTrue (decide ((r : Int) ≤ 100)) "discountRate must be 100 or less." = .ok () := by
+    simp [Assert.isTrue]; omega
   simp only [SourceModel.Fare.calculateFare, hb, hr, e1, e2, e3, ok_bind, SourceModel.Fare.ceilFare, fareFactor]
   rfl
 

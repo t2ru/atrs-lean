@@ -33,8 +33,4 @@ def JRef.deref {α : Type} (r : JRef α) (what : String := "") : JResult α :=
   | some a => .ok a
   | none => .error (.nullPointer what)
 
-/-- `Assert.isTrue` 相当。 -/
-def jAssert (cond : Bool) (message : String) : JResult Unit :=
-  if cond then .ok () else .error (.illegalArgument message)
-
 end LangSemantics.Java.Exception
