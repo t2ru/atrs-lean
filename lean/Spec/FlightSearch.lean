@@ -214,11 +214,13 @@ def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
 def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
   (searchFlight i.cfg i.md i.today i.criteria w.findAll).getD (.ok [])
 
+/-- 1 歩の関数（選択は環境・自由とも `Unit`）: 状態を変えず、`answer` を出力する。 -/
+def searchStep (w : Port.World) (i : SearchInput) (_ : Unit × Unit) : Port.World × SearchOutput := (w, answer w i)
+
 /-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードのフライト。1 歩は状態を変えない。 -/
 @[spec_doc "docs/spec/flight-search.md#searchflight"]
 def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
-  Machine.Machine.ofChoice Port.World.Inv (· = Seed.Flight.world) SearchInput.Pre
-    (fun w i (_ : Unit × Unit) => (w, answer w i)) () ()
+  Machine.Machine.ofChoice Port.World.Inv (· = Seed.Flight.world) SearchInput.Pre searchStep () ()
 
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
