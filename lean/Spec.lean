@@ -12,6 +12,8 @@ import Spec.Port
 import Spec.FlightSearch
 import Spec.Nondet
 import Spec.Seed
+import Spec.Seed.Flight
+import Spec.Seed.FlightProps
 import Spec.EnvPre
 
 /-!
@@ -25,6 +27,7 @@ import Spec.EnvPre
 | `Spec.Prim` | 基本演算・暦日・時刻・書式・文字クラス |
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
 | `Spec.Seed` | シードのマスタ・設定（`tools/conformance/seed_lean.py` が生成） |
+| `Spec.Seed.Flight`・`Spec.Seed.FlightProps` | シードのフライト（`World` の初期状態。`tools/conformance/flight_seed.py` が生成）と、その主キーの一意性・参照整合性 |
 | `Spec.EnvPre` | 入口の環境の前提 `masterConfigOk`（`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
 | `Spec.Nondet` | 非決定性 N-001〜N-005 の選択の型（`@[nondet]`）と標準の値 |
 | `Spec.Config` | 設定値と不変条件 |
@@ -34,7 +37,7 @@ import Spec.EnvPre
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
 | `Spec.Error` | エラーの分類 `AtrsError`（いまは `Business`・`NotFound`） |
 | `Spec.Port` | 抽象状態 `World`（いまはフライト）と不変条件、ポートの操作 |
-| `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。機械は backlog 0be7 の第 2 段 |
+| `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）と抽象機械 `searchMachine`（SPEC 課題） |
 
 トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`）である。
 `Abstraction` の主定理 `Abstraction.refines`・`Abstraction.preserves` の抽象側になる。入口の機械（HTTP の画面・API、

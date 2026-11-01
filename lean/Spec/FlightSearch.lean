@@ -5,13 +5,17 @@ import Spec.MasterData
 import Spec.Fare
 import Spec.Error
 import Spec.Port
+import Spec.Seed.Flight
+import Spec.Seed.FlightProps
+import Machine
 
 /-!
 # Spec.FlightSearch
 
 空席照会（B1。`docs/spec/flight-search.md`）。照会可能期間・運賃種別の予約可能判定・`searchFlight` を、
 設定・マスタ・今日の日付・照会条件・フライトの全件の関数として与える（ADR ce36）。
-フライトは抽象状態 `World` の成分で、空席照会は状態を変えない。機械と SPEC 課題は backlog 0be7 の第 2 段で置く。
+フライトは抽象状態 `World` の成分で、空席照会は状態を変えない。抽象機械 `searchMachine` は、選択を持たない
+`Machine.ofChoice`（選択の型は `Unit`）で、1 歩は状態を変えずに `searchFlight` の結果を出力する（backlog 0be7 の第 2 段）。
 -/
 
 namespace Spec.FlightSearch
@@ -172,5 +176,98 @@ def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) 
 /-- 照会画面の照会可能期間の表示（`beginningPeriod`・`endingPeriod`）。 -/
 @[spec_doc "docs/spec/flight-search.md#照会画面の初期値"]
 def searchPeriod (cfg : Config) (today : Date) : Date × Option Date := (today, searchLimitDate cfg today)
+
+/-! ## 抽象機械（SPEC 課題） -/
+
+/-- 空席照会の入力（状態のフライト以外）: 設定・マスタ・今日の日付・照会条件。 -/
+structure SearchInput where
+  cfg : Config
+  md : MasterData
+  today : Date
+  criteria : Criteria
+  deriving DecidableEq
+
+/-- 空席照会の出力。 -/
+abbrev SearchOutput := Except AtrsError (List FlightVacantInfo)
+
+/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、フライトの参照整合性（`World.RefMaster`）、照会の空港コードの形
+（入力検証を通過していれば満たされる。[Source] の `Assert.hasText` に当たる）。 -/
+@[spec_doc "docs/spec/flight-search.md#事前条件"]
+def SearchInput.Pre (w : Port.World) (i : SearchInput) : Prop :=
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ w.RefMaster i.md ∧ i.criteria.depAirportCd.WellFormed ∧
+    i.criteria.arrAirportCd.WellFormed
+
+/-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
+def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
+  (searchFlight i.cfg i.md i.today i.criteria w.findAll).getD (.ok [])
+
+/-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードのフライト。1 歩は状態を変えない。 -/
+@[spec_doc "docs/spec/flight-search.md#searchflight"]
+def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
+  Machine.Machine.ofChoice Port.World.Inv (· = Seed.Flight.world) SearchInput.Pre
+    (fun w i (_ : Unit × Unit) => (w, answer w i)) () ()
+
+/-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
+theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
+    (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
+  obtain ⟨_, hmd, href, _, _⟩ := h
+  unfold searchFlight
+  split
+  · rfl
+  · split
+    · rfl
+    · rename_i route hroute
+      simp only
+      split
+      · rfl
+      · rename_i hne
+        -- 候補が 1 つでもあれば、その搭乗クラスはマスタにある（RefMaster）
+        obtain ⟨x, hx⟩ := List.exists_mem_of_ne_nil
+          ((List.filterMap (candidateOf i.md i.criteria route (i.today.daysBetween i.criteria.depDate)) w.findAll).mergeSort
+            candidateLe) (fun h => hne (by rw [h]; rfl))
+        have hx' := (List.mergeSort_perm _ _).mem_iff.mp hx
+        rw [List.mem_filterMap] at hx'
+        obtain ⟨f, hf, hcf⟩ := hx'
+        unfold candidateOf at hcf
+        simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at hcf
+        obtain ⟨fm, _, ft, _, hcf⟩ := hcf
+        split at hcf
+        · rename_i hcond
+          obtain ⟨_, _, hbc, _, _⟩ := hcond
+          obtain ⟨_, ⟨b, hb, hbcd⟩, _⟩ := href f hf
+          have hbsome : (i.md.boardingClassOf i.criteria.boardingClassCd).isSome := by
+            unfold boardingClassOf
+            rw [List.find?_isSome]
+            exact ⟨b, hb, by simp [hbcd, hbc]⟩
+          have hroute' := List.mem_of_find?_eq_some hroute
+          obtain ⟨⟨a1, ha1, hc1⟩, ⟨a2, ha2, hc2⟩⟩ := hmd.md3.1 route hroute'
+          have hdep : (airportName? i.md route.depAirportCd).isSome := by
+            unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a1, ha1, by simp [hc1]⟩
+          have harr : (airportName? i.md route.arrAirportCd).isSome := by
+            unfold airportName?; rw [Option.isSome_map, List.find?_isSome]; exact ⟨a2, ha2, by simp [hc2]⟩
+          obtain ⟨bc, hbc'⟩ := Option.isSome_iff_exists.mp hbsome
+          obtain ⟨dn, hdn⟩ := Option.isSome_iff_exists.mp hdep
+          obtain ⟨an, han⟩ := Option.isSome_iff_exists.mp harr
+          simp [Fare.basicFare, hbc', hdn, han]
+        · cases hcf
+
+/-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
+@[obligation "SPEC-001"]
+theorem searchMachine_run_step :
+    ∀ s i, searchMachine.Pre s i → searchMachine.step s i (searchMachine.run s i).1 (searchMachine.run s i).2 :=
+  searchMachine.run_step
+
+/-- SPEC-002・SPEC-003: 初期状態（シードのフライト）は INV を満たし、1 歩は状態を変えないので INV を保つ。 -/
+@[obligation "SPEC-002", "SPEC-003"]
+theorem searchMachine_sound : searchMachine.Sound where
+  init_inv s h := h ▸ Seed.FlightProps.world_inv
+  step_inv s i s' o hi _ hs := by
+    obtain ⟨_, hc⟩ := hs
+    cases hc
+    exact hi
+
+/-- SPEC-007: 初期状態はシードのフライトの 1 点。 -/
+@[obligation "SPEC-007"]
+theorem searchMachine_initIs : searchMachine.InitIs Seed.Flight.world := fun _ => Iff.rfl
 
 end Spec.FlightSearch

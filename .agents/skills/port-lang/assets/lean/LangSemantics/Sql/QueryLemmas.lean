@@ -12,6 +12,8 @@ import LangSemantics.Core.List
   許される順列はただ 1 つで、安定整列の結果に一致する。
 - `adjacent_of_pairwise`: `pairwise_of_adjacent` の逆。
 - `allowed_perm`: 許される順列は元の行の並べ替え。
+- `cross_filter_left`・`select_filter_of_imp`: 選択の条件が左の表の行だけで決まる条件を含むなら、その条件で
+  左の表を先に絞ってよい（条件の押し下げ）。
 -/
 
 namespace LangSemantics.Sql.QueryLemmas
@@ -108,5 +110,38 @@ theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {dirs : Lis
     {key : ρ → List SqlValue} (h : isAllowedOrder cfg dirs key rows o = true) : o.Perm rows := by
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
   exact h.1.symm
+
+/-- 左の表を絞ってから直積を取るのは、直積を左の成分の条件で絞るのと同じ。 -/
+theorem cross_filter_left {α β : Type} (xs : List α) (bs : List β) (q : α → Bool) :
+    Bag.cross (xs.filter q) bs = (Bag.cross xs bs).filter (fun t => q t.1) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    simp only [Bag.cross] at ih ⊢
+    have hmap : (List.map (fun b => (x, b)) bs).filter (fun t => q t.1) =
+        if q x then List.map (fun b => (x, b)) bs else [] := by
+      by_cases hq : q x = true
+      · simp only [hq, List.filter_map, Function.comp_def, ite_true]
+        congr 1
+        exact List.filter_eq_self.mpr fun _ _ => rfl
+      · have hq' : q x = false := by simpa using hq
+        simp [hq', List.filter_map, Function.comp_def]
+    rw [List.flatMap_cons, List.filter_append, hmap, ← ih]
+    by_cases hq : q x = true
+    · simp [List.filter_cons_of_pos hq, hq]
+    · have hq' : q x = false := by simpa using hq
+      simp [List.filter_cons_of_neg hq, hq']
+
+/-- 選択の条件 `P` が `q` を含意するなら、先に `q` で絞ってから `P` で選んでも同じ。 -/
+theorem select_filter_of_imp {α : Type} (P : α → Truth) (q : α → Bool) (rows : Bag α)
+    (h : ∀ t, (P t).holds = true → q t = true) :
+    Bag.select P rows = Bag.select P (rows.filter q) := by
+  unfold Bag.select
+  rw [List.filter_filter]
+  congr 1
+  funext t
+  by_cases hp : (P t).holds = true
+  · simp [hp, h t hp]
+  · simp [hp]
 
 end LangSemantics.Sql.QueryLemmas
