@@ -9,7 +9,7 @@ okf_version: "0.2"
 * [バックログ規約](rules/backlog.md) - バックログ項目の形式・状態・完了の定義。
 * [意思決定記録（ADR）規約](rules/decision-records.md) - ADR（MADR 4.0 + OKF frontmatter）の ATRS での置き場所・命名・状態・テンプレートと作成基準。形式と道具はスキル work-records に従う。
 * [文書規約](rules/documentation.md) - 文書の言語・規範語・出典記法・リンク・OKF v0.2 準拠の規則。
-* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。コミットの単位とメッセージの規則。
+* [バージョン管理規約](rules/version-control.md) - 一通りの作業が終わったら git commit する。push は自分で作ったブランチに限り、PR を作成してよい。PR は draft で作り、人間のレビューを求める段で ready にする。コミットの単位とメッセージの規則。
 * [検査の実行規約](rules/checks.md) - 検査を常時の段・変更時の段・全数に分け、コミット前・push 前・PR・main・定期・節目のそれぞれで実行するものを決める。長い段は関係する変更があったときだけ実行し、範囲を tools/ci/check-scopes.toml に宣言する。
 
 # Decisions
@@ -75,6 +75,7 @@ okf_version: "0.2"
 * [「オラクル」を「原典実行」（origin-run）と呼び替える（ATRS）](decision/18ca-rename-oracle-to-origin-run.md) - Java の原典を実行して期待値を採取・照合する手段を「原典実行」（識別子 origin-run）と呼び替え、ATRS の文書・既存の ADR と作業項目の本文・ベクタの source の値・道具（tools/origin-run、tools/ci/java_origin_run.sh、mise の origin-run:*）をそろえる。改名しない規約の backlog のファイル名（f18c・773f）は残す。
 * [検査を常時の段・変更時の段・全数に分け、長い段は関係する変更があったときだけ実行する](decision/9c1c-check-tiers-and-change-scoped-long-checks.md) - コミット前と PR の CI では、常時の段（ci:fast）と、変更に関係する変更時の段だけを実行する（mise run check）。CI で 20 秒以上かかる段は変更時の段とし、範囲（パスの glob と Lean の import の閉包）を tools/ci/check-scopes.toml に宣言する。main への push・週次・手動・backlog の完了・版上げでは全数（mise run ci）を実行する。lake test から 20 秒以上かかる節（シードの DB を使う SourceModel の照合と空席照会の SQL の結果、暦日の全日、double の総当たり）を実行ファイル long-tests に分け、CI の push と pull_request の二重起動をやめる。
 * [文書の管理にスキル okf-bundle・work-records を使い、設定を .okf.json・.work-records.json に置く](decision/625d-adopt-okf-bundle-and-work-records-skills.md) - 移植に関係の無い文書の道具と規則を spec-pivot から分けた汎用のスキル okf-bundle（OKF のバンドルとリンクの検査・文書の移動）と work-records（ADR・backlog の形式と ID）を ATRS に置き、設定を trace/project.json の okf・ids からルートの .okf.json・.work-records.json に移す。機能と backlog の対応表の検査は id_fields で宣言し、旧番号の書き換えと登録簿の旧番号の検査は ATRS の tools/docs/legacy_ids.py に移す。
+* [PR は draft で作り、人間のレビューを求める段で ready にする](decision/8bb7-pr-draft-until-review-ready.md) - 自分で作ったブランチの PR は draft で作成し、作業が終わって確認と CI が通り、作成者の側で残る作業が無くなって人間にレビューを求める段になったら、作成者が draft から ready for review に変える。レビューで大きな作業が差し戻されたら draft に戻してよい。マージはプロジェクトオーナーが行う。
 
 # Specification
 
