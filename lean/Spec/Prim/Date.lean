@@ -9,7 +9,7 @@ import Trace
   比較・加減算する。
 - `ofOrdinal?` は、年と月を見積もって候補を調べ、結果を検算して返す。構成上、返した暦日の `ordinal` は
   引数と一致する（`ordinal_ofOrdinal?`）。範囲内の全日で値を返すこと（取りこぼしが無いこと）は、
-  `lake exe long-tests`（`Tests.DateExhaustive`）で 0001-01-01〜9999-12-31 の全日について確かめる。
+  `lake test`（`Tests.DateExhaustive`）で 0001-01-01〜9999-12-31 の全日について確かめる。
 -/
 
 namespace Spec.Prim

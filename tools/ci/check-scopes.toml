@@ -27,10 +27,6 @@ paths = [
   ".python-version",
 ]
 
-# 長い検査（lean/Tests/Long.lean）: 暦日の全日・double の総当たり（データのファイルを読まない）
-[scopes."lean:test-long"]
-lean_roots = ["Tests.LongMain"]
-
 # 宣言がモジュール名の下にあること（ATRS の Lean の全宣言が対象）
 [scopes."lean:layout-check"]
 paths = ["lean/**/*.lean"]
