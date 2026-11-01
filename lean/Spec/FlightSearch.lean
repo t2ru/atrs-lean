@@ -190,15 +190,25 @@ structure SearchInput where
 /-- 空席照会の出力。 -/
 abbrev SearchOutput := Except AtrsError (List FlightVacantInfo)
 
+/-- 便マスタの便名が空白でない（[Source] の `FlightMasterProvider.getFlightMaster` の `Assert.hasText` に当たる）。
+空白の便名の便マスタが照会の結果に現れると、[Source] は `IllegalArgumentException` を投げる（D-033。PRE の外）。 -/
+@[spec_doc "docs/spec/flight-search.md#事前条件", gap "D-033"]
+def FlightNamesHaveText (md : MasterData) : Prop :=
+  ∀ fm ∈ md.flightMasters, Text.hasText fm.flightName.val = true
+
+instance (md : MasterData) : Decidable (FlightNamesHaveText md) := by unfold FlightNamesHaveText; infer_instance
+
 /-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
 照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件で、入力検証を通過していれば
 満たされる。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
-（搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 第 3 段）。 -/
+（搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 第 3 段）。
+便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
 @[spec_doc "docs/spec/flight-search.md#事前条件"]
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
-    Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true
+    Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true ∧
+    FlightNamesHaveText i.md
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
 def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
@@ -213,7 +223,7 @@ def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
     (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
-  obtain ⟨_, hmd, hbsome, _, _⟩ := h
+  obtain ⟨_, hmd, hbsome, _, _, _⟩ := h
   unfold searchFlight
   split
   · rfl

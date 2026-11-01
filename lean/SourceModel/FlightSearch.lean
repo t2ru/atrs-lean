@@ -256,7 +256,7 @@ def createFlightVacantInfoList (sep : Char) (flightList : List Flight) (basicFar
 /-- `searchFlight(searchCriteria)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)@aebd2fb115cd02fc",
   "java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)@75061ffc6ae02ecb",
-  "dep:org.springframework:spring-core#Assert.notNull@spring-core-7.0.3", gap "D-001", "D-002", "D-014"]
+  "dep:org.springframework:spring-core#Assert.notNull@spring-core-7.0.3", gap "D-001", "D-002", "D-014", "D-033"]
 def searchFlight (svc : TicketSearchService) (searchCriteria : JRef TicketSearchCriteriaDto) :
     JResult (List FlightVacantInfoDto) := do
   let c ← match searchCriteria with
