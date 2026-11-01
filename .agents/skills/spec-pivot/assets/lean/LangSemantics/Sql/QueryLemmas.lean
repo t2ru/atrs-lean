@@ -14,6 +14,9 @@ import LangSemantics.Core.List
 - `allowed_perm`: 許される順列は元の行の並べ替え。
 - `cross_filter_left`・`select_filter_of_imp`: 選択の条件が左の表の行だけで決まる条件を含むなら、その条件で
   左の表を先に絞ってよい（条件の押し下げ）。
+- `filter_cross_split`・`select_cross_split`: 直積の選択の条件が「左の行だけの条件 ∧ 組の条件」に分かれるなら、
+  左の表を先に絞り、組の条件を入れ子ループで評価してよい（`Bag.crossWhere`。並びも含めて等しい）。
+  多段の直積に繰り返し使い、評価用の実装（`@[csimp]`）の等しさを示す。
 -/
 
 namespace LangSemantics.Sql.QueryLemmas
@@ -197,5 +200,31 @@ theorem select_filter_of_imp {α : Type} (P : α → Truth) (q : α → Bool) (r
   by_cases hp : (P t).holds = true
   · simp [hp, h t hp]
   · simp [hp]
+
+/-- 条件の押し下げ（入れ子ループの結合）: 直積を `P` で絞るのは、`P (x, b) = p x && q x b` なら、左の表を `p` で絞ってから
+組ごとに `q` で選ぶ `Bag.crossWhere` と同じ（行の並びも含めて等しい）。 -/
+theorem filter_cross_split {α β : Type} (xs : List α) (bs : List β) (P : α × β → Bool) (p : α → Bool)
+    (q : α → β → Bool) (h : ∀ x b, P (x, b) = (p x && q x b)) :
+    (Bag.cross xs bs).filter P = Bag.crossWhere q (xs.filter p) bs := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    have hx : (bs.map (x, ·)).filter P = if p x then (bs.filter (q x)).map (x, ·) else [] := by
+      by_cases hp : p x = true
+      · simp only [List.filter_map, Function.comp_def, h, hp, Bool.true_and, ite_true]
+      · have hp' : p x = false := by simpa using hp
+        simp [List.filter_map, Function.comp_def, h, hp']
+    simp only [Bag.cross, Bag.crossWhere, List.flatMap_cons, List.filter_append] at ih ⊢
+    rw [hx, ih]
+    by_cases hp : p x = true
+    · simp [List.filter_cons_of_pos hp, hp]
+    · have hp' : p x = false := by simpa using hp
+      simp [List.filter_cons_of_neg hp, hp']
+
+/-- `filter_cross_split` の `WHERE`（`Bag.select`）の形。 -/
+theorem select_cross_split {α β : Type} (xs : List α) (bs : List β) (P : α × β → Truth) (p : α → Bool)
+    (q : α → β → Bool) (h : ∀ x b, (P (x, b)).holds = (p x && q x b)) :
+    Bag.select P (Bag.cross xs bs) = Bag.crossWhere q (xs.filter p) bs :=
+  filter_cross_split xs bs (fun t => (P t).holds) p q h
 
 end LangSemantics.Sql.QueryLemmas
