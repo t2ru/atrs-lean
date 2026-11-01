@@ -65,6 +65,7 @@ theorem select_key {rs : List FlightRow} {fs : List Flight} (h : rs.mapM flightO
     · exact ih hfs
 
 /-- `exists` の文の結果は、`World.existsFlight`。 -/
+@[obligation "ABS-023"]
 theorem existsRows_eq {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (k : FlightKey) :
     existsRows fd (keyParams k) = w.existsFlight k := by
   have hs := select_key (worldOfDb_flights hw) k
@@ -101,6 +102,7 @@ theorem filter_key_eq : ∀ {fs : List Flight}, (fs.map (·.key)).Nodup → ∀ 
       simp [hk, filter_key_eq hn.2 k]
 
 /-- `findOneForUpdate` の文の行: 主キーのフライトがあれば、その行 1 つ。 -/
+@[obligation "ABS-023"]
 theorem select_key_find {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     (k : FlightKey) :
     (Bag.select (keyCond (keyParams k)) fd.flight).mapM flightOfRow = some (w.findForUpdate k).toList := by
@@ -108,6 +110,7 @@ theorem select_key_find {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd
   rfl
 
 /-- `update` の文: 主キーのフライトがあり、空席数 `v` が非負なら、更新件数は 1 で、α の像は `World.updateVacantNum`。 -/
+@[obligation "ABS-023"]
 theorem updateWhere_alpha {k : FlightKey} {n : Nat} {v : Int4} (hv : v.val = n) :
     ∀ {rs : List FlightRow} {fs : List Flight}, rs.mapM flightOfRow = some fs →
       (updateWhere (keyCond (keyParams k)) (fun f => { f with vacantNum := v }) rs).1.mapM flightOfRow =

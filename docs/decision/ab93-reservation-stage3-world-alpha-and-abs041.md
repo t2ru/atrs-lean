@@ -83,9 +83,9 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | --- | --- |
 | [Spec] の予約の PRE | 次を足す（[Spec] の修正）。<br>- `Request.Valid`: 入力検証の単項目制約のうち長さと桁、相関 1 の電話番号の長さの上限、選択フライトの便名が空白でないこと。原典の列の長さ（`VARCHAR(n)`）と `int` に収まることに使う<br>- `World.RefMaster`: フライトの便名・搭乗クラス・運賃種別がマスタにある。原典は存在の確認で搭乗クラス・運賃種別のコードを束縛するので、マスタに無いと `NULL` になり、[Spec] と結果が分かれる<br>- `World.MemberRefMaster`: 会員のカード種別がマスタにある。原典の会員の取得はカード種別の表と結合する |
 | 具体側の不変条件 | `IcW` の `KeysOk` に、会員番号の一意性（PK_MEMBER）を足す。会員の取得の文の結果を高々 1 行にするのに使う |
-| ABS-021・ABS-023 の種類 | R 課題から、ABS-041 の補題（L 課題）に改める案（プロジェクトオーナーの確認待ち）。ポートの実装は、予約の具体機械の中で使われ、単独の機械として外に出ない。R 課題にすると、ポートごとの機械と束 `Preserves` が要る |
+| ABS-021・ABS-023 の種類 | R 課題から、ABS-041 の補題（L 課題）に改める（プロジェクトオーナーの決定）。ポートの実装は、予約の具体機械の中で使われ、単独の機械として外に出ない。R 課題にすると、ポートごとの機械と束 `Preserves` が要る。ABS-023 は `Abstraction.Reserve.Port`・`Member` の補題に付けた。ABS-021 は採番の補題を置くとき（3c）に付ける。ABS-024・ABS-025 の種類は、それぞれの機能の backlog で決める |
 | 予約の入出力の α | `aiR`（設定・マスタ・Clock の最初の読み出し・選択フライト・予約フォーム・操作の種類）と `aoR`（核 `undefOrEq`）。不正要求の詳細は空文字に写し、[Spec] の詳細は自由な選択 N-004 で置き換える |
-| [Source] の計算の検証 | Hoare 三つ組の枠組み `Abstraction.Reserve.Hoare`（`EStateM` の逐次・分岐・例外・`for`）と、文の実行の規則 `Abstraction.Reserve.Tx`（障害の例外 `IsFault`）。Lean 4.35 の `Std.Do`（`mvcgen`）も使えることを確かめたが、原典のメソッドを展開すると `Assert` などの細部が検証条件に混ざるので、経路ごとの計算の形を先に示す |
+| [Source] の計算の検証 | 3c の前に検証の道具を整える（プロジェクトオーナーの決定）。Hoare 三つ組と、状態を与えた形に簡約するタクティク `java_estate_simp` をスキルの assets に置いた（[スキルの ADR cd90](../../.agents/skills/spec-pivot/references/docs/decision/cd90-estate-hoare-and-simp-tactics.md)。スキルの版 0.26）。文の実行の規則と障害の例外 `IsFault` は ATRS の `Abstraction.Reserve.Tx` に置く。試しとして、選択フライトの検証の全経路（1 便・往復、便マスタの有無、障害）の三つ組と [Spec] の対応を `Abstraction.Reserve.ValidateFlights` で示した |
 
 置いた補題（すべて `sorry` なし）:
 
@@ -94,6 +94,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Providers`: 便マスタの Provider の答え（区間の空港コード、無い場合の `null`）、予約が使う読み込みの性質 `load_res`
 * `Abstraction.Reserve.Flights`: 到着・出発時刻の解釈、搭乗間隔の検査（D-031 の前提）、運賃種別・逆区間の検査の対応 `AgreeV`
 * `Abstraction.Reserve.Select`: `toFlightList` が作るフライト情報の性質（便マスタの有無、存在の確認の文の結果、運賃種別のコード）
+* `Abstraction.Reserve.ValidateFlights`: 選択フライトの検証の Hoare 三つ組と、[Spec] の `validateFlightList` の対応
 
 ### Consequences
 

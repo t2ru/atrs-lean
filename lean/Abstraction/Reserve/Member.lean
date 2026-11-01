@@ -150,6 +150,7 @@ theorem nodup_map_val {α : Type} {xs : List α} {f : α → MembershipNumber} (
 
 /-- `findOne` の文の結果と `World.findMember`: 会員が無ければ 0 行、あれば 1 行で、その会員とログインの行の α は
 `findMember` の会員。 -/
+@[obligation "ABS-023"]
 theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World} {md : Spec.MasterData}
     (hw : worldOfDb fd = some w) (hk : KeysOk w) (hmd : masterDataOf mdb = some md) (h1 : md.MD1)
     (href : w.MemberRefMaster md) (s : String) :

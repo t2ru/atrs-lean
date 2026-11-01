@@ -1,5 +1,13 @@
 # Directory Update Log
 
+## 2026-11-02
+* **Creation**: [ADR cd90](decision/cd90-estate-hoare-and-simp-tactics.md) で、命令型の計算（`EStateM`）の検証の道具を足した。スキルの版を 0.26 にした。
+  * `LangSemantics.Core.EStateHoare`（Hoare 三つ組と合成の規則）
+  * `LangSemantics.Core.EStateSimp`（`estate_simp`）、`LangSemantics.Java.EStateSimp`（`java_estate_simp`）
+  * `LangSemantics.Java.JList.get_cons_one`
+  * 例と反例は `Test/LangSemantics/EStateHoare.lean`。[lang/lean/rules.md](lang/lean/rules.md#命令型の計算の検証) に手順を書いた。
+  * 来歴: 適用先 ATRS の ADR ab93（予約の第 3 段）。
+
 ## 2026-11-01
 * **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt`（`Machine.Alt`・`Machine.Machine.Alt`・`Machine.Concrete.Alt`・`Machine.Glue.Alt`・`Machine.Refines.Alt`・`Machine.Preserves.Alt`、例と反例 `Test/Machine/Alt.lean`）を足し、[spec/architecture.md](spec/architecture.md) に並置の使い分けを書き、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.25 にした。
   * `LangSemantics.Sql.Transaction.run`（取消。戻す成分は呼び出し側が決める）、`LangSemantics.Sql.Postgresql.PgTimestamp`（`TIMESTAMP` の列）。[lang/sql/semantics.md](lang/sql/semantics.md) を改めた。

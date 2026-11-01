@@ -1,4 +1,5 @@
-import Abstraction.Reserve.Hoare
+import LangSemantics.Core.EStateHoare
+import SourceModel.Db.Tx
 import SourceModel.Domain.Service.B0.InvalidFlightException
 import SourceModel.Domain.Common.Exception.AtrsBusinessException
 
@@ -13,7 +14,7 @@ import SourceModel.Domain.Common.Exception.AtrsBusinessException
 -/
 
 namespace Abstraction.Reserve.Tx
-open Abstraction.Reserve.Hoare
+open LangSemantics.Core.EStateHoare
 open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Sql.Core
 open SourceModel.Db.Schema SourceModel.Db.Tx
 

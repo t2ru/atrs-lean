@@ -43,8 +43,8 @@ import Abstraction.Reserve.Member
 import Abstraction.Reserve.Providers
 import Abstraction.Reserve.Flights
 import Abstraction.Reserve.Select
-import Abstraction.Reserve.Hoare
 import Abstraction.Reserve.Tx
+import Abstraction.Reserve.ValidateFlights
 
 /-!
 # Abstraction

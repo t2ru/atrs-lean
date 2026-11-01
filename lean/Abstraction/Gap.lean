@@ -125,7 +125,7 @@ def D009 : Gap where
     ⟨"予約の登録", "docs/spec/reservation.md#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
   premise := "`dev_D009`: [Source] の各シーケンスの次の値が、会員番号・予約番号では最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下"
   evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel`（シーケンスと `selectKey`）は backlog aedf の第 1 段で写した。述語と R 課題は第 2・3 段" (some "ABS-109")
-  rTasks := ["ABS-021", "ABS-031", "ABS-041", "ABS-042", "ABS-045"]
+  rTasks := ["ABS-031", "ABS-041", "ABS-042", "ABS-045"]
   impact := some (.abort, "使用済みの番号による挿入の失敗、または既存の行との衝突")
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 

@@ -35,6 +35,7 @@ generated:
 | 7d3a | [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](7d3a-java-conformance-kit-and-http-origin-run-method.md) | accepted | 2026-11-01 |
 | 288a | [「オラクル」を「原典実行」（origin-run）と呼び替える](288a-rename-oracle-to-origin-run.md) | accepted | 2026-11-01 |
 | a303 | [同じ状態を共有する機能の合成子 Machine.alt、トランザクションの取消、LocalTime・List.get・StringUtils・TIMESTAMP の写し](a303-shared-state-machine-alt-and-transaction.md) | accepted | 2026-11-01 |
+| cd90 | [命令型の計算の検証の道具: EStateM の Hoare 三つ組と、計算の形を求める簡約のタクティク](cd90-estate-hoare-and-simp-tactics.md) | accepted | 2026-11-02 |
 | 22b4 | [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](22b4-split-okf-and-records-skills.md) | accepted | 2026-11-01 |
 | 89f2 | [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](89f2-layout-check-one-process-per-group.md) | accepted | 2026-11-01 |
 | b187 | [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](b187-proven-csimp-for-evaluating-models.md) | accepted | 2026-11-01 |

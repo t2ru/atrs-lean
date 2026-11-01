@@ -83,7 +83,7 @@ generated:
 [ADR ab93](../decision/ab93-reservation-stage3-world-alpha-and-abs041.md) で小段 3a〜3d に分けた。
 
 * 3a（済）: 全表の α `worldOfDb`、具体側の不変条件 `IcW`、空席照会の初期状態の変更。ABS-011 とトップレベルの主定理は新しい貼り合わせで通る。
-* 3b（途中）: 予約の PRE に `Request.Valid`・`World.RefMaster`・`World.MemberRefMaster` を足した。予約の入出力の α と貼り合わせ、FLIGHT・会員・便マスタの Provider・選択フライトの補題、Hoare 三つ組の枠組みを置いた。差異の述語（D-009・D-014・D-031・D-027 と運賃計算の差異）、W 課題 ABS-109・ABS-131 は未着手。
+* 3b（途中）: 予約の PRE に `Request.Valid`・`World.RefMaster`・`World.MemberRefMaster` を足した。予約の入出力の α と貼り合わせ、FLIGHT・会員・便マスタの Provider・選択フライトの補題を置いた。検証の道具（Hoare 三つ組・`java_estate_simp`）をスキルに置き（スキルの ADR cd90、版 0.26）、選択フライトの検証の対応を示した。ABS-021・ABS-023 を L 課題に改めた（プロジェクトオーナーの決定）。差異の述語（D-009・D-014・D-031・D-027 と運賃計算の差異）、W 課題 ABS-109・ABS-131 は未着手。
 * 3c（未着手）: 予約の各メソッドの事前・事後条件と ABS-041、ABS-020・ABS-022。
 * 3d（未着手）: トップレベルへの統合と束。
 

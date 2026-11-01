@@ -3,7 +3,7 @@ name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。スキルの文書・記録の保守と、適用先の文書の検査には、スキル okf-bundle（OKF のバンドル）と work-records（意思決定記録・作業項目）を使う。
 metadata:
-  version: "0.25"
+  version: "0.26"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -165,8 +165,8 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 | モジュール | ファイル |
 | --- | --- |
-| `LangSemantics.Core`（言語に依存しない列・`mapM`・文字列の補題。どの言語パック・層からも使える） | `assets/lean/LangSemantics/Core/` |
-| `LangSemantics.Java`（int/long、double のソフトモデルと百分率の因子の比較、値域内の int の演算と `for` 文の補題、BigDecimal、String、LocalDate、例外と `JResult` の補題、HashMap） | `assets/lean/LangSemantics/Java/` |
+| `LangSemantics.Core`（言語に依存しない列・`mapM`・文字列の補題と、命令型の計算（`EStateM`）の Hoare 三つ組 `EStateHoare`・簡約のタクティク `estate_simp`。どの言語パック・層からも使える。[lean/rules.md](references/docs/lang/lean/rules.md#命令型の計算の検証)） | `assets/lean/LangSemantics/Core/` |
+| `LangSemantics.Java`（int/long、double のソフトモデルと百分率の因子の比較、値域内の int の演算と `for` 文の補題、BigDecimal、String、LocalDate、例外と `JResult` の補題、HashMap、命令型の写しの簡約のタクティク `java_estate_simp`） | `assets/lean/LangSemantics/Java/` |
 | `LangSemantics.Sql`（値・三値論理・バッグ照会・ORDER BY・シーケンス・更新、結合と許される順列の補題） | `assets/lean/LangSemantics/Sql/` |
 | `LangSemantics.Sql.Postgresql`（整数型・VARCHAR・TO_CHAR・既定の整列・シーケンス） | `assets/lean/LangSemantics/Sql/Postgresql.lean` |
 | `LangSemantics.Rust`（固定長整数とプロファイル、パニック、char・String・Vec） | `assets/lean/LangSemantics/Rust/` |

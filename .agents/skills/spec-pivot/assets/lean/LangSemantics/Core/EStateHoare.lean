@@ -1,16 +1,16 @@
-import SourceModel.Db.Tx
 
 /-!
-# Abstraction.Reserve.Hoare
+# LangSemantics.Core.EStateHoare
 
-状態と例外を持つ計算（`EStateM`）の事前・事後条件（Hoare 三つ組）と、その合成の規則（backlog aedf の第 3 段）。
-予約の [Source] の計算（`SourceModel.Db.Tx.DbM`）の性質を、メソッドごとに積み上げるのに使う。
+状態と例外を持つ計算（`EStateM`）の事前・事後条件（Hoare 三つ組）と、その合成の規則。移植元・移植先の命令型の計算
+（例: 状態の表に対する計算、トランザクション）の性質を、メソッドごとに積み上げるのに使う
+（`references/docs/lang/lean/rules.md#命令型の計算の検証`）。
 
 `Hoare P m Q E`: 事前条件 `P` を満たす状態から `m` を実行すると、正常に終われば `Q 値 状態`、例外で終われば
 `E 例外 状態` が成り立つ。
 -/
 
-namespace Abstraction.Reserve.Hoare
+namespace LangSemantics.Core.EStateHoare
 
 /-- Hoare 三つ組（例外の事後条件を持つ）。 -/
 def Hoare {ε σ α : Type} (P : σ → Prop) (m : EStateM ε σ α) (Q : α → σ → Prop) (E : ε → σ → Prop) : Prop :=
@@ -78,6 +78,39 @@ theorem forIn' {γ : Type} (xs : List β) (b : γ) (f : β → γ → EStateM ε
     subst hr
     exact ih (pre ++ [x]) acc' (by simpa using h) s hs
 
+theorem get' {P : σ → Prop} {Q : σ → σ → Prop} {E : ε → σ → Prop} (h : ∀ s, P s → Q s s) :
+    Hoare P (get : EStateM ε σ σ) Q E := fun s hs => h s hs
+
+theorem set' {P : σ → Prop} {s' : σ} {Q : Unit → σ → Prop} {E : ε → σ → Prop} (h : ∀ s, P s → Q () s') :
+    Hoare P (set s' : EStateM ε σ Unit) Q E := fun s hs => h s hs
+
+theorem modifyGet' {P : σ → Prop} {f : σ → α × σ} {Q : α → σ → Prop} {E : ε → σ → Prop}
+    (h : ∀ s, P s → Q (f s).1 (f s).2) : Hoare P (modifyGet f : EStateM ε σ α) Q E := fun s hs => h s hs
+
+/-- 純粋な結果の持ち上げ（`match r with | .ok a => pure a | .error e => throw e`）。 -/
+theorem liftExcept' {P : σ → Prop} {r : Except ε α} {Q : α → σ → Prop} {E : ε → σ → Prop}
+    (hok : ∀ a, r = .ok a → ∀ s, P s → Q a s) (herr : ∀ e, r = .error e → ∀ s, P s → E e s) :
+    Hoare P (match r with | .ok a => pure a | .error e => throw e : EStateM ε σ α) Q E := by
+  cases r with
+  | ok a => exact pure' (hok a rfl)
+  | error e => exact throw' (herr e rfl)
+
+/-- 例外の捕捉（`tryCatch`）。本体の例外の事後条件 `R` から、捕捉した処理の三つ組で続ける。 -/
+theorem tryCatch' {P : σ → Prop} {m : EStateM ε σ α} {h : ε → EStateM ε σ α} {R : ε → σ → Prop}
+    {Q : α → σ → Prop} {E : ε → σ → Prop} (hm : Hoare P m Q R) (hh : ∀ e, Hoare (R e) (h e) Q E) :
+    Hoare P (tryCatch m h) Q E := fun s hs => by
+  have := hm s hs
+  show match EStateM.tryCatch m h s with | .ok a s' => Q a s' | .error e s' => E e s'
+  unfold EStateM.tryCatch
+  revert this
+  cases m s with
+  | ok a s' => exact id
+  | error e s' => exact fun hr => by simpa [EStateM.Backtrackable.restore, EStateM.Backtrackable.save, EStateM.dummyRestore, EStateM.dummySave] using hh e s' hr
+
+/-- 三つ組から、実行の結果の性質を取り出す。 -/
+theorem run {P : σ → Prop} {m : EStateM ε σ α} {Q : α → σ → Prop} {E : ε → σ → Prop} (h : Hoare P m Q E)
+    {s : σ} (hs : P s) : match m.run s with | .ok a s' => Q a s' | .error e s' => E e s' := h s hs
+
 end Hoare
 
-end Abstraction.Reserve.Hoare
+end LangSemantics.Core.EStateHoare
