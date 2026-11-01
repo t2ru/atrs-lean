@@ -1,6 +1,10 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: [ADR b187](decision/b187-proven-csimp-for-evaluating-models.md) で、モデルの評価を速くする実装を、元の定義と等しいことの定理を付けた `@[csimp]` で与えることにした（定義は書き換えない）。スキルの版を 0.23 にした。
+  * `LangSemantics.Sql.Query.Bag.crossWhere`（条件を押し下げた入れ子ループの結合）と、`LangSemantics.Sql.QueryLemmas.filter_cross_split`・`select_cross_split` を足した。
+  * [lang/lean/rules.md](lang/lean/rules.md#書き方) に規則を足した。
+  * 来歴: 適用先 ATRS の ADR 9c1c（シードの DB を使う照合が CI で約 6 分かかっていた）。
 * **Update**: [ADR 22b4](decision/22b4-split-okf-and-records-skills.md) で、移植に関係の無い文書の道具と規則を、別のスキル okf-bundle・work-records に分けた。スキルの版を 0.22 にした。
   * `scripts/docs/okf_check.py`・`scripts/docs/docmv.py`・`scripts/ci/fixtures/okf/` をスキル okf-bundle に、`scripts/docs/ids.py` をスキル work-records に移した。`scripts/docs/` は無くなった。
   * 道具の設定を、`trace/project.json` の `okf`・`ids` から、適用先のルートの `.okf.json`・`.work-records.json` に移した。[spec/traceability.md](spec/traceability.md#プロジェクトの設定) の表から `ids`・`okf` を除いた。
