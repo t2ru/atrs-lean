@@ -23,7 +23,7 @@ generated:
 | [documentation.md](documentation.md) | すべての文書 | 日本語本文＋英語識別子、RFC 2119 用語、出典記法、リンク |
 | [decision-records.md](decision-records.md) | `docs/decision/` | MADR 4.0（スキル work-records）、置き場所、いつ ADR を書くか |
 | [atrs-porting.md](atrs-porting.md) | ATRS の移植 | スキル spec-pivot の適用: 言語ペア、配置、機能名、型、必須の依存、上流の版、採った値 |
-| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい |
+| [version-control.md](version-control.md) | git | 作業の区切りごとに commit、push は自分で作ったブランチに限る、PR を作成してよい（draft で作り、人間のレビューを求める段で ready にする） |
 | [backlog.md](backlog.md) | `docs/backlog/` | 項目形式・状態（スキル work-records）、置き場所、完了の定義（DoD） |
 
 ## 優先順位
