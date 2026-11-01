@@ -40,6 +40,11 @@ generated:
 手元は 4 コアの同じ環境での前と後である。この後、`long-tests` に残るのは暦日の全日と double の総当たりだけで、CI で約 7 s（手元で 20 s）だった。
 どの節も 20 秒の基準（[checks.md](../rules/checks.md#長い段の基準と範囲)）を下回るので、変更時の段として分けておく理由が無い。
 
+廃止の後の実測（この ADR の PR の全数。run 41320107059）では、`lake test` 全体が約 20 s だった。
+- そのうち約 18 s は、起動と、暦日の全日・double の総当たりの閉じた項の初期化での評価である。
+- 節ごとには、適合ベクタが合わせて 2.4 s（`source-model/flight-search` 0.29 s）、マスタの SQL の結果が 0.11 s、空席照会の SQL の結果が 1.4 s である。
+- この run では、`lakefile.lean` の変更でビルドをやり直し、他の段と並行して走った（全数は 458 s。前の run 41314658541 は 244 s）。
+
 ## Decision Drivers
 
 * 20 秒未満の段は常時の段に入れる、という規約（[checks.md](../rules/checks.md#長い段の基準と範囲)）に従うこと
@@ -66,7 +71,7 @@ Chosen option: "すべての節を `lake test` に戻し、`long-tests` の段�
 
 * Good, because `lake test` がすべての Lean のテストを実行し、どの変更でも全件を確かめる。
 * Good, because 実行ファイル・タスク・範囲・layout-check の組が 1 つずつ減る。
-* Bad, because `lake test` は暦日の全日と double の総当たりの分（CI で約 7 s）だけ長くなる。
+* Bad, because `lake test` は暦日の全日と double の総当たりの分だけ長くなる。CI の並行の負荷によっては、全体で 20 秒の基準に近い（run 41320107059 で約 20 s）。基準を超え続けるなら、全日・総当たりの評価を速くするか、段を分け直すかを改めて判断する。
 * Bad, because 暦日の全日と double の総当たりは、閉じた項としてモジュールの初期化で評価されるため、節の `time` は 0 ms と表示される。時間は実行全体で見る。
 
 ### Confirmation
