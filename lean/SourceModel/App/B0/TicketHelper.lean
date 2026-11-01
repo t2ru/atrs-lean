@@ -46,8 +46,8 @@ def toFlight (h : TicketHelper) (form : SelectFlightForm) : JResult (JRef Flight
 
 /-- `toFlightList`: 選択フライト情報ごとにフライト情報を作る（`toFlight`）。 -/
 @[source "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)@3fef600108b03c6e"]
-def toFlightList (h : TicketHelper) (forms : List SelectFlightForm) : JResult (List (JRef Flight)) :=
-  forms.mapM (toFlight h)
+def toFlightList (h : TicketHelper) (selectFlightFormList : List SelectFlightForm) : JResult (List (JRef Flight)) :=
+  selectFlightFormList.mapM (toFlight h)
 
 end TicketHelper
 

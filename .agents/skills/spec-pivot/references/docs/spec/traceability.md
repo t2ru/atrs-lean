@@ -122,10 +122,16 @@ locator = kind ":" body
 | TR-R | 存在しない Lean 名・ロケータ・課題 ID・差異 ID への参照がある |
 | TR-L1 | `Abstraction`・`Refinement` の R 課題（obligation-check の `refinements`）か W 課題（登録簿の W 課題の ID を `@[obligation]` に持つ定理）が、機能の名前空間（`<層>.<x>`。`x` は `features.json` の `lean`）に直接ない（[lean/rules.md](../lang/lean/rules.md#証明課題の配置)） |
 | TR-L2 | `Abstraction`・`Refinement` の機能のモジュール（モジュール名が機能の名前空間のもの）に、`@[obligation]` の定理と、そのモジュールの R 課題の名前で始まる付帯の義務以外の定義がある |
+| TR-M1 | `trace/project.json` に `source.mirror` があるとき。`java:`・`sql:` のロケータを持つ移植元のモデルの定義が、そのクラスのモジュール（[lang/java/layout.md](../lang/java/layout.md#移植元として原典を読む)）にない。またはソースツリーの根の外の定義がそれらのロケータを持つ。`shared` のクラスのロケータは除く |
+| TR-M2 | （警告）ソースツリーを写すモジュールの直下の宣言の名前が、自分のロケータのメンバーの名前とも、クラスのソース（Java・Mapper の XML）の識別子とも合わない。または、モジュールのクラスがインベントリに無い。構造体の欄・自動生成の名前・`_` を含む小文字の名前（定理など）は対象にしない |
+| TR-M3 | メソッドの写し（ロケータ `<Class>#<m>(…)` を持ち、名前が `<m>`。コンストラクタは `new`）の引数の名前に、原典の引数の名前が順に現れない（可変長引数は省いてよい） |
+| TR-M4 | （警告）クラスの型（モジュールと同じ名前の構造体）の欄が、原典のクラスの欄に無い |
 
 段階導入（TR-G・TR-N）: 登録簿（非決定性・入口の R 課題・前提型の差異の影響）の各行に、Lean 側を整える作業項目を書く。その項目が完了するまでは「登録簿にあって Lean にまだ無い」ことを警告にし、完了したら失敗にする。
 
 段階導入（TR-K）: 印の不足は、登録の `backlog` の作業項目がすべて完了していれば失敗、そうでなければ警告にする。
+
+段階導入（TR-M）: TR-M1・TR-M3 は、定義の機能の移植元側の作業項目がすべて完了していれば失敗、そうでなければ警告にする。TR-M2・TR-M4 は常に警告で、人が名前を確かめる（モデルだけの補助の定義や、環境から受ける欄がありうるため）。名前は大文字小文字と `_`・`-` を区別せずに比べる。
 
 段階導入（側ごと）: TR-S1・TR-T1・TR-P・TR-PE・TR-D を警告にしてよいのは、該当する機能の、指摘の側の作業項目が完了していない間だけである（[ADR ab9e](../decision/ab9e-adequate-bundle-sum-and-side-staging.md)）。
 
@@ -153,6 +159,7 @@ locator = kind ":" body
 | `rehash --dump … [--dry-run]` | 決定論的な検査を実行し、合格した定義だけハッシュを更新する |
 | `diff --old <file\|git:REV> [--side source\|target] [--json]` | 新旧インベントリの分類（[upgrade.md](../guide/upgrade.md)） |
 | `impact --dump … --obligations … [--diff <file\|git:REV>] [--json] [<起点>…]` | 証明グラフに沿った影響一覧と、見直すギャップ |
+| `review --dump … [--out <dir>]` | 原典とモデルの対照表（静的な HTML。既定は `build/review/`）。原典のクラスごとに、原典のメンバーと、それを `@[source]` で指す定義を並べ、検査済みハッシュ・ギャップの印・覆われていないメンバーを示す。生成物であり、リポジトリには置かない（CI の artifact にする） |
 
 ### プロジェクトの設定
 
@@ -165,6 +172,7 @@ locator = kind ":" body
 | `lean.roots` | Lean のモジュールを探すルート（プロジェクトの Lean パッケージと、スキルの `assets/lean`） |
 | `languages.source` / `languages.target` | 移植元・移植先の言語パックの名前（例 `["java", "sql"]`・`["rust"]`） |
 | `source.root` / `source.sql_dirs` | 移植元ソースの走査のルート（`out-of-scope.json` の glob もここからの相対）と、DDL・シードの SQL を置くディレクトリ |
+| `source.mirror` | 任意。移植元のモデルを原典のソースツリーの形に並べる規則（TR-M）。`lean_root`（モデルの層。例 `SourceModel`）、`package_prefix`（モジュールの名前から除くパッケージの接頭辞）、`roots`（ソースツリーを写すモジュールの、層の直下の成分）、`case`（`upper-camel` か `same`）、`shared`（どの定義から引いてもよい横断的な設定のクラス。TR-M1 の根拠にしない） |
 | `target.root` / `target.src` / `target.crate` / `target.generated` | 移植先のプロジェクトのルート（TR-X の範囲）、ソースのルート、crate 名、生成した写しのディレクトリ（`src` からの相対） |
 | `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |

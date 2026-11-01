@@ -36,9 +36,10 @@ def load (rows : List BoardingClassResult) : JResult BoardingClassProvider := do
 
 /-- `BoardingClassProvider.getBoardingClass`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.BoardingClassProvider#getBoardingClass(BoardingClassCd)@363af6d3dd2e282d"]
-def getBoardingClass (p : BoardingClassProvider) (cd : JRef Spec.Model.BoardingClassCd) : JResult (JRef BoardingClass) := do
-  let cd ← Assert.notNullValue cd "boardingClassCd must not null."
-  return p.boardingClassCodeMap.get cd
+def getBoardingClass (p : BoardingClassProvider) (boardingClassCd : JRef Spec.Model.BoardingClassCd) :
+    JResult (JRef BoardingClass) := do
+  let boardingClassCd ← Assert.notNullValue boardingClassCd "boardingClassCd must not null."
+  return p.boardingClassCodeMap.get boardingClassCd
 
 end BoardingClassProvider
 

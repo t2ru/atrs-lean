@@ -24,7 +24,7 @@ def className : String := "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessEx
 /-- `new AtrsBusinessException(code)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)@70bc401f3ab46d0d",
   "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException.serialVersionUID@3d4b63a6702d11d1"]
-def new (code : String) : JThrow := .other AtrsBusinessException.className code
+def new (errorCode : String) : JThrow := .other AtrsBusinessException.className errorCode
 
 end AtrsBusinessException
 

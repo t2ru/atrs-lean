@@ -118,7 +118,7 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
     {p : SourceModel.MasterQuery.Providers}
     (hbcq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
-    (hftq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeCodeMap.get cd)) =
+    (hftq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
     (hfmq : ∀ name : FlightName, Text.hasText name.val = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
@@ -177,7 +177,7 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   have hfare := Abstraction.Fare.Factors.fare_src_eq' hr100 (b := b) (by omega)
     (Nat.lt_of_le_of_lt (Nat.mul_le_mul hb' (Nat.sub_le 100 ft.discountRate)) (by decide)) (hd2 ft hftm (by
       have hc' := List.find?_some hft; simp only [beq_iff_eq] at hc'; rw [hc']; exact hftin))
-  refine ⟨(⟨p.fareType.fareTypeCodeMap.get ftc, SourceModel.Db.MyBatis.date r.result.departureDate,
+  refine ⟨(⟨p.fareType.fareTypeMap.get ftc, SourceModel.Db.MyBatis.date r.result.departureDate,
     SourceModel.Db.MyBatis.int r.result.vacantNum, some fmJ,
     p.boardingClass.boardingClassCodeMap.get c.boardingClassCd⟩ : SourceModel.Domain.Model.Flight), ?_, ?_⟩
   · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, enrich, JRef.deref, SourceModel.Domain.Common.Masterdata.FareTypeProvider.getFareType, SourceModel.Domain.Common.Masterdata.BoardingClassProvider.getBoardingClass,

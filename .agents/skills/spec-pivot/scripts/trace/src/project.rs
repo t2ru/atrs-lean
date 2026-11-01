@@ -29,6 +29,30 @@ pub struct Source {
     /// SQL のファイル（DDL・シード）を走査するディレクトリ（`root` からの相対）
     #[serde(default)]
     pub sql_dirs: Vec<String>,
+    /// モデルのモジュールを原典のソースツリーの形に並べる規則（TR-M。無ければ検査しない）
+    #[serde(default)]
+    pub mirror: Option<Mirror>,
+}
+
+/// 原典のソースツリーとモデルのモジュールの対応（references/docs/spec/traceability.md#プロジェクトの設定）。
+#[derive(Deserialize, Clone, Debug, Default)]
+pub struct Mirror {
+    /// モデルの層（例 `SourceModel`）
+    pub lean_root: String,
+    /// 原典のパッケージの共通の接頭辞（例 `jp.co.ntt.atrs`）。モジュールの名前からは除く
+    pub package_prefix: String,
+    /// 原典のソースツリーを写すモジュールの、層の直下の成分（例 `Domain`）。これ以外は原典のクラスに当たらないもの
+    pub roots: Vec<String>,
+    /// パッケージの成分の写し方。`upper-camel`（先頭だけ大文字）か `same`（そのまま）
+    #[serde(default = "default_case")]
+    pub case: String,
+    /// どの定義から引いてもよい、横断的な設定のクラス（TR-M1 で、そのロケータは配置の根拠にしない）
+    #[serde(default)]
+    pub shared: Vec<String>,
+}
+
+fn default_case() -> String {
+    "upper-camel".into()
 }
 
 #[derive(Deserialize, Clone, Debug)]

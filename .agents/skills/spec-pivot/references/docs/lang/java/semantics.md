@@ -25,10 +25,12 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 | `J64` | `long` | 64 ビット 2 の補数 |
 | `j32add`, `j32sub`, `j32mul` | `+ - *`（int） | 2^32 を法とする折り返し（JLS 15.17, 15.18） |
 | `jdiv32`, `jrem32` | `/ %`（int） | 0 方向切捨て。`MIN_VALUE / -1 = MIN_VALUE`。0 除算は `ArithmeticException` |
+| `j32neg`, `j64neg`, `j64add` など, `jdiv64`, `jrem64` | 単項の `-`、`long` の演算 | `int` と同じ（2^64 を法とする） |
 | `JDouble` | `double` | IEEE 754 binary64（有限値・±0・±∞・NaN）。符号・仮数（`Nat`）・指数（`Int`）で表し、値の意味は有理数で与える |
 | `jd n` | `(double) n` | int/long → double（\|n\| < 2^53 で正確、それ以外は最近接偶数丸め） |
 | `jdLit "…"` | リテラル | 十進表記に最も近い binary64（例 `0.01` = `0x3F847AE147AE147B`）。指数表記は **未整備**（NaN になる） |
 | `jdadd`, `jdsub`, `jdmul`, `jddiv` | `+ - * /`（double） | 正確な有理数の結果を round-to-nearest-even で丸める |
+| `jdneg` | 単項の `-`（double） | 符号だけを反転する（`-0.0`・`-∞`。NaN は NaN） |
 | `jd2i`, `jd2l` | `(int) d`, `(long) d` | NaN → 0、0 方向切捨て、範囲外は飽和（JLS 5.1.3） |
 | `JBigDecimal.setScale(x, s, mode)` | `BigDecimal.setScale` | 10^(-s) 単位への丸め。`UP` は 0 から遠ざかる方向 |
 | `JBigDecimal.intValue`, `bdCeilHundredUp` | `BigDecimal.intValue()`、`setScale(-2, UP).intValue()` | 整数部の下位 32 ビットへの切詰め |
@@ -45,6 +47,53 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 
 - 例外は `JThrow <例外クラス> <引数>` の値として表す。`IllegalArgumentException`（`Assert` 相当）と `NullPointerException` は、「前提違反」として扱う。前提違反には α を定義しない。PRE の下で到達しないことを、リファインメントの適用可能性の証明義務で示す。
 - 原典で使われている演算だけを実装すればよい。汎用の IEEE 754 は作らない（除算・平方根など、原典に無い演算は不要）。
+
+## 式の構文 java!
+
+移植元のモデルの式は、原典の Java の式と同じ字面で `java! e` と書く（`LangSemantics.Java.Expr`。[ADR 1f75](../../decision/1f75-java-expression-syntax-and-spring-assert.md)）。
+展開した項は、上の原始関数を手で書いた項と **構文として同じ** である（`Test.LangSemantics.JavaExpr` が `#guard_expr … =ₛ …` で確かめる）。証明は原始関数について書く。
+
+```lean
+-- Java: int basicFare = (int) ((basicFareOfRoute + boardingClassFare) * (multiplicationRatio * 0.01));
+let basicFare := java! (int) ((basicFareOfRoute + boardingClassFare) * (multiplicationRatio * 0.01))
+-- 展開: jd2i (jdmul (jd (j32add basicFareOfRoute boardingClassFare).val) (jdmul (jd multiplicationRatio.val) (jdLit "0.01")))
+
+-- Java: int fare = boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum;
+let fare ← java! boardingFare * adultNum + baseFare * (childFareRate - discountRate) / 100 * childNum   -- / があるので JResult
+
+-- Java: if (departureDate.isBefore(sysDate) || departureDate.isAfter(limitDate))
+if java! d.isBefore(sysDate) || d.isAfter(limitDate) then …
+```
+
+| 項目 | 規則 |
+| --- | --- |
+| 優先順位・結合（JLS 15） | 低い順に `\|\|`・`&&`・`==` `!=`・`<` `<=` `>` `>=`・`+` `-`・`*` `/` `%`、単項の `-` `!` とキャスト。2 項演算子は左結合、比較は結合しない |
+| リテラルの型（JLS 3.10） | `100` は `int`（`J32.ofInt 100`。範囲外は誤り）、`100L` は `long`、`0.01`・`1d` は `double`（`jdLit "0.01"`）。指数表記の `double` は誤り |
+| 数値昇格（JLS 5.6.2） | どちらかが `double` なら `double`、そうでなくどちらかが `long` なら `long`。`int` から `double` は `jd x.val`（整数リテラルは値のまま `jd 1`） |
+| キャスト | `(int) d` は `jd2i d`、`(long) d` は `jd2l d`、`(int) l` は `J32.ofInt l.val`、`(double) n` は `jd n.val` |
+| 比較・論理 | 整数は `decide (a.val ≥ b.val)`（整数リテラルは値のまま `decide (a.val ≥ 0)`）。`boolean` の `==`・`!=`・`&&`・`\|\|`・`!`。`&&`・`\|\|` は短絡評価 |
+| 呼び出し・埋め込み | `f(a, b)` は Lean の関数適用 `f a b`（`d.isBefore(s)` はドット記法）。Lean の項は `⟪t⟫` |
+| 例外 | 整数の `/`・`%`（0 除算）と、`JResult` を返す呼び出しを含む式は `JResult τ`。部分式を左から `>>=` でつなぐ。それ以外は `τ` |
+| 扱わないもの | `double` の比較・剰余、`float`・`char`・`short`・`byte`、参照型の `==`、代入式、`?:`（必要になった時点で足す） |
+
+## 原典の語彙とモデルの語彙
+
+原典を見比べやすくするため、移植元のモデルは次の対応で書く。名前は原典の識別子をそのまま使う（引数・ローカル変数・欄。TR-M3・TR-M4 が確かめる）。
+
+| 原典（Java） | モデル（Lean） |
+| --- | --- |
+| `int`・`long`・`double`・`boolean` | `J32`・`J64`・`JDouble`・`Bool` |
+| 参照（`null` になりうる）・`Integer` | `JRef α`（`null` は `none`） |
+| `x.getFoo()`（getter）・`x.setFoo(v)` | 欄の参照 `x.foo`・構造体の更新 `{ x with foo := v }` |
+| unboxing（`Integer` → `int`）・`null` の参照外し | `← x.foo.deref "foo"`（`null` で `NullPointerException`） |
+| 式（演算子・リテラル・キャスト・比較） | `java! …` |
+| `for (T x : xs) { … }`・`x++`・`x += y` | `for x in xs do …`・`x := java! x + 1`・`x := java! x + y` |
+| `throw new E(…)`・`return` | `throw (E.new …)`・`return` |
+| `new C(…)` | `C.new …`（モデルのコンストラクタ） |
+| Spring の `Assert.isTrue(e, m)`・`Assert.notNull(x, m)`・`Assert.notEmpty(c, m)`・`Assert.hasText(s, m)` | `Assert.isTrue e m`・`Assert.notNull x m`・`Assert.notEmpty c m`・`Assert.hasText s m`（`LangSemantics.Java.Spring`） |
+| `Assert.notNull(x, m)` の後で `x` を使う | `let x ← Assert.notNullValue x m`（`notEmpty` は `notEmptyValue`） |
+| 注入された依存（`@Inject`・`@Value`） | クラスの型の欄（`structure TicketSharedServiceImpl where boardingClassProvider : …`） |
+| インスタンスメソッド `c.m(a)` | `C.m c a`（ドット記法で `c.m a`） |
 
 ## 確認
 

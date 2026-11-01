@@ -7,7 +7,7 @@
 
 | 道具 | 内容 | 依存 |
 | --- | --- | --- |
-| `trace/`（Rust の crate） | 両端の追跡: インベントリ・manifest と生成区画・TR 検査・`rehash`・`diff`・`impact`（[references/docs/spec/traceability.md](../references/docs/spec/traceability.md#道具)） | Cargo（tree-sitter-java・tree-sitter-rust・serde・sha2・roxmltree・globset）、`git` |
+| `trace/`（Rust の crate） | 両端の追跡: インベントリ・manifest と生成区画・TR 検査（原典のソースツリーとの対応 TR-M を含む）・`rehash`・`diff`・`impact`・原典とモデルの対照表 `review`（[references/docs/spec/traceability.md](../references/docs/spec/traceability.md#道具)） | Cargo（tree-sitter-java・tree-sitter-rust・serde・sha2・roxmltree・globset）、`git` |
 | `ci/check_lean.py` | Lean ソースの静的検査（`sorry`・`axiom`・`native_decide`・`Float`・`partial` などと、名前空間の依存の向き。[references/docs/lang/lean/rules.md](../references/docs/lang/lean/rules.md)・[architecture.md](../references/docs/spec/architecture.md#依存の向き)）。`--self-test` で違反例（`ci/fixtures/lean/`）を確かめる | Python 3（標準ライブラリだけ） |
 | `ci/check_obligations.py` | `lake exe obligation-check` の結果と、課題一覧（入口の R 課題・非決定性・証明課題）・作業項目の状態の突き合わせ（TR-G の文書側・TR-N）。`--self-test` で `ci/fixtures/obligations/` を確かめる | Python 3 |
 | `ci/check_upstream.py` | 上流の submodule の commit と `trace/upstream.json` の一致 | Python 3、`git` |
@@ -26,6 +26,7 @@ cargo build --release --manifest-path <skill>/scripts/trace/Cargo.toml
 <skill>/scripts/trace/target/release/trace inventory source --check
 <skill>/scripts/trace/target/release/trace manifest --dump /tmp/dump.json --obligations /tmp/ob.json --check
 <skill>/scripts/trace/target/release/trace check --dump /tmp/dump.json --obligations /tmp/ob.json
+<skill>/scripts/trace/target/release/trace review --dump /tmp/dump.json   # build/review/index.html（生成物）
 python3 -I <skill>/scripts/ci/check_lean.py
 python3 -I <skill>/scripts/ci/check_obligations.py /tmp/ob.json
 python3 -I <skill>/scripts/docs/okf_check.py

@@ -98,8 +98,11 @@ step "trace: インベントリ・manifest・traceability.md の生成区画が�
 "$trace" inventory target --check
 "$trace" manifest --dump "$out" --obligations "$ob" --check
 
-step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L、TR-G・TR-N）"
+step "trace: 追跡の検査（TR-S1/S2/T1/T2/P/PE/D/K/X/R/L/M、TR-G・TR-N）"
 "$trace" check --dump "$out" --obligations "$ob"
+
+step "trace: 原典とモデルの対照表（build/review/。生成物。CI の artifact）"
+"$trace" review --dump "$out"
 
 step "workspace: ルートで lake setup-file（Lean LSP 用）"
 lake setup-file lean/Spec.lean > /dev/null

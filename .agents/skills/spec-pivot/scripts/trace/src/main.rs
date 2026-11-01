@@ -25,10 +25,12 @@ mod java;
 mod lean;
 mod manifest;
 mod mapper;
+mod mirror;
 mod normalize;
 mod project;
 mod props;
 mod rehash;
+mod review;
 mod rust;
 mod sqlfile;
 mod tmpl;
@@ -82,6 +84,19 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
             println!("{path}: {total} items ({}){}", detail.join(", "), if check { ", up to date" } else { "" });
             Ok(ExitCode::SUCCESS)
         }
+        Some("review") => {
+            // 原典とモデルの対照表（静的な HTML。生成物）
+            let dump: lean::Dump = lean::load(&arg_path(args, "--dump")?)?;
+            let source = inventory::load(&repo.join("trace/source-inventory.json"))?;
+            let passed = manifest::passed(&manifest::load(&repo.join("trace/manifest.json"))?);
+            let out = match args.iter().position(|a| a == "--out").and_then(|i| args.get(i + 1)) {
+                Some(o) => PathBuf::from(o),
+                None => repo.join("build/review"),
+            };
+            let s = review::run(&repo, &dump, &source, &passed, cfg.source.mirror.as_ref(), "SourceModel", &out)?;
+            println!("trace review: {} classes, {} / {} members covered -> {}", s.classes, s.covered, s.members, out.display());
+            Ok(ExitCode::SUCCESS)
+        }
         Some("manifest") => {
             let dump: lean::Dump = lean::load(&arg_path(args, "--dump")?)?;
             let target = inventory::load(&repo.join("trace/target-inventory.json"))?;
@@ -119,7 +134,7 @@ fn run(args: &[String]) -> Result<ExitCode, String> {
             Ok(ExitCode::SUCCESS)
         }
         Some("impact") => impact_cmd(&repo, args),
-        _ => Err("usage: trace inventory|manifest|check|rehash|diff|impact …".into()),
+        _ => Err("usage: trace inventory|manifest|check|rehash|diff|impact|review …".into()),
     }
 }
 
@@ -391,6 +406,11 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
         citations: citations(repo),
     };
     let mut findings = check::run(&input);
+    // TR-M: モデルのモジュールが原典のソースツリーの形に並んでいること（source.mirror があるときだけ）
+    if let Some(m) = &cfg.source.mirror {
+        let classes = mirror::load_classes(repo, &source);
+        findings.extend(mirror::check(&dump, m, &classes, &features));
+    }
     if !args.iter().any(|a| a == "--no-obligation-script") {
         findings.extend(obligation_script(repo, &obl_path)?);
     }
@@ -413,7 +433,9 @@ fn check_cmd(repo: &Path, args: &[String]) -> Result<ExitCode, String> {
         }
     }
     for ((rule, feat), n) in &groups {
-        println!("warning: {rule}: [{feat}] {n} finding(s) (staged: the feature's backlog is not done)");
+        // TR-M2・TR-M4 は常に警告（人が確かめる。src/mirror.rs）
+        let why = if ["TR-M2", "TR-M4"].contains(rule) { "advisory: review the names" } else { "staged: the feature's backlog is not done" };
+        println!("warning: {rule}: [{feat}] {n} finding(s) ({why})");
     }
     let warnings: usize = groups.values().sum();
     if errors.is_empty() {

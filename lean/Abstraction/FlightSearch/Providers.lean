@@ -162,7 +162,7 @@ theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDat
           answerOf? (.route ans) = some (.route (md.routeOf dep arr))) ∧
       (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
-      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeCodeMap.get cd)) =
+      (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
         some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
       (∀ name : FlightName, hasText name.val = true →
         ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →

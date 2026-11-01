@@ -20,7 +20,7 @@ open SourceModel.Domain.Common.Masterdata
 
 /-- `FareTypeProvider` のキャッシュ（`Map<FareTypeCd, FareType>`）。 -/
 structure FareTypeProvider where
-  fareTypeCodeMap : JHashMap Spec.Model.FareTypeCd FareType := {}
+  fareTypeMap : JHashMap Spec.Model.FareTypeCd FareType := {}
 
 namespace FareTypeProvider
 
@@ -32,13 +32,13 @@ def load (rows : List FareTypeResult) : JResult FareTypeProvider := do
   let mut m : JHashMap Spec.Model.FareTypeCd FareType := {}
   for ft in list do
     m := m.put (← ft.fareTypeCd.deref "fareTypeCd") ft
-  return { fareTypeCodeMap := m }
+  return { fareTypeMap := m }
 
 /-- `FareTypeProvider.getFareType`: 無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FareTypeProvider#getFareType(FareTypeCd)@8cca1518f179d5a0"]
-def getFareType (p : FareTypeProvider) (cd : JRef Spec.Model.FareTypeCd) : JResult (JRef FareType) := do
-  let cd ← Assert.notNullValue cd "fareTypeCd must not null."
-  return p.fareTypeCodeMap.get cd
+def getFareType (p : FareTypeProvider) (fareTypeCd : JRef Spec.Model.FareTypeCd) : JResult (JRef FareType) := do
+  let fareTypeCd ← Assert.notNullValue fareTypeCd "fareTypeCd must not null."
+  return p.fareTypeMap.get fareTypeCd
 
 end FareTypeProvider
 

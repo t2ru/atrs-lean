@@ -1,6 +1,13 @@
 # Directory Update Log
 
 ## 2026-11-01
+* **Creation**: 移植元のモデルを人が原典と見比べられるようにした（[ADR 1f75](decision/1f75-java-expression-syntax-and-spring-assert.md)・[ADR 8a3c](decision/8a3c-mirror-layout-check-and-review-view.md)）。スキルの版を 0.19 にした。
+  * `LangSemantics.Java.Expr`: Java の式の構文 `java!`（JLS の優先順位・数値昇格・リテラルの型・キャスト・短絡評価・例外を投げうる式）。展開した項は原始関数の項と構文として同じ（`Test.LangSemantics.JavaExpr`）。原始関数 `j32neg`・`j64neg`・`jrem64`・`JDouble.neg`・`jdneg` を足した。
+  * `LangSemantics.Java.Spring`: Spring の `Assert`（`isTrue`・`notNull`・`notEmpty`・`hasText` と、値を返す `notNullValue`・`notEmptyValue`）。`LangSemantics.Java.Exception.jAssert` は削除した（`Assert.isTrue` に置き換える）。
+  * [lang/java/semantics.md](lang/java/semantics.md#式の構文-java) に構文と語彙の対応表を、[lang/java/layout.md](lang/java/layout.md#移植元として原典を読む) に原典のソースツリーの形に並べる規則を書いた。[lang/lean/rules.md](lang/lean/rules.md)・[lang/sql/layout.md](lang/sql/layout.md)・[spec/architecture.md](spec/architecture.md) を合わせた。
+  * 道具: `trace check` に TR-M（配置・名前・引数・欄。設定は `source.mirror`）、`trace review`（原典とモデルの対照表）を足した。`trace-dump` は `params`・`fields`・`range` を出力する。`check_lean.py` は、式の構文のモジュール `LangSemantics.<Lang>.Expr` に限り `Lean` の import を許す。[spec/traceability.md](spec/traceability.md#検査) を改めた。
+  * 来歴: 適用先 ATRS の ADR e41c。
+
 * **Creation**: [ADR cfad](decision/cfad-name-the-method-spec-pivot.md) で、この方法を **Spec Pivot** と名付け、スキルの名前を `port-lang` から `spec-pivot` に改めた。スキルの版を 0.18 にした。
   * ディレクトリ・frontmatter の `name`・文書のバンドルの規則のファイル（`scripts/docs/profiles/spec-pivot.json`）を改め、文書・コード・コメントの名前を改めた。過去の項の文は来歴として旧名のまま残す。
   * 来歴: 適用先 ATRS の ADR fa26。

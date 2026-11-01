@@ -13,7 +13,7 @@ use tree_sitter::{Node, Parser};
 const COMMENTS: &[&str] = &["line_comment", "block_comment"];
 const ATOMIC: &[&str] = &["string_literal", "character_literal", "text_block"];
 
-fn text<'a>(n: Node, src: &'a [u8]) -> &'a str {
+pub(crate) fn text<'a>(n: Node, src: &'a [u8]) -> &'a str {
     n.utf8_text(src).unwrap_or("")
 }
 
@@ -32,7 +32,7 @@ fn modifiers<'a>(n: Node<'a>) -> Option<Node<'a>> {
     n.children(&mut c).find(|ch| ch.kind() == "modifiers")
 }
 
-fn has_modifier(n: Node, src: &[u8], word: &str) -> bool {
+pub(crate) fn has_modifier(n: Node, src: &[u8], word: &str) -> bool {
     match modifiers(n) {
         Some(m) => {
             let mut c = m.walk();
@@ -63,7 +63,7 @@ fn simple_type(t: &str) -> String {
     simple + &arr
 }
 
-fn param_types(n: Node, src: &[u8]) -> Vec<String> {
+pub(crate) fn param_types(n: Node, src: &[u8]) -> Vec<String> {
     let mut out = vec![];
     if let Some(ps) = n.child_by_field_name("parameters") {
         let mut c = ps.walk();

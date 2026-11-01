@@ -6,5 +6,8 @@ rust/target/
 # Lake (root workspace)
 .lake/
 
+# 生成物（trace review の対照表など）
+build/
+
 # Python
 __pycache__/
