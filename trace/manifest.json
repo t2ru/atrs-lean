@@ -4401,6 +4401,14 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMasterJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster_eq_join",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap",
       "layer": "SourceModel"
     },
@@ -4509,7 +4517,15 @@
       "layer": "SourceModel"
     },
     {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsJoin",
+      "layer": "SourceModel"
+    },
+    {
       "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRowsOn",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatRows_eq_join",
       "layer": "SourceModel"
     },
     {
@@ -4642,6 +4658,14 @@
     },
     {
       "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAll",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAllJoin",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Domain.Repository.Route.RouteRepository.findAll_eq_join",
       "layer": "SourceModel"
     },
     {
