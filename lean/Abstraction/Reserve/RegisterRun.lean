@@ -2,6 +2,8 @@ import Abstraction.Reserve.Insert
 import Abstraction.Reserve.Register
 import Abstraction.Reserve.Rollback
 import Abstraction.Reserve.Vacancy
+import Abstraction.Reserve.RegSpec
+import Abstraction.Reserve.Validate
 
 /-!
 # Abstraction.Reserve.RegisterRun
@@ -166,5 +168,105 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
   rw [hrow]
   simp only [EStateM.modifyGet, EStateM.bind, EStateM.pure]
   exact ⟨rfl, trivial, hse, row, rfl, hrno, hro⟩
+
+/-! ## 搭乗者の列の挿入 -/
+
+/-- 搭乗者 1 人の挿入の材料: 空でない欄の α が [Spec] の搭乗者 `q` で、氏名・年齢が列に収まる。 -/
+structure PassCond (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passenger) : Prop where
+  input : ∃ i, passengerInputOf f = some i ∧ i.toPassenger = some q
+  fn : q.familyName.length ≤ 10
+  gn : q.givenName.length ≤ 10
+  age : q.age ≤ 999
+
+theorem passengerOfRow_no {p : PassengerRow} {x : Spec.Model.PassengerRecord} (h : passengerOfRow p = some x) :
+    p.passengerNo.val = (x.passengerNo : Int) := by
+  simp only [passengerOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
+  obtain ⟨no, hno, -, -, -, -, rfl⟩ := h
+  exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
+
+/-- 搭乗者の列の挿入の不変条件: `j` 人を挿入した。 -/
+def PassInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (n m : Nat) (qs : List Spec.Model.Passenger) (j : Nat)
+    (s : St) : Prop :=
+  s.env = env ∧ SeqGe w s.db ∧ seqOf s.db.sqPassenger = some (n + j) ∧ ∃ rows,
+    s.db = { D with passenger := D.passenger ++ rows, sqPassenger := s.db.sqPassenger } ∧
+    rows.mapM passengerOfRow = some (RegSpec.recsFrom n (qs.take j)) ∧ ∀ row ∈ rows, row.reserveFlightNo.val = (m : Int)
+
+theorem forall₂_get {α β : Type} {R : α → β → Prop} :
+    ∀ {xs : List α} {ys : List β}, LangSemantics.Core.List.Forall₂ R xs ys → ∀ {j : Nat} {x : α} {y : β},
+      xs[j]? = some x → ys[j]? = some y → R x y
+  | [], [], .nil, _, _, _, h, _ => by simp at h
+  | _ :: _, _ :: _, .cons hab _, 0, _, _, h1, h2 => by
+    simp only [List.getElem?_cons_zero, Option.some.injEq] at h1 h2
+    subst h1; subst h2; exact hab
+  | _ :: _, _ :: _, .cons _ hr, j + 1, _, _, h1, h2 => by
+    simp only [List.getElem?_cons_succ] at h1 h2
+    exact forall₂_get hr h1 h2
+
+/-- 搭乗者の列の挿入。本体 `body` は、1 人の挿入の三つ組を満たすとする（`insertPassenger_hoare` から示す）。 -/
+theorem passengers_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {n m : Nat}
+    {body : JRef SourceModel.Domain.Model.Passenger → PUnit → DbM (ForInStep PUnit)}
+    {fs : List SourceModel.App.B2.PassengerForm} {qs : List Spec.Model.Passenger}
+    (hfq : LangSemantics.Core.List.Forall₂ PassCond fs qs)
+    (hbody : ∀ (D' : FlightDb) (n' : Nat) (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passenger),
+      PassCond f q → seqOf D'.sqPassenger = some n' → n' ≤ 2147483647 →
+      (∀ p ∈ D'.passenger, p.passengerNo.val ≠ (n' : Int)) → D'.member = D.member →
+      D'.reserveFlight = D.reserveFlight →
+      Hoare (fun s => s.db = D' ∧ s.env = env) (body (some (SourceModel.App.B2.B2Mapper.mapPassenger f)) ())
+        (fun r s => r = .yield () ∧ s.env = env ∧ ∃ row,
+          s.db = { D' with passenger := D'.passenger ++ [row], sqPassenger := some (n' : Int) } ∧
+          passengerOfRow row = some ⟨n', q⟩ ∧ row.reserveFlightNo.val = (m : Int))
+        (fun e s => s.env = env ∧ IsFault env e ∧
+          (s.db = D' ∨ s.db = { D' with sqPassenger := some (n' : Int) })))
+    (hmax : n + qs.length ≤ 2147483648) (hold : ∀ p ∈ D.passenger, p.passengerNo.val < (n : Int)) :
+    Hoare (PassInv env w D n m qs 0)
+      (forIn (fs.map fun f => some (SourceModel.App.B2.B2Mapper.mapPassenger f)) () body)
+      (fun _ s => PassInv env w D n m qs fs.length s)
+      (fun e s => s.env = env ∧ IsFault env e ∧ SeqGe w s.db) := by
+  have hlen : fs.length = qs.length := Abstraction.Reserve.Validate.forall₂_length hfq
+  refine Hoare.conseq (Hoare.forIn_idx _ body (PassInv env w D n m qs)
+    (E := fun e s => s.env = env ∧ IsFault env e ∧ SeqGe w s.db) fun j x hx => ?_) (fun _ h => h)
+    (fun _ _ h => by simpa using h) (fun _ _ h => h)
+  rw [List.getElem?_map] at hx
+  obtain ⟨f, hf, rfl⟩ := Option.map_eq_some_iff.mp hx
+  have hj : j < fs.length := (List.getElem?_eq_some_iff.mp hf).1
+  obtain ⟨q, hq⟩ : ∃ q, qs[j]? = some q := ⟨qs[j]'(hlen ▸ hj), List.getElem?_eq_getElem _⟩
+  have hc : PassCond f q := forall₂_get hfq hf hq
+  intro s ⟨hse, hsg, hsq, rows, hdb, hrows, hrf⟩
+  have hpass : s.db.passenger = D.passenger ++ rows := by rw [hdb]
+  have hpk : ∀ p ∈ s.db.passenger, p.passengerNo.val ≠ ((n + j : Nat) : Int) := by
+    intro p hp
+    rw [hpass, List.mem_append] at hp
+    rcases hp with hp | hp
+    · have := hold p hp; omega
+    · obtain ⟨r, hr, hpr⟩ := LangSemantics.Core.MapM.mapM_some_mem hrows hp
+      have hb := RegSpec.mem_recsFrom hr
+      have hl : (qs.take j).length ≤ j := List.length_take_le _ _
+      rw [passengerOfRow_no hpr]
+      omega
+  have hjm : n + j ≤ 2147483647 := by
+    have : j < qs.length := hlen ▸ hj
+    omega
+  have hmem : s.db.member = D.member := by rw [hdb]
+  have hrfs : s.db.reserveFlight = D.reserveFlight := by rw [hdb]
+  refine Hoare.conseq (hbody s.db (n + j) f q hc hsq hjm hpk hmem hrfs) (fun _ h => h)
+    (fun r s' ⟨hr, hse', row, hdb', hro, hrfn⟩ => ⟨hr, hse', ?_, ?_, rows ++ [row], ?_, ?_, ?_⟩)
+    (fun e s' ⟨hse', hf', hd'⟩ => ⟨hse', hf', ?_⟩) s ⟨rfl, hse⟩
+  · rw [hdb']
+    exact seqGe_tables (seqGe_passenger hsg hsq) rfl rfl rfl rfl
+  · rw [hdb']
+    exact seqOf_some_succ hsq
+  · rw [hdb']
+    conv => lhs; rw [hdb]
+    simp
+  · rw [List.mapM_append, hrows, RegSpec.recsFrom_take n qs j q hq]
+    simp [hro]
+  · intro r' hr'
+    rw [List.mem_append, List.mem_singleton] at hr'
+    rcases hr' with hr' | rfl
+    · exact hrf r' hr'
+    · exact hrfn
+  · rcases hd' with hd' | hd'
+    · rw [hd']; exact hsg
+    · rw [hd']; exact seqGe_passenger hsg hsq
 
 end Abstraction.Reserve.RegisterRun

@@ -61,6 +61,7 @@ import Abstraction.Reserve.Vacancy
 import Abstraction.Reserve.Register
 import Abstraction.Reserve.Insert
 import Abstraction.Reserve.Rollback
+import Abstraction.Reserve.RegSpec
 import Abstraction.Reserve.RegisterRun
 import Abstraction.Reserve.Witness
 

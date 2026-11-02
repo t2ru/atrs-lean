@@ -78,6 +78,19 @@ theorem forIn' {γ : Type} (xs : List β) (b : γ) (f : β → γ → EStateM ε
     subst hr
     exact ih (pre ++ [x]) acc' (by simpa using h) s hs
 
+/-- 累積値の無い `for x in xs do`（`forIn` のリスト）。不変条件 `I 処理済みの件数 状態`。`j` 番目の要素 `x` の本体は、
+`I j` から `I (j + 1)` に進めて次へ進む。 -/
+theorem forIn_idx (xs : List β) (f : β → PUnit → EStateM ε σ (ForInStep PUnit)) (I : Nat → σ → Prop)
+    {E : ε → σ → Prop}
+    (step : ∀ j x, xs[j]? = some x → Hoare (I j) (f x ()) (fun r s => r = .yield () ∧ I (j + 1) s) E) :
+    Hoare (I 0) (forIn xs () f) (fun _ s => I xs.length s) E := by
+  have h := forIn' xs () f (fun pre _ s => I pre.length s) (E := E) fun pre x suf acc hxs => by
+    have hx : xs[pre.length]? = some x := by rw [← hxs]; simp
+    refine conseq (step pre.length x hx) (fun _ h => h) (fun r s ⟨hr, hs⟩ => ⟨(), ?_, ?_⟩) (fun _ _ h => h)
+    · cases acc; exact hr
+    · simpa using hs
+  exact h
+
 theorem get' {P : σ → Prop} {Q : σ → σ → Prop} {E : ε → σ → Prop} (h : ∀ s, P s → Q s s) :
     Hoare P (get : EStateM ε σ σ) Q E := fun s hs => h s hs
 

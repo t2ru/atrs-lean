@@ -2729,6 +2729,42 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegSpec.advP",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.advRF",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.foldl_addPassenger",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.foldl_addReserveFlight",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.mem_recsFrom",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.recsFrom",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.recsFrom_length",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.recsFrom_take",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.rfsFrom",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Register.flightsOf_append",
       "layer": "Abstraction"
     },
@@ -2773,6 +2809,38 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond.age",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond.fn",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond.gn",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond.input",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassCond.mk",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.PassInv",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.forall₂_get",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.RegisterRun.insertPassenger_hoare",
       "layer": "Abstraction"
     },
@@ -2782,6 +2850,14 @@
     },
     {
       "name": "Abstraction.Reserve.RegisterRun.insert_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.passengerOfRow_no",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.passengers_hoare",
       "layer": "Abstraction"
     },
     {

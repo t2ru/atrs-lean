@@ -7,6 +7,7 @@
   * `LangSemantics.Java.JList.get_cons_one`
   * 例と反例は `Test/LangSemantics/EStateHoare.lean`。[lang/lean/rules.md](lang/lean/rules.md#命令型の計算の検証) に手順を書いた。
   * 来歴: 適用先 ATRS の ADR ab93（予約の第 3 段）。
+* **Update**: 累積値の無い `for` 文を、処理済みの件数で添字づけた不変条件で扱う規則 `LangSemantics.Core.EStateHoare.Hoare.forIn_idx` を足した（版 0.26 に含める）。来歴: 適用先 ATRS の予約の第 3 段（搭乗者の列の挿入）。
 * **Update**: 要素ごとの関係を両辺の写像で移す `LangSemantics.Core.List.Forall₂.map_of` と、弱める `Forall₂.imp` を足した（版 0.26 に含める）。来歴: 適用先 ATRS の予約の第 3 段（運賃種別の利用条件の検査の対応）。
 
 ## 2026-11-01
