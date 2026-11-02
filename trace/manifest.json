@@ -2565,6 +2565,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.KeysPres.keysOk_advance",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.KeysPres.keysOk_regWorld",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.KeysPres.mem_rfsFrom_no",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Member.findOneRows_eq",
       "layer": "Abstraction"
     },
@@ -2994,6 +3006,98 @@
     },
     {
       "name": "Abstraction.Reserve.Registration.secureAll_world",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.buildDraft_compact",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.create_reset",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.foldlM_ok_all",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.forall₂_mem_left",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.memberNoOf_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.passConds",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.register_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.reserveOp_cases",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveFacts.validate_members",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveHelper.buildDraft_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveHelper.helperReserve_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveHelper.now_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.fault_out",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.findForUpdate_isSome",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.forall₂_imp_mem",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.reserveRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.reserveRefines_initSurj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.reserve_core",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.reserve_run",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.run_any",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.secureAll_code",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.step_reserve",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.ReserveRun.vacCond_of",
       "layer": "Abstraction"
     },
     {

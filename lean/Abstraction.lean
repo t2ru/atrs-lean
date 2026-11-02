@@ -66,6 +66,10 @@ import Abstraction.Reserve.RegisterRun
 import Abstraction.Reserve.Keys
 import Abstraction.Reserve.FlightFacts
 import Abstraction.Reserve.Registration
+import Abstraction.Reserve.ReserveFacts
+import Abstraction.Reserve.ReserveHelper
+import Abstraction.Reserve.KeysPres
+import Abstraction.Reserve.ReserveRun
 import Abstraction.Reserve.Witness
 
 /-!
