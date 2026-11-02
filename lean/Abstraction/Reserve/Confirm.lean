@@ -63,7 +63,7 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
 /-- 予約確認の流れの例外の事後条件: 障害か、前段の不正要求（[Spec] の前段が改竄）か、後段の業務例外（[Spec] の前段が
 成功し、予約内容の検証が同じコードと引数の `Business`）。 -/
 def ConfirmE (P : St → Prop) (v vr : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ (IsFault e ∨
+  fun e s => P s ∧ (IsFault s.env e ∨
     ((∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
       ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str)) ∨
     (v = .ok () ∧ ∃ c args, e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs c args ∧

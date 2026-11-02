@@ -108,6 +108,8 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | トランザクションの取消 | 状態の表を変えない計算（`validateReservation`）では、取消は状態を変えない（`transactional_hoare`。`FlightDb.rollback fd fd = fd`） |
 | 選択フライトの検証（前段） | [Spec] の選択フライトの検証の失敗は、すべて改竄に写るエラー（`InvalidRequest` か `Business`）である（`validateFlightList_req`）。原典の `BadRequestException` は、出力の α で `InvalidRequest` に写り、詳細は自由な選択 N-004 で合わせる。往復の搭乗間隔の検査には D-031 の前提（往路便の到着時刻が 24:00 より前）を使う（`vf_two`）。逆区間・運賃種別の検査の三つ組 `two_some` の運賃種別の仮定は、両便の存在の確認の後に限った |
 | 業務例外のメッセージの分解 | 具体機械の `catchReserve` は、業務例外のメッセージを 1 文字の区切り（改行）の `String.split` で分ける（従来の `String.splitOn "\n"` と同じ結果）。core に、区切りを含まない文字列の列を `intercalate` したものとの往復の補題（`String.toList_split_intercalate`）があるので、コードと引数が改行を含まなければ、元のコードと引数に戻る（`Abstraction.Reserve.Catch.catch_business`） |
+| 実行環境の障害 | 障害の例外 `IsFault env e` は実行環境を持ち、排他の失敗は `env` が排他の失敗の位置を持つときに限る。予約確認の具体機械の定義域（排他の失敗の位置が無い）では、障害は I/O の失敗だけになり、[Spec] の予約確認が `Conflict` を返さないことと合う（`catch_fault_none`） |
+| 業務例外の引数 | 予約内容の検証の業務例外のコードと引数は改行を含まない（`Abstraction.Reserve.NoNL.validate_nl`）。引数は設定の整数・位置（自然数の文字列）とマスタの運賃種別名で、運賃種別名は D-027 の前提（`dev_D027R`）で改行を含まない |
 | 合計金額 | 予約の合計金額の計算は、合計金額の L 課題 ABS-005（`runTotalFare_eq`）から [Spec] の `totalFareOfKeys` の値になる（`Abstraction.Reserve.TotalFare.calc_eq`）。会員の表を差し替えたサービスでも同じ |
 
 置いた補題（すべて `sorry` なし）:
@@ -121,6 +123,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Draft`: 予約情報の組み立てと `buildDraft` の対応（空の搭乗者欄の判定、欄を詰める処理、搭乗者の会員番号・氏名・性別）
 * `Abstraction.Reserve.SpecFacts`: 選択フライトの検証が成功したときの、フライトの存在と運賃種別、予約確認の操作の値の分解
 * `Abstraction.Reserve.Input`: 入力の α `aiR` の像の分解
+* `Abstraction.Reserve.NoNL`: 業務例外のコードと引数が改行を含まないこと
 * `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）
 
 ### Consequences

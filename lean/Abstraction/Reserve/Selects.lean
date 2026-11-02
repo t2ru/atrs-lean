@@ -197,14 +197,14 @@ open SourceModel.Db.Tx SourceModel.App.B2
 
 /-- 前段の検証の例外の事後条件: 障害か、不正要求（`BadRequestException`）で [Spec] の結果が改竄。 -/
 def PostS (P : St → Prop) (v : Except AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ (IsFault e ∨
+  fun e s => P s ∧ (IsFault s.env e ∨
     (∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
       ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str))
 
-theorem fault_cls {e : JThrow} (h : IsFault e) : ∃ cls msg, e = .other cls msg ∧
+theorem fault_cls {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsFault env e) : ∃ cls msg, e = .other cls msg ∧
     ¬ (cls = SourceModel.Domain.Service.B0.InvalidFlightException.className ∨
       cls = SourceModel.Domain.Common.Exception.AtrsBusinessException.className) := by
-  obtain ⟨m, rfl | rfl⟩ := h
+  obtain ⟨m, rfl | ⟨rfl, -⟩⟩ := h
   · exact ⟨_, m, rfl, by decide⟩
   · exact ⟨_, m, rfl, by decide⟩
 

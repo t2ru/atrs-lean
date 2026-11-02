@@ -31,7 +31,7 @@ def Post (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : Unit → St 
 
 /-- 選択フライトの検証の例外の事後条件。 -/
 def PostE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ ((BadReq e ∧ ∃ e', v = .error e') ∨ IsFault e)
+  fun e s => P s ∧ ((BadReq e ∧ ∃ e', v = .error e') ∨ IsFault s.env e)
 
 theorem badReq_invalid (msg : String) : BadReq (InvalidFlightException.new msg) := ⟨_, msg, rfl, .inl rfl⟩
 
@@ -63,7 +63,7 @@ theorem one_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr rfl⟩⟩
+    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
   have hx : existsRows s.db (bindKey f0.departureDate fm.flightName f0.boardingClass f0.fareType) =
       w.existsFlight k0 := hdb ▸ he
   simp only [h1, h2, ite_false, hx]
@@ -123,7 +123,7 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr rfl⟩⟩
+    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
   simp only [h1, h2, ite_false, hx0]
   cases hw0 : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]
@@ -140,7 +140,7 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     exact ⟨htt, .inr ⟨_, .inl rfl⟩⟩
   by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
   · simp only [h3, h4, ite_true, ite_false]
-    exact ⟨htt, .inr ⟨_, .inr rfl⟩⟩
+    exact ⟨htt, .inr ⟨_, .inr ⟨rfl, by simp [h4]⟩⟩⟩
   simp only [h3, h4, ite_false, hx1]
   cases hw1 : w.existsFlight k1
   · simp only [Bool.not_false, ite_true]
@@ -196,7 +196,7 @@ theorem two_none1 {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec
     exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr rfl⟩⟩
+    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
   simp only [h1, h2, ite_false, hx0]
   cases hw0 : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]

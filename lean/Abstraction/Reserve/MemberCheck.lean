@@ -27,7 +27,7 @@ def PostB (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : Unit → St
 
 /-- 会員照合の例外の事後条件。 -/
 def PostBE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ (IsFault e ∨ ∃ c args, e = AtrsBusinessException.newArgs c args ∧ v = .error (.business c args))
+  fun e s => P s ∧ (IsFault s.env e ∨ ∃ c args, e = AtrsBusinessException.newArgs c args ∧ v = .error (.business c args))
 
 /-- 会員の取得の答え: 会員が無ければ `null`、あれば照合が [Spec] の `matchesMember` になる会員。 -/
 def MemberAns (w : Spec.Port.World) (s : String) (r : JRef SourceModel.Domain.Model.Member) : Prop :=
@@ -47,7 +47,7 @@ structure MemberEnv (fd : FlightDb) (mdb : MasterDb) (w : Spec.Port.World) : Pro
 theorem findOne_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {mdb : MasterDb} {w : Spec.Port.World}
     (he : MemberEnv fd mdb w) (s : String) :
     Hoare P (MemberRepository.findOne mdb (some s)) (fun r s' => P s' ∧ MemberAns w s r)
-      (fun e s' => P s' ∧ IsFault e) := by
+      (fun e s' => P s' ∧ IsFault s'.env e) := by
   intro s0 hs
   have hdb := hP.db s0 hs
   have ht := hP.tick s0 hs
@@ -60,7 +60,7 @@ theorem findOne_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {mdb 
     exact ⟨ht, _, .inl rfl⟩
   by_cases h2 : s0.env.conflictAt = some s0.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, _, .inr rfl⟩
+    exact ⟨ht, _, .inr ⟨rfl, by simp [h2]⟩⟩
   simp only [h1, h2, ite_false]
   unfold MemberAns
   have htk : ({ db := s0.db, env := s0.env, clockReads := s0.clockReads, sqlCalls := s0.sqlCalls + 1 } : St) =

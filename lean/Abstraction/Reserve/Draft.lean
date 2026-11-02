@@ -2,6 +2,7 @@ import Abstraction.Reserve.Alpha
 import Abstraction.Reserve.MemberCheck
 import Abstraction.MasterData.Pre
 import SourceModel.App.B2.TicketReserveHelper
+import Abstraction.Fare.TotalAlpha
 
 /-!
 # Abstraction.Reserve.Draft
@@ -101,6 +102,43 @@ theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInpu
       Option.some.injEq] at hp
     obtain ⟨fn, hfn, gn, hgn, ag, -, g, hg, rfl⟩ := hp
     exact ⟨_, rfl, rfl, hfn, hgn, hg⟩
+
+/-- 空でない欄の搭乗者の年齢（`ageOfPassenger`）は、[Spec] の搭乗者の年齢。 -/
+theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Model.Passenger},
+    fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
+    (fs.map fun f => some (B2Mapper.mapPassenger f)).mapM Abstraction.Fare.TotalAlpha.ageOfPassenger =
+        some (ps.map (·.age)) ∧ ins.map (·.age.getD 0) = ps.map (·.age)
+  | [], ins, ps, h1, h2 => by
+    simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h1
+    subst h1
+    simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h2
+    subst h2
+    exact ⟨rfl, rfl⟩
+  | f :: fs, ins, ps, h1, h2 => by
+    simp only [List.mapM_cons, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+      Option.some.injEq] at h1
+    obtain ⟨i, hi, ins', hins, rfl⟩ := h1
+    simp only [List.mapM_cons, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+      Option.some.injEq] at h2
+    obtain ⟨p, hp, ps', hps, rfl⟩ := h2
+    obtain ⟨ih1, ih2⟩ := ages_eq hins hps
+    simp only [passengerInputOf, Option.map_eq_some_iff] at hi
+    obtain ⟨a, ha, rfl⟩ := hi
+    simp only [PassengerInput.toPassenger, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+      Option.some.injEq] at hp
+    obtain ⟨fn, -, gn, -, ag, hag, g, -, rfl⟩ := hp
+    subst hag
+    have hage : Abstraction.Fare.TotalAlpha.ageOfPassenger (some (B2Mapper.mapPassenger f)) = some ag := by
+      cases hf : f.age with
+      | none => rw [hf] at ha; cases ha
+      | some x =>
+        rw [hf] at ha
+        simp only [optAgeOf, Option.map_eq_some_iff, Option.some.injEq] at ha
+        obtain ⟨n, hn, rfl⟩ := ha
+        simp [Abstraction.Fare.TotalAlpha.ageOfPassenger, B2Mapper.mapPassenger, hf, hn]
+    refine ⟨?_, ?_⟩
+    · simp only [List.map_cons, List.mapM_cons, hage, ih1, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+    · simp only [List.map_cons, Option.getD_some, ih2]
 
 theorem reserveInputOf_eq {form : TicketReserveForm} {ri : ReserveInput} (h : reserveInputOf form = some ri) :
     form.repFamilyName = some ri.repFamilyName ∧ form.repGivenName = some ri.repGivenName ∧
