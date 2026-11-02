@@ -2817,6 +2817,94 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Vacancy.AtW",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond.bc",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond.fm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond.ft",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond.key",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.VacCond.mk",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.fareType_days",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.findForUpdate_isSome_of_keys",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.flightMap_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.foldlM_secure",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.isAvailable_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.mapM_singleton",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.mkFlight_days",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.mkFlight_key",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.resultOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.secureAll",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.secureSeats_seq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.updateRows_alpha",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.vacancies_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.vacancy_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Vacancy.worldOfDb_setFlights",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Validate.AgreeB",
       "layer": "Abstraction"
     },

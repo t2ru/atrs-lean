@@ -57,6 +57,7 @@ import Abstraction.Reserve.Confirm
 import Abstraction.Reserve.Input
 import Abstraction.Reserve.NoNL
 import Abstraction.Reserve.ConfirmRun
+import Abstraction.Reserve.Vacancy
 import Abstraction.Reserve.Witness
 
 /-!
