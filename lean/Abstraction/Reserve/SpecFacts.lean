@@ -58,6 +58,16 @@ theorem validateFlightList_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Sp
         · exact (checkFlight_ok hc').1
   · cases h
 
+/-- 選択フライトの検証の値があれば、選択フライトは 1〜2 件。 -/
+theorem validateFlightList_len {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
+    {fs : List ResolvedFlight} {x : Except AtrsError Unit} (h : validateFlightList cfg md w fs = some x) :
+    1 ≤ fs.length ∧ fs.length ≤ 2 := by
+  unfold validateFlightList at h
+  split at h
+  · simp
+  · simp
+  · cases h
+
 /-- 主キーで存在するフライトの運賃種別は、マスタにある。 -/
 theorem fareTypeOf_of_exists {md : Spec.MasterData} {w : Spec.Port.World} (href : w.RefMaster md) {k : FlightKey}
     (he : w.existsFlight k = true) : ∃ FT, md.fareTypeOf k.fareTypeCd = some FT := by

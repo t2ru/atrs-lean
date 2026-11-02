@@ -30,9 +30,10 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
     {f0 : SourceModel.Domain.Model.Flight} {fs : List SourceModel.Domain.Model.Flight}
     {FTs : List Spec.MasterData.FareType} (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (f0 :: fs) FTs)
     (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs) {T : Int.J32}
-    (hcalc : TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
-      (some ((f0 :: fs).map some))
-      (some (((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).map some)) = .ok T) :
+    (hcalc : ∀ vr, Spec.UseCase.Reserve.validateReservation cfg md w d = some vr → vr = .ok () →
+      TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
+        (some ((f0 :: fs).map some))
+        (some (((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).map some)) = .ok T) :
     ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
       Hoare P (TicketReserveHelper.reserveConfirm (helperOf p ic) ic.form ((f0 :: fs).map some))
         (fun r s => P s ∧ v = .ok () ∧ r.2.totalFare = T) (PostBE P v) := by
@@ -56,7 +57,7 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
     rw [hrfl0]
     simp only [LangSemantics.Java.EStateSimp.deref_some, List.map_cons,
       LangSemantics.Java.JList.get_cons_zero, LangSemantics.Java.EStateSimp.except_ok_bind]
-    exact hcalc
+    exact hcalc v hv hv0
   simp only [hc, lift_ok, pure_bind]
   exact ⟨hs, hv0, rfl⟩
 

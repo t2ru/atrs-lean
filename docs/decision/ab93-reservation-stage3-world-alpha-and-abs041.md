@@ -124,6 +124,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.SpecFacts`: 選択フライトの検証が成功したときの、フライトの存在と運賃種別、予約確認の操作の値の分解
 * `Abstraction.Reserve.Input`: 入力の α `aiR` の像の分解
 * `Abstraction.Reserve.NoNL`: 業務例外のコードと引数が改行を含まないこと
+* `Abstraction.Reserve.ConfirmRun`: 予約確認の 1 歩の対応（`confirm_run`）。具体機械の予約確認の 1 歩は、どの許される並び・障害の位置でも、状態を変えずに出力の値で終わり、その像は [Spec] の予約確認の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002 の失敗と採番の前進 0、前段の改竄は N-004 の詳細の置き換え）の出力である
 * `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）
 
 ### Consequences
