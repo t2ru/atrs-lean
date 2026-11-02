@@ -2237,6 +2237,50 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Confirm.ConfirmE",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Confirm.confirm_core",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Confirm.helperConfirm_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.compact_filter",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.filter_mapM",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.hasText_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.isEmpty_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.passengerFacts",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.reservation_facts",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.reserveInputOf_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Draft.reset_filter",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Flights.AgreeV",
       "layer": "Abstraction"
     },
@@ -2302,6 +2346,26 @@
     },
     {
       "name": "Abstraction.Reserve.Flights.toEpochMinute_ofEpochMinute",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.aiR_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.requestOf_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.resolve_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.selectOfForm_key",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.selects_keys",
       "layer": "Abstraction"
     },
     {
@@ -2558,6 +2622,26 @@
     },
     {
       "name": "Abstraction.Reserve.Selects.vf_two",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.checkFlight_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.confirmOp_cases",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.exists_forall₂",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.fareTypeOf_of_exists",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.validateFlightList_ok",
       "layer": "Abstraction"
     },
     {

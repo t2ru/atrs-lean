@@ -51,6 +51,10 @@ import Abstraction.Reserve.ValidateReservation
 import Abstraction.Reserve.TotalFare
 import Abstraction.Reserve.Selects
 import Abstraction.Reserve.Catch
+import Abstraction.Reserve.Draft
+import Abstraction.Reserve.SpecFacts
+import Abstraction.Reserve.Confirm
+import Abstraction.Reserve.Input
 import Abstraction.Reserve.Witness
 
 /-!

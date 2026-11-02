@@ -118,6 +118,10 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.TotalFare`: 予約の合計金額（`calc_eq`）
 * `Abstraction.Reserve.Selects`: 選択フライトの検証の失敗が改竄に写ること、1 便・往復の三つ組（`vf_one`・`vf_two`）、`BadRequestException` に包む前段（`helper_vf`）
 * `Abstraction.Reserve.Catch`: 出力の値とする例外の像（業務例外・不正要求・障害）
+* `Abstraction.Reserve.Draft`: 予約情報の組み立てと `buildDraft` の対応（空の搭乗者欄の判定、欄を詰める処理、搭乗者の会員番号・氏名・性別）
+* `Abstraction.Reserve.SpecFacts`: 選択フライトの検証が成功したときの、フライトの存在と運賃種別、予約確認の操作の値の分解
+* `Abstraction.Reserve.Input`: 入力の α `aiR` の像の分解
+* `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）
 
 ### Consequences
 
