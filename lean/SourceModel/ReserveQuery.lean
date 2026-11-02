@@ -103,13 +103,13 @@ inductive ReserveError where
 abbrev MOutput := Except ReserveError MOutputValue
 
 /-- 出力の値とする例外を、出力の値に変える。それ以外の例外は、そのまま例外とする。業務例外のメッセージは、
-コードと引数を改行でつないだもの（`AtrsBusinessException.newArgs`）。 -/
+コードと引数を改行でつないだもの（`AtrsBusinessException.newArgs`）で、改行（1 文字の区切り）で分ける。 -/
 def catchReserve (r : JResult MOutputValue) : JResult MOutput :=
   match r with
   | .ok v => .ok (.ok v)
   | .error (.other cls msg) =>
     if cls = SourceModel.Domain.Common.Exception.AtrsBusinessException.className then
-      match msg.splitOn "\n" with
+      match (msg.split '\n').toList.map (·.copy) with
       | code :: args => .ok (.error (.business code args))
       | [] => .ok (.error (.business msg []))
     else if cls = TicketReserveHelper.badRequestClass then .ok (.error .badRequest)

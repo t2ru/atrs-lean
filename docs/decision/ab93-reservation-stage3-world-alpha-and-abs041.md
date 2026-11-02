@@ -106,6 +106,8 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 業務例外の対応 | 検査の結果の対応 `AgreeB`（どちらも成功するか、[Source] の業務例外と [Spec] の `Business` のコードと引数が同じ）を置く。状態を伴う検査の事後条件は `PostB`・`PostBE`（障害 `IsFault` か、同じコードと引数の業務例外）とし、検査の逐次は `seqB`、純粋な検査の持ち上げは `lift_agreeB` でつなぐ |
 | 予約フライトごとの繰り返し | 原典は、運賃種別の利用条件と搭乗者の会員照合を予約フライトごとに繰り返す。[Spec] は、運賃種別の利用条件を便ごとの検査の最初の失敗（`firstErr`）、搭乗者の会員照合を 1 回とする。後者は、すべての予約フライトが同じ搭乗者列を持つので、最初の繰り返しが [Spec] と同じ結果になり、2 回目以降は成功か障害である（`forIn_same`） |
 | トランザクションの取消 | 状態の表を変えない計算（`validateReservation`）では、取消は状態を変えない（`transactional_hoare`。`FlightDb.rollback fd fd = fd`） |
+| 選択フライトの検証（前段） | [Spec] の選択フライトの検証の失敗は、すべて改竄に写るエラー（`InvalidRequest` か `Business`）である（`validateFlightList_req`）。原典の `BadRequestException` は、出力の α で `InvalidRequest` に写り、詳細は自由な選択 N-004 で合わせる。往復の搭乗間隔の検査には D-031 の前提（往路便の到着時刻が 24:00 より前）を使う（`vf_two`）。逆区間・運賃種別の検査の三つ組 `two_some` の運賃種別の仮定は、両便の存在の確認の後に限った |
+| 業務例外のメッセージの分解 | 具体機械の `catchReserve` は、業務例外のメッセージを 1 文字の区切り（改行）の `String.split` で分ける（従来の `String.splitOn "\n"` と同じ結果）。core に、区切りを含まない文字列の列を `intercalate` したものとの往復の補題（`String.toList_split_intercalate`）があるので、コードと引数が改行を含まなければ、元のコードと引数に戻る（`Abstraction.Reserve.Catch.catch_business`） |
 | 合計金額 | 予約の合計金額の計算は、合計金額の L 課題 ABS-005（`runTotalFare_eq`）から [Spec] の `totalFareOfKeys` の値になる（`Abstraction.Reserve.TotalFare.calc_eq`）。会員の表を差し替えたサービスでも同じ |
 
 置いた補題（すべて `sorry` なし）:
@@ -114,6 +116,8 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.MemberCheck`: 会員の取得の三つ組 `findOne_hoare`、代表者・搭乗者の会員照合の三つ組（`repMember_hoare`・`passengerMember_hoare`）
 * `Abstraction.Reserve.ValidateReservation`: 予約内容の検証の三つ組と、[Spec] の `validateReservation` の対応（`validate_hoare`）
 * `Abstraction.Reserve.TotalFare`: 予約の合計金額（`calc_eq`）
+* `Abstraction.Reserve.Selects`: 選択フライトの検証の失敗が改竄に写ること、1 便・往復の三つ組（`vf_one`・`vf_two`）、`BadRequestException` に包む前段（`helper_vf`）
+* `Abstraction.Reserve.Catch`: 出力の値とする例外の像（業務例外・不正要求・障害）
 
 ### Consequences
 

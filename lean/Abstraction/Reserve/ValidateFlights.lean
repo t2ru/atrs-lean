@@ -104,8 +104,8 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
         (Spec.Ticket.checkInterval cfg k0 X0 k1 X1))
     {rv : Except Spec.Error.AtrsError Unit} (hrv : Spec.Ticket.checkReverse md X0 X1 = some rv)
     (hrt : AgreeV (TicketSharedServiceImpl.validateFlightRouteForRoundTripFlight f0 f1) rv)
-    (hft : AgreeV (TicketSharedServiceImpl.validateFlightFareType [some f0, some f1])
-      (Spec.Ticket.checkFareTypes [k0, k1]))
+    (hft : w.existsFlight k0 = true → w.existsFlight k1 = true →
+      AgreeV (TicketSharedServiceImpl.validateFlightFareType [some f0, some f1]) (Spec.Ticket.checkFareTypes [k0, k1]))
     {v : Except Spec.Error.AtrsError Unit}
     (hv : Spec.Ticket.validateFlightList cfg md w [⟨k0, some X0⟩, ⟨k1, some X1⟩] = some v) :
     Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0, some f1])) (Post P v) (PostE P v) := by
@@ -155,7 +155,7 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     subst hv
     rcases hrt with ⟨hr, hc'⟩ | ⟨cls', msg', hr, hcl', e', hc'⟩
     · simp only [hr, hc', Except.bind]
-      rcases hft with ⟨hf, hc''⟩ | ⟨cls'', msg'', hf, hcl'', e'', hc''⟩
+      rcases hft hw0 hw1 with ⟨hf, hc''⟩ | ⟨cls'', msg'', hf, hcl'', e'', hc''⟩
       · simp only [hf, hc'']; exact ⟨htt, rfl⟩
       · simp only [hf, hc'']; exact ⟨htt, .inl ⟨⟨cls'', msg'', rfl, hcl''⟩, e'', rfl⟩⟩
     · simp only [hr, hc', Except.bind]; exact ⟨htt, .inl ⟨⟨cls', msg', rfl, hcl'⟩, e', rfl⟩⟩

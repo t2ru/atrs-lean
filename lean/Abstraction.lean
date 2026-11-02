@@ -49,6 +49,8 @@ import Abstraction.Reserve.Validate
 import Abstraction.Reserve.MemberCheck
 import Abstraction.Reserve.ValidateReservation
 import Abstraction.Reserve.TotalFare
+import Abstraction.Reserve.Selects
+import Abstraction.Reserve.Catch
 import Abstraction.Reserve.Witness
 
 /-!
