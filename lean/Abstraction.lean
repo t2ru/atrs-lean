@@ -45,6 +45,10 @@ import Abstraction.Reserve.Flights
 import Abstraction.Reserve.Select
 import Abstraction.Reserve.Tx
 import Abstraction.Reserve.ValidateFlights
+import Abstraction.Reserve.Validate
+import Abstraction.Reserve.MemberCheck
+import Abstraction.Reserve.ValidateReservation
+import Abstraction.Reserve.TotalFare
 import Abstraction.Reserve.Witness
 
 /-!

@@ -7,6 +7,7 @@
   * `LangSemantics.Java.JList.get_cons_one`
   * 例と反例は `Test/LangSemantics/EStateHoare.lean`。[lang/lean/rules.md](lang/lean/rules.md#命令型の計算の検証) に手順を書いた。
   * 来歴: 適用先 ATRS の ADR ab93（予約の第 3 段）。
+* **Update**: 要素ごとの関係を両辺の写像で移す `LangSemantics.Core.List.Forall₂.map_of` と、弱める `Forall₂.imp` を足した（版 0.26 に含める）。来歴: 適用先 ATRS の予約の第 3 段（運賃種別の利用条件の検査の対応）。
 
 ## 2026-11-01
 * **Creation**: [ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md) で、同じ状態を共有する機能の合成子 `Machine.alt`（`Machine.Alt`・`Machine.Machine.Alt`・`Machine.Concrete.Alt`・`Machine.Glue.Alt`・`Machine.Refines.Alt`・`Machine.Preserves.Alt`、例と反例 `Test/Machine/Alt.lean`）を足し、[spec/architecture.md](spec/architecture.md) に並置の使い分けを書き、状態を変える移植元の計算のための演算と言語パックの不足を足した。スキルの版を 0.25 にした。

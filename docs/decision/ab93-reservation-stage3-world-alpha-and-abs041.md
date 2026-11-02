@@ -99,6 +99,22 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Select`: `toFlightList` が作るフライト情報の性質（便マスタの有無、存在の確認の文の結果、運賃種別のコード）
 * `Abstraction.Reserve.ValidateFlights`: 選択フライトの検証の Hoare 三つ組と、[Spec] の `validateFlightList` の対応
 
+### 3c の決定（途中）
+
+| 項目 | 決定 |
+| --- | --- |
+| 業務例外の対応 | 検査の結果の対応 `AgreeB`（どちらも成功するか、[Source] の業務例外と [Spec] の `Business` のコードと引数が同じ）を置く。状態を伴う検査の事後条件は `PostB`・`PostBE`（障害 `IsFault` か、同じコードと引数の業務例外）とし、検査の逐次は `seqB`、純粋な検査の持ち上げは `lift_agreeB` でつなぐ |
+| 予約フライトごとの繰り返し | 原典は、運賃種別の利用条件と搭乗者の会員照合を予約フライトごとに繰り返す。[Spec] は、運賃種別の利用条件を便ごとの検査の最初の失敗（`firstErr`）、搭乗者の会員照合を 1 回とする。後者は、すべての予約フライトが同じ搭乗者列を持つので、最初の繰り返しが [Spec] と同じ結果になり、2 回目以降は成功か障害である（`forIn_same`） |
+| トランザクションの取消 | 状態の表を変えない計算（`validateReservation`）では、取消は状態を変えない（`transactional_hoare`。`FlightDb.rollback fd fd = fd`） |
+| 合計金額 | 予約の合計金額の計算は、合計金額の L 課題 ABS-005（`runTotalFare_eq`）から [Spec] の `totalFareOfKeys` の値になる（`Abstraction.Reserve.TotalFare.calc_eq`）。会員の表を差し替えたサービスでも同じ |
+
+置いた補題（すべて `sorry` なし）:
+
+* `Abstraction.Reserve.Validate`: 代表者の年齢・運賃種別の利用条件の検査の対応（`repAge`・`fareTypes`）
+* `Abstraction.Reserve.MemberCheck`: 会員の取得の三つ組 `findOne_hoare`、代表者・搭乗者の会員照合の三つ組（`repMember_hoare`・`passengerMember_hoare`）
+* `Abstraction.Reserve.ValidateReservation`: 予約内容の検証の三つ組と、[Spec] の `validateReservation` の対応（`validate_hoare`）
+* `Abstraction.Reserve.TotalFare`: 予約の合計金額（`calc_eq`）
+
 ### Consequences
 
 * Good, because 空席照会と予約の貼り合わせの `J` が同じ定義になり、`Refines.alt`・`Preserves.alt` の仮定を満たせる
