@@ -64,6 +64,8 @@ import Abstraction.Reserve.Rollback
 import Abstraction.Reserve.RegSpec
 import Abstraction.Reserve.RegisterRun
 import Abstraction.Reserve.Keys
+import Abstraction.Reserve.FlightFacts
+import Abstraction.Reserve.Registration
 import Abstraction.Reserve.Witness
 
 /-!

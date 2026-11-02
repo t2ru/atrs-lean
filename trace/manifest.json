@@ -2369,6 +2369,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.FlightFacts.flight_row",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.FlightFacts.member_row",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.FlightFacts.mkFlight_codes",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Flights.AgreeV",
       "layer": "Abstraction"
     },
@@ -2938,6 +2950,50 @@
     },
     {
       "name": "Abstraction.Reserve.RegisterRun.rfOf_passengers",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.advance_zero",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.forall₂_get'",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.lift_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.lift_pure",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.paxList",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.regRes",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.regWorld",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.registerReservation_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.rfList",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.rfOfForm",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Registration.secureAll_world",
       "layer": "Abstraction"
     },
     {

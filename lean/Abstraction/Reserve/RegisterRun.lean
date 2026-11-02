@@ -208,7 +208,7 @@ theorem passengers_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {n m :
     {fs : List SourceModel.App.B2.PassengerForm} {qs : List Spec.Model.Passenger}
     (hfq : LangSemantics.Core.List.Forall₂ PassCond fs qs)
     (hbody : ∀ (D' : FlightDb) (n' : Nat) (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passenger),
-      PassCond f q → seqOf D'.sqPassenger = some n' → n' ≤ 2147483647 →
+      f ∈ fs → PassCond f q → seqOf D'.sqPassenger = some n' → n' ≤ 2147483647 →
       (∀ p ∈ D'.passenger, p.passengerNo.val ≠ (n' : Int)) → D'.member = D.member →
       D'.reserveFlight = D.reserveFlight →
       Hoare (fun s => s.db = D' ∧ s.env = env) (body (some (SourceModel.App.B2.B2Mapper.mapPassenger f)) ())
@@ -248,7 +248,7 @@ theorem passengers_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {n m :
     omega
   have hmem : s.db.member = D.member := by rw [hdb]
   have hrfs : s.db.reserveFlight = D.reserveFlight := by rw [hdb]
-  refine Hoare.conseq (hbody s.db (n + j) f q hc hsq hjm hpk hmem hrfs) (fun _ h => h)
+  refine Hoare.conseq (hbody s.db (n + j) f q (List.mem_of_getElem? hf) hc hsq hjm hpk hmem hrfs) (fun _ h => h)
     (fun r s' ⟨hr, hse', row, hdb', hro, hrfn⟩ => ⟨hr, hse', ?_, ?_, rows ++ [row], ?_, ?_, ?_⟩)
     (fun e s' ⟨hse', hf', hd'⟩ => ⟨hse', hf', ?_⟩) s ⟨rfl, hse⟩
   · rw [hdb']
@@ -342,6 +342,7 @@ theorem flights_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {rfn pn :
         seqOf D'.sqPassenger = some (pn + j * ps.length) → SeqGe w D' →
         (∀ g ∈ D'.reserveFlight, g.reserveFlightNo.val < ((rfn + j : Nat) : Int)) →
         (∀ p ∈ D'.passenger, p.passengerNo.val < ((pn + j * ps.length : Nat) : Int)) →
+        D'.flight = D.flight → D'.reservation = D.reservation → D'.member = D.member →
         Hoare (fun s => s.db = D' ∧ s.env = env) (body x ())
           (fun r s => r = .yield () ∧ s.env = env ∧ SeqGe w s.db ∧
             seqOf s.db.sqPassenger = some (pn + (j + 1) * ps.length) ∧ ∃ row prows,
@@ -387,7 +388,8 @@ theorem flights_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {rfn pn :
       have hmul : (ks.take j).length * ps.length ≤ j * ps.length := Nat.mul_le_mul_right _ hl
       rw [passengerOfRow_no hpx]
       omega
-  refine Hoare.conseq (hbody j x k hx hk s.db hsf hsp hsg hrf' hp') (fun _ h => h)
+  refine Hoare.conseq (hbody j x k hx hk s.db hsf hsp hsg hrf' hp' (by rw [hdb]) (by rw [hdb]) (by rw [hdb]))
+    (fun _ h => h)
     (fun r s' ⟨hr, hse', hsg', hsp', row, prows, hdb', hro, hpr, hprf, hrno, hrfn⟩ => ⟨hr, hse', hsg', ?_, hsp', ?_⟩)
     (fun _ _ h => h) s ⟨rfl, hse⟩
   · rw [hdb']; exact seqOf_some_succ hsf
