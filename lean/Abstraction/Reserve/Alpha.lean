@@ -162,4 +162,46 @@ theorem aoR_kernel : KernelIs aoR (undefOrEq aoR) := by
 /-- 予約の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は `IcW`。空席照会の貼り合わせと `J` が同じ）。 -/
 abbrev glueR := Machine.Glue.ofStd worldOfDb IcW aiR aoR
 
+/-! ## 前提型の差異 -/
+
+/-- D-027（予約）: 具体側の入力（DB のマスタ・設定・Clock の最初の読み出し・予約フォーム・操作の種類）が [Spec] の型で
+表せる（`aiR` が定義される）。あわせて、業務例外の引数に使うマスタの運賃種別名が改行を含まない（SourceModel の業務例外の
+メッセージは、コードと引数を改行でつないだもの。`AtrsBusinessException.newArgs`）。 -/
+@[deviation "D-027"]
+def dev_D027R (ic : SourceModel.ReserveQuery.MInput) : Prop :=
+  (aiR ic).isSome = true ∧ ∀ ft ∈ ic.input.db.fareType, '\n' ∉ ft.fareTypeName.val.toList
+
+/-- D-014（予約）: 1 回の操作の中で、Clock のどの読み出しも最初の読み出しと同じ日付（予約日と、予約フライトごとの
+予約可能期間の判定の今日が同じ）。 -/
+@[deviation "D-014"]
+def dev_D014R (ic : SourceModel.ReserveQuery.MInput) : Prop := ∀ n, ic.input.env.clock n = ic.input.env.clock 0
+
+/-- D-009: 予約確定では、採番の次の値から、1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号
+12 まで）が、シーケンスの最大値と `int` の上限（予約フライト番号・搭乗者番号の列と `selectKey` の `Integer`）を超えない。 -/
+@[deviation "D-009"]
+def dev_D009 (w : Spec.Port.World) (i : MInput) : Prop :=
+  i.op = .reserve → w.sequences.reserve ≤ 9999999999 ∧ w.sequences.reserveFlight + 1 ≤ 2147483647 ∧
+    w.sequences.passenger + 11 ≤ 2147483647
+
+/-- D-031: 往復の予約では、往路便の便マスタの到着時刻が 24:00 より前。 -/
+@[deviation "D-031"]
+def dev_D031 (i : MInput) : Prop :=
+  ∀ o h, i.req.selects = [o, h] → ∀ m, i.md.flightMasterOf o.flightName = some m → m.arrivalTime.toMinutes < 1440
+
+/-- 予約の合計金額の入力: 選択フライトの主キーと、空でない搭乗者欄の年齢。 -/
+def tfOf (i : MInput) : Spec.Fare.TotalFareInput :=
+  ⟨i.cfg, i.md, i.req.selects.map (·.key), (i.req.form.passengers.filter (!·.isEmpty)).map fun p => p.age.getD 0⟩
+
+/-- D-001（予約）: 合計金額の入力 `tfOf` に `dev_D001T` が成り立つ。 -/
+@[deviation "D-001"]
+def dev_D001R (i : MInput) : Prop := Abstraction.Fare.TotalAlpha.dev_D001T (tfOf i)
+
+/-- D-002（予約）: 合計金額の入力 `tfOf` に `dev_D002T` が成り立つ。 -/
+@[deviation "D-002"]
+def dev_D002R (i : MInput) : Prop := Abstraction.Fare.TotalAlpha.dev_D002T (tfOf i)
+
+/-- D-012（予約）: 合計金額の入力 `tfOf` に `dev_D012` が成り立つ。 -/
+@[deviation "D-012"]
+def dev_D012R (i : MInput) : Prop := Abstraction.Fare.TotalAlpha.dev_D012 (tfOf i)
+
 end Abstraction.Reserve.Alpha

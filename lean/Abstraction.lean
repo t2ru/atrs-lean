@@ -45,6 +45,7 @@ import Abstraction.Reserve.Flights
 import Abstraction.Reserve.Select
 import Abstraction.Reserve.Tx
 import Abstraction.Reserve.ValidateFlights
+import Abstraction.Reserve.Witness
 
 /-!
 # Abstraction

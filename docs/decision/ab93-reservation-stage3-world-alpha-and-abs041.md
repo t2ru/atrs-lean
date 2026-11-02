@@ -87,6 +87,9 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 予約の入出力の α | `aiR`（設定・マスタ・Clock の最初の読み出し・選択フライト・予約フォーム・操作の種類）と `aoR`（核 `undefOrEq`）。不正要求の詳細は空文字に写し、[Spec] の詳細は自由な選択 N-004 で置き換える |
 | [Source] の計算の検証 | 3c の前に検証の道具を整える（プロジェクトオーナーの決定）。Hoare 三つ組と、状態を与えた形に簡約するタクティク `java_estate_simp` をスキルの assets に置いた（[スキルの ADR cd90](../../.agents/skills/spec-pivot/references/docs/decision/cd90-estate-hoare-and-simp-tactics.md)。スキルの版 0.26）。文の実行の規則と障害の例外 `IsFault` は ATRS の `Abstraction.Reserve.Tx` に置く。試しとして、選択フライトの検証の全経路（1 便・往復、便マスタの有無、障害）の三つ組と [Spec] の対応を `Abstraction.Reserve.ValidateFlights` で示した |
 
+| 差異の述語 | `Abstraction.Reserve.Alpha` に置き、それぞれに非自明性の定理を `Abstraction.Reserve.Witness` に置いた（G8）。<br>- 具体側: `dev_D027R`（`aiR` が定義され、業務例外の引数に使う運賃種別名が改行を含まない。SourceModel の業務例外のメッセージがコードと引数を改行でつないだものなので）、`dev_D014R`（Clock のどの読み出しも最初と同じ日付）<br>- 抽象側: `dev_D009`（状態と入力。予約確定で使う番号がシーケンスの最大値と `int` の上限を超えない）、`dev_D031`（往復の往路便の到着時刻が 24:00 より前）、`dev_D001R`・`dev_D002R`・`dev_D012R`（合計金額の入力 `tfOf` に `dev_D001T` などを課す）<br>ABS-041 の機械は `reserveMachine` に `restrictState dev_D009` と抽象側の `restrict` の層、`reserveConcrete` に `dev_D027R`・`dev_D014R` の `restrict` の層をかけたものとする（層の並びは 3c で W 課題の否定の定理と合わせて固める） |
+| W 課題の証人 | D-031 の証人の材料（往路便 NTT523 の到着時刻 `2415` のマスタ `db2415`・FLIGHT 表 `fd2415`・往復の予約確認 `ic2415`）を置いた。[Source] の計算が `DateTimeParseException` で終わることは `#eval` で確かめた。カーネルでの評価（`decide +kernel`）は途中で簡約できずに止まるので、評価の定理と否定の定理 `need_D031`・`need_D009` は 3c で ABS-041 と同時に置く |
+
 置いた補題（すべて `sorry` なし）:
 
 * `Abstraction.Reserve.Port`: FLIGHT の主キーの条件・`exists`・`findOneForUpdate`・`update` の行
