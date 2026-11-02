@@ -112,7 +112,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 業務例外の引数 | 予約内容の検証の業務例外のコードと引数は改行を含まない（`Abstraction.Reserve.NoNL.validate_nl`）。引数は設定の整数・位置（自然数の文字列）とマスタの運賃種別名で、運賃種別名は D-027 の前提（`dev_D027R`）で改行を含まない |
 | 合計金額 | 予約の合計金額の計算は、合計金額の L 課題 ABS-005（`runTotalFare_eq`）から [Spec] の `totalFareOfKeys` の値になる（`Abstraction.Reserve.TotalFare.calc_eq`）。会員の表を差し替えたサービスでも同じ |
 | 予約確定の 1 歩の選択 | 障害で終わった予約確定は、I/O の失敗なら N-002、排他の失敗なら N-001 を選び、その採番の前進は、失敗するまでに進んだ数（取消の後の α が `advance w a` になる `a`）とする（`Abstraction.Reserve.ReserveRun.fault_out`）。登録の後の具体側の不変条件 `IcW` は、新しい予約の番号が採番の次の値から振られることから保たれる（`KeysPres`） |
-| ABS-041 の課題の属性 | 主定理 `reserveRefines` には、まだ `@[obligation "ABS-041"]` を付けない。obligation-check は、課題の属性を付けた R 課題に、束 `Machine.Preserves`（G6）・自由な選択の射影の核（G3）・具体機械の基底の `Dom` を既定にすること（G4）を課す。束と具体機械の定義域（予約確認では排他の失敗を起こさない）の扱いは 3d で決める。束の成分 `pinned`（環境の選択を具体側の入力の環境 `ce i_c` に固定する）は、選択の型が採番の前進 `SeqAdvance`（実行に依存する）を持つため、`ce` の形と合わせてプロジェクトオーナーの判断が要る |
+| ABS-041 の課題の属性 | 主定理 `reserveRefines` と、W 課題 ABS-109・ABS-131 の否定の定理（`need_D009`・`need_D031`）には、まだ課題の属性を付けない（W 課題の定理は、課題の属性を付けた R 課題に対してだけ必要性の定理と認められる。G9・GK）。obligation-check は、課題の属性を付けた R 課題に、束 `Machine.Preserves`（G6）・自由な選択の射影の核（G3）・具体機械の基底の `Dom` を既定にすること（G4）を課す。束と具体機械の定義域（予約確認では排他の失敗を起こさない）の扱いは 3d で決める。束の成分 `pinned`（環境の選択を具体側の入力の環境 `ce i_c` に固定する）は、選択の型が採番の前進 `SeqAdvance`（実行に依存する）を持つため、`ce` の形と合わせてプロジェクトオーナーの判断が要る |
 
 置いた補題（すべて `sorry` なし）:
 
@@ -138,6 +138,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.ReserveFacts`: [Spec] の予約内容の検証が成功すれば代表者・搭乗者の会員番号の会員があること（`validate_members`）、搭乗者欄を詰めても組み立てと原典の予約情報が変わらないこと（`buildDraft_compact`・`create_reset`）、要求の長さと桁の制約から搭乗者欄の条件が分かること（`passConds`）、[Spec] の予約確定の操作の値の分解（`reserveOp_cases`）と登録の結果の形（`register_eq`）
 * `Abstraction.Reserve.ReserveHelper`: 予約確定（`TicketReserveHelper.reserve`）の三つ組（`helperReserve_hoare`）。予約内容の検証・Clock の読み出し（D-014）・合計金額・予約の登録をつなぎ、正常なら状態の表の α は [Spec] の `register` の結果、例外なら障害（採番の前進だけ変わる）か予約内容の検証・空席の確保の業務例外（α は変わらない）
 * `Abstraction.Reserve.KeysPres`: 予約確定の後も具体側の不変条件 `KeysOk` が保たれる（採番の前進 `keysOk_advance`、予約の登録 `keysOk_regWorld`）
+* `Abstraction.Reserve.Witness`（追加）: W 課題の否定の定理 `need_D031`（往路便の到着時刻が 24:15 の往復の予約確認で、[Source] は `DateTimeParseException` で終わる）と `need_D009`（搭乗者の採番の次の値が `int` の最大値を超える状態の予約確定で、[Source] は `MyBatisSystemException` で終わる）。どちらも [Spec] の PRE と他の差異の前提は成り立ち、具体側の適用可能性が破れる。[Source] の計算は、`hasText`（`String.any`。整礎再帰でカーネルの評価が止まる）を文字の列の形に書き換えてから `decide +kernel` で評価する
 * `Abstraction.Reserve.ReserveRun`: 予約確定の 1 歩の対応（`reserve_run`）と、予約確認・予約確定をまとめた 1 歩（`run_any`）、R 課題 ABS-041 の主定理 `reserveRefines` と付帯の義務 `reserveRefines_initSurj`（課題の属性を付ける 3d で、機能のモジュール `Abstraction.Reserve` へ移す）。具体機械の予約確定の 1 歩は、どの許される並び・障害の位置でも出力の値で終わり、実行後の状態は `IcW` を満たし、その α と出力の像は [Spec] の予約の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002、排他の失敗は N-001 の選択と、失敗までに進んだ採番、前段の改竄は N-004 の詳細の置き換え）の結果である
 * `Abstraction.Reserve.ConfirmRun`: 予約確認の 1 歩の対応（`confirm_run`）。具体機械の予約確認の 1 歩は、どの許される並び・障害の位置でも、状態を変えずに出力の値で終わり、その像は [Spec] の予約確認の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002 の失敗と採番の前進 0、前段の改竄は N-004 の詳細の置き換え）の出力である
 * `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）

@@ -1,15 +1,21 @@
 import Abstraction.Reserve.Alpha
 import Abstraction.FlightSearch.Witness
+import Abstraction.MasterData.QueryRun
 
 /-!
 # Abstraction.Reserve.Witness
 
-予約（ABS-041）の差異の述語の両向きの例（非自明性。G8）と、W 課題の証人の材料（backlog aedf の第 3 段）。
+予約（ABS-041）の差異の述語の両向きの例（非自明性。G8）と、W 課題 ABS-109（D-009）・ABS-131（D-031）の証人と否定の
+定理（backlog aedf の第 3 段）。否定の定理の課題の属性は、R 課題 ABS-041 の属性と同時に 3d で付ける（ADR ab93）。
+
+[Source] の計算のカーネルでの評価は、`String.any`（整礎再帰）で止まるので、`hasText` を文字の列の形に書き換えてから
+`decide +kernel` で評価する（空席照会の証人と同じ）。
 -/
 
 namespace Abstraction.Reserve.Witness
 open Abstraction.Reserve.Alpha Abstraction.Fare.TotalAlpha Abstraction.FlightSearch.Witness Spec.Model
   Spec.UseCase.Reserve
+open Machine Abstraction.World.Alpha Abstraction.MasterData.QueryRun
 open Machine.Preserves (Nontrivial Nontrivial₂)
 open LangSemantics.Java LangSemantics.Java.Int SourceModel.Db.Schema
 
@@ -93,13 +99,220 @@ def fd2415 : FlightDb :=
   { flight := [⟨⟨0, by decide⟩, ⟨"NTT523", by decide⟩, ⟨"N", by decide⟩, ⟨"RT", by decide⟩, ⟨10, by decide⟩⟩,
       ⟨⟨1, by decide⟩, ⟨"NTT528", by decide⟩, ⟨"N", by decide⟩, ⟨"RT", by decide⟩, ⟨10, by decide⟩⟩] }
 
-/-- NTT523 を往路、NTT528 を復路とする往復の予約確認。[Source] の計算（`runOp fd2415 ic2415 (mergeOrder db2415)`）は
-`DateTimeParseException`（`Text '2415' could not be parsed`）で終わる（`#eval` で確かめた）。カーネルでの評価の定理と
-ABS-131 の否定の定理は、ABS-041 と同時に置く（backlog aedf の 3c）。 -/
+/-- 搭乗者欄（デンデン タロウ・5 歳・男性）。 -/
+def paxR : SourceModel.App.B2.PassengerForm :=
+  { familyName := some "デンデン", givenName := some "タロウ", age := some (J32.ofInt 5), gender := some .M }
+
+/-- NTT523 を往路、NTT528 を復路とする予約フォーム（搭乗者 1 人）。 -/
+def form2415 : SourceModel.App.B2.TicketReserveForm :=
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT523", some .RT, some .N⟩,
+    ⟨some ⟨1970, 1, 2⟩, some "NTT528", some .RT, some .N⟩], passengerFormList := [paxR] }
+
+/-- NTT523 を往路、NTT528 を復路とする往復の予約確認（搭乗者 1 人）。 -/
 def ic2415 : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := db2415, config := SourceModel.AtrsProperties.upstreamConfig,
-     form := { formR with selectFlightFormList :=
-       [⟨some ⟨1970, 1, 1⟩, some "NTT523", some .RT, some .N⟩, ⟨some ⟨1970, 1, 2⟩, some "NTT528", some .RT, some .N⟩] },
+     form := form2415,
      env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .confirm⟩
+
+/-! ## 評価の補題 -/
+
+theorem hasText_fun : Spec.Prim.Text.hasText = fun s => s.toList.any fun c => !Spec.Prim.Text.isBlank c := by
+  funext s
+  simp only [Spec.Prim.Text.hasText, LangSemantics.Core.List.string_any_toList]
+
+theorem suHasText_fun : LangSemantics.Java.Spring.StringUtils.hasText =
+    fun str => match str with
+      | some s => s.toList.any fun c => !LangSemantics.Java.String.isJavaWhitespace c
+      | none => false := by
+  funext str
+  cases str <;> simp [LangSemantics.Java.Spring.StringUtils.hasText, LangSemantics.Core.List.string_any_toList]
+
+/-! ## W 課題 ABS-131（D-031） -/
+
+/-- ABS-131 の証人の [Spec] のマスタ（`db2415` の写し）。 -/
+def mdW2415 : Spec.MasterData :=
+  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
+    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 10000⟩, ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 10000⟩],
+    flightMasters := [⟨⟨"NTT523"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
+      ⟨⟨"NTT528"⟩, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+    boardingClasses := [⟨.N, "N", 0, 1⟩],
+    fareTypes := [⟨.RT, "RT", 10, 355, 0, 1, 1⟩],
+    peakTimes := [], planes := [], creditTypes := [] }
+
+/-- 1970-01-02。 -/
+def day1R : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
+
+/-- ABS-131 の証人の [Spec] の入力（`ic2415` の像）。 -/
+def ia2415 : Spec.UseCase.Reserve.MInput :=
+  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, ⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩], inputR⟩, .confirm⟩
+
+/-- ABS-131 の証人の [Spec] の状態（`fd2415` の像）。 -/
+def w2415 : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, 10⟩, ⟨⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩, 10⟩] }
+
+theorem worldOfDb_fd2415 : worldOfDb fd2415 = some w2415 := by decide
+
+theorem w2415_inv : w2415.Inv := by decide
+
+theorem aiR_ic2415 : aiR ic2415 = some ia2415 := by
+  have h1 : Abstraction.MasterData.Alpha.configOf ic2415.input.config = some Spec.Config.default := by decide
+  have h2 : Abstraction.MasterData.Alpha.masterDataOf ic2415.input.db = some mdW2415 := by decide
+  have h3 : Abstraction.MasterData.AlphaLeaf.dateOfJ (ic2415.input.env.clock 0) = some day0 := by decide
+  have h4 : requestOf ic2415.input.form = some ia2415.req := by decide
+  simp only [aiR, h1, h2, h3, h4, Option.bind_some]
+  rfl
+
+theorem md2415_valid : mdW2415.Valid Spec.Config.default := by
+  refine ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩
+  refine ⟨?_, by decide, by decide, by decide⟩
+  intro a ha
+  simp only [mdW2415, List.mem_cons, List.not_mem_nil, or_false] at ha
+  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+
+theorem inputR_passengers : ∀ p ∈ inputR.passengers, (∀ s ∈ p.familyName, s.length ≤ 10) ∧
+    (∀ s ∈ p.givenName, s.length ≤ 10) ∧ (∀ a ∈ p.age, a ≤ 999) := by
+  intro p hp
+  simp only [inputR, List.mem_cons, List.not_mem_nil, or_false] at hp
+  subst hp
+  exact ⟨by decide, by decide, by decide⟩
+
+theorem req2415_valid : ia2415.req.Valid := by
+  refine ⟨?_, by decide, by decide, by decide, by decide, by decide, by decide, by decide, inputR_passengers⟩
+  intro s hs
+  simp only [ia2415, List.mem_cons, List.not_mem_nil, or_false] at hs
+  rcases hs with rfl | rfl <;> (rw [Spec.Prim.Text.hasText, LangSemantics.Core.List.string_any_toList]; decide)
+
+theorem confirm2415_some : (confirmOp ia2415.cfg ia2415.md w2415 ia2415.req).isSome = true := by
+  simp only [hasText_fun, confirmOp, checkSelects, reserveConfirm, buildDraft, compactPassengers,
+    PassengerInput.isEmpty, ia2415, inputR]
+  all_goals decide +kernel
+
+theorem ia2415_pre : ia2415.Pre w2415 :=
+  ⟨by decide, md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
+
+theorem ia2415_devs : dev_D009 w2415 ia2415 ∧ dev_D001R ia2415 ∧ dev_D002R ia2415 ∧ dev_D012R ia2415 := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · intro h; simp [ia2415] at h
+  · unfold dev_D001R; decide
+  · unfold dev_D002R; decide
+  · unfold dev_D012R; decide
+
+theorem ic2415_dev : dev_D027R ic2415 := ⟨by rw [aiR_ic2415]; rfl, by decide⟩
+
+set_option maxHeartbeats 4000000 in
+/-- [Source] の計算（許される並びの 1 つ）は、出力の値としない例外（`DateTimeParseException`。`Text '2415' could not
+be parsed`）で終わる。 -/
+theorem run2415 : (match SourceModel.ReserveQuery.catchReserve (SourceModel.ReserveQuery.runOp fd2415 ic2415 (mergeOrder db2415)).1 with
+    | .error _ => true
+    | .ok _ => false) = true := by
+  simp only [SourceModel.ReserveQuery.runOp, SourceModel.ReserveQuery.runConfirm, SourceModel.ReserveQuery.confirmBody, ic2415,
+    form2415, List.mapM_cons, List.mapM_nil,
+    SourceModel.App.B0.TicketHelper.toFlightList, SourceModel.App.B0.TicketHelper.toFlight,
+    SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq]
+  decide +kernel
+
+/-- W 課題 ABS-131（D-031 の必要性。G9）: 前提を外すと、ABS-041 は成り立たない。往路便の到着時刻が 24:15 の往復の
+予約確認で、[Source] は `DateTimeParseException` で終わる（適用可能性が破れる）。[Spec] の PRE は成り立つ。 -/
+theorem need_D031 :
+    ¬ Refines ((((reserveMachine.restrictState dev_D009).restrict dev_D001R).restrict dev_D002R).restrict dev_D012R)
+      ((SourceModel.ReserveQuery.reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR := fun h => by
+  obtain ⟨d9, d1, d2, d12⟩ := ia2415_devs
+  obtain ⟨-, hne⟩ := h.applicable w2415 fd2415 ic2415 ia2415 w2415_inv (Or.inl ⟨worldOfDb_fd2415, icW_of_nil rfl rfl⟩)
+    aiR_ic2415 ⟨⟨⟨⟨ia2415_pre, d9⟩, d1⟩, d2⟩, d12⟩ ⟨⟨fun _ => rfl, ic2415_dev⟩, fun _ => rfl⟩
+  have hr := run2415
+  split at hr
+  · rename_i e he
+    exact hne e ⟨mergeOrder db2415, mergeOrder_allowed _, by rw [he]; rfl⟩
+  · cases hr
+
+/-! ## W 課題 ABS-109（D-009） -/
+
+/-- 搭乗者の採番の次の値が 2,147,483,648（`int` の最大値の次）の状態の表（フライトは空席照会の証人と同じ）。 -/
+def fd109 : FlightDb := { fdFS with sqPassenger := some 2147483647 }
+
+/-- NTT001・N・OW を選んだ予約フォーム（搭乗者 1 人）。 -/
+def form109 : SourceModel.App.B2.TicketReserveForm :=
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
+
+/-- NTT001・N・OW を選んだ予約確定（搭乗者 1 人）。 -/
+def ic109 : SourceModel.ReserveQuery.MInput :=
+  ⟨{ db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig,
+     form := form109,
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .reserve⟩
+
+/-- ABS-109 の証人の [Spec] の状態（`fd109` の像）。 -/
+def w109 : Spec.Port.World := { wFS with sequences := { wFS.sequences with passenger := 2147483648 } }
+
+theorem worldOfDb_fd109 : worldOfDb fd109 = some w109 := by decide
+
+theorem w109_inv : w109.Inv := by decide
+
+theorem aiR_ic109 : aiR ic109 = some (iaR mdFS [selR]) := by
+  have h1 : Abstraction.MasterData.Alpha.configOf ic109.input.config = some Spec.Config.default := by decide
+  have h2 : Abstraction.MasterData.Alpha.masterDataOf ic109.input.db = some mdFS := by decide
+  have h3 : Abstraction.MasterData.AlphaLeaf.dateOfJ (ic109.input.env.clock 0) = some day0 := by decide
+  have h4 : requestOf ic109.input.form = some (iaR mdFS [selR]).req := by decide
+  simp only [aiR, h1, h2, h3, h4, Option.bind_some]
+  rfl
+
+theorem mdFS_valid : mdFS.Valid Spec.Config.default := by
+  refine ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩
+  refine ⟨?_, by decide, by decide, by decide⟩
+  intro a ha
+  simp only [mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
+  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+
+theorem req109_valid : (iaR mdFS [selR]).req.Valid := by
+  refine ⟨?_, by decide, by decide, by decide, by decide, by decide, by decide, by decide, inputR_passengers⟩
+  intro s hs
+  simp only [iaR, selR, List.mem_cons, List.not_mem_nil, or_false] at hs
+  subst hs
+  rw [Spec.Prim.Text.hasText, LangSemantics.Core.List.string_any_toList]
+  decide
+
+theorem reserve109_some : (reserveOp (iaR mdFS [selR]).cfg (iaR mdFS [selR]).md (iaR mdFS [selR]).today w109
+    (iaR mdFS [selR]).req).isSome = true := by
+  simp only [hasText_fun, reserveOp, checkSelects, reserve, buildDraft, PassengerInput.isEmpty, iaR, inputR]
+  all_goals decide +kernel
+
+theorem ia109_pre : (iaR mdFS [selR]).Pre w109 :=
+  ⟨by decide, mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
+
+theorem ia109_devs : dev_D031 (iaR mdFS [selR]) ∧ dev_D001R (iaR mdFS [selR]) ∧ dev_D002R (iaR mdFS [selR]) ∧
+    dev_D012R (iaR mdFS [selR]) := by
+  refine ⟨fun o h e => by simp [iaR] at e, ?_, ?_, ?_⟩
+  · unfold dev_D001R; decide
+  · unfold dev_D002R; decide
+  · unfold dev_D012R; decide
+
+theorem ic109_dev : dev_D027R ic109 := ⟨by rw [aiR_ic109]; rfl, by decide⟩
+
+set_option maxHeartbeats 8000000 in
+/-- [Source] の計算（許される並びの 1 つ）は、搭乗者番号の `selectKey` の読み出しの失敗（`MyBatisSystemException`。
+`Bad value for type int : 2147483648`）で終わる。 -/
+theorem run109 : (match SourceModel.ReserveQuery.catchReserve (SourceModel.ReserveQuery.runOp fd109 ic109 (mergeOrder dbFS)).1 with
+    | .error _ => true
+    | .ok _ => false) = true := by
+  simp only [SourceModel.ReserveQuery.runOp, SourceModel.ReserveQuery.runReserve, SourceModel.ReserveQuery.reserveBody, ic109, form109, SourceModel.App.B2.TicketReserveHelper.reserve,
+    SourceModel.App.B2.TicketReserveHelper.createReservation, List.mapM_cons, List.mapM_nil,
+    SourceModel.App.B0.TicketHelper.toFlightList, SourceModel.App.B0.TicketHelper.toFlight,
+    SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq,
+    SourceModel.App.B2.PassengerForm.isEmpty, suHasText_fun]
+  decide +kernel
+
+/-- W 課題 ABS-109（D-009 の必要性。G9）: 前提を外すと、ABS-041 は成り立たない。搭乗者の採番の次の値が `int` の
+最大値を超える状態で予約確定すると、[Source] は `MyBatisSystemException` で終わる（適用可能性が破れる）。[Spec] の
+PRE は成り立つ。 -/
+theorem need_D009 :
+    ¬ Refines ((((reserveMachine.restrict dev_D031).restrict dev_D001R).restrict dev_D002R).restrict dev_D012R)
+      ((SourceModel.ReserveQuery.reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR := fun h => by
+  obtain ⟨d31, d1, d2, d12⟩ := ia109_devs
+  obtain ⟨-, hne⟩ := h.applicable w109 fd109 ic109 (iaR mdFS [selR]) w109_inv
+    (Or.inl ⟨worldOfDb_fd109, icW_of_nil rfl rfl⟩) aiR_ic109 ⟨⟨⟨⟨ia109_pre, d31⟩, d1⟩, d2⟩, d12⟩
+    ⟨⟨fun h => by simp [ic109] at h, ic109_dev⟩, fun _ => rfl⟩
+  have hr := run109
+  split at hr
+  · rename_i e he
+    exact hne e ⟨mergeOrder dbFS, mergeOrder_allowed _, by rw [he]; rfl⟩
+  · cases hr
 
 end Abstraction.Reserve.Witness

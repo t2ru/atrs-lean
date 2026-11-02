@@ -127,7 +127,7 @@ def D009 : Gap where
     ⟨"予約の登録", "docs/spec/reservation.md#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
   premise := "`dev_D009`（`Abstraction.Reserve.Alpha`。抽象側の状態と入力の述語）: 予約確定では、採番の次の値から 1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号 12 まで）が、予約番号ではシーケンスの最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下。会員番号（会員登録）は backlog 4e0e で課す"
   deviations := [``Abstraction.Reserve.Alpha.dev_D009]
-  evidence := .pending "述語 `dev_D009` と非自明性の定理を置き（backlog aedf の 3b）、R 課題 ABS-041（`Abstraction.Reserve.ReserveRun.reserveRefines`）で前提として使った（3c）。W 課題 ABS-109 は aedf の 3c で示す" (some "ABS-109")
+  evidence := .pending "述語 `dev_D009` と非自明性の定理を置き（backlog aedf の 3b）、R 課題 ABS-041（`Abstraction.Reserve.ReserveRun.reserveRefines`）で前提として使い、否定の定理（`Abstraction.Reserve.Witness.need_D009`）を示した（3c）。課題の属性と証明の状態は、R 課題 ABS-041 の属性と同時に aedf の 3d で改める" (some "ABS-109")
   rTasks := ["ABS-031", "ABS-041", "ABS-042", "ABS-045"]
   impact := some (.abort, "使用済みの番号による挿入の失敗、既存の行との衝突、または int32 を超える番号での採番・挿入の失敗")
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068"]
@@ -395,7 +395,7 @@ def D031 : Gap where
   sites := [⟨"往復の便の検査", "docs/spec/reservation.md#validateflightlist", ""⟩, ⟨"便マスタの到着時刻", "docs/spec/master-data.md", ""⟩]
   premise := "`dev_D031`（`Abstraction.Reserve.Alpha`。抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
   deviations := [``Abstraction.Reserve.Alpha.dev_D031]
-  evidence := .pending "述語 `dev_D031` と非自明性の定理、W 課題の証人の材料（`Abstraction.Reserve.Witness.ic2415`）を置き（backlog aedf の 3b）、R 課題 ABS-041（`Abstraction.Reserve.ReserveRun.reserveRefines`）で前提として使った（3c）。W 課題 ABS-131 は aedf の 3c で示す" (some "ABS-131")
+  evidence := .pending "述語 `dev_D031` と非自明性の定理を置き（backlog aedf の 3b）、R 課題 ABS-041（`Abstraction.Reserve.ReserveRun.reserveRefines`）で前提として使い、否定の定理（`Abstraction.Reserve.Witness.need_D031`）を示した（3c）。課題の属性と証明の状態は、R 課題 ABS-041 の属性と同時に aedf の 3d で改める" (some "ABS-131")
   rTasks := ["ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる（`2400` なら往路便の到着日時を 1 日早く検査する）")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]
