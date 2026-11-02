@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-29T23:52:11+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 予約履歴レポート（D1）
@@ -91,7 +91,7 @@ generated:
 
 ## 一覧（listReports）
 
-**[Spec=Source]** 会員 `n` の領域にあるファイル名の列を **降順**（Unicode スカラ値の辞書順の逆）で返す。領域が無ければ空列。ファイル名に時刻を含むため、新しいものが先頭になる。
+**[Spec=Source]** 会員 `n` の領域にあるファイル名の列を **降順**（Unicode スカラ値の辞書順の逆）で返す。領域が無ければ空列。ファイル名に時刻を含むため、新しいものが先頭になる。[Source] は `String` の順（UTF-16 の符号単位の順）で並べるので、補助文字と U+E000〜U+FFFF の文字を含むファイル名で並びが異なる（既知差異 [D-006](abstraction.md#既知差異)）。
 
 出典: atrs-domain/.../service/d1/ReservationHistoryReportServiceImpl.java `getExistingReportNameList`
 

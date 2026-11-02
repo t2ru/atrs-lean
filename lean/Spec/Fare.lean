@@ -16,7 +16,7 @@ open Spec.Config Spec.Model Spec.Prim.Int Spec.Prim.Text
 
 open Spec.Prim Spec.MasterData
 
-/-- 基本運賃。`floorDiv((routeBasicFare + extra) * ratio, 100)`。搭乗クラスがマスタに無ければ `none`（PRE: MD-3）。 -/
+/-- 基本運賃。`floorDiv((routeBasicFare + extra) * ratio, 100)`。搭乗クラスがマスタに無ければ `none`（PRE: `BasicFareInput.Pre`。MD-3 は搭乗クラスの存在を課さない）。 -/
 @[spec_doc "docs/spec/fare-calculation.md#基本運賃", gap "D-001"]
 def basicFare (md : MasterData) (routeBasicFare : Nat) (cd : BoardingClassCd) (depDate : Date) : Option Nat :=
   (md.boardingClassOf cd).map fun bc => (routeBasicFare + bc.extraCharge) * md.multiplicationRatioOn depDate / 100
@@ -69,7 +69,7 @@ def totalFareOfKeys (cfg : Config) (md : MasterData) (keys : List FlightKey) (ag
   return ceilTo parts.sum 100
 
 /-- 合計金額。すべてのフライトに同じ搭乗者列が搭乗する。100 円単位の切上げは合計にだけ行う。
-マスタに便・区間・搭乗クラス・運賃種別が無ければ `none`（PRE: MD-3）。合計金額が観測するのは、フライトのキーと
+マスタに便・区間・搭乗クラス・運賃種別が無ければ `none`（PRE: `TotalFareInput.Pre` の `totalFareOfKeys` の連言。MD-3 は区間の空港と便マスタの区間だけを課す）。合計金額が観測するのは、フライトのキーと
 搭乗者の年齢だけである（`totalFare`＝`totalFareOfKeys`）。 -/
 @[spec_doc "docs/spec/fare-calculation.md#合計金額"]
 def totalFare (cfg : Config) (md : MasterData) (flights : List Flight) (passengers : List Passenger) : Option Nat :=
@@ -88,9 +88,9 @@ structure BasicFareInput where
   boardingClassCd : BoardingClassCd
   depDate : Date
 
-/-- 基本運賃の PRE: 設定とマスタの不変条件、搭乗クラスがマスタに在ること（MD-3）、
+/-- 基本運賃の PRE: 設定とマスタの不変条件、搭乗クラスがマスタに在ること、
 `routeBasicFare + extraCharge` の値域（`docs/spec/domain-model.md#値域`）。 -/
-@[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
+@[spec_doc "docs/spec/fare-calculation.md#基本運賃", gap "D-035"]
 def BasicFareInput.Pre (i : BasicFareInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧
     (i.md.boardingClassOf i.boardingClassCd).any (fun bc => decide (i.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) = true
@@ -108,7 +108,7 @@ structure FareInput where
   discountRate : Nat
 
 /-- 運賃の PRE: 基本運賃と割引率の値域。 -/
-@[spec_doc "docs/spec/fare-calculation.md#運賃"]
+@[spec_doc "docs/spec/fare-calculation.md#運賃", gap "D-030"]
 def FareInput.Pre (i : FareInput) : Prop := i.basicFare ≤ Range.maxBasicFare ∧ i.discountRate ≤ Range.maxDiscountRate
 
 instance (i : FareInput) : Decidable i.Pre := by unfold FareInput.Pre; infer_instance
@@ -154,8 +154,8 @@ structure TotalFareInput where
   ages : List Nat
 
 /-- 合計金額の PRE: 設定とマスタの不変条件、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
-便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること（MD-3）。 -/
-@[spec_doc "docs/spec/fare-calculation.md#合計金額"]
+便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
+@[spec_doc "docs/spec/fare-calculation.md#合計金額", gap "D-035"]
 def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧
     Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧

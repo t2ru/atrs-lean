@@ -15,7 +15,8 @@ open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
 open LangSemantics.Java
 
-/-- `@Value` で注入される設定の値。 -/
+/-- `@Value` で注入される設定の値。[Spec] の型で表せる値に限ることは、既知差異 D-027 の前提である。 -/
+@[gap "D-027"]
 structure AtrsConfig where
   /-- `atrs.limitDay`（`TicketSharedServiceImpl`） -/
   limitDay : J32

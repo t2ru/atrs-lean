@@ -1353,6 +1353,38 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Gap.D034",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D035",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D036",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D037",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D038",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D039",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D040",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.D041",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Gap.claim_D013",
       "layer": "Abstraction"
     },
@@ -1370,6 +1402,10 @@
     },
     {
       "name": "Abstraction.Gap.claim_D025",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Gap.claim_D037",
       "layer": "Abstraction"
     },
     {
@@ -10248,6 +10284,11 @@
     },
     {
       "type": "gap",
+      "from": "Abstraction.Gap.claim_D037",
+      "to": "D-037"
+    },
+    {
+      "type": "gap",
       "from": "Abstraction.MasterData.need_D027",
       "to": "D-027"
     },
@@ -10258,7 +10299,27 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.AtrsProperties.AtrsConfig",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Config.App.AtrsCodeListConfig.CL_AIRPORT",
+      "to": "D-029"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Config.App.AtrsCodeListConfig.jdbcCodeList",
+      "to": "D-015"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Db.Schema.FlightDb",
+      "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Db.Schema.MasterDb",
       "to": "D-027"
     },
     {
@@ -10283,6 +10344,16 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster",
+      "to": "D-033"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster",
+      "to": "D-034"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Domain.Common.Masterdata.FlightMasterProvider.load",
       "to": "D-015"
     },
@@ -10293,8 +10364,28 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.RouteProvider.getRouteByAirportCd",
+      "to": "D-034"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Domain.Common.Masterdata.RouteProvider.load",
       "to": "D-015"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.RouteProvider.load",
+      "to": "D-036"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.RouteProvider.makeCacheKey",
+      "to": "D-034"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Common.Masterdata.RouteProvider.makeCacheKey",
+      "to": "D-036"
     },
     {
       "type": "gap",
@@ -10343,8 +10434,18 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare",
+      "to": "D-035"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
       "to": "D-002"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
+      "to": "D-030"
     },
     {
       "type": "gap",
@@ -10413,6 +10514,16 @@
     },
     {
       "type": "gap",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
+      "to": "D-035"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
       "to": "D-014"
     },
@@ -10453,6 +10564,26 @@
     },
     {
       "type": "gap",
+      "from": "Spec.Config.Valid",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.BasicFareInput.Pre",
+      "to": "D-035"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.FareInput.Pre",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Fare.TotalFareInput.Pre",
+      "to": "D-035"
+    },
+    {
+      "type": "gap",
       "from": "Spec.Fare.basicFare",
       "to": "D-001"
     },
@@ -10474,6 +10605,11 @@
     {
       "type": "gap",
       "from": "Spec.FlightSearch.FlightNamesHaveText",
+      "to": "D-033"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.FlightSearch.SearchInput.Pre",
       "to": "D-033"
     },
     {
@@ -10533,6 +10669,16 @@
     },
     {
       "type": "gap",
+      "from": "Spec.MasterData.MD8",
+      "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.MasterData.MD8",
+      "to": "D-036"
+    },
+    {
+      "type": "gap",
       "from": "Spec.MasterData.airportNopCode",
       "to": "D-029"
     },
@@ -10543,8 +10689,18 @@
     },
     {
       "type": "gap",
+      "from": "Spec.MasterQuery.Query.Valid",
+      "to": "D-034"
+    },
+    {
+      "type": "gap",
       "from": "Spec.MasterQuery.queryMachine",
       "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Model.Range.maxBasicFare",
+      "to": "D-030"
     },
     {
       "type": "gap",
@@ -10750,6 +10906,46 @@
       "type": "gap_entry",
       "from": "Abstraction.Gap.D033",
       "to": "D-033"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D034",
+      "to": "D-034"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D035",
+      "to": "D-035"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D036",
+      "to": "D-036"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D037",
+      "to": "D-037"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D038",
+      "to": "D-038"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D039",
+      "to": "D-039"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D040",
+      "to": "D-040"
+    },
+    {
+      "type": "gap_entry",
+      "from": "Abstraction.Gap.D041",
+      "to": "D-041"
     },
     {
       "type": "kernel",

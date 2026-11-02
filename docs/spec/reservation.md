@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T23:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 予約（B0/B2）
@@ -24,7 +24,7 @@ generated:
 画面から送られる選択フライトは `SelectFlight = { depDate, flightName, boardingClassCd, fareTypeCd }` の列（往路、復路の順）である。
 これをマスタで解決したものを `Flight`（便マスタ・運賃種別・搭乗クラスの実体を伴う）として扱う。
 
-**[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。
+**[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。便名が空白だけ（U+3000 など）の場合も同じである。[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で例外（500）になる（既知差異 [D-039](abstraction.md#既知差異)）。
 
 出典: `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)`
 
@@ -44,7 +44,7 @@ generated:
 
 1. 往路 `o = flights[0]`: 便マスタが無ければ `InvalidRequest("flightMaster is null")`。`o` の主キーに一致するフライトが `allFlights` に無ければ `InvalidRequest("flight not found")`。
 2. `len(flights) = 2` のとき、復路 `h = flights[1]` に同じ検査を行い、さらに:
-   1. 搭乗間隔: `at(o.departureDate, o.arrivalTime) + reserveIntervalTime 分 > at(h.departureDate, h.departureTime)` なら `Business("e.ar.b2.2001")`。ちょうど間隔分なら可。
+   1. 搭乗間隔: `at(o.departureDate, o.arrivalTime) + reserveIntervalTime 分 > at(h.departureDate, h.departureTime)` なら `Business("e.ar.b2.2001")`。ちょうど間隔分なら可。到着時刻は出発日 0:00 からの時分で、24:00 より後（翌日着）でもよい（[Source] は `HHmm` で読むので、翌日着の便で例外になる。既知差異 [D-031](abstraction.md#既知差異)）。
    2. 逆区間: `o` の区間の出発空港 ≠ `h` の区間の到着空港、または `o` の到着空港 ≠ `h` の出発空港なら `InvalidRequest("homeward route is not outward route reverse")`。
 3. 運賃種別:
    - `len = 1`: `o.fareTypeCd ∉ oneWayFareTypes` なら `InvalidRequest`。
@@ -106,11 +106,11 @@ generated:
 
 ## 予約確定（reserve）
 
-**[Spec=Source]** 1 つのトランザクションとして実行する（[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[ports.md](ports.md#idgenerator)）。
+**[Spec]** 1 つのトランザクションとして実行する（[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md)）。[Source] は手順 2（`validateReservation`）と手順 3 以降（`registerReservation`）を別のトランザクションで行う（モデル外の既知差異 [D-037](abstraction.md#既知差異)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[ports.md](ports.md#idgenerator)）。
 
 1. 予約内容を組み立てる。
 2. `validateReservation`。
-3. `reserveDate = today`、`totalFare = totalFare(flights, reserveFlights[0].passengers)`。
+3. `reserveDate = today`、`totalFare = totalFare(flights, reserveFlights[0].passengers)`。`today` は、ユースケースの初めに 1 回だけ読んだ値である（[Source] は呼ぶたびに読む。既知差異 [D-014](abstraction.md#既知差異)）。
 4. 予約フライトを順に、
    1. `isAvailableFareType(fareType, departureDate, today)`（[flight-search.md](flight-search.md#運賃種別の予約可能判定)）でなければ `Business("e.ar.b2.2008")`。
    2. 主キーでフライトを **排他的に** 取得し（同時実行の予約と直列化される）、`vacantNum < len(passengers)` なら `Business("e.ar.b2.2009")`。
@@ -122,9 +122,9 @@ generated:
 
 **[Source]** の追加の振る舞い:
 
-- 各登録・更新の件数が 1 でなければ `System("e.ar.a0.L9002", [件数, 1])`（[Spec] ではリポジトリ契約により到達不能）。
+- 各登録・更新の件数が 1 でなければ `System("e.ar.a0.L9002", [件数, 1])`（[Spec] ではリポジトリ契約により到達不能。[Spec] の前提の外の振る舞い [D-010](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。
 - 手順 4.2 で主キーのフライトが存在しなければ `NullPointerException`（前提違反）。`validateFlightList` 済みなら到達しない。
-- 採番が循環して既存番号と衝突した場合は主キー違反によるシステムエラー。
+- 採番が循環して既存番号と衝突した場合は主キー違反によるシステムエラー（既知差異 [D-009](abstraction.md#既知差異)）。
 
 ### 不変条件
 

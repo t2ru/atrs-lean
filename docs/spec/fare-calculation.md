@@ -8,7 +8,7 @@ spec_role: informative
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T17:49:17+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 運賃計算
@@ -25,7 +25,7 @@ Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、
 
 ### 事前条件
 
-- `boardingClassOf(boardingClassCd)` が存在する（MD-3）。
+- `boardingClassOf(boardingClassCd)` が存在する（`BasicFareInput.Pre` の連言。MD-3 は区間の空港と便マスタの区間だけを課し、搭乗クラスの存在は含まない）。無ければ [Source] は `NullPointerException`（参考 [D-035](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。
 - [Source]: `routeBasicFare ≥ 0`（`Assert`）。違反時 `PreconditionViolation`。
 
 ### 定義
@@ -49,7 +49,7 @@ basicFare = jd2i( jdmul( jd(j32add(routeBasicFare, extra)),
 
 差異: [D-001](abstraction.md#既知差異)。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`(routeBasicFare + extra) × ratio` が 100 で割り切れ、積算比率の因子 `ratio × 0.01`（double）が安全でない（`ratio/100` を `2^-54` 以上下回る）ときに限る。例えば `routeBasicFare + extra = 100, ratio = 29` で [Spec] は 29、[Source] は `100 × (29 × 0.01)` が `28.999999999999996` になり、切り捨てて 28 となる。`dev_D001` の下でのリファインメントは課題 [ABS-001](abstraction.md#証明課題)、差の条件は ABS-007（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。
 
-抽象機械は `Spec.Fare.basicFareMachine`（`Machine.pure`）である。PRE は、設定とマスタの不変条件、搭乗クラスがマスタに在ること（MD-3）、`routeBasicFare + extraCharge ≤ 10,000,000`（[値域](domain-model.md#値域)）である。
+抽象機械は `Spec.Fare.basicFareMachine`（`Machine.pure`）である。PRE は、設定とマスタの不変条件、搭乗クラスがマスタに在ること、`routeBasicFare + extraCharge ≤ 10,000,000`（[値域](domain-model.md#値域)）である。
 
 ### 例
 
@@ -158,7 +158,7 @@ totalFare       = bdCeilHundredUp( foldl j32add 0 [flightTotal(f) | f ← flight
 
 差異: [D-002](abstraction.md#既知差異)（`fare` 経由）、[D-012](abstraction.md#既知差異)（`b × (childFareRate − r)` が int32 を超えるとき、[Source] の `j32mul` が折り返す）。`discountRate > childFareRate` のときの [Source] の振る舞い（D-003）は、[Spec] の前提 MD-7 の外なので差異ではない（[abstraction.md](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。
 
-抽象機械は `Spec.Fare.totalFareMachine`（`Machine.pure`）である。入力はフライトのキーの列と搭乗者の年齢の列で、合計金額はこの 2 つだけで決まる（`totalFareOfKeys`）。PRE は、設定とマスタの不変条件、予約フライト数 1〜2・搭乗者数 1〜6・年齢 0〜999（[値域](domain-model.md#値域)）、便名が空白でないこと、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること（MD-3）である。
+抽象機械は `Spec.Fare.totalFareMachine`（`Machine.pure`）である。入力はフライトのキーの列と搭乗者の年齢の列で、合計金額はこの 2 つだけで決まる（`totalFareOfKeys`）。PRE は、設定とマスタの不変条件、予約フライト数 1〜2・搭乗者数 1〜6・年齢 0〜999（[値域](domain-model.md#値域)）、便名が空白でないこと、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること（`totalFareOfKeys` が値を持つこと）である。PRE の外での [Source] の前提違反（`Assert`・`NullPointerException`）は、参考 [D-035](abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。
 
 ### 例
 

@@ -6,7 +6,7 @@ tags: [adr, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # スキルの意思決定記録
@@ -39,3 +39,4 @@ generated:
 | 22b4 | [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](22b4-split-okf-and-records-skills.md) | accepted | 2026-11-01 |
 | 89f2 | [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](89f2-layout-check-one-process-per-group.md) | accepted | 2026-11-01 |
 | b187 | [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](b187-proven-csimp-for-evaluating-models.md) | accepted | 2026-11-01 |
+| cb1f | [差異の登録簿の棚卸しの手順を方法の文書に置く](cb1f-gap-inventory-procedure.md) | accepted | 2026-11-01 |

@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:30:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # ATRS での spec-pivot スキルの適用

@@ -129,3 +129,4 @@ Chosen option: "状態の共有 (a)・操作の境界 (a)・差異の登録 (a)"
 * Java の原典実行: 共有ベクタ 47 件が原典と一致した。シードの範囲から予約確認の 76 件を採取した（`conformance/source-model/reservation/origin-run-confirm.json`。結果は成功 56 件、`e.ar.b2.2004` 11 件、`e.ar.b2.2010` 5 件、`e.ar.b2.2007` 4 件）。原典の取消が働くことは、トランザクションの包みを外すと `rs-rt-homeward-short` が失敗することで確かめた。
 * [backlog aedf](../backlog/aedf-reservation-usecase.md)、[reservation.md](../spec/reservation.md)、[ports.md](../spec/ports.md)、[http-contract.md](../spec/http-contract.md#b2-予約)
 * [ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md)（`World` の導入）、[ADR cdb6](cdb6-flight-search-stage2-machines-seed-sql.md)（状態の表と D-027）、[ADR 0b0c](0b0c-flight-search-stage3-abs011.md)（確認待ちの登録の前例）、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)、[ADR 97f9](97f9-persistence-and-transaction-semantics.md)
+* 補足: 上の表の D-009 の拡大と D-031 の R 課題の修正（確認待ち）は、[ADR f786](f786-gap-inventory-and-registry-fixes.md) でプロジェクトオーナーが承認した。

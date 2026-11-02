@@ -266,7 +266,7 @@ namespace Range
 def maxBasicFareWithCharge : Nat := 10000000
 
 /-- 基本運賃（`basicFare` の値）の上限。`maxBasicFareWithCharge × maxMultiplicationRatio / 100`。 -/
-@[spec_doc "docs/spec/domain-model.md#値域"]
+@[spec_doc "docs/spec/domain-model.md#値域", gap "D-030"]
 def maxBasicFare : Nat := 100000000
 
 /-- `PeakTime.multiplicationRatio` の上限。 -/

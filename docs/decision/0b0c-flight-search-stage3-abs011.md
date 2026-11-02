@@ -10,7 +10,7 @@ date: 2026-11-01
 decision-makers: プロジェクトオーナー（計画の承認）。D-033 の登録と D-014 の写しの細分は、計画の後に作業の中で決めた（プロジェクトオーナーの確認待ち。More Information）
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T18:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 空席照会の第 3 段: R 課題 ABS-011 の証明の構成、PRE の改め、D-014・D-032 の具体側の入力、D-033 の登録、トップレベルへの統合
@@ -94,6 +94,7 @@ Chosen option: "PRE (a)・空白の便名 (a)・D-014 (a)・証人 (a)", because
 * プロジェクトオーナーの確認待ちの項目:
   * D-033 の登録（新しい差異の登録はオーナーの決定を要する。計画に無かった）。代わりの案は、MD-8 に「便マスタの便名が空白でない」を足すこと。その場合、ABS-026 の束の PRE も変わる。
   * D-014 の写しを、Clock の読み出しごとに分けたこと（計画の「D-014 には Lean の述語を置かない」を改めた）。
+  * 補足: 上の 2 件は、[ADR f786](f786-gap-inventory-and-registry-fixes.md) でプロジェクトオーナーが承認した。
 * 敵対的レビュー（完了前。独立したエージェント）の指摘と対応:
   * 中: `isAvailableFareType` の Java のロケータと Lean の名前空間が別の機能に属していた → 両方とも Reserve へ移し、理由を決定の表に書いた。
   * 中: トップレベルの束が `searchPreserves.core` で、条件付きの成分を含まないことが文書から読めなかった → `Abstraction.lean` の `preserves`・[spec/abstraction.md](../spec/abstraction.md) に明記した。
