@@ -2773,6 +2773,62 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegisterRun.insertPassenger_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.insertReserveFlight_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.insert_hoare",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.readInteger_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.SeqGe",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqGe_passenger",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqGe_reserve",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqGe_reserveFlight",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqGe_self",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqGe_tables",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.seqOf_some_succ",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.sequencesOf_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.sequencesOf_rollback",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.worldOfDb_rollback",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Select.boardingClass_none",
       "layer": "Abstraction"
     },
