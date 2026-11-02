@@ -2681,6 +2681,50 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Register.flightsOf_append",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.flightsOf_nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.mapM_congr'",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.mem_flatMap_flightsOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.mem_flatMap_passengersOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.nextval_seq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.passengersOf_append",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.passengersOf_nil",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.reservationsOf_append",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.toChar_reserveNo",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Register.toDigits_len",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Select.boardingClass_none",
       "layer": "Abstraction"
     },
@@ -11334,6 +11378,16 @@
       "type": "obligation",
       "from": "Abstraction.Reserve.Port.updateWhere_alpha",
       "to": "ABS-023"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.Register.nextval_seq",
+      "to": "ABS-021"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.Register.toChar_reserveNo",
+      "to": "ABS-021"
     },
     {
       "type": "obligation",
