@@ -129,7 +129,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Insert`: 予約・予約フライト・搭乗者の行の挿入の文（型変換・NOT NULL・主キー・外部キー）が値域内で成功し、行が末尾に足され、その α が [Spec] の記録であること（`insertRow_ok`・`insertReserveFlightRow_ok`・`insertPassengerRow_ok`）
 * `Abstraction.Reserve.Rollback`: トランザクションの取消の後の α（開始時の `World` の採番を進めたもの `advance w a`）と、採番が進んだことを表す `SeqGe`
 * `Abstraction.Reserve.RegSpec`: [Spec] の `register` の採番の分解（搭乗者・予約フライトの記録は、採番の次の値から順に番号を振ったもの）
-* `Abstraction.Reserve.RegisterRun`: 予約・予約フライト・搭乗者 1 件ずつの挿入（採番の文・整数の読み出し・挿入の文）の三つ組と、搭乗者の列の挿入の三つ組（`passengers_hoare`）。例外で終われば障害で、状態の表は採番だけ進んでいる
+* `Abstraction.Reserve.RegisterRun`: 予約・予約フライト・搭乗者 1 件ずつの挿入（採番の文・整数の読み出し・挿入の文）の三つ組と、搭乗者の列・予約フライトの列の挿入の三つ組（`passengers_hoare`・`flights_hoare`。挿入の途中は予約の表の α の定義域に入らないので、表の生の形と採番を不変条件にする）。例外で終われば障害で、状態の表は採番だけ進んでいる
 * `Abstraction.Reserve.ConfirmRun`: 予約確認の 1 歩の対応（`confirm_run`）。具体機械の予約確認の 1 歩は、どの許される並び・障害の位置でも、状態を変えずに出力の値で終わり、その像は [Spec] の予約確認の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002 の失敗と採番の前進 0、前段の改竄は N-004 の詳細の置き換え）の出力である
 * `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）
 

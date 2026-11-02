@@ -2765,6 +2765,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegSpec.rfsFrom_take",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Register.flightsOf_append",
       "layer": "Abstraction"
     },
@@ -2809,6 +2813,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegisterRun.FlightInv",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.RegisterRun.PassCond",
       "layer": "Abstraction"
     },
@@ -2837,6 +2845,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegisterRun.flights_hoare",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.RegisterRun.forall₂_get",
       "layer": "Abstraction"
     },
@@ -2853,7 +2865,19 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.RegisterRun.mem_rfsFrom",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.RegisterRun.passengerOfRow_no",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.passengersOf_new",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.passengersOf_old",
       "layer": "Abstraction"
     },
     {
@@ -2862,6 +2886,10 @@
     },
     {
       "name": "Abstraction.Reserve.RegisterRun.readInteger_ok",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegisterRun.rfOf_passengers",
       "layer": "Abstraction"
     },
     {

@@ -79,4 +79,21 @@ theorem mem_recsFrom : ∀ {n : Nat} {qs : List Passenger} {x : PassengerRecord}
       simp only [List.length_cons]
       omega
 
+theorem rfsFrom_take (ps : List Passenger) (no : ReserveNo) : ∀ (rfn pn : Nat) (ks : List FlightKey) (j : Nat)
+    (k : FlightKey), ks[j]? = some k →
+    rfsFrom ps no rfn pn (ks.take (j + 1)) =
+      rfsFrom ps no rfn pn (ks.take j) ++ [⟨rfn + j, no, k, recsFrom (pn + j * ps.length) ps⟩]
+  | _, _, [], _, _, h => by simp at h
+  | rfn, pn, k' :: ks, 0, k, h => by
+    simp only [List.getElem?_cons_zero, Option.some.injEq] at h
+    subst h
+    simp [rfsFrom]
+  | rfn, pn, k' :: ks, j + 1, k, h => by
+    simp only [List.getElem?_cons_succ] at h
+    simp only [List.take_succ_cons, rfsFrom, rfsFrom_take ps no (rfn + 1) (pn + ps.length) ks j k h,
+      List.cons_append]
+    have e1 : rfn + 1 + j = rfn + (j + 1) := by omega
+    have e2 : pn + ps.length + j * ps.length = pn + (j + 1) * ps.length := by rw [Nat.succ_mul]; omega
+    rw [e1, e2]
+
 end Abstraction.Reserve.RegSpec
