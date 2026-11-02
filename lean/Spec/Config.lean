@@ -50,7 +50,7 @@ def default : Config where
   defaultBoardingClassCd := .N
 
 /-- 設定の不変条件。運賃種別の `discountRate ≤ childFareRate` は `MasterData.Valid`（MD-7）で課す。 -/
-@[spec_doc "docs/spec/configuration.md#不変条件"]
+@[spec_doc "docs/spec/configuration.md#不変条件", gap "D-030"]
 structure Valid (c : Config) : Prop where
   childFareRate_le : c.childFareRate ≤ 100
   adultMinAge_le : c.adultPassengerMinAge ≤ c.representativeMinAge

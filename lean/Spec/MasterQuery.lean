@@ -52,7 +52,7 @@ inductive Query where
 
 /-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。
 便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数"]
+@[spec_doc "docs/spec/master-data.md#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
   | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true

@@ -8,7 +8,7 @@ spec_role: [informative, draft]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:30:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # ドメインモデル
@@ -72,7 +72,7 @@ generated:
 
 適合テストベクタは `conformance/shared/format/`（[conformance.md](conformance.md#操作名)）。
 
-**[Source]**（draft）原典 `DateTimeUtil.toFormatTimeString` は、長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする。`fmtPaymentDate` に当たる `#temporals.format(paymentDate,'MM月dd日(E)')` は要求の `Accept-Language` に従い、英語なら `Wed` などになる（既知差異 [D-019](abstraction.md#既知差異)）。
+**[Source]**（draft）原典 `DateTimeUtil.toFormatTimeString` は、長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする。`fmtPaymentDate` に当たる `#temporals.format(paymentDate,'MM月dd日(E)')` は要求の `Accept-Language` に従い、英語なら `Wed` などになる。予約入力・予約確認・予約失敗の画面の搭乗日（`#temporals.format(departureDate,'MM月dd日(E)')`）も同じ（既知差異 [D-019](abstraction.md#既知差異)）。
 
 ## 列挙
 

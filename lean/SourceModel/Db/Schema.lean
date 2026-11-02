@@ -231,7 +231,9 @@ def rollback (start stop : FlightDb) : FlightDb :=
 
 end FlightDb
 
-/-- マスタの表の内容（各表は行のバッグ）。 -/
+/-- マスタの表の内容（各表は行のバッグ）。列の型の範囲は [Spec] の型より広く、[Spec] の型で表せる内容に限ることは
+既知差異 D-027 の前提である（ADR c108）。 -/
+@[gap "D-027"]
 structure MasterDb where
   airport : LangSemantics.Sql.Query.Bag AirportRow := []
   route : LangSemantics.Sql.Query.Bag RouteRow := []

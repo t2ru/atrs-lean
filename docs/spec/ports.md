@@ -8,7 +8,7 @@ spec_role: [draft, normative]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T10:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # ポート
@@ -40,7 +40,7 @@ generated:
 
 [Spec] の各ユースケースは、初めに 1 回だけ `today()` を読み、その値を使う。[Source] は呼ぶたびに読むので、日付をまたぐ実行で異なりうる（既知差異 [D-014](abstraction.md#既知差異)）。
 
-**規範（実行環境の要件）**: 本番の `Clock` アダプタは、現在時刻を **Asia/Tokyo**（UTC+9、夏時間なし）の暦日・時刻として返す。実行環境の既定のタイムゾーンに依存してはならない（[ADR 9ee4](../decision/9ee4-clock-timezone-and-fixture-base-date.md)）。テストでは任意の固定値を注入してよい。
+**規範（実行環境の要件）**: 本番の `Clock` アダプタは、現在時刻を **Asia/Tokyo**（UTC+9、夏時間なし）の暦日・時刻として返す。実行環境の既定のタイムゾーンに依存してはならない（[ADR 9ee4](../decision/9ee4-clock-timezone-and-fixture-base-date.md)。[Source] は JVM の既定のタイムゾーンで決める。既知差異 [D-023](abstraction.md#既知差異)）。テストでは任意の固定値を注入してよい。
 
 ## FlightRepository
 
@@ -80,7 +80,7 @@ generated:
 | `nextPassengerNo()` | Nat | `sq_passenger_1`（1〜9999999999999, CYCLE） |
 
 - [Spec]: 各操作は呼ぶたびに **未使用** の値を返す（`n`, `n+1`, … と単調増加する実装を参照とする。値の空間は上限を持たない）。
-- [Source]: 最大値の次は 1 に戻る。戻った値が使用済みなら、挿入時の主キー違反でシステムエラー（既知差異 [D-009](abstraction.md#既知差異)）。
+- [Source]: 最大値の次は 1 に戻る。戻った値が使用済みなら、挿入時の主キー違反でシステムエラー。また、予約フライト番号・搭乗者番号は列が `INT`、採番の `selectKey` が `resultType="Integer"` なので、シーケンスの最大値より前の 2,147,483,648 から採番・挿入に失敗する（既知差異 [D-009](abstraction.md#既知差異)）。
 - 採番は失敗したトランザクションでも巻き戻らない（[Spec=Source]。シーケンスの性質）。そのため、各ユースケースの「失敗時は状態が変化しない」は `World.sequences` を除いた成分についての性質である。
 - 適合テストでは、fixture にシード投入後の各シーケンスの次の値（原典では会員 `8`、予約・予約フライト・搭乗者 `1`。`00230_insert_member.sql` は `nextval('sq_member_1')` を 7 回呼ぶ）を持たせ、参照実装（`n`, `n+1`, …）で採番した番号を厳密に比較する（[conformance.md](conformance.md#共有入力fixtures)）。
 
@@ -122,7 +122,7 @@ generated:
 ## トランザクション
 
 **[Spec]** 状態を変更するユースケース（予約確定・会員登録・会員情報変更・ログイン/ログアウト状態更新・レポート生成）は、それぞれ原子的かつ直列化可能に実行されなければならない。この一覧を正とする（[ADR 97f9](../decision/97f9-persistence-and-transaction-semantics.md) の一覧にレポート生成を加えたもの。[ADR 578b](../decision/578b-member-update-in-single-transaction.md)）。
-会員情報変更は、現在パスワードの照合（[member.md](member.md#現在パスワードの照合checkmemberpassword)）も同じトランザクションに含む（[Source] とは異なる。モデル外の既知差異 [D-013](abstraction.md#既知差異)）。
+会員情報変更は、現在パスワードの照合（[member.md](member.md#現在パスワードの照合checkmemberpassword)）も同じトランザクションに含む（[Source] とは異なる。モデル外の既知差異 [D-013](abstraction.md#既知差異)）。予約確定は、予約内容の検査（`validateReservation`）も同じトランザクションに含む（[Source] とは異なる。モデル外の既知差異 [D-037](abstraction.md#既知差異)）。
 移植先は、この性質を満たす限り任意の実装（RDB のトランザクション、単一スレッド、楽観ロック等）を選んでよい。
 - 各モデル（`Spec`・`SourceModel`・`TargetModel`）では、各ユースケースを抽象機械の 1 つの操作として原子的に扱う。
 - 実際の並行実行がどれかの逐次実行と一致することは、モデルの外の要件である。確認は確認課題 SRC-005（[refinement.md](refinement.md)）の決定論的な手段で行い、確かめきれない部分は保証の限界とする（[assurance.md](assurance.md)）。

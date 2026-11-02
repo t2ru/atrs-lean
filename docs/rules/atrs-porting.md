@@ -6,7 +6,7 @@ tags: [rules, porting, atrs]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:30:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # ATRS での spec-pivot スキルの適用
@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/docs/lang/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/docs/lang/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.25`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
+使うスキルの版: `metadata.version` = `0.26`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 

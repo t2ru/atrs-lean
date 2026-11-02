@@ -60,7 +60,7 @@ def getMultiplicationRatio (svc : TicketSharedServiceImpl) (departureDate : JRef
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl.MULTIPLICATION_RATIO_IN_NORMAL_TIME@48440c4bc2152d40",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)@5b0822fe4c6991ac",
   "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateBasicFare(int,BoardingClassCd,LocalDate)@9872678663e9a896",
-  gap "D-001", "D-030"]
+  gap "D-001", "D-030", "D-035"]
 def calculateBasicFare (svc : TicketSharedServiceImpl) (basicFareOfRoute : J32) (boardingClassCd : JRef Spec.Model.BoardingClassCd)
     (depDate : JRef JLocalDate) : JResult J32 := do
   Assert.isTrue (java! basicFareOfRoute >= 0) "basicFareOfRoute must be 0 or higher."
@@ -74,7 +74,7 @@ def calculateBasicFare (svc : TicketSharedServiceImpl) (basicFareOfRoute : J32) 
 
 /-- `calculateFare`: `FareUtil.ceilFare((int) (basicFare * (1 - (discountRate * 0.01))))`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateFare(int,int)@1e12eb714e2bc395",
-  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e", gap "D-002"]
+  "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#calculateFare(int,int)@8088a7f2c9efaf7e", gap "D-002", "D-030"]
 def calculateFare (basicFare discountRate : J32) : JResult J32 := do
   Assert.isTrue (java! basicFare >= 0) "basicFare must be 0 or higher."
   Assert.isTrue (java! discountRate >= 0) "discountRate must be 0 or higher."

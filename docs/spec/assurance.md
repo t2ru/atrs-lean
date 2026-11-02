@@ -8,7 +8,7 @@ spec_role: meta
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T22:30:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 保証の限界
@@ -36,7 +36,7 @@ generated:
 | マスタ・設定を入力として写すこと | SQL の差分実行と Java の原典実行は、上流のシードを投入した DB で実行する（fixture と DB の一致は `Tests.MasterSql`）。原典実行の設定は原典の `atrs.properties` から読む | 実行中にマスタが変わらないこと（不変の入力とみなせること）は前提とする |
 | 「今日」に依存する処理 | 原典実行を JST（`-Duser.timezone=Asia/Tokyo`）で実行し、原典の `dateFactory` を止めた時計（`FixedClockFactory`。`fixed`・`tick` とも決めた時刻）に差し替える。ドメイン層はケースの今日の 10:00、HTTP は 2026-11-03T10:00 | 時計を固定できない操作。JST 以外のタイムゾーンで動く原典（モデル外の差異 [D-023](abstraction.md#既知差異)）。日付をまたいで実行されたユースケース（前提型の差異 [D-014](abstraction.md#既知差異) の前提の外） | 時計を差し替える仕組み |
 | 予約を含む状態の抽象化（暫定） | なし。backlog aedf の第 1 段では、空席照会の α `worldOfDb` を、会員・予約の表とシーケンスが使われていない状態に限っている（[ADR 4c45](../decision/4c45-reservation-stage1-shared-state-and-source-model.md)） | 会員・予約を含む状態での空席照会のリファインメント（トップレベルの主定理の 5 番目の成分）。上流のシード（00230 の会員）を投入した状態も、この α の定義域の外である。aedf の第 3 段で、全表の α に置き換えて解消する | — |
-| 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)） | — |
+| 並行実行 | なし。モデルでは各ユースケースを原子的に扱う | 原典の実際の並行実行とモデルとの一致。原典は READ COMMITTED で動く（モデル外の差異 [D-025](abstraction.md#既知差異)）。会員情報変更は照合と更新が別トランザクションである（[D-013](abstraction.md#既知差異)）。予約確定は検査と登録が別トランザクションである（[D-037](abstraction.md#既知差異)） | — |
 | セッション・Cookie・トランザクショントークン・CSRF（規範節） | HTTP レベルの原典実行で、ステータスと遷移先を照合する | セッション ID の扱い（[D-016](abstraction.md#既知差異)）、Cookie 属性（[D-024](abstraction.md#既知差異)）。トークンの値そのもの | Spring Security |
 | REST の Basic 認証・日付の JSON 表現・エラー画面への遷移（規範節） | HTTP レベルの原典実行。日付の JSON 表現（`"yyyy-MM-dd"`）と、Basic 認証の成功でログイン状態が更新されること（[D-028](abstraction.md#既知差異)）は採取で確かめた（`tools/origin-run/http/postTicket.json`・`login.json`） | ベクタの入力の外。誤った資格情報の 401 とエラー画面への遷移は、まだ採取していない（[a89e](../backlog/a89e-http-contract-adapter.md)） | Spring Security、Jackson |
 | 採番（シーケンス）の一意性・巻き戻らないこと | SQL の差分実行（`nextval` の結果） | 最大値に達した後（前提型の差異 [D-009](abstraction.md#既知差異) の前提の外） | PostgreSQL のシーケンス |
@@ -104,7 +104,7 @@ generated:
 | SPEC-008（標準の環境で、環境に固有の結果を返さない） | 機能ごとの定理 | 定理の文面が SPEC-008 を表していること（検査器は形を確かめない） |
 | 入口でない R 課題の PRE | 入口の R 課題の証明で使われること | 入口から到達しない使われ方での振る舞い |
 | R 課題の合成 | 主定理を具体機械と [Spec] の間で直接に述べる | `Refines.trans` で合成した貼り合わせは `Glue.ofStd` の形にならず、TR-G の対象にならない |
-| 成分の必要性（G9）の範囲 | 差異の ID ごとに、少なくとも 1 つの R 課題についての必要性か被覆の定理 | 次のこと。<br>- 差異を引き継ぐ複合の R 課題（例: ABS-045 の D-001）で、その差異が冗長でないこと（変異テストの「除去」で報告する予定）<br>- 被覆された差異（例: D-012）が、覆う差異を取り消した後も要ること（取り消すときに必要性を示し直す）<br>- 必要性の証人の状態が到達可能であること（INV と `J` を満たせばよい）。αᵢ の未定義だけで必要性が成り立つ場合に、移植元が実際に違うこと<br>- 必要性を示した R 課題が、登録簿でその差異を挙げた R 課題であること<br>- 環境の前提の強さ（必要性は、基底の PRE が全域でないことしか示さない） |
+| 成分の必要性（G9）の範囲 | 差異の ID ごとに、少なくとも 1 つの R 課題についての必要性か被覆の定理 | 次のこと。<br>- 差異を引き継ぐ複合の R 課題（例: ABS-045 の D-001）で、その差異が冗長でないこと（変異テストの「除去」で報告する予定）<br>- 被覆された差異（`.covered`。現在は該当なし）が、覆う差異を取り消した後も要ること（取り消すときに必要性を示し直す）<br>- 必要性の証人の状態が到達可能であること（INV と `J` を満たせばよい）。αᵢ の未定義だけで必要性が成り立つ場合に、移植元が実際に違うこと<br>- 必要性を示した R 課題が、登録簿でその差異を挙げた R 課題であること<br>- 環境の前提の強さ（必要性は、基底の PRE が全域でないことしか示さない） |
 | 検査器 TR-G の構文の判定 | `obligation-check` の正例・違反例（スキルの `assets/lean/Test/Trace/ObligationFixture.lean`） | 違反例に無い迂回（例: `@[reducible]` 以外の展開、未知の定数名の付け替え）。検査器は Lean の式の形を見るだけで、意味を見ない |
 | シードの妥当性（入口の環境の前提の証拠） | 定理 `Spec.EnvPre.seed_env`（生成した `Spec.Seed` に対する検査関数 `validB` のカーネルの評価と、その正しさ `validB_sound`）。生成物が fixture と一致することは CI の `seed_lean.py --check`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md) | fixture（`master_fixture.py` が上流のシードから生成）が DB に投入される値と一致すること。到着時刻 2415 の便マスタ 2 行も `Spec.Seed` に含む（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)） |
 | 前提型の差異の前提が十分条件であること（D-001・D-002） | 差異が起きない十分条件の定理（`Abstraction.Fare.Factors.basicFare_src_eq`・`fare_src_eq`）と、安全でない因子の一覧（`basicFactor_unsafe`・`fareFactor_unsafe`。カーネルの評価）。[ADR e9bc](../decision/e9bc-fare-double-analysis.md) | 前提の外の入力で、差異が実際に起きること。安全でない因子でも差異が起きない入力（開発中の探索では、積算比率 447 と割引率 68・92 で差異が見つからなかった）は、R 課題の適用範囲の外になる |

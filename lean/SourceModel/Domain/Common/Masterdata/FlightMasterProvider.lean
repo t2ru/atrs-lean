@@ -35,7 +35,7 @@ def load (rows : List FlightMasterResult) : JResult FlightMasterProvider := do
 
 /-- `FlightMasterProvider.getFlightMaster`: 便名が `hasText` でなければ `IllegalArgumentException`。無ければ `null`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.masterdata.FlightMasterProvider#getFlightMaster(String)@73525e4cbaf2e787",
-  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3"]
+  "dep:org.springframework:spring-core#Assert.hasText@spring-core-7.0.3", gap "D-033", "D-034"]
 def getFlightMaster (p : FlightMasterProvider) (flightName : String) : JResult (JRef FlightMaster) := do
   Assert.hasText flightName "flightName must have some text."
   return p.flightMasterMap.get flightName

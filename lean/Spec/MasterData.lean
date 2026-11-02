@@ -197,7 +197,7 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
 def airportNopCode : String := "NOP"
 
 /-- MD-8: 値域（`docs/spec/domain-model.md#値域` のうちマスタのもの）。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-029"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-029", "D-030", "D-036"]
 def MD8 (md : MasterData) : Prop :=
   (∀ a ∈ md.airports, a.code.WellFormed ∧ a.code.val ≠ airportNopCode) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧

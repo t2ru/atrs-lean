@@ -3,7 +3,7 @@ name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。スキルの文書・記録の保守と、適用先の文書の検査には、スキル okf-bundle（OKF のバンドル）と work-records（意思決定記録・作業項目）を使う。
 metadata:
-  version: "0.25"
+  version: "0.26"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -122,7 +122,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 ## 手順（要約）
 
 詳細と完了の定義は [process.md](references/docs/guide/process.md)。
-人と AI エージェントの作業の進め方の既定は [workflow.md](references/docs/guide/workflow.md) にある。評価、判断を記録する事項、検査ゲート、未着手の可視化、独立した敵対的レビュー、記録を扱う。プロジェクトは、自分の規約で置き換えてよい。
+人と AI エージェントの作業の進め方の既定は [workflow.md](references/docs/guide/workflow.md) にある。評価、判断を記録する事項、検査ゲート、未着手の可視化、独立した敵対的レビュー、記録を扱う。プロジェクトは、自分の規約で置き換えてよい。差異の登録簿が実装と原典に合っているかを全範囲で確かめる点検は [gap-inventory.md](references/docs/guide/gap-inventory.md) にある。
 
 0. **評価する**（任意）。対象ごとに適用の前提を確かめ、適用する範囲を決める（[workflow.md](references/docs/guide/workflow.md#評価)）。
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。

@@ -8,7 +8,7 @@ spec_role: draft
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T14:27:47+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # 入力検証
@@ -124,7 +124,7 @@ IPV6    = 下記の正規表現（原典 DomainNameUtil.IP_V6_DOMAIN と同一�
 
 画面の表示、`/api/flights` の `messages`、REST の ApiError の `details` はこの順に従う。
 
-**[Source]** 原典の Hibernate Validator は単項目の違反を `HashSet` に集め、Spring はその反復順で `BindingResult` に積む。そのため単項目エラーの並びは、項目をまたいでも決まらない（相関検証のエラーはその後に発生順で積まれる）。[Source] の結果はエラーの多重集合として扱い、[Spec] とは順序を無視して比較する（[abstraction.md](abstraction.md#抽象化関数-α)）。
+**[Source]** 原典の Hibernate Validator は単項目の違反を `HashSet` に集め、Spring はその反復順で `BindingResult` に積む。そのため単項目エラーの並びは、項目をまたいでも決まらない（相関検証のエラーはその後に発生順で積まれる）。[Source] の結果はエラーの多重集合として扱い、[Spec] とは順序を無視して比較する（既知差異 [D-022](abstraction.md#既知差異)、[abstraction.md](abstraction.md#抽象化関数-α)）。
 
 ## 項目名の対応
 
@@ -210,7 +210,7 @@ IPV6    = 下記の正規表現（原典 DomainNameUtil.IP_V6_DOMAIN と同一�
 | `passengers[0..5].membershipNumber` | FixedLength(10), HalfWidthNumber |
 | `flightType`, `selectFlights` | フライト選択と同じ |
 
-搭乗者欄は常に 6 欄（最初の表示は 3 欄、最大 6 欄）。
+搭乗者欄は常に 6 欄（最初の表示は 3 欄、最大 6 欄）。[Source] は `passengerFormList[6]` 以降の欄を送られるとリストを伸ばし（Spring のデータバインダ。上限 256）、搭乗者数の上限を検査しないので、7 名以上の予約を受け付ける（既知差異 [D-038](abstraction.md#既知差異)）。
 
 相関（この順）:
 

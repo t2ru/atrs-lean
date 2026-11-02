@@ -206,7 +206,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
 （搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 0b0c）。
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
-@[spec_doc "docs/spec/flight-search.md#事前条件"]
+@[spec_doc "docs/spec/flight-search.md#事前条件", gap "D-033"]
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
     Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true ∧

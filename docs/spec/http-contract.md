@@ -8,7 +8,7 @@ spec_role: [draft, normative]
 models: [spec, source]
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T19:00:00+09:00
+  at: 2026-11-01T23:30:00+09:00
 ---
 
 # HTTP 契約
@@ -87,7 +87,7 @@ generated:
 | `GET /` | — | 302 `/ticket/search?topForm` |
 | `GET\|POST /auth/login` | — | 画面 `A1/loginForm`（直前のログイン失敗メッセージがあれば表示） |
 | `GET /api/auth/status` | ログイン中か | ログイン中 200（本文無し）、未ログイン 404 |
-| `GET /api/member/available?membershipNumber=n` | 前後の空白（U+0000–U+0020）を除去する。結果が空またはパラメータが無ければ 400（必須パラメータ欠落）。それ以外は `isMember(n)` | 存在 200、無し 404 |
+| `GET /api/member/available?membershipNumber=n` | 前後の空白（U+0000–U+0020）を除去する。結果が空またはパラメータが無ければ 400（必須パラメータ欠落）。それ以外は `isMember(n)`。[Source] は、残りが U+3000 などの Unicode の空白だけなら 200 を返す（既知差異 [D-040](abstraction.md#既知差異)） | 存在 200、無し 404 |
 
 ## B1: 空席照会
 
@@ -108,7 +108,7 @@ generated:
 | クエリ | `flightType`, `depAirportCd`, `arrAirportCd`, `depDate`（yyyy/MM/dd）, `boardingClassCd` |
 | 検証 | FlightSearchInput（[input-validation.md](input-validation.md#空席照会b1)） |
 | 200 | `[FlightVacantInfo]`（[flight-search.md](flight-search.md#出力-flightvacantinfo)）。`fareTypes` は JSON オブジェクトでキー順を保つ |
-| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（解決済みの文言。並びは [input-validation.md](input-validation.md#検証の順序とエラーの並び) の [Spec] の順。[Source] では順序不定） |
+| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（解決済みの文言。並びは [input-validation.md](input-validation.md#検証の順序とエラーの並び) の [Spec] の順。[Source] では順序不定（既知差異 [D-022](abstraction.md#既知差異)）） |
 | 404 | `NotFound`（`e.ar.b1.2003`）。本文同上 |
 
 ## B2: 予約
@@ -118,14 +118,14 @@ generated:
 | リクエスト | トークン | 入力 | 処理 | 結果 |
 | --- | --- | --- | --- | --- |
 | `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[reservation.md](reservation.md#会員情報による入力補完)）、フライト表示。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
-| `POST ?redo` | — | TicketReserveInput | — | 画面 `B2/reserveForm` |
+| `POST ?redo` | — | TicketReserveInput | フライト表示（`GET ?form` と同じ。[Source] の 500 も同じ。[D-020](abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?confirm` | BEGIN | TicketReserveInput | 1. 入力検証: `selectFlights*`・`flightType` のフィールドエラーは 400、その他は `B2/reserveForm` にエラー表示。2. `validateFlightList`: 失敗はすべて 400（`Business` も改竄扱い）。3. `reserveConfirm`: `Business` は `B2/reserveForm` にメッセージ表示 | 画面 `B2/reserveConfirm`（合計金額、フライト表示、入力値を hidden で保持） |
 | `POST`（判別無し） | IN | TicketReserveInput | 1. 入力検証: エラーはすべて 400。2. `validateFlightList`: 失敗は 400。3. `reserve`（[reservation.md](reservation.md#予約確定reserve)） | 成功: フラッシュ `{reserveNo, paymentDate, totalFare}` で 302 `?complete`。`Business`: フラッシュ（メッセージ・フライト表示）で 302 `?fail` |
 | `GET ?complete` | — | — | — | 画面 `B2/reserveComplete`（予約番号、`fmtYen(totalFare)` 円、支払期限 `fmtPaymentDate(paymentDate)`。[domain-model.md](domain-model.md#書式)） |
 | `GET ?fail` | — | — | — | 画面 `B2/reserveFail`（メッセージを HTML として表示、選択した **全** フライト（往路・復路）の表示） |
 | `POST ?backToSearch` | — | ReservationFlightInput | 照会条件を復元（下記） | 302 `/ticket/search?redo` ＋ 照会条件と選択フライトのクエリ |
 
-「照会へ戻る」の照会条件: 選択が空または往路の便マスタが無ければ 400。`flightType = (選択数 = 2 ? RT : OW)`（入力の `flightType` ではなく選択数から決める）、出発/到着空港は往路の区間、`outwardDate` は往路の搭乗日、`homewardDate` は復路の搭乗日（片道なら空文字）、搭乗クラスは往路のもの。
+「照会へ戻る」の照会条件: 選択が空または往路の便マスタが無ければ 400。`flightType = (選択数 = 2 ? RT : OW)`（入力の `flightType` ではなく選択数から決める。[Source] は入力の `flightType` を使い、無ければ 400。選択フライトの項目の欠落は 500。既知差異 [D-020](abstraction.md#既知差異)）、出発/到着空港は往路の区間、`outwardDate` は往路の搭乗日、`homewardDate` は復路の搭乗日（片道なら空文字）、搭乗クラスは往路のもの。
 
 ## C1: 会員登録
 
@@ -203,7 +203,7 @@ generated:
 - `validateFlightList` の失敗は、`InvalidRequest` も `Business`（`e.ar.b2.2001`）もすべて改竄とみなし、`InvalidRequest` として 500 を返す（原典 `w/api/ticket/TicketHelper.validateFlightList` が `BadRequestException` に包む）。
 - **[Spec]** 入力検証の結果にコード `Invalid` のフィールドエラー（選択フライト数・搭乗者数の改竄）があれば、他のエラーにかかわらず `InvalidRequest` として 500 を返す。[Source] では相関検証が無く、同じ入力は後段の `Assert` で 500（`e.ar.fw.9999`）になる。
 
-応答 201: 要求と同じオブジェクトに `reserveNo`, `paymentDate`, `totalFare` を加えたもの。
+応答 201: 要求と同じオブジェクトに `reserveNo`, `paymentDate`, `totalFare` を加えたもの。`passengerResourceList` の各要素には、さらに `"empty": false` を加える（原典の `PassengerResource.isEmpty()` が JSON の欄として出る。Java の原典実行 `tools/origin-run/http/postTicket.json` で確かめた。差異にせず、[Spec] を原典に合わせる）。要求の `Integer` の欄（`repAge`・`age`）は JSON の数値とする（[Source] は数字の文字列も受け付ける。既知差異 [D-041](abstraction.md#既知差異)）。
 
 ### GET /api/v1/ticket/check?reserveNo=x
 
