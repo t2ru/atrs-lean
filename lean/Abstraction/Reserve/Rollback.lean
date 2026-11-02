@@ -1,5 +1,7 @@
 import Abstraction.World.Alpha
 import Spec.UseCase.Reserve
+import LangSemantics.Core.EStateHoare
+import SourceModel.Db.Tx
 
 /-!
 # Abstraction.Reserve.Rollback
@@ -86,5 +88,20 @@ theorem seqGe_tables {w : Spec.Port.World} {fd fd' : FlightDb} (h : SeqGe w fd)
     (h3 : fd'.sqReserveFlight = fd.sqReserveFlight) (h4 : fd'.sqPassenger = fd.sqPassenger) : SeqGe w fd' := by
   obtain ⟨a, ha⟩ := h
   exact ⟨a, by simp only [sequencesOf, h1, h2, h3, h4]; exact ha⟩
+
+open LangSemantics.Core.EStateHoare SourceModel.Db.Tx LangSemantics.Java.Exception in
+/-- トランザクション: 本体が例外で終われば、状態の表を開始時に戻す（シーケンスは終了時のまま）。 -/
+theorem transactional_hoare' {α : Type} {P : St → Prop} {body : DbM α} {Q : α → St → Prop}
+    {E : JThrow → St → Prop} {E' : JThrow → St → Prop}
+    (h : ∀ s0, P s0 → Hoare (fun s => s = s0) body Q (fun e s => E e s ∧
+      ∀ db', db' = FlightDb.rollback s0.db s.db → E' e { s with db := db' })) :
+    Hoare P (transactional body) Q E' := by
+  intro s hs
+  have hb := h s hs s rfl
+  unfold transactional LangSemantics.Sql.Transaction.run
+  revert hb
+  cases body s with
+  | ok a s' => exact id
+  | error e s' => exact fun ⟨_, h'⟩ => h' _ rfl
 
 end Abstraction.Reserve.Rollback

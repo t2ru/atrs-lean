@@ -2505,6 +2505,54 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Keys.decode",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.decode_append",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.decode_digitChar",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.decode_toDigits",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.decode_zeros",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.foldl_zeros",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.reservationOfRow_no",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.reserveFlightOfRow_no",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.reserveNoOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.rows_lt",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.rows_of_world",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.toString_toList",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Member.findOneRows_eq",
       "layer": "Abstraction"
     },
@@ -2926,6 +2974,10 @@
     },
     {
       "name": "Abstraction.Reserve.Rollback.sequencesOf_rollback",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Rollback.transactional_hoare'",
       "layer": "Abstraction"
     },
     {

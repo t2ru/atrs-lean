@@ -127,7 +127,8 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Vacancy`: 空席の確保の三つ組（1 便 `vacancy_hoare`、予約フライトの列 `vacancies_hoare`）と [Spec] の `secureSeats` の対応。排他でのフライトの取得の行の写像、空席数の更新の文の α（`World.updateVacantNum`）、運賃種別の予約可能判定（D-014 の前提で Clock の読み出しは同じ日付）。例外で終われば採番は変わっていない
 * `Abstraction.Reserve.Register`: 採番の文と予約番号の書式（L 課題 ABS-021 を付けた）、予約の表の末尾に新しい予約・予約フライト・搭乗者の行を足したときの α（`reservationsOf_append`）
 * `Abstraction.Reserve.Insert`: 予約・予約フライト・搭乗者の行の挿入の文（型変換・NOT NULL・主キー・外部キー）が値域内で成功し、行が末尾に足され、その α が [Spec] の記録であること（`insertRow_ok`・`insertReserveFlightRow_ok`・`insertPassengerRow_ok`）
-* `Abstraction.Reserve.Rollback`: トランザクションの取消の後の α（開始時の `World` の採番を進めたもの `advance w a`）と、採番が進んだことを表す `SeqGe`
+* `Abstraction.Reserve.Rollback`: トランザクションの取消の後の α（開始時の `World` の採番を進めたもの `advance w a`）、採番が進んだことを表す `SeqGe`、取消を含むトランザクションの三つ組の規則（`transactional_hoare'`）
+* `Abstraction.Reserve.Keys`: 予約番号の書式の単射性（`reserveNoOf_inj`）と、主キーの性質 `KeysOk` から既存の予約・予約フライト・搭乗者の行の番号が採番の次の値より小さいこと（`rows_lt`）
 * `Abstraction.Reserve.RegSpec`: [Spec] の `register` の採番の分解（搭乗者・予約フライトの記録は、採番の次の値から順に番号を振ったもの）
 * `Abstraction.Reserve.RegisterRun`: 予約・予約フライト・搭乗者 1 件ずつの挿入（採番の文・整数の読み出し・挿入の文）の三つ組と、搭乗者の列・予約フライトの列の挿入の三つ組（`passengers_hoare`・`flights_hoare`。挿入の途中は予約の表の α の定義域に入らないので、表の生の形と採番を不変条件にする）。例外で終われば障害で、状態の表は採番だけ進んでいる
 * `Abstraction.Reserve.ConfirmRun`: 予約確認の 1 歩の対応（`confirm_run`）。具体機械の予約確認の 1 歩は、どの許される並び・障害の位置でも、状態を変えずに出力の値で終わり、その像は [Spec] の予約確認の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002 の失敗と採番の前進 0、前段の改竄は N-004 の詳細の置き換え）の出力である
