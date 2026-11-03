@@ -25,7 +25,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 - 翌日着の便（到着時刻 `2415`。シードの NTT523・NTT528）
   - `Spec.MasterData.FlightMaster.arrivalTime` を、翌日着を表せる形に改める。
   - [Source] の `DateTimeParseException` を既知差異 D-031 として登録する。例外は空席照会でなく、予約（B2）の往復便の検査で起きる（W 課題 ABS-131 は [backlog aedf](aedf-reservation-usecase.md) で証明する）。
-  - fixture の `outsideSpec` を外す（[master-data.md](../spec/master-data.md)、[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
+  - fixture の `outsideSpec` を外す（[`Spec.MasterData`](../../lean/Spec/MasterData.lean)、[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 - ベクタ
 
 ## 対象外
@@ -45,7 +45,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 ## 完了条件
 
-- [x] [flight-search.md](../spec/flight-search.md) の例がベクタで通る
+- [x] [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) の例がベクタで通る
 - [x] ABS-010, ABS-011 を証明した（ABS-011 は `Machine.Refines` の形。運賃計算の `dev_D001`・`dev_D002` を引き継ぐ）
 - [x] 空席照会の SPEC-001 を証明した
 - [x] SQL `findByVacantSeatSearchCriteria` の写しを PostgreSQL での差分実行で照合した
@@ -99,7 +99,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 ## 参照
 
-- [flight-search.md](../spec/flight-search.md)
+- [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean)
 - [ADR 5fcb](../decision/5fcb-sql-semantics-for-source-repositories.md)
 - [ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)
 - [ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)

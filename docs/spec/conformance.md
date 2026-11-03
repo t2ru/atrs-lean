@@ -25,24 +25,24 @@ generated:
 
 | 操作 | 仕様 |
 | --- | --- |
-| `fare.basicFare`, `fare.fare`, `fare.totalFare` | [fare-calculation.md](fare-calculation.md) |
-| `master.routeOf`, `master.flightMasterOf`, `master.fareTypeOf`, `master.boardingClassOf`, `master.peakTimeOn`, `master.multiplicationRatioOn`, `master.config`, `master.codeList` | [master-data.md](master-data.md#参照関数)（R 課題 ABS-026 の両側。`Spec.MasterQuery.queryMachine` と `SourceModel.MasterQuery.queryConcrete`） |
-| `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.confirm`, `reservation.reserve` | [reservation.md](reservation.md)（ベクタは `shared/reservation/`。入力は `flights`・`members`・`sequences`（採番の次の値）・`today`・`selectFlights`・`form`（入力検証の後の予約入力）。`reservation.reserve` の期待値は、結果と実行後の状態（フライト・予約・採番の次の値）。エラーは `{"error": {"kind": …}}` で、`business` は `code`・`args` を持つ。`invalidRequest` の詳細は比較しない（N-004）。[Source] の `BadRequestException`・`InvalidFlightException` が `invalidRequest` に当たる。形式の詳細は `lean/Tests/ConformanceReservation.lean`） |
-| `flightSearch.validateDepartureDate`, `flightSearch.isAvailableFareType`, `flightSearch.searchFlight` | [flight-search.md](flight-search.md)（ベクタは `shared/flight-search/`。入力のフライト `flights` は、[Spec] では `World.flights`、[Source] では FLIGHT 表の行。エラーは `{"error": {"kind": "business" \| "notFound", "code": …}}` として期待値に書く。[Source] の `AtrsBusinessException` が `business`、`FlightNotFoundException` が `notFound` に当たる） |
-| `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.reserveConfirm`, `reservation.reserve` | [reservation.md](reservation.md) |
-| `member.toMember`, `member.toMemberUpdateInput`, `member.register`, `member.update` | [member.md](member.md) |
-| `auth.login`, `auth.logout` | [authentication.md](authentication.md) |
-| `report.reportFileName`, `report.renderCsv`, `report.createReport`, `report.listReports` | [reservation-history-report.md](reservation-history-report.md) |
-| `validation.<入力名>` | [input-validation.md](input-validation.md) |
-| `format.fmtDate`, `format.fmtIsoDate`, `format.fmtTime`, `format.fmtTimestamp`, `format.fmtYen`, `format.fmtPaymentDate`, `format.fullYearsBetween`, `format.parseHHmm`, `format.addDays`, `format.daysBetween` | [domain-model.md](domain-model.md) |
-| `http.<リクエスト>` | [http-contract.md](http-contract.md)（HTTP レベルの原典実行の採取結果は、`SourceModel.Http` ができるまで `tools/origin-run/http/` に置く。`modelDef` は `null`。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)） |
+| `fare.basicFare`, `fare.fare`, `fare.totalFare` | [`Spec.Fare`](../../lean/Spec/Fare.lean) |
+| `master.routeOf`, `master.flightMasterOf`, `master.fareTypeOf`, `master.boardingClassOf`, `master.peakTimeOn`, `master.multiplicationRatioOn`, `master.config`, `master.codeList` | [`Spec.MasterData`](../../lean/Spec/MasterData.lean#参照関数)（R 課題 ABS-026 の両側。`Spec.MasterQuery.queryMachine` と `SourceModel.MasterQuery.queryConcrete`） |
+| `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.confirm`, `reservation.reserve` | [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean)（ベクタは `shared/reservation/`。入力は `flights`・`members`・`sequences`（採番の次の値）・`today`・`selectFlights`・`form`（入力検証の後の予約入力）。`reservation.reserve` の期待値は、結果と実行後の状態（フライト・予約・採番の次の値）。エラーは `{"error": {"kind": …}}` で、`business` は `code`・`args` を持つ。`invalidRequest` の詳細は比較しない（N-004）。[Source] の `BadRequestException`・`InvalidFlightException` が `invalidRequest` に当たる。形式の詳細は `lean/Tests/ConformanceReservation.lean`） |
+| `flightSearch.validateDepartureDate`, `flightSearch.isAvailableFareType`, `flightSearch.searchFlight` | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean)（ベクタは `shared/flight-search/`。入力のフライト `flights` は、[Spec] では `World.flights`、[Source] では FLIGHT 表の行。エラーは `{"error": {"kind": "business" \| "notFound", "code": …}}` として期待値に書く。[Source] の `AtrsBusinessException` が `business`、`FlightNotFoundException` が `notFound` に当たる） |
+| `reservation.validateFlightList`, `reservation.validateReservation`, `reservation.reserveConfirm`, `reservation.reserve` | [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) |
+| `member.toMember`, `member.toMemberUpdateInput`, `member.register`, `member.update` | [`Spec.Member`](../../lean/Spec/Member.lean) |
+| `auth.login`, `auth.logout` | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
+| `report.reportFileName`, `report.renderCsv`, `report.createReport`, `report.listReports` | [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) |
+| `validation.<入力名>` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
+| `format.fmtDate`, `format.fmtIsoDate`, `format.fmtTime`, `format.fmtTimestamp`, `format.fmtYen`, `format.fmtPaymentDate`, `format.fullYearsBetween`, `format.parseHHmm`, `format.addDays`, `format.daysBetween` | [`Spec.Model`](../../lean/Spec/Model.lean) |
+| `http.<リクエスト>` | [`Spec.Http`](../../lean/Spec/Http.lean)（HTTP レベルの原典実行の採取結果は、`SourceModel.Http` ができるまで `tools/origin-run/http/` に置く。`modelDef` は `null`。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)） |
 
 ## 共有入力（fixtures）
 
 | ファイル | 内容 |
 | --- | --- |
-| `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[master-data.md](master-data.md#シードデータ) |
-| `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[configuration.md](configuration.md) |
+| `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[`Spec.MasterData`](../../lean/Spec/MasterData.lean#シードデータ) |
+| `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[`Spec.Config`](../../lean/Spec/Config.lean) |
 
 `master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。[Spec] の値域の外の時刻の便マスタには `outsideSpec` が付く（上流のシードには無い。到着時刻 `2415` は [Spec] の値域の内である。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
 
@@ -58,6 +58,6 @@ generated:
   - ピーク時期: 2026 年と 2027 年の 2 年分。
   - フライト: 2026-11-01 から 120 日後の 2027-03-01 まで（両端を含む 121 日分。原典 `00250_insert_flight.sql` の `currentDate <= current_date + 120`）。空席数のパターン `i mod 3` の `i` は 2026-11-01 を 0 とする。
   - ベクタの `today` は各ベクタで明示する。既定は投入日と同じ 2026-11-01。
-- シーケンスの初期値は、シード投入後の原典の値とする。採番を伴う操作のベクタは、参照実装（`n`, `n+1`, …）で採番した番号を期待値として厳密に比較する（[ports.md](ports.md#idgenerator)）。
+- シーケンスの初期値は、シード投入後の原典の値とする。採番を伴う操作のベクタは、参照実装（`n`, `n+1`, …）で採番した番号を期待値として厳密に比較する（[`Spec.Port`](../../lean/Spec/Port.lean#idgenerator)）。
 - `source-model/` のベクタでは、入力検証エラーを多重集合として比較する（[ADR e24e](../decision/e24e-validation-error-ordering.md)）。
 - `source-model/` のベクタの `upstream` は `trace/upstream.json` の release・commit とする。

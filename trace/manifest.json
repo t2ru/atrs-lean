@@ -15915,1207 +15915,1207 @@
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.CodeEntry",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.airport",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.boardingClass",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.contains",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.creditMonth",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.creditType",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.creditYear",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.fareType",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.flightType",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.CodeList.gender",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config",
-      "to": "docs/spec/configuration.md#config"
+      "to": "lean/Spec/Config.lean#config"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.Valid",
-      "to": "docs/spec/configuration.md#不変条件"
+      "to": "lean/Spec/Config.lean#不変条件"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.default",
-      "to": "docs/spec/configuration.md#config"
+      "to": "lean/Spec/Config.lean#config"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.initialPassengersNumber",
-      "to": "docs/spec/configuration.md#画面入力に関する定数"
+      "to": "lean/Spec/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.maxPassengersNumber",
-      "to": "docs/spec/configuration.md#画面入力に関する定数"
+      "to": "lean/Spec/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.telAreaAndLocalMaxLength",
-      "to": "docs/spec/configuration.md#画面入力に関する定数"
+      "to": "lean/Spec/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Config.telAreaAndLocalMinLength",
-      "to": "docs/spec/configuration.md#画面入力に関する定数"
+      "to": "lean/Spec/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.EnvPre.masterConfigOk",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Error.AtrsError",
-      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+      "to": "lean/Spec/Error.lean#分類atrserror"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Error.BusinessError",
-      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+      "to": "lean/Spec/Error.lean#分類atrserror"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Error.NotFoundError",
-      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+      "to": "lean/Spec/Error.lean#分類atrserror"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Error.SystemError",
-      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+      "to": "lean/Spec/Error.lean#分類atrserror"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.BasicFareInput.Pre",
-      "to": "docs/spec/fare-calculation.md#基本運賃"
+      "to": "lean/Spec/Fare.lean#基本運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.FareInput.Pre",
-      "to": "docs/spec/fare-calculation.md#運賃"
+      "to": "lean/Spec/Fare.lean#運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.TotalFareInput.Pre",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.basicFare",
-      "to": "docs/spec/fare-calculation.md#基本運賃"
+      "to": "lean/Spec/Fare.lean#基本運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.basicFareMachine",
-      "to": "docs/spec/fare-calculation.md#基本運賃"
+      "to": "lean/Spec/Fare.lean#基本運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.childNum",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.childNumOfAges",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.fare",
-      "to": "docs/spec/fare-calculation.md#運賃"
+      "to": "lean/Spec/Fare.lean#運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.fareMachine",
-      "to": "docs/spec/fare-calculation.md#運賃"
+      "to": "lean/Spec/Fare.lean#運賃"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.flightTotal",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.flightTotalOfKey",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.routeOfFlight",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.routeOfFlightName",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.totalFare",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.totalFareMachine",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Fare.totalFareOfKeys",
-      "to": "docs/spec/fare-calculation.md#合計金額"
+      "to": "lean/Spec/Fare.lean#合計金額"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.Criteria",
-      "to": "docs/spec/flight-search.md#シグネチャ"
+      "to": "lean/Spec/FlightSearch.lean#シグネチャ"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.FareTypeVacantInfo",
-      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+      "to": "lean/Spec/FlightSearch.lean#出力-flightvacantinfo"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.FlightNamesHaveText",
-      "to": "docs/spec/flight-search.md#事前条件"
+      "to": "lean/Spec/FlightSearch.lean#事前条件"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.FlightVacantInfo",
-      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+      "to": "lean/Spec/FlightSearch.lean#出力-flightvacantinfo"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.SearchInput.Pre",
-      "to": "docs/spec/flight-search.md#事前条件"
+      "to": "lean/Spec/FlightSearch.lean#事前条件"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.availableOnDayNum",
-      "to": "docs/spec/flight-search.md#運賃種別の予約可能判定"
+      "to": "lean/Spec/FlightSearch.lean#運賃種別の予約可能判定"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.candidateLe",
-      "to": "docs/spec/flight-search.md#定義評価順"
+      "to": "lean/Spec/FlightSearch.lean#定義評価順"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.candidateOf",
-      "to": "docs/spec/flight-search.md#定義評価順"
+      "to": "lean/Spec/FlightSearch.lean#定義評価順"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.group",
-      "to": "docs/spec/flight-search.md#定義評価順"
+      "to": "lean/Spec/FlightSearch.lean#定義評価順"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.headerOf",
-      "to": "docs/spec/flight-search.md#出力-flightvacantinfo"
+      "to": "lean/Spec/FlightSearch.lean#出力-flightvacantinfo"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.isAvailableFareType",
-      "to": "docs/spec/flight-search.md#運賃種別の予約可能判定"
+      "to": "lean/Spec/FlightSearch.lean#運賃種別の予約可能判定"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.outOfPeriod",
-      "to": "docs/spec/flight-search.md#照会可能期間"
+      "to": "lean/Spec/FlightSearch.lean#照会可能期間"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.searchFlight",
-      "to": "docs/spec/flight-search.md#searchflight"
+      "to": "lean/Spec/FlightSearch.lean#searchflight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.searchLimitDate",
-      "to": "docs/spec/flight-search.md#照会可能期間"
+      "to": "lean/Spec/FlightSearch.lean#照会可能期間"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.searchMachine",
-      "to": "docs/spec/flight-search.md#searchflight"
+      "to": "lean/Spec/FlightSearch.lean#searchflight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.searchPeriod",
-      "to": "docs/spec/flight-search.md#照会画面の初期値"
+      "to": "lean/Spec/FlightSearch.lean#照会画面の初期値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.FlightSearch.validateDepartureDate",
-      "to": "docs/spec/flight-search.md#照会可能期間"
+      "to": "lean/Spec/FlightSearch.lean#照会可能期間"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData",
-      "to": "docs/spec/master-data.md#masterdata"
+      "to": "lean/Spec/MasterData.lean#masterdata"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.Airport",
-      "to": "docs/spec/master-data.md#airport"
+      "to": "lean/Spec/MasterData.lean#airport"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.BoardingClass",
-      "to": "docs/spec/master-data.md#boardingclass"
+      "to": "lean/Spec/MasterData.lean#boardingclass"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.BoardingClassInfo",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.CreditType",
-      "to": "docs/spec/master-data.md#plane--credittype"
+      "to": "lean/Spec/MasterData.lean#plane--credittype"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.FareType",
-      "to": "docs/spec/master-data.md#faretype"
+      "to": "lean/Spec/MasterData.lean#faretype"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.FareTypeInfo",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.FlightMaster",
-      "to": "docs/spec/master-data.md#flightmaster"
+      "to": "lean/Spec/MasterData.lean#flightmaster"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD1",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD2",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD3",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD4",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD5",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD6",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD7",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.MD8",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.PeakTime",
-      "to": "docs/spec/master-data.md#peaktime"
+      "to": "lean/Spec/MasterData.lean#peaktime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.Plane",
-      "to": "docs/spec/master-data.md#plane--credittype"
+      "to": "lean/Spec/MasterData.lean#plane--credittype"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.Route",
-      "to": "docs/spec/master-data.md#route"
+      "to": "lean/Spec/MasterData.lean#route"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.Valid",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.boardingClassOf",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.fareTypeOf",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.flightMasterOf",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.multiplicationRatioOn",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.peakTimeOn",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterData.routeOf",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.CodeListName",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.Query.Valid",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.codeListOfName",
-      "to": "docs/spec/master-data.md#空港コードリスト画面用"
+      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.queryMachine",
-      "to": "docs/spec/master-data.md#参照関数"
+      "to": "lean/Spec/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.AirportCd",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.AirportCd.ofString?",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.AirportCd.valid",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.BoardingClassCd",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.CreditTypeCd",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.CreditTypeCd.ofString?",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.CreditTypeCd.valid",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FareTypeCd",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Flight",
-      "to": "docs/spec/domain-model.md#flight"
+      "to": "lean/Spec/Model.lean#flight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FlightKey",
-      "to": "docs/spec/domain-model.md#flight"
+      "to": "lean/Spec/Model.lean#flight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FlightName",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FlightName.ofString?",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FlightName.valid",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.FlightType",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Gender",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.LineType",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Member",
-      "to": "docs/spec/domain-model.md#member"
+      "to": "lean/Spec/Model.lean#member"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.MemberLogin",
-      "to": "docs/spec/domain-model.md#memberlogin"
+      "to": "lean/Spec/Model.lean#memberlogin"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.MembershipNumber",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.MembershipNumber.ofString?",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.MembershipNumber.valid",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.OneWayPassenger",
-      "to": "docs/spec/domain-model.md#passenger"
+      "to": "lean/Spec/Model.lean#passenger"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Passenger",
-      "to": "docs/spec/domain-model.md#passenger"
+      "to": "lean/Spec/Model.lean#passenger"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.PasswordHash",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxAge",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxBasicFare",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxBasicFareWithCharge",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxDiscountRate",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxMultiplicationRatio",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxPassengers",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxReserveFlights",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.maxVacantNum",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.minPassengers",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Range.minReserveFlights",
-      "to": "docs/spec/domain-model.md#値域"
+      "to": "lean/Spec/Model.lean#値域"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.Reservation",
-      "to": "docs/spec/domain-model.md#reservation"
+      "to": "lean/Spec/Model.lean#reservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveFlight",
-      "to": "docs/spec/domain-model.md#reserveflight"
+      "to": "lean/Spec/Model.lean#reserveflight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveFlights",
-      "to": "docs/spec/domain-model.md#reserveflight"
+      "to": "lean/Spec/Model.lean#reserveflight"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveNo",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveNo.ofString?",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveNo.val",
-      "to": "docs/spec/domain-model.md#コード値"
+      "to": "lean/Spec/Model.lean#コード値"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.RoundTripPassenger",
-      "to": "docs/spec/domain-model.md#passenger"
+      "to": "lean/Spec/Model.lean#passenger"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.fareTypesFor",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.oneWayFareTypes",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.roundTripFareTypes",
-      "to": "docs/spec/domain-model.md#列挙"
+      "to": "lean/Spec/Model.lean#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.ConflictChoice",
-      "to": "docs/spec/ports.md#トランザクション"
+      "to": "lean/Spec/Port.lean#トランザクション"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.InvalidRequestDetail",
-      "to": "docs/spec/http-contract.md"
+      "to": "lean/Spec/Http.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.IoFailureChoice",
-      "to": "docs/spec/ports.md#トランザクション"
+      "to": "lean/Spec/Port.lean#トランザクション"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.PasswordHashChoice",
-      "to": "docs/spec/ports.md#passwordhasher"
+      "to": "lean/Spec/Port.lean#passwordhasher"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.ReportDeliveryChoice",
-      "to": "docs/spec/ports.md#reportqueue"
+      "to": "lean/Spec/Port.lean#reportqueue"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Nondet.admits",
-      "to": "docs/spec/ports.md#トランザクション"
+      "to": "lean/Spec/Port.lean#トランザクション"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.Sequences",
-      "to": "docs/spec/ports.md#idgenerator"
+      "to": "lean/Spec/Port.lean#idgenerator"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World",
-      "to": "docs/spec/ports.md#world抽象状態"
+      "to": "lean/Spec/Port.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.Inv",
-      "to": "docs/spec/ports.md#world抽象状態"
+      "to": "lean/Spec/Port.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.MemberRefMaster",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.RefMaster",
-      "to": "docs/spec/master-data.md#不変条件spec"
+      "to": "lean/Spec/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.existsFlight",
-      "to": "docs/spec/ports.md#flightrepository"
+      "to": "lean/Spec/Port.lean#flightrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.findAll",
-      "to": "docs/spec/ports.md#flightrepository"
+      "to": "lean/Spec/Port.lean#flightrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.findForUpdate",
-      "to": "docs/spec/ports.md#flightrepository"
+      "to": "lean/Spec/Port.lean#flightrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.findMember",
-      "to": "docs/spec/ports.md#memberrepository"
+      "to": "lean/Spec/Port.lean#memberrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.insertReservation",
-      "to": "docs/spec/ports.md#reservationrepository"
+      "to": "lean/Spec/Port.lean#reservationrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.nextPassengerNo",
-      "to": "docs/spec/ports.md#idgenerator"
+      "to": "lean/Spec/Port.lean#idgenerator"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.nextReserveFlightNo",
-      "to": "docs/spec/ports.md#idgenerator"
+      "to": "lean/Spec/Port.lean#idgenerator"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.nextReserveNo",
-      "to": "docs/spec/ports.md#idgenerator"
+      "to": "lean/Spec/Port.lean#idgenerator"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.reserveNoOf",
-      "to": "docs/spec/ports.md#idgenerator"
+      "to": "lean/Spec/Port.lean#idgenerator"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Port.World.updateVacantNum",
-      "to": "docs/spec/ports.md#flightrepository"
+      "to": "lean/Spec/Port.lean#flightrepository"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.IsValidYmd",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.addDays",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.dayOfWeek",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.daysBetween",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.daysInMonth",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.epochDay",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.fullYearsBetween",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.isLeap",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.ofEpochDay?",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.ofOrdinal?",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.ofYmd?",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Date.ordinal",
-      "to": "docs/spec/domain-model.md#date"
+      "to": "lean/Spec/Prim/Date.lean#date"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtArrTime",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtDate",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtIsoDate",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtPaymentDate",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtTime",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtTimestamp",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Format.fmtYen",
-      "to": "docs/spec/domain-model.md#書式"
+      "to": "lean/Spec/Prim/Format.lean#書式"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Int.ceilDiv",
-      "to": "docs/spec/domain-model.md#基本演算specprim"
+      "to": "lean/Spec/Prim/Int.lean#基本演算specprim"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Int.ceilTo",
-      "to": "docs/spec/domain-model.md#基本演算specprim"
+      "to": "lean/Spec/Prim/Int.lean#基本演算specprim"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Int.floorDiv",
-      "to": "docs/spec/domain-model.md#基本演算specprim"
+      "to": "lean/Spec/Prim/Int.lean#基本演算specprim"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Int.pct",
-      "to": "docs/spec/domain-model.md#基本演算specprim"
+      "to": "lean/Spec/Prim/Int.lean#基本演算specprim"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.fullWidth",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.fullWidthKatakana",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.halfWidth",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.halfWidthNumber",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.hasText",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.isBlank",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.isDigit",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.isHalf",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.isHalfKana",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.isKatakana",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Text.scalarLen",
-      "to": "docs/spec/input-validation.md#文字クラス"
+      "to": "lean/Spec/Prim/Text.lean#文字クラス"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.ArrivalTime",
-      "to": "docs/spec/domain-model.md#arrivaltime"
+      "to": "lean/Spec/Prim/Time.lean#arrivaltime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.ArrivalTime.ofHm?",
-      "to": "docs/spec/domain-model.md#arrivaltime"
+      "to": "lean/Spec/Prim/Time.lean#arrivaltime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.ArrivalTime.parseHHmm",
-      "to": "docs/spec/domain-model.md#arrivaltime"
+      "to": "lean/Spec/Prim/Time.lean#arrivaltime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.ArrivalTime.toMinutes",
-      "to": "docs/spec/domain-model.md#arrivaltime"
+      "to": "lean/Spec/Prim/Time.lean#arrivaltime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.DateTime",
-      "to": "docs/spec/domain-model.md#datetime"
+      "to": "lean/Spec/Prim/Time.lean#datetime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.DateTime.atTime",
-      "to": "docs/spec/domain-model.md#datetime"
+      "to": "lean/Spec/Prim/Time.lean#datetime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.DateTime.toEpochMinutes",
-      "to": "docs/spec/domain-model.md#datetime"
+      "to": "lean/Spec/Prim/Time.lean#datetime"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.HourMinute",
-      "to": "docs/spec/domain-model.md#hourminute"
+      "to": "lean/Spec/Prim/Time.lean#hourminute"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.HourMinute.ofHm?",
-      "to": "docs/spec/domain-model.md#hourminute"
+      "to": "lean/Spec/Prim/Time.lean#hourminute"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.HourMinute.parseHHmm",
-      "to": "docs/spec/domain-model.md#hourminute"
+      "to": "lean/Spec/Prim/Time.lean#hourminute"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Prim.Time.HourMinute.toMinutes",
-      "to": "docs/spec/domain-model.md#hourminute"
+      "to": "lean/Spec/Prim/Time.lean#hourminute"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Seed.World.world",
-      "to": "docs/spec/ports.md#world抽象状態"
+      "to": "lean/Spec/Port.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.Itinerary",
-      "to": "docs/spec/reservation.md#選択フライト"
+      "to": "lean/Spec/Ticket.lean#選択フライト"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.ResolvedFlight",
-      "to": "docs/spec/reservation.md#選択フライト"
+      "to": "lean/Spec/Ticket.lean#選択フライト"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.SelectFlight",
-      "to": "docs/spec/reservation.md#選択フライト"
+      "to": "lean/Spec/Ticket.lean#選択フライト"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.availableMinute",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.checkFareTypes",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.checkFlight",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.checkInterval",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.checkReverse",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.departureMinute",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.resolve",
-      "to": "docs/spec/reservation.md#選択フライト"
+      "to": "lean/Spec/Ticket.lean#選択フライト"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Ticket.validateFlightList",
-      "to": "docs/spec/reservation.md#validateflightlist"
+      "to": "lean/Spec/Ticket.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.Draft",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.DraftPassenger",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.DraftPassenger.toPassenger",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.MInput",
-      "to": "docs/spec/reservation.md"
+      "to": "lean/Spec/UseCase/Reserve.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.MInput.Pre",
-      "to": "docs/spec/reservation.md"
+      "to": "lean/Spec/UseCase/Reserve.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.MOutputValue",
-      "to": "docs/spec/reservation.md"
+      "to": "lean/Spec/UseCase/Reserve.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.Op",
-      "to": "docs/spec/reservation.md"
+      "to": "lean/Spec/UseCase/Reserve.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.PassengerInput",
-      "to": "docs/spec/input-validation.md#予約入力b2"
+      "to": "lean/Spec/InputValidation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.PassengerInput.isEmpty",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.PassengerInput.toPassenger",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.Request",
-      "to": "docs/spec/http-contract.md#b2-予約"
+      "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.Request.Valid",
-      "to": "docs/spec/input-validation.md#予約入力b2"
+      "to": "lean/Spec/InputValidation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.ReserveInput",
-      "to": "docs/spec/input-validation.md#予約入力b2"
+      "to": "lean/Spec/InputValidation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.ReserveResult",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.asInvalidRequest",
-      "to": "docs/spec/http-contract.md#b2-予約"
+      "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.buildDraft",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkFareTypeOf",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkFareTypes",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkPassengerMembers",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkRepAge",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkRepMember",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.checkSelects",
-      "to": "docs/spec/http-contract.md#b2-予約"
+      "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.compactPassengers",
-      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.confirmOp",
-      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.memberNoOf",
-      "to": "docs/spec/reservation.md#予約内容の組み立て"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.register",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.reserve",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.reserveConfirm",
-      "to": "docs/spec/reservation.md#予約確認reserveconfirm"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.reserveMachine",
-      "to": "docs/spec/reservation.md"
+      "to": "lean/Spec/UseCase/Reserve.lean"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.reserveOp",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.reserveStep",
-      "to": "docs/spec/ports.md#トランザクション"
+      "to": "lean/Spec/Port.lean#トランザクション"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.secureSeats",
-      "to": "docs/spec/reservation.md#予約確定reserve"
+      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.validateReservation",
-      "to": "docs/spec/reservation.md#validatereservation"
+      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
     },
     {
       "type": "std_abs",

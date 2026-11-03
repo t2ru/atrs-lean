@@ -1,5 +1,6 @@
 import Trace
 import Machine
+import Spec.Glossary
 import Spec.Prim
 import Spec.Model
 import Spec.Config
@@ -12,6 +13,11 @@ import Spec.Port
 import Spec.FlightSearch
 import Spec.Ticket
 import Spec.UseCase.Reserve
+import Spec.Member
+import Spec.Authentication
+import Spec.ReservationHistoryReport
+import Spec.InputValidation
+import Spec.Http
 import Spec.Nondet
 import Spec.Seed
 import Spec.Seed.Flight
@@ -24,10 +30,13 @@ import Spec.EnvPre
 # Spec
 
 抽象モデル（言語中立・厳密整数の正規仕様。ADR 61bc）。各機能は `Machine.Machine` の抽象機械として与える。
+業務仕様の散文（要約・草案・`Spec` で表せない規範）は、各モジュールのモジュール文書に、定義のすぐ前に書く。
+mdgen と mdbook で HTML の本にする（`mise run book:build`。ADR 68a6）。
 依存してよいもの: `Spec`, `Machine`, `Trace`（spec-pivot の `spec/architecture.md#依存の向き`）。
 
 | モジュール | 内容 |
 | --- | --- |
+| `Spec.Glossary` | 用語集（文書だけのモジュール） |
 | `Spec.Prim` | 基本演算・暦日・時刻・書式・文字クラス |
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
 | `Spec.Seed` | シードのマスタ・設定（`tools/conformance/seed_lean.py` が生成） |
@@ -42,6 +51,9 @@ import Spec.EnvPre
 | `Spec.Error` | エラーの分類 `AtrsError`（いまは `Business`・`NotFound`） |
 | `Spec.Port` | 抽象状態 `World`（いまはフライト）と不変条件、ポートの操作 |
 | `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）と抽象機械 `searchMachine`（SPEC 課題） |
+| `Spec.Ticket`・`Spec.UseCase.Reserve` | 予約（選択フライトの検証・予約内容の組み立て・予約確認・予約確定）と抽象機械 `reserveMachine` |
+| `Spec.Member`・`Spec.Authentication`・`Spec.ReservationHistoryReport` | 会員・認証・予約履歴レポート（形式化前の草案だけを書いた、文書だけのモジュール） |
+| `Spec.InputValidation`・`Spec.Http` | 入力検証と HTTP 契約（草案と、`Spec` で表せない規範。文書だけのモジュール） |
 
 トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`。状態を共有する
 空席照会と予約は `Machine.alt`）である。

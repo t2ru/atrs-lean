@@ -41,12 +41,12 @@ Chosen option: "`Conflict` を、`Spec` の状態変更操作の非決定的な�
 * `AtrsError.Conflict(reason)` を置く。`reason` はログ用で、利用者には示さない（ADR 41f7 から引き継ぐ）。
 * `Spec` の **状態を変更する** 各操作の事後の関係 `step` は、通常の結果に加えて次の結果を許す。
   * 出力は `Conflict`。
-  * 事後の状態は、採番の前進（[spec/ports.md](../spec/ports.md#idgenerator)）を除いて、事前の状態と等しい。
+  * 事後の状態は、採番の前進（[spec/ports.md](../../lean/Spec/Port.lean#idgenerator)）を除いて、事前の状態と等しい。
 * 実行可能な `Spec` の標準の選択 `run` は、`Conflict` を選ばない。そのため、`spec/` のベクタに `Conflict` は現れない。
 * 状態を変更しない操作（照会・計算）は、`Conflict` を返さない。移植先は、照会を直列化の失敗が起きない方法（例: PostgreSQL の `READ ONLY DEFERRABLE`）で実行するか、成功するまで再試行する。
-* 画面では 500 のシステムエラー画面（`e.ar.fw.9999`）とする。REST では 409、`code = "e.ar.fw.9999"` とする（[spec/http-contract.md](../spec/http-contract.md#apierror)）。
+* 画面では 500 のシステムエラー画面（`e.ar.fw.9999`）とする。REST では 409、`code = "e.ar.fw.9999"` とする（[spec/http-contract.md](../../lean/Spec/Http.lean#apierror)）。
 * 原典が同じ状況で返す応答も、この結果で模倣される。原典の応答は、REST では 409、画面ではシステムエラーである。そのため、移植元側の差異にはならない。
-* 直列化可能性そのもの、すなわち並行実行が逐次実行のどれかと一致することは、モデルの外の要件である（[spec/ports.md](../spec/ports.md#トランザクション) の規範節）。各モデルでは、操作は原子的に実行される。実際の並行実行とモデルとの一致は、[spec/assurance.md](../spec/assurance.md) に限界として扱う。
+* 直列化可能性そのもの、すなわち並行実行が逐次実行のどれかと一致することは、モデルの外の要件である（[spec/ports.md](../../lean/Spec/Port.lean#トランザクション) の規範節）。各モデルでは、操作は原子的に実行される。実際の並行実行とモデルとの一致は、[spec/assurance.md](../spec/assurance.md) に限界として扱う。
 
 ### 実行環境の失敗
 
@@ -54,7 +54,7 @@ Chosen option: "`Conflict` を、`Spec` の状態変更操作の非決定的な�
   * ポートの各操作は、通常の結果に加えて `System`（I/O 失敗のコード）を返しうる。
   * そのユースケースは、採番以外の状態を変えない。
   * 実行可能な `Spec` の標準の選択は、この結果を選ばない。
-* 対象の操作とコードは [spec/ports.md](../spec/ports.md) に定める。
+* 対象の操作とコードは [spec/ports.md](../../lean/Spec/Port.lean) に定める。
 
 ### 活性の限界
 

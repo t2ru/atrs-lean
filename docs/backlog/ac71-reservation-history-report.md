@@ -39,5 +39,5 @@ generated:
 
 ## 参照
 
-- [reservation-history-report.md](../spec/reservation-history-report.md)
+- [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean)
 - [ADR ff4d](../decision/ff4d-asynchronous-report-generation.md)

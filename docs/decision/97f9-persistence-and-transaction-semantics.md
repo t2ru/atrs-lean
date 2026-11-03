@@ -45,11 +45,11 @@ sources:
 
 Chosen option: "リポジトリ契約 + ユースケース単位の原子性", because SQL 内の業務ロジックを純粋関数として取り出しつつ、同時実行の保証を技術非依存に表現できるため。
 
-* SQL の絞り込み・並び順は純粋関数として [spec/flight-search.md](../spec/flight-search.md) 等に定義し、リポジトリは「全件を返す」または「キー検索」の単純な契約にする（実装は SQL に押し下げてよい）。
+* SQL の絞り込み・並び順は純粋関数として [spec/flight-search.md](../../lean/Spec/FlightSearch.lean) 等に定義し、リポジトリは「全件を返す」または「キー検索」の単純な契約にする（実装は SQL に押し下げてよい）。
 * 状態を変更するユースケース（予約登録・会員登録・会員更新・ログイン/ログアウト状態更新）は **原子的**（全て反映されるか全く反映されない）かつ **直列化可能** でなければならない。原典の `FOR UPDATE` はこの保証の一実装である。
 * 採番は `IdGenerator` ポートとし、生成値の書式（10 桁ゼロ埋め十進）と一意性を契約にする。循環（CYCLE）後の重複は原典では主キー違反によるシステムエラーとなる。[Spec] では「採番空間を使い切らない」ことを前提とし、[Source] では循環を再現する。
 * 原典の「更新件数が期待と異なれば `SystemException`（`e.ar.a0.L9002`）」は、[Spec] ではリポジトリ契約（キーが存在すれば必ず 1 件更新）により到達不能とし、[Source] ではシステムエラーとして残す。
-* 契約の詳細は [spec/ports.md](../spec/ports.md)。
+* 契約の詳細は [spec/ports.md](../../lean/Spec/Port.lean)。
 * [Source] では原典の SQL 文そのものを `LangSemantics.Sql` 上の式として写し（[ADR 5fcb](5fcb-sql-semantics-for-source-repositories.md)）、[Spec] の純粋関数との一致を `Abstraction` で証明する。
 
 ### Consequences
@@ -81,8 +81,8 @@ Chosen option: "リポジトリ契約 + ユースケース単位の原子性", b
 
 ## More Information
 
-* [spec/ports.md](../spec/ports.md), [ADR f0e4](f0e4-functional-core-with-ports.md)
-* 後続: [ADR 578b](578b-member-update-in-single-transaction.md)（会員情報変更の照合と更新を 1 トランザクションにし、原子性の対象にレポート生成を含める。一覧は [spec/ports.md](../spec/ports.md#トランザクション) を正とする）
+* [spec/ports.md](../../lean/Spec/Port.lean), [ADR f0e4](f0e4-functional-core-with-ports.md)
+* 後続: [ADR 578b](578b-member-update-in-single-transaction.md)（会員情報変更の照合と更新を 1 トランザクションにし、原子性の対象にレポート生成を含める。一覧は [spec/ports.md](../../lean/Spec/Port.lean#トランザクション) を正とする）
 
 [^flight-repo]: atrs-domain/src/main/resources/jp/co/ntt/atrs/domain/repository/flight/FlightRepository.xml `findByVacantSeatSearchCriteria`, `findOneForUpdate`
 * （補足 2026-10-30・訂正）Decision Outcome の「原典の `FOR UPDATE` はこの保証の一実装である」は不正確である。原典は PostgreSQL の既定の分離レベル READ COMMITTED で動き、`FOR UPDATE` は予約での空席行の競合だけを防ぐ。会員情報変更などでは直列化可能でない（既知差異 D-013、モデル外の差異 D-025。[spec/abstraction.md](../spec/abstraction.md#既知差異)）。並行実行とモデルとの一致は [spec/assurance.md](../spec/assurance.md) に限界として扱う。`Conflict` の扱いは [ADR e56e](e56e-conflict-as-spec-nondeterminism.md)。

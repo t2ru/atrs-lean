@@ -30,7 +30,7 @@ generated:
 
 ## 完了条件
 
-- [x] [fare-calculation.md](../spec/fare-calculation.md) の全例がベクタ化され、両モデルで通る
+- [x] [`Spec.Fare`](../../lean/Spec/Fare.lean) の全例がベクタ化され、両モデルで通る
 - [x] ABS-026 を証明し、マスタの Mapper の SQL を PostgreSQL での差分実行で照合した
 - [x] 1430 円・30% の例で [Spec] 1100、[Source] 1000 になる
 - [x] fare-calculation.md の例を、`run` から写さずに期待値を手で書いた検査（拒む例を含む）で [Spec] に照らした（意図から書く例。[ADR 9ac6](../decision/9ac6-vacuity-literature-necessity-and-mutation.md)）
@@ -167,5 +167,5 @@ generated:
 
 ## 参照
 
-- [fare-calculation.md](../spec/fare-calculation.md)
+- [`Spec.Fare`](../../lean/Spec/Fare.lean)
 - [ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)、[ADR c108](../decision/c108-master-data-source-model-and-spec-fixes.md)、[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)

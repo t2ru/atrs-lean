@@ -107,7 +107,7 @@ def sample : MasterData where
 #guard (sample.routeOf "HND" "HND").isNone
 #guard CodeList.contains (CodeList.airport sample) "HND" && !CodeList.contains (CodeList.airport sample) "NOP"
 
-/-! ### 運賃計算の意図から書く例（`docs/spec/fare-calculation.md` の例の表。ADR 9ac6 の採用 C）
+/-! ### 運賃計算の意図から書く例（`lean/Spec/Fare.lean` の例の表。ADR 9ac6 の採用 C）
 
 期待値は表から手で書いたもので、`run`・ベクタから写していない。拒む例（[Source] の値・丸め前の値・マスタに無い入力）を含む。 -/
 

@@ -21,7 +21,7 @@ generated:
 ## 範囲
 
 - `Spec.Nondet`: [Spec の非決定性](../spec/abstraction.md#spec-の非決定性n-nnn) N-001〜N-005 の選択の型（`@[nondet]`）と、環境の選択の標準値
-- 入口の環境の前提: マスタ・設定の妥当性（`Spec.MasterData.Valid`、`Spec.Config` の妥当性）を、入力の成分だけで書いた決定可能な述語（`@[env_pre]`）と、その両向きの例（`Nontrivial`）。入力の値域（[domain-model.md](../spec/domain-model.md#値域)）の述語は、入口の機械の入力の型に合わせて各機能の backlog（[a89e](a89e-http-contract-adapter.md)・[ac71](ac71-reservation-history-report.md)）で置く（プロジェクトオーナーの決定。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
+- 入口の環境の前提: マスタ・設定の妥当性（`Spec.MasterData.Valid`、`Spec.Config` の妥当性）を、入力の成分だけで書いた決定可能な述語（`@[env_pre]`）と、その両向きの例（`Nontrivial`）。入力の値域（[`Spec.Model`](../../lean/Spec/Model.lean#値域)）の述語は、入口の機械の入力の型に合わせて各機能の backlog（[a89e](a89e-http-contract-adapter.md)・[ac71](ac71-reservation-history-report.md)）で置く（プロジェクトオーナーの決定。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 - シードのマスタ・設定が環境の前提を満たすことの証明（`decide` で証明できない場合は、真偽値の関数とその正しさの定理で示す）
 
 ## 対象外
@@ -40,4 +40,4 @@ generated:
 
 - [ADR 70eb](../decision/70eb-refinement-non-vacuity-obligations.md)
 - [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)
-- [master-data.md](../spec/master-data.md)
+- [`Spec.MasterData`](../../lean/Spec/MasterData.lean)

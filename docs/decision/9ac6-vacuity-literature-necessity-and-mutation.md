@@ -148,7 +148,7 @@ R 課題で使う差異の ID ごとに、**その差異を外した R 課題の
 
 ### C. 意図から書く例（Spec-Testing Proofs）
 
-仕様文書の規範節に書いた具体例（例: [fare-calculation.md](../spec/fare-calculation.md) の D-002 の 1430 円・30%）は、`run` から生成したベクタとは別に、期待値を手で書いた検査で `Spec` に照らす。
+仕様文書の規範節に書いた具体例（例: [`Spec.Fare`](../../lean/Spec/Fare.lean) の D-002 の 1430 円・30%）は、`run` から生成したベクタとは別に、期待値を手で書いた検査で `Spec` に照らす。
 
 * 形は `#guard` か定理とする。
 * 許す例（Usefulness・Provability）に加えて、拒む例（Correctness。`¬ step s i s' o`、PRE の外）も書く。

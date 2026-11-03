@@ -21,7 +21,7 @@ generated:
 
 1. 運賃計算の [Source] ベクタが Java の原典実行と一致する（[ADR e9bc](e9bc-fare-double-analysis.md) で bbcc から移した）
 2. 空席照会の [Source] ベクタが Java の原典実行と一致する（[ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md) で 0be7 から移した）
-3. [http-contract.md](../spec/http-contract.md#rest-apiapiv1)（REST の日付の JSON 表現）と [authentication.md](../spec/authentication.md#ログインlogin)（ログイン時の状態更新。D-028 は未確定）の TODO(spec) を解消する
+3. [`Spec.Http`](../../lean/Spec/Http.lean#rest-apiapiv1)（REST の日付の JSON 表現）と [`Spec.Authentication`](../../lean/Spec/Authentication.lean#ログインlogin)（ログイン時の状態更新。D-028 は未確定）の TODO(spec) を解消する
 4. HTTP レベルのハーネスで、Spring を起動した原典に要求を送り、応答をベクタの形で採取できる
 5. 対象外とした操作とベクタの範囲を [assurance.md](../spec/assurance.md) に書く
 

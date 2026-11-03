@@ -47,14 +47,14 @@ Chosen option: "[Spec] はスカラ値単位、[Source] は UTF-16 単位", beca
 
 * 文字列は Unicode スカラ値（U+0000–U+D7FF, U+E000–U+10FFFF）の列とする。
 * `scalarLen(s)`: スカラ値の個数（[Spec]）。`utf16Len(s)`: U+10000 以上を 2、それ以外を 1 として合計（[Source]）。
-* 文字クラスは閉区間の集合で定義する（[spec/input-validation.md](../spec/input-validation.md)）。
+* 文字クラスは閉区間の集合で定義する（[spec/input-validation.md](../../lean/Spec/InputValidation.lean)）。
   * `HalfWidthChar = [U+0020, U+007E]`
   * `HalfWidthKanaChar = [U+FF61, U+FF9F]`
   * `FullWidthChar = 全スカラ値 − HalfWidthChar − HalfWidthKanaChar`（制御文字・補助文字も含む。原典どおり）
   * `KatakanaChar = [U+30A0, U+30FF]`
   * `DigitChar = [U+0030, U+0039]`
 * 差異: 補助文字（例: U+20BB7 「𠮷」）を含む全角入力では、[Spec] と [Source] で長さ判定が異なりうる。これを既知差異として [spec/abstraction.md](../spec/abstraction.md) に登録し、「補助文字を含まない文字列では `scalarLen = utf16Len`」を証明義務とする。
-* 入力の前処理（原典 `StringTrimmerEditor(true)`: 前後の空白除去、空文字は null）も手順として仕様化する。「空白」の定義は Java の `String.trim()` に合わせ U+0000–U+0020 とする（[spec/input-validation.md](../spec/input-validation.md)）。
+* 入力の前処理（原典 `StringTrimmerEditor(true)`: 前後の空白除去、空文字は null）も手順として仕様化する。「空白」の定義は Java の `String.trim()` に合わせ U+0000–U+0020 とする（[spec/input-validation.md](../../lean/Spec/InputValidation.lean)）。
 
 ### Consequences
 
@@ -85,4 +85,4 @@ Chosen option: "[Spec] はスカラ値単位、[Source] は UTF-16 単位", beca
 
 ## More Information
 
-* [spec/input-validation.md](../spec/input-validation.md)
+* [spec/input-validation.md](../../lean/Spec/InputValidation.lean)

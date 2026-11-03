@@ -40,7 +40,7 @@ def providers : Option Providers := (load (standardOrder db)).toOption
 #guard (providers.map fun p => match toFlightList (SourceModel.FareQuery.ticketHelper p) [form none] with
   | .error (.illegalArgument _) => true | _ => false) == some true
 
--- 合計金額（fare-calculation.md の例: 大人 2 名・小児 1 名で 53,600 円）
+-- 合計金額（Spec.Fare の例: 大人 2 名・小児 1 名で 53,600 円）
 def passengers : List (JRef Passenger) := [30, 28, 5].map fun a => some { age := some (J32.ofInt a) }
 #guard ((runTotalFare ⟨db, SourceModel.AtrsProperties.upstreamConfig, [form (some "NTT001")], passengers⟩
   (standardOrder db)).toOption.map (·.val)) == some 53600

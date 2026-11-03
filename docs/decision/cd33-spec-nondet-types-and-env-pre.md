@@ -73,4 +73,4 @@ Chosen option: "下表のとおり決める", because 理由は次の 2 つで�
 ## More Information
 
 * [ADR 70eb](70eb-refinement-non-vacuity-obligations.md)、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)、[ADR 90f5](90f5-report-queue-at-least-once-delivery.md)、[ADR 2d1f](2d1f-password-hashing-port.md)
-* [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)、[ports.md](../spec/ports.md)
+* [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)、[`Spec.Port`](../../lean/Spec/Port.lean)

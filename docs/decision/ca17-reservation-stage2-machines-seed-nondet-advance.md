@@ -23,7 +23,7 @@ generated:
 
 1. 予約確認と予約確定を、1 つの機械にするか、2 つの機械にするか。
 2. `Conflict`・I/O 失敗のとき、[Spec] の状態がどう変わるか。
-   - [ports.md](../spec/ports.md#idgenerator) と [ADR e56e](e56e-conflict-as-spec-nondeterminism.md) は、「採番以外の状態は変わらない」「採番は失敗したトランザクションでも巻き戻らない」と定める。
+   - [`Spec.Port`](../../lean/Spec/Port.lean#idgenerator) と [ADR e56e](e56e-conflict-as-spec-nondeterminism.md) は、「採番以外の状態は変わらない」「採番は失敗したトランザクションでも巻き戻らない」と定める。
    - [Source] では、失敗するまでに `nextval` が呼ばれた回数だけ採番が進む。
    - ところが Lean の選択の型 `ConflictChoice`・`IoFailureChoice` は `none | conflict` で、進んだ数を表せなかった。
 3. 具体機械で、どの例外を出力の値にするか。

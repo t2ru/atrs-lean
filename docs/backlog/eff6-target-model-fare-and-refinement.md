@@ -35,4 +35,4 @@ generated:
 ## 参照
 
 - [refinement.md](../spec/refinement.md)
-- [fare-calculation.md](../spec/fare-calculation.md)
+- [`Spec.Fare`](../../lean/Spec/Fare.lean)

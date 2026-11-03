@@ -1,7 +1,7 @@
 {
   "operation": "flightSearch.searchFlight",
   "modelDef": "SourceModel.FlightSearchQuery.runSearchFlight",
-  "specRef": "docs/spec/flight-search.md#searchflight",
+  "specRef": "lean/Spec/FlightSearch.lean#searchflight",
   "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力の flights は、シードの FLIGHT（00250 を投入日 2026-11-01 で展開）のうち、搭乗日・区間の便の行（両搭乗クラス）。区間 × 搭乗クラス × 片道・往復（搭乗日 2026-11-11）と、照会可能期間の境界（区間 1）",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

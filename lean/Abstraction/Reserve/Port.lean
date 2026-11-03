@@ -8,7 +8,7 @@ import SourceModel.Domain.Repository.Reservation.ReservationRepository
 # Abstraction.Reserve.Port
 
 L 課題 ABS-023 の補題: 予約が使うリポジトリの文（`LangSemantics.Sql` で写した SQL）の結果を、α `worldOfDb` の像の
-`World` のポートの操作（`docs/spec/ports.md`）で表す（backlog aedf の第 3 段）。
+`World` のポートの操作（`lean/Spec/Port.lean`）で表す（backlog aedf の第 3 段）。
 
 - FLIGHT: 主キーの条件 `keyCond`、`exists`・`findOneForUpdate`・`update` の行
 -/

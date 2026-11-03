@@ -6,7 +6,7 @@ tags: [adr, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:20:00+09:00
+  at: 2026-11-03T12:00:00+09:00
 ---
 
 # スキルの意思決定記録
@@ -17,3 +17,4 @@ generated:
 
 | ID | 題名 | decision_status | 日付 |
 | --- | --- | --- | --- |
+| [75c9](75c9-check-links-in-lean-module-docs.md) | Lean のモジュール文書のリンクと、.lean の見出しアンカーを検査する | accepted | 2026-11-03 |

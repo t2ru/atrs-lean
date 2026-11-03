@@ -1,7 +1,7 @@
 {
   "operation": "reservation.confirm",
   "modelDef": "SourceModel.ReserveQuery.runConfirm",
-  "specRef": "docs/spec/reservation.md#予約確認reserveconfirm",
+  "specRef": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm",
   "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力の flights は、選択フライトのシードの FLIGHT の行（00250 を投入日 2026-11-01 で展開）。今日は投入日。区間 1 の代表便（シードにある便のうち便名の順で最初のもの。搭乗日 2026-11-11）の搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便の 2 日後）× 搭乗者の型のすべてと、ほかの区間（シードに便のあるもの）の代表便（搭乗日 2026-12-26）の搭乗クラス・運賃種別・搭乗者の型の巡回",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

@@ -124,11 +124,11 @@ generated:
 
 | 規範節 | 移植元側の行 | 移植先側の行 |
 | --- | --- | --- |
-| [トランザクション](ports.md#トランザクション) | 並行実行 | 並行実行 |
-| [ReportStore の `publish` の原子性](ports.md#reportstore)・[ReportQueue の配信保証](ports.md#reportqueue)（プロセスの異常終了に対するもの） | ReportStore・ReportQueue | ファイル・時計のアダプタ |
-| [Clock のタイムゾーン](ports.md#clock) | 「今日」に依存する処理 | ファイル・時計のアダプタ |
-| [セッション](http-contract.md#セッション)・CSRF・トランザクショントークン | セッション・Cookie・トランザクショントークン・CSRF | HTTP の規範節 |
-| REST の Basic 認証・日付の JSON 表現・エラー画面（[http-contract.md](http-contract.md)） | REST の Basic 認証・日付の JSON 表現・エラー画面への遷移 | HTTP の規範節 |
+| [トランザクション](../../lean/Spec/Port.lean#トランザクション) | 並行実行 | 並行実行 |
+| [ReportStore の `publish` の原子性](../../lean/Spec/Port.lean#reportstore)・[ReportQueue の配信保証](../../lean/Spec/Port.lean#reportqueue)（プロセスの異常終了に対するもの） | ReportStore・ReportQueue | ファイル・時計のアダプタ |
+| [Clock のタイムゾーン](../../lean/Spec/Port.lean#clock) | 「今日」に依存する処理 | ファイル・時計のアダプタ |
+| [セッション](../../lean/Spec/Http.lean#セッション)・CSRF・トランザクショントークン | セッション・Cookie・トランザクショントークン・CSRF | HTTP の規範節 |
+| REST の Basic 認証・日付の JSON 表現・エラー画面（[`Spec.Http`](../../lean/Spec/Http.lean)） | REST の Basic 認証・日付の JSON 表現・エラー画面への遷移 | HTTP の規範節 |
 | パスワードハッシュの互換（[ADR 2d1f](../decision/2d1f-password-hashing-port.md)） | パスワードの照合 | パスワードの照合 |
 
 ## 付録: 範囲の詳細（記入待ち）

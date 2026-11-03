@@ -132,13 +132,14 @@ structure EnvPreId where
   wf : EnvPreId.valid val = true := by decide
   deriving DecidableEq, Repr
 
-/-- 文字の列が `.md` で終わり、その前が空でないか。 -/
+/-- 文字の列が文書の拡張子（`.md`、または Lean のモジュール文書の `.lean`）で終わり、その前が空でないか。 -/
 def endsWithMd (cs : List Char) : Bool :=
   match cs.reverse with
   | 'd' :: 'm' :: '.' :: _ :: _ => true
+  | 'n' :: 'a' :: 'e' :: 'l' :: '.' :: _ :: _ => true
   | _ => false
 
-/-- 文書のパス（`.md` で終わる）と、任意のアンカー（`#` の後。空でない）の形か。 -/
+/-- 文書のパス（`.md` か `.lean` で終わる）と、任意のアンカー（`#` の後。空でない）の形か。 -/
 def DocAnchor.valid (s : String) : Bool :=
   let cs := s.toList
   let path := cs.takeWhile (· != '#')
@@ -146,7 +147,7 @@ def DocAnchor.valid (s : String) : Bool :=
   | [] => endsWithMd path
   | _ :: anchor => endsWithMd path && !anchor.isEmpty && !anchor.contains '#'
 
-/-- 文書の節（`<path>.md` か `<path>.md#<anchor>`）。 -/
+/-- 文書の節（`<path>.md`・`<path>.lean` か、その後に `#<anchor>`。`.lean` は Lean のモジュール文書の見出し）。 -/
 structure DocAnchor where
   val : String
   wf : DocAnchor.valid val = true := by decide
@@ -193,7 +194,7 @@ instance : OfString? NondetId := ⟨"N-NNN", fun s => if h : NondetId.valid s = 
 instance : OfString? EnvPreId :=
   ⟨"an upper-case ID with an optional number (MD-1, CFG)", fun s => if h : EnvPreId.valid s = true then some ⟨s, h⟩ else none⟩
 instance : OfString? DocAnchor :=
-  ⟨"<path>.md or <path>.md#<anchor>", fun s => if h : DocAnchor.valid s = true then some ⟨s, h⟩ else none⟩
+  ⟨"<path>.md / <path>.lean, optionally #<anchor>", fun s => if h : DocAnchor.valid s = true then some ⟨s, h⟩ else none⟩
 instance : OfString? Locator :=
   ⟨"<scheme>:<locator>@<pin>", fun s => if h : Locator.valid s = true then some ⟨s, h⟩ else none⟩
 

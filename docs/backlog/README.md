@@ -6,7 +6,7 @@ tags: [backlog, index]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T23:30:00+09:00
+  at: 2026-11-03T12:00:00+09:00
 ---
 
 # バックログ
@@ -58,6 +58,7 @@ generated:
 | 7d08 | [検査の層を分け、長い段を関係する変更があったときだけ実行する](7d08-change-scoped-checks.md) | done | — |
 | 8d24 | [Spec の型を、不正な状態を表現できない型にする](8d24-misu-spec-types.md) | done | [d3fd](../../.agents/skills/spec-pivot/references/docs/backlog/d3fd-misu-skill-types.md) |
 | ceb8 | [差異の候補を HTTP レベルの原典実行で確かめる](ceb8-origin-run-checks-for-gap-candidates.md) | todo | [f18c](f18c-java-oracle-harness.md) |
+| c89a | [業務仕様を Spec のモジュール文書へ移し、HTML の本を作る](c89a-business-spec-in-lean-module-docs.md) | done | — |
 
 ## 推奨する着手順
 

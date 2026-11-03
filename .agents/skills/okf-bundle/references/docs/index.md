@@ -9,6 +9,7 @@ okf_version: "0.2"
 # Decisions
 
 * [スキルの意思決定記録](decision/README.md) - スキル okf-bundle の意思決定記録（MADR 4.0）の索引。
+* [Lean のモジュール文書のリンクと、.lean の見出しアンカーを検査する](decision/75c9-check-links-in-lean-module-docs.md) - okf_check.py が、設定 links.lean_roots の Lean のファイルについて、mdgen が Markdown の地の文にする部分（列 0 から始まる /-! -/ と /- -/）を文書として読み、その中のリンクを L1・L2 で検査する。.lean を指すリンクの見出しアンカーも、同じ地の文の見出しから作って検査する。
 
 # Backlog
 

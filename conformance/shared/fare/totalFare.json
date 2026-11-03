@@ -4,7 +4,7 @@
     "Spec.Fare.totalFare",
     "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare"
   ],
-  "specRef": "docs/spec/fare-calculation.md#合計金額",
+  "specRef": "lean/Spec/Fare.lean#合計金額",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

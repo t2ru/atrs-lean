@@ -42,7 +42,7 @@ Chosen option: "Markdown 表による状態機械 + JSON 形状表", because 画
 
 * 画面遷移: 各リクエストを `(メソッド, パス, 判別パラメータ)` で識別し、入力（フォーム項目）、事前条件（認証・トークン）、呼び出すユースケース、成功時・各エラー時の遷移（表示する画面 ID またはリダイレクト先とステータス）を表にする。
 * 画面は「画面 ID と表示に必要なデータ（ビューモデル）」として定義し、HTML の構造は定義しない。
-* REST API: パス・メソッド・クエリ/本文の JSON 形状・応答の JSON 形状・ステータスコード・エラー本文を表にする。日付の JSON 表現は [spec/http-contract.md](../spec/http-contract.md) で固定する。
+* REST API: パス・メソッド・クエリ/本文の JSON 形状・応答の JSON 形状・ステータスコード・エラー本文を表にする。日付の JSON 表現は [spec/http-contract.md](../../lean/Spec/Http.lean) で固定する。
 * トランザクショントークン・CSRF は「一度だけ有効な不透明トークンの検証」という契約として記述し、実装方式は規定しない。
 * 原典の不具合（例: `POST /api/v1/ticket` で相関検証が適用されない）は [Source] として記録し、[Spec] では相関検証を適用する（差異として [spec/abstraction.md](../spec/abstraction.md) に登録）。
 
@@ -74,4 +74,4 @@ Chosen option: "Markdown 表による状態機械 + JSON 形状表", because 画
 
 ## More Information
 
-* [spec/http-contract.md](../spec/http-contract.md)
+* [spec/http-contract.md](../../lean/Spec/Http.lean)

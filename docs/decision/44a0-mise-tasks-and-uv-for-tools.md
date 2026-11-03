@@ -77,6 +77,7 @@ Chosen option: "mise のタスクに分け、mise が uv を入れ、Python は 
 
 ## More Information
 
+* 補足（2026-11-03）: mise が管理する道具に mdbook を足した（[ADR 68a6](68a6-business-spec-in-lean-module-docs-and-book.md)。仕様の本）。
 * スキルの側: [スキルの ADR 8cb7](../../.agents/skills/spec-pivot/references/docs/decision/8cb7-run-python-tools-with-uv.md)
 * 置き換えた一括検査を導入した記録: [backlog be49](../backlog/be49-lean-project-scaffold.md)
 * 規約: [version-control.md](../rules/version-control.md#コミット前の確認)、[atrs-porting.md](../rules/atrs-porting.md)

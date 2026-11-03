@@ -104,6 +104,10 @@
       "docs",
       ".agents"
     ],
+    "lean_roots": [
+      "lean/Spec.lean",
+      "lean/Spec"
+    ],
     "absolute": false
   },
   "skip": [

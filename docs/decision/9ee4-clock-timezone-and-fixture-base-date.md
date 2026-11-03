@@ -36,7 +36,7 @@ generated:
 
 Chosen option: "本番は Asia/Tokyo、fixture の投入日は 2026-11-01", because 国内線の業務日付は日本時間で決まり、投入日を 11 月 1 日にすると フライトが年をまたぎ（2026-11-01〜2027-03-01。原典は投入日から 120 日後までの 121 日分を作る）、ピーク時期（12/19〜1/5 など）も含むため。
 
-* 本番の `Clock` アダプタは、現在時刻を Asia/Tokyo（UTC+9、夏時間なし）の暦日と時刻に変換して返す。これは実行環境に課す要件であり、[spec/ports.md](../spec/ports.md#clock) の規範節に書く。
+* 本番の `Clock` アダプタは、現在時刻を Asia/Tokyo（UTC+9、夏時間なし）の暦日と時刻に変換して返す。これは実行環境に課す要件であり、[spec/ports.md](../../lean/Spec/Port.lean#clock) の規範節に書く。
 * fixture の投入日は `2026-11-01`、投入年 `Y = 2026` とする。ピーク時期は 2026 年と 2027 年の 2 年分、フライトは投入日から 120 日後（2027-03-01）までの両端を含む 121 日分とし、空席数のパターンの起点 `i = 0` を投入日とする（[spec/conformance.md](../spec/conformance.md)）。
 * 適合テストベクタの `today` は、各ベクタで明示する。
 
@@ -70,4 +70,4 @@ Chosen option: "本番は Asia/Tokyo、fixture の投入日は 2026-11-01", beca
 ## More Information
 
 * [ADR 6eb2](6eb2-date-and-time-model.md) の補足である（決定内容は変えない）
-* [spec/ports.md](../spec/ports.md), [spec/conformance.md](../spec/conformance.md), [spec/master-data.md](../spec/master-data.md#シードデータ)
+* [spec/ports.md](../../lean/Spec/Port.lean), [spec/conformance.md](../spec/conformance.md), [spec/master-data.md](../../lean/Spec/MasterData.lean#シードデータ)

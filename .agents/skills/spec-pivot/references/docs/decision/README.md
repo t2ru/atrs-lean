@@ -41,4 +41,5 @@ generated:
 | 89f2 | [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](89f2-layout-check-one-process-per-group.md) | accepted | 2026-11-01 |
 | b187 | [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](b187-proven-csimp-for-evaluating-models.md) | accepted | 2026-11-01 |
 | cb1f | [差異の登録簿の棚卸しの手順を方法の文書に置く](cb1f-gap-inventory-procedure.md) | accepted | 2026-11-01 |
+| c634 | [仕様の散文を Spec のモジュール文書に書き、mdgen と mdbook で本にする道具を置く](c634-spec-prose-in-lean-module-docs-and-book.md) | accepted | 2026-11-03 |
 | bf1b | [不正な状態を表現できない型（MISU）を Lean のすべてのデータ型に課す](bf1b-make-illegal-states-unrepresentable.md) | accepted | 2026-11-03 |

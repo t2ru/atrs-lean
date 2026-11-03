@@ -41,7 +41,7 @@ generated:
 | パス | 内容 |
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets/lean`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
-| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
+| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv と mdbook。[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
 | `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
@@ -80,17 +80,17 @@ generated:
 
 | Lean の下位名前空間 | Rust モジュール | ベクタの `<feature>` | 仕様の草案 |
 | --- | --- | --- | --- |
-| `Fare` | `fare` | `fare` | [fare-calculation.md](../spec/fare-calculation.md) |
-| `FlightSearch` | `flight_search` | `flight-search` | [flight-search.md](../spec/flight-search.md) |
-| `Ticket`, `UseCase.Reserve` | `reservation` | `reservation` | [reservation.md](../spec/reservation.md) |
-| `UseCase.Member` | `member` | `member` | [member.md](../spec/member.md) |
-| `UseCase.Auth` | `auth` | `authentication` | [authentication.md](../spec/authentication.md) |
-| `UseCase.Report` | `report` | `report` | [reservation-history-report.md](../spec/reservation-history-report.md) |
-| `Validation` | `validation` | `validation` | [input-validation.md](../spec/input-validation.md) |
-| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format` | `model_types`, `master_data` | `format` | [domain-model.md](../spec/domain-model.md), [master-data.md](../spec/master-data.md) |
-| `Error`, `Message` | `error` | — | [errors-and-messages.md](../spec/errors-and-messages.md) |
-| `Repository.*` | `adapter` | — | [ports.md](../spec/ports.md) |
-| `Http` | `adapter::http` | `http` | [http-contract.md](../spec/http-contract.md) |
+| `Fare` | `fare` | `fare` | [`Spec.Fare`](../../lean/Spec/Fare.lean) |
+| `FlightSearch` | `flight_search` | `flight-search` | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) |
+| `Ticket`, `UseCase.Reserve` | `reservation` | `reservation` | [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) |
+| `UseCase.Member` | `member` | `member` | [`Spec.Member`](../../lean/Spec/Member.lean) |
+| `UseCase.Auth` | `auth` | `authentication` | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
+| `UseCase.Report` | `report` | `report` | [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) |
+| `Validation` | `validation` | `validation` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
+| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format` | `model_types`, `master_data` | `format` | [`Spec.Model`](../../lean/Spec/Model.lean), [`Spec.MasterData`](../../lean/Spec/MasterData.lean) |
+| `Error`, `Message` | `error` | — | [`Spec.Error`](../../lean/Spec/Error.lean) |
+| `Repository.*` | `adapter` | — | [`Spec.Port`](../../lean/Spec/Port.lean) |
+| `Http` | `adapter::http` | `http` | [`Spec.Http`](../../lean/Spec/Http.lean) |
 
 - `SourceModel` は機能名ではなく、原典の Java のソースツリーの形に並べる（`jp.co.ntt.atrs.<pkg>.<Class>` → `SourceModel.<Pkg>.<Class>`。[ADR e41c](../decision/e41c-source-model-mirrors-java-tree.md)）。機能の具体機械は `SourceModel.<機能>Query`（`FareQuery`・`MasterQuery`・`FlightSearchQuery`）に置く。`trace/features.json` の `lean` には、原典のクラス・メソッドの名前空間を機能ごとに書く（1 つのクラスのメソッドが複数の機能に分かれてよい）。式は `java!`、検査は `Assert.*` で原典と同じ字面に書く。原典と並べた対照表は `trace review`（CI の artifact `source-model-review`）。
 - Lean の宣言はモジュール名の下に置く（スキルの [lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#モジュールと名前空間)）。`Abstraction`・`Refinement` の機能の名前空間は、`trace/features.json` の `lean` に層を付けたもの（`Abstraction.Fare`・`Abstraction.MasterData` など）で、そのモジュール（`lean/Abstraction/Fare.lean`）には R・W・C 課題と付帯の義務だけを置く（[証明課題の配置](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#証明課題の配置)）。検査は `lake exe layout-check`（`lean/Tools/LayoutCheck.lean`）と `trace check` の TR-L。
@@ -108,7 +108,7 @@ generated:
 
 型は、不正な状態を表現できない型にする（スキルの [lang/lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#不正な状態を表現できない型)、[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
 
-値域は [domain-model.md](../spec/domain-model.md#値域) に従う。
+値域は [`Spec.Model`](../../lean/Spec/Model.lean#値域) に従う。
 
 ## `@[source]` に必ず含める依存（ATRS）
 
@@ -116,14 +116,14 @@ generated:
 
 | 効果 | ロケータ | ATRS で影響する仕様 |
 | --- | --- | --- |
-| 画面入力の前後空白の除去と空文字の null 化 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` | [input-validation.md#前処理](../spec/input-validation.md#前処理) |
-| Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [input-validation.md](../spec/input-validation.md) |
-| `@InitBinder` の名前一致（REST 予約 API の相関検証の抜け、既知差異 D-007） | `dep:org.springframework:spring-web#InitBinder` | [http-contract.md](../spec/http-contract.md) |
-| ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [authentication.md](../spec/authentication.md) |
+| 画面入力の前後空白の除去と空文字の null 化 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean#前処理) |
+| Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
+| `@InitBinder` の名前一致（REST 予約 API の相関検証の抜け、既知差異 D-007） | `dep:org.springframework:spring-web#InitBinder` | [`Spec.Http`](../../lean/Spec/Http.lean) |
+| ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
 | パスワードエンコーダ `{pbkdf2}` | `dep:org.springframework.security:spring-security-crypto#DelegatingPasswordEncoder` | [ADR 2d1f](../decision/2d1f-password-hashing-port.md) |
-| REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [http-contract.md](../spec/http-contract.md#rest-apiapiv1) |
-| `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [ports.md#idgenerator](../spec/ports.md#idgenerator) |
-| `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [ports.md#トランザクション](../spec/ports.md#トランザクション) |
+| REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [`Spec.Http`](../../lean/Spec/Http.lean#rest-apiapiv1) |
+| `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [`Spec.Port`](../../lean/Spec/Port.lean#idgenerator) |
+| `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [`Spec.Port`](../../lean/Spec/Port.lean#トランザクション) |
 
 ## 進め方の適用（ATRS）
 

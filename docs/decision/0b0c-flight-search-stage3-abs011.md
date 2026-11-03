@@ -108,4 +108,4 @@ Chosen option: "PRE (a)・空白の便名 (a)・D-014 (a)・証人 (a)", because
   * 軽微（対応しない）: 整列の照合順序（`sortCfg`）は符号位置を前提とし、PostgreSQL の既定の照合はクラスタのロケールによる。整列キーの出発時刻は 4 桁の数字列で、どの照合でも順序は変わらないので、差異として登録しない（[backlog c7e8](../backlog/c7e8-lang-semantics-sql.md) の突き合わせは照合 C）。
   * 確かめて正しかったもの: Clock の 3 回の読み出しの対応、同順位の無さ、`null` の照会条件の扱い、`need_D032` の証人、スキルの補題の命題。
 * [ADR cdb6](cdb6-flight-search-stage2-machines-seed-sql.md)（第 2 段）、[ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md)（第 1 段）、[ADR f353](f353-abs-026-proof-structure-nop-and-d027-scope.md)（空白の便名と `Query.Valid`）
-* [backlog 0be7](../backlog/0be7-flight-search-usecase.md)、[spec/abstraction.md](../spec/abstraction.md#既知差異)、[spec/flight-search.md](../spec/flight-search.md#事前条件)
+* [backlog 0be7](../backlog/0be7-flight-search-usecase.md)、[spec/abstraction.md](../spec/abstraction.md#既知差異)、[spec/flight-search.md](../../lean/Spec/FlightSearch.lean#事前条件)

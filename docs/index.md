@@ -83,28 +83,15 @@ okf_version: "0.2"
 * [公開のライセンスを MIT OR Apache-2.0 のデュアルライセンスとし、上流由来の部分を NOTICE で示す](decision/1add-license-mit-or-apache-2-0.md) - リポジトリの公開にあたり、本プロジェクトの著作物を MIT License と Apache License 2.0 のデュアルライセンス（SPDX: MIT OR Apache-2.0）とし、ルートに LICENSE-MIT・LICENSE-APACHE・NOTICE・README.md を置く。submodule の上流 ATRS は対象外で Apache-2.0 のまま。SourceModel・共有入力・原典実行の採取結果など上流から派生した部分は NOTICE に列挙し、再配布には上流の Apache-2.0 の条件もかかることを示す。
 * [ATRS の Spec の型を、不正な状態を表現できない型にする（L1 値・L2 境界・L3 関係）](decision/6d36-misu-spec-types.md) - スキルの ADR bf1b を ATRS の Spec に当てる。L1 で値に閉じた制約（コード値の形式・列の形・エラーコード・位置の組）を型に、L2 で機械の入力・要求を生の型にして検証済みの型に移し、L3 で設定・マスタ・World の不変条件を証明フィールドに置く。機械の PRE・INV と、状態とマスタの外部キーは述語のまま残す。表せない DB の値は D-027 に入れ、型に移った PRE の成分を挙げていた outsidePre の項目を付け替える。
 * [SourceModel と Spec の差異の棚卸し: 登録簿の修正、D-034〜D-041 の登録、既存の差異の拡大](decision/f786-gap-inventory-and-registry-fixes.md) - 実装済み（マスタ・運賃・空席照会）と未着手（予約・会員・認証・レポート・HTTP）の全範囲で、上流の Java と Lean のモデル・仕様文書を登録簿 Abstraction.Gap と突き合わせた。誤記・古い記述・印の不足を直し、PRE の外の振る舞い D-034〜D-036、モデル外 D-037、前提型 D-038〜D-041 を登録し、D-006・D-009・D-020・D-030・D-033 と rTasks を広げた。REST の予約の応答の empty の欄は Spec を原典に合わせた。ADR 0b0c の保留 2 件を承認した。
+* [業務仕様を Spec のモジュール文書に書き、mdgen と mdbook で HTML の本にする](decision/68a6-business-spec-in-lean-module-docs-and-book.md) - docs/spec の業務仕様（要約・草案・Spec で表せない規範）を、lean/Spec の各モジュールのモジュール文書（/-! -/）として定義のすぐ前に置く。形式化していない領域は文書だけのモジュールにする。mdgen で Markdown に、mdbook で HTML にして CI の artifact にする。docs/spec にはメタ情報だけを残す。mise が管理する道具に mdbook を足す。
 
 # Specification
 
-* [ATRS 仕様文書](spec/README.md) - docs/spec の役割（Spec 外の規範・メタ情報・草案）、正規性、対象版、文書の区分一覧。
+* [ATRS 仕様文書](spec/README.md) - docs/spec の役割（メタ情報）、業務仕様を書く Spec のモジュール文書と仕様の本、正規性、対象版、文書の区分一覧。
 * [抽象化証明課題（Abstraction）](spec/abstraction.md) - 移植元モデル SourceModel が抽象モデル Spec を B メソッドの意味でリファインすることの証明課題 ABS-NNN、貼り合わせ関係と抽象化関数、既知差異 D-NNN の一覧。
 * [保証の限界](spec/assurance.md) - ソース⇔モデルの一致を確かめる決定論的な手段と、手段の届かない部分（保証の限界）・信頼の基盤を境界ごとにすべて列挙する。
-* [認証（A0/A1/A2）](spec/authentication.md) - ログインの事前検査・資格情報の照合・ログイン状態の更新・ログアウト・セッションと権限。
-* [設定パラメータ](spec/configuration.md) - 業務規則に影響する設定値とその既定値。純粋関数には Config として明示的に渡す。
 * [適合テストベクタ（ATRS）](spec/conformance.md) - ATRS の適合テストベクタの機能区分・操作名・共有入力・ATRS 固有の前提。形式はスキル spec-pivot に従う。
-* [ドメインモデル](spec/domain-model.md) - 型・列挙・値域・不変条件と、仕様全体で使う基本演算（除算・丸め・暦日・書式）の定義。
-* [エラーとメッセージ](spec/errors-and-messages.md) - エラーの分類、エラーコード一覧、日本語メッセージ文言、項目の表示名、引数置換規則。
-* [運賃計算](spec/fare-calculation.md) - 基本運賃・運賃（大人 1 名）・合計金額（大人・小児、往復）の計算と 100 円単位の切上げ。[Spec] は厳密整数、[Source] は Java の double/int32 意味論。
-* [空席照会（B1）](spec/flight-search.md) - 搭乗日・区間・搭乗クラス・フライト種別から、予約可能な運賃種別ごとの空席数と運賃を出発時刻順に返す。
-* [用語集](spec/glossary.md) - ATRS の業務用語と識別子の日英対応表。
-* [HTTP 契約](spec/http-contract.md) - 画面遷移（URL・メソッド・判別パラメータ・遷移先・エラー画面）、認証と権限、二重送信防止、REST API の JSON 形状とステータス。
-* [入力検証](spec/input-validation.md) - 前処理（空白除去）、文字クラス、単項目検証、相関検証、エラーの並び順を画面・API ごとに定義する。
-* [マスタデータ](spec/master-data.md) - 空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別の構造、不変条件、参照関数、シードデータ。
-* [会員（C0/C1/C2）](spec/member.md) - 会員登録・会員情報変更・現在パスワード照合・入力値と会員エンティティの相互変換。
-* [ポート](spec/ports.md) - 副作用（時刻・永続化・採番・パスワード・レポート保存・キュー）の契約。Spec はこれらの契約だけに依存し、実装は TargetModel が提供する。
 * [具体化証明課題（Refinement）と移植先ソースの確認](spec/refinement.md) - TargetModel が Spec を B メソッドの意味でリファインすることの証明課題 REF-NNN、移植先の既知差異 T-NNN、TargetModel ⇔ Rust ソースを決定論的に確認する課題 SRC-NNN（写しの生成・Verus・Kani・適合テスト）。
-* [予約履歴レポート（D1）](spec/reservation-history-report.md) - レポート作成要求の受付、非同期生成、CSV のバイト仕様、ファイル名、一覧と取得。
-* [予約（B0/B2）](spec/reservation.md) - 選択フライトの検証、予約内容の検証、予約確認、空席の確保と予約登録、会員情報による入力補完。
 * [追跡（トレーサビリティ）](spec/traceability.md) - ATRS の両端の追跡: 使うロケータ種別、運賃計算の追跡例と検査の判定、生成表、予定対応、対象外。方式はスキル spec-pivot に従う。
 
 # Backlog
@@ -152,6 +139,7 @@ okf_version: "0.2"
 * [検査の層を分け、長い段を関係する変更があったときだけ実行する](backlog/7d08-change-scoped-checks.md) - コミット前と PR の CI を、常時の段と変更に関係する長い段だけにし（mise run check）、全数（mise run ci）を main への push・週次・節目に実行する。範囲の宣言と選択の道具、lake test の総当たりの分割、CI の起動の整理、実行の時点の規約を置く。
 * [Spec の型を、不正な状態を表現できない型にする](backlog/8d24-misu-spec-types.md) - ADR 6d36 に従い、ATRS の Spec の型を L1（値）・L2（境界）・L3（関係）の順に書き換え、SourceModel の α・生成器・テスト・証明を追従させる。
 * [差異の候補を HTTP レベルの原典実行で確かめる](backlog/ceb8-origin-run-checks-for-gap-candidates.md) - 差異の棚卸し（ADR f786）で保留にした、ライブラリの内部の挙動に拠る差異の候補を、HTTP レベルの Java の原典実行で採取して確かめ、差異・Spec の修正・見送りを判断する。
+* [業務仕様を Spec のモジュール文書へ移し、HTML の本を作る](backlog/c89a-business-spec-in-lean-module-docs.md) - docs/spec の業務仕様を lean/Spec のモジュール文書（/-! -/）へ移し、mdgen と mdbook で HTML の本を作る。参照の書き換えと、移した後の検査（リンク・アンカー・出典・参照の行き先）を整える。
 
 # Skill
 

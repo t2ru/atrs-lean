@@ -82,7 +82,7 @@ theorem basicFare_refines :
                   basicFareGlue
 
 -- lean/Spec/Fare.lean
-@[spec_doc "docs/spec/fare-calculation.md#基本運賃"]
+@[spec_doc "lean/Spec/Fare.lean#基本運賃"]
 def basicFare ... -- [Spec]
 
 -- lean/Refinement/Fare.lean

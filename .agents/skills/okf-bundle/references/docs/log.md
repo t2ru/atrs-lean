@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-03
+* **Update**: `okf_check.py` が、設定 `links.lean_roots` の Lean のファイルのモジュール文書（mdgen が Markdown の地の文にする部分）のリンクと、`.lean` を指すリンクの見出しアンカーを検査するようにした（[ADR 75c9](decision/75c9-check-links-in-lean-module-docs.md)）。違反例 `scripts/fixtures/lean-docs` を足し、[rules/bundle.md](rules/bundle.md) を改めた。版を 0.2 にした。来歴: 適用先 ATRS の ADR 68a6。
+
 ## 2026-11-01
 * **Creation**: スキル okf-bundle を作った。版は 0.1。
   * スキル spec-pivot の道具 `scripts/docs/okf_check.py`・`scripts/docs/docmv.py` と違反例 `scripts/ci/fixtures/okf/` を、`scripts/okf_check.py`・`scripts/docmv.py`・`scripts/fixtures/` に移した。

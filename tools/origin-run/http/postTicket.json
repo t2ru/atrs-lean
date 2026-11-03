@@ -1,8 +1,8 @@
 {
   "operation": "http.postTicket",
   "modelDef": null,
-  "specRef": "docs/spec/http-contract.md#rest-apiapiv1",
-  "note": "REST の日付の JSON 表現の確認（http-contract.md の TODO。本文は atrs-selenium の RestAPITest に倣う）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
+  "specRef": "lean/Spec/Http.lean#rest-apiapiv1",
+  "note": "REST の日付の JSON 表現の確認（Spec.Http の TODO。本文は atrs-selenium の RestAPITest に倣う）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

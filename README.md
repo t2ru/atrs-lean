@@ -117,7 +117,7 @@ mise run ci
 - [docs/index.md](docs/index.md): 文書の索引
 - [AGENTS.md](AGENTS.md): 作業者（人・AI エージェント）向けの案内と規則の要約
 - [docs/rules/README.md](docs/rules/README.md): 運用規約
-- [docs/spec/](docs/spec/README.md): Lean の `Spec` で表せない仕様、既知差異の表、保証の限界
+- [docs/spec/](docs/spec/README.md): 仕様の文書の案内、既知差異の表、保証の限界。業務仕様は `lean/Spec` のモジュール文書に書き、`mise run book:build` で HTML の本（`build/book/html/`）にする
 
 ## 上流
 

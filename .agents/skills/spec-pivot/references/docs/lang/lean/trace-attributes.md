@@ -131,7 +131,7 @@ def D001 : Trace.Gap where
 @[gap_entry]
 def D013 : Trace.Gap where
   id := gid!"D-013"
-  sites := ne![⟨ne!"トランザクション", ne!"docs/spec/ports.md#トランザクション", "（規範節）"⟩]
+  sites := ne![⟨ne!"トランザクション", ne!"lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
   body := .outOfModel {
     reason := ne!"— モデル外（並行実行はモデルに現れない）"
     claim := ``claim_D013 }

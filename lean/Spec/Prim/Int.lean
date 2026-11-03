@@ -3,25 +3,41 @@ import Trace
 /-!
 # Spec.Prim.Int
 
-整数の基本演算（`docs/spec/domain-model.md#基本演算specprim`）。引数は数学的整数で、溢れは無い（ADR e41d）。
+整数の基本演算（`lean/Spec/Prim/Int.lean#基本演算specprim`）。引数は数学的整数で、溢れは無い（ADR e41d）。
 -/
 
 namespace Spec.Prim.Int
 
+/-!
+## 基本演算（Spec.Prim）
+
+**[Spec]** Lean: [`Spec.Prim.Int`](Int.lean)。引数は数学的整数で、溢れは無い。
+
+| 演算 | 事前条件 | 要約 |
+| --- | --- | --- |
+| `floorDiv(a, b)` | `b > 0` | 床除算（`floorDiv_eq_iff` で特徴付け） |
+| `ceilDiv(a, b)` | `b > 0` | 天井除算 |
+| `ceilTo(a, m)` | `a ≥ 0`, `m > 0` | `a` 以上の `m` の倍数のうち最小のもの（`ceilTo_le_of_dvd`） |
+| `pct(a, r)` | `a ≥ 0`, `r ≥ 0` | `a` の `r`% の切捨て |
+
+**[Source]**（draft）の基本演算（`j32add`, `jdiv32`, `jdmul`, `jd2i`, `bdCeilHundredUp`, `utf16Len` など）は [ADR 935b](../../../docs/decision/935b-java-primitive-semantics.md) に定義する。
+[Source] の Java 参照型（`Integer` 等）が `null` のまま演算された場合は、その操作の結果を `PreconditionViolation("NullPointerException")` とする。
+-/
+
 /-- `a / b` 以下の最大の整数（`b > 0`）。Lean の `Int` の `/` は、`b > 0` で床除算に一致する。 -/
-@[spec_doc "docs/spec/domain-model.md#基本演算specprim"]
+@[spec_doc "lean/Spec/Prim/Int.lean#基本演算specprim"]
 def floorDiv (a b : Int) : Int := a / b
 
 /-- `a / b` 以上の最小の整数（`b > 0`）。 -/
-@[spec_doc "docs/spec/domain-model.md#基本演算specprim"]
+@[spec_doc "lean/Spec/Prim/Int.lean#基本演算specprim"]
 def ceilDiv (a b : Int) : Int := -((-a) / b)
 
 /-- `a` を `m` の倍数に切り上げる（`a ≥ 0`, `m > 0`）。`ceilDiv a m * m` と同じ。 -/
-@[spec_doc "docs/spec/domain-model.md#基本演算specprim"]
+@[spec_doc "lean/Spec/Prim/Int.lean#基本演算specprim"]
 def ceilTo (a m : Nat) : Nat := (a + m - 1) / m * m
 
 /-- `a` の `r`% を切り捨てたもの（`a ≥ 0`, `r ≥ 0`）。`floorDiv (a * r) 100` と同じ。 -/
-@[spec_doc "docs/spec/domain-model.md#基本演算specprim"]
+@[spec_doc "lean/Spec/Prim/Int.lean#基本演算specprim"]
 def pct (a r : Nat) : Nat := a * r / 100
 
 theorem floorDiv_mul_le (a : Int) {b : Int} (hb : 0 < b) : floorDiv a b * b ≤ a :=

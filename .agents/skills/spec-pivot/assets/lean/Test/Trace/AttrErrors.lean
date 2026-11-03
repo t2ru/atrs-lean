@@ -34,7 +34,7 @@ namespace Test.Trace.AttrErrors
 #guard_msgs in
 @[nondet "N-1"] def badNondet : Nat := 0
 
-/-- error: @[spec_doc]: "docs/spec/x" is not <path>.md or <path>.md#<anchor> -/
+/-- error: @[spec_doc]: "docs/spec/x" is not <path>.md / <path>.lean, optionally #<anchor> -/
 #guard_msgs in
 @[spec_doc "docs/spec/x"] def badSpecDoc : Nat := 0
 

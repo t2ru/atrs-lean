@@ -4,7 +4,7 @@
     "Spec.Fare.basicFare",
     "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare"
   ],
-  "specRef": "docs/spec/fare-calculation.md#基本運賃",
+  "specRef": "lean/Spec/Fare.lean#基本運賃",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

@@ -45,7 +45,7 @@ IDNA の変換は Unicode の正規化と対応表に依存するため、言語
 
 Chosen option: "HV の規則を書き下し、IDN 変換だけを除外する", because 非 ASCII の入力は `HalfWidth` で必ず不合格になるので、業務上の合否は変わらない。違いが出るのは、Email のエラーが追加で報告されるかどうかだけである。
 
-* 規則は [spec/input-validation.md](../spec/input-validation.md#email) に定義する。
+* 規則は [spec/input-validation.md](../../lean/Spec/Prim/Text.lean#email) に定義する。
 * ドメイン部の長さは、IDN 変換の後の長さではなく、スカラ値の数で数える。
 * 非 ASCII のドメインで生じる差は、既知差異 [D-011](../spec/abstraction.md#既知差異) として記録する。一致の前提は「ドメイン部が ASCII だけからなる」である。
 
@@ -78,7 +78,7 @@ Chosen option: "HV の規則を書き下し、IDN 変換だけを除外する", 
 
 ## More Information
 
-* [spec/input-validation.md](../spec/input-validation.md), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/input-validation.md](../../lean/Spec/InputValidation.lean), [spec/abstraction.md](../spec/abstraction.md)
 * [ADR 10a5](10a5-text-length-and-character-classes.md)（文字列長と文字クラス）
 
 [^hv-email]: hibernate-validator 9.1.0.Final `AbstractEmailValidator`

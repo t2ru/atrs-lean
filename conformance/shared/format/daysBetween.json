@@ -1,7 +1,7 @@
 {
   "operation": "format.daysBetween",
   "modelDef": "Spec.Prim.Date.daysBetween",
-  "specRef": "docs/spec/domain-model.md#date",
+  "specRef": "lean/Spec/Prim/Date.lean#date",
   "cases": [
     {
       "id": "daysBetween-0",

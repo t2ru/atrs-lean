@@ -1,7 +1,7 @@
 {
   "operation": "format.fmtYen",
   "modelDef": "Spec.Prim.Format.fmtYen",
-  "specRef": "docs/spec/domain-model.md#書式",
+  "specRef": "lean/Spec/Prim/Format.lean#書式",
   "cases": [
     {
       "id": "fmtYen-0",
