@@ -27,7 +27,7 @@ def PostB (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : Unit → St
 
 /-- 会員照合の例外の事後条件。 -/
 def PostBE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ (IsIoFault s.env e ∨ ∃ c args, e = AtrsBusinessException.newArgs c args ∧ v = .error (.business c args))
+  fun e s => P s ∧ (IsIoFault s.env e ∨ ∃ be : Spec.Error.BusinessError, e = AtrsBusinessException.newArgs be.code be.args ∧ v = .error (.business be))
 
 /-- 会員の取得の答え: 会員が無ければ `null`、あれば照合が [Spec] の `matchesMember` になる会員。 -/
 def MemberAns (w : Spec.Port.World) (s : String) (r : JRef SourceModel.Domain.Model.Member) : Prop :=
@@ -108,14 +108,14 @@ theorem repMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {sv
       cases hx : w.findMember ⟨str⟩ with
       | none =>
         rw [hx] at ha; subst ha
-        exact ⟨hs', .inr ⟨_, [], rfl, rfl⟩⟩
+        exact ⟨hs', .inr ⟨_, rfl, rfl⟩⟩
       | some x =>
         rw [hx] at ha
         obtain ⟨M, rfl, hM⟩ := ha
         simp only [hf, hg, hgd, hM]
         java_estate_simp []
         cases Spec.UseCase.Reserve.matchesMember d.repFamilyName d.repGivenName d.repGender x
-        · exact ⟨hs', .inr ⟨_, [], rfl, rfl⟩⟩
+        · exact ⟨hs', .inr ⟨_, rfl, rfl⟩⟩
         · exact ⟨hs', rfl⟩
 
 /-! ## 搭乗者の会員照合 -/
@@ -126,9 +126,9 @@ def checkOne (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) : Except
   | none => .ok ()
   | some n =>
     match w.findMember n with
-    | none => .error (.business "e.ar.b2.2005" [toString (i + 1)])
+    | none => .error (.business (.passengerMemberNotFound (toString (i + 1))))
     | some m => if Spec.UseCase.Reserve.matchesMember p.familyName p.givenName p.gender m then .ok ()
-      else .error (.business "e.ar.b2.2006" [toString (i + 1)])
+      else .error (.business (.passengerMemberMismatch (toString (i + 1))))
 
 /-- 搭乗者の会員照合を、位置 `i` から順に。 -/
 def pmFrom (w : Spec.Port.World) : List Spec.Model.Passenger → Nat → Except Spec.Error.AtrsError Unit
@@ -142,9 +142,9 @@ theorem foldlM_zipIdx (w : Spec.Port.World) :
         | none => .ok ()
         | some m =>
           match w.findMember m with
-          | none => .error (.business "e.ar.b2.2005" [toString (pi.2 + 1)])
+          | none => .error (.business (.passengerMemberNotFound (toString (pi.2 + 1))))
           | some x => if Spec.UseCase.Reserve.matchesMember pi.1.familyName pi.1.givenName pi.1.gender x then .ok ()
-            else .error (.business "e.ar.b2.2006" [toString (pi.2 + 1)])) = pmFrom w ps n
+            else .error (.business (.passengerMemberMismatch (toString (pi.2 + 1))))) = pmFrom w ps n
   | [], _ => rfl
   | p :: ps, n => by
     rw [List.zipIdx_cons, List.foldlM_cons]
@@ -183,9 +183,9 @@ theorem forIn_pos {P : St → Prop} {w : Spec.Port.World} {R : SourceModel.Domai
     rw [List.map_cons, List.forIn_cons]
     refine Hoare.bind' (Hoare.conseq (hf x q pos i hxq hpos (by simp at hlen; omega)) (fun _ h => h)
       (fun _ _ h => h) fun e s' ⟨hs', he⟩ => ⟨hs', ?_⟩) fun r => ?_
-    · rcases he with he | ⟨c, args, rfl, hc⟩
+    · rcases he with he | ⟨c, rfl, hc⟩
       · exact .inl he
-      · exact .inr ⟨c, args, rfl, by simp only [pmFrom, hc]; rfl⟩
+      · exact .inr ⟨c, rfl, by simp only [pmFrom, hc]; rfl⟩
     intro s ⟨hs, hc, p', hr', hp'⟩
     subst hr'
     have ih := forIn_pos hf hr (i + 1) p' (by rw [hp', hpos]; push_cast; omega) (by simp at hlen; omega)
@@ -274,14 +274,14 @@ theorem passengerMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P f
       cases hx : w.findMember ⟨str⟩ with
       | none =>
         rw [hx] at ha; subst ha
-        exact ⟨hs', .inr ⟨_, _, rfl, by rw [hts]; rfl⟩⟩
+        exact ⟨hs', .inr ⟨.passengerMemberNotFound (toString pos.val), rfl, by rw [hts]⟩⟩
       | some x =>
         rw [hx] at ha
         obtain ⟨M, rfl, hM⟩ := ha
         simp only [hf, hg, hgd, hM]
         java_estate_simp []
         cases Spec.UseCase.Reserve.matchesMember q.familyName q.givenName q.gender x
-        · exact ⟨hs', .inr ⟨_, _, rfl, by rw [hts]; rfl⟩⟩
+        · exact ⟨hs', .inr ⟨.passengerMemberMismatch (toString pos.val), rfl, by rw [hts]; rfl⟩⟩
         · exact ⟨hs', by first | rfl | trivial, _, rfl, hadd⟩
 
 end Abstraction.Reserve.MemberCheck

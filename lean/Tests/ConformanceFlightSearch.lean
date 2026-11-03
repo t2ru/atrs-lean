@@ -49,10 +49,10 @@ def specCriteria (c : Json) : Except String Spec.FlightSearch.Criteria := do
            flightType := ← flightType (← getStr c "flightType") }
 
 def specErrorJson : Spec.Error.AtrsError → Json
-  | .business code _ => errorJson "business" code
-  | .notFound code => errorJson "notFound" code
+  | .business e => errorJson "business" e.code
+  | .notFound e => errorJson "notFound" e.code
   | .invalidRequest _ => errorJson "invalidRequest" ""
-  | .system code _ => errorJson "system" code
+  | .system e => errorJson "system" e.code
   | .conflict _ => errorJson "conflict" ""
 
 def specInfoJson (v : Spec.FlightSearch.FlightVacantInfo) : Json :=

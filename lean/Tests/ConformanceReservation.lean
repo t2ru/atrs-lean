@@ -105,10 +105,10 @@ def specRequest (i : Json) : Except String Spec.UseCase.Reserve.Request := do
   return { selects := ← (← getArr i "selectFlights").mapM specSelect, form := ← specForm (← getObjVal i "form") }
 
 def specErrorJson : Spec.Error.AtrsError → Json
-  | .business code args => businessJson code args
-  | .notFound code => errorJson "notFound" [("code", .str code)]
+  | .business e => businessJson e.code e.args
+  | .notFound e => errorJson "notFound" [("code", .str e.code)]
   | .invalidRequest _ => errorJson "invalidRequest" []
-  | .system code _ => errorJson "system" [("code", .str code)]
+  | .system e => errorJson "system" [("code", .str e.code)]
   | .conflict _ => errorJson "conflict" []
 
 def flightJson (k : FlightKey) (vacantNum : Nat) : Json :=

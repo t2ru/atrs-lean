@@ -51,7 +51,7 @@ theorem step_confirm {w : Spec.Port.World} {ia : Spec.UseCase.Reserve.MInput} (h
   simp [reserveStep, baseStep, hop, hx]
 
 theorem step_io (w : Spec.Port.World) (ia : Spec.UseCase.Reserve.MInput) (d : Spec.Nondet.InvalidRequestDetail) :
-    reserveStep w ia ((.none, .failure {}), d) = (w, .error (.system "e.ar.fw.9999")) := by
+    reserveStep w ia ((.none, .failure {}), d) = (w, .error (.system .ioFailure)) := by
   simp [reserveStep, advance_zero]
 
 /-- 予約確認の合計金額の入力: 合計金額の具体側の入力の α は `tfOf`、その PRE が成り立ち、年齢の列は予約内容の搭乗者の
@@ -314,16 +314,16 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       simp only [aoR, hv', Option.map_some, Except.map, withDetail]
     | error e' s =>
       rintro ⟨⟨hsd, hse⟩, hE⟩
-      rcases hE with hf | ⟨-, str, hstr⟩ | ⟨-, c, args, rfl, hc⟩
+      rcases hE with hf | ⟨-, str, hstr⟩ | ⟨-, be, rfl, hc⟩
       · exact ⟨.error .ioFailure, _, ((.none, .failure {}), .std), catch_ioFault hf, hsd, step_io w ia _, rfl,
           admits_ioFault (hse ▸ hf) {}⟩
       · simp [Except.mapError] at hstr
       · rcases hres with ⟨e, he, rfl⟩ | ⟨hvr0, -⟩
         · rw [hc] at he
           cases he
-          have hnl := validate_nl hkf' hft hvr c args hc
-          exact ⟨.error (.business c args), _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hsd,
-            step_confirm hop' hx _, rfl, admits_std _⟩
+          have hnl := validate_nl hkf' hft hvr be hc
+          exact ⟨.error (.business be.code be.args), _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hsd,
+            step_confirm hop' hx _, aoR_business be, admits_std _⟩
         · rw [hc] at hvr0; cases hvr0
 
 end Abstraction.Reserve.ConfirmRun

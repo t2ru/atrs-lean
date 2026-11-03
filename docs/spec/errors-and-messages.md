@@ -33,6 +33,8 @@ sources:
 | `System(code, args)` | 整合性違反・I/O 失敗 | 500 システムエラー画面 | 500 |
 | `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
 
+Lean `Spec` では、`Business`・`NotFound`・`System` のコードは事由の列挙（`Spec.Error.BusinessError`・`NotFoundError`・`SystemError`）で、引数の数は事由ごとに決まる。コードと引数の綴りは関数 `code`・`args` が与える（[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
+
 `InvalidRequest` のログ用コードは `e.ar.a0.L9001`（「不正リクエスト(パラメータ改竄) {0}」）。
 
 ## 入力検証エラー

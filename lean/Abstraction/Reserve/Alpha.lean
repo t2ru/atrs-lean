@@ -98,10 +98,15 @@ def aoR : SourceModel.ReserveQuery.MOutput → Option MOutput
   | .ok (.reserved o) =>
     (o.reserveNo.bind Spec.Model.ReserveNo.ofString?).bind fun no => (o.paymentDate.bind dateOfJ).bind fun d =>
       (o.totalFare.bind natOfJ32).map fun tf => .ok (.reserved ⟨no, d, tf⟩)
-  | .error (.business c a) => some (.error (.business c a))
+  | .error (.business c a) => (Spec.Error.BusinessError.ofCode? c a).map fun e => .error (.business e)
   | .error .badRequest => some (.error (.invalidRequest ""))
-  | .error .ioFailure => some (.error (.system "e.ar.fw.9999"))
+  | .error .ioFailure => some (.error (.system .ioFailure))
   | .error .conflict => some (.error (.conflict "conflict"))
+
+/-- 業務例外の α: コードと引数から事由が戻る。 -/
+theorem aoR_business (be : Spec.Error.BusinessError) :
+    aoR (.error (.business be.code be.args)) = some (.error (.business be)) := by
+  simp only [aoR, Spec.Error.BusinessError.ofCode?_code_args, Option.map_some]
 
 theorem optDateOfJ_inj {x y : JRef JLocalDate} {d : Spec.Prim.Date} (hx : x.bind dateOfJ = some d)
     (hy : y.bind dateOfJ = some d) : x = y := by
@@ -133,12 +138,14 @@ theorem aoR_reserved {x : SourceModel.ReserveQuery.MOutput} {r : ReserveResult} 
   simp only [Spec.Model.ReserveNo.val_of_ofString? hrn]
 
 theorem aoR_error {x : SourceModel.ReserveQuery.MOutput} {e : Spec.Error.AtrsError} (h : aoR x = some (.error e)) :
-    (∃ c a, e = .business c a ∧ x = .error (.business c a)) ∨ (e = .invalidRequest "" ∧ x = .error .badRequest) ∨
-      (e = .system "e.ar.fw.9999" ∧ x = .error .ioFailure) ∨ (e = .conflict "conflict" ∧ x = .error .conflict) := by
+    (∃ be, e = .business be ∧ x = .error (.business be.code be.args)) ∨ (e = .invalidRequest "" ∧ x = .error .badRequest) ∨
+      (e = .system .ioFailure ∧ x = .error .ioFailure) ∨ (e = .conflict "conflict" ∧ x = .error .conflict) := by
   rcases x with (⟨c, a⟩ | _ | _ | _) | (⟨⟨t⟩⟩ | ⟨⟨no, d, tf⟩⟩) <;>
     simp only [aoR, Option.some.injEq, Option.map_eq_some_iff, Option.bind_eq_some_iff, reduceCtorEq,
       Except.error.injEq, and_false, exists_false] at h
-  · exact .inl ⟨c, a, h.symm, rfl⟩
+  · obtain ⟨be, hbe, rfl⟩ := h
+    obtain ⟨rfl, rfl⟩ := Spec.Error.BusinessError.code_args_of_ofCode? hbe
+    exact .inl ⟨be, rfl, rfl⟩
   · exact .inr (.inl ⟨h.symm, rfl⟩)
   · exact .inr (.inr (.inl ⟨h.symm, rfl⟩))
   · exact .inr (.inr (.inr ⟨h.symm, rfl⟩))
@@ -148,8 +155,8 @@ theorem aoR_kernel : KernelIs aoR (undefOrEq aoR) := by
   apply kernelIs_undefOrEq
   intro x y b hx hy
   rcases b with e | (n | r)
-  · rcases aoR_error hx with ⟨c, a, rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      rcases aoR_error hy with ⟨c', a', he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ <;>
+  · rcases aoR_error hx with ⟨be, rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
+      rcases aoR_error hy with ⟨be', he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ <;>
       first | rfl | (cases he; rfl) | (cases he; done)
   · obtain ⟨t, rfl, ht⟩ := aoR_confirmed hx
     obtain ⟨t', rfl, ht'⟩ := aoR_confirmed hy

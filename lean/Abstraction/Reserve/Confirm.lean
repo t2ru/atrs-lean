@@ -67,8 +67,9 @@ def ConfirmE (P : St → Prop) (v vr : Except Spec.Error.AtrsError Unit) : JThro
   fun e s => P s ∧ (IsIoFault s.env e ∨
     ((∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
       ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str)) ∨
-    (v = .ok () ∧ ∃ c args, e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs c args ∧
-      vr = .error (.business c args)))
+    (v = .ok () ∧ ∃ be : Spec.Error.BusinessError,
+      e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs be.code be.args ∧
+      vr = .error (.business be)))
 
 /-- 予約確認の流れ（`confirmBody`）: 前段の選択フライトの検証の三つ組と、前段が成功したときの後段の三つ組をつなぐ。 -/
 theorem confirm_core {P : St → Prop} {p : SourceModel.MasterQuery.Providers} {ic : ReserveInput}
@@ -93,8 +94,8 @@ theorem confirm_core {P : St → Prop} {p : SourceModel.MasterQuery.Providers} {
   · intro s ⟨hs, hv⟩
     refine Hoare.bind' (Hoare.conseq (hrest hv) (fun _ h => h) (fun _ _ h => h) fun e s ⟨hs', he⟩ => ⟨hs', ?_⟩)
       (fun r => Hoare.pure' fun s' ⟨hs', hvr, hT⟩ => ⟨hs', hv, hvr, hT⟩) s hs
-    rcases he with he | ⟨c, args, rfl, hc⟩
+    rcases he with he | ⟨be, rfl, hc⟩
     · exact .inl he
-    · exact .inr (.inr ⟨hv, c, args, rfl, hc⟩)
+    · exact .inr (.inr ⟨hv, be, rfl, hc⟩)
 
 end Abstraction.Reserve.Confirm

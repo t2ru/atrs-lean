@@ -39,7 +39,7 @@ def outOfPeriod (cfg : Config) (today depDate : Date) : Bool :=
 /-- 搭乗日の検査。期間外なら `Business("e.ar.b1.2001")`。 -/
 @[spec_doc "docs/spec/flight-search.md#照会可能期間"]
 def validateDepartureDate (cfg : Config) (today depDate : Date) : Except AtrsError Unit :=
-  if outOfPeriod cfg today depDate then .error (.business "e.ar.b1.2001") else .ok ()
+  if outOfPeriod cfg today depDate then .error (.business .outOfSearchPeriod) else .ok ()
 
 /-! ## 運賃種別の予約可能判定 -/
 
@@ -165,11 +165,11 @@ def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) 
   | .error e => some (.error e)
   | .ok () =>
     match md.routeOf c.depAirportCd c.arrAirportCd with
-    | none => some (.error (.business "e.ar.b1.2002"))
+    | none => some (.error (.business .routeNotFound))
     | some route =>
       let beforeDayNum := Date.daysBetween today c.depDate
       let cs := (flights.filterMap (candidateOf md c route beforeDayNum)).mergeSort candidateLe
-      if cs.isEmpty then some (.error (.notFound "e.ar.b1.2003"))
+      if cs.isEmpty then some (.error (.notFound .noFlight))
       else do
         let b ← Fare.basicFare md route.basicFare c.boardingClassCd c.depDate
         let depName ← airportName? md route.depAirportCd

@@ -111,7 +111,7 @@ def buildDraft (i : ReserveInput) (flights : List FlightKey) : Option Draft := d
 /-- 1. 代表者年齢。 -/
 @[spec_doc "docs/spec/reservation.md#validatereservation"]
 def checkRepAge (cfg : Config) (d : Draft) : Except AtrsError Unit :=
-  if d.repAge < cfg.representativeMinAge then .error (.business "e.ar.b2.2004" [toString cfg.representativeMinAge])
+  if d.repAge < cfg.representativeMinAge then .error (.business (.repTooYoung (toString cfg.representativeMinAge)))
   else .ok ()
 
 /-- 2. 運賃種別の利用条件（1 便）。運賃種別がマスタに無ければ無し（PRE: MD-3）。 -/
@@ -119,9 +119,9 @@ def checkRepAge (cfg : Config) (d : Draft) : Except AtrsError Unit :=
 def checkFareTypeOf (md : MasterData) (ps : List Passenger) (k : FlightKey) : Option (Except AtrsError Unit) := do
   let ft ← md.fareTypeOf k.fareTypeCd
   return match ft.fareTypeCd with
-  | .LD => if ps.any (·.gender == .M) then .error (.business "e.ar.b2.2007") else .ok ()
+  | .LD => if ps.any (·.gender == .M) then .error (.business .ladiesOnly) else .ok ()
   | .GD => if ps.length < ft.passengerMinNum then
-      .error (.business "e.ar.b2.2010" [ft.fareTypeName, toString ft.passengerMinNum]) else .ok ()
+      .error (.business (.tooFewPassengers ft.fareTypeName (toString ft.passengerMinNum))) else .ok ()
   | _ => .ok ()
 
 /-- 2. 運賃種別の利用条件（予約フライトを順に）。 -/
@@ -143,9 +143,9 @@ def checkRepMember (w : World) (d : Draft) : Except AtrsError Unit :=
   | none => .ok ()
   | some n =>
     match w.findMember n with
-    | none => .error (.business "e.ar.b2.2002")
+    | none => .error (.business .repMemberNotFound)
     | some m => if matchesMember d.repFamilyName d.repGivenName d.repGender m then .ok ()
-      else .error (.business "e.ar.b2.2003")
+      else .error (.business .repMemberMismatch)
 
 /-- 4. 搭乗者の会員照合（1 から数えた位置 `pos`。空の欄を詰めた後の位置）。 -/
 @[spec_doc "docs/spec/reservation.md#validatereservation"]
@@ -155,9 +155,9 @@ def checkPassengerMembers (w : World) (ps : List Passenger) : Except AtrsError U
     | none => .ok ()
     | some n =>
       match w.findMember n with
-      | none => .error (.business "e.ar.b2.2005" [toString (i + 1)])
+      | none => .error (.business (.passengerMemberNotFound (toString (i + 1))))
       | some m => if matchesMember p.familyName p.givenName p.gender m then .ok ()
-        else .error (.business "e.ar.b2.2006" [toString (i + 1)])
+        else .error (.business (.passengerMemberMismatch (toString (i + 1))))
 
 /-- `validateReservation`（評価順。最初に失敗した検査のエラーを返す）。搭乗者の会員照合は、原典では予約フライトごとに
 繰り返すが、すべての予約フライトが同じ搭乗者列を持つので、1 回と同じ結果になる。 -/
@@ -196,11 +196,11 @@ structure ReserveResult where
 def secureSeats (md : MasterData) (today : Date) (n : Nat) (w : World) (k : FlightKey) :
     Option (Except AtrsError World) := do
   let ft ← md.fareTypeOf k.fareTypeCd
-  if !Spec.FlightSearch.isAvailableFareType ft k.departureDate today then return .error (.business "e.ar.b2.2008")
+  if !Spec.FlightSearch.isAvailableFareType ft k.departureDate today then return .error (.business .fareTypeUnavailable)
   match w.findForUpdate k with
   | none => return .error (.invalidRequest "flight not found")
   | some f =>
-    if f.vacantNum < n then return .error (.business "e.ar.b2.2009")
+    if f.vacantNum < n then return .error (.business .noVacancy)
     return .ok (w.updateVacantNum k (f.vacantNum - n))
 
 /-- 搭乗者を 1 人登録する（搭乗者番号を採番する）。 -/
@@ -274,7 +274,7 @@ instance (r : Request) : Decidable r.Valid := by unfold Request.Valid; infer_ins
 `e.ar.b2.2001` も含む。`docs/spec/http-contract.md#b2-予約`）。 -/
 @[spec_doc "docs/spec/http-contract.md#b2-予約"]
 def asInvalidRequest : AtrsError → AtrsError
-  | .business code _ => .invalidRequest code
+  | .business e => .invalidRequest e.code
   | e => e
 
 /-- 選択フライトの検証（予約確認・予約確定の前段）。 -/
@@ -368,7 +368,7 @@ def reserveStep (w : World) (i : MInput)
     (c : (Spec.Nondet.ConflictChoice × Spec.Nondet.IoFailureChoice) × Spec.Nondet.InvalidRequestDetail) :
     World × MOutput :=
   match c.1.2, c.1.1, i.op with
-  | .failure a, _, _ => (advance w a, .error (.system "e.ar.fw.9999"))
+  | .failure a, _, _ => (advance w a, .error (.system .ioFailure))
   | .none, .conflict a, .reserve => (advance w a, .error (.conflict "conflict"))
   | _, _, _ => let r := baseStep w i; (r.1, withDetail c.2 r.2)
 
@@ -548,7 +548,7 @@ theorem reserveMachine_initIs : reserveMachine.InitIs Spec.Seed.World.world := f
 @[obligation "SPEC-004"]
 theorem reserveStep_failure (w : World) (i : MInput) (e : Spec.Nondet.ConflictChoice) (a : Spec.Nondet.SeqAdvance)
     (d : Spec.Nondet.InvalidRequestDetail) :
-    reserveStep w i ((e, .failure a), d) = (advance w a, .error (.system "e.ar.fw.9999")) := rfl
+    reserveStep w i ((e, .failure a), d) = (advance w a, .error (.system .ioFailure)) := rfl
 
 /-- SPEC-004: 予約確定の `Conflict` の選択（I/O 失敗が無いとき）では、出力は `Conflict` で、状態は採番の前進だけ変わる。 -/
 @[obligation "SPEC-004"]
@@ -567,7 +567,7 @@ theorem advance_frame (w : World) (a : Spec.Nondet.SeqAdvance) :
 /-- 環境に固有のエラー（N-001 の `Conflict`、N-002 の `System("e.ar.fw.9999")`）でない。 -/
 def NotEnvError : AtrsError → Prop
   | .conflict _ => False
-  | .system code _ => code ≠ "e.ar.fw.9999"
+  | .system .ioFailure => False
   | _ => True
 
 theorem checkFlight_err {w : World} {f : ResolvedFlight} {e : AtrsError}
@@ -719,9 +719,9 @@ theorem foldPassengerMembers_allNE (w : World) :
       | none => (.ok () : Except AtrsError Unit)
       | some n =>
         match w.findMember n with
-        | none => .error (.business "e.ar.b2.2005" [toString (i + 1)])
+        | none => .error (.business (.passengerMemberNotFound (toString (i + 1))))
         | some m => if matchesMember p.familyName p.givenName p.gender m then .ok ()
-          else .error (.business "e.ar.b2.2006" [toString (i + 1)]))
+          else .error (.business (.passengerMemberMismatch (toString (i + 1)))))
   | [], u => AllNE.ok u
   | (p, i) :: xs, u => by
     rw [List.foldlM_cons]
@@ -732,12 +732,12 @@ theorem foldPassengerMembers_allNE (w : World) :
     | some n =>
       dsimp only
       cases w.findMember n with
-      | none => exact AllNE.err (e := .business _ _) trivial
+      | none => exact AllNE.err (e := .business _) trivial
       | some m =>
         dsimp only
         split
         · exact AllNE.ok _
-        · exact AllNE.err (e := .business _ _) trivial
+        · exact AllNE.err (e := .business _) trivial
 
 theorem validateReservation_allNE {cfg : Config} {md : MasterData} {w : World} {d : Draft} {r : Except AtrsError Unit}
     (h : validateReservation cfg md w d = some r) : AllNE r := by
@@ -760,11 +760,11 @@ theorem secureSeats_allNE {md : MasterData} {today : Date} {n : Nat} {w : World}
   | some ft =>
     simp only [hft, Option.bind_eq_bind, Option.bind_some] at h
     split at h
-    · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.err (e := .business _ _) trivial
+    · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.err (e := .business _) trivial
     · split at h
       · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.err (e := .invalidRequest _) trivial
       · split at h
-        · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.err (e := .business _ _) trivial
+        · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.err (e := .business _) trivial
         · simp only [Option.pure_def, Option.some.injEq] at h; subst h; exact AllNE.ok _
 
 theorem foldSecure_allNE {md : MasterData} {today : Date} {n : Nat} :

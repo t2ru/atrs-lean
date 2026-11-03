@@ -209,8 +209,8 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
       (TicketReserveServiceImpl.validateAndUpdateVacancy svc
         (some { flight := some (mkFlight p f), passengerList := some (xs.map some) }))
       (fun _ s => ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
-      (fun e s => AtW env w s ∧ (IsFault env e ∨ ∃ c, e = AtrsBusinessException.newArgs c [] ∧
-        Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.error (.business c [])))) := by
+      (fun e s => AtW env w s ∧ (IsFault env e ∨ ∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
+        Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.error (.business be)))) := by
   intro s ⟨hdb, hse⟩
   obtain ⟨t, sd, ed, hte, hs1, hs2, he1, he2⟩ := mkFlight_days hfq hk hft
   obtain ⟨dj, hdj, hd, -⟩ := keyOfForm_eq hk
@@ -236,8 +236,8 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
     rw [List.length_map]; exact LangSemantics.Java.IntLemmas.ofInt_nat (by omega)
   have hss : Spec.UseCase.Reserve.secureSeats md T xs.length w k =
       if (!Spec.FlightSearch.isAvailableFareType FT k.departureDate T) = true then
-        some (.error (.business "e.ar.b2.2008"))
-      else if fX.vacantNum < xs.length then some (.error (.business "e.ar.b2.2009"))
+        some (.error (.business .fareTypeUnavailable))
+      else if fX.vacantNum < xs.length then some (.error (.business .noVacancy))
       else some (.ok (w.updateVacantNum k (fX.vacantNum - xs.length))) := by
     simp only [Spec.UseCase.Reserve.secureSeats, hft, hfX, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
   rw [hss]
@@ -247,7 +247,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
       AtrsBusinessException.newArgs c [] := fun c => (AtrsBusinessException.newArgs_nil c).symm
   cases hA : Spec.FlightSearch.isAvailableFareType FT k.departureDate T
   · simp only [Bool.not_false, ite_true]
-    exact ⟨hat _ _, .inr ⟨_, hbiz _, rfl⟩⟩
+    exact ⟨hat _ _, .inr ⟨_, rfl, hbiz _, rfl⟩⟩
   simp only [Bool.not_true, Bool.false_eq_true, ite_false]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
@@ -261,7 +261,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   by_cases h9 : fX.vacantNum < xs.length
   · have : v0.val < (xs.length : Int) := by omega
     simp only [this, h9, decide_true, ite_true]
-    exact ⟨hat _ _, .inr ⟨_, hbiz _, rfl⟩⟩
+    exact ⟨hat _ _, .inr ⟨_, rfl, hbiz _, rfl⟩⟩
   have h9' : ¬ v0.val < (xs.length : Int) := by omega
   simp only [h9', h9, decide_false, Bool.false_eq_true, ite_false]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
@@ -366,8 +366,9 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
             TicketReserveServiceImpl.validateAndUpdateVacancy svc rf
             pure (ForInStep.yield ()))
         (fun _ s => ∃ w', secureAll md T xs.length ks w = some (.ok w') ∧ AtW env w' s)
-        (fun e s => ∃ w', AtW env w' s ∧ w'.sequences = w.sequences ∧ (IsFault env e ∨ ∃ c,
-          e = AtrsBusinessException.newArgs c [] ∧ secureAll md T xs.length ks w = some (.error (.business c []))))
+        (fun e s => ∃ w', AtW env w' s ∧ w'.sequences = w.sequences ∧ (IsFault env e ∨ ∃ be : Spec.Error.BusinessError,
+          be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
+            secureAll md T xs.length ks w = some (.error (.business be))))
   | [], [], .nil, w, _, _ => fun s hs => ⟨w, rfl, hs⟩
   | f :: fs, k :: ks, .cons hc hr, w, hinv, hex => by
     obtain ⟨hk, ⟨BC, hb⟩, ⟨FT, hft⟩, ⟨fm, hfm, hfn⟩⟩ := hc
@@ -378,9 +379,9 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
         ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
       (Hoare.bind' (Hoare.conseq hv (fun _ h => h) (fun _ _ h => h) fun e s ⟨hat, he⟩ => ⟨w, hat, rfl, ?_⟩)
         fun _ => Hoare.pure' fun s h => ⟨rfl, h⟩) fun r => ?_
-    · rcases he with he | ⟨c, rfl, hc⟩
+    · rcases he with he | ⟨be, hba, rfl, hc⟩
       · exact .inl he
-      · exact .inr ⟨c, rfl, by simp only [secureAll, hc, Option.bind_some]⟩
+      · exact .inr ⟨be, hba, rfl, by simp only [secureAll, hc, Option.bind_some]⟩
     · intro s ⟨hr0, w', hw', hat⟩
       subst hr0
       have hkeys := Spec.UseCase.Reserve.secureSeats_keys hw'
@@ -392,9 +393,9 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
       refine Hoare.conseq ih (fun _ h => h) (fun _ s ⟨w'', hw'', hat''⟩ => ⟨w'', ?_, hat''⟩)
         (fun e s ⟨w'', hat'', hseq'', he⟩ => ⟨w'', hat'', hseq''.trans hseq, ?_⟩) s hat
       · simp only [secureAll, hw', Option.bind_some, hw'']
-      · rcases he with he | ⟨c, rfl, hc⟩
+      · rcases he with he | ⟨c, hca, rfl, hc⟩
         · exact .inl he
-        · exact .inr ⟨c, rfl, by simp only [secureAll, hw', Option.bind_some, hc]⟩
+        · exact .inr ⟨c, hca, rfl, by simp only [secureAll, hw', Option.bind_some, hc]⟩
 
 end
 

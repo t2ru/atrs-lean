@@ -21,18 +21,18 @@ open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.Domain.Common.Exception
 theorem lift_agreeB {P : St → Prop} {r : JResult Unit} {x : Except Spec.Error.AtrsError Unit} (h : AgreeB r x) :
     Hoare P (lift r) (PostB P x) (PostBE P x) := by
   intro s hs
-  rcases h with ⟨rfl, rfl⟩ | ⟨c, args, rfl, rfl⟩
+  rcases h with ⟨rfl, rfl⟩ | ⟨be, rfl, rfl⟩
   · exact ⟨hs, rfl⟩
-  · exact ⟨hs, .inr ⟨c, args, rfl, rfl⟩⟩
+  · exact ⟨hs, .inr ⟨be, rfl, rfl⟩⟩
 
 /-- 検査の逐次: [Spec] の検査の結果も、最初に失敗した検査の結果。 -/
 theorem seqB {P : St → Prop} {m1 m2 : DbM Unit} {v1 v2 : Except Spec.Error.AtrsError Unit}
     (h1 : Hoare P m1 (PostB P v1) (PostBE P v1)) (h2 : Hoare P m2 (PostB P v2) (PostBE P v2)) :
     Hoare P (m1 >>= fun _ => m2) (PostB P (v1 >>= fun _ => v2)) (PostBE P (v1 >>= fun _ => v2)) := by
   refine Hoare.bind' (Hoare.conseq h1 (fun _ h => h) (fun _ _ h => h) fun e s ⟨hs, he⟩ => ⟨hs, ?_⟩) fun _ => ?_
-  · rcases he with he | ⟨c, args, rfl, hv⟩
+  · rcases he with he | ⟨be, rfl, hv⟩
     · exact .inl he
-    · exact .inr ⟨c, args, rfl, by rw [hv]; rfl⟩
+    · exact .inr ⟨be, rfl, by rw [hv]; rfl⟩
   · intro s ⟨hs, hv⟩
     rw [hv]
     exact h2 s hs

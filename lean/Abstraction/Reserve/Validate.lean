@@ -21,7 +21,7 @@ open SourceModel.Domain.Service.B2 SourceModel.Domain.Common.Exception
 /-- 検査の結果の対応: どちらも成功するか、[Source] が業務例外（コードと引数）を投げ、[Spec] が同じコードと引数の
 `Business` を返す。 -/
 def AgreeB (r : JResult Unit) (x : Except Spec.Error.AtrsError Unit) : Prop :=
-  (r = .ok () ∧ x = .ok ()) ∨ ∃ c args, r = .error (AtrsBusinessException.newArgs c args) ∧ x = .error (.business c args)
+  (r = .ok () ∧ x = .ok ()) ∨ ∃ be : Spec.Error.BusinessError, r = .error (AtrsBusinessException.newArgs be.code be.args) ∧ x = .error (.business be)
 
 /-- 整数の値の文字列（非負なら自然数の文字列）。 -/
 theorem toString_int_ofNat (n : Nat) : toString (n : Int) = toString n := rfl
@@ -33,7 +33,7 @@ theorem repAge {svc : TicketReserveServiceImpl} {cfg : Spec.Config} {age : J32} 
   unfold TicketReserveServiceImpl.validateRepresentativeAge Spec.UseCase.Reserve.checkRepAge
   by_cases h : d.repAge < cfg.representativeMinAge
   · have h' : age.val < (cfg.representativeMinAge : Int) := by omega
-    refine .inr ⟨"e.ar.b2.2004", [toString cfg.representativeMinAge], ?_, by simp [h]⟩
+    refine .inr ⟨.repTooYoung (toString cfg.representativeMinAge), ?_, by simp [h]⟩
     simp only [hmin, toString_int_ofNat, h', decide_true, ite_true]
     rfl
   · have h' : ¬ age.val < (cfg.representativeMinAge : Int) := by omega
@@ -98,9 +98,9 @@ def FareTypeFacts (fl : SourceModel.Domain.Model.Flight) (FT : Spec.MasterData.F
 /-- 予約フライトごとの [Spec] の検査の値。 -/
 def specFareTypeOf (FT : Spec.MasterData.FareType) (qs : List Spec.Model.Passenger) : Except Spec.Error.AtrsError Unit :=
   match FT.fareTypeCd with
-  | .LD => if qs.any (·.gender == .M) then .error (.business "e.ar.b2.2007") else .ok ()
+  | .LD => if qs.any (·.gender == .M) then .error (.business .ladiesOnly) else .ok ()
   | .GD => if qs.length < FT.passengerMinNum then
-      .error (.business "e.ar.b2.2010" [FT.fareTypeName, toString FT.passengerMinNum]) else .ok ()
+      .error (.business (.tooFewPassengers (FT.fareTypeName) (toString FT.passengerMinNum))) else .ok ()
   | _ => .ok ()
 
 theorem checkFareTypeOf_eq {md : Spec.MasterData} {qs : List Spec.Model.Passenger} {k : Spec.Model.FlightKey}
@@ -135,7 +135,7 @@ def firstErr {ε : Type} : List (Except ε Unit) → Except ε Unit
 /-- `for` 文の 1 回分の結果の対応: どちらも成功して次へ進むか、[Source] が業務例外を投げ、[Spec] が同じコードと引数の
 `Business` を返す。 -/
 def AgreeStep (r : JResult (ForInStep PUnit)) (x : Except Spec.Error.AtrsError Unit) : Prop :=
-  (r = .ok (.yield ()) ∧ x = .ok ()) ∨ ∃ c args, r = .error (AtrsBusinessException.newArgs c args) ∧ x = .error (.business c args)
+  (r = .ok (.yield ()) ∧ x = .ok ()) ∨ ∃ be : Spec.Error.BusinessError, r = .error (AtrsBusinessException.newArgs be.code be.args) ∧ x = .error (.business be)
 
 /-- 要素ごとの検査の `for` 文と、[Spec] の検査の列の最初の失敗の対応。 -/
 theorem forIn_agree {α : Type} (f : α → PUnit → JResult (ForInStep PUnit)) :
@@ -145,11 +145,11 @@ theorem forIn_agree {α : Type} (f : α → PUnit → JResult (ForInStep PUnit))
   | [], [], .nil => .inl ⟨rfl, rfl⟩
   | a :: l, s :: ss, .cons h hr => by
     rw [List.forIn_cons]
-    rcases h with ⟨hf, rfl⟩ | ⟨c, args, hf, rfl⟩
+    rcases h with ⟨hf, rfl⟩ | ⟨be, hf, rfl⟩
     · have ih := forIn_agree f hr
       simp only [hf, bind, Except.bind, firstErr] at ih ⊢
       exact ih
-    · exact .inr ⟨c, args, by simp only [hf, bind, Except.bind], rfl⟩
+    · exact .inr ⟨be, by simp only [hf, bind, Except.bind], rfl⟩
 
 /-- 運賃種別の利用条件の検査（予約フライトを順に）。すべての予約フライトが同じ搭乗者の列 `xs`（[Spec] の `qs`）を持つ。 -/
 theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.Model.Passenger}
@@ -176,7 +176,7 @@ theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec
     rw [List.forIn_map, forIn_check _ (fun x => x.gender == some .M) _ ladies_body, any_gender_eq hg]
     cases qs.any (·.gender == .M)
     · exact .inl ⟨rfl, rfl⟩
-    · exact .inr ⟨"e.ar.b2.2007", [], rfl, rfl⟩
+    · exact .inr ⟨.ladiesOnly, rfl, rfl⟩
   case GD =>
     have hl : (J32.ofInt ((List.map some xs).length : Int)).val = (qs.length : Int) := by
       rw [List.length_map, LangSemantics.Java.IntLemmas.ofInt_nat (by omega), forall₂_length hg]
@@ -184,7 +184,7 @@ theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec
     by_cases hlt : qs.length < FT.passengerMinNum
     · have : (qs.length : Int) < FT.passengerMinNum := by omega
       simp only [this, hlt, decide_true, ite_true]
-      exact .inr ⟨_, _, rfl, rfl⟩
+      exact .inr ⟨_, rfl, rfl⟩
     · have : ¬ (qs.length : Int) < FT.passengerMinNum := by omega
       simp only [this, hlt, decide_false, Bool.false_eq_true, ite_false]
       exact .inl ⟨rfl, rfl⟩

@@ -134,13 +134,13 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         dto.reserveNo = some (Spec.Port.World.reserveNoOf w.sequences.reserve).val ∧
         dto.paymentDate = (mkFlight p f0).departureDate)
       (fun e s => s.env = env ∧ ((IsFault env e ∧ ∃ a, worldOfDb s.db = some (Spec.UseCase.Reserve.advance w a)) ∨
-        (∃ c, e = AtrsBusinessException.newArgs c [] ∧
-          secureAll md T qs.length ks w = some (.error (.business c [])) ∧ worldOfDb s.db = some w))) := by
+        (∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
+          secureAll md T qs.length ks w = some (.error (.business be)) ∧ worldOfDb s.db = some w))) := by
   have hlenp : (pfs.map SourceModel.App.B2.B2Mapper.mapPassenger).length = qs.length := by
     rw [List.length_map]; exact Abstraction.Reserve.Validate.forall₂_length hpc
   have hlenq : (pfs.map SourceModel.App.B2.B2Mapper.mapPassenger).length ≤ 6 := hlenp ▸ hql
   refine transactional_hoare' (E := fun e s => s.env = env ∧ ((IsFault env e ∧ SeqGe w s.db) ∨
-      (∃ c, e = AtrsBusinessException.newArgs c [] ∧ secureAll md T qs.length ks w = some (.error (.business c [])) ∧
+      (∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧ secureAll md T qs.length ks w = some (.error (.business be)) ∧
         ∃ w', worldOfDb s.db = some w' ∧ w'.sequences = w.sequences))) fun s0 ⟨hd0, he0⟩ => ?_
   have hnev : LangSemantics.Java.Spring.Assert.notEmptyValue (some (rfList p (f0 :: fs) pfs))
       "reserveFlightList must not empty." = pure (rfList p (f0 :: fs) pfs) := rfl
@@ -151,7 +151,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     simp only [rfList, List.map_map]; rfl
   -- 取消の後の α
   refine Hoare.conseq (P := fun s => s = s0) (E := fun e s => s.env = env ∧ ((IsFault env e ∧ SeqGe w s.db) ∨
-      (∃ c, e = AtrsBusinessException.newArgs c [] ∧ secureAll md T qs.length ks w = some (.error (.business c [])) ∧
+      (∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧ secureAll md T qs.length ks w = some (.error (.business be)) ∧
         ∃ w', worldOfDb s.db = some w' ∧ w'.sequences = w.sequences))) ?_ (fun _ h => h) (fun _ _ h => h)
     (fun e s h => ⟨h, fun db' hdb' => ⟨h.1, ?_⟩⟩)
   · rw [hrl]
@@ -159,10 +159,10 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     · subst h; exact ⟨hd0 ▸ hw0, he0⟩
     · obtain ⟨w', ⟨hw', hse⟩, hseq, he⟩ := h
       refine ⟨hse, ?_⟩
-      rcases he with he | ⟨c, hc, hsa⟩
+      rcases he with he | ⟨be, hba, hc, hsa⟩
       · refine .inl ⟨he, {}, ?_⟩
         rw [advance_zero, ← hseq]; exact (worldOfDb_eq_some.mp hw').2.2.2
-      · exact .inr ⟨c, hc, by rw [← hlenp]; exact hsa, w', hw', hseq⟩
+      · exact .inr ⟨be, hba, hc, by rw [← hlenp]; exact hsa, w', hw', hseq⟩
     · intro s ⟨w1, hw1, hdb1, hse1⟩
       obtain ⟨hr1, hm1, hq1, hk1⟩ := secureAll_world hw1
       have hk1' : KeysOk w1 := by unfold KeysOk at hk ⊢; rw [hr1, hm1, hq1]; exact hk
@@ -353,9 +353,9 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
           · rw [e8]; exact seqOf_some_succ hsr
           · exact hsf3
           · exact hsp3
-  · rcases h.2 with ⟨hf, a, ha⟩ | ⟨c, hc, hsa, w', hw', hseq⟩
+  · rcases h.2 with ⟨hf, a, ha⟩ | ⟨be, hba, hc, hsa, w', hw', hseq⟩
     · exact .inl ⟨hf, a, by rw [hdb', hd0]; exact worldOfDb_rollback hw0 ha⟩
-    · refine .inr ⟨c, hc, hsa, ?_⟩
+    · refine .inr ⟨be, hba, hc, hsa, ?_⟩
       have hsq : sequencesOf s.db = some (Spec.UseCase.Reserve.advance w {}).sequences := by
         rw [advance_zero, ← hseq]; exact (worldOfDb_eq_some.mp hw').2.2.2
       rw [hdb', hd0, worldOfDb_rollback hw0 hsq, advance_zero]

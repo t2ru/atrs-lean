@@ -79,9 +79,9 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
           o.reserveNo = some (Spec.UseCase.Reserve.register d TD tfn w1).1.val ∧
           o.paymentDate = (mkFlight p f0).departureDate ∧ o.totalFare = some T)
         (fun e s => s.env = ic.env ∧ ((IsFault ic.env e ∧ ∃ a, worldOfDb s.db = some (Spec.UseCase.Reserve.advance w a)) ∨
-          (∃ c args, e = AtrsBusinessException.newArgs c args ∧ worldOfDb s.db = some w ∧
-            (v = .error (.business c args) ∨ (v = .ok () ∧ args = [] ∧
-              secureAll md TD d.passengers.length ks w = some (.error (.business c []))))))) := by
+          (∃ be : Spec.Error.BusinessError, e = AtrsBusinessException.newArgs be.code be.args ∧ worldOfDb s.db = some w ∧
+            (v = .error (.business be) ∨ (v = .ok () ∧ be.args = [] ∧
+              secureAll md TD d.passengers.length ks w = some (.error (.business be))))))) := by
   obtain ⟨hrfl, ⟨age, hage, hagev⟩, ⟨M0, hm, hn⟩, hf, hg, hgd, hR, hne, hks⟩ :=
     reservation_facts hri (by rw [buildDraft_compact]; exact hd) (((f0 :: fs).map (mkFlight p)).map some)
   simp only [create_reset] at hrfl hage hm hf hg hgd
@@ -105,9 +105,9 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
   unfold TicketReserveHelper.reserve
   refine Hoare.bind' (Hoare.conseq hH (fun _ h => h) (fun _ _ h => h) fun e s ⟨⟨hsd, hse⟩, he'⟩ => ⟨hse, ?_⟩)
     fun _ => ?_
-  · rcases he' with hft | ⟨c, args, rfl, hc⟩
+  · rcases he' with hft | ⟨be, rfl, hc⟩
     · exact .inl ⟨hse ▸ hft.fault, {}, by rw [advance_zero, hsd]; exact hw⟩
-    · exact .inr ⟨c, args, rfl, hsd ▸ hw, .inl hc⟩
+    · exact .inr ⟨be, rfl, hsd ▸ hw, .inl hc⟩
   intro s ⟨hs, hv0⟩
   subst hv0
   refine (?_ : Hoare (fun s => s.db = t ∧ s.env = ic.env) _ _ _) s hs
@@ -154,9 +154,9 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
     ?_ ?_ (mail := d.repMail) ?_ (hdmail ▸ hmaill) (by rw [← hR]; exact hm) hrm
   · refine Hoare.bind' (Hoare.conseq hreg (fun _ h => h) (fun _ _ h => h) fun e s ⟨hse, h⟩ => ⟨hse, ?_⟩)
       fun dto => Hoare.pure' fun s ⟨hse, w1, hsa, hdb, hno, hpd⟩ => ⟨trivial, hse, w1, hsa, ?_, ?_, hpd, rfl⟩
-    · rcases h with h | ⟨c, hc, hsa, hdb⟩
+    · rcases h with h | ⟨be, hba, hc, hsa, hdb⟩
       · exact .inl h
-      · exact .inr ⟨c, [], hc, hdb, .inr ⟨trivial, rfl, hsa⟩⟩
+      · exact .inr ⟨be, by rw [hc, hba], hdb, .inr ⟨trivial, hba, hsa⟩⟩
     · rw [register_eq d TD tfn (secureAll_world hsa).2.2.1, ← hn]
       exact hdb
     · rw [register_eq d TD tfn (secureAll_world hsa).2.2.1]

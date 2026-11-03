@@ -175,7 +175,7 @@ theorem run_icFS14 :
   · cases h
 
 /-- [Spec] の出力は `NotFound` ではない（搭乗日が今日より前なので `Business("e.ar.b1.2001")`）。 -/
-theorem answer_ne14 : Spec.FlightSearch.answer wFS iaFS14 ≠ .error (.notFound "e.ar.b1.2003") := by
+theorem answer_ne14 : Spec.FlightSearch.answer wFS iaFS14 ≠ .error (.notFound .noFlight) := by
   have h : (match Spec.FlightSearch.answer wFS iaFS14 with
       | .error (.notFound _) => false
       | _ => true) = true := by decide +kernel

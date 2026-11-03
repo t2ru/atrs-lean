@@ -2173,6 +2173,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Alpha.aoR_business",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Alpha.aoR_confirmed",
       "layer": "Abstraction"
     },
@@ -2749,6 +2753,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.NoNL.bizNL_of",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.NoNL.checkOne_nl",
       "layer": "Abstraction"
     },
@@ -2758,6 +2766,10 @@
     },
     {
       "name": "Abstraction.Reserve.NoNL.checkRepMember_nl",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.NoNL.code_noNL",
       "layer": "Abstraction"
     },
     {
@@ -10081,6 +10093,18 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Error.BusinessError",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Error.NotFoundError",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Error.SystemError",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Fare.BasicFareInput.Pre",
       "layer": "Spec"
     },
@@ -15722,6 +15746,21 @@
     {
       "type": "spec_doc",
       "from": "Spec.Error.AtrsError",
+      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Error.BusinessError",
+      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Error.NotFoundError",
+      "to": "docs/spec/errors-and-messages.md#分類atrserror"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Error.SystemError",
       "to": "docs/spec/errors-and-messages.md#分類atrserror"
     },
     {

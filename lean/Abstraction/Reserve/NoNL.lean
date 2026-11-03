@@ -26,51 +26,50 @@ theorem noNL_repr (n : Nat) : NoNL n.repr := noNL_toString n
 
 /-- 業務例外のコードと引数が改行を含まない。 -/
 def BizNL (x : Except AtrsError Unit) : Prop :=
-  ∀ c args, x = .error (.business c args) → NoNL c ∧ ∀ a ∈ args, NoNL a
+  ∀ be, x = .error (.business be) → NoNL be.code ∧ ∀ a ∈ be.args, NoNL a
 
-theorem BizNL.ok : BizNL (.ok ()) := fun _ _ h => by cases h
+theorem BizNL.ok : BizNL (.ok ()) := fun _ h => by cases h
+
+/-- 業務エラーのコードは改行を含まない。 -/
+theorem code_noNL (be : BusinessError) : NoNL be.code := by
+  cases be <;> simp only [BusinessError.code] <;> decide
+
+/-- 引数の無い業務エラー・自然数の文字列の引数の業務エラー。 -/
+theorem bizNL_of {be : BusinessError} (h : ∀ a ∈ be.args, NoNL a) : BizNL (.error (.business be)) := by
+  intro be' h'
+  simp only [Except.error.injEq, AtrsError.business.injEq] at h'
+  subst h'
+  exact ⟨code_noNL _, h⟩
 
 theorem BizNL.bind {x y : Except AtrsError Unit} (hx : BizNL x) (hy : BizNL y) : BizNL (x.bind fun _ => y) := by
-  intro c args h
+  intro be h
   cases x with
-  | error e => exact hx c args h
-  | ok u => exact hy c args h
+  | error e => exact hx be h
+  | ok u => exact hy be h
 
 theorem checkRepAge_nl (cfg : Spec.Config) (d : Spec.UseCase.Reserve.Draft) :
     BizNL (Spec.UseCase.Reserve.checkRepAge cfg d) := by
-  intro c args h
-  unfold Spec.UseCase.Reserve.checkRepAge at h
-  split at h
-  · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-    obtain ⟨rfl, rfl⟩ := h
-    refine ⟨by decide, ?_⟩
-    intro a ha
-    simp only [List.mem_singleton] at ha
-    subst ha
-    exact noNL_toString _
-  · cases h
+  unfold Spec.UseCase.Reserve.checkRepAge
+  split
+  · exact bizNL_of fun a ha => by
+      simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
+  · exact BizNL.ok
 
 theorem specFareTypeOf_nl {FT : Spec.MasterData.FareType} (hft : NoNL FT.fareTypeName)
     (qs : List Spec.Model.Passenger) : BizNL (specFareTypeOf FT qs) := by
-  intro c args h
-  unfold specFareTypeOf at h
-  split at h
-  · split at h
-    · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-      obtain ⟨rfl, rfl⟩ := h
-      exact ⟨by decide, by simp⟩
-    · cases h
-  · split at h
-    · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-      obtain ⟨rfl, rfl⟩ := h
-      refine ⟨by decide, ?_⟩
-      intro a ha
-      simp only [List.mem_cons, List.not_mem_nil, or_false] at ha
+  unfold specFareTypeOf
+  split
+  · split
+    · exact bizNL_of (by simp [BusinessError.args])
+    · exact BizNL.ok
+  · split
+    · refine bizNL_of fun a ha => ?_
+      simp only [BusinessError.args, List.mem_cons, List.not_mem_nil, or_false] at ha
       rcases ha with rfl | rfl
       · exact hft
       · exact noNL_toString _
-    · cases h
-  · cases h
+    · exact BizNL.ok
+  · exact BizNL.ok
 
 theorem firstErr_nl : ∀ {xs : List (Except AtrsError Unit)}, (∀ x ∈ xs, BizNL x) → BizNL (firstErr xs)
   | [], _ => BizNL.ok
@@ -84,34 +83,26 @@ theorem firstErr_nl : ∀ {xs : List (Except AtrsError Unit)}, (∀ x ∈ xs, Bi
 
 theorem checkRepMember_nl (w : Spec.Port.World) (d : Spec.UseCase.Reserve.Draft) :
     BizNL (Spec.UseCase.Reserve.checkRepMember w d) := by
-  intro c args h
-  unfold Spec.UseCase.Reserve.checkRepMember at h
-  split at h
-  · cases h
-  · split at h
-    · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-      obtain ⟨rfl, rfl⟩ := h
-      exact ⟨by decide, by simp⟩
-    · split at h
-      · cases h
-      · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-        obtain ⟨rfl, rfl⟩ := h
-        exact ⟨by decide, by simp⟩
+  unfold Spec.UseCase.Reserve.checkRepMember
+  split
+  · exact BizNL.ok
+  · split
+    · exact bizNL_of (by simp [BusinessError.args])
+    · split
+      · exact BizNL.ok
+      · exact bizNL_of (by simp [BusinessError.args])
 
 theorem checkOne_nl (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) : BizNL (checkOne w p i) := by
-  intro c args h
-  unfold checkOne at h
-  split at h
-  · cases h
-  · split at h
-    · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-      obtain ⟨rfl, rfl⟩ := h
-      exact ⟨by decide, fun a ha => by simp only [List.mem_singleton] at ha; subst ha; exact noNL_toString _⟩
-    · split at h
-      · cases h
-      · simp only [Except.error.injEq, AtrsError.business.injEq] at h
-        obtain ⟨rfl, rfl⟩ := h
-        exact ⟨by decide, fun a ha => by simp only [List.mem_singleton] at ha; subst ha; exact noNL_toString _⟩
+  unfold checkOne
+  split
+  · exact BizNL.ok
+  · split
+    · exact bizNL_of fun a ha => by
+        simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
+    · split
+      · exact BizNL.ok
+      · exact bizNL_of fun a ha => by
+          simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
 
 theorem pmFrom_nl (w : Spec.Port.World) : ∀ (ps : List Spec.Model.Passenger) (i : Nat), BizNL (pmFrom w ps i)
   | [], _ => BizNL.ok

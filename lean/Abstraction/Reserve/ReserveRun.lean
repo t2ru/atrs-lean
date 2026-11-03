@@ -104,10 +104,10 @@ theorem reserve_core {P : St → Prop} {p : Providers} {ic : SourceModel.Reserve
 
 /-- 空席の確保の業務例外のコードは `e.ar.b2.2008` か `e.ar.b2.2009`。 -/
 theorem secureAll_code {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} :
-    ∀ {ks : List Spec.Model.FlightKey} {w : Spec.Port.World} {c : String} {a : List String},
-      secureAll md T n ks w = some (.error (.business c a)) → c = "e.ar.b2.2008" ∨ c = "e.ar.b2.2009"
-  | [], w, c, a, h => by simp [secureAll] at h
-  | k :: ks, w, c, a, h => by
+    ∀ {ks : List Spec.Model.FlightKey} {w : Spec.Port.World} {be : Spec.Error.BusinessError},
+      secureAll md T n ks w = some (.error (.business be)) → be = .fareTypeUnavailable ∨ be = .noVacancy
+  | [], w, be, h => by simp [secureAll] at h
+  | k :: ks, w, be, h => by
     simp only [secureAll] at h
     cases hs : secureSeats md T n w k with
     | none => rw [hs] at h; cases h
@@ -123,12 +123,12 @@ theorem secureAll_code {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} :
         obtain ⟨ft, -, hs⟩ := hs
         split at hs
         · simp only [Option.some.injEq, Except.error.injEq, Spec.Error.AtrsError.business.injEq] at hs
-          exact .inl hs.1.symm
+          exact .inl hs.symm
         · split at hs
           · simp at hs
           · split at hs
             · simp only [Option.some.injEq, Except.error.injEq, Spec.Error.AtrsError.business.injEq] at hs
-              exact .inr hs.1.symm
+              exact .inr hs.symm
             · simp at hs
 
 theorem forall₂_imp_mem {α β : Type} {R S : α → β → Prop} :
@@ -310,17 +310,18 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
         rw [hTn, hv', Abstraction.Reserve.Keys.ofString?_val, Option.bind_some, Option.map_some]
     | error e' s =>
       rintro ⟨hse, hE⟩
-      rcases hE with ⟨hf, a, hdb⟩ | ⟨c, args, rfl, hdb, hcv⟩
+      rcases hE with ⟨hf, a, hdb⟩ | ⟨be, rfl, hdb, hcv⟩
       · obtain ⟨oc, oa, ch, hc, hst, ho, had⟩ := fault_out hf w hop' a
         exact ⟨oc, _, oa, ch, hc, hdb, fun w'' h => by rw [hdb] at h; cases h; exact keysOk_advance hkw a, hst, ho, had⟩
       · have hic' : IcW s.db := fun w'' h => by rw [hdb] at h; cases h; exact hkw
-        rcases hcv with hvb | ⟨hvr0, rfl, hsa⟩
+        rcases hcv with hvb | ⟨hvr0, hba, hsa⟩
         · rcases hres with ⟨e, he', hww, rfl⟩ | ⟨hvr0, -⟩
           · rw [hvb] at he'
             cases he'
             rw [hww] at hx
-            have hnl := validate_nl hkf' hft hvr c args hvb
-            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hdb, hic', step_reserve hop' hx _, rfl,
+            have hnl := validate_nl hkf' hft hvr be hvb
+            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hdb, hic', step_reserve hop' hx _,
+              aoR_business be,
               admits_std _⟩
           · rw [hvb] at hvr0; cases hvr0
         · rcases hres with ⟨e, he', -⟩ | ⟨-, n, hn, sec, hsec, hsc⟩
@@ -330,8 +331,9 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
           rcases hsc with ⟨e, he', hww, rfl⟩ | ⟨w1, hw1, -⟩
           · cases he'
             rw [hww] at hx
-            have hnc : NoNL c := by rcases secureAll_code hsa with rfl | rfl <;> decide
-            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnc (by simp), hdb, hic', step_reserve hop' hx _, rfl,
+            have hnc : NoNL be.code := Abstraction.Reserve.NoNL.code_noNL be
+            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnc (by simp [hba]), hdb, hic',
+              step_reserve hop' hx _, aoR_business be,
               admits_std _⟩
           · cases hw1
 

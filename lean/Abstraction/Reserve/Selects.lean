@@ -18,7 +18,7 @@ def IsReq (e : AtrsError) : Prop := ∃ s, Spec.UseCase.Reserve.asInvalidRequest
 
 theorem isReq_invalid (s : String) : IsReq (.invalidRequest s) := ⟨s, rfl⟩
 
-theorem isReq_business (c : String) (a : List String) : IsReq (.business c a) := ⟨c, rfl⟩
+theorem isReq_business (be : BusinessError) : IsReq (.business be) := ⟨be.code, rfl⟩
 
 theorem checkFlight_req {w : Spec.Port.World} {f : ResolvedFlight} {m : Except AtrsError Spec.MasterData.FlightMaster}
     (h : checkFlight w f = m) : ∀ e, m = .error e → IsReq e := by
@@ -31,7 +31,7 @@ theorem checkFlight_req {w : Spec.Port.World} {f : ResolvedFlight} {m : Except A
 
 theorem checkInterval_req {cfg : Spec.Config} {o h' : Spec.Model.FlightKey} {om hm : Spec.MasterData.FlightMaster}
     {e : AtrsError} (h : checkInterval cfg o om h' hm = .error e) : IsReq e := by
-  unfold checkInterval at h; split at h <;> cases h; exact isReq_business _ _
+  unfold checkInterval at h; split at h <;> cases h; exact isReq_business _
 
 theorem checkFareTypes_req {ks : List Spec.Model.FlightKey} {e : AtrsError} (h : checkFareTypes ks = .error e) :
     IsReq e := by

@@ -69,7 +69,7 @@ def departureMinute (h : FlightKey) (hm : FlightMaster) : Int :=
 @[spec_doc "docs/spec/reservation.md#validateflightlist", gap "D-031"]
 def checkInterval (cfg : Config) (o : FlightKey) (om : FlightMaster) (h : FlightKey) (hm : FlightMaster) :
     Except AtrsError Unit :=
-  if departureMinute h hm < availableMinute cfg o om then .error (.business "e.ar.b2.2001") else .ok ()
+  if departureMinute h hm < availableMinute cfg o om then .error (.business .intervalTooShort) else .ok ()
 
 /-- 逆区間の検査: 往路の出発空港 ≠ 復路の到着空港、または往路の到着空港 ≠ 復路の出発空港なら `InvalidRequest`。
 区間がマスタに無ければ無し（PRE: MD-2）。 -/
