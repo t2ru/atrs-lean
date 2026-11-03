@@ -11693,6 +11693,11 @@
     },
     {
       "type": "gap",
+      "from": "Spec.Port.Sequences",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
       "from": "Spec.Ticket.availableMinute",
       "to": "D-031"
     },
@@ -12443,6 +12448,66 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getDepDate()",
+      "hash": "9e5ad0157d1bece7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFareTypeCd()",
+      "hash": "0ad0a31bd0da4f1d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFlightName()",
+      "hash": "56b669a044a195ca"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setDepDate(LocalDate)",
+      "hash": "e4d262f79ebcb7ac"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFareTypeCd(FareTypeCd)",
+      "hash": "028d6508ed1eadd9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFlightName(String)",
+      "hash": "c8ed541ae69f3cad"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B0.SelectFlightForm",
+      "to": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm.serialVersionUID",
+      "hash": "7be1d1be2d9c3506"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.App.B0.TicketHelper.toFlightList",
       "to": "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)",
       "hash": "3fef600108b03c6e"
@@ -12473,6 +12538,78 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getAge()",
+      "hash": "a104b8de82dcc9aa"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getFamilyName()",
+      "hash": "42b1265bbc5dfce0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGender()",
+      "hash": "40162857f388bc4a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGivenName()",
+      "hash": "d2416f58f72730cb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getMembershipNumber()",
+      "hash": "b2f27b5067cb06d6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setAge(Integer)",
+      "hash": "0f30aa30583622a4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setFamilyName(String)",
+      "hash": "f5e85e96b8121f23"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGender(Gender)",
+      "hash": "4a852d53b0d2198a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGivenName(String)",
+      "hash": "b701004f7a9287e1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setMembershipNumber(String)",
+      "hash": "6669caafcd097fd4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.PassengerForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm.serialVersionUID",
+      "hash": "e62c9f0ec675d596"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.App.B2.PassengerForm.isEmpty",
       "to": "dep:org.springframework:spring-core#StringUtils",
       "hash": "spring-core-7.0.3"
@@ -12482,6 +12619,240 @@
       "from": "SourceModel.App.B2.PassengerForm.isEmpty",
       "to": "java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()",
       "hash": "4c989a582a1c8d97"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getPaymentDate()",
+      "hash": "305a3cd2edbb1ef0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getReserveNo()",
+      "hash": "627ab75e41f993e2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getTotalFare()",
+      "hash": "337b91f1b4b57ed5"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setPaymentDate(LocalDate)",
+      "hash": "28072d31fdd042a0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto.serialVersionUID",
+      "hash": "b254b2b7e2ccf898"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#getTotalFare()",
+      "hash": "337b91f1b4b57ed5"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "to": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto.serialVersionUID",
+      "hash": "a5320337ac4d508c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getFlightType()",
+      "hash": "9b6142b3fa1d0242"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getPassengerFormList()",
+      "hash": "6f58be9f86183e69"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepAge()",
+      "hash": "846ec8352e5658be"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepFamilyName()",
+      "hash": "66abb894190a0227"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGender()",
+      "hash": "015d7284f4686835"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGivenName()",
+      "hash": "416cfd32c3fd3e09"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMail()",
+      "hash": "1f11cdab9d1723af"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMembershipNumber()",
+      "hash": "0a19ce49bcf3b2f0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel1()",
+      "hash": "f63099e3bf370f7d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel2()",
+      "hash": "76a960a8570763d7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel3()",
+      "hash": "f3aa4bc2e10c0517"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getSelectFlightFormList()",
+      "hash": "88b7fb3a97cf3933"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setFlightType(FlightType)",
+      "hash": "7f178ac43c6090bd"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassenger(int,PassengerForm)",
+      "hash": "6be9b84152dfe022"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassengerFormList(List)",
+      "hash": "ea101707e186ad95"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepAge(Integer)",
+      "hash": "6a4c35f99292ef27"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepFamilyName(String)",
+      "hash": "bcf989d8201a63e6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGender(Gender)",
+      "hash": "d6a97d15e5c042cf"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGivenName(String)",
+      "hash": "51d9e064217ea526"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMail(String)",
+      "hash": "2a33f1fef3a3ef8f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMembershipNumber(String)",
+      "hash": "a17d24ad21760b13"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel1(String)",
+      "hash": "8c65985fbae35f9c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel2(String)",
+      "hash": "b9219bb92a129742"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel3(String)",
+      "hash": "5b2191984494152c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setSelectFlightFormList(List)",
+      "hash": "4043576d5d6872c9"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.App.B2.TicketReserveForm",
+      "to": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm.serialVersionUID",
+      "hash": "5a3bc741ecae5432"
     },
     {
       "type": "source",
@@ -13841,6 +14212,102 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getAge()",
+      "hash": "a104b8de82dcc9aa"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getFamilyName()",
+      "hash": "42b1265bbc5dfce0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getGender()",
+      "hash": "40162857f388bc4a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getGivenName()",
+      "hash": "d2416f58f72730cb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getMember()",
+      "hash": "1e62d600fca019f6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getPassengerNo()",
+      "hash": "dd1555b61a86c0fa"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#getReserveFlightNo()",
+      "hash": "2769dce77ca87a1a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setAge(Integer)",
+      "hash": "0f30aa30583622a4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setFamilyName(String)",
+      "hash": "f5e85e96b8121f23"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setGender(Gender)",
+      "hash": "4a852d53b0d2198a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setGivenName(String)",
+      "hash": "b701004f7a9287e1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setMember(Member)",
+      "hash": "e55af386080fd1eb"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setPassengerNo(Integer)",
+      "hash": "55aa102035d21774"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#setReserveFlightNo(Integer)",
+      "hash": "0970fb4639317f1c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Passenger",
+      "to": "java:jp.co.ntt.atrs.domain.model.Passenger.serialVersionUID",
+      "hash": "a4400e5f56da5cba"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Model.PeakTime",
       "to": "java:jp.co.ntt.atrs.domain.model.PeakTime#getMultiplicationRatio()",
       "hash": "0b4e159bab8a2bad"
@@ -13946,6 +14413,210 @@
       "from": "SourceModel.Domain.Model.Plane",
       "to": "java:jp.co.ntt.atrs.domain.model.Plane.serialVersionUID",
       "hash": "ee869d61bf2fce1b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepAge()",
+      "hash": "846ec8352e5658be"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepFamilyName()",
+      "hash": "66abb894190a0227"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepGender()",
+      "hash": "015d7284f4686835"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepGivenName()",
+      "hash": "416cfd32c3fd3e09"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepMail()",
+      "hash": "1f11cdab9d1723af"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepMember()",
+      "hash": "a6545c8a50e40110"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepTel()",
+      "hash": "32a86102cf08218b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveDate()",
+      "hash": "2c8ef6f8d1698155"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveFlightList()",
+      "hash": "f425d6344b4a2403"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveNo()",
+      "hash": "627ab75e41f993e2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#getTotalFare()",
+      "hash": "337b91f1b4b57ed5"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepAge(Integer)",
+      "hash": "6a4c35f99292ef27"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepFamilyName(String)",
+      "hash": "bcf989d8201a63e6"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepGender(Gender)",
+      "hash": "d6a97d15e5c042cf"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepGivenName(String)",
+      "hash": "51d9e064217ea526"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepMail(String)",
+      "hash": "2a33f1fef3a3ef8f"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepMember(Member)",
+      "hash": "3a750ea4386f8f84"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepTel(String)",
+      "hash": "c2e8b2936c18f73b"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveDate(LocalDate)",
+      "hash": "0a1d34981e900f2e"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveFlightList(List)",
+      "hash": "6b9a3b4787149f5d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.Reservation",
+      "to": "java:jp.co.ntt.atrs.domain.model.Reservation.serialVersionUID",
+      "hash": "fadf05834e294c32"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getFlight()",
+      "hash": "f32789ed3a8ab89a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getPassengerList()",
+      "hash": "14ef9a6a124c29ed"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveFlightNo()",
+      "hash": "2769dce77ca87a1a"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveNo()",
+      "hash": "627ab75e41f993e2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setFlight(Flight)",
+      "hash": "7e222d6a5c787480"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setPassengerList(List)",
+      "hash": "3c0f73ab04c18ff1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveFlightNo(Integer)",
+      "hash": "0970fb4639317f1c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Model.ReserveFlight",
+      "to": "java:jp.co.ntt.atrs.domain.model.ReserveFlight.serialVersionUID",
+      "hash": "fd7ac2ae97b49599"
     },
     {
       "type": "source",
@@ -14669,6 +15340,48 @@
     },
     {
       "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#<init>(String,LocalDate)",
+      "hash": "9478f45856d7dcf7"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getPaymentDate()",
+      "hash": "305a3cd2edbb1ef0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getReserveNo()",
+      "hash": "627ab75e41f993e2"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setPaymentDate(LocalDate)",
+      "hash": "28072d31fdd042a0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#toString()",
+      "hash": "b78e85e304022465"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto.serialVersionUID",
+      "hash": "ab7b84f869e4a96c"
+    },
+    {
+      "type": "source",
       "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
       "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode#code()",
       "hash": "5fde806a365dc7a0"
@@ -14732,6 +15445,24 @@
       "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
       "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2010",
       "hash": "d64487b413becec0"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5001",
+      "hash": "5acd18b769673fe4"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5002",
+      "hash": "f4427cb5117641dc"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "to": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5003",
+      "hash": "a96dc797ba2e65b6"
     },
     {
       "type": "source",
@@ -16235,6 +16966,106 @@
   ],
   "checks": [
     {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getBoardingClassCd()",
+      "hash": "2c95f973159bc7cc",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getDepDate()",
+      "hash": "9e5ad0157d1bece7",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFareTypeCd()",
+      "hash": "0ad0a31bd0da4f1d",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFlightName()",
+      "hash": "56b669a044a195ca",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setBoardingClassCd(BoardingClassCd)",
+      "hash": "fab24fded6a99658",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setDepDate(LocalDate)",
+      "hash": "e4d262f79ebcb7ac",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFareTypeCd(FareTypeCd)",
+      "hash": "028d6508ed1eadd9",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFlightName(String)",
+      "hash": "c8ed541ae69f3cad",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B0.SelectFlightForm",
+      "locator": "java:jp.co.ntt.atrs.app.b0.SelectFlightForm.serialVersionUID",
+      "hash": "7be1d1be2d9c3506",
+      "merkle": "b8583b09b1db7678",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.App.B0.TicketHelper.toFlightList",
       "locator": "java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)",
       "hash": "3fef600108b03c6e",
@@ -16264,10 +17095,520 @@
       ]
     },
     {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getAge()",
+      "hash": "a104b8de82dcc9aa",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getFamilyName()",
+      "hash": "42b1265bbc5dfce0",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGender()",
+      "hash": "40162857f388bc4a",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGivenName()",
+      "hash": "d2416f58f72730cb",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#getMembershipNumber()",
+      "hash": "b2f27b5067cb06d6",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setAge(Integer)",
+      "hash": "0f30aa30583622a4",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setFamilyName(String)",
+      "hash": "f5e85e96b8121f23",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGender(Gender)",
+      "hash": "4a852d53b0d2198a",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGivenName(String)",
+      "hash": "b701004f7a9287e1",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#setMembershipNumber(String)",
+      "hash": "6669caafcd097fd4",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.PassengerForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm.serialVersionUID",
+      "hash": "e62c9f0ec675d596",
+      "merkle": "7846b240eed68b4f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.App.B2.PassengerForm.isEmpty",
       "locator": "java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()",
       "hash": "4c989a582a1c8d97",
       "merkle": "87157b82dfad4b5f",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getPaymentDate()",
+      "hash": "305a3cd2edbb1ef0",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getReserveNo()",
+      "hash": "627ab75e41f993e2",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getTotalFare()",
+      "hash": "337b91f1b4b57ed5",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setPaymentDate(LocalDate)",
+      "hash": "28072d31fdd042a0",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveCompleteOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto.serialVersionUID",
+      "hash": "b254b2b7e2ccf898",
+      "merkle": "bac13162f6f7c33e",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#getTotalFare()",
+      "hash": "337b91f1b4b57ed5",
+      "merkle": "7a6c70888cbb652c",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d",
+      "merkle": "7a6c70888cbb652c",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "7a6c70888cbb652c",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.ReserveConfirmOutputDto",
+      "locator": "java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto.serialVersionUID",
+      "hash": "a5320337ac4d508c",
+      "merkle": "7a6c70888cbb652c",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getFlightType()",
+      "hash": "9b6142b3fa1d0242",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getPassengerFormList()",
+      "hash": "6f58be9f86183e69",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepAge()",
+      "hash": "846ec8352e5658be",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepFamilyName()",
+      "hash": "66abb894190a0227",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGender()",
+      "hash": "015d7284f4686835",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGivenName()",
+      "hash": "416cfd32c3fd3e09",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMail()",
+      "hash": "1f11cdab9d1723af",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMembershipNumber()",
+      "hash": "0a19ce49bcf3b2f0",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel1()",
+      "hash": "f63099e3bf370f7d",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel2()",
+      "hash": "76a960a8570763d7",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel3()",
+      "hash": "f3aa4bc2e10c0517",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getSelectFlightFormList()",
+      "hash": "88b7fb3a97cf3933",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setFlightType(FlightType)",
+      "hash": "7f178ac43c6090bd",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassenger(int,PassengerForm)",
+      "hash": "6be9b84152dfe022",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassengerFormList(List)",
+      "hash": "ea101707e186ad95",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepAge(Integer)",
+      "hash": "6a4c35f99292ef27",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepFamilyName(String)",
+      "hash": "bcf989d8201a63e6",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGender(Gender)",
+      "hash": "d6a97d15e5c042cf",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGivenName(String)",
+      "hash": "51d9e064217ea526",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMail(String)",
+      "hash": "2a33f1fef3a3ef8f",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMembershipNumber(String)",
+      "hash": "a17d24ad21760b13",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel1(String)",
+      "hash": "8c65985fbae35f9c",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel2(String)",
+      "hash": "b9219bb92a129742",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel3(String)",
+      "hash": "5b2191984494152c",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setSelectFlightFormList(List)",
+      "hash": "4043576d5d6872c9",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "7a43514d7b877e85",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.App.B2.TicketReserveForm",
+      "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveForm.serialVersionUID",
+      "hash": "5a3bc741ecae5432",
+      "merkle": "7a43514d7b877e85",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -18301,6 +19642,166 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getAge()",
+      "hash": "a104b8de82dcc9aa",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getFamilyName()",
+      "hash": "42b1265bbc5dfce0",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getGender()",
+      "hash": "40162857f388bc4a",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getGivenName()",
+      "hash": "d2416f58f72730cb",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getMember()",
+      "hash": "1e62d600fca019f6",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getPassengerNo()",
+      "hash": "dd1555b61a86c0fa",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#getReserveFlightNo()",
+      "hash": "2769dce77ca87a1a",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setAge(Integer)",
+      "hash": "0f30aa30583622a4",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setFamilyName(String)",
+      "hash": "f5e85e96b8121f23",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setGender(Gender)",
+      "hash": "4a852d53b0d2198a",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setGivenName(String)",
+      "hash": "b701004f7a9287e1",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setMember(Member)",
+      "hash": "e55af386080fd1eb",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setPassengerNo(Integer)",
+      "hash": "55aa102035d21774",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#setReserveFlightNo(Integer)",
+      "hash": "0970fb4639317f1c",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Passenger",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Passenger.serialVersionUID",
+      "hash": "a4400e5f56da5cba",
+      "merkle": "dc8fcc7863a55169",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Model.PeakTime",
       "locator": "java:jp.co.ntt.atrs.domain.model.PeakTime#getMultiplicationRatio()",
       "hash": "0b4e159bab8a2bad",
@@ -18459,6 +19960,346 @@
       "hash": "ee869d61bf2fce1b",
       "merkle": "67d45b028534e7bb",
       "checks": [
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepAge()",
+      "hash": "846ec8352e5658be",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepFamilyName()",
+      "hash": "66abb894190a0227",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepGender()",
+      "hash": "015d7284f4686835",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepGivenName()",
+      "hash": "416cfd32c3fd3e09",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepMail()",
+      "hash": "1f11cdab9d1723af",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepMember()",
+      "hash": "a6545c8a50e40110",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getRepTel()",
+      "hash": "32a86102cf08218b",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveDate()",
+      "hash": "2c8ef6f8d1698155",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveFlightList()",
+      "hash": "f425d6344b4a2403",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getReserveNo()",
+      "hash": "627ab75e41f993e2",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#getTotalFare()",
+      "hash": "337b91f1b4b57ed5",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepAge(Integer)",
+      "hash": "6a4c35f99292ef27",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepFamilyName(String)",
+      "hash": "bcf989d8201a63e6",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepGender(Gender)",
+      "hash": "d6a97d15e5c042cf",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepGivenName(String)",
+      "hash": "51d9e064217ea526",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepMail(String)",
+      "hash": "2a33f1fef3a3ef8f",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepMember(Member)",
+      "hash": "3a750ea4386f8f84",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setRepTel(String)",
+      "hash": "c2e8b2936c18f73b",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveDate(LocalDate)",
+      "hash": "0a1d34981e900f2e",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveFlightList(List)",
+      "hash": "6b9a3b4787149f5d",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#setTotalFare(Integer)",
+      "hash": "7f3959b617cdbb6d",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.Reservation",
+      "locator": "java:jp.co.ntt.atrs.domain.model.Reservation.serialVersionUID",
+      "hash": "fadf05834e294c32",
+      "merkle": "a0eb7ab85e49fbc5",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getFlight()",
+      "hash": "f32789ed3a8ab89a",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getPassengerList()",
+      "hash": "14ef9a6a124c29ed",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveFlightNo()",
+      "hash": "2769dce77ca87a1a",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveNo()",
+      "hash": "627ab75e41f993e2",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setFlight(Flight)",
+      "hash": "7e222d6a5c787480",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setPassengerList(List)",
+      "hash": "3c0f73ab04c18ff1",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveFlightNo(Integer)",
+      "hash": "0970fb4639317f1c",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Model.ReserveFlight",
+      "locator": "java:jp.co.ntt.atrs.domain.model.ReserveFlight.serialVersionUID",
+      "hash": "fd7ac2ae97b49599",
+      "merkle": "7d752d5a8ca43cda",
+      "checks": [
+        "java-origin-run",
         "lake-test"
       ]
     },
@@ -19500,6 +21341,76 @@
       ]
     },
     {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#<init>(String,LocalDate)",
+      "hash": "9478f45856d7dcf7",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getPaymentDate()",
+      "hash": "305a3cd2edbb1ef0",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getReserveNo()",
+      "hash": "627ab75e41f993e2",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setPaymentDate(LocalDate)",
+      "hash": "28072d31fdd042a0",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setReserveNo(String)",
+      "hash": "2edb9dab1a771a71",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#toString()",
+      "hash": "b78e85e304022465",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveDto",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto.serialVersionUID",
+      "hash": "ab7b84f869e4a96c",
+      "merkle": "8cd1a24ce4718123",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
       "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode#code()",
       "hash": "5fde806a365dc7a0",
@@ -19603,6 +21514,36 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2010",
       "hash": "d64487b413becec0",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5001",
+      "hash": "5acd18b769673fe4",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5002",
+      "hash": "f4427cb5117641dc",
+      "merkle": "57e17a8387554a16",
+      "checks": [
+        "java-origin-run",
+        "lake-test"
+      ]
+    },
+    {
+      "definition": "SourceModel.Domain.Service.B2.TicketReserveErrorCode.code",
+      "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5003",
+      "hash": "a96dc797ba2e65b6",
       "merkle": "57e17a8387554a16",
       "checks": [
         "java-origin-run",

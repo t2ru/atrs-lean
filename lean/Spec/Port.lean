@@ -12,8 +12,9 @@ import Spec.Prim.Format
 namespace Spec.Port
 open Spec.Model Spec.Prim.Format
 
-/-- 採番の状態: 各 `IdGenerator` の操作が次に返す値（`docs/spec/ports.md#idgenerator`）。値の空間は上限を持たない。 -/
-@[spec_doc "docs/spec/ports.md#idgenerator"]
+/-- 採番の状態: 各 `IdGenerator` の操作が次に返す値（`docs/spec/ports.md#idgenerator`）。値の空間は上限を持たない
+（[Source] のシーケンスは上限で循環し、INT の列は上限で読み出しに失敗する。既知差異 D-009）。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator", gap "D-009"]
 structure Sequences where
   member : Nat := 1
   reserve : Nat := 1

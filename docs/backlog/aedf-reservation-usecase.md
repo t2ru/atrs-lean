@@ -4,7 +4,7 @@ title: "予約（B0/B2）"
 description: "validateFlightList・validateReservation・reserveConfirm・reserve を SourceModel と Spec で実装し、空席の不変条件を証明する。"
 tags: [backlog, spec, source-model, reservation]
 id: "aedfeffc-3e82-46b1-b497-3d8b7808d068"
-state: doing
+state: done
 depends_on: ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "1ae40815-ac5a-4602-99bc-1d9ad267dd0b", "f18c3c0f-4007-42c1-ba25-102fb385a16c", "bbcce088-c475-4378-9cc6-e3d821acc0f5", "ffdc480d-eaf2-42a0-9818-0b128e9403d4"]
 generated:
   by: claude-code/claude-opus-5-5
@@ -78,16 +78,17 @@ generated:
 - 完了条件のうち「予約の SPEC-001〜SPEC-004 を証明した」と「リポジトリの SQL の写しを PostgreSQL での差分実行で照合した」を満たした。
 - 第 3 段に申し送るもの: 空席照会の状態と初期状態を全表に広げること（全表の α と一体）、D-014 の述語、R 課題 ABS-020〜023・041・109・131 とトップレベルへの統合。
 
-## 第 3 段の進み具合
+## 第 3 段の結果
 
-[ADR ab93](../decision/ab93-reservation-stage3-world-alpha-and-abs041.md) で小段 3a〜3d に分けた。
+2026-11-03 に完了した。[ADR ab93](../decision/ab93-reservation-stage3-world-alpha-and-abs041.md) で小段 3a〜3e に分けた。
 
 * 3a（済）: 全表の α `worldOfDb`、具体側の不変条件 `IcW`、空席照会の初期状態の変更。ABS-011 とトップレベルの主定理は新しい貼り合わせで通る。
 * 3b（途中）: 予約の PRE に `Request.Valid`・`World.RefMaster`・`World.MemberRefMaster` を足した。予約の入出力の α と貼り合わせ、FLIGHT・会員・便マスタの Provider・選択フライトの補題を置いた。検証の道具（Hoare 三つ組・`java_estate_simp`）をスキルに置き（スキルの ADR cd90、版 0.26）、選択フライトの検証の対応を示した。ABS-021・ABS-023 を L 課題に改めた（プロジェクトオーナーの決定）。差異の述語（`dev_D027R`・`dev_D014R`・`dev_D009`・`dev_D031`・`dev_D001R`・`dev_D002R`・`dev_D012R`）と非自明性の定理、D-031 の証人の材料を置いた。W 課題 ABS-109・ABS-131 の否定の定理は 3c で ABS-041 と同時に置く。
 * 3c（途中）: 予約の各メソッドの事前・事後条件と ABS-041、ABS-020・ABS-022。予約内容の検証（代表者の年齢・運賃種別の利用条件・会員照合）の三つ組と [Spec] の対応、予約の合計金額の補題を置き、予約確認の 1 歩の対応（`confirm_run`）、予約確定の 1 歩の対応（`reserve_run`。空席の確保・登録・採番。D-009・D-014）と、ABS-041 の主定理 `reserveRefines`（`Abstraction.Reserve.ReserveRun`。課題の属性は束とともに 3d で付ける）を示した。W 課題 ABS-109・ABS-131 の否定の定理 `need_D009`・`need_D031` も示した。
 * 3d（済）: スキルの束の規則の拡張（スキルの ADR 61e6）と、排他の失敗を行ロックを取る文に限る SourceModel の修正のうえで、ABS-041 の束 `reservePreserves` を示し、主定理・束・W 課題に課題の属性を付けた（`Abstraction.Reserve`）。L 課題 ABS-020・ABS-022 の予約の分も示した。予約をトップレベルの主定理に加えた（`Machine.alt`）。予約確定の結果と実行後の状態を原典から 76 件採取し、`SourceModel` と一致した。
-* 完了条件の 4 項目は満たした。完了の定義のうち、Reserve の移植元側の追跡の検査（TR-S1・TR-K）を失敗扱いで通すことが残る（2026-11-03 の時点で、TR-S1 の未対応 265 件。Web 層・REST の form・DTO・コントローラ、ドメインのモデルの getter・setter、予約の履歴の DTO など）。
-* 3e（未着手）: 移植元側の追跡の検査を失敗扱いにする準備。
+* 3e（済）: 移植元側の追跡の検査を失敗扱いで通す準備。モデルにしない Web 層・REST と、画面だけが使うメンバ・原典で呼ばれていないメンバを Http（[backlog a89e](a89e-http-contract-adapter.md)）に、予約の履歴の DTO と問い合わせを Report（[backlog ac71](ac71-reservation-history-report.md)）に移した。データクラスの getter・setter などを写しの構造体の `@[source]` で覆い、D-009 の [Spec] の箇所の印を付けた。
+* 完了条件の 4 項目と完了の定義を満たした。予約の移植元側の検査（TR-S1・TR-P・TR-D・TR-K）は、以後失敗扱いになる。
+* 残る確認: N-001・N-002 の選択の型の採番の前進 `SeqAdvance`（[ADR ca17](../decision/ca17-reservation-stage2-machines-seed-nondet-advance.md)）は、プロジェクトオーナーの確認待ちのまま。変更が要る場合は、新しい作業項目で扱う。
 
 ## 参照
 

@@ -131,17 +131,78 @@ pub fn basic_fare(...) -> (r: u64)
 ### ① 移植元ソース ⇔ SourceModel
 
 <!-- BEGIN GENERATED: source-trace -->
-移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 348 件。`trace manifest` が生成する（手で編集しない）。
+移植元ソース ⇔ SourceModel: インベントリ 1963 件（対象範囲 1322 件、対象外 641 件）、対応あり 469 件。`trace manifest` が生成する（手で編集しない）。
 
 | ロケータ | Lean の定義 | 本文ハッシュ | 合格した検査 |
 | --- | --- | --- | --- |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getBoardingClassCd()` | `SourceModel.App.B0.SelectFlightForm` | `2c95f973159bc7cc` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getDepDate()` | `SourceModel.App.B0.SelectFlightForm` | `9e5ad0157d1bece7` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFareTypeCd()` | `SourceModel.App.B0.SelectFlightForm` | `0ad0a31bd0da4f1d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#getFlightName()` | `SourceModel.App.B0.SelectFlightForm` | `56b669a044a195ca` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setBoardingClassCd(BoardingClassCd)` | `SourceModel.App.B0.SelectFlightForm` | `fab24fded6a99658` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setDepDate(LocalDate)` | `SourceModel.App.B0.SelectFlightForm` | `e4d262f79ebcb7ac` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFareTypeCd(FareTypeCd)` | `SourceModel.App.B0.SelectFlightForm` | `028d6508ed1eadd9` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#setFlightName(String)` | `SourceModel.App.B0.SelectFlightForm` | `c8ed541ae69f3cad` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm#toString()` | `SourceModel.App.B0.SelectFlightForm` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b0.SelectFlightForm.serialVersionUID` | `SourceModel.App.B0.SelectFlightForm` | `7be1d1be2d9c3506` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)` | `SourceModel.App.B0.TicketHelper.toFlightList` | `3fef600108b03c6e` | lake-test |
 | `dep:org.mapstruct:mapstruct#Mapper` | `SourceModel.App.B2.B2Mapper.mapPassenger` | `mapstruct-1.6.3` | （なし） |
 | `java:jp.co.ntt.atrs.app.b2.B2Mapper#map(PassengerForm)` | `SourceModel.App.B2.B2Mapper.mapPassenger` | `0685ad6f1c953274` | java-origin-run, lake-test |
 | `dep:org.mapstruct:mapstruct#Mapper` | `SourceModel.App.B2.B2Mapper.mapReservation` | `mapstruct-1.6.3` | （なし） |
 | `java:jp.co.ntt.atrs.app.b2.B2Mapper#map(TicketReserveForm,Reservation)` | `SourceModel.App.B2.B2Mapper.mapReservation` | `b1198d19edff71a3` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#getAge()` | `SourceModel.App.B2.PassengerForm` | `a104b8de82dcc9aa` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#getFamilyName()` | `SourceModel.App.B2.PassengerForm` | `42b1265bbc5dfce0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#getGender()` | `SourceModel.App.B2.PassengerForm` | `40162857f388bc4a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#getGivenName()` | `SourceModel.App.B2.PassengerForm` | `d2416f58f72730cb` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#getMembershipNumber()` | `SourceModel.App.B2.PassengerForm` | `b2f27b5067cb06d6` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#setAge(Integer)` | `SourceModel.App.B2.PassengerForm` | `0f30aa30583622a4` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#setFamilyName(String)` | `SourceModel.App.B2.PassengerForm` | `f5e85e96b8121f23` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#setGender(Gender)` | `SourceModel.App.B2.PassengerForm` | `4a852d53b0d2198a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#setGivenName(String)` | `SourceModel.App.B2.PassengerForm` | `b701004f7a9287e1` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#setMembershipNumber(String)` | `SourceModel.App.B2.PassengerForm` | `6669caafcd097fd4` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm#toString()` | `SourceModel.App.B2.PassengerForm` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.PassengerForm.serialVersionUID` | `SourceModel.App.B2.PassengerForm` | `e62c9f0ec675d596` | java-origin-run, lake-test |
 | `dep:org.springframework:spring-core#StringUtils` | `SourceModel.App.B2.PassengerForm.isEmpty` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()` | `SourceModel.App.B2.PassengerForm.isEmpty` | `4c989a582a1c8d97` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getPaymentDate()` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `305a3cd2edbb1ef0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getReserveNo()` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `627ab75e41f993e2` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#getTotalFare()` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `337b91f1b4b57ed5` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setPaymentDate(LocalDate)` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `28072d31fdd042a0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setReserveNo(String)` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `2edb9dab1a771a71` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#setTotalFare(Integer)` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `7f3959b617cdbb6d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto#toString()` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveCompleteOutputDto.serialVersionUID` | `SourceModel.App.B2.ReserveCompleteOutputDto` | `b254b2b7e2ccf898` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#getTotalFare()` | `SourceModel.App.B2.ReserveConfirmOutputDto` | `337b91f1b4b57ed5` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#setTotalFare(Integer)` | `SourceModel.App.B2.ReserveConfirmOutputDto` | `7f3959b617cdbb6d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto#toString()` | `SourceModel.App.B2.ReserveConfirmOutputDto` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.ReserveConfirmOutputDto.serialVersionUID` | `SourceModel.App.B2.ReserveConfirmOutputDto` | `a5320337ac4d508c` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getFlightType()` | `SourceModel.App.B2.TicketReserveForm` | `9b6142b3fa1d0242` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getPassengerFormList()` | `SourceModel.App.B2.TicketReserveForm` | `6f58be9f86183e69` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepAge()` | `SourceModel.App.B2.TicketReserveForm` | `846ec8352e5658be` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepFamilyName()` | `SourceModel.App.B2.TicketReserveForm` | `66abb894190a0227` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGender()` | `SourceModel.App.B2.TicketReserveForm` | `015d7284f4686835` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepGivenName()` | `SourceModel.App.B2.TicketReserveForm` | `416cfd32c3fd3e09` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMail()` | `SourceModel.App.B2.TicketReserveForm` | `1f11cdab9d1723af` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepMembershipNumber()` | `SourceModel.App.B2.TicketReserveForm` | `0a19ce49bcf3b2f0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel1()` | `SourceModel.App.B2.TicketReserveForm` | `f63099e3bf370f7d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel2()` | `SourceModel.App.B2.TicketReserveForm` | `76a960a8570763d7` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getRepTel3()` | `SourceModel.App.B2.TicketReserveForm` | `f3aa4bc2e10c0517` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#getSelectFlightFormList()` | `SourceModel.App.B2.TicketReserveForm` | `88b7fb3a97cf3933` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setFlightType(FlightType)` | `SourceModel.App.B2.TicketReserveForm` | `7f178ac43c6090bd` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassenger(int,PassengerForm)` | `SourceModel.App.B2.TicketReserveForm` | `6be9b84152dfe022` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setPassengerFormList(List)` | `SourceModel.App.B2.TicketReserveForm` | `ea101707e186ad95` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepAge(Integer)` | `SourceModel.App.B2.TicketReserveForm` | `6a4c35f99292ef27` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepFamilyName(String)` | `SourceModel.App.B2.TicketReserveForm` | `bcf989d8201a63e6` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGender(Gender)` | `SourceModel.App.B2.TicketReserveForm` | `d6a97d15e5c042cf` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepGivenName(String)` | `SourceModel.App.B2.TicketReserveForm` | `51d9e064217ea526` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMail(String)` | `SourceModel.App.B2.TicketReserveForm` | `2a33f1fef3a3ef8f` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepMembershipNumber(String)` | `SourceModel.App.B2.TicketReserveForm` | `a17d24ad21760b13` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel1(String)` | `SourceModel.App.B2.TicketReserveForm` | `8c65985fbae35f9c` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel2(String)` | `SourceModel.App.B2.TicketReserveForm` | `b9219bb92a129742` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setRepTel3(String)` | `SourceModel.App.B2.TicketReserveForm` | `5b2191984494152c` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#setSelectFlightFormList(List)` | `SourceModel.App.B2.TicketReserveForm` | `4043576d5d6872c9` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#toString()` | `SourceModel.App.B2.TicketReserveForm` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.app.b2.TicketReserveForm.serialVersionUID` | `SourceModel.App.B2.TicketReserveForm` | `5a3bc741ecae5432` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#<init>()` | `SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER` | `e8da8828068e2108` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.app.b2.TicketReserveForm.MAX_PASSENGERS_NUMBER` | `SourceModel.App.B2.TicketReserveForm.MAX_PASSENGERS_NUMBER` | `ce743698ff3529b4` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()` | `SourceModel.App.B2.TicketReserveForm.resetPassengersIndex` | `402fa38c7797fc36` | java-origin-run, lake-test |
@@ -368,6 +429,22 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.model.Gender.F` | `SourceModel.Domain.Model.Gender.getCode` | `f67ab10ad4e4c531` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Gender.M` | `SourceModel.Domain.Model.Gender.getCode` | `08f271887ce94707` | java-origin-run, lake-test |
 | `dep:org.mybatis:mybatis#EnumTypeHandler` | `SourceModel.Domain.Model.Gender.valueOf` | `mybatis-3.5.19` | （なし） |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getAge()` | `SourceModel.Domain.Model.Passenger` | `a104b8de82dcc9aa` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getFamilyName()` | `SourceModel.Domain.Model.Passenger` | `42b1265bbc5dfce0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getGender()` | `SourceModel.Domain.Model.Passenger` | `40162857f388bc4a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getGivenName()` | `SourceModel.Domain.Model.Passenger` | `d2416f58f72730cb` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getMember()` | `SourceModel.Domain.Model.Passenger` | `1e62d600fca019f6` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getPassengerNo()` | `SourceModel.Domain.Model.Passenger` | `dd1555b61a86c0fa` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#getReserveFlightNo()` | `SourceModel.Domain.Model.Passenger` | `2769dce77ca87a1a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setAge(Integer)` | `SourceModel.Domain.Model.Passenger` | `0f30aa30583622a4` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setFamilyName(String)` | `SourceModel.Domain.Model.Passenger` | `f5e85e96b8121f23` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setGender(Gender)` | `SourceModel.Domain.Model.Passenger` | `4a852d53b0d2198a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setGivenName(String)` | `SourceModel.Domain.Model.Passenger` | `b701004f7a9287e1` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setMember(Member)` | `SourceModel.Domain.Model.Passenger` | `e55af386080fd1eb` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setPassengerNo(Integer)` | `SourceModel.Domain.Model.Passenger` | `55aa102035d21774` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#setReserveFlightNo(Integer)` | `SourceModel.Domain.Model.Passenger` | `0970fb4639317f1c` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger#toString()` | `SourceModel.Domain.Model.Passenger` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Passenger.serialVersionUID` | `SourceModel.Domain.Model.Passenger` | `a4400e5f56da5cba` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.model.PeakTime#getMultiplicationRatio()` | `SourceModel.Domain.Model.PeakTime` | `0b4e159bab8a2bad` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.PeakTime#getPeakEndDate()` | `SourceModel.Domain.Model.PeakTime` | `3320372937ffb1c6` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.PeakTime#getPeakStartDate()` | `SourceModel.Domain.Model.PeakTime` | `8c5afe3863a52476` | lake-test |
@@ -386,6 +463,40 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.model.Plane#setSSeatNum(Integer)` | `SourceModel.Domain.Model.Plane` | `a1d12f387b95199b` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Plane#toString()` | `SourceModel.Domain.Model.Plane` | `b78e85e304022465` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Plane.serialVersionUID` | `SourceModel.Domain.Model.Plane` | `ee869d61bf2fce1b` | lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepAge()` | `SourceModel.Domain.Model.Reservation` | `846ec8352e5658be` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepFamilyName()` | `SourceModel.Domain.Model.Reservation` | `66abb894190a0227` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepGender()` | `SourceModel.Domain.Model.Reservation` | `015d7284f4686835` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepGivenName()` | `SourceModel.Domain.Model.Reservation` | `416cfd32c3fd3e09` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepMail()` | `SourceModel.Domain.Model.Reservation` | `1f11cdab9d1723af` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepMember()` | `SourceModel.Domain.Model.Reservation` | `a6545c8a50e40110` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getRepTel()` | `SourceModel.Domain.Model.Reservation` | `32a86102cf08218b` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getReserveDate()` | `SourceModel.Domain.Model.Reservation` | `2c8ef6f8d1698155` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getReserveFlightList()` | `SourceModel.Domain.Model.Reservation` | `f425d6344b4a2403` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getReserveNo()` | `SourceModel.Domain.Model.Reservation` | `627ab75e41f993e2` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#getTotalFare()` | `SourceModel.Domain.Model.Reservation` | `337b91f1b4b57ed5` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepAge(Integer)` | `SourceModel.Domain.Model.Reservation` | `6a4c35f99292ef27` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepFamilyName(String)` | `SourceModel.Domain.Model.Reservation` | `bcf989d8201a63e6` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepGender(Gender)` | `SourceModel.Domain.Model.Reservation` | `d6a97d15e5c042cf` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepGivenName(String)` | `SourceModel.Domain.Model.Reservation` | `51d9e064217ea526` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepMail(String)` | `SourceModel.Domain.Model.Reservation` | `2a33f1fef3a3ef8f` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepMember(Member)` | `SourceModel.Domain.Model.Reservation` | `3a750ea4386f8f84` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setRepTel(String)` | `SourceModel.Domain.Model.Reservation` | `c2e8b2936c18f73b` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setReserveDate(LocalDate)` | `SourceModel.Domain.Model.Reservation` | `0a1d34981e900f2e` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setReserveFlightList(List)` | `SourceModel.Domain.Model.Reservation` | `6b9a3b4787149f5d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setReserveNo(String)` | `SourceModel.Domain.Model.Reservation` | `2edb9dab1a771a71` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#setTotalFare(Integer)` | `SourceModel.Domain.Model.Reservation` | `7f3959b617cdbb6d` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation#toString()` | `SourceModel.Domain.Model.Reservation` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.Reservation.serialVersionUID` | `SourceModel.Domain.Model.Reservation` | `fadf05834e294c32` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#getFlight()` | `SourceModel.Domain.Model.ReserveFlight` | `f32789ed3a8ab89a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#getPassengerList()` | `SourceModel.Domain.Model.ReserveFlight` | `14ef9a6a124c29ed` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveFlightNo()` | `SourceModel.Domain.Model.ReserveFlight` | `2769dce77ca87a1a` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#getReserveNo()` | `SourceModel.Domain.Model.ReserveFlight` | `627ab75e41f993e2` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#setFlight(Flight)` | `SourceModel.Domain.Model.ReserveFlight` | `7e222d6a5c787480` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#setPassengerList(List)` | `SourceModel.Domain.Model.ReserveFlight` | `3c0f73ab04c18ff1` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveFlightNo(Integer)` | `SourceModel.Domain.Model.ReserveFlight` | `0970fb4639317f1c` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#setReserveNo(String)` | `SourceModel.Domain.Model.ReserveFlight` | `2edb9dab1a771a71` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight#toString()` | `SourceModel.Domain.Model.ReserveFlight` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.model.ReserveFlight.serialVersionUID` | `SourceModel.Domain.Model.ReserveFlight` | `fd7ac2ae97b49599` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route#getArrivalAirport()` | `SourceModel.Domain.Model.Route` | `e4e63cfd9aa52b7c` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route#getBasicFare()` | `SourceModel.Domain.Model.Route` | `89a978cfeb517ad4` | lake-test |
 | `java:jp.co.ntt.atrs.domain.model.Route#getDepartureAirport()` | `SourceModel.Domain.Model.Route` | `c52377ce8cec2f3c` | lake-test |
@@ -506,6 +617,13 @@ pub fn basic_fare(...) -> (r: u64)
 | `dep:org.springframework:spring-core#Assert.notNull` | `SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight` | `spring-core-7.0.3` | （なし） |
 | `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchService#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight` | `aebd2fb115cd02fc` | lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)` | `SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight` | `75061ffc6ae02ecb` | lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#<init>(String,LocalDate)` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `9478f45856d7dcf7` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getPaymentDate()` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `305a3cd2edbb1ef0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#getReserveNo()` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `627ab75e41f993e2` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setPaymentDate(LocalDate)` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `28072d31fdd042a0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#setReserveNo(String)` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `2edb9dab1a771a71` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto#toString()` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `b78e85e304022465` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveDto.serialVersionUID` | `SourceModel.Domain.Service.B2.TicketReserveDto` | `ab7b84f869e4a96c` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode#code()` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `5fde806a365dc7a0` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2001` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `48c863106106d000` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2002` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `cd7ca684671ce46f` | java-origin-run, lake-test |
@@ -517,6 +635,9 @@ pub fn basic_fare(...) -> (r: u64)
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2008` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `25e29d5a5f6f2214` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2009` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `9810cb0c99b4d473` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_2010` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `d64487b413becec0` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5001` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `5acd18b769673fe4` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5002` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `f4427cb5117641dc` | java-origin-run, lake-test |
+| `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveErrorCode.E_AR_B2_5003` | `SourceModel.Domain.Service.B2.TicketReserveErrorCode.code` | `a96dc797ba2e65b6` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#calculateTotalFare(List,List)` | `SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare` | `ca1a14757ce1cb33` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#calculateTotalFare(List,List)` | `SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare` | `35bc5d27ed5f2ca9` | java-origin-run, lake-test |
 | `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#registerReservation(Reservation)` | `SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation` | `4df168e425feb579` | java-origin-run, lake-test |

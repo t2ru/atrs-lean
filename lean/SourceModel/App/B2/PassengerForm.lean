@@ -13,6 +13,18 @@ namespace SourceModel.App.B2
 open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.Spring
 
 /-- `PassengerForm`（搭乗者情報フォーム）。 -/
+@[source "java:jp.co.ntt.atrs.app.b2.PassengerForm#getAge()@a104b8de82dcc9aa",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#getFamilyName()@42b1265bbc5dfce0",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGender()@40162857f388bc4a",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#getGivenName()@d2416f58f72730cb",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#getMembershipNumber()@b2f27b5067cb06d6",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#setAge(Integer)@0f30aa30583622a4",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#setFamilyName(String)@f5e85e96b8121f23",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGender(Gender)@4a852d53b0d2198a",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#setGivenName(String)@b701004f7a9287e1",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#setMembershipNumber(String)@6669caafcd097fd4",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm#toString()@b78e85e304022465",
+  "java:jp.co.ntt.atrs.app.b2.PassengerForm.serialVersionUID@e62c9f0ec675d596"]
 structure PassengerForm where
   familyName : JRef String := none
   givenName : JRef String := none

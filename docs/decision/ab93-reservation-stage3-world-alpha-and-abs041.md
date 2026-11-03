@@ -66,6 +66,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 3b | ポートの R 課題 ABS-021・ABS-023、差異の述語（D-009・D-014・D-031）、W 課題 ABS-109・ABS-131 |
 | 3c | 予約の R 課題 ABS-041 と L 課題 ABS-020・ABS-022 |
 | 3d | 束 `Preserves` と課題の属性、トップレベルへの統合（`searchMachine.alt reserveMachine`）、記録 |
+| 3e | 移植元側の追跡の検査（TR-S1・TR-K）を失敗扱いで通す準備と、backlog aedf の完了 |
 
 ### 3a の決定
 
@@ -159,6 +160,17 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | L 課題 ABS-020・ABS-022 | 予約の 1 歩の対応 `reserve_run`（ABS-020・ABS-022）と `confirm_run`（ABS-022）に課題の属性を付けた。障害で終われば状態の α は `advance w a`、業務例外なら `w` で、どの結果も出力の値で終わる（L9002 に到達しない）。ABS-022 の他のユースケースの分は、その R 課題とともに示す |
 | トップレベルへの統合 | `Spec.machine`・`SourceModel.machine` の空席照会の成分を、同じ状態の上の並置 `Machine.alt`（空席照会と予約）にした。`Abstraction.refines` は `searchRefines.alt reserveRefines`、`Abstraction.preserves` は `searchPreserves.core.alt reservePreserves.core` を並置に加えて示す。<br>- 抽象側の差異の述語 `dev` は状態と入力の述語にし、`restrictState` で課す（D-009 が状態を見る）。<br>- 環境の前提 `env` は、`Machine.Sum.altEnv` で予約の `envR` を並べる。<br>- obligation-check の G3'（`Spec` の層の機械の形）が `Machine.alt` を受けるようにした（スキル） |
 | 予約確定の原典採取 | 予約確認の採取（76 件）と同じ入力で、予約確定の結果と実行後の状態を原典から採取した（`conformance/source-model/reservation/origin-run-reserve.json`。正常終了 44 件・業務例外 32 件）。`lake test` が `SourceModel` と照合する |
+
+### 3e の決定
+
+backlog aedf を完了にすると、予約の機能の移植元側の検査（TR-S1・TR-P・TR-D・TR-K）が失敗扱いになる。3d の終わりの時点で、TR-S1 の未対応が 265 件、TR-K（D-009 の [Spec] の箇所の印）が 1 件あった。
+
+| 項目 | 決定 |
+| --- | --- |
+| 機能の境界 | 空席照会（[backlog 0be7](../backlog/0be7-flight-search-usecase.md)）と同じく、モデルにしない Web 層と REST を `trace/features.json` の Http（[backlog a89e](../backlog/a89e-http-contract-adapter.md)）に移した。<br>- 予約の機能に残すのは、モデルにした Web 層のクラスとメンバ（`TicketHelper#toFlightList`・`SelectFlightForm`、`TicketReserveHelper` の予約確認・予約確定・選択フライトの検証、`B2Mapper` の 2 つの `map`、`TicketReserveForm`・`PassengerForm`・出力の DTO）だけ。<br>- 画面だけが使う `TicketReserveService#findMember` と `DateTimeUtil#toLocalDateTime(LocalDate)`、原典で呼ばれていない `InvalidFlightException#<init>(Exception)`・`DateTimeUtil#toLocalDate(LocalDateTime)`、確認用の `JdbcClient` も Http に移した。R 課題の閉包に入らない定義をモデルに置くと TR-P（例外なし）に掛かるため。呼ばれていないメンバの扱いは a89e で決める。<br>- 予約の履歴の DTO と `findAllByMembershipNumberForReport` は Report（[backlog ac71](../backlog/ac71-reservation-history-report.md)）に移した。機能は最初に当たった glob で決まるので、Report を予約の前に置いた |
+| データクラスの付属のメンバ | getter・setter・`toString`・`serialVersionUID`・コンストラクタを、写しの構造体の `@[source]` で覆う（`Flight` の前例と同じ）。予約・予約フライト・搭乗者のモデル、予約の form・出力の DTO、`TicketReserveDto` の 118 件 |
+| その他の注釈 | `TicketReserveErrorCode` の `E_AR_B2_5001`〜`5003`（Web 層の入力検証が使う）を、コードの写し `TicketReserveErrorCode.code` の注釈に加えた。トランザクションマネージャの設定（`AtrsDomainConfig#annotationDrivenTransactionManager`）は、写しの配置（TR-M1。設定のクラスの写しは `SourceModel.Config.App` に置く）に合わないので `transactional` には付けず、ほかのモデルにしない設定と同じく Http に移した（`@Transactional` の取消は `dep:` の注釈で追跡する）。D-009 の [Spec] の箇所として、採番の状態 `Spec.Port.Sequences` に `@[gap "D-009"]` を付けた |
+| glob の書き方 | `trace/features.json` の glob（Rust の globset）では、選択肢の中に `,` を含む引数の型を書けず、入れ子の `{}` と空の選択肢（`{,Impl}`）も意図どおりに当たらない。必要なら glob を分けて書く |
 
 ### Consequences
 
