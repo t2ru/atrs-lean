@@ -20,7 +20,7 @@ open SourceModel.Domain.Service.B1
 namespace FlightNotFoundException
 
 /-- 照会結果 0 件の業務例外のクラス名。 -/
-def className : String := "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException"
+def className : LangSemantics.Java.Exception.JClassName := cls!"jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException"
 
 /-- `new FlightNotFoundException()`（`E_AR_B1_2003`）。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException#<init>()@a759c61b6ed17dc4",

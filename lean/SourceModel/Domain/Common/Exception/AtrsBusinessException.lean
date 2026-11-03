@@ -19,7 +19,7 @@ open SourceModel.Domain.Common.Exception
 namespace AtrsBusinessException
 
 /-- 業務例外のクラス名。 -/
-def className : String := "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException"
+def className : LangSemantics.Java.Exception.JClassName := cls!"jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException"
 
 /-- `new AtrsBusinessException(code)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException#<init>(AtrsErrorCode,Object...)@70bc401f3ab46d0d",

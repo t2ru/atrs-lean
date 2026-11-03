@@ -241,12 +241,12 @@ def srcForm (i : Json) : Except String TicketReserveForm := do
 /-- 業務例外・不正要求を JSON に。ほかの例外はテストの失敗。 -/
 def srcErrorJson (e : JThrow) : Except String Json :=
   match e with
-  | .other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" msg =>
+  | .other ⟨"jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException", _⟩ msg =>
     match msg.splitOn "\n" with
     | code :: args => .ok (businessJson code args)
     | [] => .ok (businessJson msg [])
-  | .other "jp.co.ntt.atrs.app.common.exception.BadRequestException" _ => .ok (errorJson "invalidRequest" [])
-  | .other "jp.co.ntt.atrs.domain.service.b0.InvalidFlightException" _ => .ok (errorJson "invalidRequest" [])
+  | .other ⟨"jp.co.ntt.atrs.app.common.exception.BadRequestException", _⟩ _ => .ok (errorJson "invalidRequest" [])
+  | .other ⟨"jp.co.ntt.atrs.domain.service.b0.InvalidFlightException", _⟩ _ => .ok (errorJson "invalidRequest" [])
   | e => .error s!"java exception: {repr e}"
 
 def srcWorldJson (fd : FlightDb) : Json :=

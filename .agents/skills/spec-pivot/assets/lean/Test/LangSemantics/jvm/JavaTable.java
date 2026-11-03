@@ -128,7 +128,7 @@ public class JavaTable {
                 }
                 catch (StringIndexOutOfBoundsException e) { expect = "error"; }
                 if (expect.equals("error"))
-                    line("#guard (jSubstring " + lit(sub) + " " + r[0] + " " + r[1] + ") matches .error (.other \"java.lang.StringIndexOutOfBoundsException\" _)");
+                    line("#guard (jSubstring " + lit(sub) + " " + r[0] + " " + r[1] + ") matches .error (.other ⟨\"java.lang.StringIndexOutOfBoundsException\", _⟩ _)");
                 else
                     line("#guard (jSubstring " + lit(sub) + " " + r[0] + " " + r[1] + ").toOption == " + expect);
             }
@@ -156,7 +156,7 @@ public class JavaTable {
             String one = String.valueOf((char) (sy.getZeroDigit() + 1));
             String m1 = g.format(-1);
             String minus = m1.substring(0, m1.length() - one.length());
-            String sym = "⟨" + charLit(sy.getGroupingSeparator()) + ", " + charLit(sy.getZeroDigit()) + ", " + lit(minus) + "⟩";
+            String sym = "⟨" + charLit(sy.getGroupingSeparator()) + ", " + charLit(sy.getZeroDigit()) + ", " + lit(minus) + ", by decide⟩";
             line("-- new DecimalFormat(\"###,###\", DecimalFormatSymbols.getInstance(" + tag + "))");
             for (long n : ms) line("#guard formatGroupedS " + sym + " " + intLit(n) + " == " + lit(g.format(n)));
         }

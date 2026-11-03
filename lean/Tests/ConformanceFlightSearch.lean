@@ -110,8 +110,8 @@ def srcCriteria (c : Json) : Except String SourceModel.Domain.Service.B1.TicketS
 /-- 業務例外を `business`・`notFound` の JSON に。ほかの例外はテストの失敗。 -/
 def srcErrorJson (e : JThrow) : Except String Json :=
   match e with
-  | .other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" code => .ok (errorJson "business" code)
-  | .other "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException" code => .ok (errorJson "notFound" code)
+  | .other ⟨"jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException", _⟩ code => .ok (errorJson "business" code)
+  | .other ⟨"jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException", _⟩ code => .ok (errorJson "notFound" code)
   | e => .error s!"java exception: {repr e}"
 
 def jstr (r : JRef String) : Json := optJson Json.str r

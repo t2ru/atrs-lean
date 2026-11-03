@@ -26,7 +26,9 @@ theorem containsKey_eq_false {m : JHashMap κ υ} {k : κ} (h : k ∉ m.entries.
 /-- 無いキーの `put` は、末尾に足す。 -/
 theorem put_entries_of_not_mem {m : JHashMap κ υ} {k : κ} (v : υ) (h : k ∉ m.entries.map Prod.fst) :
     (m.put k v).entries = m.entries ++ [(k, v)] := by
-  simp [put, containsKey_eq_false h]
+  have := containsKey_eq_false h
+  simp only [containsKey] at this
+  simp [put, putE, this]
 
 /-- 表 `m` にキーが無い列を順に `put` すると、末尾に順に足される。 -/
 theorem foldl_put_entries (xs : List (κ × υ)) (m : JHashMap κ υ)
@@ -52,7 +54,7 @@ theorem ofList_entries {xs : List (κ × υ)} (h : (xs.map Prod.fst).Nodup) : (o
 /-- キーが重複しない列の `ofList` の `get` は、列でキーを探した結果。 -/
 theorem get_ofList {xs : List (κ × υ)} (h : (xs.map Prod.fst).Nodup) (k : κ) :
     (ofList xs).get k = (xs.find? fun e => e.1 == k).map (·.2) := by
-  simp [get, ofList_entries h]
+  simp [get, getE, ofList_entries h]
 
 /-- 並べ替えの `ofList` の `get` は、元の行での検索の写し（キーが重複しないとき）。 -/
 theorem get_ofList_perm {ρ σ κ υ : Type} [DecidableEq κ] {rows : List ρ} {o : List σ} {proj : ρ → σ}

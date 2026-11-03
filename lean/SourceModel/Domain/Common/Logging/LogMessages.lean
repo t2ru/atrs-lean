@@ -16,7 +16,7 @@ open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Java.Int
 namespace LogMessages
 
 /-- `SystemException` のクラス名。 -/
-def systemExceptionClass : String := "org.terasoluna.gfw.common.exception.SystemException"
+def systemExceptionClass : LangSemantics.Java.Exception.JClassName := cls!"org.terasoluna.gfw.common.exception.SystemException"
 
 /-- `new SystemException(LogMessages.E_AR_A0_L9002.getCode(), LogMessages.E_AR_A0_L9002.getMessage(actual, expected))`。
 例外のメッセージは、コードと引数を改行でつないだもの（`AtrsBusinessException.newArgs` と同じ表し方）。 -/

@@ -34,7 +34,7 @@ namespace JLocalTime
 def ofHm? (h m : Nat) : Option JLocalTime := if hv : h < 24 ∧ m < 60 then some ⟨h, m, hv⟩ else none
 
 /-- `DateTimeParseException` のクラス名。 -/
-def parseExceptionClass : String := "java.time.format.DateTimeParseException"
+def parseExceptionClass : LangSemantics.Java.Exception.JClassName := cls!"java.time.format.DateTimeParseException"
 
 /-- ASCII の数字の値。 -/
 def asciiDigit? (c : Char) : Option Nat := if '0' ≤ c ∧ c ≤ '9' then some (c.toNat - '0'.toNat) else none

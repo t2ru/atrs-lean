@@ -38,7 +38,7 @@ structure TicketReserveHelper where
 namespace TicketReserveHelper
 
 /-- `BadRequestException` のクラス名。 -/
-def badRequestClass : String := "jp.co.ntt.atrs.app.common.exception.BadRequestException"
+def badRequestClass : LangSemantics.Java.Exception.JClassName := cls!"jp.co.ntt.atrs.app.common.exception.BadRequestException"
 
 /-- 予約情報を組み立てる（private `createReservation`）。空でない搭乗者情報フォームを搭乗者にし、すべての予約フライトに
 同じ搭乗者の列を持たせる。代表者の電話番号は `String.format("%s-%s-%s", repTel1, repTel2, repTel3)`（`null` は

@@ -19,7 +19,7 @@ open SourceModel.Domain.Common.Exception SourceModel.Domain.Service.B1 SourceMod
   LangSemantics.Core.List
 
 /-- 区切り文字が `.` の記号（ドイツ語など）。 -/
-def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-"⟩
+def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-", by decide⟩
 
 /-- マスタの DB。 -/
 def dbFS : MasterDb := dbTF ⟨100000, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩

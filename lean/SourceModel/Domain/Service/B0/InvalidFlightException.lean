@@ -14,7 +14,7 @@ open LangSemantics.Java LangSemantics.Java.Exception
 namespace InvalidFlightException
 
 /-- フライト不正の例外のクラス名。 -/
-def className : String := "jp.co.ntt.atrs.domain.service.b0.InvalidFlightException"
+def className : LangSemantics.Java.Exception.JClassName := cls!"jp.co.ntt.atrs.domain.service.b0.InvalidFlightException"
 
 /-- `new InvalidFlightException(message)`。 -/
 @[source "java:jp.co.ntt.atrs.domain.service.b0.InvalidFlightException#<init>(String)@80edf1af3fd26cf2",

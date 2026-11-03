@@ -116,11 +116,11 @@ theorem vacantInfoOf_kernel : KernelIs vacantInfoOf (undefOrEq vacantInfoOf) := 
   simp only [Spec.FlightSearch.FlightVacantInfo.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩ := h
   obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
-  obtain ⟨_, _, _, _, _, _, _, ⟨es⟩⟩ := d
-  obtain ⟨_, _, _, _, _, _, _, ⟨es'⟩⟩ := d'
+  obtain ⟨_, _, _, _, _, _, _, ⟨es, _⟩⟩ := d
+  obtain ⟨_, _, _, _, _, _, _, ⟨es', _⟩⟩ := d'
   simp only at *
-  rw [hn, hn', hdn, hdn', han, han', hdt, hdt', hat, hat', hdd, hdd', hbc, hbc',
-    mapM_inj (fun _ _ _ hx hy => inj_of_kernel fareTypeInfoOf_kernel hx hy) hfts hfts']
+  obtain rfl := mapM_inj (fun _ _ _ hx hy => inj_of_kernel fareTypeInfoOf_kernel hx hy) hfts hfts'
+  rw [hn, hn', hdn, hdn', han, han', hdt, hdt', hat, hat', hdd, hdd', hbc, hbc']
 
 /-- 出力: 便ごとの空席情報の列、または業務例外（コードで写す）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]

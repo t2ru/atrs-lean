@@ -83,6 +83,29 @@ def softMatchesNative (x r : Nat) : Bool :=
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).get "a") == some 3
 #guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).size) == 2
 #guard ((JHashMap.ofList [("a", 1)] : JHashMap String Nat).get "z") == none
+#guard ((JHashMap.ofList [("a", 1), ("b", 2), ("a", 3)]).entries) == [("a", 3), ("b", 2)]
+
+-- DecimalFormat.Symbols: 数字が Unicode のスカラー値で、区切り文字が数字でなく、負の記号が空でない
+#guard DecimalFormat.Symbols.valid ',' '0' "-"
+#guard DecimalFormat.Symbols.valid '٬' '٠' "؜-"
+#guard !DecimalFormat.Symbols.valid '5' '0' "-"
+#guard !DecimalFormat.Symbols.valid ',' '0' ""
+#guard !DecimalFormat.Symbols.valid ',' (Char.ofNat 0xD7FA) "-"
+#guard (DecimalFormat.Symbols.mk? ',' '0' "-") == some DecimalFormat.Symbols.ascii
+#guard (DecimalFormat.Symbols.mk? '0' '0' "-").isNone
+
+-- JClassName: `.` で区切った 2 つ以上の Java の識別子
+#guard Exception.JClassName.valid "java.lang.IndexOutOfBoundsException"
+#guard Exception.JClassName.valid "a.$b_1"
+#guard !Exception.JClassName.valid ""
+#guard !Exception.JClassName.valid "Exception"
+#guard !Exception.JClassName.valid "java..lang.X"
+#guard !Exception.JClassName.valid "java.lang."
+#guard !Exception.JClassName.valid ".java.lang"
+#guard !Exception.JClassName.valid "java.1lang"
+#guard !Exception.JClassName.valid "java.lang.X-Y"
+#guard (Exception.JClassName.ofString? "java.lang.Foo").map (·.val) == some "java.lang.Foo"
+#guard (Exception.JClassName.ofString? "Foo").isNone
 
 -- Spring の Assert: 条件を満たさなければ IllegalArgumentException(message)
 #guard (Assert.isTrue false "m") matches .error (.illegalArgument "m")

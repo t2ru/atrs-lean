@@ -7,7 +7,7 @@ import Abstraction.FlightSearch.Format
 ABS-011 の補題: `createFlightVacantInfoList`（便マスタの出発時刻をキーにした `LinkedHashMap` への畳み込み）と、
 [Spec] の `group`（`insertOrdered` への畳み込み）の対応。
 
-- `insertOrdered` は `JHashMap.put` の項目の列に等しい（`insertOrdered_eq_put`）。両方の畳み込みの状態は、
+- `insertOrdered` は `JHashMap.put` の本体（項目の列の上の `putE`）に等しい（`insertOrdered_eq_put`）。両方の畳み込みの状態は、
   項目ごとの写し（キーは `hmOfStr`・運賃種別のコード、値は `vacantInfoOf`・運賃種別の空席情報）で結ばれ、
   スキルの `get_alpha`・`put_alpha` で 1 歩ずつ保たれる（`body_step`）。
 - 各フライトは、`FlightOk`（Provider で詰め直した値が候補の写し）を満たすとする。
@@ -66,13 +66,12 @@ theorem group_eq (depName arrName : String) (b : Nat) (cs : List Candidate) :
     group depName arrName b cs = (cs.foldl (gstep depName arrName b) []).map (·.2) := rfl
 
 theorem insertOrdered_eq_put {κ ν : Type} [DecidableEq κ] (m : List (κ × ν)) (k : κ) (v : ν) :
-    insertOrdered m k v = ((⟨m⟩ : JHashMap κ ν).put k v).entries := by
-  simp only [insertOrdered, JHashMap.put, JHashMap.containsKey, beq_iff_eq]
-  by_cases h : (m.any fun x => x.1 == k) = true <;> simp only [h, ↓reduceIte, Bool.false_eq_true]
+    insertOrdered m k v = JHashMap.putE m k v := by
+  simp only [insertOrdered, JHashMap.putE, beq_iff_eq]
 
 theorem pickG_eq_get (gs : List (HourMinute × FlightVacantInfo)) (k : HourMinute) (d : FlightVacantInfo) :
-    pickG gs k d = (match (⟨gs⟩ : JHashMap HourMinute FlightVacantInfo).get k with | some g => g | none => d) := by
-  simp only [pickG, JHashMap.get]
+    pickG gs k d = (match JHashMap.getE gs k with | some g => g | none => d) := by
+  simp only [pickG, JHashMap.getE]
   cases gs.find? (·.1 == k) <;> rfl
 
 theorem deref_some {α : Type} (a : α) (w : String) : JRef.deref (some a) w = .ok a := rfl
@@ -105,8 +104,8 @@ theorem fareTypeInfoOf_eq : Alpha.fareTypeInfoOf = pairAlpha ftCdOf ftVal := by
 
 theorem vacantInfoOf_fields {d : FlightVacantInfoDto} {g : FlightVacantInfo} (h : vacantInfoOf d = some g) :
     d.fareTypes.entries.mapM Alpha.fareTypeInfoOf = some g.fareTypes ∧
-      ∀ es fts, es.mapM Alpha.fareTypeInfoOf = some fts →
-        vacantInfoOf { d with fareTypes := ⟨es⟩ } = some { g with fareTypes := fts } := by
+      ∀ (es : JLinkedHashMap String FareTypeVacantInfoDto) fts, es.entries.mapM Alpha.fareTypeInfoOf = some fts →
+        vacantInfoOf { d with fareTypes := es } = some { g with fareTypes := fts } := by
   simp only [vacantInfoOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
   obtain ⟨n, ⟨sn, hn, en⟩, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
   refine ⟨hfts, fun es fts' h' => ?_⟩
@@ -206,8 +205,9 @@ theorem body_step {sep : LangSemantics.Java.DecimalFormat.Symbols} {bf : J32} {b
   unfold body gstep
   simp only [hfm, deref_some, ok_bind]
   rw [pickG_eq_get]
+  change Option.Rel _ (JHashMap.get m fm.departureTime) _ at hrel
   generalize JHashMap.get m fm.departureTime = gm at hrel ⊢
-  generalize JHashMap.get (⟨gs⟩ : JHashMap HourMinute FlightVacantInfo) X.master.departureTime = gg at hrel ⊢
+  generalize JHashMap.getE gs X.master.departureTime = gg at hrel ⊢
   cases hrel with
   | none =>
     obtain ⟨m', h1, h2⟩ := hjp hdr0 _ hhdr'

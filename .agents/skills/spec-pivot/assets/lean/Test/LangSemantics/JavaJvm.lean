@@ -216,42 +216,42 @@ open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 #guard (jSubstring "0945" 2 4).toOption == some "45"
 #guard (jSubstring "0945" 0 0).toOption == some ""
 #guard (jSubstring "0945" 1 3).toOption == some "94"
-#guard (jSubstring "0945" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "0945" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "0945" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "0945" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "2415" 0 2).toOption == some "24"
 #guard (jSubstring "2415" 2 4).toOption == some "15"
 #guard (jSubstring "2415" 0 0).toOption == some ""
 #guard (jSubstring "2415" 1 3).toOption == some "41"
-#guard (jSubstring "2415" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "2415" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "2415" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "2415" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "abc" 0 2).toOption == some "ab"
-#guard (jSubstring "abc" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "abc" 0 0).toOption == some ""
 #guard (jSubstring "abc" 1 3).toOption == some "bc"
-#guard (jSubstring "abc" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "abc" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "abc" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "ab" 0 2).toOption == some "ab"
-#guard (jSubstring "ab" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "ab" 0 0).toOption == some ""
-#guard (jSubstring "ab" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "ab" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "ab" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 0 2) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 1 3) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "ab" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "ab" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 0 2) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "" 0 0).toOption == some ""
-#guard (jSubstring "" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 1 3) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "山田太郎" 0 2).toOption == some "山田"
 #guard (jSubstring "山田太郎" 2 4).toOption == some "太郎"
 #guard (jSubstring "山田太郎" 0 0).toOption == some ""
 #guard (jSubstring "山田太郎" 1 3).toOption == some "田太"
-#guard (jSubstring "山田太郎" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "山田太郎" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "山田太郎" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "山田太郎" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "a𠮷b" 0 0).toOption == some ""
 #guard (jSubstring "a𠮷b" 1 3).toOption == some "𠮷"
-#guard (jSubstring "a𠮷b" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "a𠮷b" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "a𠮷b" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "a𠮷b" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 -- String.substring(begin)
 #guard (jSubstringFrom "0945" 2).toOption == some "45"
 #guard (jSubstringFrom "2415" 2).toOption == some "15"
@@ -277,53 +277,53 @@ open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 #guard formatGrouped ',' (-1234) == "-1,234"
 #guard formatGrouped ',' (-2147483648) == "-2,147,483,648"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(ja-JP))
-#guard formatGroupedS ⟨',', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 1234 == "1,234"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 20600 == "20,600"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 2147483647 == "2,147,483,647"
-#guard formatGroupedS ⟨',', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨',', '0', "-"⟩ (-1234) == "-1,234"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 1234 == "1,234"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 20600 == "20,600"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 2147483647 == "2,147,483,647"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ (-1234) == "-1,234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(de-DE))
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 1234 == "1.234"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 20600 == "20.600"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 2147483647 == "2.147.483.647"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ (-1234) == "-1.234"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 1234 == "1.234"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 20600 == "20.600"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 2147483647 == "2.147.483.647"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ (-1234) == "-1.234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(fr-FR))
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 1234 == "1 234"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 20600 == "20 600"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 2147483647 == "2 147 483 647"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ (-1234) == "-1 234"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 1234 == "1 234"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 20600 == "20 600"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 2147483647 == "2 147 483 647"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ (-1234) == "-1 234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(th-TH-u-nu-thai))
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 0 == "๐"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 7 == "๗"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 1234 == "๑,๒๓๔"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 20600 == "๒๐,๖๐๐"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 2147483647 == "๒,๑๔๗,๔๘๓,๖๔๗"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ (-1) == "-๑"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ (-1234) == "-๑,๒๓๔"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 0 == "๐"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 7 == "๗"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 1234 == "๑,๒๓๔"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 20600 == "๒๐,๖๐๐"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 2147483647 == "๒,๑๔๗,๔๘๓,๖๔๗"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ (-1) == "-๑"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ (-1234) == "-๑,๒๓๔"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(ar-EG))
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 0 == "٠"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 7 == "٧"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 1234 == "١٬٢٣٤"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 20600 == "٢٠٬٦٠٠"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 2147483647 == "٢٬١٤٧٬٤٨٣٬٦٤٧"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ (-1) == "؜-١"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ (-1234) == "؜-١٬٢٣٤"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 0 == "٠"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 7 == "٧"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 1234 == "١٬٢٣٤"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 20600 == "٢٠٬٦٠٠"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 2147483647 == "٢٬١٤٧٬٤٨٣٬٦٤٧"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ (-1) == "؜-١"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ (-1234) == "؜-١٬٢٣٤"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(fa-IR))
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 0 == "۰"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 7 == "۷"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 1234 == "۱٬۲۳۴"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 20600 == "۲۰٬۶۰۰"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 2147483647 == "۲٬۱۴۷٬۴۸۳٬۶۴۷"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ (-1) == "‎−۱"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ (-1234) == "‎−۱٬۲۳۴"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 0 == "۰"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 7 == "۷"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 1234 == "۱٬۲۳۴"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 20600 == "۲۰٬۶۰۰"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 2147483647 == "۲٬۱۴۷٬۴۸۳٬۶۴۷"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ (-1) == "‎−۱"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ (-1234) == "‎−۱٬۲۳۴"
 
 /-! ## LocalDate -/
 

@@ -39,8 +39,8 @@ generated:
 
 ### 進み具合
 
-- 済み: S1（`Trace.Gap`）、S2（属性・`Trace` の内部の型）、S3（判断のみ。下）、S4 の `JLocalDate`・`JLocalTime`・`JLocalDateTime`・`JDouble`・`Rat'`・`SequenceDef`、S5 の検査 MISU-1 と型の棚卸しの手順。
-- 残り（S4）: `JHashMap` のキーの一意性、`Sql.Query.compareKeys` の向きとキーの組、`DecimalFormat.Symbols`、`Java.Expr` の内部の値、`JThrow.other` のクラス名、`ConformanceKit.SqlTable` の行の幅。
+- 済み: S1（`Trace.Gap`）、S2（属性・`Trace` の内部の型）、S3（判断のみ。下）、S4 の `JLocalDate`・`JLocalTime`・`JLocalDateTime`・`JDouble`・`Rat'`・`SequenceDef`・`JHashMap`（キーの一意性 `nodup`）・`DecimalFormat.Symbols`（`Symbols.valid`）・`JThrow.other`（クラス名 `JClassName`）、S5 の検査 MISU-1 と型の棚卸しの手順。
+- 残り（S4）: `Sql.Query.compareKeys` の向きとキーの組、`Java.Expr` の内部の値、`ConformanceKit.SqlTable` の行の幅。
 
 ### S3 の判断
 

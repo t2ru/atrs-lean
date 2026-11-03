@@ -17,7 +17,7 @@ namespace JList
 def get {α : Type} (list : List α) (index : Nat) : JResult α :=
   match list[index]? with
   | some a => .ok a
-  | none => .error (.other "java.lang.IndexOutOfBoundsException" s!"Index {index} out of bounds for length {list.length}")
+  | none => .error (.other cls!"java.lang.IndexOutOfBoundsException" s!"Index {index} out of bounds for length {list.length}")
 
 theorem get_cons_zero {α : Type} (a : α) (l : List α) : get (a :: l) 0 = .ok a := rfl
 
