@@ -118,7 +118,7 @@ theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = s
 theorem flights_seed :
     SourceModel.Db.Seed.seedDb.flight.mapM flightOfRow = some Spec.Seed.World.world.flights := by
   simp only [SourceModel.Db.Seed.seedDb, SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.World.world,
-    Spec.Seed.Flight.world, mapM_days days_map 0]
+    Spec.Seed.Flight.flights, mapM_days days_map 0]
 
 /-- シードの MEMBER・MEMBER_LOGIN は、シードの会員に写る。 -/
 theorem members_seed :

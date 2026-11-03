@@ -151,7 +151,7 @@ def w2415 : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT523" }, .N
 
 theorem worldOfDb_fd2415 : worldOfDb fd2415 = some w2415 := by decide
 
-theorem w2415_inv : w2415.Inv := by decide
+theorem w2415_inv : w2415.Inv := w2415.inv
 
 theorem aiR_ic2415 : aiR ic2415 = some ia2415 := by
   have h1 : Abstraction.MasterData.Alpha.configOf ic2415.input.config = some Spec.Config.default := by decide
@@ -230,7 +230,7 @@ def w109 : Spec.Port.World := { wFS with sequences := { wFS.sequences with passe
 
 theorem worldOfDb_fd109 : worldOfDb fd109 = some w109 := by decide
 
-theorem w109_inv : w109.Inv := by decide
+theorem w109_inv : w109.Inv := w109.inv
 
 theorem aiR_ic109 : aiR ic109 = some (iaR mdFS [selR]) := by
   have h1 : Abstraction.MasterData.Alpha.configOf ic109.input.config = some Spec.Config.default := by decide

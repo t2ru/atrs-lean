@@ -261,11 +261,8 @@ theorem searchMachine_run_step :
 /-- SPEC-002・SPEC-003: 初期状態（シードを投入した後の `World`）は INV を満たし、1 歩は状態を変えないので INV を保つ。 -/
 @[obligation "SPEC-002", "SPEC-003"]
 theorem searchMachine_sound : searchMachine.Sound where
-  init_inv s h := h ▸ Seed.FlightProps.world_inv
-  step_inv s i s' o hi _ hs := by
-    obtain ⟨_, hc⟩ := hs
-    cases hc
-    exact hi
+  init_inv s _ := s.inv
+  step_inv _ _ s' _ _ _ _ := s'.inv
 
 /-- SPEC-007: 初期状態は、シードを投入した後の `World` の 1 点。 -/
 @[obligation "SPEC-007"]

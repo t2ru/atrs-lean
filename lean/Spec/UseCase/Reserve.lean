@@ -622,17 +622,8 @@ theorem reserveStep_keys (w : World) (i : MInput) (c) :
 保つ。空席の確保は主キーを変えず、登録と採番はフライトを変えない。 -/
 @[obligation "SPEC-002", "SPEC-003"]
 theorem reserveMachine_sound : reserveMachine.Sound where
-  init_inv s h := by
-    subst h
-    exact Spec.Seed.FlightProps.world_inv
-  step_inv s i s' o hi _ hs := by
-    obtain ⟨c, hc⟩ := hs
-    have := reserveStep_keys s i c
-    rw [hc] at this
-    show World.Inv s'
-    unfold World.Inv
-    rw [this]
-    exact hi
+  init_inv s _ := s.inv
+  step_inv _ _ s' _ _ _ _ := s'.inv
 
 /-- SPEC-007: 初期状態は、シードを投入した後の `World` の 1 点。 -/
 @[obligation "SPEC-007"]

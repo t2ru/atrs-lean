@@ -23,10 +23,10 @@ open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Sql.Core Lang
 open SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
 open Spec.Model
 
-/-- 状態の表 FLIGHT だけを替えたときの α。 -/
+/-- 状態の表 FLIGHT だけを替えたときの α（写したフライトが主キーで一意なとき）。 -/
 theorem worldOfDb_setFlights {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w)
-    {rows : List FlightRow} {fs : List Flight} (hr : rows.mapM flightOfRow = some fs) :
-    worldOfDb { fd with flight := rows } = some { w with flights := fs } := by
+    {rows : List FlightRow} {fs : List Flight} (hr : rows.mapM flightOfRow = some fs) (hn : (fs.map (·.key)).Nodup) :
+    worldOfDb { fd with flight := rows } = some { w with flights := fs, flights_nodup := hn } := by
   obtain ⟨-, hm, hrs, hsq⟩ := worldOfDb_eq_some.mp hw
   exact worldOfDb_eq_some.mpr ⟨hr, hm, hrs, hsq⟩
 
@@ -73,7 +73,7 @@ theorem updateRows_alpha {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb f
     unfold Spec.Port.World.findForUpdate at hf
     rw [hf]
     rfl
-  refine ⟨_, ?_, worldOfDb_setFlights hw h1⟩
+  refine ⟨_, ?_, worldOfDb_setFlights hw h1 (w.updateVacantNum k n).flights_nodup⟩
   simp only [updateRows, hne, Bool.false_eq_true, ite_false]
   unfold LangSemantics.Sql.Postgresql.Int4.ofInt
   rw [dite_eq_left_of_eq_true (eq_true hr)]
@@ -385,7 +385,7 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
     · intro s ⟨hr0, w', hw', hat⟩
       subst hr0
       have hkeys := Spec.UseCase.Reserve.secureSeats_keys hw'
-      have hinv' : w'.Inv := by unfold Spec.Port.World.Inv at hinv ⊢; rw [hkeys]; exact hinv
+      have hinv' : w'.Inv := w'.inv
       have hex' : ∀ k ∈ ks, (w'.findForUpdate k).isSome := fun k' hk' =>
         findForUpdate_isSome_of_keys hkeys (hex k' (List.mem_cons_of_mem _ hk'))
       have hseq : w'.sequences = w.sequences := secureSeats_seq hw'

@@ -1,12 +1,12 @@
 import Spec.Model
-import Spec.Port
 
 /-!
 # Spec.Seed.Flight
 
 シードのフライト（`World` の初期状態。backlog 0be7 の第 2 段）。投入日 2026-11-01 から 121 日の各日に、
 空席数のパターン `i % 3`（`i` は投入日を 0 とする日の番号）を、便名 × 10 枠（搭乗クラス・運賃種別）で並べる。
-全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `world` を作る。
+全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `flights` を作る。主キーの一意性の証明は
+`Spec.Seed.FlightProps.flights_nodup` が生成の形から示す（`World` は `Spec.Seed.World.world` が組み立てる）。
 
 `tools/conformance/flight_seed.py` が上流のシード 00250 から生成する。手で編集しない。
 -/
@@ -565,7 +565,7 @@ def pattern (i : Nat) : List (List Nat) :=
 def dayFlights (d : Date) (vs : List (List Nat)) : List Flight :=
   (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨⟨d, n, b, f⟩, v⟩
 
-/-- シードのフライト（`World` の初期状態）。 -/
-def world : Spec.Port.World := { flights := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i) }
+/-- シードのフライト（`World` の初期状態のフライト）。 -/
+def flights : List Flight := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i)
 
 end Spec.Seed.Flight

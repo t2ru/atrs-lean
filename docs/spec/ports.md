@@ -22,7 +22,7 @@ generated:
 
 | 成分 | 型 |
 | --- | --- |
-| `flights` | フライトの集合（主キーで一意） |
+| `flights` | フライトの集合（主キーで一意。Lean の `Spec.Port.World` は一意性の証明 `flights_nodup` を持つ。[ADR 6d36](../decision/6d36-misu-spec-types.md)） |
 | `members` | 会員の集合（会員番号で一意） |
 | `reservations` | 予約の集合（予約番号で一意。予約フライト・搭乗者を含む） |
 | `sequences` | 採番の状態（会員・予約・予約フライト・搭乗者） |

@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、`Spec.Port.World` にフライトの主キーの一意性の証明を持たせ、状態の α を主キーが重複する行に定義しないようにした。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/ports.md](spec/ports.md) を改めた。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、検証済みの設定・マスタの型 `Spec.EnvPre.ValidEnv` と検証 `validate` を置き、環境の前提 `masterConfigOk` と各機械の PRE をそれで書き直した。[spec/master-data.md](spec/master-data.md) を改めた。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L2 として、機械の入力・画面の入力の型に `@[raw_input]` を付け、段の記録を足した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 の最後として、予約内容の便を `Itinerary`、登録した予約の便と搭乗者を和型 `ReserveFlights` にし、予約フライトの予約番号の写しと `PassengerRecord` を除いた。登録簿の D-027 の前提の文、[spec/domain-model.md](spec/domain-model.md)・[spec/reservation.md](spec/reservation.md) を改めた。

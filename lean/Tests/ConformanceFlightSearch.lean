@@ -78,8 +78,9 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
         (← decodeDate (← getStr i "today")))),
     ("flightSearch.searchFlight", fun i => do
       let flights ← (← getArr i "flights").mapM specFlight
-      let w : Spec.Port.World := { flights }
-      if !decide w.Inv then throw "outside INV (duplicate flight key)"
+      -- フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）
+      let w : Spec.Port.World ← if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h }
+        else throw "outside INV (duplicate flight key)"
       if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
       let r ← need (Spec.FlightSearch.searchFlight cfg md (← decodeDate (← getStr i "today")) (← specCriteria (← getObjVal i "criteria"))
         w.findAll) "outside PRE"

@@ -10,7 +10,8 @@
 - パターンごとの空席数の表（便名ごとに 10 個）
 
 生成物:
-- lean/Spec/Seed/Flight.lean: [Spec] の `World` の初期状態 `Spec.Seed.Flight.world`
+- lean/Spec/Seed/Flight.lean: [Spec] の `World` の初期状態のフライト `Spec.Seed.Flight.flights`（主キーの一意性の証明は
+  `Spec.Seed.FlightProps.flights_nodup` が生成の形から示し、`Spec.Seed.World.world` が組み立てる）
 - lean/SourceModel/Db/FlightSeed.lean: [Source] の FLIGHT 表の初期状態 `seedFlightDb`（行の順は INSERT の順）
 
 ほかの道具（tools/conformance/master_sql.py）は、`expand()` で全件を展開して PostgreSQL の投入結果と照合する。
@@ -117,11 +118,12 @@ def header(module, desc):
 
 
 def spec_lean(days, slots, names, tables, h):
-    L = ["import Spec.Model", "import Spec.Port", ""]
+    L = ["import Spec.Model", ""]
     L += header("Spec.Seed.Flight", [
         "シードのフライト（`World` の初期状態。backlog 0be7 の第 2 段）。投入日 2026-11-01 から 121 日の各日に、",
         "空席数のパターン `i % 3`（`i` は投入日を 0 とする日の番号）を、便名 × 10 枠（搭乗クラス・運賃種別）で並べる。",
-        "全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `world` を作る。"])
+        "全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `flights` を作る。主キーの一意性の証明は",
+        "`Spec.Seed.FlightProps.flights_nodup` が生成の形から示す（`World` は `Spec.Seed.World.world` が組み立てる）。"])
     L += ["set_option maxRecDepth 8192", "", "namespace Spec.Seed.Flight", "open Spec.Model Spec.Prim", ""]
     L += ["/-- 日付の列（投入日から 121 日）。 -/", f'@[source "{SEED_LOCATOR}@{h}"]', "def days : List Date := ["]
     L += [f"  ⟨{d.year}, {d.month}, {d.day}, by decide⟩," for d in dates(days)]
@@ -144,8 +146,8 @@ def spec_lean(days, slots, names, tables, h):
           "/-- 1 日分のフライト（便名ごとに、枠と空席数を組にする）。 -/",
           "def dayFlights (d : Date) (vs : List (List Nat)) : List Flight :=",
           "  (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨⟨d, n, b, f⟩, v⟩", "",
-          "/-- シードのフライト（`World` の初期状態）。 -/",
-          "def world : Spec.Port.World := { flights := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i) }", "",
+          "/-- シードのフライト（`World` の初期状態のフライト）。 -/",
+          "def flights : List Flight := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i)", "",
           "end Spec.Seed.Flight", ""]
     return "\n".join(L)
 

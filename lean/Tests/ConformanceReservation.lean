@@ -82,10 +82,14 @@ def specMember (m : Json) : Except String Member := do
            mail := "", creditNo := "", creditTypeCd := { val := "VIS" }, creditTerm := "",
            login := { password := ⟨""⟩, lastPassword := none, loginDateTime := none, loginFlg := false } }
 
+/-- 入力の `World`。フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）。 -/
 def specWorld (i : Json) : Except String Spec.Port.World := do
-  return { flights := ← (← optArr i "flights").mapM specFlight, members := ← (← optArr i "members").mapM specMember,
-           sequences := { reserve := ← seqOf i "reserve", reserveFlight := ← seqOf i "reserveFlight",
-                          passenger := ← seqOf i "passenger" } }
+  let flights ← (← optArr i "flights").mapM specFlight
+  if h : (flights.map (·.key)).Nodup then
+    return { flights, flights_nodup := h, members := ← (← optArr i "members").mapM specMember,
+             sequences := { reserve := ← seqOf i "reserve", reserveFlight := ← seqOf i "reserveFlight",
+                            passenger := ← seqOf i "passenger" } }
+  else throw "outside INV (duplicate flight key)"
 
 def specSelect (s : Json) : Except String Spec.Ticket.SelectFlight := do
   return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ← getStr s "flightName",
@@ -141,7 +145,6 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let md ← decodeMaster fx.master
   let cfg ← decodeConfig fx.config
   let checkWorld (w : Spec.Port.World) : Except String Unit := do
-    if !decide w.Inv then throw "outside INV (duplicate flight key)"
     if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
   return [
     ("reservation.validateFlightList", fun i => do

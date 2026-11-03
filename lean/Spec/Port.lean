@@ -27,6 +27,8 @@ structure Sequences where
 structure World where
   /-- フライトの集合（主キーで一意。列の順序は意味を持たない） -/
   flights : List Flight
+  /-- フライトは主キーで一意である（ADR 6d36 の L3） -/
+  flights_nodup : (flights.map (·.key)).Nodup := by decide
   /-- 会員の集合（会員番号で一意） -/
   members : List Member := []
   /-- 予約の集合（予約番号で一意。登録順） -/
@@ -38,11 +40,24 @@ structure World where
 namespace World
 
 /-- `World` の不変条件: フライトは主キーで一意である。会員・予約・採番の不変条件は、それを使う機械（backlog aedf の
-第 2 段）で足す。 -/
+第 2 段）で足す。主キーの一意性は `World` の証明フィールド `flights_nodup` が持つので、どの `World` も満たす（`inv`。
+ADR 6d36 の L3）。機械の INV の枠として述語のまま残す。 -/
 @[spec_doc "docs/spec/ports.md#world抽象状態"]
 def Inv (w : World) : Prop := (w.flights.map (·.key)).Nodup
 
 instance (w : World) : Decidable w.Inv := by unfold Inv; infer_instance
+
+/-- どの `World` も不変条件を満たす（証明フィールド `flights_nodup`）。 -/
+theorem inv (w : World) : w.Inv := w.flights_nodup
+
+/-- 空席数の更新（フライトの列の写像）は、主キーの列を変えない。 -/
+theorem map_key_setVacant (fs : List Flight) (k : FlightKey) (n : Nat) :
+    (fs.map fun f => if f.key == k then { f with vacantNum := n } else f).map (·.key) = fs.map (·.key) := by
+  simp only [List.map_map]
+  congr 1
+  funext f
+  simp only [Function.comp]
+  split <;> rfl
 
 /-- フライトの参照整合性（DDL の FK_FLIGHT_1〜3）: 各フライトの便名・搭乗クラス・運賃種別がマスタにある。
 マスタは `World` に含めない入力なので、`World.Inv` でなく、マスタとの組の述語とする（MD-3 の残り）。 -/
@@ -82,7 +97,9 @@ def findForUpdate (w : World) (k : FlightKey) : Option Flight := w.flights.find?
 /-- `FlightRepository.updateVacantNum(key, n)`。 -/
 @[spec_doc "docs/spec/ports.md#flightrepository"]
 def updateVacantNum (w : World) (k : FlightKey) (n : Nat) : World :=
-  { w with flights := w.flights.map fun f => if f.key == k then { f with vacantNum := n } else f }
+  { w with
+    flights := w.flights.map fun f => if f.key == k then { f with vacantNum := n } else f
+    flights_nodup := by rw [map_key_setVacant]; exact w.flights_nodup }
 
 /-! ## MemberRepository -/
 

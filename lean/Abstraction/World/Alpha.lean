@@ -21,6 +21,8 @@ import Spec.Port
   （`reserveFlightsOf`）、0 件・3 件以上の予約と、往復で往路・復路の搭乗者（番号を除く値の列）が違う予約には
   定義しない。
 - シーケンス: 次に返す値（未使用なら 1、最後に返した値 `v ≥ 1` なら `v + 1`）。
+- 写したフライトの主キー（出発日・便名・搭乗クラス・運賃種別）が重複する状態には定義しない（`World` は主キーの一意性を
+  証明フィールドで持つ。ADR 6d36 の L3）。DDL の PK_FLIGHT が保つ性質で、[Source] の到達する状態は満たす。
 
 どの α も部分写像で、[Spec] の型で表せない状態（負の数・未知のコード・暦日の外の日付など）には定義しない（既知差異
 D-027）。`worldOfDb` は葉（定義域の上で単射なので、核は `undefOrEq`。ABS-048 の `worldOfDb_kernel`）で、会員・予約の
@@ -496,7 +498,8 @@ def worldOfDb (fd : FlightDb) : Option Spec.Port.World := do
   let members ← membersOf fd.member fd.memberLogin
   let reservations ← reservationsOf fd.reservation fd.reserveFlight fd.passenger
   let sequences ← sequencesOf fd
-  pure { flights, members, reservations, sequences }
+  if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h, members, reservations, sequences }
+  else none
 
 theorem worldOfDb_eq_some {fd : FlightDb} {w : Spec.Port.World} :
     worldOfDb fd = some w ↔ fd.flight.mapM flightOfRow = some w.flights ∧
@@ -505,11 +508,15 @@ theorem worldOfDb_eq_some {fd : FlightDb} {w : Spec.Port.World} :
       sequencesOf fd = some w.sequences := by
   constructor
   · intro h
-    simp only [worldOfDb, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-    obtain ⟨fs, hfs, ms, hms, rs, hrs, sq, hsq, rfl⟩ := h
-    exact ⟨hfs, hms, hrs, hsq⟩
+    simp only [worldOfDb, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def] at h
+    obtain ⟨fs, hfs, ms, hms, rs, hrs, sq, hsq, h⟩ := h
+    split at h
+    · cases h
+      exact ⟨hfs, hms, hrs, hsq⟩
+    · cases h
   · rintro ⟨hfs, hms, hrs, hsq⟩
-    simp only [worldOfDb, hfs, hms, hrs, hsq, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+    simp only [worldOfDb, hfs, hms, hrs, hsq, Option.bind_eq_bind, Option.bind_some, Option.pure_def,
+      dite_eq_left_of_eq_true (eq_true w.flights_nodup)]
 
 theorem worldOfDb_flights {fd : FlightDb} {w : Spec.Port.World} (h : worldOfDb fd = some w) :
     fd.flight.mapM flightOfRow = some w.flights := (worldOfDb_eq_some.mp h).1

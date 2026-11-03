@@ -55,7 +55,7 @@ theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 
 theorem worldOfDb_fdFS : worldOfDb fdFS = some wFS := rfl
 
-theorem wFS_inv : wFS.Inv := by decide
+theorem wFS_inv : wFS.Inv := wFS.inv
 
 theorem hasText_ok (s : String) (h : hasText s = true) (m : String) :
     LangSemantics.Java.Spring.Assert.hasText s m = .ok () := assertHasText_ok h m

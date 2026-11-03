@@ -44,7 +44,7 @@ theorem aiR_icSeed : aiR icSeed = some iaSeed := by
   rfl
 
 theorem refMaster_seed : Spec.Seed.World.world.RefMaster Spec.Seed.masterData :=
-  Spec.Seed.FlightProps.world_refMaster
+  Spec.Seed.World.world_refMaster
 
 theorem memberRefMaster_seed : Spec.Seed.World.world.MemberRefMaster Spec.Seed.masterData := by decide
 
