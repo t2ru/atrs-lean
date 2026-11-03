@@ -1,5 +1,6 @@
 import SourceModel.ReserveQuery
 import Abstraction.Reserve.Tx
+import Spec.Nondet
 
 /-!
 # Abstraction.Reserve.Catch
@@ -54,5 +55,25 @@ theorem catch_ioFault {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault 
   have h2 : SourceModel.Db.Tx.ioFailureClass ≠ SourceModel.App.B2.TicketReserveHelper.badRequestClass := by decide
   obtain ⟨m, rfl, -⟩ := h
   simp [catchReserve, h1, h2]
+
+theorem catch_conflict (m : String) :
+    catchReserve (.error (.other SourceModel.Db.Tx.conflictClass m)) = .ok (.error .conflict) := by
+  have h3 : SourceModel.Db.Tx.conflictClass ≠ AtrsBusinessException.className := by decide
+  have h4 : SourceModel.Db.Tx.conflictClass ≠ SourceModel.App.B2.TicketReserveHelper.badRequestClass := by decide
+  have h5 : SourceModel.Db.Tx.conflictClass ≠ SourceModel.Db.Tx.ioFailureClass := by decide
+  simp [catchReserve, h3, h4, h5]
+
+/-! ## 環境の選択が障害の位置の記述に許されること（束の環境の固定。ADR ab93 の 3d） -/
+
+theorem admits_std (d : Spec.Nondet.FaultSpec) : Spec.Nondet.admits d (.none, .none) := ⟨fun _ => rfl, fun _ => rfl⟩
+
+theorem admits_ioFault {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault env e) (a : Spec.Nondet.SeqAdvance) :
+    Spec.Nondet.admits (env.ioFailAt, env.conflictAt) (.none, .failure a) := by
+  obtain ⟨_, _, hi⟩ := h
+  exact ⟨fun hn => by simp only at hn; simp [hn] at hi, fun _ => rfl⟩
+
+theorem admits_conflict {env : SourceModel.Db.Tx.Env} (hc : env.conflictAt.isSome = true)
+    (a : Spec.Nondet.SeqAdvance) : Spec.Nondet.admits (env.ioFailAt, env.conflictAt) (.conflict a, .none) :=
+  ⟨fun _ => rfl, fun hn => by simp only at hn; simp [hn] at hc⟩
 
 end Abstraction.Reserve.Catch

@@ -177,6 +177,14 @@ pub fn basic_fare(...) -> (r: u64)
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant0` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant1` | `ebc1effd92f8d4a3` | pg-flight-sql |
 | `seed:00250_insert_flight.sql#FLIGHT` | `SourceModel.Db.FlightSeed.vacant2` | `ebc1effd92f8d4a3` | pg-flight-sql |
+| `seed:00200_insert_fixed_value.sql#AIRPORT` | `SourceModel.Db.MasterSeed.airport` | `e5f2a74a341d1ab1` | seed-lean |
+| `seed:00200_insert_fixed_value.sql#BOARDING_CLASS` | `SourceModel.Db.MasterSeed.boardingClass` | `0c0030e40bed7655` | seed-lean |
+| `seed:00200_insert_fixed_value.sql#CREDIT_TYPE` | `SourceModel.Db.MasterSeed.creditType` | `5cac07149240715c` | seed-lean |
+| `seed:00200_insert_fixed_value.sql#FARE_TYPE` | `SourceModel.Db.MasterSeed.fareType` | `9d4738994cba9a16` | seed-lean |
+| `seed:00220_insert_flight_master.sql#FLIGHT_MASTER` | `SourceModel.Db.MasterSeed.flightMaster` | `ce88990bf3547005` | seed-lean |
+| `seed:00240_insert_peak_time.sql#PEAK_TIME` | `SourceModel.Db.MasterSeed.peakTime` | `3eead422572ddcea` | seed-lean |
+| `seed:00200_insert_fixed_value.sql#PLANE` | `SourceModel.Db.MasterSeed.plane` | `4dd53d69f0fe3e83` | seed-lean |
+| `seed:00210_insert_route.sql#ROUTE` | `SourceModel.Db.MasterSeed.route` | `376e285ef8a7ec0a` | seed-lean |
 | `seed:00230_insert_member.sql#MEMBER_LOGIN` | `SourceModel.Db.MemberSeed.memberLoginRows` | `d692d2c1627b0945` | pg-reservation-sql |
 | `seed:00230_insert_member.sql#MEMBER` | `SourceModel.Db.MemberSeed.memberRows` | `0fa5d725ee1debb7` | pg-reservation-sql |
 | `seed:00230_insert_member.sql#MEMBER` | `SourceModel.Db.MemberSeed.sqMember` | `0fa5d725ee1debb7` | pg-reservation-sql |

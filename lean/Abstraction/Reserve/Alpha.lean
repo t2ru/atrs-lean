@@ -162,6 +162,19 @@ theorem aoR_kernel : KernelIs aoR (undefOrEq aoR) := by
 /-- 予約の標準の貼り合わせ（状態は `worldOfDb`、具体側の不変条件は `IcW`。空席照会の貼り合わせと `J` が同じ）。 -/
 abbrev glueR := Machine.Glue.ofStd worldOfDb IcW aiR aoR
 
+/-- 具体側の入力の環境の記述（障害の位置。束の環境の固定 `pinned` の `ce`。ADR ab93 の 3d）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def ceR (ic : SourceModel.ReserveQuery.MInput) : Spec.Nondet.FaultSpec :=
+  (ic.input.env.ioFailAt, ic.input.env.conflictAt)
+
+/-- `ceR` の核: 障害の位置が同じ入力を同一視する。 -/
+@[kernel "docs/spec/abstraction.md#抽象化関数-α"]
+def ceRKer (a b : SourceModel.ReserveQuery.MInput) : Prop :=
+  a.input.env.ioFailAt = b.input.env.ioFailAt ∧ a.input.env.conflictAt = b.input.env.conflictAt
+
+@[obligation "ABS-048"]
+theorem ceR_kernel : Machine.Preserves.KernelIs ceR ceRKer := fun _ _ => by simp [ceR, ceRKer]
+
 /-! ## 前提型の差異 -/
 
 /-- D-027（予約）: 具体側の入力（DB のマスタ・設定・Clock の最初の読み出し・予約フォーム・操作の種類）が [Spec] の型で

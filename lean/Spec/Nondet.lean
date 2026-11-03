@@ -47,6 +47,28 @@ inductive IoFailureChoice where
 /-- 標準の値: I/O は失敗しない。 -/
 def IoFailureChoice.std : IoFailureChoice := .none
 
+/-- 障害の位置の記述（環境の選択 N-001・N-002 のうち、実行環境が前もって決める部分）: I/O の失敗の位置と、排他の失敗の
+位置。位置が無ければ、その障害は起きない。位置があっても、障害が実際に起きるかと、起きるまでに進んだ採番は、実行で
+決まる（ADR ab93 の 3d・スキル spec-pivot の ADR 61e6）。 -/
+abbrev FaultSpec := Option Nat × Option Nat
+
+/-- 障害の位置の記述 `d` が許す環境の選択: I/O の失敗の位置が無ければ I/O の失敗を選ばず、排他の失敗の位置が無ければ
+衝突を選ばない。 -/
+@[spec_doc "docs/spec/ports.md#トランザクション"]
+def admits (d : FaultSpec) (e : ConflictChoice × IoFailureChoice) : Prop :=
+  (d.1 = none → e.2 = .none) ∧ (d.2 = none → e.1 = .none)
+
+/-- 障害の位置の無い記述が許すのは、標準の環境の選択だけ。 -/
+theorem admits_none {e : ConflictChoice × IoFailureChoice} (h : admits (none, none) e) :
+    e = (ConflictChoice.std, IoFailureChoice.std) := by
+  obtain ⟨h1, h2⟩ := h
+  have e1 := h1 rfl
+  have e2 := h2 rfl
+  cases e
+  simp only at e1 e2
+  rw [e1, e2]
+  rfl
+
 /-- N-003: レポート要求の配信（環境）。再配信の上限（1 以上。配備の設定）、次に配信する待ち行列の位置（配信の順序は
 保証しない）、その要求を待ち行列に残したまま配信するか（重複配信）。 -/
 @[nondet "N-003", spec_doc "docs/spec/ports.md#reportqueue"]

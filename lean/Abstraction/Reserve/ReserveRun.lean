@@ -11,7 +11,6 @@ import Abstraction.World.Init
 ABS-041 の補題: 予約確定の 1 歩の対応（backlog aedf の第 3 段）。具体機械の予約確定の 1 歩（どの許される並びでも）は、
 出力の値で終わり、実行後の状態は具体側の不変条件を満たし、その α と出力の像は、[Spec] の予約の 1 歩（環境の選択
 N-001・N-002 と自由な選択 N-004 を適当に選んだもの）の結果である。障害で終われば、状態は採番の前進だけ変わる。
-あわせて、R 課題 ABS-041 の主定理 `reserveRefines` と付帯の義務 `reserveRefines_initSurj` を置く（課題の属性は 3d で付ける）。
 -/
 
 namespace Abstraction.Reserve.ReserveRun
@@ -78,10 +77,12 @@ theorem step_reserve {w w' : Spec.Port.World} {ia : Spec.UseCase.Reserve.MInput}
 /-- 障害の像: I/O の失敗は環境の選択 N-002、排他の失敗は N-001 で、状態は採番の前進だけ変わる。 -/
 theorem fault_out {env : Env} {e : JThrow} (hf : IsFault env e) (w : Spec.Port.World)
     {ia : Spec.UseCase.Reserve.MInput} (hop : ia.op = .reserve) (a : Spec.Nondet.SeqAdvance) :
-    ∃ oc oa c, catchReserve (.error e) = .ok oc ∧ reserveStep w ia c = (advance w a, oa) ∧ aoR oc = some oa := by
-  rcases catch_fault hf with h | h
-  · exact ⟨_, _, ((.none, .failure a), .std), h, by simp [reserveStep], rfl⟩
-  · exact ⟨_, _, ((.conflict a, .none), .std), h, by simp [reserveStep, hop], rfl⟩
+    ∃ oc oa c, catchReserve (.error e) = .ok oc ∧ reserveStep w ia c = (advance w a, oa) ∧ aoR oc = some oa ∧
+      Spec.Nondet.admits (env.ioFailAt, env.conflictAt) c.1 := by
+  obtain ⟨m, ⟨rfl, hi⟩ | ⟨rfl, hc⟩⟩ := hf
+  · exact ⟨_, _, ((.none, .failure a), .std), catch_ioFault ⟨m, rfl, hi⟩, by simp [reserveStep], rfl,
+      admits_ioFault ⟨m, rfl, hi⟩ a⟩
+  · exact ⟨_, _, ((.conflict a, .none), .std), catch_conflict m, by simp [reserveStep, hop], rfl, admits_conflict hc a⟩
 
 /-- 予約確定の流れ（`reserveBody`）: 前段の選択フライトの検証の三つ組と、前段が成功したときの後段の三つ組をつなぐ。 -/
 theorem reserve_core {P : St → Prop} {p : Providers} {ic : SourceModel.ReserveQuery.ReserveInput}
@@ -146,13 +147,14 @@ theorem findForUpdate_isSome {w : Spec.Port.World} {k : Spec.Model.FlightKey} (h
 
 /-- 予約確定の 1 歩: 具体機械の予約確定の 1 歩（どの許される並びでも）は出力の値で終わり、実行後の状態は具体側の不変条件を
 満たし、その α と出力の像は、[Spec] の予約の 1 歩（環境の選択と自由な選択を適当に選んだもの）の結果である。 -/
+@[obligation "ABS-020", "ABS-022"]
 theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t) (hinv : w.Inv)
     {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
     (hk : ic.kind = .reserve) (hpre : ia.Pre w) (h9 : dev_D009 w ia) (h14 : dev_D014R ic) (h31 : dev_D031 ia)
     (h1 : dev_D001R ia) (h2 : dev_D002R ia) (h12 : dev_D012R ia) (h27 : dev_D027R ic) {mo : Order}
     (hmo : mo.Allowed ic.input.db) :
     ∃ oc w' oa c, catchReserve (runOp t ic mo).1 = .ok oc ∧ worldOfDb (runOp t ic mo).2 = some w' ∧
-      IcW (runOp t ic mo).2 ∧ reserveStep w ia c = (w', oa) ∧ aoR oc = some oa := by
+      IcW (runOp t ic mo).2 ∧ reserveStep w ia c = (w', oa) ∧ aoR oc = some oa ∧ Spec.Nondet.admits (ceR ic) c.1 := by
   obtain ⟨hcfg, hmd, hT, hreq, hop⟩ := aiR_eq hα
   have hop' : ia.op = .reserve := by
     rw [hk] at hop; simp only [opOf, Option.some.injEq] at hop; exact hop.symm
@@ -193,13 +195,14 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     | error e' s =>
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨⟨msg, rfl⟩, str, hstr⟩
-      · obtain ⟨oc, oa, c, hc, hst, ho⟩ := fault_out (IsIoFault.fault (hse ▸ hf)) w hop' {}
+      · obtain ⟨oc, oa, c, hc, hst, ho, had⟩ := fault_out (IsIoFault.fault (hse ▸ hf)) w hop' {}
         rw [ConfirmRun.advance_zero] at hst
         exact ⟨oc, w, oa, c, hc, by show worldOfDb s.db = _; rw [hsd]; exact hw,
-          by show IcW s.db; rw [hsd]; exact hic, hst, ho⟩
+          by show IcW s.db; rw [hsd]; exact hic, hst, ho, had⟩
       · simp only [Except.mapError, Except.error.injEq] at hstr
         refine ⟨.error .badRequest, w, _, ((.none, .none), ⟨some ""⟩), catch_badRequest msg,
-          by show worldOfDb s.db = _; rw [hsd]; exact hw, by show IcW s.db; rw [hsd]; exact hic, step_reserve hop' hx _, ?_⟩
+          by show worldOfDb s.db = _; rw [hsd]; exact hw, by show IcW s.db; rw [hsd]; exact hic, step_reserve hop' hx _, ?_,
+          admits_std _⟩
         simp only [Except.map, hstr, withDetail, Option.getD_some]
         rfl
   · -- 前段の成功
@@ -285,7 +288,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       rw [hww] at hx
       have hseq := (secureAll_world hsa).2.2.1
       have hdb' : worldOfDb s.db = some (register d ia.today n w1).2 := hdb
-      refine ⟨.ok (.reserved o), _, _, ((.none, .none), .std), rfl, hdb', fun w'' h => ?_, step_reserve hop' hx _, ?_⟩
+      refine ⟨.ok (.reserved o), _, _, ((.none, .none), .std), rfl, hdb', fun w'' h => ?_, step_reserve hop' hx _, ?_,
+        admits_std _⟩
       · rw [hdb'] at h
         cases h
         rw [register_eq d ia.today n hseq]
@@ -307,8 +311,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     | error e' s =>
       rintro ⟨hse, hE⟩
       rcases hE with ⟨hf, a, hdb⟩ | ⟨c, args, rfl, hdb, hcv⟩
-      · obtain ⟨oc, oa, ch, hc, hst, ho⟩ := fault_out hf w hop' a
-        exact ⟨oc, _, oa, ch, hc, hdb, fun w'' h => by rw [hdb] at h; cases h; exact keysOk_advance hkw a, hst, ho⟩
+      · obtain ⟨oc, oa, ch, hc, hst, ho, had⟩ := fault_out hf w hop' a
+        exact ⟨oc, _, oa, ch, hc, hdb, fun w'' h => by rw [hdb] at h; cases h; exact keysOk_advance hkw a, hst, ho, had⟩
       · have hic' : IcW s.db := fun w'' h => by rw [hdb] at h; cases h; exact hkw
         rcases hcv with hvb | ⟨hvr0, rfl, hsa⟩
         · rcases hres with ⟨e, he', hww, rfl⟩ | ⟨hvr0, -⟩
@@ -316,7 +320,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
             cases he'
             rw [hww] at hx
             have hnl := validate_nl hkf' hft hvr c args hvb
-            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hdb, hic', step_reserve hop' hx _, rfl⟩
+            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hdb, hic', step_reserve hop' hx _, rfl,
+              admits_std _⟩
           · rw [hvb] at hvr0; cases hvr0
         · rcases hres with ⟨e, he', -⟩ | ⟨-, n, hn, sec, hsec, hsc⟩
           · rw [hvr0] at he'; cases he'
@@ -326,7 +331,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
           · cases he'
             rw [hww] at hx
             have hnc : NoNL c := by rcases secureAll_code hsa with rfl | rfl <;> decide
-            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnc (by simp), hdb, hic', step_reserve hop' hx _, rfl⟩
+            exact ⟨_, w, _, ((.none, .none), .std), catch_business hnc (by simp), hdb, hic', step_reserve hop' hx _, rfl,
+              admits_std _⟩
           · cases hw1
 
 /-- 予約の 1 歩（予約確認・予約確定）: どの許される並びでも、具体機械の 1 歩は出力の値で終わり、実行後の状態は具体側の
@@ -337,54 +343,11 @@ theorem run_any {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w)
     (h12 : dev_D012R ia) (h27 : dev_D027R ic) (h14 : dev_D014R ic)
     {mo : Order} (hmo : mo.Allowed ic.input.db) :
     ∃ oc w' oa c, catchReserve (runOp t ic mo).1 = .ok oc ∧ worldOfDb (runOp t ic mo).2 = some w' ∧
-      IcW (runOp t ic mo).2 ∧ reserveStep w ia c = (w', oa) ∧ aoR oc = some oa := by
+      IcW (runOp t ic mo).2 ∧ reserveStep w ia c = (w', oa) ∧ aoR oc = some oa ∧ Spec.Nondet.admits (ceR ic) c.1 := by
   cases hk : ic.kind with
   | confirm =>
-    obtain ⟨oc, oa, c, hc, ht, hst, ho⟩ := confirm_run hw hic hα hk hpre h31 h1 h2 h12 h27 hmo
-    exact ⟨oc, w, oa, c, hc, by rw [ht]; exact hw, by rw [ht]; exact hic, hst, ho⟩
+    obtain ⟨oc, oa, c, hc, ht, hst, ho, had⟩ := confirm_run hw hic hα hk hpre h31 h1 h2 h12 h27 hmo
+    exact ⟨oc, w, oa, c, hc, by rw [ht]; exact hw, by rw [ht]; exact hic, hst, ho, had⟩
   | reserve => exact reserve_run hw hic hinv hα hk hpre h9 h14 h31 h1 h2 h12 h27 hmo
-
-/-- R 課題 ABS-041: 予約。[Spec] の `reserveMachine`（D-009 の前提で状態と入力の PRE を強め、D-031・D-001・D-002・
-D-012 の前提で PRE を強める）は、具体機械 `reserveConcrete`（D-027・D-014 の前提で入力を制限する）に、標準の貼り合わせ
-`glueR`（状態は `worldOfDb`、具体側の不変条件は `IcW`）でリファインされる。課題の属性 `@[obligation "ABS-041"]` は、
-束 `Machine.Preserves` と具体機械の定義域の扱いと同時に付け、機能のモジュール `Abstraction.Reserve` へ移す（backlog aedf の 3d。
-ADR ab93）。 -/
-theorem reserveRefines :
-    Refines (((((reserveMachine.restrictState dev_D009).restrict dev_D031).restrict dev_D001R).restrict dev_D002R).restrict
-        dev_D012R) ((reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR where
-  init t ht := ⟨Spec.Seed.World.world, rfl, Or.inl ⟨by rw [ht]; exact worldOfDb_seed, by rw [ht]; exact icW_seed⟩⟩
-  input_total := Glue.ofStd_input_total fun _ hd => hd.1.2.1
-  applicable s t ic ia hinv hJ hα hpre hd := by
-    obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre
-    obtain ⟨⟨-, h27⟩, h14⟩ := hd
-    obtain ⟨hw, hic⟩ : worldOfDb t = some s ∧ IcW t := by
-      rcases hJ with h | h
-      · exact h
-      · exact h.elim
-    obtain ⟨oc, -, -, -, hc, -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14
-      (mergeOrder_allowed ic.input.db)
-    refine ⟨⟨_, mergeOrder ic.input.db, mergeOrder_allowed _, rfl⟩, fun e ⟨mo, hmo, he⟩ => ?_⟩
-    obtain ⟨oc', -, -, -, hc', -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14 hmo
-    rw [hc'] at he
-    cases he
-  correct s t ic ia t' oc hinv hJ hα hpre hd hs := by
-    obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre
-    obtain ⟨⟨-, h27⟩, h14⟩ := hd
-    obtain ⟨hw, hic⟩ : worldOfDb t = some s ∧ IcW t := by
-      rcases hJ with h | h
-      · exact h
-      · exact h.elim
-    obtain ⟨mo, hmo, he⟩ := hs
-    obtain ⟨oc', w', oa, c, hc, hdb, hic', hst, ho⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14 hmo
-    rw [hc] at he
-    simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
-    obtain ⟨rfl, rfl⟩ := he
-    exact ⟨w', oa, ⟨c, hst⟩, Or.inl ⟨hdb, hic'⟩, Or.inl ho⟩
-
-/-- 付帯の義務: 抽象側の初期状態は、具体側の初期状態の像。 -/
-theorem reserveRefines_initSurj :
-    Refines.InitSurj (((((reserveMachine.restrictState dev_D009).restrict dev_D031).restrict dev_D001R).restrict
-        dev_D002R).restrict dev_D012R) ((reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR :=
-  fun s hs => ⟨SourceModel.Db.Seed.seedDb, rfl, Or.inl ⟨by rw [hs]; exact worldOfDb_seed, icW_seed⟩⟩
 
 end Abstraction.Reserve.ReserveRun

@@ -2117,6 +2117,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.SeedAlpha.masterDataOf_seed",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.need_D027",
       "layer": "Abstraction"
     },
@@ -2178,6 +2182,18 @@
     },
     {
       "name": "Abstraction.Reserve.Alpha.aoR_reserved",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.ceR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.ceRKer",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Alpha.ceR_kernel",
       "layer": "Abstraction"
     },
     {
@@ -2261,11 +2277,27 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Catch.admits_conflict",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Catch.admits_ioFault",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Catch.admits_std",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Catch.catch_badRequest",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Reserve.Catch.catch_business",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Catch.catch_conflict",
       "layer": "Abstraction"
     },
     {
@@ -2789,6 +2821,102 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Preserves.aiR_icSeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.aiR_noFaults",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.chR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.confirm_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.daySeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.dev_D027R_icSeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.devs_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.envR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.envR_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.eraseDetailO",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.eraseDetailO_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.eraseDetailO_withDetail",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.eraseDetailR",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.eraseDetailR_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.formSeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.iaBad",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.iaSeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.icSeed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.memberRefMaster_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.noFaults",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.refMaster_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.req_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.reserveStep_frame",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Preserves.sameUpToDetail",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Providers.flightMaster_codes",
       "layer": "Abstraction"
     },
@@ -3066,14 +3194,6 @@
     },
     {
       "name": "Abstraction.Reserve.ReserveRun.forall₂_imp_mem",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Reserve.ReserveRun.reserveRefines",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Reserve.ReserveRun.reserveRefines_initSurj",
       "layer": "Abstraction"
     },
     {
@@ -3661,14 +3781,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.Witness.need_D009",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Reserve.Witness.need_D031",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Reserve.Witness.paxR",
       "layer": "Abstraction"
     },
@@ -3722,6 +3834,26 @@
     },
     {
       "name": "Abstraction.Reserve.Witness.worldOfDb_fd2415",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.need_D009",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.need_D031",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.reservePreserves",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.reserveRefines",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.reserveRefines_initSurj",
       "layer": "Abstraction"
     },
     {
@@ -4598,6 +4730,130 @@
     },
     {
       "name": "SourceModel.Db.FlightSeed.vacant2",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.airport",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.airport0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.boardingClass",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.boardingClass0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.creditType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.creditType0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.fareType",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.fareType0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.flightMaster",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.flightMaster0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.flightMaster1",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.masterDb",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.peakTime",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.peakTime0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane0",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane1",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane10",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane11",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane12",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane13",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane2",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane3",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane4",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane5",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane6",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane7",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane8",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.plane9",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.route",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.MasterSeed.route0",
       "layer": "SourceModel"
     },
     {
@@ -10285,6 +10541,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Nondet.admits",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Port.Sequences",
       "layer": "Spec"
     },
@@ -10998,6 +11258,16 @@
     },
     {
       "type": "gap",
+      "from": "Abstraction.Reserve.need_D009",
+      "to": "D-009"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.Reserve.need_D031",
+      "to": "D-031"
+    },
+    {
+      "type": "gap",
       "from": "SourceModel.App.B2.TicketReserveHelper.reserve",
       "to": "D-014"
     },
@@ -11667,6 +11937,16 @@
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
+      "type": "kernel",
+      "from": "Abstraction.Reserve.Alpha.ceRKer",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "kernel",
+      "from": "Abstraction.Reserve.Preserves.sameUpToDetail",
+      "to": "docs/spec/abstraction.md#spec-の非決定性"
+    },
+    {
       "type": "nondet",
       "from": "Spec.Nondet.ConflictChoice",
       "to": "N-001"
@@ -11923,6 +12203,11 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.Reserve.Alpha.ceR_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.Reserve.Alpha.opOf_kernel",
       "to": "ABS-048"
     },
@@ -11930,6 +12215,11 @@
       "type": "obligation",
       "from": "Abstraction.Reserve.Alpha.optAgeOf_kernel",
       "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.ConfirmRun.confirm_run",
+      "to": "ABS-022"
     },
     {
       "type": "obligation",
@@ -11953,6 +12243,11 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.Reserve.Preserves.eraseDetailR_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.Reserve.Register.nextval_seq",
       "to": "ABS-021"
     },
@@ -11960,6 +12255,36 @@
       "type": "obligation",
       "from": "Abstraction.Reserve.Register.toChar_reserveNo",
       "to": "ABS-021"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.ReserveRun.reserve_run",
+      "to": "ABS-020"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.ReserveRun.reserve_run",
+      "to": "ABS-022"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.need_D009",
+      "to": "ABS-109"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.need_D031",
+      "to": "ABS-131"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.reservePreserves",
+      "to": "ABS-041"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.Reserve.reserveRefines",
+      "to": "ABS-041"
     },
     {
       "type": "obligation",
@@ -12367,6 +12692,54 @@
       "from": "SourceModel.Db.FlightSeed.vacant2",
       "to": "seed:00250_insert_flight.sql#FLIGHT",
       "hash": "ebc1effd92f8d4a3"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.airport",
+      "to": "seed:00200_insert_fixed_value.sql#AIRPORT",
+      "hash": "e5f2a74a341d1ab1"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.boardingClass",
+      "to": "seed:00200_insert_fixed_value.sql#BOARDING_CLASS",
+      "hash": "0c0030e40bed7655"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.creditType",
+      "to": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
+      "hash": "5cac07149240715c"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.fareType",
+      "to": "seed:00200_insert_fixed_value.sql#FARE_TYPE",
+      "hash": "9d4738994cba9a16"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.flightMaster",
+      "to": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
+      "hash": "ce88990bf3547005"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.peakTime",
+      "to": "seed:00240_insert_peak_time.sql#PEAK_TIME",
+      "hash": "3eead422572ddcea"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.plane",
+      "to": "seed:00200_insert_fixed_value.sql#PLANE",
+      "hash": "4dd53d69f0fe3e83"
+    },
+    {
+      "type": "source",
+      "from": "SourceModel.Db.MasterSeed.route",
+      "to": "seed:00210_insert_route.sql#ROUTE",
+      "hash": "376e285ef8a7ec0a"
     },
     {
       "type": "source",
@@ -15101,6 +15474,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Nondet.admits",
+      "to": "docs/spec/ports.md#トランザクション"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Port.Sequences",
       "to": "docs/spec/ports.md#idgenerator"
     },
@@ -15796,6 +16174,11 @@
     },
     {
       "type": "std_abs",
+      "from": "Abstraction.Reserve.Alpha.ceR",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
       "from": "Abstraction.Reserve.Alpha.opOf",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
@@ -16196,6 +16579,78 @@
       "merkle": "35a66e9c5ac3e64e",
       "checks": [
         "pg-flight-sql"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.airport",
+      "locator": "seed:00200_insert_fixed_value.sql#AIRPORT",
+      "hash": "e5f2a74a341d1ab1",
+      "merkle": "19275515070921c6",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.boardingClass",
+      "locator": "seed:00200_insert_fixed_value.sql#BOARDING_CLASS",
+      "hash": "0c0030e40bed7655",
+      "merkle": "7542118e2dc71c6a",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.creditType",
+      "locator": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
+      "hash": "5cac07149240715c",
+      "merkle": "ccfcfe9fea39bebd",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.fareType",
+      "locator": "seed:00200_insert_fixed_value.sql#FARE_TYPE",
+      "hash": "9d4738994cba9a16",
+      "merkle": "c2cc980a555a9dc9",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.flightMaster",
+      "locator": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
+      "hash": "ce88990bf3547005",
+      "merkle": "81469988b8c502a7",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.peakTime",
+      "locator": "seed:00240_insert_peak_time.sql#PEAK_TIME",
+      "hash": "3eead422572ddcea",
+      "merkle": "4b92b9ea3af0e131",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.plane",
+      "locator": "seed:00200_insert_fixed_value.sql#PLANE",
+      "hash": "4dd53d69f0fe3e83",
+      "merkle": "29c05b4d53a07844",
+      "checks": [
+        "seed-lean"
+      ]
+    },
+    {
+      "definition": "SourceModel.Db.MasterSeed.route",
+      "locator": "seed:00210_insert_route.sql#ROUTE",
+      "hash": "376e285ef8a7ec0a",
+      "merkle": "57bb5c7d049ef4e9",
+      "checks": [
+        "seed-lean"
       ]
     },
     {

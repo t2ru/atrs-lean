@@ -6,7 +6,7 @@ import Abstraction.MasterData.QueryRun
 # Abstraction.Reserve.Witness
 
 予約（ABS-041）の差異の述語の両向きの例（非自明性。G8）と、W 課題 ABS-109（D-009）・ABS-131（D-031）の証人と否定の
-定理（backlog aedf の第 3 段）。否定の定理の課題の属性は、R 課題 ABS-041 の属性と同時に 3d で付ける（ADR ab93）。
+定理の材料（backlog aedf の第 3 段）。否定の定理（W 課題）は、機能のモジュール `Abstraction.Reserve` に置く。
 
 [Source] の計算のカーネルでの評価は、`String.any`（整礎再帰）で止まるので、`hasText` を文字の列の形に書き換えてから
 `decide +kernel` で評価する（空席照会の証人と同じ）。
@@ -210,20 +210,6 @@ theorem run2415 : (match SourceModel.ReserveQuery.catchReserve (SourceModel.Rese
     SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq]
   decide +kernel
 
-/-- W 課題 ABS-131（D-031 の必要性。G9）: 前提を外すと、ABS-041 は成り立たない。往路便の到着時刻が 24:15 の往復の
-予約確認で、[Source] は `DateTimeParseException` で終わる（適用可能性が破れる）。[Spec] の PRE は成り立つ。 -/
-theorem need_D031 :
-    ¬ Refines ((((reserveMachine.restrictState dev_D009).restrict dev_D001R).restrict dev_D002R).restrict dev_D012R)
-      ((SourceModel.ReserveQuery.reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR := fun h => by
-  obtain ⟨d9, d1, d2, d12⟩ := ia2415_devs
-  obtain ⟨-, hne⟩ := h.applicable w2415 fd2415 ic2415 ia2415 w2415_inv (Or.inl ⟨worldOfDb_fd2415, icW_of_nil rfl rfl⟩)
-    aiR_ic2415 ⟨⟨⟨⟨ia2415_pre, d9⟩, d1⟩, d2⟩, d12⟩ ⟨⟨trivial, ic2415_dev⟩, fun _ => rfl⟩
-  have hr := run2415
-  split at hr
-  · rename_i e he
-    exact hne e ⟨mergeOrder db2415, mergeOrder_allowed _, by rw [he]; rfl⟩
-  · cases hr
-
 /-! ## W 課題 ABS-109（D-009） -/
 
 /-- 搭乗者の採番の次の値が 2,147,483,648（`int` の最大値の次）の状態の表（フライトは空席照会の証人と同じ）。 -/
@@ -298,21 +284,5 @@ theorem run109 : (match SourceModel.ReserveQuery.catchReserve (SourceModel.Reser
     SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster, assertHasText_eq,
     SourceModel.App.B2.PassengerForm.isEmpty, suHasText_fun]
   decide +kernel
-
-/-- W 課題 ABS-109（D-009 の必要性。G9）: 前提を外すと、ABS-041 は成り立たない。搭乗者の採番の次の値が `int` の
-最大値を超える状態で予約確定すると、[Source] は `MyBatisSystemException` で終わる（適用可能性が破れる）。[Spec] の
-PRE は成り立つ。 -/
-theorem need_D009 :
-    ¬ Refines ((((reserveMachine.restrict dev_D031).restrict dev_D001R).restrict dev_D002R).restrict dev_D012R)
-      ((SourceModel.ReserveQuery.reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR := fun h => by
-  obtain ⟨d31, d1, d2, d12⟩ := ia109_devs
-  obtain ⟨-, hne⟩ := h.applicable w109 fd109 ic109 (iaR mdFS [selR]) w109_inv
-    (Or.inl ⟨worldOfDb_fd109, icW_of_nil rfl rfl⟩) aiR_ic109 ⟨⟨⟨⟨ia109_pre, d31⟩, d1⟩, d2⟩, d12⟩
-    ⟨⟨trivial, ic109_dev⟩, fun _ => rfl⟩
-  have hr := run109
-  split at hr
-  · rename_i e he
-    exact hne e ⟨mergeOrder dbFS, mergeOrder_allowed _, by rw [he]; rfl⟩
-  · cases hr
 
 end Abstraction.Reserve.Witness

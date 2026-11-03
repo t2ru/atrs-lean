@@ -153,6 +153,10 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 判断 1: 環境の固定 | スキルの規則を広げる（スキルの ADR 61e6、版 0.27）。束の `pinned` を、具体側の環境の記述 `ce ic` が許す選択の関係 `adm` にする。障害の指定の無い記述は標準の選択だけを許す（`noFaultStd`）。障害の位置は実行環境が持つが、障害が実際に起きるかと採番の進んだ数は実行で決まるため |
 | 判断 2: 予約確認のロックの失敗 | SourceModel を直す。排他の失敗（ロック待ちのタイムアウト・デッドロック）は、行ロックを取る文でだけ起こす。<br>- 読むだけの文 `SourceModel.Db.Tx.query` は、I/O の失敗だけを起こす。<br>- 行ロック付きの読み出し `lockQuery`（`findOneForUpdate`）と、更新・挿入・採番の `sql` は両方を起こす。<br>これで `reserveConcrete` の定義域を既定（すべての入力）に戻した（3c の「実行環境の障害」の行の定義域の扱いを置き換える）。証明では、読むだけの文の障害を `IsIoFault`、`IsFault` の I/O の失敗を「実行環境が I/O の失敗の位置を持つとき」に限る形にした |
 | 判断 3: 状態とマスタの対応 | スキルの規則を広げる（スキルの ADR 61e6）。環境の前提を状態と入力の述語にし、証人は初期状態で示す。予約の PRE の `World.RefMaster`・`World.MemberRefMaster`（外部キーに当たる）と D-009 の前提を、環境の前提に書けるようにするため |
+| ABS-041 の束 | `Abstraction.Reserve.reservePreserves`（機能のモジュール。`@[obligation "ABS-041"]`）。<br>- 選択の像の材料 `chR`: 環境の記述 `Abstraction.Reserve.Alpha.ceR`（障害の位置の組。`@[std_abs]`、核は ABS-048）と、[Spec] の許す選択 `Spec.Nondet.admits`（位置の無い障害は選ばない）。<br>- 自由な選択 N-004 の枠の射影 `eraseDetailR`（`InvalidRequest` の詳細を消す。核 `sameUpToDetail`）。<br>- 環境の前提 `envR`: マスタ・設定の妥当性、`Request.Valid`、`RefMaster`・`MemberRefMaster`、操作の結果が定まること、差異の前提。<br>- 差異はすべて中断の差異なので、「出力のみ」の層は無い。<br>- `pinned` は、予約の 1 歩の対応（`run_any`）が、選んだ環境の選択が `admits (ceR ic)` を満たすことも返すことで示す |
+| 初期状態での証人 | シードのマスタの具体側の DB `SourceModel.Db.MasterSeed.masterDb` を、共有入力から生成器 `tools/conformance/master_seed.py` で作る（`conformance:check` で一致を確かめる）。その α がシードのマスタであることを、カーネルでの評価で示す（`Abstraction.MasterData.SeedAlpha.masterDataOf_seed`）。証人はシードの最初のフライト（2026-11-01・NTT001・N・OW）を選ぶ予約確認で、操作の結果が定まることはカーネルで評価する（シードのフライトの列の先頭で探索が止まる） |
+| 課題の属性 | `reserveRefines`・`reserveRefines_initSurj`・`reservePreserves` を機能のモジュール `Abstraction.Reserve` に置き、W 課題 `need_D009`（ABS-109）・`need_D031`（ABS-131）を同じモジュールに移して `@[obligation]`・`@[gap]` を付けた。登録簿の D-009・D-031 の証明の状態を「偽を証明済み」にした |
+| L 課題 ABS-020・ABS-022 | 予約の 1 歩の対応 `reserve_run`（ABS-020・ABS-022）と `confirm_run`（ABS-022）に課題の属性を付けた。障害で終われば状態の α は `advance w a`、業務例外なら `w` で、どの結果も出力の値で終わる（L9002 に到達しない）。ABS-022 の他のユースケースの分は、その R 課題とともに示す |
 
 ### Consequences
 

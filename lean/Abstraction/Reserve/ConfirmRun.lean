@@ -202,13 +202,14 @@ end
 
 /-- 予約確認の 1 歩: 具体機械の予約確認の 1 歩（どの許される並びでも）は、状態を変えずに出力の値で終わり、その像は、
 [Spec] の予約確認の 1 歩（環境の選択と自由な選択を適当に選んだもの）の出力である。 -/
+@[obligation "ABS-022"]
 theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t)
     {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
     (hk : ic.kind = .confirm) (hpre : ia.Pre w) (h31 : dev_D031 ia) (h1 : dev_D001R ia) (h2 : dev_D002R ia)
     (h12 : dev_D012R ia) (h27 : dev_D027R ic) {mo : Order}
     (hmo : mo.Allowed ic.input.db) :
     ∃ oc oa c, catchReserve (runOp t ic mo).1 = .ok oc ∧ (runOp t ic mo).2 = t ∧
-      reserveStep w ia c = (w, oa) ∧ aoR oc = some oa := by
+      reserveStep w ia c = (w, oa) ∧ aoR oc = some oa ∧ Spec.Nondet.admits (ceR ic) c.1 := by
   obtain ⟨hcfg, hmd, -, hreq, hop⟩ := aiR_eq hα
   have hop' : ia.op = .confirm := by
     rw [hk] at hop; simp only [opOf, Option.some.injEq] at hop; exact hop.symm
@@ -246,10 +247,11 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     | error e' s =>
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨⟨msg, rfl⟩, str, hstr⟩ | ⟨hv0, -⟩
-      · refine ⟨.error .ioFailure, _, ((.none, .failure {}), .std), ?_, hsd, step_io w ia _, rfl⟩
-        exact catch_ioFault hf
+      · exact ⟨.error .ioFailure, _, ((.none, .failure {}), .std), catch_ioFault hf, hsd, step_io w ia _, rfl,
+          admits_ioFault (hse ▸ hf) {}⟩
       · simp only [Except.mapError, Except.error.injEq] at hstr
-        refine ⟨.error .badRequest, _, ((.none, .none), ⟨some ""⟩), catch_badRequest msg, hsd, step_confirm hop' hx _, ?_⟩
+        refine ⟨.error .badRequest, _, ((.none, .none), ⟨some ""⟩), catch_badRequest msg, hsd, step_confirm hop' hx _, ?_,
+          admits_std _⟩
         simp only [Except.map, hstr, withDetail, Option.getD_some]
         rfl
       · cases hv0
@@ -304,7 +306,7 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
         rw [hn]
         rfl
       rw [hTn] at hle
-      refine ⟨.ok (.confirmed o), _, ((.none, .none), .std), rfl, hsd, step_confirm hop' hx _, ?_⟩
+      refine ⟨.ok (.confirmed o), _, ((.none, .none), .std), rfl, hsd, step_confirm hop' hx _, ?_, admits_std _⟩
       have hv' : natOfJ32 o.totalFare = some n := by
         rw [hT, natOfJ32_eq_some]
         simp only [T, hTn]
@@ -313,15 +315,15 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     | error e' s =>
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨-, str, hstr⟩ | ⟨-, c, args, rfl, hc⟩
-      · refine ⟨.error .ioFailure, _, ((.none, .failure {}), .std), ?_, hsd, step_io w ia _, rfl⟩
-        exact catch_ioFault hf
+      · exact ⟨.error .ioFailure, _, ((.none, .failure {}), .std), catch_ioFault hf, hsd, step_io w ia _, rfl,
+          admits_ioFault (hse ▸ hf) {}⟩
       · simp [Except.mapError] at hstr
       · rcases hres with ⟨e, he, rfl⟩ | ⟨hvr0, -⟩
         · rw [hc] at he
           cases he
           have hnl := validate_nl hkf' hft hvr c args hc
           exact ⟨.error (.business c args), _, ((.none, .none), .std), catch_business hnl.1 hnl.2, hsd,
-            step_confirm hop' hx _, rfl⟩
+            step_confirm hop' hx _, rfl, admits_std _⟩
         · rw [hc] at hvr0; cases hvr0
 
 end Abstraction.Reserve.ConfirmRun

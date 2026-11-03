@@ -50,6 +50,7 @@ import SourceModel.FlightSearchQuery
 import SourceModel.ReserveQuery
 import SourceModel.Db.FlightSeed
 import SourceModel.Db.MemberSeed
+import SourceModel.Db.MasterSeed
 import SourceModel.Db.Seed
 
 /-!
