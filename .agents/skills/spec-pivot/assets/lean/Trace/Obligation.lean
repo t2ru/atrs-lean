@@ -715,20 +715,19 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
     match r with
     | .error e => errors := errors.push s!"GK: {n} (@[gap_entry]): {e}"
     | .ok g =>
-      let want := if g.id.startsWith "T-" then "Refinement" else "Abstraction"
+      let want := g.id.side.proofLayer
       if sc.layerOf n != some want then
-        errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}) must be in the {want} layer"
+        errors := errors.push s!"GK: {n} (@[gap_entry] {g.idStr}) must be in the {want} layer"
       if ((gapDoc? env n).getD "").trimAscii.isEmpty then
-        errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}) has no docstring (the description)"
-      for p in g.problems do errors := errors.push s!"GK: {n} (@[gap_entry] {g.id}): {p}"
-      match byId[g.id]? with
-      | some (m, _) => errors := errors.push s!"GK: {g.id} is declared by both {m} and {n}"
-      | none => byId := byId.insert g.id (n, g); order := order.push g.id
+        errors := errors.push s!"GK: {n} (@[gap_entry] {g.idStr}) has no docstring (the description)"
+      match byId[g.idStr]? with
+      | some (m, _) => errors := errors.push s!"GK: {g.idStr} is declared by both {m} and {n}"
+      | none => byId := byId.insert g.idStr (n, g); order := order.push g.idStr
   -- 裏付けの宣言（`@[gap]` を付け、証明の層に置いてよい）
   let mut witnessOf : Std.HashMap Name (Array String) := {}
   for i in order do
     let some (_, g) := byId[i]? | continue
-    for w in g.evidence.witnesses do witnessOf := witnessOf.insert w ((witnessOf.getD w #[]).push i)
+    for w in g.witnesses do witnessOf := witnessOf.insert w ((witnessOf.getD w #[]).push i)
   for (n, ids) in gapMarkers env do
     for i in ids do
       let isWitness := (witnessOf.getD n #[]).contains i
@@ -757,16 +756,23 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
   let mut claims : Array (Name × String) := #[]
   for i in order do
     let some (_, g) := byId[i]? | continue
-    let code := g.evidence.code
+    let code := g.evidenceCode
     for d in g.deviations do
       unless (deviationAttr.getParam? env d).any (·.contains i) do
         errors := errors.push s!"GK: {i}: deviations lists {d}, which has no @[deviation \"{i}\"]"
-    for w in g.evidence.witnesses do
+    for w in g.witnesses do
       unless (gapAttr.getParam? env w).any (·.contains i) do
         errors := errors.push s!"GK: {i}: {w} (the evidence {code}) must have @[gap \"{i}\"]"
-    match g.evidence with
-    | .refuted ts =>
-      for t in ts do
+    if let some c := g.claim? then
+      match env.find? c with
+      | some (.opaqueInfo oi) =>
+        if oi.type.consumeMData == .sort .zero then claims := claims.push (c, i)
+        else errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop"
+      | _ => errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop (opaque {c} : Prop)"
+    match g.typedEvidence? with
+    | none => pure ()
+    | some (.refuted _ ts) =>
+      for t in ts.toList do
         match env.find? t with
         | some (.thmInfo _) =>
           let ok := rs.any fun ri => ri.necessityBy.any fun (d, t') => t' == t && g.deviations.contains d
@@ -774,8 +780,8 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
             errors := errors.push
               s!"GK: {i}: {t} is not a necessity theorem of {g.deviations} (¬ of an R obligation with one of them removed)"
         | _ => errors := errors.push s!"GK: {i}: {t} (refuted) is not a theorem"
-    | .covered m ts =>
-      for t in ts do
+    | some (.covered _ m ts) =>
+      for t in ts.toList do
         unless cs.covers.any (fun (t', m', d) => t' == t && m' == m && g.deviations.contains d) do
           errors := errors.push s!"GK: {i}: {t} is not a theorem Covers {m} d with d in {g.deviations}"
       -- 被覆の連鎖は、偽を証明済みの差異で終わる（循環しない）
@@ -787,21 +793,14 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
         if seen.contains j then
           errors := errors.push s!"GK: {i}: the covered chain is cyclic ({seen.toList ++ [j]})"; break
         let some (_, gj) := byId[j]? | break
-        match gj.evidence with
-        | .refuted _ => break
-        | .covered m' _ => seen := seen.push j; cur := m'
-        | e =>
-          errors := errors.push s!"GK: {i}: the coverer {cur} ({j}) is {e.code}, not refuted / covered"; break
-    | .unformalized c _ =>
-      match env.find? c with
-      | some (.opaqueInfo oi) =>
-        if oi.type.consumeMData == .sort .zero then claims := claims.push (c, i)
-        else errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop"
-      | _ => errors := errors.push s!"GK: {i}: the claim {c} must be an opaque Prop (opaque {c} : Prop)"
-    | .pending .. =>
+        match gj.typedEvidence? with
+        | some (.refuted ..) => break
+        | some (.covered _ m' _) => seen := seen.push j; cur := m'
+        | _ =>
+          errors := errors.push s!"GK: {i}: the coverer {cur} ({j}) is {gj.evidenceCode}, not refuted / covered"; break
+    | some (.pending ..) =>
       if g.deviations.any (fun d => rs.any fun ri => ri.necessity.contains d) then
         errors := errors.push s!"GK: {i} is pending but has a necessity theorem; make it refuted"
-    | .excludedBy _ => pure ()
   -- 形式化していない主張は、どの定数からも参照しない（仮定として推論に持ち込まない）
   unless claims.isEmpty do
     for (n, ci) in env.constants.toList do
@@ -899,7 +898,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let idsOf (n : Name) : List String := ((deviationAttr.getParam? env n).getD #[]).toList
   let neededIds := needed.toList.flatMap idsOf
   let pendingIds := (gapEntries env).toList.filterMap fun (_, r) =>
-    match r with | .ok g => (match g.evidence with | .pending .. => some g.id | _ => none) | .error _ => none
+    match r with | .ok g => (if g.isPending then some g.idStr else none) | .error _ => none
   let mut warnings := #[]
   for i in (used.flatMap idsOf).eraseDups do
     unless neededIds.contains i do

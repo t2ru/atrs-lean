@@ -3,68 +3,103 @@ import Trace
 /-!
 # Test.Trace.GapErrors
 
-`@[gap_entry]` の値の誤り（種類ごとの必須の欄・禁じる欄、種類と証明の状態の組み合わせ、読めない値）が、
-付けた時点でエラーになることを確かめる。
+ギャップの登録の値の誤りが、エラボレートの時点で誤りになることを確かめる。
+
+- 種類ごとに要る欄・許す証明の状態は型（`Trace.Gap.Body`・`TypedEvidence`・`UndeterminedEvidence`）が表すので、
+  不正な組み合わせは型の誤りになる（ADR bf1b）。ここでは、その代表を確かめる。
+- ID・空でない文字列の形式は、証明フィールド（既定 `by decide`）の誤りになる。
+- 値を式から読めない（関数で組み立てた文字列・名前）ことは、`@[gap_entry]` が付けた時点で誤りにする。
 -/
 
-open _root_.Trace
+open _root_.Trace Trace.Gap Trace.Id
 
 namespace Test.Trace.GapErrors
 
-/-- error: @[gap_entry] D-001: impact is required for pre; backlog is required for pre (the impact table) -/
-#guard_msgs in
-@[gap_entry] def noImpact : Gap :=
-  { id := "D-001", kind := .pre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p", rTasks := ["ABS-001"],
-    evidence := .pending "Lean に述語がまだ無い" (some "ABS-101") }
+/-! ## 型が表す組み合わせ -/
 
-/-- error: @[gap_entry] D-002: impact is only for pre, not observational -/
-#guard_msgs in
-@[gap_entry] def obsWithImpact : Gap :=
-  { id := "D-002", kind := .observational, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    rTasks := ["ABS-001"], evidence := .pending "r" none, impact := some (.outputOnly, "r") }
+-- 前提型は、影響と作業項目を含むすべての欄を持つ（正例）。
+example : PreGap :=
+  { side := .abstract, premise := ne!"p", evidence := .pending [] ne!"r" none, rTasks := ne![oid!"ABS-001"],
+              impact := .abort, impactReason := ne!"r", backlog := ne![bid!"00000000-0000-4000-8000-000000000001"] }
 
-/-- error: @[gap_entry] D-003: rTasks is only for pre / observational, not out_of_model -/
-#guard_msgs in
-@[gap_entry] def outOfModelWithTasks : Gap :=
-  { id := "D-003", kind := .outOfModel, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    rTasks := ["ABS-001"], evidence := .unformalized ``Nat "" }
+-- 前提型には影響が要る（欄を省けない）。
+/-- error: Fields missing: `impact`, `impactReason`, `backlog` -/
+#guard_msgs (substring := true) in
+example : PreGap :=
+  { side := .abstract, premise := ne!"p", evidence := .pending [] ne!"r" none, rTasks := ne![oid!"ABS-001"] }
 
-/-- error: @[gap_entry] D-004: evidence unformalized does not fit kind undetermined (or lacks its theorems / resolution) -/
+-- 観測型は影響の欄を持たない。
+/-- error: `impact` is not a field of structure `ObsGap` -/
 #guard_msgs in
-@[gap_entry] def undeterminedNoResolution : Gap :=
-  { id := "D-004", kind := .undetermined, sites := [⟨"a", "docs/a.md", ""⟩], evidence := .unformalized ``Nat "" }
+example : ObsGap :=
+  { component := ne!"p", evidence := .pending [] ne!"r" none, rTasks := ne![oid!"ABS-001"], impact := .abort }
 
-/-- error: @[gap_entry] D-006: evidence refuted does not fit kind outside_pre (or lacks its theorems / resolution); evidence refuted needs the deviations (the @[deviation] constants) -/
+-- モデル外は R 課題の欄を持たない。
+/-- error: `rTasks` is not a field of structure `OutOfModelGap` -/
 #guard_msgs in
-@[gap_entry] def kindMismatch : Gap :=
-  { id := "D-006", kind := .outsidePre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    evidence := .refuted [``Nat.le_refl] }
+example : OutOfModelGap := { reason := ne!"p", claim := ``Nat, rTasks := ne![oid!"ABS-001"] }
 
-/-- error: @[gap_entry] D-007: evidence refuted does not fit kind pre (or lacks its theorems / resolution) -/
+-- PRE の外は、偽を証明済みの状態を持てない（証明の状態の欄が無い）。
+/-- error: `evidence` is not a field of structure `OutsidePreGap` -/
 #guard_msgs in
-@[gap_entry] def refutedWithoutTheorems : Gap :=
-  { id := "D-007", kind := .pre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p", rTasks := ["ABS-001"],
-    deviations := [``Nat], evidence := .refuted [], impact := some (.abort, "r"), backlog := ["b"] }
+example : OutsidePreGap := { excludingPre := ne!"p", pre := [], evidence := .refuted ne![``Nat] ne![``Nat.le_refl] }
 
-/-- error: @[gap_entry] D-008: evidence pending does not fit kind out_of_model (or lacks its theorems / resolution) -/
+-- 偽を証明済みには、差異の定数と必要性の定理が 1 つ以上要る。
+/-- error: Application type mismatch: The argument
+  []
+has type
+  List ?m.1
+but is expected to have type
+  NEList Lean.Name
+in the application
+  TypedEvidence.refuted []
+-/
 #guard_msgs in
-@[gap_entry] def outOfModelPending : Gap :=
-  { id := "D-008", kind := .outOfModel, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    evidence := .pending "r" none }
+example : TypedEvidence := .refuted [] []
 
-/-- error: @[gap_entry] X-1: id "X-1" is not D-NNN / T-NNN; sites must not be empty -/
+/-! ## 形式 -/
+
+/-- error: could not synthesize default value for field 'wf' of 'Trace.Id.GapId' using tactics
+---
+error: Tactic `decide` proved that the proposition
+  GapId.valid "X-1" = true
+is false -/
 #guard_msgs in
-@[gap_entry] def badId : Gap :=
-  { id := "X-1", kind := .outsidePre, sites := [], premise := "p", evidence := .excludedBy [] }
+example : GapId := gid!"X-1"
+
+/-- error: could not synthesize default value for field 'ne' of 'Trace.Id.NEString' using tactics
+---
+error: unsolved goals
+⊢ False -/
+#guard_msgs in
+example : NEString := ne!""
+
+/-- error: could not synthesize default value for field 'wf' of 'Trace.Id.ObligationId' using tactics
+---
+error: Tactic `decide` proved that the proposition
+  ObligationId.valid "ABS-1" = true
+is false -/
+#guard_msgs in
+example : ObligationId := oid!"ABS-1"
+
+/-- error: could not synthesize default value for field 'wf' of 'Trace.Id.BacklogId' using tactics
+---
+error: Tactic `decide` proved that the proposition
+  BacklogId.valid "backlog-x" = true
+is false -/
+#guard_msgs in
+example : BacklogId := bid!"backlog-x"
+
+/-! ## 式から読めない値 -/
 
 /-- 文字列を関数で組み立てると読めない。 -/
-def suffix : String := "05"
+def suffix : String := "PRE X"
 
 /-- error: @[gap_entry]: expected a string literal (only definitions are unfolded; no function calls) -/
 #guard_msgs in
 @[gap_entry] def computed : Gap :=
-  { id := "D-0" ++ suffix, kind := .outsidePre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    evidence := .excludedBy [] }
+  { id := gid!"D-005", sites := ne![⟨ne!"a", ne!"docs/a.md", ""⟩],
+    body := .outsidePre { excludingPre := ⟨"p " ++ suffix, by decide⟩, pre := [] } }
 
 /-- 名前を関数で組み立てると読めない。 -/
 def nameSuffix : String := "x"
@@ -72,8 +107,8 @@ def nameSuffix : String := "x"
 /-- error: @[gap_entry]: expected a string literal (only definitions are unfolded; no function calls) -/
 #guard_msgs in
 @[gap_entry] def computedName : Gap :=
-  { id := "D-009", kind := .outsidePre, sites := [⟨"a", "docs/a.md", ""⟩], premise := "p",
-    evidence := .excludedBy [Lean.Name.str .anonymous ("a" ++ nameSuffix)] }
+  { id := gid!"D-009", sites := ne![⟨ne!"a", ne!"docs/a.md", ""⟩],
+    body := .outsidePre { excludingPre := ne!"p", pre := [Lean.Name.str .anonymous ("a" ++ nameSuffix)] } }
 
 /-- error: @[gap_entry]: Test.Trace.GapErrors.notGap must have type Trace.Gap -/
 #guard_msgs in
