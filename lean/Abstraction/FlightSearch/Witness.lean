@@ -64,7 +64,8 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
   have hN : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
   have hH : hasText "HND" = true := by rw [hasText, string_any_toList]; decide
   have hI : hasText "ITM" = true := by rw [hasText, string_any_toList]; decide
-  refine ⟨by decide, ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩, rfl, hH, hI, ?_⟩
+  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+    ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩, rfl, hH, hI, ?_⟩
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha

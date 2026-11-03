@@ -36,6 +36,6 @@ theorem envMQ_icMQ : ∃ ia, aiMQ icMQ = some ia ∧ envMQ ia := by
     have hm : EnvPre.validB ia.1 ia.2.1 = true := by
       have : (aiMQ icMQ).any (fun ia => EnvPre.validB ia.1 ia.2.1) = true := by decide +kernel
       rw [he] at this; simpa using this
-    exact ⟨ia, rfl, ⟨hc, EnvPre.validB_sound hm⟩, hq⟩
+    exact ⟨ia, rfl, masterConfigOk.of_valid hc (EnvPre.validB_sound hm), hq⟩
 
 end Abstraction.MasterData.Preserves

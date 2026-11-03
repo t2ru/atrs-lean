@@ -202,7 +202,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
   ∀ r, md.routeOf c.depAirportCd c.arrAirportCd = some r →
     ∀ fm ∈ md.flightMasters, fm.routeNo = r.routeNo → Text.hasText fm.flightName.val = true
 
-/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
+/-- PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
 照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件である（照会条件の条件は、
 入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
@@ -210,7 +210,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
 @[spec_doc "docs/spec/flight-search.md#事前条件", gap "D-033"]
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
     Text.hasText i.criteria.depAirportCd = true ∧ Text.hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria
 
@@ -230,7 +230,8 @@ def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
     (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
-  obtain ⟨_, hmd, hbsome, _, _, _⟩ := h
+  obtain ⟨hok, hbsome, _, _, _⟩ := h
+  obtain ⟨_, hmd⟩ := hok.valid
   unfold searchFlight
   split
   · rfl

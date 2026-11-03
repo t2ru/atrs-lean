@@ -239,7 +239,8 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
   simp only [criteriaOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hcrit
   obtain ⟨D, hD, bc, hbc, dep, hdep, arr, harr, ft, hft, rfl⟩ := hcrit
   obtain ⟨dj, hdj, hDj⟩ := hD
-  obtain ⟨hcv, hv, hbsome, hdepT, harrT, hfn⟩ := hp
+  obtain ⟨hok, hbsome, hdepT, harrT, hfn⟩ := hp
+  obtain ⟨hcv, hv⟩ := hok.valid
   simp only at hcv hv hbsome hdepT harrT hfn h1 h2
   obtain ⟨p, hl, hpt, hrq, hbcq, hftq, hfmq⟩ := Abstraction.FlightSearch.Providers.load_fs hm hv hmo
   simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, SourceModel.FlightSearchQuery.runSearchFlight, hl, ok_bind, SourceModel.Domain.Service.B1.TicketSearchServiceImpl.searchFlight, htc, hdj, hbc,

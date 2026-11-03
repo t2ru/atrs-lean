@@ -181,7 +181,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 
 シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
-シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）。
+シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。前提は、設定とマスタの検証 `Spec.EnvPre.validate` が、不変条件の証明を持つ検証済みの型 `ValidEnv` を返すことである。機械の入力の設定・マスタは生の型のまま持つ（[ADR 6d36](../decision/6d36-misu-spec-types.md)）。[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）。
 
 翌日着の便（NTT523・NTT528）について、[Source] の空席照会は到着時刻を文字列として整形するだけで（`DateTimeUtil.toFormatTimeString`。`2415` → `24:15`）、[Spec] と一致する。
 [Source] の `DateTimeFormatter("HHmm")` が `DateTimeParseException` を投げるのは、予約の往復便の検査で往路便がこの便のとき（`TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight`）で、既知差異 [D-031](abstraction.md#既知差異) である（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md) の暫定措置 `outsideSpec` は外した）。

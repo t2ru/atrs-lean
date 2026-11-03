@@ -90,7 +90,7 @@ theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase
     have hpsl : ps.length = (ia.req.form.passengers.filter (!·.isEmpty)).length :=
       LangSemantics.Core.MapM.mapM_some_length hps |>.symm |>.symm
     have hfl := List.length_filter_le (fun x : PassengerInput => !x.isEmpty) ia.req.form.passengers
-    refine ⟨hcv, hmv, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    refine ⟨Spec.EnvPre.masterConfigOk.of_valid hcv hmv, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · rw [hkeys]; simpa [Spec.Model.Range.minReserveFlights] using hl1
     · rw [hkeys]; simpa [Spec.Model.Range.maxReserveFlights] using hl2
     · rw [hages, List.length_map]
@@ -206,7 +206,8 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
   have hop' : ia.op = .confirm := by
     rw [hk] at hop; simp only [opOf, Option.some.injEq] at hop; exact hop.symm
   obtain ⟨hsel, hri⟩ := requestOf_eq hreq
-  obtain ⟨hcv, hmv, hrv, href, hmref, hx⟩ := hpre
+  obtain ⟨hok, hrv, href, hmref, hx⟩ := hpre
+  obtain ⟨hcv, hmv⟩ := hok.valid
   rw [hop'] at hx
   obtain ⟨x, hx⟩ := Option.isSome_iff_exists.mp hx
   obtain ⟨v, hv, hcases⟩ := confirmOp_cases hx

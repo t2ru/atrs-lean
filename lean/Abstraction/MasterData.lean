@@ -27,14 +27,14 @@ theorem queryRefines : Refines Spec.MasterQuery.queryMachine ((queryConcrete.res
     obtain ⟨cfg, md, q⟩ := ia
     have hα' : aiMQ ic = some (cfg, md, q) := hα
     refine ⟨⟨_, mergeOrder ic.db, mergeOrder_allowed ic.db, rfl⟩, fun e ⟨o, ho, he⟩ => ?_⟩
-    obtain ⟨a, hr, -⟩ := run_correct hα' hpre.2.1 hpre.2.2 ho
+    obtain ⟨a, hr, -⟩ := run_correct hα' hpre.1.valid.2 hpre.2 ho
     rw [hr] at he
     cases he
   correct s t ic ia t' oc _ _ hα hpre _ hs := by
     obtain ⟨cfg, md, q⟩ := ia
     have hα' : aiMQ ic = some (cfg, md, q) := hα
     obtain ⟨o, ho, he⟩ := hs
-    obtain ⟨a, hr, ha⟩ := run_correct hα' hpre.2.1 hpre.2.2 ho
+    obtain ⟨a, hr, ha⟩ := run_correct hα' hpre.1.valid.2 hpre.2 ho
     rw [hr] at he
     simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
     obtain ⟨-, rfl⟩ := he
@@ -76,13 +76,13 @@ theorem queryPreserves :
   sound := Spec.MasterQuery.queryMachine_sound
   initIs := Spec.MasterQuery.queryMachine_initIs
   initSurj := queryRefines_initSurj
-  total _ _ _ h := ⟨h.1.1, h.1.2, h.2⟩
+  total _ _ _ h := ⟨h.1, h.2⟩
   envWitness := by
     obtain ⟨ia, hα, he⟩ := envMQ_icMQ
     have h27 : dev_D027 icMQ := by unfold dev_D027; rw [hα]; rfl
     exact ⟨icMQ, ia, ⟨⟨trivial, h27⟩, covers_D036 _ h27⟩, hα, he⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := (Seed.config, badMasterData, .config)) trivial
-    fun h => badMasterData_not_env ⟨h.1, h.2.1⟩
+    fun h => badMasterData_not_env h.1
 
 /-- ABS-026 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、答えの像は [Spec] の答え。 -/
 theorem queryRefines_commutes {ic : SrcInput} {cfg : Config} {md : Spec.MasterData} {q : Spec.MasterQuery.Query}
@@ -91,7 +91,7 @@ theorem queryRefines_commutes {ic : SrcInput} {cfg : Config} {md : Spec.MasterDa
   intro r hr
   have h27 : dev_D027 ic := by unfold dev_D027; rw [hα]; rfl
   obtain ⟨-, h⟩ := queryRefines.complete_fun (f := fun i => Spec.MasterQuery.answer i.1 i.2.1 i.2.2)
-    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα ⟨hv.1.1, hv.1.2, hv.2⟩
+    (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα ⟨hv.1, hv.2⟩
     ⟨⟨trivial, h27⟩, covers_D036 _ h27⟩
   obtain ⟨_, a, rfl, -, ho⟩ := h r hr
   rcases ho with ho | ho

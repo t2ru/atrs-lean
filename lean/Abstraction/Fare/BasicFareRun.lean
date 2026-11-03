@@ -66,7 +66,8 @@ theorem runBasicFare_spec {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} 
   obtain ⟨cfg, -, md, hm, b, hb, cd, hcd, d, hd, rfl⟩ := hα
   obtain ⟨dj, hdj, hD⟩ := hd
   rw [natOfJ32_eq_some] at hb
-  obtain ⟨-, hv, hbx⟩ := hp
+  obtain ⟨hok, hbx⟩ := hp
+  obtain ⟨-, hv⟩ := hok.valid
   simp only at hv hbx
   cases hbc : md.boardingClassOf cd with
   | none => rw [hbc] at hbx; cases hbx

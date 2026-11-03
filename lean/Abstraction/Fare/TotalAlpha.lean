@@ -126,7 +126,8 @@ theorem aiTF_icTF012 : aiTF icTF012 = some iaTF012 := by
   rfl
 
 theorem iaTF012_pre : iaTF012.Pre := by
-  refine ⟨by decide, ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩,
+  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+      ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩,
     by decide, by decide, by decide, by decide, by decide, ?_, by decide⟩
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha

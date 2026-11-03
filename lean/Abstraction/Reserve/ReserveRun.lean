@@ -160,7 +160,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     rw [hk] at hop; simp only [opOf, Option.some.injEq] at hop; exact hop.symm
   obtain ⟨hsel, hri⟩ := requestOf_eq hreq
   have hrv0 := hpre.2.2.1
-  obtain ⟨hcv, hmv, hrv, href, hmref, hx⟩ := hpre
+  obtain ⟨hok, hrv, href, hmref, hx⟩ := hpre
+  obtain ⟨hcv, hmv⟩ := hok.valid
   rw [hop'] at hx
   obtain ⟨⟨w', x⟩, hx⟩ := Option.isSome_iff_exists.mp hx
   obtain ⟨v, hv, hcases⟩ := reserveOp_cases hx

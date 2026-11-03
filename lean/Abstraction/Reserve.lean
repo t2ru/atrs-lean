@@ -69,11 +69,11 @@ theorem reservePreserves :
   sound := ((((reserveMachine_sound.restrictState _).restrict _).restrict _).restrict _).restrict _
   initIs := reserveMachine_initIs
   initSurj := reserveRefines_initSurj
-  total _ _ _ h := ⟨⟨⟨⟨⟨⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.1⟩,
+  total _ _ _ h := ⟨⟨⟨⟨⟨⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.1⟩,
     h.2.2.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.2.2.2⟩
   envWitness := ⟨icSeed, iaSeed, ⟨⟨trivial, dev_D027R_icSeed⟩, fun _ => rfl⟩, aiR_icSeed, envR_seed⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaBad) wFS_inv
-    fun h => Spec.EnvPre.badMasterData_not_env ⟨h.1.1.1.1.1.1, h.1.1.1.1.1.2.1⟩
+    fun h => Spec.EnvPre.badMasterData_not_env h.1.1.1.1.1.1
   pinned c hc s t ic ia t' oc hi hJ hα hpre hd hs := by
     cases hc
     obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre

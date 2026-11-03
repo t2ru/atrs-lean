@@ -82,13 +82,13 @@ def opNames : List String :=
   ["master.routeOf", "master.flightMasterOf", "master.fareTypeOf", "master.boardingClassOf", "master.peakTimeOn",
    "master.multiplicationRatioOn", "master.config", "master.codeList"]
 
-/-- `Spec` の `master.*`。PRE（設定とマスタの不変条件、問い合わせの値域）を満たさない入力は失敗とする。 -/
+/-- `Spec` の `master.*`。PRE（設定とマスタの検証 `masterConfigOk`、問い合わせの値域）を満たさない入力は失敗とする。 -/
 def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let md ← decodeMaster fx.master
   let cfg ← decodeConfig fx.config
   return opNames.map fun op => (op, fun i => do
     let q ← specQuery i op
-    if !(decide cfg.Valid && decide (md.Valid cfg) && decide q.Valid) then throw "outside PRE"
+    if !(decide (Spec.EnvPre.masterConfigOk (cfg, md)) && decide q.Valid) then throw "outside PRE"
     return specAnswerJson (Spec.MasterQuery.answer cfg md q))
 
 /-! ## SourceModel -/

@@ -1,12 +1,13 @@
 import Spec.Config
 import Spec.MasterData
+import Spec.EnvPre
 import Spec.CodeList
 
 /-!
 # Spec.MasterQuery
 
 マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。`docs/spec/master-data.md`）。
-状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの不変条件（MD-1〜MD-8）と、
+状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）と、
 問い合わせの引数の値域。
 -/
 
@@ -84,11 +85,11 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
   | .config => .config cfg
   | .codeList n => .codeList (codeListOfName md n)
 
-/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件と、
+/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`）と、
 問い合わせの引数の値域。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数", gap "D-027"]
 def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
-  Machine.Machine.pure (fun i => i.1.Valid ∧ i.2.1.Valid i.1 ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
+  Machine.Machine.pure (fun i => EnvPre.masterConfigOk (i.1, i.2.1) ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
 
 /-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
 @[obligation "SPEC-001"]

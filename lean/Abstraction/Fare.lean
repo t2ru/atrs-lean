@@ -193,12 +193,12 @@ theorem basicFarePreserves :
   sound := Spec.Fare.basicFareMachine_sound.restrictState _
   initIs := Spec.Fare.basicFareMachine_initIs
   initSurj := basicFareRefines_initSurj
-  total _ _ _ h := ⟨⟨h.1.1, h.1.2, h.2.1⟩, h.2.2⟩
+  total _ _ _ h := ⟨⟨h.1, h.2.1⟩, h.2.2⟩
   envWitness := by
     obtain ⟨ia, hα, he⟩ := envBF_icBF101
     exact ⟨icBF101, ia, ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩, hα, he⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaBFbad) trivial
-    fun h => badMasterData_not_env ⟨h.1.1, h.1.2.1⟩
+    fun h => badMasterData_not_env h.1.1
 
 /-- ABS-001 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、出力の像は [Spec] の基本運賃。 -/
 theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} (hα : aiBF ic = some ia)
@@ -209,7 +209,7 @@ theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFar
   obtain ⟨-, h⟩ := basicFareRefines.complete_fun
     (f := fun i => (Spec.Fare.basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).getD 0)
     (by intro _ _ _ _ h; exact h) (s := ()) (t := ()) trivial (Or.inl ⟨rfl, trivial⟩) hα
-    ⟨⟨hv.1.1, hv.1.2, hv.2.1⟩, hv.2.2⟩ ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩
+    ⟨⟨hv.1, hv.2.1⟩, hv.2.2⟩ ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩
   obtain ⟨_, oc, rfl, -, ho⟩ := h r hr
   rcases ho with ho | ho
   · exact ⟨oc, rfl, ho⟩
@@ -255,12 +255,12 @@ theorem totalFarePreserves :
   initIs := Spec.Fare.totalFareMachine_initIs
   initSurj := totalFareRefines_initSurj
   total _ _ _ h :=
-    ⟨⟨⟨⟨h.1.1, h.1.2, h.2.1.1, h.2.1.2.1, h.2.1.2.2.1, h.2.1.2.2.2.1, h.2.1.2.2.2.2.1, h.2.1.2.2.2.2.2.1,
+    ⟨⟨⟨⟨h.1, h.2.1.1, h.2.1.2.1, h.2.1.2.2.1, h.2.1.2.2.2.1, h.2.1.2.2.2.2.1, h.2.1.2.2.2.2.2.1,
       h.2.1.2.2.2.2.2.2⟩, h.2.2.1⟩, h.2.2.2.1⟩, h.2.2.2.2⟩
   envWitness :=
     ⟨icTF100, iaTF100, ⟨trivial, by unfold dev_D027TF; rw [aiTF_icTF100]; rfl⟩, aiTF_icTF100, envTF_iaTF100⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaTFbad) trivial
-    fun h => badMasterData_not_env ⟨h.1.1.1.1, h.1.1.1.2.1⟩
+    fun h => badMasterData_not_env h.1.1.1.1
 
 /-- ABS-004 の 1 歩の可換式。 -/
 theorem totalFareRefines_commutes {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = some ia)

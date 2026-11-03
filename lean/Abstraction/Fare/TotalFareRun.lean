@@ -145,7 +145,8 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     runTotalFare ic o = .ok (J32.ofInt ((Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0)) := by
   simp only [aiTF, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hα
   obtain ⟨cfg, hcfg, md, hm, ks, hks, ages, hages, rfl⟩ := hα
-  obtain ⟨hcv, hv, hf1, hf2, hp1, hp2, hpa, hpt, hsome⟩ := hp
+  obtain ⟨hok, hf1, hf2, hp1, hp2, hpa, hpt, hsome⟩ := hp
+  obtain ⟨hcv, hv⟩ := hok.valid
   simp only [Range.minReserveFlights, Range.maxReserveFlights, Range.minPassengers, Range.maxPassengers,
     Range.maxAge] at hcv hv hf1 hf2 hp1 hp2 hpa hpt hsome
   obtain ⟨p, hl, hptp, hbq, hfq, hmf⟩ := load_correct' hm hv ho
@@ -275,7 +276,8 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
 /-- [Spec] の合計金額は 12 億円以下（予約フライト 2・搭乗者 6 名・基本運賃 1 億円以下）。 -/
 theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
     (Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0 ≤ 1200000000 := by
-  obtain ⟨hcv, hv, -, hf2, -, hp2, -, -, hsome⟩ := hp
+  obtain ⟨hok, -, hf2, -, hp2, -, -, hsome⟩ := hp
+  obtain ⟨hcv, hv⟩ := hok.valid
   simp only [Range.maxReserveFlights, Range.maxPassengers] at hf2 hp2
   obtain ⟨parts, hparts⟩ : ∃ parts, ia.flights.mapM (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages) = some parts := by
     simp only [Spec.Fare.totalFareOfKeys, Option.bind_eq_bind, Option.isSome_iff_exists, Option.bind_eq_some_iff,

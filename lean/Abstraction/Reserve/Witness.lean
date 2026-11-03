@@ -187,7 +187,7 @@ theorem confirm2415_some : (confirmOp ia2415.cfg ia2415.md w2415 ia2415.req).isS
   all_goals decide +kernel
 
 theorem ia2415_pre : ia2415.Pre w2415 :=
-  ⟨by decide, md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
+  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
 
 theorem ia2415_devs : dev_D009 w2415 ia2415 ∧ dev_D001R ia2415 ∧ dev_D002R ia2415 ∧ dev_D012R ia2415 := by
   refine ⟨?_, ?_, ?_, ?_⟩
@@ -261,7 +261,7 @@ theorem reserve109_some : (reserveOp (iaR mdFS [selR]).cfg (iaR mdFS [selR]).md 
   all_goals decide +kernel
 
 theorem ia109_pre : (iaR mdFS [selR]).Pre w109 :=
-  ⟨by decide, mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
+  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
 
 theorem ia109_devs : dev_D031 (iaR mdFS [selR]) ∧ dev_D001R (iaR mdFS [selR]) ∧ dev_D002R (iaR mdFS [selR]) ∧
     dev_D012R (iaR mdFS [selR]) := by

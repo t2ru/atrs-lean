@@ -2,6 +2,7 @@ import Spec.Prim
 import Spec.Model
 import Spec.Config
 import Spec.MasterData
+import Spec.EnvPre
 
 /-!
 # Spec.Fare
@@ -89,11 +90,11 @@ structure BasicFareInput where
   boardingClassCd : BoardingClassCd
   depDate : Date
 
-/-- 基本運賃の PRE: 設定とマスタの不変条件、搭乗クラスがマスタに在ること、
+/-- 基本運賃の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、搭乗クラスがマスタに在ること、
 `routeBasicFare + extraCharge` の値域（`docs/spec/domain-model.md#値域`）。 -/
 @[spec_doc "docs/spec/fare-calculation.md#基本運賃", gap "D-035"]
 def BasicFareInput.Pre (i : BasicFareInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧
     (i.md.boardingClassOf i.boardingClassCd).any (fun bc => decide (i.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) = true
 
 instance (i : BasicFareInput) : Decidable i.Pre := by unfold BasicFareInput.Pre; infer_instance
@@ -156,11 +157,11 @@ structure TotalFareInput where
   flights : List FlightKey
   ages : List Nat
 
-/-- 合計金額の PRE: 設定とマスタの不変条件、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
+/-- 合計金額の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
 便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
 @[spec_doc "docs/spec/fare-calculation.md#合計金額", gap "D-035"]
 def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧
     Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧
     Range.minPassengers ≤ i.ages.length ∧ i.ages.length ≤ Range.maxPassengers ∧
     (∀ a ∈ i.ages, a ≤ Range.maxAge) ∧
@@ -191,7 +192,7 @@ theorem totalFareMachine_initIs : totalFareMachine.InitIs () := fun _ => ⟨fun 
 /-- PRE の下で、基本運賃は値を持つ。 -/
 theorem basicFare_isSome {i : BasicFareInput} (h : i.Pre) :
     (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).isSome = true := by
-  obtain ⟨-, -, h⟩ := h
+  obtain ⟨-, h⟩ := h
   unfold basicFare
   cases hb : i.md.boardingClassOf i.boardingClassCd <;> simp_all
 
