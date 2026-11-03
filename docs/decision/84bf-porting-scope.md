@@ -48,17 +48,17 @@ Chosen option: "ドメイン + ユースケース + HTTP 契約", because 業務
 
 | 区分 | 対象 | 仕様 |
 | --- | --- | --- |
-| A1/A2 ログイン・ログアウト（ログイン状態の更新、資格情報の事前検査） | 対象 | [authentication.md](../spec/authentication.md) |
-| B1 空席照会 | 対象 | [flight-search.md](../spec/flight-search.md) |
-| B0/B2 フライト検証・予約 | 対象 | [reservation.md](../spec/reservation.md) |
-| C1/C2 会員登録・会員情報変更 | 対象 | [member.md](../spec/member.md) |
-| D1 予約履歴レポート（要求・生成・一覧・取得） | 対象 | [reservation-history-report.md](../spec/reservation-history-report.md) |
-| フォーム入力検証（Bean Validation と相関検証の効果） | 対象 | [input-validation.md](../spec/input-validation.md) |
-| 画面遷移（URL・メソッド・パラメータ・遷移先・エラー画面） | 対象（契約として） | [http-contract.md](../spec/http-contract.md) |
-| REST API（`/api/v1/*`, `/api/flights` 等）の JSON 形状とステータス | 対象（契約として） | [http-contract.md](../spec/http-contract.md) |
+| A1/A2 ログイン・ログアウト（ログイン状態の更新、資格情報の事前検査） | 対象 | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
+| B1 空席照会 | 対象 | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) |
+| B0/B2 フライト検証・予約 | 対象 | [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) |
+| C1/C2 会員登録・会員情報変更 | 対象 | [`Spec.Member`](../../lean/Spec/Member.lean) |
+| D1 予約履歴レポート（要求・生成・一覧・取得） | 対象 | [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) |
+| フォーム入力検証（Bean Validation と相関検証の効果） | 対象 | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
+| 画面遷移（URL・メソッド・パラメータ・遷移先・エラー画面） | 対象（契約として） | [`Spec.Http`](../../lean/Spec/Http.lean) |
+| REST API（`/api/v1/*`, `/api/flights` 等）の JSON 形状とステータス | 対象（契約として） | [`Spec.Http`](../../lean/Spec/Http.lean) |
 | Thymeleaf テンプレートの HTML 構造・CSS・JavaScript | **対象外** | — |
 | ログ出力の文言・形式、アクセスログ、MDC | **対象外**（ログ ID のみ参考として記録） | — |
-| CSRF・トランザクショントークン・セッション Cookie の実装方式 | **対象外**（契約上の要件としてのみ記述） | [http-contract.md](../spec/http-contract.md) |
+| CSRF・トランザクショントークン・セッション Cookie の実装方式 | **対象外**（契約上の要件としてのみ記述） | [`Spec.Http`](../../lean/Spec/Http.lean) |
 | パスワードハッシュのアルゴリズム実装 | **対象外**（ポートとして抽象化） | [ADR 2d1f](2d1f-password-hashing-port.md) |
 | Selenium テスト、環境設定（Tomcat, ActiveMQ, PostgreSQL） | **対象外** | — |
 

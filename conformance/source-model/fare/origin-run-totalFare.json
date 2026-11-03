@@ -1,7 +1,7 @@
 {
   "operation": "fare.totalFare",
   "modelDef": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare",
-  "specRef": "docs/spec/fare-calculation.md#合計金額",
+  "specRef": "lean/Spec/Fare.lean#合計金額",
   "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力は区間ごとの代表便 × 搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便）× 搭乗者の型 × 搭乗日（投入日 2026-11-01 とピーク日 2026-12-26）の抽出",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

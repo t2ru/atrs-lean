@@ -1,7 +1,7 @@
 {
   "operation": "format.fmtTime",
   "modelDef": "Spec.Prim.Format.fmtTime",
-  "specRef": "docs/spec/domain-model.md#書式",
+  "specRef": "lean/Spec/Prim/Format.lean#書式",
   "cases": [
     {
       "id": "fmtTime-0000",

@@ -37,8 +37,8 @@ generated:
 Chosen option: "少なくとも 1 回配信し、再配信に上限を設ける", because 原典の JMS の振る舞いに近く、一時的な失敗から回復できるため。
 
 * `onReportRequested` が失敗したら、その要求を再配信する。
-* 再配信の上限回数は実装で定める。参考値は原典のブローカーの既定値とする（[spec/ports.md](../spec/ports.md#reportqueue)）。上限を超えた要求は破棄し、ログに残す。
-* 同じ要求が重複して配信されてもよい。その結果、別の秒のレポートが 2 本できることを許す。同じ秒なら、2 本目は「同名が存在する」ので失敗する（[spec/reservation-history-report.md](../spec/reservation-history-report.md)）。
+* 再配信の上限回数は実装で定める。参考値は原典のブローカーの既定値とする（[spec/ports.md](../../lean/Spec/Port.lean#reportqueue)）。上限を超えた要求は破棄し、ログに残す。
+* 同じ要求が重複して配信されてもよい。その結果、別の秒のレポートが 2 本できることを許す。同じ秒なら、2 本目は「同名が存在する」ので失敗する（[spec/reservation-history-report.md](../../lean/Spec/ReservationHistoryReport.lean)）。
 * 配信の順序は保証しない。同時に処理する要求は 1 件とする（既存の契約どおり）。
 
 ### Consequences
@@ -65,4 +65,4 @@ Chosen option: "少なくとも 1 回配信し、再配信に上限を設ける"
 ## More Information
 
 * [ADR ff4d](ff4d-asynchronous-report-generation.md) の補足である
-* [spec/ports.md](../spec/ports.md), [spec/reservation-history-report.md](../spec/reservation-history-report.md)
+* [spec/ports.md](../../lean/Spec/Port.lean), [spec/reservation-history-report.md](../../lean/Spec/ReservationHistoryReport.lean)

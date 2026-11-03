@@ -1,7 +1,7 @@
 {
   "operation": "format.parseHHmm",
   "modelDef": "Spec.Prim.Time.HourMinute.parseHHmm",
-  "specRef": "docs/spec/domain-model.md#hourminute",
+  "specRef": "lean/Spec/Prim/Time.lean#hourminute",
   "cases": [
     {
       "id": "parseHHmm-0",

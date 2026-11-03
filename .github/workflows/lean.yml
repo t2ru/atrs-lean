@@ -49,8 +49,9 @@ jobs:
           distribution: temurin
           java-version: "17"
 
-      # 検査・生成のタスク（mise.toml）と、mise が管理する uv。Python は uv が .python-version に従って用意する（ADR 44a0）
-      - name: Set up mise (uv)
+      # 検査・生成のタスク（mise.toml）と、mise が管理する uv・mdbook。Python は uv が .python-version に従って用意する
+      # （ADR 44a0・ADR 68a6）
+      - name: Set up mise (uv, mdbook)
         uses: jdx/mise-action@v2
         with:
           install: true
@@ -75,9 +76,10 @@ jobs:
             .lake
             lean/.lake
             .agents/skills/spec-pivot/assets/lean/.lake
-          key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-${{ github.sha }}
+            .agents/skills/spec-pivot/assets/mdgen/.lake
+          key: lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json', '.agents/skills/spec-pivot/assets/mdgen/lake-manifest.json') }}-${{ github.sha }}
           restore-keys: |
-            lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json') }}-
+            lake-${{ runner.os }}-${{ hashFiles('lean-toolchain', 'lean/lean-toolchain', 'lake-manifest.json', 'lean/lake-manifest.json', '.agents/skills/spec-pivot/assets/mdgen/lake-manifest.json') }}-
 
       # Java の原典実行（backlog f18c）の Maven の依存。原典のビルド物（jp/co/ntt/atrs）は毎回作り直すので除く
       - name: Cache Maven (Java origin run)
@@ -118,4 +120,13 @@ jobs:
         with:
           name: source-model-review
           path: build/review/
+          if-no-files-found: ignore
+
+      # 仕様の本（Spec のモジュール文書の HTML。book:build。ADR 68a6）。PR では Spec の変更があったときだけ作る
+      - name: Upload the spec book (book:build)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spec-book
+          path: build/book/html/
           if-no-files-found: ignore

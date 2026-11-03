@@ -3,7 +3,7 @@ import Trace
 /-!
 # Spec.Prim.Date
 
-先発グレゴリオ暦の暦日（`docs/spec/domain-model.md#date`、ADR 6eb2）。タイムゾーンを持たない。
+先発グレゴリオ暦の暦日（`lean/Spec/Prim/Date.lean#date`、ADR 6eb2）。タイムゾーンを持たない。
 
 - 年は 1〜9999。通算日数 `ordinal`（0001-01-01 を 0 とする）と `epochDay`（1970-01-01 を 0 とする）で
   比較・加減算する。
@@ -16,12 +16,26 @@ namespace Spec.Prim
 
 namespace Date
 
+/-!
+## 暦日と時刻
+
+**[Spec=Source]**（[ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`]()、[`Spec.Prim.Time`](Time.lean)。
+
+### Date
+
+- `Date`: 先発グレゴリオ暦の年月日（年 1〜9999）。妥当性を型で保証する。
+- 通算日数 `ordinal`（0001-01-01 を 0）と `epochDay`（1970-01-01 を 0）で比較・加減算する。順序は年月日の辞書順と一致する（`lt_iff_lex`）。
+- `addDays(d, n)` は `epochDay` 上の加算で、範囲外なら無し。`daysBetween(a, b)` は `b − a` の日数。
+- `fullYearsBetween(b, d)` は満年齢。誕生日の到来を `(month, day)` の辞書順で判定するので、閏日生まれは平年の 2 月 28 日には加齢せず 3 月 1 日に加齢する。`d < b` のときの値は使わない。
+- 閏年・月末・年越しの境界は、Lean の例と、0001-01-01〜9999-12-31 の全日の検査（`lake test`。`lean/Tests/DateExhaustive.lean`）で確かめている。
+-/
+
 /-- 閏年。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def isLeap (y : Nat) : Bool := y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)
 
 /-- 月の日数。月が 1〜12 でなければ 0。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def daysInMonth (y m : Nat) : Nat :=
   match m with
   | 1 | 3 | 5 | 7 | 8 | 10 | 12 => 31
@@ -30,7 +44,7 @@ def daysInMonth (y m : Nat) : Nat :=
   | _ => 0
 
 /-- 年月日が暦日として妥当である。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def IsValidYmd (y m d : Nat) : Prop :=
   1 ≤ y ∧ y ≤ 9999 ∧ 1 ≤ m ∧ m ≤ 12 ∧ 1 ≤ d ∧ d ≤ daysInMonth y m
 
@@ -40,7 +54,7 @@ end Date
 
 open Date in
 /-- 暦日。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 structure Date where
   year : Nat
   month : Nat
@@ -52,7 +66,7 @@ namespace Date
 
 
 /-- 年月日から暦日を作る。妥当でなければ無し。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def ofYmd? (y m d : Nat) : Option Date :=
   if h : IsValidYmd y m d then some ⟨y, m, d, h⟩ else none
 
@@ -77,14 +91,14 @@ def daysBeforeMonth (y m : Nat) : Nat :=
 
 
 /-- 0001-01-01 を 0 とする通算日数。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def ordinal (d : Date) : Nat := daysBeforeYear d.year + daysBeforeMonth d.year d.month + (d.day - 1)
 
 /-- 1970-01-01 の `ordinal`。 -/
 def epochOrdinal : Nat := 719162
 
 /-- 1970-01-01 を 0 とする通算日数。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def epochDay (d : Date) : Int := (d.ordinal : Int) - epochOrdinal
 
 instance : LT Date := ⟨fun a b => a.ordinal < b.ordinal⟩
@@ -104,7 +118,7 @@ def findMonth (y doy : Nat) : List Nat → Option Nat
   | m :: ms => if daysBeforeMonth y m ≤ doy then some m else findMonth y doy ms
 
 /-- 通算日数から暦日を求める。範囲外なら無し。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def ofOrdinal? (n : Nat) : Option Date :=
   let y₀ := n * 400 / 146097 + 1
   match findYear n [y₀ - 1, y₀, y₀ + 1] with
@@ -121,28 +135,28 @@ def ofOrdinal? (n : Nat) : Option Date :=
       else none
 
 /-- `epochDay` から暦日を求める。範囲外なら無し。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def ofEpochDay? (k : Int) : Option Date :=
   let n := k + epochOrdinal
   if n < 0 then none else ofOrdinal? n.toNat
 
 /-- `n` 日後（負なら前）の暦日。範囲外なら無し。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def addDays (d : Date) (n : Int) : Option Date := ofEpochDay? (d.epochDay + n)
 
 /-- `b − a` の日数（負もありうる）。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def daysBetween (a b : Date) : Int := b.epochDay - a.epochDay
 
 /-- 満年齢: 誕生日 `b` から日付 `d` までの満年数。`(month, day)` の辞書順で誕生日の到来を判定するので、
 閏日生まれは平年の 2 月 28 日には加齢せず 3 月 1 日に加齢する。`d < b` のときの値は使わない（0 になる）。 -/
-@[spec_doc "docs/spec/domain-model.md#date"]
+@[spec_doc "lean/Spec/Prim/Date.lean#date"]
 def fullYearsBetween (b d : Date) : Nat :=
   let before := decide (d.month < b.month ∨ (d.month = b.month ∧ d.day < b.day))
   d.year - b.year - (if before then 1 else 0)
 
 /-- 曜日。0 が日曜、6 が土曜（1970-01-01 は木曜）。 -/
-@[spec_doc "docs/spec/domain-model.md#書式"]
+@[spec_doc "lean/Spec/Prim/Format.lean#書式"]
 def dayOfWeek (d : Date) : Nat := (d.ordinal + 1) % 7
 
 /-! ## 性質 -/

@@ -1,7 +1,7 @@
 {
   "operation": "format.fullYearsBetween",
   "modelDef": "Spec.Prim.Date.fullYearsBetween",
-  "specRef": "docs/spec/domain-model.md#date",
+  "specRef": "lean/Spec/Prim/Date.lean#date",
   "cases": [
     {
       "id": "fullYearsBetween-0",

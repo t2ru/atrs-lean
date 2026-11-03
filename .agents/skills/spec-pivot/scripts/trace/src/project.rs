@@ -72,6 +72,9 @@ pub struct Target {
 pub struct Docs {
     /// 仕様文書のディレクトリ（「出典:」を走査する範囲）
     pub spec: String,
+    /// 仕様の散文を書いた Lean のファイル・ディレクトリ（`Spec` のモジュール文書。「出典:」を走査する範囲に加える）
+    #[serde(default)]
+    pub spec_lean: Vec<String>,
     /// 抽象化の課題一覧（`D-NNN` の表・入口の R 課題・証明課題）
     pub abstraction: String,
     /// 具体化の課題一覧（`T-NNN` の表・入口の R 課題・REF 課題）

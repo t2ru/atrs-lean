@@ -44,7 +44,7 @@ Chosen option: "任意精度整数と明示的な丸め", because 全言語に�
   * `floorDiv(a, b)`（b > 0）: 床関数による除算
   * `ceilDiv(a, b)`（a ≥ 0, b > 0）: 天井関数による除算
   * `ceilTo(a, m)` = `ceilDiv(a, m) * m`（a ≥ 0, m > 0）
-* 値域（オーバーフローしないための上限）は [spec/domain-model.md](../spec/domain-model.md) に書く。固定長整数で実装する言語は、その値域で溢れないことを確認しなければならない。
+* 値域（オーバーフローしないための上限）は [spec/domain-model.md](../../lean/Spec/Model.lean) に書く。固定長整数で実装する言語は、その値域で溢れないことを確認しなければならない。
 
 ### Consequences
 
@@ -76,5 +76,5 @@ Chosen option: "任意精度整数と明示的な丸め", because 全言語に�
 
 ## More Information
 
-* [spec/fare-calculation.md](../spec/fare-calculation.md)
+* [spec/fare-calculation.md](../../lean/Spec/Fare.lean)
 * [spec-pivot/portability.md](../../.agents/skills/spec-pivot/references/docs/spec/portability.md)

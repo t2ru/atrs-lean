@@ -78,7 +78,7 @@ Chosen option: "機械 (a)・シード (a)・業務例外 (a)・差分実行 (a)
 ## More Information
 
 * 敵対的レビュー（第 2 段の完了前。独立したエージェント）の指摘と対応:
-  * PRE の空港コードの形（英大文字 3 文字）は、文書の事前条件より強く、使われていなかった → [Source] の `Assert.hasText` に当たる「空白でない」に改め、[flight-search.md](../spec/flight-search.md#事前条件) に書いた（形の違うコードは両方とも `e.ar.b1.2002`）。
+  * PRE の空港コードの形（英大文字 3 文字）は、文書の事前条件より強く、使われていなかった → [Source] の `Assert.hasText` に当たる「空白でない」に改め、[`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean#事前条件) に書いた（形の違うコードは両方とも `e.ar.b1.2002`）。
   * D-027 の登録簿の FLIGHT の部分が不十分だった → 箇所（`World`）を足し、初期状態の対応と FLIGHT の部分の証拠は第 3 段で示すと書いた。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像で表すと明記した。
   * 検査 `pg-flight-sql` の対象と照合の中身がずれていた → `Tests.FlightSql` が、原典の条件 `VacantSeatSearchCriteriaDto` から `bind`（型ハンドラの写し）で束縛する値を作り、`flight-map` で写した値を PostgreSQL の列と比べるようにした。
   * シードの解析が、注釈の中の文やループの余分な文を見逃しうる → 注釈を除いた文で、関数の形とループの本体を厳密に確かめるようにした。

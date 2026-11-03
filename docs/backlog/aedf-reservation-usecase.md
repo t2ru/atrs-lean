@@ -44,7 +44,7 @@ generated:
 
 ## 完了条件
 
-- [x] [reservation.md](../spec/reservation.md) の例がベクタで通る
+- [x] [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) の例がベクタで通る
 - [x] ABS-020・ABS-021・ABS-022・ABS-023・ABS-041・ABS-109・ABS-114 と、予約の SPEC-001〜SPEC-004 を証明した
 - [x] 予約の `source-model/` ベクタが Java の原典実行と一致する
 - [x] リポジトリの SQL の写しを PostgreSQL での差分実行で照合した
@@ -92,5 +92,5 @@ generated:
 
 ## 参照
 
-- [reservation.md](../spec/reservation.md)
-- [ports.md](../spec/ports.md)
+- [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean)
+- [`Spec.Port`](../../lean/Spec/Port.lean)

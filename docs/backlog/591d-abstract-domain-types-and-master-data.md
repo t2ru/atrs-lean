@@ -55,7 +55,7 @@ generated:
 
 ## 参照
 
-- [domain-model.md](../spec/domain-model.md)
-- [master-data.md](../spec/master-data.md)
-- [configuration.md](../spec/configuration.md)
+- [`Spec.Model`](../../lean/Spec/Model.lean)
+- [`Spec.MasterData`](../../lean/Spec/MasterData.lean)
+- [`Spec.Config`](../../lean/Spec/Config.lean)
 - [ADR 6eb2](../decision/6eb2-date-and-time-model.md)

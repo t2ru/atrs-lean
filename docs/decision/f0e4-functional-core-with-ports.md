@@ -38,7 +38,7 @@ generated:
 Chosen option: "関数型コア + ポート", because 計算部分は純粋関数として証明でき、状態変更を伴うユースケースもポートの契約を通じて言語中立に記述できるため。
 
 * **純粋関数**: 運賃計算、空席照会結果の整形、予約検証、入力検証、CSV 行生成など。マスタ・設定値・今日の日付はすべて引数で受け取る。
-* **ポート**（[spec/ports.md](../spec/ports.md)）: `Clock`, `FlightRepository`, `MemberRepository`, `ReservationRepository`, `IdGenerator`（会員番号・予約番号・予約フライト番号・搭乗者番号）, `PasswordHasher`, `ReportStore`, `ReportQueue`。
+* **ポート**（[spec/ports.md](../../lean/Spec/Port.lean)）: `Clock`, `FlightRepository`, `MemberRepository`, `ReservationRepository`, `IdGenerator`（会員番号・予約番号・予約フライト番号・搭乗者番号）, `PasswordHasher`, `ReportStore`, `ReportQueue`。
 * **マスタ**（空港・路線・便マスタ・運賃種別・搭乗クラス・ピーク時期・カード種別）は不変の値 `MasterData` として純粋関数に渡す。
 * **ユースケース** はポートを使う手続きとして定義し、トランザクション境界（全部成功か全部取消か）を明記する。
 * Lean では、ポートを `Monad m` 上の関数レコード（`structure Ports (m : Type → Type)`）として `Spec` に置き、`Spec` のユースケースはインメモリの抽象状態 `StateT World (Except AtrsError)` 上で意味を与える。実際のアダプタ（インメモリ・HTTP・永続化）は移植先モデル `TargetModel` に置く（[ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md)）。
@@ -73,4 +73,4 @@ Chosen option: "関数型コア + ポート", because 計算部分は純粋関�
 
 ## More Information
 
-* [spec/ports.md](../spec/ports.md), [ADR 97f9](97f9-persistence-and-transaction-semantics.md)
+* [spec/ports.md](../../lean/Spec/Port.lean), [ADR 97f9](97f9-persistence-and-transaction-semantics.md)

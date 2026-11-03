@@ -12,7 +12,7 @@ import Spec.Seed.Member
 namespace Spec.Seed.World
 
 /-- シードを投入した後の `World`。 -/
-@[spec_doc "docs/spec/ports.md#world抽象状態"]
+@[spec_doc "lean/Spec/Port.lean#world抽象状態"]
 def world : Spec.Port.World :=
   { flights := Spec.Seed.Flight.world.flights, members := Spec.Seed.Member.members, reservations := [],
     sequences := Spec.Seed.Member.sequences }

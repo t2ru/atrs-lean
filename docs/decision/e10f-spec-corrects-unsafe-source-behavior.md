@@ -44,7 +44,7 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
 
 | 差異 | [Spec] の振る舞い |
 | --- | --- |
-| D-016 | ログイン時にセッション ID を新しくする（[http-contract.md](../spec/http-contract.md#セッション)） |
+| D-016 | ログイン時にセッション ID を新しくする（[`Spec.Http`](../../lean/Spec/Http.lean#セッション)） |
 | D-017 | `redirectTo` は、`/` で始まり `//` で始まらないアプリ内のパスだけを受け付ける |
 | D-018 | 文字列の `Min`・`Max` は十進整数だけを数として扱う |
 | D-019 | 支払期限の曜日は常に日本語にする |
@@ -75,7 +75,7 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
 
 ## More Information
 
-* [spec/http-contract.md](../spec/http-contract.md), [spec/input-validation.md](../spec/input-validation.md), [spec/domain-model.md](../spec/domain-model.md), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/http-contract.md](../../lean/Spec/Http.lean), [spec/input-validation.md](../../lean/Spec/InputValidation.lean), [spec/domain-model.md](../../lean/Spec/Model.lean), [spec/abstraction.md](../spec/abstraction.md)
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)（移植元モデルと抽象モデルを分ける方針）
 * （補足 2026-10-30）[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md) により、D-016〜D-021 は次の 2 つで確認する。上の Confirmation のベクタは、その補助である。
   * リファインメントの主定理（R 課題）の名前付きの仮定または観測成分

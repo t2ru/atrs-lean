@@ -1,7 +1,7 @@
 {
   "operation": "format.addDays",
   "modelDef": "Spec.Prim.Date.addDays",
-  "specRef": "docs/spec/domain-model.md#date",
+  "specRef": "lean/Spec/Prim/Date.lean#date",
   "cases": [
     {
       "id": "addDays-0",

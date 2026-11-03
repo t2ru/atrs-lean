@@ -19,7 +19,7 @@ generated:
 
 原典の会員情報変更は、コントローラが `checkMemberPassword`（現在パスワードの照合）を呼んだ後、別のサービス呼び出し `updateMember` で更新する。両者は別のトランザクションである。
 そのため、照合の後・更新の前に、別のセッションが同じ会員のパスワードを変えると、古いパスワードで照合したまま更新が通る。
-一方 [spec/ports.md](../spec/ports.md#トランザクション) は「会員情報変更」全体を原子的かつ直列化可能に行うよう求めており、[spec/member.md](../spec/member.md#会員情報変更update) と矛盾していた。
+一方 [spec/ports.md](../../lean/Spec/Port.lean#トランザクション) は「会員情報変更」全体を原子的かつ直列化可能に行うよう求めており、[spec/member.md](../../lean/Spec/Member.lean#会員情報変更update) と矛盾していた。
 
 ## Decision Drivers
 
@@ -35,9 +35,9 @@ generated:
 
 Chosen option: "[Spec] は照合と更新を 1 つのトランザクションで行う", because 照合と更新の間の競合は原典の不具合とみなせ、[Spec] を安全な側にそろえるほうが移植先の実装も単純になるため。
 
-* [spec/member.md](../spec/member.md#会員情報変更update) の手順 1（照合）と手順 2（更新）を、1 つの直列化可能なトランザクションにまとめる。
+* [spec/member.md](../../lean/Spec/Member.lean#会員情報変更update) の手順 1（照合）と手順 2（更新）を、1 つの直列化可能なトランザクションにまとめる。
 * [Source] との差は既知差異 [D-013](../spec/abstraction.md#既知差異) とする。一致の前提は「照合から更新までの間に、同じ会員のパスワードを他のトランザクションが変更しない」である。
-* あわせて、原子性が要求されるユースケースの一覧を [spec/ports.md](../spec/ports.md#トランザクション) と [ADR 97f9](97f9-persistence-and-transaction-semantics.md) でそろえる（レポート生成を含める）。
+* あわせて、原子性が要求されるユースケースの一覧を [spec/ports.md](../../lean/Spec/Port.lean#トランザクション) と [ADR 97f9](97f9-persistence-and-transaction-semantics.md) でそろえる（レポート生成を含める）。
 
 ### Consequences
 
@@ -63,6 +63,6 @@ Chosen option: "[Spec] は照合と更新を 1 つのトランザクションで
 ## More Information
 
 * [ADR 97f9](97f9-persistence-and-transaction-semantics.md) の補足である
-* [spec/member.md](../spec/member.md), [spec/ports.md](../spec/ports.md), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/member.md](../../lean/Spec/Member.lean), [spec/ports.md](../../lean/Spec/Port.lean), [spec/abstraction.md](../spec/abstraction.md)
 
 * （補足 2026-10-30）[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md) により、D-013 は **モデル外** の差異とした。違いは並行実行でだけ観測でき、各モデルは各ユースケースを 1 つの原子的な操作として扱うためである。そのため ABS-034 は、`dev_D013` の仮定を置かないリファインメントの課題とした。並行実行での [Source] との違いは、[spec/assurance.md](../spec/assurance.md) の限界とする。上の Confirmation の「D-013 の前提の下で」は、これに読み替える。

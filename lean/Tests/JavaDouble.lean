@@ -3,9 +3,9 @@ import LangSemantics.Java
 /-!
 # Tests.JavaDouble
 
-運賃計算の [Source] の double 式（`docs/spec/fare-calculation.md`）を、`LangSemantics.Java` のソフトモデルと
+運賃計算の [Source] の double 式（`lean/Spec/Fare.lean`）を、`LangSemantics.Java` のソフトモデルと
 ネイティブ `Float`（ホストの IEEE 754 binary64）とでビット単位に突き合わせる（backlog a8be）。
-値域は `docs/spec/domain-model.md#値域` による。
+値域は `lean/Spec/Model.lean#値域` による。
 
 - 基本運賃: `jd2i(jdmul(jd b, jdmul(jd q, 0.01)))`。`b ≤ 10,000,000`、積算比率 `q ≤ 1,000`
 - 運賃: `jd2i(jdmul(jd f, jdsub(jd 1, jdmul(jd r, 0.01))))`。`f ≤ 100,000,000`、割引率 `r ≤ 100`

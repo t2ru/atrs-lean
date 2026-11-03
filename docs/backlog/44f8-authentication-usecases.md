@@ -30,12 +30,12 @@ generated:
 
 ## 完了条件
 
-- [ ] [authentication.md](../spec/authentication.md) の全手順がベクタで確認できる
+- [ ] [`Spec.Authentication`](../../lean/Spec/Authentication.lean) の全手順がベクタで確認できる
 - [ ] ABS-043 と、認証の SPEC-001〜SPEC-004 を証明した
 - [ ] 認証の `source-model/` ベクタが Java の原典実行と一致する
 - [ ] ログイン時の状態更新の差異 D-028（画面ログインで更新しない・REST の Basic 認証で更新する）の成分 `obs_D028` を R 課題 ABS-043 に置き、W 課題 ABS-128 を証明した
 
 ## 参照
 
-- [authentication.md](../spec/authentication.md)
+- [`Spec.Authentication`](../../lean/Spec/Authentication.lean)
 - [ADR 2d1f](../decision/2d1f-password-hashing-port.md)

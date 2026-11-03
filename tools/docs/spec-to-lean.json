@@ -1,0 +1,81 @@
+{
+  "note": "業務仕様の docs/spec/*.md を lean/Spec のモジュール文書へ移したときの配置（tools/docs/spec_to_lean.py。backlog c89a）。file はその文書の既定の移し先（前文と、sections に無い節）。sections は節（見出しのアンカー）ごとの移し先。at は節の差し込み位置（その文字列を含む最初の行の前。同じ題の節の印 `/-! ## … -/` が無く、@[spec_doc] で指す最初の宣言の前では離れすぎる節）。split は、親の ## 節から切り出して別のファイルへ移す ### 節（見出しを 1 段上げる）",
+  "docs": {
+    "glossary": {
+      "file": "lean/Spec/Glossary.lean",
+      "new": true
+    },
+    "configuration": {
+      "file": "lean/Spec/Config.lean"
+    },
+    "domain-model": {
+      "file": "lean/Spec/Model.lean",
+      "sections": {
+        "基本演算specprim": "lean/Spec/Prim/Int.lean",
+        "暦日と時刻": "lean/Spec/Prim/Date.lean",
+        "hourminute": "lean/Spec/Prim/Time.lean",
+        "arrivaltime": "lean/Spec/Prim/Time.lean",
+        "datetime": "lean/Spec/Prim/Time.lean",
+        "書式": "lean/Spec/Prim/Format.lean"
+      },
+      "split": [
+        "hourminute",
+        "arrivaltime",
+        "datetime",
+        "書式"
+      ]
+    },
+    "master-data": {
+      "file": "lean/Spec/MasterData.lean",
+      "sections": {
+        "空港コードリスト画面用": "lean/Spec/CodeList.lean"
+      }
+    },
+    "fare-calculation": {
+      "file": "lean/Spec/Fare.lean"
+    },
+    "flight-search": {
+      "file": "lean/Spec/FlightSearch.lean"
+    },
+    "reservation": {
+      "file": "lean/Spec/UseCase/Reserve.lean",
+      "sections": {
+        "選択フライト": "lean/Spec/Ticket.lean",
+        "validateflightlist": "lean/Spec/Ticket.lean"
+      },
+      "at": {
+        "予約確認reserveconfirm": "/-! ## 予約確認・予約確定 -/",
+        "予約確定reserve": "/-! ## 予約確認・予約確定 -/"
+      }
+    },
+    "member": {
+      "file": "lean/Spec/Member.lean",
+      "new": true
+    },
+    "authentication": {
+      "file": "lean/Spec/Authentication.lean",
+      "new": true
+    },
+    "reservation-history-report": {
+      "file": "lean/Spec/ReservationHistoryReport.lean",
+      "new": true
+    },
+    "input-validation": {
+      "file": "lean/Spec/InputValidation.lean",
+      "new": true,
+      "sections": {
+        "文字クラス": "lean/Spec/Prim/Text.lean"
+      }
+    },
+    "errors-and-messages": {
+      "file": "lean/Spec/Error.lean"
+    },
+    "ports": {
+      "file": "lean/Spec/Port.lean"
+    },
+    "http-contract": {
+      "file": "lean/Spec/Http.lean",
+      "new": true
+    }
+  }
+}

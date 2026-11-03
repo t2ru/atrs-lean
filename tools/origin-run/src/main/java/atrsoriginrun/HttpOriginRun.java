@@ -126,8 +126,8 @@ final class HttpOriginRun {
     }
 
     static ObjectNode ticket(Path repo) {
-        ObjectNode d = doc(repo, "postTicket.json", "http.postTicket", "docs/spec/http-contract.md#rest-apiapiv1",
-                "REST の日付の JSON 表現の確認（http-contract.md の TODO。本文は atrs-selenium の RestAPITest に倣う）。");
+        ObjectNode d = doc(repo, "postTicket.json", "http.postTicket", "lean/Spec/Http.lean#rest-apiapiv1",
+                "REST の日付の JSON 表現の確認（Spec.Http の TODO。本文は atrs-selenium の RestAPITest に倣う）。");
         ArrayNode cases = d.withArray("cases");
         ArrayNode r1 = Json.arr();
         r1.add(request("POST", "/api/v1/ticket").set("json", ticketBody("2026-11-04")));
@@ -143,8 +143,8 @@ final class HttpOriginRun {
     // ---------------------------------------------------------------- 画面ログイン
 
     static ObjectNode login(Path repo) {
-        ObjectNode d = doc(repo, "login.json", "http.login", "docs/spec/authentication.md#ログインlogin",
-                "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（authentication.md の TODO、D-028）。");
+        ObjectNode d = doc(repo, "login.json", "http.login", "lean/Spec/Authentication.lean#ログインlogin",
+                "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（Spec.Authentication の TODO、D-028）。");
         ArrayNode cases = d.withArray("cases");
         for (String[] k : new String[][] {{"login-success", "aaaaa11111", "正しいパスワードでの画面ログイン"},
                 {"login-wrongPassword", "aaaaa00000", "誤ったパスワード（過去のパスワード）での画面ログイン"}}) {

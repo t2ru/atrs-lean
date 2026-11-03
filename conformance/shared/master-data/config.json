@@ -4,7 +4,7 @@
     "Spec.MasterQuery.queryMachine",
     "SourceModel.MasterQuery.queryConcrete"
   ],
-  "specRef": "docs/spec/configuration.md",
+  "specRef": "lean/Spec/Config.lean",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

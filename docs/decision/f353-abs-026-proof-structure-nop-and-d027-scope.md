@@ -91,4 +91,4 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 ## More Information
 
 * [ADR c108](c108-master-data-source-model-and-spec-fixes.md)、[ADR 9ac6](9ac6-vacuity-literature-necessity-and-mutation.md)、[ADR c336](c336-foundational-principles.md)
-* [abstraction.md](../spec/abstraction.md#既知差異)（D-027）、[master-data.md](../spec/master-data.md)
+* [abstraction.md](../spec/abstraction.md#既知差異)（D-027）、[`Spec.MasterData`](../../lean/Spec/MasterData.lean)

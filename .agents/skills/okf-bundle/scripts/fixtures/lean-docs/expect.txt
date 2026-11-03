@@ -1,0 +1,4 @@
+# 符号 ファイル
+# README.md から .lean の無い見出しへのリンク（L2）と、Lean のモジュール文書の中の切れたリンク（L1）
+L2 README.md
+L1 src/A.lean
