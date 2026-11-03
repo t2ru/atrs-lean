@@ -21,6 +21,8 @@
   `vectors`（適合テストベクタの `specRef` を探すディレクトリ）
 - `okf_check`: 見出しのアンカーの規則を借りる、スキル okf-bundle の `okf_check.py` のパス
 
+パス: リポジトリ相対のパスと本のページのパスは、OS によらず `/` 区切りで扱う（Windows でも同じ結果になる）。
+
 本の中のリンク: Lean のファイルの中のリンクは、そのファイルから見た相対パスで書く（エディタや GitHub でも辿れる）。
 この道具は、roots の中の `.lean` を指すリンクを本のページへのリンクに、roots の外を指すリンクを `repo_url` の URL に替える。
 """
@@ -28,6 +30,7 @@
 import importlib.util
 import json
 import os
+import posixpath
 import re
 import shutil
 import subprocess
@@ -65,7 +68,7 @@ IMPORT_RE = re.compile(r"^import\s+(.+)$")
 
 def module_of(rel, base):
     """`lean/Spec/Fare.lean` → `Spec.Fare`（base は `lean`）。"""
-    return os.path.relpath(rel, base)[:-len(".lean")].replace(os.sep, ".")
+    return posixpath.relpath(rel, base)[:-len(".lean")].replace("/", ".")
 
 
 def imports(text):
@@ -175,9 +178,9 @@ def rewrite_links(okf, md_text, src_rel, page_rel, pages, repo_url, repo):
             if target.startswith("<") or re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", target) or target.startswith("#"):
                 continue
             path, _, frag = target.partition("#")
-            dest = os.path.normpath(os.path.join(os.path.dirname(src_rel), path))
+            dest = posixpath.normpath(posixpath.join(posixpath.dirname(src_rel), path))
             if dest in pages:
-                new = os.path.relpath(pages[dest], os.path.dirname(page_rel) or ".").replace(os.sep, "/")
+                new = posixpath.relpath(pages[dest], posixpath.dirname(page_rel) or ".")
             elif dest.startswith(".."):
                 continue
             else:
@@ -232,7 +235,7 @@ def parts_of(repo, cfg):
             out.append((part.get("title"), base, units))
     else:
         roots = cfg["roots"]
-        base = os.path.dirname(roots[0].rstrip("/"))
+        base = posixpath.dirname(roots[0].rstrip("/"))
         files = root_files(repo, roots)
         entry = cfg.get("entry")
         out.append((None, base, [(module_of(entry, base) if entry else "", entry, files)]))
@@ -240,7 +243,7 @@ def parts_of(repo, cfg):
 
 
 def page_of(f, base):
-    return os.path.relpath(f, base)[:-len(".lean")] + ".md"
+    return posixpath.relpath(f, base)[:-len(".lean")] + ".md"
 
 
 def unit_modules(mod, entry, files, base, texts):
