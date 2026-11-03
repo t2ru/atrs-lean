@@ -19,13 +19,19 @@ lang: `dep:java.base#java.time.LocalTime`,
 namespace LangSemantics.Java
 open LangSemantics.Java.Exception
 
-/-- 時刻（時・分。秒は 0）。 -/
+/-- 時刻（時 0〜23・分 0〜59。秒は 0）。`LocalTime` は範囲外の時刻を作れないので、範囲を型で持つ。 -/
 structure JLocalTime where
   hour : Nat
   minute : Nat
-  deriving Repr, BEq, DecidableEq
+  valid : hour < 24 ∧ minute < 60 := by decide
+  deriving Repr, DecidableEq
+
+instance : BEq JLocalTime := ⟨fun a b => decide (a = b)⟩
 
 namespace JLocalTime
+
+/-- `LocalTime.of(h, m)`。範囲外は無し（Java では `DateTimeException`）。 -/
+def ofHm? (h m : Nat) : Option JLocalTime := if hv : h < 24 ∧ m < 60 then some ⟨h, m, hv⟩ else none
 
 /-- `DateTimeParseException` のクラス名。 -/
 def parseExceptionClass : String := "java.time.format.DateTimeParseException"
@@ -42,9 +48,9 @@ def parseHHmm (s : String) : JResult JLocalTime :=
     | some a, some b, some c, some d =>
       let h := a * 10 + b
       let m := c * 10 + d
-      if m ≥ 60 then err
-      else if h ≤ 23 then .ok ⟨h, m⟩
-      else if h = 24 ∧ m = 0 then .ok ⟨0, 0⟩
+      if hm : m ≥ 60 then err
+      else if hh : h ≤ 23 then .ok ⟨h, m, by omega, by omega⟩
+      else if h = 24 ∧ m = 0 then .ok ⟨0, 0, by decide⟩
       else err
     | _, _, _, _ => err
   | _ => err

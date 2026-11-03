@@ -24,12 +24,12 @@ def daySeed : Spec.Prim.Date := ⟨2026, 11, 1, by decide⟩
 
 /-- シードの最初のフライト（2026-11-01・NTT001・N・OW）を選ぶ予約フォーム。 -/
 def formSeed : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨2026, 11, 1⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨2026, 11, 1, by decide⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
 
 /-- 初期状態での環境の前提の証人（予約確認。マスタはシードのマスタの DB）。 -/
 def icSeed : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := SourceModel.Db.MasterSeed.masterDb, config := SourceModel.AtrsProperties.upstreamConfig, form := formSeed,
-     env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1, by decide⟩ }, .confirm⟩
 
 def iaSeed : Spec.UseCase.Reserve.MInput :=
   ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, ⟨"NTT001"⟩, .N, .OW⟩], inputR⟩, .confirm⟩

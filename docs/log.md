@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: スキルの `JLocalDate`・`JLocalTime`・`JLocalDateTime` の妥当性の型（スキルの backlog d3fd の S4）に合わせ、`Abstraction` の字面・補題（[Spec] の暦日から `LocalDate` への `Abstraction.Prim.Date.jOfDate`、閏年と月の日数の対応を `Abstraction.Prim.Date` に移した）を直した。変わった `SourceModel` の定義の照合の記録を `trace rehash`（`lake test` と Java の原典実行）で更新した（`trace/manifest.json`・[spec/traceability.md](spec/traceability.md) の生成区画）。
 * **Update**: [backlog 8d24](backlog/8d24-misu-spec-types.md) の前段として、ギャップの登録簿 `lean/Abstraction/Gap.lean` の 41 件を、スキルの和型の `Trace.Gap`（スキルの backlog d3fd の S1）に書き換えた。[spec/abstraction.md](spec/abstraction.md) の生成表は変わらない。
 * **Creation**: [ADR 6d36](decision/6d36-misu-spec-types.md) で、ATRS の `Spec` の型を、不正な状態を表現できない型（MISU）にすることにした（L1 値・L2 境界・L3 関係。プロジェクトオーナーの指示と選択）。作業を [backlog 8d24](backlog/8d24-misu-spec-types.md) にした。スキル spec-pivot の版 0.28（スキルの ADR bf1b・backlog d3fd）に合わせ、[rules/atrs-porting.md](rules/atrs-porting.md) の版の記載と §Spec の型を改めた。[index.md](index.md)・[backlog/README.md](backlog/README.md) を更新した。
 * **Update**: [backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を完了にした（ADR ab93 の 3e）。予約の移植元側の追跡の検査を失敗扱いで通すため、`trace/features.json` で、モデルにしない Web 層・REST と画面だけが使うメンバ・原典で呼ばれていないメンバを Http に、予約の履歴の DTO と問い合わせを Report に移し（[backlog a89e](backlog/a89e-http-contract-adapter.md)・[backlog ac71](backlog/ac71-reservation-history-report.md) の範囲に追記）、データクラスの getter・setter などを写しの構造体の `@[source]` で覆い、D-009 の [Spec] の箇所の印を付けた。[backlog/README.md](backlog/README.md) を更新した。

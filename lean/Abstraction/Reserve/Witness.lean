@@ -30,7 +30,7 @@ def formR : SourceModel.App.B2.TicketReserveForm :=
 /-- 1970-01-01 に予約確認を行う具体側の入力（マスタは空席照会の証人と同じ）。 -/
 def icR : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, form := formR,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .confirm⟩
 
 theorem dev_D027R_nontrivial : Nontrivial dev_D027R :=
   ⟨⟨icR, by unfold dev_D027R; decide⟩,
@@ -39,7 +39,7 @@ theorem dev_D027R_nontrivial : Nontrivial dev_D027R :=
 /-- 2 回目の読み出しで日付をまたぐ実行環境。 -/
 def icR14 : SourceModel.ReserveQuery.MInput :=
   { icR with input := { icR.input with
-      env := { clock := fun n => if n = 0 then ⟨1970, 1, 1⟩ else ⟨1970, 1, 2⟩ } } }
+      env := { clock := fun n => if n = 0 then ⟨1970, 1, 1, by decide⟩ else ⟨1970, 1, 2, by decide⟩ } } }
 
 theorem dev_D014R_nontrivial : Nontrivial dev_D014R :=
   ⟨⟨icR, fun _ => rfl⟩, ⟨icR14, fun h => by have := h 1; simp [icR14] at this⟩⟩
@@ -105,14 +105,14 @@ def paxR : SourceModel.App.B2.PassengerForm :=
 
 /-- NTT523 を往路、NTT528 を復路とする予約フォーム（搭乗者 1 人）。 -/
 def form2415 : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT523", some .RT, some .N⟩,
-    ⟨some ⟨1970, 1, 2⟩, some "NTT528", some .RT, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT523", some .RT, some .N⟩,
+    ⟨some ⟨1970, 1, 2, by decide⟩, some "NTT528", some .RT, some .N⟩], passengerFormList := [paxR] }
 
 /-- NTT523 を往路、NTT528 を復路とする往復の予約確認（搭乗者 1 人）。 -/
 def ic2415 : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := db2415, config := SourceModel.AtrsProperties.upstreamConfig,
      form := form2415,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .confirm⟩
 
 /-! ## 評価の補題 -/
 
@@ -217,13 +217,13 @@ def fd109 : FlightDb := { fdFS with sqPassenger := some 2147483647 }
 
 /-- NTT001・N・OW を選んだ予約フォーム（搭乗者 1 人）。 -/
 def form109 : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
 
 /-- NTT001・N・OW を選んだ予約確定（搭乗者 1 人）。 -/
 def ic109 : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig,
      form := form109,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .reserve⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .reserve⟩
 
 /-- ABS-109 の証人の [Spec] の状態（`fd109` の像）。 -/
 def w109 : Spec.Port.World := { wFS with sequences := { wFS.sequences with passenger := 2147483648 } }

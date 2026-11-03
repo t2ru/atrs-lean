@@ -27,9 +27,8 @@ generated:
 - **S2 追跡属性と `Trace` の内部の型**
   - 属性の引数を、付けた時点で型付きの値に解析する。`@[deviation]` は引数を 1 つだけ受ける。
   - `Trace.Dump` の層を列挙にする。`Trace.Layout` の違反・例外を和型にする。`Trace.Obligation` の内部の記録の旗・位置の組を、和型と名前付きの `structure` にする。
-- **S3 `Machine`**
-  - `Preserves`・`Abstracts` の `ch : Option Choice` と、それで守った成分を、基底の和型にする。
-  - `Obligation` の、引数の位置で決め打ちした読み取りを、新しい形に合わせる。
+- **S3 `Machine`**（棚卸しの結果、型は変えない。下の「S3 の判断」）
+  - `Preserves`・`Abstracts` の `ch : Option Choice` と、それで守った成分を見直す。
 - **S4 `LangSemantics`・`ConformanceKit`**
   - `JDouble` の有限値を正規形だけにし、`Rat'` の分母を正にする。
   - `JLocalDate`・`JLocalTime`・`JLocalDateTime`・`JHashMap`・`SequenceDef`・`Sql.Query` の並びのキー・`DecimalFormat.Symbols`・`Java.Expr` の内部の値・`JThrow.other`・`SqlTable` に、それぞれの不変条件を持たせる。
@@ -37,6 +36,16 @@ generated:
   - 規約（[lang/lean/rules.md](../lang/lean/rules.md)・[lang/lean/trace-attributes.md](../lang/lean/trace-attributes.md)・言語パックの `semantics.md`）を直す。
   - 型の棚卸しの手順 [guide/type-inventory.md](../guide/type-inventory.md) を置く。
   - 検査 MISU-1（`scripts/ci/check_lean.py`）と属性 `@[raw_input]` を置く。
+
+### S3 の判断
+
+型の棚卸し（[guide/type-inventory.md](../guide/type-inventory.md)）の観点 T1・T6 で見直した。
+
+- `Preserves`・`Abstracts` は命題（証明の義務の束）で、値の型ではない。基底が `ofChoice` のときだけ要る成分は、
+  `∀ c, ch = some c → …` の形で、すでに形式的に条件付けられている（`ch = some c` なら、その成分を省けない）。
+- 残る対応は、`ch` が基底の形（`ofChoice`・`pure`）に合うことと、`Choice.f`・`Choice.e₀` が基底の `ofChoice` の引数と同じ式であることである。
+  これは R 課題の命題の書き方（式の形）の性質で、環境の全体にわたる性質として obligation-check の G6 が照合する（ADR bf1b の規則 3）。
+- `Choice`・`OutLayer` を基底の機械から作る形にすると、`Spec` の機械の書き方と G3・G6 の読み取りが変わる。G6 の照合で足りるので行わない。
 
 ## 対象外
 

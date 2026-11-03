@@ -293,7 +293,7 @@ theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
 theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .ok (J32.ofInt 17050400) := by
   have ht : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
   have hA : ∀ m, LangSemantics.Java.Spring.Assert.hasText "NTT001" m = .ok () := fun m => assertHasText_ok ht m
-  have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩] := rfl
+  have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT001", some .OW, some .N⟩] := rfl
   simp only [runTotalFare, hfl, toFlightList, List.mapM_cons, List.mapM_nil, toFlight, pure_bind, FlightMasterProvider.getFlightMaster, hA,
     ok_bind]
   rfl

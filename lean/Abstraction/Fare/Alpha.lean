@@ -82,7 +82,7 @@ def db29 : SourceModel.Db.Schema.MasterDb :=
 /-- D-001 の差異が起きる入力: 区間の運賃 100 円・搭乗クラス N・1970-01-01（積算比率 29%）。 -/
 def icBF29 : BasicFareInput :=
   { db := db29, config := SourceModel.AtrsProperties.upstreamConfig, basicFareOfRoute := J32.ofInt 100,
-    boardingClassCd := some .N, depDate := some ⟨1970, 1, 1⟩ }
+    boardingClassCd := some .N, depDate := some ⟨1970, 1, 1, by decide⟩ }
 
 /-- 前提を満たさない入力: 搭乗クラスが `null`。 -/
 def icBFnull : BasicFareInput := { icBF29 with boardingClassCd := none }

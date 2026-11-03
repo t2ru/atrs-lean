@@ -99,7 +99,7 @@ def dbTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) : SourceModel.Db.Sc
 /-- 1970-01-01 の NTT001・N・OW を 1 つ選び、搭乗者の年齢を `ages` とする入力。 -/
 def icTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) (ages : List Int) : TotalFareInput :=
   { db := dbTF bf ratio disc, config := SourceModel.AtrsProperties.upstreamConfig,
-    flights := [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) (some "NTT001") (some FareTypeCd.OW)
+    flights := [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1, by decide⟩) (some "NTT001") (some FareTypeCd.OW)
       (some BoardingClassCd.N)],
     passengers := ages.map fun a => some ({ age := some (J32.ofInt a) } : SourceModel.Domain.Model.Passenger) }
 
@@ -144,7 +144,7 @@ theorem iaTF012_devs : dev_D001T iaTF012 ∧ dev_D002T iaTF012 ∧ ¬ dev_D012 i
 /-- 前提を満たさない入力: 便名が `null`。 -/
 def icTFnull : TotalFareInput :=
   ⟨dbTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩, SourceModel.AtrsProperties.upstreamConfig,
-    [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
+    [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1, by decide⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
     []⟩
 
 /-- フライトの無い入力（各フライトの述語は自明に成り立つ）。 -/

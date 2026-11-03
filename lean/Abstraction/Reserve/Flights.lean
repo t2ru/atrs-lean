@@ -24,7 +24,8 @@ theorem asciiDigit?_eq : JLocalTime.asciiDigit? = HourMinute.digitVal? := rfl
 
 /-- 到着時刻が 24:00 より前なら、`HHmm` の解釈（`LocalTime`）は同じ時分。 -/
 theorem parseHHmm_arr {s : String} {a : ArrivalTime} (h : arrOfStr s = some a) (hlt : a.toMinutes < 1440) :
-    JLocalTime.parseHHmm s = .ok ⟨a.hour, a.minute⟩ := by
+    JLocalTime.parseHHmm s =
+      .ok ⟨a.hour, a.minute, by have := a.valid; simp only [ArrivalTime.toMinutes] at hlt; omega⟩ := by
   unfold arrOfStr ArrivalTime.parseHHmm at h
   unfold JLocalTime.parseHHmm
   rw [asciiDigit?_eq]
@@ -49,7 +50,7 @@ theorem parseHHmm_arr {s : String} {a : ArrivalTime} (h : arrOfStr s = some a) (
 
 /-- 出発時刻の `HHmm` の解釈（`LocalTime`）は同じ時分。 -/
 theorem parseHHmm_dep {s : String} {t : HourMinute} (h : hmOfStr s = some t) :
-    JLocalTime.parseHHmm s = .ok ⟨t.hour, t.minute⟩ := by
+    JLocalTime.parseHHmm s = .ok ⟨t.hour, t.minute, by have := t.valid; omega⟩ := by
   unfold hmOfStr HourMinute.parseHHmm at h
   unfold JLocalTime.parseHHmm
   rw [asciiDigit?_eq]
@@ -69,7 +70,8 @@ theorem parseHHmm_dep {s : String} {t : HourMinute} (h : hmOfStr s = some t) :
   · cases h
 
 theorem toEpochMinute_ofEpochMinute (n : Int) : (JLocalDateTime.ofEpochMinute n).toEpochMinute = n := by
-  simp only [JLocalDateTime.ofEpochMinute, JLocalDateTime.toEpochMinute, JLocalDate.toEpochDay_ofEpochDay]
+  simp only [JLocalDateTime.ofEpochMinute, JLocalDateTime.toEpochMinute, JLocalDateTime.hour, JLocalDateTime.minute,
+    JLocalDate.toEpochDay_ofEpochDay]
   have h0 : 0 ≤ n % 1440 := Int.emod_nonneg n (by decide)
   have h1 : n % 1440 < 1440 := Int.emod_lt_of_pos n (by decide)
   have e : ((n % 1440).toNat / 60 * 60 + (n % 1440).toNat % 60 : Nat) = (n % 1440).toNat := Nat.div_add_mod' _ _

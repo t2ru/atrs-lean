@@ -29,10 +29,10 @@ def fdFS : FlightDb := { flight := [⟨⟨0, by decide⟩, ⟨"NTT001", by decid
 
 /-- 配備の環境の書式の記号 `sym` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
 def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
-  { db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, today := ⟨1970, 1, 1⟩,
-    sharedClock := (⟨1970, 1, 1⟩, ⟨1970, 1, 1⟩),
+  { db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, today := ⟨1970, 1, 1, by decide⟩,
+    sharedClock := (⟨1970, 1, 1, by decide⟩, ⟨1970, 1, 1, by decide⟩),
     criteria := some { flightType := some .OW, departureAirportCd := some "HND", arrivalAirportCd := some "ITM",
-                       depDate := some ⟨1970, 1, 1⟩, boardingClassCd := some .N },
+                       depDate := some ⟨1970, 1, 1, by decide⟩, boardingClassCd := some .N },
     formatSymbols := sym }
 
 /-- マスタの [Spec] の写し。 -/
@@ -143,7 +143,7 @@ def day1 : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
 /-- 照会の途中で日付をまたいだ入力: `TicketSharedServiceImpl` が読む今日（`validateDepatureDate`・`getSearchLimitDate`）は
 1970-01-01、その後に `searchFlight` が読む今日は 1970-01-02（Clock は進むだけ）。 -/
-def icFS14 : SearchInput := { icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with today := ⟨1970, 1, 2⟩ }
+def icFS14 : SearchInput := { icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with today := ⟨1970, 1, 2, by decide⟩ }
 
 /-- `icFS14` の [Spec] の入力（今日は 1970-01-02）。 -/
 def iaFS14 : Spec.FlightSearch.SearchInput := { iaFS with today := day1 }

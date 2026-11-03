@@ -231,7 +231,7 @@ public class JavaTable {
         long[] mins = {0, 1, 120, 119, 1440, -1, -1441, 2880, 100000};
         for (LocalDate d : ds) for (int[] hm : hms) for (long n : mins) {
             java.time.LocalDateTime x = d.atTime(hm[0], hm[1]).plusMinutes(n);
-            String pre = "#guard " + ofYmd(d) + ".map (fun d => let r := (JLocalDateTime.atTime d ⟨" + hm[0] + ", " + hm[1] + "⟩).plusMinutes " + intLit(n);
+            String pre = "#guard " + ofYmd(d) + ".map (fun d => let r := (JLocalDateTime.atTime d ⟨" + hm[0] + ", " + hm[1] + ", by decide⟩).plusMinutes " + intLit(n);
             line(pre + "; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (" + x.getYear() + ", " + x.getMonthValue()
                 + ", " + x.getDayOfMonth() + ", " + x.getHour() + ", " + x.getMinute() + ")");
         }
@@ -239,11 +239,11 @@ public class JavaTable {
         java.time.LocalDateTime[] bs = {LocalDate.of(2026, 4, 11).atTime(11, 59), LocalDate.of(2026, 4, 11).atTime(12, 0),
             LocalDate.of(2026, 4, 11).atTime(12, 1), LocalDate.of(2026, 4, 10).atTime(23, 59), LocalDate.of(2026, 4, 12).atStartOfDay()};
         for (java.time.LocalDateTime b : bs) {
-            line("#guard (do let d ← " + ofYmd(a.toLocalDate()) + "; let e ← " + ofYmd(b.toLocalDate()) + "; pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨"
-                + b.getHour() + ", " + b.getMinute() + "⟩), (JLocalDateTime.atTime e ⟨" + b.getHour() + ", " + b.getMinute() + "⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some ("
+            line("#guard (do let d ← " + ofYmd(a.toLocalDate()) + "; let e ← " + ofYmd(b.toLocalDate()) + "; pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨"
+                + b.getHour() + ", " + b.getMinute() + ", by decide⟩), (JLocalDateTime.atTime e ⟨" + b.getHour() + ", " + b.getMinute() + ", by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some ("
                 + a.isBefore(b) + ", " + b.isBefore(a) + ")");
         }
-        line("#guard (JLocalDate.ofYMD? 2026 4 12).map (fun d => JLocalDateTime.atStartOfDay d == JLocalDateTime.atTime d ⟨0, 0⟩) == some true");
+        line("#guard (JLocalDate.ofYMD? 2026 4 12).map (fun d => JLocalDateTime.atStartOfDay d == JLocalDateTime.atTime d ⟨0, 0, by decide⟩) == some true");
     }
 
     static void doubles() {
