@@ -28,12 +28,13 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 | G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum`・`Machine.alt` で並置したもので作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.Kernel.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
-| G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
+| G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 2 つ |
 | GK | ギャップの登録簿（`Trace.Gap`）と証明の状態の裏付け。下のとおり |
 
 G9 の内容は次のとおりである。
 
-- `@[deviation]` の定数は ID を 1 つだけ持つ（複数の差異を 1 つの定数に束ねない。観測型は `Machine.Preserves.anyOf` で並べる）。
+`@[deviation]` の定数は ID を 1 つだけ持つ（属性の構文が 1 つだけを受ける。観測型は `Machine.Preserves.anyOf` で並べる）。
+
 - R 課題で使う各差異 ID について、その ID のどれかの定数が、少なくとも 1 つの R 課題で次のどちらかを満たす。
   - 必要性: 差異を外した R 課題の命題の否定の閉じた定理（`¬ P` か `P → False`。`@[obligation]` の W 課題でもよい）がある
     - 前提型の差異 `d`: R 課題の機械から `.restrict d`・`.restrictState d`・`Concrete.restrict d` の層を 1 つ外す
@@ -120,13 +121,23 @@ def allowedCombinators : List Name :=
 /-- 走査の対象とする層の決め方。 -/
 structure Scope where
   /-- 定数の層（`Trace.Dump.defaultLayerOf` と同じ規則）。`none` は層の外。 -/
-  layerOf : Name → Option String
+  layerOf : Name → Option Trace.Dump.Layer
 
 /-- モデルの層（`Machine`・`LangSemantics` を除く）にあるか。 -/
 def Scope.isModel (sc : Scope) (n : Name) : Bool :=
   match sc.layerOf n with
-  | some l => !(l == "Machine" || l.startsWith "LangSemantics")
+  | some l => !(l == .machine || l.isLangSemantics)
   | none => false
+
+/-- ギャップの側の証明の層。 -/
+def proofLayer : Trace.Id.GapSide → Trace.Dump.Layer
+  | .source => .abstraction
+  | .target => .refinement
+
+/-- ギャップの側のモデルの層（`Spec` と、側のモデル）。 -/
+def modelLayers : Trace.Id.GapSide → List Trace.Dump.Layer
+  | .source => [.spec, .sourceModel]
+  | .target => [.spec, .targetModel]
 
 /-- 既定の対象。 -/
 def defaultScope : Scope := { layerOf := Trace.Dump.defaultLayerOf [] }
@@ -177,10 +188,6 @@ where
     | .forallE _ _ b _, n => go b (n + 1)
     | .mdata _ e, n => go e n
     | e, n => (e, n)
-
-/-- 定数に追跡属性が付いているか。 -/
-def hasAttr (attr : ParametricAttribute (Array String)) (env : Environment) (n : Name) : Bool :=
-  (attr.getParam? env n).isSome
 
 /-- 型の形成子（型が `Sort` で終わる定数）か。 -/
 def isTypeFormer (ci : ConstantInfo) : Bool :=
@@ -238,35 +245,49 @@ partial def closure (env : Environment) (start : Name) : Array Name := Id.run do
         unless seen.contains c do stack := stack.push c
   return out
 
+/-- 抽象側の基底の形（G3）。 -/
+inductive AbsKind where
+  /-- `Machine.ofChoice`・`Machine.pure` のどちらでもない（読めない） -/
+  | unknown
+  | pure
+  | ofChoice
+  deriving DecidableEq, BEq, Repr
+
+/-- JSON の値。 -/
+def AbsKind.code : AbsKind → String
+  | .unknown => "?"
+  | .pure => "pure"
+  | .ofChoice => "ofChoice"
+
 /-- 1 つの R 課題の判定結果。 -/
 structure RInfo where
   name : Name
   ids : Array String
   absBase : Option Name := none
-  absKind : String := "?"
+  absKind : AbsKind := .unknown
   conBase : Option Name := none
   devs : Array Name := #[]
   obs : Array Name := #[]
   stdAbs : Array Name := #[]
   envLeaves : Array Name := #[]
   freeLeaves : Array Name := #[]
-  hasInitSurj : Bool := false
-  hasSound : Bool := false
-  hasInitIs : Bool := false
-  hasPinned : Bool := false
-  hasNoFault : Bool := false
+  /-- 束があり、全 R 課題に共通の成分（`initSurj`・`sound`・`initIs`）を持つ -/
+  bundled : Bool := false
+  /-- 束の選択の材料が基底に合い、環境の固定の成分（`pinned`・`noFault`）を持つ -/
+  pinned : Bool := false
   hasFreeFrame : Bool := false
   /-- 抽象側の基底についての `TotalUnder` の環境の前提と、その `EnvWitness` の有無 -/
   totalUnder : Array (Name × Bool) := #[]
   /-- 束の `outs`・`outsC` に層がある差異の述語（`StateSafe`・`StateSafeConcrete`） -/
   stateSafe : Array Name := #[]
-  /-- 必要性の定理（G9）がある差異 -/
-  necessity : Array Name := #[]
-  /-- 差異と、その必要性の定理（GK が `Evidence.refuted` と照合する） -/
+  /-- 差異と、その必要性の定理（GK が `TypedEvidence.refuted` と照合する） -/
   necessityBy : Array (Name × Name) := #[]
   /-- 抽象側の基底に `¬ TotalUnder A always` があるか -/
   envNecessary : Bool := false
   errors : Array String := #[]
+
+/-- 必要性の定理（G9）がある差異。 -/
+def RInfo.necessity (r : RInfo) : Array Name := (r.necessityBy.map (·.1)).toList.eraseDups.toArray
 
 /-- 付帯の定理の一覧（引数は正規形）。 -/
 structure Companions where
@@ -299,12 +320,26 @@ structure Bundle where
   outs : Except String (Array (Expr × Expr))
   outsC : Except String (Array (Expr × Expr))
 
+/-- `@[obligation]` の定理の結論の形。 -/
+inductive ObligationShape where
+  /-- `Machine.Refines`（R 課題） -/
+  | refines
+  /-- `Machine.Preserves`（束） -/
+  | preserves
+  /-- その他 -/
+  | other
+  deriving DecidableEq, BEq, Repr
+
+/-- `@[obligation]` の定理。 -/
+structure ObligationRow where
+  name : Name
+  ids : Array String
+  shape : ObligationShape
+
 /-- 走査全体の結果。 -/
 structure Report where
   rs : Array RInfo
-  obligations : Array (Name × Array String × Bool)
-  /-- 結論が `Machine.Preserves` の `@[obligation]` 定理（GP） -/
-  preserves : Array Name := #[]
+  obligations : Array ObligationRow
   nondets : Array (Name × Array String)
   deviations : Array (Name × Array String)
   stdAbs : Array (Name × Array String)
@@ -527,9 +562,9 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
   let mut pinCes : Array (Expr × Expr) := #[]
   match unfoldTo env [N.ofChoice, N.pure] aBase with
   | some v =>
-    if v.getAppFn.constName? == some N.pure then r := { r with absKind := "pure" }
+    if v.getAppFn.constName? == some N.pure then r := { r with absKind := .pure }
     else
-      r := { r with absKind := "ofChoice" }
+      r := { r with absKind := .ofChoice }
       let vs := v.getAppArgs
       choice := some (nz vs[8]!, nz vs[9]!)
       for (isEnv, ty) in [(true, vs[3]!), (false, vs[4]!)] do
@@ -560,7 +595,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
     for n in closure env cb do
       if n == N.ofMachine then
         r := { r with errors := r.errors.push "G4: concrete base uses Machine.Concrete.ofMachine" }
-      else if sc.layerOf n == some "Spec" then
+      else if sc.layerOf n == some .spec then
         if let some ci := env.find? n then
           unless isStructural env n ci do
             r := { r with errors := r.errors.push s!"G4: concrete base uses the Spec function {n}" }
@@ -591,7 +626,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
   if bs.isEmpty then
     r := { r with errors := r.errors.push "G6: no Machine.Preserves bundle (@[obligation] with the same ID, A, C and g) for this R obligation" }
   else
-    r := { r with hasInitSurj := true, hasSound := true, hasInitIs := true }
+    r := { r with bundled := true }
   for b in bs do
     -- 選択の像の材料
     match b.ch, choice with
@@ -604,7 +639,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
     | .ok (some (f', ce, adm, e₀', m)), some (f, e₀) =>
       -- `adm`: 等号 `Machine.Preserves.sameEnv` か、`Spec` の層の裸の定数（環境の記述が許す環境の選択）
       let admOk := headConst? adm == some N.sameEnv ||
-        (bareConst? adm).any fun ac => sc.layerOf ac == some "Spec"
+        (bareConst? adm).any fun ac => sc.layerOf ac == some .spec
       if f' != f then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.f is not the f of Machine.ofChoice" }
       else if e₀' != e₀ then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.e₀ is not the e₀ of Machine.ofChoice" }
       else if !admOk then
@@ -613,7 +648,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
         | some cc =>
           if hasAttr stdAbsAttr env cc then
             pinCes := pinCes.push (ce, adm)
-            r := { r with hasPinned := true, hasNoFault := true }
+            r := { r with pinned := true }
           else r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce = {cc} has no @[std_abs]" }
         | none => r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce is not a bare @[std_abs] constant" }
       if !r.freeLeaves.isEmpty && (bareConst? m).any fun mc => cs.kernel.contains mc then
@@ -648,13 +683,13 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
     match choice, pin with
     | some (f, _), some (f', ce', adm') => f' == f && pinCes.contains (ce', adm')
     | some _, none => true
-    | none, none => r.absKind == "pure"
+    | none, none => r.absKind == .pure
     | none, some _ => false
   let found (a' c' g' : Expr) : Array Name :=
     (cs.necessity.filter fun (_, a'', c'', g'', pin) => a'' == a' && c'' == c' && g'' == g' && pinOk pin).map (·.1)
   let record (r : RInfo) (d : Name) (ts : Array Name) : RInfo :=
     if ts.isEmpty then r
-    else { r with necessity := r.necessity.push d, necessityBy := r.necessityBy ++ ts.map (d, ·) }
+    else { r with necessityBy := r.necessityBy ++ ts.map (d, ·) }
   for p in aPs ++ cPs do
     if let some pc := bareConst? p then
       if r.devs.contains pc && !r.necessity.contains pc then
@@ -715,7 +750,7 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
     match r with
     | .error e => errors := errors.push s!"GK: {n} (@[gap_entry]): {e}"
     | .ok g =>
-      let want := g.id.side.proofLayer
+      let want := proofLayer g.id.side
       if sc.layerOf n != some want then
         errors := errors.push s!"GK: {n} (@[gap_entry] {g.idStr}) must be in the {want} layer"
       if ((gapDoc? env n).getD "").trimAscii.isEmpty then
@@ -731,9 +766,9 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
   for (n, ids) in gapMarkers env do
     for i in ids do
       let isWitness := (witnessOf.getD n #[]).contains i
-      let base := if i.startsWith "T-" then ["Spec", "TargetModel"] else ["Spec", "SourceModel"]
-      let proof := if i.startsWith "T-" then "Refinement" else "Abstraction"
-      let allowed := if isWitness then base ++ [proof] else base
+      let side : Trace.Id.GapSide := if i.startsWith "T-" then .target else .source
+      let proof := proofLayer side
+      let allowed := if isWitness then modelLayers side ++ [proof] else modelLayers side
       unless (sc.layerOf n).any allowed.contains do
         errors := errors.push
           s!"GK: {n} has @[gap \"{i}\"] but is not in the {allowed} layers (the {proof} layer is only for the evidence of {i})"
@@ -752,16 +787,16 @@ def checkGaps (env : Environment) (sc : Scope) (rs : Array RInfo) (cs : Companio
         else if !g.deviations.contains n then
           errors := errors.push s!"GK: {n} has @[deviation \"{i}\"] but the @[gap_entry] of {i} does not list it in deviations"
   -- 証明の状態ごとの裏付け
-  let idOfDev (d : Name) : Option String := (deviationAttr.getParam? env d).bind (·[0]?)
+  let idOfDev (d : Name) : Option String := (deviationOf? env d).map toString
   let mut claims : Array (Name × String) := #[]
   for i in order do
     let some (_, g) := byId[i]? | continue
     let code := g.evidenceCode
     for d in g.deviations do
-      unless (deviationAttr.getParam? env d).any (·.contains i) do
+      unless (deviationOf? env d).any (toString · == i) do
         errors := errors.push s!"GK: {i}: deviations lists {d}, which has no @[deviation \"{i}\"]"
     for w in g.witnesses do
-      unless (gapAttr.getParam? env w).any (·.contains i) do
+      unless (strsOf gapAttr env w).any (·.contains i) do
         errors := errors.push s!"GK: {i}: {w} (the evidence {code}) must have @[gap \"{i}\"]"
     if let some c := g.claim? then
       match env.find? c with
@@ -816,7 +851,6 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   let cs := collectCompanions env
   let mut rs := #[]
   let mut obligations := #[]
-  let mut preserves : Array Name := #[]
   -- R 課題の (ID, A, C, g)（GP の照合）
   let mut rArgs : Array (Array String × Array Expr) := #[]
   let mut nondets := #[]
@@ -828,30 +862,29 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
   -- 1 回目: 束 `Preserves` を集める（G6 が R 課題ごとに引く）
   let mut bundles : Array Bundle := #[]
   for (n, ci) in consts do
-    if let some ids := obligationAttr.getParam? env n then
+    if let some ids := strsOf obligationAttr env n then
       if let .thmInfo _ := ci then
         let concl := unfoldReducible env (conclusion ci.type).1
         if concl.isAppOfArity N.preserves 15 then bundles := bundles.push (readBundle env n ids concl)
   for (n, ci) in consts do
-    let attrs := [("nondet", nondetAttr), ("deviation", deviationAttr), ("std_abs", stdAbsAttr),
-      ("kernel", kernelAttr), ("env_pre", envPreAttr), ("obligation", obligationAttr)]
-    let mine := (attrs.filter fun (_, attr) => hasAttr attr env n).map (·.1) ++
+    let attrs := [("nondet", hasAttr nondetAttr env n), ("deviation", hasAttr deviationAttr env n),
+      ("std_abs", hasAttr stdAbsAttr env n), ("kernel", hasAttr kernelAttr env n), ("env_pre", hasAttr envPreAttr env n),
+      ("obligation", hasAttr obligationAttr env n)]
+    let mine := (attrs.filter (·.2)).map (·.1) ++
       (if hasAttr gapAttr env n then ["gap"] else []) ++ (if gapEntryAttr.hasTag env n then ["gap_entry"] else [])
     if !mine.isEmpty && !sc.isModel n then
       errors := errors.push s!"G0: {n} has @[{mine}] but is not in a model layer"
-    if let some ids := nondetAttr.getParam? env n then nondets := nondets.push (n, ids)
-    if let some ids := deviationAttr.getParam? env n then
-      devs := devs.push (n, ids)
-      if ids.size > 1 then
-        errors := errors.push
-          s!"G9: {n} (@[deviation]) has {ids.size} IDs {ids.toList}; give each deviation its own constant (Machine.Preserves.anyOf for observational components)"
+    if let some ids := strsOf nondetAttr env n then nondets := nondets.push (n, ids)
+    -- 差異の定数は ID を 1 つだけ持つ（`@[deviation]` の構文。差異ごとに定数を分ける）
+    if let some i := deviationOf? env n then
+      devs := devs.push (n, #[toString i])
       unless cs.nontrivial.contains n do
         errors := errors.push s!"G8: {n} (@[deviation]) has no Nontrivial/Nontrivial₂ theorem"
-    if let some ids := envPreAttr.getParam? env n then
+    if let some ids := strsOf envPreAttr env n then
       envPres := envPres.push (n, ids)
       unless cs.nontrivial.contains n do
         errors := errors.push s!"G8: {n} (@[env_pre]) has no Nontrivial theorem"
-    if let some ids := stdAbsAttr.getParam? env n then
+    if let some ids := strsOf stdAbsAttr env n then
       stds := stds.push (n, ids)
       unless isUnaryFun ci.type do
         errors := errors.push s!"G7: {n} (@[std_abs]) is not a function of one non-function argument"
@@ -861,22 +894,22 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
           errors := errors.push
             s!"G7: {n} (@[std_abs]) has no KernelIs theorem and refers to {bad.toList}"
     -- G3': Spec の層の抽象機械
-    if sc.layerOf n == some "Spec" && ci.isDefinition then
+    if sc.layerOf n == some .spec && ci.isDefinition then
       if (conclusion ci.type).1.isAppOf N.machine then
         let mut v := ci.value!
         while v.isLambda do v := v.bindingBody!
         if !specMachineOk env (unfoldReducible env v) then
           errors := errors.push s!"G3: {n} (Spec machine) is not built with Machine.ofChoice or Machine.pure"
-    if let some ids := obligationAttr.getParam? env n then
+    if let some ids := strsOf obligationAttr env n then
       if let .thmInfo _ := ci then
         let (concl, _) := conclusion ci.type
         let concl := unfoldReducible env concl
         let isR := concl.isAppOfArity N.refines 10
         let isP := concl.isAppOfArity N.preserves 15
-        obligations := obligations.push (n, ids, isR)
+        let shape : ObligationShape := if isR then .refines else if isP then .preserves else .other
+        obligations := obligations.push { name := n, ids, shape }
         let acg (e : Expr) (i : Nat) : Array Expr :=
           (e.getAppArgs.extract i (i + 3)).map fun x => normalize env (unfoldReducible env x)
-        if isP then preserves := preserves.push n
         if isR then
           rs := rs.push (checkR env sc cs bundles n ids ci.type)
           rArgs := rArgs.push (ids, acg concl 7)
@@ -895,7 +928,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
       if needed.contains m && !needed.contains d &&
           rs.any (fun ri => ri.devs.contains m && ri.devs.contains d) then
         needed := needed.push d
-  let idsOf (n : Name) : List String := ((deviationAttr.getParam? env n).getD #[]).toList
+  let idsOf (n : Name) : List String := ((deviationOf? env n).map toString).toList
   let neededIds := needed.toList.flatMap idsOf
   let pendingIds := (gapEntries env).toList.filterMap fun (_, r) =>
     match r with | .ok g => (if g.isPending then some g.idStr else none) | .error _ => none
@@ -914,7 +947,7 @@ def check (env : Environment) (sc : Scope := defaultScope) : Report := Id.run do
           s!"G9: {e} (@[env_pre]) is used for the abstract base {b} of an R obligation without a ¬ TotalUnder (base) always theorem (if PRE is total, state TotalUnder (base) always instead)"
   errors := errors ++ checkGaps env sc rs cs
   let moduleOf (n : Name) : String := Trace.Dump.moduleOf env n
-  return { rs, obligations, preserves, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
+  return { rs, obligations, nondets, deviations := devs, stdAbs := stds, envPres, errors, warnings,
            gaps := Trace.Gap.gapsJson env moduleOf }
 
 /-- 誤りの総数。 -/
@@ -930,19 +963,19 @@ def Report.toJson (r : Report) : Json :=
   Json.mkObj [
     ("refinements", Json.arr (r.rs.map fun ri => Json.mkObj [
       ("name", Lean.toJson ri.name.toString), ("ids", Lean.toJson ri.ids),
-      ("abstract_base", opt ri.absBase), ("abstract_kind", Lean.toJson ri.absKind),
+      ("abstract_base", opt ri.absBase), ("abstract_kind", Lean.toJson ri.absKind.code),
       ("concrete_base", opt ri.conBase), ("deviations", names ri.devs), ("observations", names ri.obs),
       ("std_abs", names ri.stdAbs), ("env_choices", names ri.envLeaves), ("free_choices", names ri.freeLeaves),
-      ("init_surj", Lean.toJson ri.hasInitSurj), ("sound", Lean.toJson ri.hasSound),
-      ("init_is", Lean.toJson ri.hasInitIs), ("pinned", Lean.toJson ri.hasPinned),
-      ("no_fault", Lean.toJson ri.hasNoFault), ("free_frame", Lean.toJson ri.hasFreeFrame),
+      ("init_surj", Lean.toJson ri.bundled), ("sound", Lean.toJson ri.bundled),
+      ("init_is", Lean.toJson ri.bundled), ("pinned", Lean.toJson ri.pinned),
+      ("no_fault", Lean.toJson ri.pinned), ("free_frame", Lean.toJson ri.hasFreeFrame),
       ("total_under", Json.arr (ri.totalUnder.map fun (e, w) =>
         Json.mkObj [("env", Lean.toJson e.toString), ("witness", Lean.toJson w)])),
       ("state_safe", names ri.stateSafe), ("necessity", names ri.necessity),
       ("errors", Lean.toJson ri.errors)])),
-    ("obligations", Json.arr (r.obligations.map fun (n, ids, isR) => Json.mkObj [
-      ("name", Lean.toJson n.toString), ("ids", Lean.toJson ids), ("refines", Lean.toJson isR),
-      ("preserves", Lean.toJson (r.preserves.contains n))])),
+    ("obligations", Json.arr (r.obligations.map fun o => Json.mkObj [
+      ("name", Lean.toJson o.name.toString), ("ids", Lean.toJson o.ids),
+      ("refines", Lean.toJson (o.shape == .refines)), ("preserves", Lean.toJson (o.shape == .preserves))])),
     ("nondet", attrd r.nondets), ("deviation", attrd r.deviations), ("std_abs", attrd r.stdAbs),
     ("env_pre", attrd r.envPres), ("errors", Lean.toJson r.errors),
     ("warnings", Lean.toJson r.warnings), ("gaps", r.gaps)]

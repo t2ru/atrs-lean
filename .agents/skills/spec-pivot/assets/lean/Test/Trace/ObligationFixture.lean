@@ -568,11 +568,6 @@ theorem devLangB_nontrivial : Nontrivial devLangB := Test.Machine.Preserves.devL
 theorem v9_sameId : Refines spec (good.restrict devLangB) glue :=
   Refines.restrictConcrete Test.Machine.Preserves.good_refines _
 
-/-- 違反例: 2 つの差異 ID を 1 つの定数に束ねる。 -/
-@[deviation "D-908", "D-909"] def devTwo (r : Req) : Prop := r.lang = false
-
-theorem devTwo_nontrivial : Nontrivial devTwo := Test.Machine.Preserves.devLang_nontrivial
-
 /-- 正例: 必要な `devLang` に覆われる差異（被覆）。 -/
 @[deviation "D-910"] def devWeak (r : Req) : Prop := r.lang = false ∨ 50 < r.n
 
@@ -705,8 +700,6 @@ def noW (devs : List Lean.Name) : TypedEvidence := .pending devs ne!"必要性�
 @[gap_entry] def gD906 : Gap := preGap gid!"D-906" (.refuted ne![``devLang2] ne![``v9_noPinned_nec])
 /-- 違反: 偽の証明の定理 `obs2_needed` に `@[gap]` が無い（GK）。 -/
 @[gap_entry] def gD907 : Gap := obsGap gid!"D-907" (.refuted ne![``obsNaN] ne![``obs_needed, ``obs2_needed])
-/-- D-908 -/ @[gap_entry] def gD908 : Gap := preGap gid!"D-908" (noW [``devTwo])
-/-- D-909 -/ @[gap_entry] def gD909 : Gap := preGap gid!"D-909" (noW [``devTwo])
 /-- 被覆（`devLang` は偽を証明済みの D-901）。 -/
 @[gap_entry] def gD910 : Gap := preGap gid!"D-910" (.covered ne![``devWeak] ``devLang ne![``devWeak_covered])
 /-- 違反: 被覆が循環する（GK）。 -/

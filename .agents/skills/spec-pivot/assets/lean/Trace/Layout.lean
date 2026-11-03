@@ -28,17 +28,19 @@ open Trace.Attr
 
 open Lean
 
-/-- 違反、または明示した例外の 1 件。 -/
+/-- 違反の 1 件。 -/
 structure Item where
   name : Name
   module : Name
-  /-- 明示した例外の理由（違反では空）。 -/
-  reason : Array String := #[]
+
+/-- 明示した例外の 1 件（理由は 1 つ以上）。 -/
+structure ExceptionItem extends Item where
+  reason : Trace.Id.NEList String
 
 /-- 判定の結果。 -/
 structure Result where
   violations : Array Item := #[]
-  exceptions : Array Item := #[]
+  exceptions : Array ExceptionItem := #[]
   /-- 検査した定数の数。 -/
   checked : Nat := 0
   /-- 範囲のモジュール（環境の読み込みの順）と、それぞれで検査した定数の数。数が 0 のモジュールも含む。 -/
@@ -56,9 +58,9 @@ def ancestors (n : Name) : List Name :=
   | .str p _ | .num p _ => if p.isAnonymous then [] else p :: ancestors p
   | .anonymous => []
 
-/-- `n` 自身か、その祖先の定数に付いた `@[ns_exception]` の理由。 -/
-def exceptionOf (env : Environment) (n : Name) : Option (Array String) :=
-  (n :: ancestors n).findSome? (nsExceptionAttr.getParam? env ·)
+/-- `n` 自身か、その祖先の定数に付いた `@[ns_exception]` の理由（1 つ以上）。 -/
+def exceptionOf (env : Environment) (n : Name) : Option (Trace.Id.NEList String) :=
+  (n :: ancestors n).findSome? fun m => (strsOf nsExceptionAttr env m).bind (Trace.Id.NEList.ofList? ·.toList)
 
 /-- 定数を定義したモジュール。 -/
 def moduleOf? (env : Environment) (n : Name) : Option Name := do
@@ -111,38 +113,54 @@ def check (env : Environment) (roots : List Name) (exclude : List Name := []) : 
 /-- 同じモジュールで祖先も違反（または例外）の名前は、祖先の 1 件にまとめる（構築子・射影・自動生成の補題など）。
 同じモジュールの中だけでまとめるので、組ごとに行ってよい（1 つのモジュールは、合わせた結果では 1 つの組から来る）。 -/
 def Result.collapse (r : Result) : Result :=
-  let heads : NameMap Name := (r.violations ++ r.exceptions).foldl (fun s i => s.insert i.name i.module) {}
-  let top (xs : Array Item) := xs.filter fun i => !(ancestors i.name).any (heads.find? · == some i.module)
-  { r with violations := top r.violations, exceptions := top r.exceptions }
+  let heads : NameMap Name :=
+    (r.violations ++ r.exceptions.map (·.toItem)).foldl (fun s i => s.insert i.name i.module) {}
+  let isTop (i : Item) := !(ancestors i.name).any (heads.find? · == some i.module)
+  { r with violations := r.violations.filter isTop, exceptions := r.exceptions.filter (isTop ·.toItem) }
 
-/-- 組の子プロセスが返す 1 件（名前は文字列。環境の外へ持ち出すため）。 -/
+/-- 組の子プロセスが返す違反の 1 件（名前は文字列。環境の外へ持ち出すため）。 -/
 structure OutItem where
   name : String
   module : String
-  /-- 明示した例外の理由（違反では空）。 -/
-  reason : Array String := #[]
+
+/-- 組の子プロセスが返す例外の 1 件（理由は 1 つ以上）。 -/
+structure OutException extends OutItem where
+  reason : Trace.Id.NEList String
 
 /-- 組の子プロセスが返す結果。 -/
 structure GroupOut where
   /-- 範囲のモジュールと、それぞれで検査した定数の数（`Result.modules`）。 -/
   modules : Array (String × Nat) := #[]
   violations : Array OutItem := #[]
-  exceptions : Array OutItem := #[]
+  exceptions : Array OutException := #[]
 
-def Item.out (i : Item) : OutItem :=
-  { name := i.name.toString, module := i.module.toString, reason := i.reason }
+def Item.out (i : Item) : OutItem := { name := i.name.toString, module := i.module.toString }
+
+def ExceptionItem.out (i : ExceptionItem) : OutException := { i.toItem.out with reason := i.reason }
 
 def Result.out (r : Result) : GroupOut :=
   { modules := r.modules.map fun (m, k) => (m.toString, k),
     violations := r.violations.map (·.out), exceptions := r.exceptions.map (·.out) }
 
-/-- 1 件を JSON にする。 -/
+/-- 違反の 1 件を JSON にする（`reason` は空の配列）。 -/
 def OutItem.toJson (i : OutItem) : Json :=
-  Json.mkObj [("name", Lean.toJson i.name), ("module", Lean.toJson i.module), ("reason", Lean.toJson i.reason)]
+  Json.mkObj [("name", Lean.toJson i.name), ("module", Lean.toJson i.module), ("reason", Json.arr #[])]
+
+/-- 例外の 1 件を JSON にする。 -/
+def OutException.toJson (i : OutException) : Json :=
+  Json.mkObj [("name", Lean.toJson i.name), ("module", Lean.toJson i.module),
+    ("reason", Lean.toJson i.reason.toList)]
 
 def OutItem.fromJson? (j : Json) : Except String OutItem := do
-  return { name := ← j.getObjValAs? String "name", module := ← j.getObjValAs? String "module",
-           reason := ← j.getObjValAs? (Array String) "reason" }
+  let name ← j.getObjValAs? String "name"
+  let module ← j.getObjValAs? String "module"
+  return { name, module }
+
+def OutException.fromJson? (j : Json) : Except String OutException := do
+  let i ← OutItem.fromJson? j
+  let some reason := Trace.Id.NEList.ofList? (← j.getObjValAs? (List String) "reason")
+    | throw "an exception needs at least one reason"
+  return { i with reason }
 
 def GroupOut.toJson (g : GroupOut) : Json :=
   Json.mkObj [
@@ -155,7 +173,7 @@ def GroupOut.fromJson? (j : Json) : Except String GroupOut := do
   let modules ← (← j.getObjValAs? (Array Json) "modules").mapM fun m => do
     return (← m.getObjValAs? String "module", ← m.getObjValAs? Nat "checked")
   let violations ← (← j.getObjValAs? (Array Json) "violations").mapM OutItem.fromJson?
-  let exceptions ← (← j.getObjValAs? (Array Json) "exceptions").mapM OutItem.fromJson?
+  let exceptions ← (← j.getObjValAs? (Array Json) "exceptions").mapM OutException.fromJson?
   return { modules, violations, exceptions }
 
 /--
@@ -170,9 +188,9 @@ def mergeGroups (gs : Array GroupOut) : GroupOut × Nat := Id.run do
     let fresh := g.modules.filter fun (m, _) => !seen.contains m
     let names := fresh.map (·.1)
     checked := fresh.foldl (fun s (_, k) => s + k) checked
-    let keep (xs : Array OutItem) := xs.filter fun i => names.contains i.module
-    out := { modules := out.modules ++ fresh, violations := out.violations ++ keep g.violations,
-             exceptions := out.exceptions ++ keep g.exceptions }
+    let keep (i : OutItem) := names.contains i.module
+    out := { modules := out.modules ++ fresh, violations := out.violations ++ g.violations.filter keep,
+             exceptions := out.exceptions ++ g.exceptions.filter (keep ·.toOutItem) }
     seen := seen ++ names
   return (out, checked)
 

@@ -1,9 +1,11 @@
 import Lean
+import Trace.Id
 
 /-!
 # Trace.Attr
 
-追跡属性を定義する。引数は文字列リテラルの並びで、環境拡張に `Array String` として記録する。
+追跡属性を定義する。引数は文字列リテラルの並びで、付けた時点で属性ごとの型（`Trace.Id` の ID・文書の節・ロケータ）に
+解析し、環境拡張にその型の値として記録する（不正な状態を表現できない型。ADR bf1b）。形式に合わない引数は、付けた時点で誤りになる。
 属性を付けた定義と同じモジュールでは使えないため、使う側は別のモジュールに置く。
 
 | 属性 | 付ける対象 | 引数 |
@@ -34,8 +36,8 @@ syntax (name := source) "source" ppSpace str (atomic(", " str))* : attr
 syntax (name := target) "target" ppSpace str (atomic(", " str))* : attr
 /-- `@[obligation "<ID>", …]` -/
 syntax (name := obligation) "obligation" ppSpace str (atomic(", " str))* : attr
-/-- `@[deviation "<ID>", …]` -/
-syntax (name := deviation) "deviation" ppSpace str (atomic(", " str))* : attr
+/-- `@[deviation "<ID>"]`（ID は 1 つだけ） -/
+syntax (name := deviation) "deviation" ppSpace str : attr
 /-- `@[gap "<ID>", …]` -/
 syntax (name := gap) "gap" ppSpace str (atomic(", " str))* : attr
 /-- `@[nondet "<ID>", …]` -/
@@ -63,60 +65,108 @@ partial def collectStrLits (stx : Syntax) : Array Syntax :=
 引数の区切りの `,` は、次が文字列リテラルのときだけ引数の区切りとみなす（`atomic`）。
 そのため `@[spec_doc "…", no_source "…"]` のように、他の属性と並べて書ける。
 -/
-def parseStrArgs (attrName : Name) (stx : Syntax) : AttrM (Array String) := do
+def parseStrArgs (attrName : Name) (stx : Syntax) : AttrM (Array (Syntax × String)) := do
   let mut out := #[]
   for a in collectStrLits stx do
     let s := (a.isStrLit?).getD ""
     if s.isEmpty then throwErrorAt a "@[{attrName}]: empty string argument"
-    out := out.push s
+    out := out.push (a, s)
   if out.isEmpty then throwError "@[{attrName}]: at least one argument is required"
   return out
 
-/-- 文字列引数を持つ追跡属性を登録する。 -/
-def registerTraceAttr (attrName : Name) (descr : String) (ref : Name) :
-    IO (ParametricAttribute (Array String)) :=
+open Trace.Id in
+/-- 文字列引数を、属性の型 `α` の値に解析する。 -/
+def parseArgs (α : Type) [OfString? α] (attrName : Name) (stx : Syntax) : AttrM (Array α) := do
+  let mut out := #[]
+  for (a, s) in ← parseStrArgs attrName stx do
+    match OfString?.ofString? s with
+    | some x => out := out.push x
+    | none => throwErrorAt a "@[{attrName}]: {s.quote} is not {OfString?.form α}"
+  return out
+
+open Trace.Id in
+/-- 型 `α` の引数の並びを持つ追跡属性を登録する。 -/
+def registerTraceAttr (α : Type) [OfString? α] [Inhabited α] (attrName : Name) (descr : String) (ref : Name) :
+    IO (ParametricAttribute (Array α)) :=
   registerParametricAttribute {
     name := attrName
     descr := descr
     ref := ref
-    getParam := fun _ stx => parseStrArgs attrName stx
+    getParam := fun _ stx => parseArgs α attrName stx
   }
 
-initialize sourceAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `source "移植元ロケータと検査済みハッシュ" `Trace.Attr.sourceAttr
-initialize targetAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `target "移植先ロケータと検査済みハッシュ" `Trace.Attr.targetAttr
-initialize obligationAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.Attr.obligationAttr
-initialize deviationAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `deviation "既知差異の ID（D-NNN / T-NNN）" `Trace.Attr.deviationAttr
-initialize gapAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `gap "ギャップが生じる定義の印（D-NNN / T-NNN）" `Trace.Attr.gapAttr
-initialize nondetAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `nondet "Spec の非決定性の ID（N-NNN）" `Trace.Attr.nondetAttr
-initialize stdAbsAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `std_abs "標準の抽象化の表の節（<path>#<anchor>）" `Trace.Attr.stdAbsAttr
-initialize kernelAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `kernel "標準の抽象化の核の表の節（<path>#<anchor>）" `Trace.Attr.kernelAttr
-initialize envPreAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `env_pre "入口の環境の前提の ID（MD-N など）" `Trace.Attr.envPreAttr
-initialize specDocAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.Attr.specDocAttr
-initialize noSourceAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `no_source "移植元に対応が無い理由" `Trace.Attr.noSourceAttr
-/-- `layout-check` の例外（E3）。`trace-dump` の属性には含めない（追跡の対象ではないため）。 -/
-initialize nsExceptionAttr : ParametricAttribute (Array String) ←
-  registerTraceAttr `ns_exception "モジュール名の下に置けない理由" `Trace.Attr.nsExceptionAttr
+open Trace.Id in
+/-- 型 `α` の引数を 1 つだけ持つ追跡属性を登録する。 -/
+def registerTraceAttr1 (α : Type) [OfString? α] [Inhabited α] (attrName : Name) (descr : String) (ref : Name) :
+    IO (ParametricAttribute α) :=
+  registerParametricAttribute {
+    name := attrName
+    descr := descr
+    ref := ref
+    getParam := fun _ stx => do
+      let xs ← parseArgs α attrName stx
+      let #[x] := xs | throwError "@[{attrName}]: exactly one argument is required"
+      return x
+  }
 
-/-- 追跡属性の一覧（JSON のキー名と属性）。キー名は属性名と同じ。 -/
-def traceAttrs : List (String × ParametricAttribute (Array String)) :=
-  [("source", sourceAttr), ("target", targetAttr), ("obligation", obligationAttr),
-   ("deviation", deviationAttr), ("gap", gapAttr), ("nondet", nondetAttr), ("std_abs", stdAbsAttr),
-   ("kernel", kernelAttr), ("env_pre", envPreAttr),
-   ("spec_doc", specDocAttr), ("no_source", noSourceAttr)]
+open Trace.Id
+
+instance : Inhabited NEString := ⟨⟨"_", by decide⟩⟩
+instance : Inhabited GapId := ⟨⟨"D-000", by decide⟩⟩
+instance : Inhabited ObligationId := ⟨⟨"ABS-000", by decide⟩⟩
+instance : Inhabited NondetId := ⟨⟨"N-000", by decide⟩⟩
+instance : Inhabited EnvPreId := ⟨⟨"X", by decide⟩⟩
+instance : Inhabited DocAnchor := ⟨⟨"x.md", by decide⟩⟩
+instance : Inhabited Locator := ⟨⟨"x:x@x", by decide⟩⟩
+
+initialize sourceAttr : ParametricAttribute (Array Locator) ←
+  registerTraceAttr Locator `source "移植元ロケータと検査済みハッシュ" `Trace.Attr.sourceAttr
+initialize targetAttr : ParametricAttribute (Array Locator) ←
+  registerTraceAttr Locator `target "移植先ロケータと検査済みハッシュ" `Trace.Attr.targetAttr
+initialize obligationAttr : ParametricAttribute (Array ObligationId) ←
+  registerTraceAttr ObligationId `obligation "証明課題の ID（ABS-NNN / REF-NNN / SPEC-NNN）" `Trace.Attr.obligationAttr
+initialize deviationAttr : ParametricAttribute GapId ←
+  registerTraceAttr1 GapId `deviation "既知差異の ID（D-NNN / T-NNN。1 つだけ）" `Trace.Attr.deviationAttr
+initialize gapAttr : ParametricAttribute (Array GapId) ←
+  registerTraceAttr GapId `gap "ギャップが生じる定義の印（D-NNN / T-NNN）" `Trace.Attr.gapAttr
+initialize nondetAttr : ParametricAttribute (Array NondetId) ←
+  registerTraceAttr NondetId `nondet "Spec の非決定性の ID（N-NNN）" `Trace.Attr.nondetAttr
+initialize stdAbsAttr : ParametricAttribute (Array DocAnchor) ←
+  registerTraceAttr DocAnchor `std_abs "標準の抽象化の表の節（<path>#<anchor>）" `Trace.Attr.stdAbsAttr
+initialize kernelAttr : ParametricAttribute (Array DocAnchor) ←
+  registerTraceAttr DocAnchor `kernel "標準の抽象化の核の表の節（<path>#<anchor>）" `Trace.Attr.kernelAttr
+initialize envPreAttr : ParametricAttribute (Array EnvPreId) ←
+  registerTraceAttr EnvPreId `env_pre "入口の環境の前提の ID（MD-N など）" `Trace.Attr.envPreAttr
+initialize specDocAttr : ParametricAttribute (Array DocAnchor) ←
+  registerTraceAttr DocAnchor `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.Attr.specDocAttr
+initialize noSourceAttr : ParametricAttribute (Array NEString) ←
+  registerTraceAttr NEString `no_source "移植元に対応が無い理由" `Trace.Attr.noSourceAttr
+/-- `layout-check` の例外（E3）。`trace-dump` の属性には含めない（追跡の対象ではないため）。 -/
+initialize nsExceptionAttr : ParametricAttribute (Array NEString) ←
+  registerTraceAttr NEString `ns_exception "モジュール名の下に置けない理由" `Trace.Attr.nsExceptionAttr
+
+/-- 引数の並びを文字列で引く。 -/
+def strsOf {α : Type} [Inhabited α] [ToString α] (attr : ParametricAttribute (Array α)) (env : Environment)
+    (decl : Name) : Option (Array String) :=
+  (attr.getParam? env decl).map (·.map toString)
+
+/-- `@[deviation]` の ID。 -/
+def deviationOf? (env : Environment) (decl : Name) : Option GapId := deviationAttr.getParam? env decl
+
+/-- 属性を持つか。 -/
+def hasAttr {α : Type} [Inhabited α] (attr : ParametricAttribute α) (env : Environment) (n : Name) : Bool :=
+  (attr.getParam? env n).isSome
+
+/-- 追跡属性の一覧（JSON のキー名と、引数を文字列で引く関数）。キー名は属性名と同じ。 -/
+def traceAttrs : List (String × (Environment → Name → Option (Array String))) :=
+  [("source", strsOf sourceAttr), ("target", strsOf targetAttr), ("obligation", strsOf obligationAttr),
+   ("deviation", fun env n => (deviationOf? env n).map fun i => #[toString i]), ("gap", strsOf gapAttr),
+   ("nondet", strsOf nondetAttr), ("std_abs", strsOf stdAbsAttr),
+   ("kernel", strsOf kernelAttr), ("env_pre", strsOf envPreAttr),
+   ("spec_doc", strsOf specDocAttr), ("no_source", strsOf noSourceAttr)]
 
 /-- 定義に付いた追跡属性を、属性名と引数の組で返す（`traceAttrs` の順）。 -/
 def attrsOf (env : Environment) (decl : Name) : List (String × Array String) :=
-  traceAttrs.filterMap fun (key, attr) => (attr.getParam? env decl).map (key, ·)
+  traceAttrs.filterMap fun (key, get) => (get env decl).map (key, ·)
 
 end Trace.Attr

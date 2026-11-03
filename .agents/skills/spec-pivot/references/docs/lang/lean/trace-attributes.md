@@ -16,7 +16,8 @@ generated:
 
 | モジュール | 内容 |
 | --- | --- |
-| `Trace.Attr` | 文字列引数の追跡属性 |
+| `Trace.Id` | 追跡の値の型（ID・空でない文字列と列・文書の節・ロケータ）と、その字面のマクロ |
+| `Trace.Attr` | 追跡属性（引数を、付けた時点で `Trace.Id` の型に解析する） |
 | `Trace.Gap` | ギャップの登録簿（`Trace.Gap`・`@[gap_entry]`） |
 | `Trace.Dump` | `trace-dump` の本体 |
 | `Trace.Obligation` | `obligation-check` の本体（TR-G の Lean 側と GK） |
@@ -29,19 +30,19 @@ generated:
 ## 属性
 
 `Trace` 名前空間（どのモデルにも依存しない基盤）に、次の属性を定義する。
-引数は文字列リテラルの並びとする。属性は環境拡張（`registerParametricAttribute` 等）に記録し、`trace-dump` が読み出せるようにする。
+引数は文字列リテラルの並びとする。付けた時点で、属性ごとの型（下の表の「引数」の形式。`Trace.Id`）に解析し、その型の値として環境拡張（`registerParametricAttribute`）に記録する。形式に合わない引数は、付けた時点で誤りになる（不正な状態を表現できない型。[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)）。`trace-dump` は文字列に戻して出す。
 
 | 属性 | 付ける対象 | 引数 |
 | --- | --- | --- |
-| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版） |
-| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
+| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版）。型 `Locator`（`<scheme>:<locator>@<pin>`） |
+| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ。型 `Locator` |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理と補題、`Spec` 自身の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
-| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Preserves.anyOf` で並べる） |
+| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。構文が 1 つだけを受ける（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Preserves.anyOf` で並べる） |
 | `@[gap "<ID>", …]` | ギャップの生じる `Spec`・`SourceModel`・`TargetModel` の定義（箇所の印）。`D-NNN` は `Spec`・`SourceModel`、`T-NNN` は `Spec`・`TargetModel` に付ける | `D-NNN` / `T-NNN`。宣言（`@[gap_entry]`）のある ID |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型（`Machine.ofChoice` の選択の型の葉） | `N-NNN` |
-| `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節 |
+| `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節。型 `DocAnchor`（`<path>.md` か `<path>.md#<anchor>`。`kernel`・`spec_doc` も同じ） |
 | `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係。`KernelIs` の K） | α・β の表の節 |
-| `@[env_pre "<ID>"]` | 入口の機械の環境の前提（`TotalUnder` の Env） | `MD-N` など |
+| `@[env_pre "<ID>"]` | 入口の機械の環境の前提（`TotalUnder` の Env） | `MD-N`・`CFG` など（英大文字と、任意の `-` と数字） |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
 | `@[ns_exception "<理由>"]` | モジュール名の下に置けない宣言（`layout-check` の例外 E3。[rules.md](rules.md#モジュールと名前空間)）。`trace-dump` の属性には出さない | 技術的な必要 |

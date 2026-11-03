@@ -601,14 +601,14 @@ def gapEntries (env : Environment) : Array (Name × Except String Gap) :=
 def gapMarkers (env : Environment) : Array (Name × Array String) := Id.run do
   let mut out := #[]
   for (n, _) in env.constants.toList do
-    if let some ids := gapAttr.getParam? env n then out := out.push (n, ids)
+    if let some ids := strsOf gapAttr env n then out := out.push (n, ids)
   return out.qsort fun a b => a.1.toString < b.1.toString
 
 /-- `@[deviation]` を付けた定数（名前順）と、その ID。 -/
 def deviationConsts (env : Environment) : Array (Name × Array String) := Id.run do
   let mut out := #[]
   for (n, _) in env.constants.toList do
-    if let some ids := deviationAttr.getParam? env n then out := out.push (n, ids)
+    if let some i := deviationOf? env n then out := out.push (n, #[toString i])
   return out.qsort fun a b => a.1.toString < b.1.toString
 
 /-- 登録の宣言の docstring（Markdown）。 -/
@@ -628,7 +628,7 @@ def gapsJson (env : Environment) (moduleOf : Name → String) : Json := Id.run d
   let wTaskOf (g : Gap) : Option String :=
     match g.plannedW with
     | some w => some w
-    | none => g.witnesses.findSome? fun t => (obligationAttr.getParam? env t).bind (·[0]?)
+    | none => g.witnesses.findSome? fun t => (strsOf obligationAttr env t).bind (·[0]?)
   let markers := gapMarkers env
   let devs := deviationConsts env
   let mut out := #[]

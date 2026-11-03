@@ -16,8 +16,6 @@ structure NEString where
   ne : val ≠ "" := by simp
   deriving DecidableEq, Repr
 
-instance : ToString NEString := ⟨NEString.val⟩
-
 /-- 空でない列（先頭と残り）。 -/
 structure NEList (α : Type) where
   head : α
@@ -69,16 +67,6 @@ inductive GapSide where
 /-- ID の側。 -/
 def GapId.side (i : GapId) : GapSide := if i.val.startsWith "T-" then .target else .source
 
-/-- 側の証明の層。 -/
-def GapSide.proofLayer : GapSide → String
-  | .source => "Abstraction"
-  | .target => "Refinement"
-
-/-- 側のモデルの層（`Spec` と、側のモデル）。 -/
-def GapSide.modelLayers : GapSide → List String
-  | .source => ["Spec", "SourceModel"]
-  | .target => ["Spec", "TargetModel"]
-
 /-- `ABS-NNN` / `REF-NNN` / `SPEC-NNN` の形か。 -/
 def ObligationId.valid (s : String) : Bool :=
   match s.toList with
@@ -112,6 +100,104 @@ structure BacklogId where
   val : String
   wf : BacklogId.valid val = true := by decide
   deriving DecidableEq, Repr
+
+/-- `N-NNN` の形か。 -/
+def NondetId.valid (s : String) : Bool :=
+  match s.toList with
+  | 'N' :: '-' :: ds => digits3 ds
+  | _ => false
+
+/-- `Spec` の非決定性の ID（`N-NNN`）。 -/
+structure NondetId where
+  val : String
+  wf : NondetId.valid val = true := by decide
+  deriving DecidableEq, Repr
+
+/-- 英大文字か。 -/
+def isUpper (c : Char) : Bool := 'A' ≤ c && c ≤ 'Z'
+
+/-- 英大文字 1 文字以上と、任意の `-` と数字 1 文字以上（`MD-1`・`CFG`）の形か。 -/
+def EnvPreId.valid (s : String) : Bool :=
+  let cs := s.toList
+  let pre := cs.takeWhile isUpper
+  let rest := cs.drop pre.length
+  !pre.isEmpty && match rest with
+    | [] => true
+    | '-' :: ds => !ds.isEmpty && ds.all Char.isDigit
+    | _ => false
+
+/-- 入口の環境の前提の ID（`MD-N`・`CFG` など）。 -/
+structure EnvPreId where
+  val : String
+  wf : EnvPreId.valid val = true := by decide
+  deriving DecidableEq, Repr
+
+/-- 文字の列が `.md` で終わり、その前が空でないか。 -/
+def endsWithMd (cs : List Char) : Bool :=
+  match cs.reverse with
+  | 'd' :: 'm' :: '.' :: _ :: _ => true
+  | _ => false
+
+/-- 文書のパス（`.md` で終わる）と、任意のアンカー（`#` の後。空でない）の形か。 -/
+def DocAnchor.valid (s : String) : Bool :=
+  let cs := s.toList
+  let path := cs.takeWhile (· != '#')
+  match cs.drop path.length with
+  | [] => endsWithMd path
+  | _ :: anchor => endsWithMd path && !anchor.isEmpty && !anchor.contains '#'
+
+/-- 文書の節（`<path>.md` か `<path>.md#<anchor>`）。 -/
+structure DocAnchor where
+  val : String
+  wf : DocAnchor.valid val = true := by decide
+  deriving DecidableEq, Repr
+
+/-- ロケータと照合の記録（`<scheme>:<locator>@<pin>`。pin は検査済みハッシュか依存の版）の形か。
+pin は最後の `@` の後で、空でなく `@` を含まない。scheme は空でなく、`:` の後のロケータも空でない。 -/
+def Locator.valid (s : String) : Bool :=
+  let rcs := s.toList.reverse
+  let pin := rcs.takeWhile (· != '@')
+  match rcs.drop pin.length with
+  | [] => false
+  | _ :: rloc =>
+    let loc := rloc.reverse
+    let scheme := loc.takeWhile (· != ':')
+    !pin.isEmpty && !scheme.isEmpty && scheme.length + 1 < loc.length
+
+/-- 移植元・移植先のロケータと照合の記録。 -/
+structure Locator where
+  val : String
+  wf : Locator.valid val = true := by decide
+  deriving DecidableEq, Repr
+
+instance : ToString GapId := ⟨GapId.val⟩
+instance : ToString ObligationId := ⟨ObligationId.val⟩
+instance : ToString BacklogId := ⟨BacklogId.val⟩
+instance : ToString NondetId := ⟨NondetId.val⟩
+instance : ToString EnvPreId := ⟨EnvPreId.val⟩
+instance : ToString DocAnchor := ⟨DocAnchor.val⟩
+instance : ToString Locator := ⟨Locator.val⟩
+
+/-- 文字列から ID を作る（形式に合わなければ無し）。属性の引数の解析と、式からの読み取りに使う。 -/
+class OfString? (α : Type) where
+  /-- 期待する形式（誤りの文に使う） -/
+  form : String
+  ofString? : String → Option α
+
+instance : OfString? NEString := ⟨"a non-empty string", fun s => if h : s ≠ "" then some ⟨s, h⟩ else none⟩
+instance : OfString? GapId := ⟨"D-NNN / T-NNN", fun s => if h : GapId.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? ObligationId :=
+  ⟨"ABS-NNN / REF-NNN / SPEC-NNN", fun s => if h : ObligationId.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? BacklogId := ⟨"a UUID", fun s => if h : BacklogId.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? NondetId := ⟨"N-NNN", fun s => if h : NondetId.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? EnvPreId :=
+  ⟨"an upper-case ID with an optional number (MD-1, CFG)", fun s => if h : EnvPreId.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? DocAnchor :=
+  ⟨"<path>.md or <path>.md#<anchor>", fun s => if h : DocAnchor.valid s = true then some ⟨s, h⟩ else none⟩
+instance : OfString? Locator :=
+  ⟨"<scheme>:<locator>@<pin>", fun s => if h : Locator.valid s = true then some ⟨s, h⟩ else none⟩
+
+instance : ToString NEString := ⟨NEString.val⟩
 
 /-- 空でない文字列の字面。 -/
 syntax:max "ne!" str : term
