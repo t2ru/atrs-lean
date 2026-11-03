@@ -137,14 +137,31 @@ structure MembershipNumber where
 /-- 会員番号の形式: 数字 10 文字。 -/
 def MembershipNumber.WellFormed (n : MembershipNumber) : Prop := n.val.length = 10 ∧ n.val.all isDigit = true
 
-/-- 予約番号。 -/
-@[spec_doc "docs/spec/domain-model.md#コード値"]
+/-- 予約番号。採番の値で持つ（上限を持たない。ADR 6d36）。表記 `val` は 10 桁にゼロ埋めした十進文字列で、採番が
+10^10 以上なら 11 桁以上になる（[Source] のシーケンスは上限で循環する。既知差異 D-009）。どの採番の値も予約番号として
+妥当なので、型は不正な値を持たない。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値", gap "D-009"]
 structure ReserveNo where
-  val : String
+  num : Nat
   deriving DecidableEq, Repr
 
-/-- 予約番号の形式: 数字 10 文字。 -/
-def ReserveNo.WellFormed (n : ReserveNo) : Prop := n.val.length = 10 ∧ n.val.all isDigit = true
+/-- 予約番号の表記: 10 桁にゼロ埋めした十進文字列。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def ReserveNo.val (n : ReserveNo) : String := Spec.Prim.Format.padNat 10 n.num
+
+/-- 予約番号の表記を読む。表記 `val` の形（10 桁以上のゼロ埋めの十進文字列）でなければ無し。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def ReserveNo.ofString? (s : String) : Option ReserveNo :=
+  let n : ReserveNo := ⟨s.toList.foldl (fun acc c => acc * 10 + (c.toNat - 48)) 0⟩
+  if n.val = s then some n else none
+
+/-- 読めた予約番号の表記は、読んだ文字列そのもの。 -/
+theorem ReserveNo.val_of_ofString? {s : String} {n : ReserveNo} (h : ReserveNo.ofString? s = some n) : n.val = s := by
+  unfold ReserveNo.ofString? at h
+  by_cases hv : (⟨s.toList.foldl (fun acc c => acc * 10 + (c.toNat - 48)) 0⟩ : ReserveNo).val = s
+  · simp only [hv, ite_true, Option.some.injEq] at h
+    subst h; exact hv
+  · simp only [hv, ite_false, reduceCtorEq] at h
 
 /-- カード種別コード。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
@@ -165,7 +182,6 @@ instance (c : AirportCd) : Decidable c.WellFormed := by unfold AirportCd.WellFor
 instance (n : FlightName) : Decidable n.WellFormed := by unfold FlightName.WellFormed; infer_instance
 instance (n : MembershipNumber) : Decidable n.WellFormed := by
   unfold MembershipNumber.WellFormed; infer_instance
-instance (n : ReserveNo) : Decidable n.WellFormed := by unfold ReserveNo.WellFormed; infer_instance
 instance (c : CreditTypeCd) : Decidable c.WellFormed := by unfold CreditTypeCd.WellFormed; infer_instance
 
 /-! ## エンティティ -/

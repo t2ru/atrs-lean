@@ -96,5 +96,11 @@ Chosen option: "L1+L2+L3", because プロジェクトオーナーが選び、内
 ### 段の記録
 
 * **前段（スキルの側）**: スキルの backlog d3fd の S1〜S4 で、ギャップの登録簿 `Abstraction.Gap` の 41 件を和型の `Trace.Gap` に書き換え（生成表は不変）、`LocalDate`・`LocalTime`・`double` の写しの妥当性・正規形の型に合わせて `Abstraction` の字面と補題を直した（[Spec] の暦日から `LocalDate` への `Abstraction.Prim.Date.jOfDate`）。運賃の double の解析（ADR e9bc）の定理の主張は変わらない。変わった `SourceModel` の定義の照合の記録は `trace rehash` で更新した。
-* **検査の段階導入**: スキルの検査 MISU-1 が見つける `Spec` の 13 件（コード値 6 型とその `WellFormed` 5 件、`Query.Valid`・`Request.Valid`）のうち、`PasswordHash` は外部（パスワードエンコーダのポート）の不透明な値なので `@[raw_input]` にした。`Query`・`Request`（機械の入力）も `@[raw_input]` にした（その `Valid` は PRE）。残る 10 件（コード値 5 型とその `WellFormed`）は `trace/project.json` の `lean.misu_pending` に挙げ、L1・L2 の段で 1 件ずつ外す。
-* **未決（プロジェクトオーナーの判断を待つ）**: `ReserveNo` の 10 桁の形式と、上限の無い採番（D-009）。
+* **検査の段階導入**: スキルの検査 MISU-1 が見つける `Spec` の 13 件（コード値 6 型とその `WellFormed` 5 件、`Query.Valid`・`Request.Valid`）のうち、`PasswordHash` は外部（パスワードエンコーダのポート）の不透明な値なので `@[raw_input]` にした。`Query`・`Request`（機械の入力）も `@[raw_input]` にした（その `Valid` は PRE）。残る 10 件（コード値 5 型とその `WellFormed`。うち `ReserveNo` の 2 件は下の決定で外した）は `trace/project.json` の `lean.misu_pending` に挙げ、L1・L2 の段で 1 件ずつ外す。
+* **`ReserveNo` の決定（プロジェクトオーナー、案 A）**: 10 桁の形式と上限の無い採番（D-009）がぶつかる件は、次の 4 案から A を選んだ。
+  * A: 予約番号を採番の値（`num : Nat`）で持ち、10 桁のゼロ埋めの表記は関数 `ReserveNo.val` で与える。`Spec` の振る舞いは変えず、10 桁を超えたときの [Source] との違いは D-009 に残す。
+  * B: 10 桁の型にし、`Spec` の採番に上限を設ける（上限での振る舞いを新たに決める）。
+  * C: 10 桁の型にし、「採番が上限未満」を予約の PRE に入れる（D-009 の一部を PRE の外に付け替える）。
+  * D: いまのまま（MISU の指示に反する）。
+
+  A を選んだのは、型が表す値と `Spec` が作りうる値が一致し、仕様の振る舞いを変えないからである。表記を読む `ReserveNo.ofString?` は表記の形（10 桁以上のゼロ埋めの十進文字列）でない文字列を拒む。DB の行から写す α（`Abstraction.World.Alpha`）と予約確定の出力の α（`Abstraction.Reserve.Alpha.aoR`）は、これで表記を読む。読めない表記は D-027（表せない DB の値）に当たる。予約番号の書式の補題（`Abstraction.Reserve.Keys`・`Register`・`Insert`・`RegisterRun`・`Registration`・`ReserveRun`）を、表記 `val` についての主張と、表記を読むと元に戻ること（`Keys.ofString?_val`）で直した。使われていなかった述語 `ReserveNo.WellFormed` は除いた。検査 MISU-1 の段階導入の一覧から `ReserveNo` を外した（残り 8 件）。

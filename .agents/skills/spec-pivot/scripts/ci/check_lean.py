@@ -221,7 +221,7 @@ RAW_RE = re.compile(r"@\[[^\]]*\braw_input\b[^\]]*\]\s*(?:/-[\s\S]*?-/\s*)?$")
 
 
 def misu_violations(raw: str, code: str, module: str, pending: set):
-    """MISU-1（spec-pivot の ADR bf1b）: `Spec` で、証明フィールドの無い単一の `String`・`Nat` を包む `structure` と、
+    """MISU-1（spec-pivot の ADR bf1b）: `Spec` で、証明フィールドの無い単一の `String` を包む `structure` と、
     型の外の `T.WellFormed`・`T.Valid`。`@[raw_input "<理由>"]` を付けた型と、適用先の段階導入の一覧 `pending`
     （`trace/project.json` の `lean.misu_pending`。完全名）は除く。"""
     found = []
@@ -231,7 +231,7 @@ def misu_violations(raw: str, code: str, module: str, pending: set):
     for m in STRUCT_RE.finditer(code):
         name = m.group(1)
         fields = [f for f in FIELD_RE.findall(m.group(2)) if not f[0].startswith("--")]
-        if len(fields) != 1 or fields[0][1].strip() not in ("String", "Nat", "Int"):
+        if len(fields) != 1 or fields[0][1].strip() != "String":
             continue
         if name in raw_types or (prefix + name) in pending or name in pending:
             continue

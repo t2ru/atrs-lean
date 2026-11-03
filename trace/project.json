@@ -13,12 +13,10 @@
         "Spec.Model.AirportCd",
         "Spec.Model.FlightName",
         "Spec.Model.MembershipNumber",
-        "Spec.Model.ReserveNo",
         "Spec.Model.CreditTypeCd",
         "Spec.Model.AirportCd.WellFormed",
         "Spec.Model.FlightName.WellFormed",
         "Spec.Model.MembershipNumber.WellFormed",
-        "Spec.Model.ReserveNo.WellFormed",
         "Spec.Model.CreditTypeCd.WellFormed"
       ]
     }

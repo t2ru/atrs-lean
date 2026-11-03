@@ -175,8 +175,8 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         intro x hx e
         obtain ⟨m, hm', hxm⟩ := hres x hx
         rw [hq1] at hm'
-        have : Spec.Port.World.reserveNoOf m = Spec.Port.World.reserveNoOf w.sequences.reserve := by
-          rw [← hxm]; exact congrArg Spec.Model.ReserveNo.mk e
+        have : (Spec.Port.World.reserveNoOf m).val = (Spec.Port.World.reserveNoOf w.sequences.reserve).val := by
+          rw [← hxm]; exact e
         have := Abstraction.Reserve.Keys.reserveNoOf_inj this
         omega
       have hmem0 : ∀ str, M0.membershipNumber = some str → str ≠ "" →
@@ -201,7 +201,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         rw [List.length_map]; exact Abstraction.Reserve.Validate.forall₂_length hvc
       refine Hoare.bind' (P := fun s => s = s2)
         (Hoare.conseq (flights_hoare (D := s2.db) (rfn := w.sequences.reserveFlight) (pn := w.sequences.passenger)
-          (ps := qs) (no := (Spec.Port.World.reserveNoOf w.sequences.reserve).val) hlenL ?_ ?_ ?_)
+          (ps := qs) (rn := Spec.Port.World.reserveNoOf w.sequences.reserve) hlenL ?_ ?_ ?_)
           (fun s' h => ?_) (fun _ _ h => h) (fun e s' h => ⟨h.1, .inl h.2⟩)) (fun _ => ?_) s2 rfl
       · intro j x k hx hk D' hsfD hspD hsgD hrfD hpD hflD hresD hmemD
         rw [List.getElem?_map] at hx

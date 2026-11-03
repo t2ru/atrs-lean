@@ -162,7 +162,7 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
 - **述語のまま残すもの**: 機械の PRE・INV（B メソッドの意味論）、互いに独立な入力の間の関係（状態とマスタの外部キーなど）、環境の全体にわたる性質（宣言の書き方・名前の解決・docstring・登録簿の ID の重複。obligation-check・GK・`trace check` が検査する）、評価せずに式から読む値の字面の形。
 - **字面**: 証明フィールドは既定 `by decide` にし、字面用のマクロ（例: `gid!"D-001"`）を用意する。生成器はそれを出す。大きな表の検査は、真偽値の検査の正しさの定理（`validB_sound` の形）と `decide +kernel` で速くする。
 - **α**: 検証済みの型を作る α は、具体側の不変条件の下で証明を渡し、外では既定の値に写してよい（`dite`）。抽象側の型で表せない具体側の値は、前提型の差異（具体側の入力・状態）である。
-- **検査**: `scripts/ci/check_lean.py` の MISU-1 は、`Spec` で、証明フィールドの無い単一の `String`・`Nat`・`Int` を包む `structure` と、型 `T` の外の `T.WellFormed`・`T.Valid` を誤りにする。`@[raw_input]` を付けた型（とその `Valid`）は除く。型を移す途中の名前は、適用先の `trace/project.json` の `lean.misu_pending`（`names` と、移す作業項目 `backlog`）に挙げて段階導入する。名前空間の中で `structure Valid` と書いた述語は見つけないので、型の棚卸しで補う。
+- **検査**: `scripts/ci/check_lean.py` の MISU-1 は、`Spec` で、証明フィールドの無い単一の `String` を包む `structure`（形式の決まった文字列の兆候。どの値も妥当な番号を包む `Nat` は対象外）と、型 `T` の外の `T.WellFormed`・`T.Valid` を誤りにする。`@[raw_input]` を付けた型（とその `Valid`）は除く。型を移す途中の名前は、適用先の `trace/project.json` の `lean.misu_pending`（`names` と、移す作業項目 `backlog`）に挙げて段階導入する。名前空間の中で `structure Valid` と書いた述語は見つけないので、型の棚卸しで補う。
 
 ## 命名
 

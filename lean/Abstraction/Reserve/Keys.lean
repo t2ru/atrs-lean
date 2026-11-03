@@ -50,30 +50,40 @@ theorem toString_toList (n : Nat) : (toString n).toList = Nat.toDigits 10 n := b
   simp [toString, Nat.repr]
 
 /-- 10 桁ゼロ埋めの十進文字列は単射（予約番号の書式）。 -/
-theorem reserveNoOf_inj {n m : Nat} (h : Spec.Port.World.reserveNoOf n = Spec.Port.World.reserveNoOf m) : n = m := by
-  simp only [Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.mk.injEq, Spec.Prim.Format.padNat] at h
+theorem reserveNoOf_inj {n m : Nat} (h : (Spec.Port.World.reserveNoOf n).val = (Spec.Port.World.reserveNoOf m).val) :
+    n = m := by
+  simp only [Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat] at h
   have h' := congrArg (fun s => decode s.toList) h
   simp only [String.toList_append, String.toList_ofList, decode_zeros, toString_toList, decode_toDigits] at h'
   exact h'
 
 
+/-- 予約番号の表記を読むと、元の予約番号に戻る。 -/
+theorem ofString?_val (n : Spec.Model.ReserveNo) : Spec.Model.ReserveNo.ofString? n.val = some n := by
+  have hd : decode n.val.toList = n.num := by
+    simp only [Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, String.toList_append, String.toList_ofList,
+      decode_zeros, toString_toList, decode_toDigits]
+  unfold Spec.Model.ReserveNo.ofString?
+  simp only [show (⟨n.val.toList.foldl (fun acc c => acc * 10 + (c.toNat - 48)) 0⟩ : Spec.Model.ReserveNo) = n from by
+    cases n; simp only [Spec.Model.ReserveNo.mk.injEq]; exact hd, ite_true]
+
 theorem reservationOfRow_no {r : ReservationRow} {fs : List Spec.Model.ReserveFlight} {R : Spec.Model.Reservation}
-    (h : reservationOfRow r fs = some R) : R.reserveNo = ⟨r.reserveNo.val⟩ ∧ R.reserveFlights = fs := by
+    (h : reservationOfRow r fs = some R) : R.reserveNo.val = r.reserveNo.val ∧ R.reserveFlights = fs := by
   simp only [reservationOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-  obtain ⟨_, -, _, -, _, -, _, -, rfl⟩ := h
-  exact ⟨rfl, rfl⟩
+  obtain ⟨_, -, _, -, _, -, _, -, _, hrn, rfl⟩ := h
+  exact ⟨Spec.Model.ReserveNo.val_of_ofString? hrn, rfl⟩
 
 theorem reserveFlightOfRow_no {r : ReserveFlightRow} {ps : List Spec.Model.PassengerRecord}
     {F : Spec.Model.ReserveFlight} (h : reserveFlightOfRow r ps = some F) :
     r.reserveFlightNo.val = (F.reserveFlightNo : Int) ∧ F.passengers = ps := by
   simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at h
-  obtain ⟨no, hno, _, -, _, -, _, -, rfl⟩ := h
+  obtain ⟨no, hno, _, -, _, -, _, -, _, -, rfl⟩ := h
   exact ⟨Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno, rfl⟩
 
 /-- 予約の表の行は、α の像の予約・予約フライト・搭乗者に当たる。 -/
 theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) :
-    (∀ x ∈ fd.reservation, ∃ R ∈ w.reservations, R.reserveNo = ⟨x.reserveNo.val⟩) ∧
+    (∀ x ∈ fd.reservation, ∃ R ∈ w.reservations, R.reserveNo.val = x.reserveNo.val) ∧
     (∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights,
       g.reserveFlightNo.val = (F.reserveFlightNo : Int)) ∧
     (∀ p ∈ fd.passenger, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights, ∃ P ∈ F.passengers,
@@ -122,14 +132,14 @@ theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd =
 
 /-- 主キーの性質（`KeysOk`）から、予約の表の行の番号は採番の次の値より小さい。 -/
 theorem rows_lt {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hk : KeysOk w) :
-    (∀ x ∈ fd.reservation, ∃ n, n < w.sequences.reserve ∧ ⟨x.reserveNo.val⟩ = Spec.Port.World.reserveNoOf n) ∧
+    (∀ x ∈ fd.reservation, ∃ n, n < w.sequences.reserve ∧ x.reserveNo.val = (Spec.Port.World.reserveNoOf n).val) ∧
     (∀ g ∈ fd.reserveFlight, g.reserveFlightNo.val < (w.sequences.reserveFlight : Int)) ∧
     (∀ p ∈ fd.passenger, p.passengerNo.val < (w.sequences.passenger : Int)) := by
   obtain ⟨h1, h2, h3⟩ := rows_of_world hw
   refine ⟨fun x hx => ?_, fun g hg => ?_, fun p hp => ?_⟩
   · obtain ⟨R, hR, e⟩ := h1 x hx
     obtain ⟨⟨n, hn, hRn⟩, -⟩ := hk.2 R hR
-    exact ⟨n, hn, e ▸ hRn⟩
+    exact ⟨n, hn, e.symm.trans (congrArg Spec.Model.ReserveNo.val hRn)⟩
   · obtain ⟨R, hR, F, hF, e⟩ := h2 g hg
     have := ((hk.2 R hR).2 F hF).1
     omega

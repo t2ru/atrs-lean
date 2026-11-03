@@ -96,8 +96,8 @@ def aiR (ic : SourceModel.ReserveQuery.MInput) : Option MInput :=
 def aoR : SourceModel.ReserveQuery.MOutput → Option MOutput
   | .ok (.confirmed o) => (natOfJ32 o.totalFare).map fun n => .ok (.confirmed n)
   | .ok (.reserved o) =>
-    o.reserveNo.bind fun no => (o.paymentDate.bind dateOfJ).bind fun d => (o.totalFare.bind natOfJ32).map fun tf =>
-      .ok (.reserved ⟨⟨no⟩, d, tf⟩)
+    (o.reserveNo.bind Spec.Model.ReserveNo.ofString?).bind fun no => (o.paymentDate.bind dateOfJ).bind fun d =>
+      (o.totalFare.bind natOfJ32).map fun tf => .ok (.reserved ⟨no, d, tf⟩)
   | .error (.business c a) => some (.error (.business c a))
   | .error .badRequest => some (.error (.invalidRequest ""))
   | .error .ioFailure => some (.error (.system "e.ar.fw.9999"))
@@ -128,8 +128,9 @@ theorem aoR_reserved {x : SourceModel.ReserveQuery.MOutput} {r : ReserveResult} 
   rcases x with (⟨c, a⟩ | _ | _ | _) | (⟨⟨t⟩⟩ | ⟨⟨no, d, tf⟩⟩) <;>
     simp only [aoR, Option.some.injEq, Option.map_eq_some_iff, Option.bind_eq_some_iff, reduceCtorEq,
       Except.ok.injEq, MOutputValue.reserved.injEq, and_false, exists_false] at h
-  obtain ⟨n, rfl, j, hj, k, hk, rfl⟩ := h
-  exact ⟨d, tf, rfl, Option.bind_eq_some_iff.mpr hj, Option.bind_eq_some_iff.mpr hk⟩
+  obtain ⟨rn, ⟨n, rfl, hrn⟩, j, hj, k, hk, rfl⟩ := h
+  refine ⟨d, tf, ?_, Option.bind_eq_some_iff.mpr hj, Option.bind_eq_some_iff.mpr hk⟩
+  simp only [Spec.Model.ReserveNo.val_of_ofString? hrn]
 
 theorem aoR_error {x : SourceModel.ReserveQuery.MOutput} {e : Spec.Error.AtrsError} (h : aoR x = some (.error e)) :
     (∃ c a, e = .business c a ∧ x = .error (.business c a)) ∨ (e = .invalidRequest "" ∧ x = .error .badRequest) ∨

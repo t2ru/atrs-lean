@@ -2577,6 +2577,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Keys.ofString?_val",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Keys.reservationOfRow_no",
       "layer": "Abstraction"
     },
@@ -10513,6 +10517,14 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.ReserveNo.ofString?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.ReserveNo.val",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.fareTypesFor",
       "layer": "Spec"
     },
@@ -11694,6 +11706,11 @@
       "type": "gap",
       "from": "Spec.Model.Range.maxMultiplicationRatio",
       "to": "D-030"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Model.ReserveNo",
+      "to": "D-009"
     },
     {
       "type": "gap",
@@ -16165,6 +16182,16 @@
     {
       "type": "spec_doc",
       "from": "Spec.Model.ReserveNo",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.ReserveNo.ofString?",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.ReserveNo.val",
       "to": "docs/spec/domain-model.md#コード値"
     },
     {

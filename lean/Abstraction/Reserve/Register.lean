@@ -53,7 +53,7 @@ theorem toChar_reserveNo {n : Nat} (hn : n ≤ 9999999999) :
   rw [e]
   have hlen : (toString n).length = (Nat.toDigits 10 n).length := by
     simp [toString, Nat.repr, String.length]
-  simp (config := { decide := true }) only [hd, Spec.Port.World.reserveNoOf, Spec.Prim.Format.padNat, hlen,
+  simp (config := { decide := true }) only [hd, Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, hlen,
     List.length_cons, List.length_nil, ite_false, Int.natCast_nonneg, Int.not_lt.mpr]
   have hfz : List.findIdx (fun x => x == '0') ['0', '9', '9', '9', '9', '9', '9', '9', '9', '9'] = 0 := by decide
   have hgt : ¬ (Nat.toDigits 10 n).length > 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 := by omega

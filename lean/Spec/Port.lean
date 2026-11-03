@@ -100,7 +100,7 @@ def insertReservation (w : World) (r : Reservation) : World := { w with reservat
 
 /-- 予約番号の書式: 10 桁ゼロ埋めの十進文字列。 -/
 @[spec_doc "docs/spec/ports.md#idgenerator"]
-def reserveNoOf (n : Nat) : ReserveNo := ⟨padNat 10 n⟩
+def reserveNoOf (n : Nat) : ReserveNo := ⟨n⟩
 
 /-- `IdGenerator.nextReserveNo()`。 -/
 @[spec_doc "docs/spec/ports.md#idgenerator"]

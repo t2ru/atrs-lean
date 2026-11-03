@@ -94,14 +94,14 @@ generated:
 
 ## コード値
 
-**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。`String` を包む structure で、形式は述語 `WellFormed` で表す。マスタに存在することは、マスタの参照関数と不変条件で表す（[master-data.md](master-data.md)）。
+**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。`String` を包む structure で、形式は述語 `WellFormed` で表す（型に移す途中。[ADR 6d36](../decision/6d36-misu-spec-types.md)。`ReserveNo` は採番の値で持つ）。マスタに存在することは、マスタの参照関数と不変条件で表す（[master-data.md](master-data.md)）。
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
 | `AirportCd` | 英大文字 3 文字（マスタに存在するもの）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` とは限らない。区間の検索で見つからなければ業務エラーになる（[master-data.md](master-data.md#空港コードリスト画面用)） | `HND` |
 | `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（[Spec] の前提。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無い）。マスタの参照の問い合わせでは、空白でない（`hasText`）ことも課す | `NTT001` |
 | `MembershipNumber` | 数字 10 文字 | `0000000001` |
-| `ReserveNo` | 数字 10 文字 | `0000000123` |
+| `ReserveNo` | 採番の値（自然数。上限なし）で持ち、表記は 10 桁にゼロ埋めした十進文字列（採番が 10^10 以上なら 11 桁以上。[Source] との違いは既知差異 D-009）。表記を読むときは、この形でない文字列を拒む（[ADR 6d36](../decision/6d36-misu-spec-types.md)） | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの） | `VIS` |
 | `PasswordHash` | 不透明な文字列（[ADR 2d1f](../decision/2d1f-password-hashing-port.md)） | — |
 

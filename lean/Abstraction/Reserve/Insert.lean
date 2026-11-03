@@ -150,7 +150,8 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
     {b : SourceModel.Domain.Model.BoardingClass} (hb : fl.boardingClass = some b)
     (hbc : b.boardingClassCd = some k.boardingClassCd) {t : SourceModel.Domain.Model.FareType}
     (ht : fl.fareType = some t) (htc : t.fareTypeCd = some k.fareTypeCd)
-    {no : String} (hnol : no.length ≤ 10) {rfNoJ : J32} {m : Nat} (hm : rfNoJ.val = (m : Int))
+    {no : String} (hnol : no.length ≤ 10) {rn0 : Spec.Model.ReserveNo}
+    (hrn0 : Spec.Model.ReserveNo.ofString? no = some rn0) {rfNoJ : J32} {m : Nat} (hm : rfNoJ.val = (m : Int))
     (hmax : m ≤ 2147483647) (hpk : ∀ g ∈ fd.reserveFlight, g.reserveFlightNo.val ≠ (m : Int))
     (hfk1 : fd.reservation.any (·.reserveNo.val == no) = true)
     (hfk2 : ∃ r ∈ fd.flight, ∃ fx, flightOfRow r = some fx ∧ fx.key = k)
@@ -158,7 +159,7 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
     (hrf : rfObj.flight = some fl) :
     ∃ row, insertReserveFlightRow fd { rfObj with reserveNo := some no, reserveFlightNo := some rfNoJ } =
         .ok (1, { fd with reserveFlight := fd.reserveFlight ++ [row] }) ∧
-      reserveFlightOfRow row ps = some ⟨m, ⟨no⟩, k, ps⟩ ∧ row.reserveNo.val = no ∧
+      reserveFlightOfRow row ps = some ⟨m, rn0, k, ps⟩ ∧ row.reserveNo.val = no ∧
       row.reserveFlightNo.val = (m : Int) := by
   obtain ⟨rn, hrn, hrnv⟩ := convInt_ok hm hmax
   obtain ⟨dx, hdx, hdxv⟩ := convDate_ok hdj
@@ -195,7 +196,7 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
       Bool.false_eq_true, ite_false, Bool.not_true]
   · simp only [reserveFlightOfRow, natOfInt4, hrnv, hdxv, Abstraction.FlightSearch.Alpha.boardingClassCdName_eq,
       Abstraction.FlightSearch.Alpha.fareTypeCdName_eq, Option.bind_eq_bind, Option.pure_def]
-    simp [bcCdOf, ftCdOf, Spec.Model.BoardingClassCd.ofCode?_toCode, Spec.Model.FareTypeCd.ofCode?_toCode]
+    simp [bcCdOf, ftCdOf, Spec.Model.BoardingClassCd.ofCode?_toCode, Spec.Model.FareTypeCd.ofCode?_toCode, hrn0]
 
 /-- NULLIF の会員番号の列の値（空文字・`null` は無し）。 -/
 theorem customerNo_ok {fd : SourceModel.Db.Schema.FlightDb} {col : String} {v : Exception.JRef String}
@@ -227,10 +228,11 @@ theorem insertRow_ok {fd : FlightDb} {r : SourceModel.Domain.Model.Reservation} 
     (htel : r.repTel = some tel) (htell : tel.length ≤ 13) {mail : String} (hmail : r.repMail = some mail)
     (hmaill : mail.length ≤ 256) {M0 : SourceModel.Domain.Model.Member} (hm : r.repMember = some M0)
     (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true)
-    (hpk : ∀ x ∈ fd.reservation, x.reserveNo.val ≠ no) :
+    (hpk : ∀ x ∈ fd.reservation, x.reserveNo.val ≠ no) {rn0 : Spec.Model.ReserveNo}
+    (hrn0 : Spec.Model.ReserveNo.ofString? no = some rn0) :
     ∃ row, insertRow fd { r with reserveNo := some no } = .ok (1, { fd with reservation := fd.reservation ++ [row] }) ∧
       row.reserveNo.val = no ∧ ∀ fs, reservationOfRow row fs = some
-        { reserveNo := ⟨no⟩, reserveDate := T, totalFare := tfn, repFamilyName := fn, repGivenName := gn,
+        { reserveNo := rn0, reserveDate := T, totalFare := tfn, repFamilyName := fn, repGivenName := gn,
           repAge := an, repGender := g, repTel := tel, repMail := mail,
           repMembershipNumber := Spec.UseCase.Reserve.memberNoOf M0.membershipNumber, reserveFlights := fs } := by
   obtain ⟨dx, hdx, hdxv⟩ := convDate_ok hT
@@ -253,6 +255,6 @@ theorem insertRow_ok {fd : FlightDb} {r : SourceModel.Domain.Model.Reservation} 
     | none => rfl
     | some c => simp [hcnfk c rfl]
   · simp only [reservationOfRow, hdxv, natOfInt4, htxv, haxv, hgc, hcnm, Option.bind_eq_bind, Option.pure_def]
-    simp
+    simp [hrn0]
 
 end Abstraction.Reserve.Insert

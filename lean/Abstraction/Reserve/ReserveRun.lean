@@ -307,7 +307,7 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
           exact LangSemantics.Java.IntLemmas.ofInt_nat (by omega)
         rw [hTn] at hv'
         simp only [aoR, hno, hpd, mkFlight, hdj, Option.bind_some, hdjk, hto, Except.map, withDetail, hpd']
-        rw [hTn, hv', Option.map_some]
+        rw [hTn, hv', Abstraction.Reserve.Keys.ofString?_val, Option.bind_some, Option.map_some]
     | error e' s =>
       rintro ⟨hse, hE⟩
       rcases hE with ⟨hf, a, hdb⟩ | ⟨c, args, rfl, hdb, hcv⟩
