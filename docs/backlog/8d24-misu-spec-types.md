@@ -4,7 +4,7 @@ title: "Spec の型を、不正な状態を表現できない型にする"
 description: "ADR 6d36 に従い、ATRS の Spec の型を L1（値）・L2（境界）・L3（関係）の順に書き換え、SourceModel の α・生成器・テスト・証明を追従させる。"
 tags: [backlog, spec, types, misu]
 id: "8d240cee-be76-41cb-857e-ebe44ad87e53"
-state: todo
+state: done
 depends_on: ["d3fd1f35-7c8a-4218-a2a8-c7f617541769"]
 generated:
   by: claude-code/claude-opus-5-5
@@ -31,11 +31,11 @@ generated:
 
 ## 完了条件
 
-- [ ] スキルの検査 MISU-1 が、ATRS の `Spec` で違反 0 件である。
-- [ ] `Abstraction.refines`・`Abstraction.preserves`・`Abstraction.abstracts`、`seed_env` が通る。
-- [ ] `lake test` の適合テストベクタがすべて通る。
-- [ ] ギャップの付け替えを ADR 6d36 の段の記録に書き、`trace manifest` の表がそれと一致する。
-- [ ] 全数の `mise run ci` が通る。
+- [x] スキルの検査 MISU-1 が、ATRS の `Spec` で違反 0 件である。
+- [x] `Abstraction.refines`・`Abstraction.preserves`・`Abstraction.abstracts`、`seed_env` が通る。
+- [x] `lake test` の適合テストベクタがすべて通る。
+- [x] ギャップの付け替えを ADR 6d36 の段の記録に書き、`trace manifest` の表がそれと一致する。
+- [x] 全数の `mise run ci` が通る。
 
 ## 参照
 

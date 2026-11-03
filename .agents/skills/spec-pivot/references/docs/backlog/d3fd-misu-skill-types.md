@@ -4,7 +4,7 @@ title: "スキルの Lean のデータ型を、不正な状態を表現できな
 description: "ADR bf1b に従い、Trace（ギャップの登録簿・追跡属性・道具の内部の記録）、Machine（Preserves の条件付きの成分）、LangSemantics・ConformanceKit（値の型）の妥当性の条件を型に移す。"
 tags: [backlog, skill, lean, types, misu]
 id: "d3fd1f35-7c8a-4218-a2a8-c7f617541769"
-state: doing
+state: done
 depends_on: []
 generated:
   by: claude-code/claude-opus-5-5
@@ -59,12 +59,12 @@ generated:
 
 ## 完了条件
 
-- [ ] `Trace.Gap` の不正な組み合わせが型の誤りになり、`Test/Trace/GapErrors.lean` がそれを `#guard_msgs` で確かめる。
-- [ ] `trace-dump` の `gaps` と属性の JSON が、変更前の適用先の出力と同じである。
-- [ ] `Machine.Preserves` の選択の義務が、基底の和型の構築子の欄になっている。
-- [ ] `JDouble` の有限値が正規形だけを表し、assets と適用先の証明が通る。
-- [ ] MISU-1 が CI で動き、違反が 0 件である。
-- [ ] `lake build`・`lake test`（assets）、`trace-test`、`layout-check` が通る。
+- [x] `Trace.Gap` の不正な組み合わせが型の誤りになり、`Test/Trace/GapErrors.lean` がそれを `#guard_msgs` で確かめる。
+- [x] `trace-dump` の `gaps` と属性の JSON が、変更前の適用先の出力と同じである。
+- [x] `Machine.Preserves` の条件付きの成分を見直し、型を変えず obligation-check の G6 の照合で足りるとした（下の「S3 の判断」）。
+- [x] `JDouble` の有限値が正規形だけを表し、assets と適用先の証明が通る。
+- [x] MISU-1 が CI で動き、違反が 0 件である。
+- [x] `lake build`・`lake test`（assets）、`trace-test`、`layout-check` が通る。
 
 ## 参照
 
