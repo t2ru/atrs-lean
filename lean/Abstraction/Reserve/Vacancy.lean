@@ -231,7 +231,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
     simp only [findOneForUpdateRows, hsr, Bag.project, List.map_cons, List.map_nil]
     rfl
   java_estate_simp [TicketReserveServiceImpl.validateAndUpdateVacancy, lift, now, hte, hdep, hfm, hc, hav,
-    findOneForUpdate, query, sql, hkey, FlightRepository.update]
+    findOneForUpdate, lockQuery, sql, hkey, FlightRepository.update]
   have hn : (Int.J32.ofInt ((List.map some xs).length : Int)).val = (xs.length : Int) := by
     rw [List.length_map]; exact LangSemantics.Java.IntLemmas.ofInt_nat (by omega)
   have hss : Spec.UseCase.Reserve.secureSeats md T xs.length w k =
@@ -251,7 +251,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   simp only [Bool.not_true, Bool.false_eq_true, ite_false]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨hat _ _, .inl ⟨_, .inl rfl⟩⟩
+    exact ⟨hat _ _, .inl ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h1]⟩⟩⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
     exact ⟨hat _ _, .inl ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h2]⟩⟩⟩
@@ -266,7 +266,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   simp only [h9', h9, decide_false, Bool.false_eq_true, ite_false]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
   · simp only [h3, ite_true]
-    exact ⟨hat _ _, .inl ⟨_, .inl rfl⟩⟩
+    exact ⟨hat _ _, .inl ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h3]⟩⟩⟩
   by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
   · simp only [h3, h4, ite_true, ite_false]
     exact ⟨hat _ _, .inl ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h4]⟩⟩⟩

@@ -217,7 +217,7 @@ theorem need_D031 :
       ((SourceModel.ReserveQuery.reserveConcrete.restrict dev_D027R).restrict dev_D014R) glueR := fun h => by
   obtain ⟨d9, d1, d2, d12⟩ := ia2415_devs
   obtain ⟨-, hne⟩ := h.applicable w2415 fd2415 ic2415 ia2415 w2415_inv (Or.inl ⟨worldOfDb_fd2415, icW_of_nil rfl rfl⟩)
-    aiR_ic2415 ⟨⟨⟨⟨ia2415_pre, d9⟩, d1⟩, d2⟩, d12⟩ ⟨⟨fun _ => rfl, ic2415_dev⟩, fun _ => rfl⟩
+    aiR_ic2415 ⟨⟨⟨⟨ia2415_pre, d9⟩, d1⟩, d2⟩, d12⟩ ⟨⟨trivial, ic2415_dev⟩, fun _ => rfl⟩
   have hr := run2415
   split at hr
   · rename_i e he
@@ -308,7 +308,7 @@ theorem need_D009 :
   obtain ⟨d31, d1, d2, d12⟩ := ia109_devs
   obtain ⟨-, hne⟩ := h.applicable w109 fd109 ic109 (iaR mdFS [selR]) w109_inv
     (Or.inl ⟨worldOfDb_fd109, icW_of_nil rfl rfl⟩) aiR_ic109 ⟨⟨⟨⟨ia109_pre, d31⟩, d1⟩, d2⟩, d12⟩
-    ⟨⟨fun h => by simp [ic109] at h, ic109_dev⟩, fun _ => rfl⟩
+    ⟨⟨trivial, ic109_dev⟩, fun _ => rfl⟩
   have hr := run109
   split at hr
   · rename_i e he

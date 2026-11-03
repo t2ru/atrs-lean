@@ -2273,7 +2273,7 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.Catch.catch_fault_none",
+      "name": "Abstraction.Reserve.Catch.catch_ioFault",
       "layer": "Abstraction"
     },
     {
@@ -3266,6 +3266,14 @@
     },
     {
       "name": "Abstraction.Reserve.Tx.IsFault",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Tx.IsIoFault",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Tx.IsIoFault.fault",
       "layer": "Abstraction"
     },
     {
@@ -5866,6 +5874,10 @@
     },
     {
       "name": "SourceModel.Db.Tx.lift",
+      "layer": "SourceModel"
+    },
+    {
+      "name": "SourceModel.Db.Tx.lockQuery",
       "layer": "SourceModel"
     },
     {
@@ -15912,7 +15924,7 @@
       "definition": "SourceModel.App.B2.TicketReserveHelper.reserve",
       "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)",
       "hash": "adcae9fef7b9df35",
-      "merkle": "6cb69e4b05c232d2",
+      "merkle": "0b2bb5a615fceff1",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -15922,7 +15934,7 @@
       "definition": "SourceModel.App.B2.TicketReserveHelper.reserveConfirm",
       "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)",
       "hash": "7b28499828937c4a",
-      "merkle": "a26d9c980a166521",
+      "merkle": "2c1314655a32159c",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -15932,7 +15944,7 @@
       "definition": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
       "locator": "java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#validateFlightList(List)",
       "hash": "d6700fbbefbc4997",
-      "merkle": "92886c855659fc1a",
+      "merkle": "9beedc38021f6a68",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -15942,7 +15954,7 @@
       "definition": "SourceModel.App.B2.TicketReserveHelper.validateFlightList",
       "locator": "java:jp.co.ntt.atrs.app.common.exception.BadRequestException#<init>(Exception)",
       "hash": "e6ed9d4d70fd7b28",
-      "merkle": "92886c855659fc1a",
+      "merkle": "9beedc38021f6a68",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -18109,7 +18121,7 @@
       "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
       "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#exists(LocalDate,String,BoardingClass,FareType)",
       "hash": "963eff23e19232bd",
-      "merkle": "6e0f3c911ea3ff1e",
+      "merkle": "ddc016d473958d2b",
       "checks": [
         "java-origin-run",
         "lake-test",
@@ -18144,7 +18156,7 @@
       "definition": "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
       "locator": "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate(LocalDate,String,BoardingClass,FareType)",
       "hash": "852c2d72ff703d07",
-      "merkle": "720dcd02cf909e73",
+      "merkle": "a0e30e4152ea5799",
       "checks": [
         "java-origin-run",
         "lake-test",
@@ -18293,7 +18305,7 @@
       "definition": "SourceModel.Domain.Repository.Member.MemberRepository.findOne",
       "locator": "java:jp.co.ntt.atrs.domain.repository.member.MemberRepository#findOne(String)",
       "hash": "451a02e1a5c2ef0a",
-      "merkle": "dc8de8f705f629c5",
+      "merkle": "2a53697bbd74abd8",
       "checks": [
         "java-origin-run",
         "lake-test",
@@ -18519,7 +18531,7 @@
       "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#existsFlight(Flight)",
       "hash": "3a7ea0432fb7d108",
-      "merkle": "f90afe0847d69f8e",
+      "merkle": "4934230667848d96",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -18529,7 +18541,7 @@
       "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.existsFlight",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#existsFlight(Flight)",
       "hash": "a4e50b127ec510cf",
-      "merkle": "f90afe0847d69f8e",
+      "merkle": "4934230667848d96",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -18593,7 +18605,7 @@
       "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedService#validateFlightList(List)",
       "hash": "cab75bbff4478e82",
-      "merkle": "0359ef6654248936",
+      "merkle": "09ec3299c04cd790",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -18603,7 +18615,7 @@
       "definition": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList",
       "locator": "java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#validateFlightList(List)",
       "hash": "31235b0af5e54df0",
-      "merkle": "0359ef6654248936",
+      "merkle": "09ec3299c04cd790",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -19166,7 +19178,7 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#registerReservation(Reservation)",
       "hash": "4df168e425feb579",
-      "merkle": "e143ae39d33fd29b",
+      "merkle": "5f0f5b82d8f452ff",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -19176,7 +19188,7 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.registerReservation",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#registerReservation(Reservation)",
       "hash": "14ec7266e29f86b3",
-      "merkle": "e143ae39d33fd29b",
+      "merkle": "5f0f5b82d8f452ff",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -19186,7 +19198,7 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveService#validateReservation(Reservation)",
       "hash": "66cb03764db77def",
-      "merkle": "95ba9ed8b9f149ea",
+      "merkle": "e8fb0856fb02cbe4",
       "checks": [
         "java-origin-run",
         "lake-test"
@@ -19196,7 +19208,7 @@
       "definition": "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation",
       "locator": "java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)",
       "hash": "d94a3852f47a03d1",
-      "merkle": "95ba9ed8b9f149ea",
+      "merkle": "e8fb0856fb02cbe4",
       "checks": [
         "java-origin-run",
         "lake-test"

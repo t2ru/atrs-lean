@@ -106,7 +106,7 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
   refine Hoare.bind' (Hoare.conseq hH (fun _ h => h) (fun _ _ h => h) fun e s ⟨⟨hsd, hse⟩, he'⟩ => ⟨hse, ?_⟩)
     fun _ => ?_
   · rcases he' with hft | ⟨c, args, rfl, hc⟩
-    · exact .inl ⟨hse ▸ hft, {}, by rw [advance_zero, hsd]; exact hw⟩
+    · exact .inl ⟨hse ▸ hft.fault, {}, by rw [advance_zero, hsd]; exact hw⟩
     · exact .inr ⟨c, args, rfl, hsd ▸ hw, .inl hc⟩
   intro s ⟨hs, hv0⟩
   subst hv0

@@ -197,16 +197,15 @@ open SourceModel.Db.Tx SourceModel.App.B2
 
 /-- 前段の検証の例外の事後条件: 障害か、不正要求（`BadRequestException`）で [Spec] の結果が改竄。 -/
 def PostS (P : St → Prop) (v : Except AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ (IsFault s.env e ∨
+  fun e s => P s ∧ (IsIoFault s.env e ∨
     (∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
       ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str))
 
-theorem fault_cls {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsFault env e) : ∃ cls msg, e = .other cls msg ∧
+theorem fault_cls {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault env e) : ∃ cls msg, e = .other cls msg ∧
     ¬ (cls = SourceModel.Domain.Service.B0.InvalidFlightException.className ∨
       cls = SourceModel.Domain.Common.Exception.AtrsBusinessException.className) := by
-  obtain ⟨m, rfl | ⟨rfl, -⟩⟩ := h
-  · exact ⟨_, m, rfl, by decide⟩
-  · exact ⟨_, m, rfl, by decide⟩
+  obtain ⟨m, rfl, -⟩ := h
+  exact ⟨_, m, rfl, by decide⟩
 
 /-- 前段の選択フライトの検証（`InvalidFlightException`・業務例外を `BadRequestException` に包む）。 -/
 theorem helper_vf {P : St → Prop} {h : TicketReserveHelper} {fl : List (JRef SourceModel.Domain.Model.Flight)}

@@ -125,11 +125,10 @@ def runOp (fd : FlightDb) (ic : MInput) (mo : Order) : JResult MOutputValue × F
   | .reserve => let (r, fd') := runReserve fd ic.input mo; (r.map .reserved, fd')
 
 /-- 予約の具体機械。状態は状態の表とシーケンス、初期状態はシードを投入した後の状態。1 歩は、Mapper の文の結果の
-許される並びのどれかで読み込み、操作を実行する。定義域: 予約確認では排他の失敗を起こさない（予約確認の文は行ロックを
-取らないので、排他の失敗は起きない）。 -/
+許される並びのどれかで読み込み、操作を実行する。定義域はすべての入力（予約確認は読むだけの文しか実行しないので、
+排他の失敗は起きない。`SourceModel.Db.Tx.query`）。 -/
 def reserveConcrete : Machine.Concrete FlightDb MInput MOutput JThrow where
   Init t := t = SourceModel.Db.Seed.seedDb
-  Dom ic := ic.kind = .confirm → ic.input.env.conflictAt = none
   step t ic r := ∃ mo, mo.Allowed ic.input.db ∧ r = (catchReserve (runOp t ic mo).1).map fun o => ((runOp t ic mo).2, o)
 
 end SourceModel.ReserveQuery

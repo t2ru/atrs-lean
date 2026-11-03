@@ -3,6 +3,7 @@
 ## 2026-11-03
 
 * **Update**: [ADR ab93](decision/ab93-reservation-stage3-world-alpha-and-abs041.md) の 3d（プロジェクトオーナーの判断 1・3 は案 A）に向けて、スキル spec-pivot の版 0.27（スキルの ADR 61e6。束の環境の固定を許す選択の関係 `adm` に、環境の前提を状態と入力の述語に広げた）に、既存の束（ABS-026・001・002・004・011）とトップレベルの `Abstraction.env` を合わせた（入力だけの環境の前提は `fun _ => env` で包む。空席照会の `chFS` は `adm` に `sameEnv`）。spec-pivot の版の記載を 0.27 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
+* **Update**: ADR ab93 の 3d の決定（判断 2）として、SourceModel の排他の失敗を行ロックを取る文に限った（読むだけの文 `query` は I/O の失敗だけ、行ロック付きの読み出し `lockQuery`・`sql` は両方）。`reserveConcrete` の定義域を既定に戻し、予約の証明（`IsIoFault`）を合わせた。変わった定義の照合の記録を `trace rehash` で更新した（`trace/manifest.json`）。
 
 ## 2026-11-02
 

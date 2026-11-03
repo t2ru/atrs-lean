@@ -31,7 +31,7 @@ def Post (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : Unit → St 
 
 /-- 選択フライトの検証の例外の事後条件。 -/
 def PostE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
-  fun e s => P s ∧ ((BadReq e ∧ ∃ e', v = .error e') ∨ IsFault s.env e)
+  fun e s => P s ∧ ((BadReq e ∧ ∃ e', v = .error e') ∨ IsIoFault s.env e)
 
 theorem badReq_invalid (msg : String) : BadReq (InvalidFlightException.new msg) := ⟨_, msg, rfl, .inl rfl⟩
 
@@ -57,16 +57,13 @@ theorem one_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
   have hdb := hP.db s hs
   have ht := hP.tick s hs
   java_estate_simp [TicketSharedServiceImpl.validateFlightList, TicketSharedServiceImpl.existsFlight,
-    FlightRepository.exists, lift, query, sql, hfm]
+    FlightRepository.exists, lift, query, hfm]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
-  by_cases h2 : s.env.conflictAt = some s.sqlCalls
-  · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
+    exact ⟨ht, .inr ⟨_, rfl, by simp [h1]⟩⟩
   have hx : existsRows s.db (bindKey f0.departureDate fm.flightName f0.boardingClass f0.fareType) =
       w.existsFlight k0 := hdb ▸ he
-  simp only [h1, h2, ite_false, hx]
+  simp only [h1, ite_false, hx]
   cases hw : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]
     refine ⟨ht, .inl ⟨badReq_invalid _, .invalidRequest "flight not found", ?_⟩⟩
@@ -117,14 +114,11 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
   have hx0 : existsRows s.db (bindKey f0.departureDate fm0.flightName f0.boardingClass f0.fareType) =
       w.existsFlight k0 := hdb ▸ he0
   java_estate_simp [TicketSharedServiceImpl.validateFlightList, TicketSharedServiceImpl.existsFlight,
-    FlightRepository.exists, lift, query, sql, hfm0, hfm1]
+    FlightRepository.exists, lift, query, hfm0, hfm1]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
-  by_cases h2 : s.env.conflictAt = some s.sqlCalls
-  · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
-  simp only [h1, h2, ite_false, hx0]
+    exact ⟨ht, .inr ⟨_, rfl, by simp [h1]⟩⟩
+  simp only [h1, ite_false, hx0]
   cases hw0 : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]
     refine ⟨ht, .inl ⟨badReq_invalid _, .invalidRequest "flight not found", ?_⟩⟩
@@ -137,11 +131,8 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
   simp only [tick] at hx1 htt
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
   · simp only [h3, ite_true]
-    exact ⟨htt, .inr ⟨_, .inl rfl⟩⟩
-  by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
-  · simp only [h3, h4, ite_true, ite_false]
-    exact ⟨htt, .inr ⟨_, .inr ⟨rfl, by simp [h4]⟩⟩⟩
-  simp only [h3, h4, ite_false, hx1]
+    exact ⟨htt, .inr ⟨_, rfl, by simp [h3]⟩⟩
+  simp only [h3, ite_false, hx1]
   cases hw1 : w.existsFlight k1
   · simp only [Bool.not_false, ite_true]
     refine ⟨htt, .inl ⟨badReq_invalid _, .invalidRequest "flight not found", ?_⟩⟩
@@ -190,14 +181,11 @@ theorem two_none1 {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec
   have hx0 : existsRows s.db (bindKey f0.departureDate fm0.flightName f0.boardingClass f0.fareType) =
       w.existsFlight k0 := hdb ▸ he0
   java_estate_simp [TicketSharedServiceImpl.validateFlightList, TicketSharedServiceImpl.existsFlight,
-    FlightRepository.exists, lift, query, sql, hfm0, hfm1]
+    FlightRepository.exists, lift, query, hfm0, hfm1]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨ht, .inr ⟨_, .inl rfl⟩⟩
-  by_cases h2 : s.env.conflictAt = some s.sqlCalls
-  · simp only [h1, h2, ite_true, ite_false]
-    exact ⟨ht, .inr ⟨_, .inr ⟨rfl, by simp [h2]⟩⟩⟩
-  simp only [h1, h2, ite_false, hx0]
+    exact ⟨ht, .inr ⟨_, rfl, by simp [h1]⟩⟩
+  simp only [h1, ite_false, hx0]
   cases hw0 : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]
     refine ⟨ht, .inl ⟨badReq_invalid _, .invalidRequest "flight not found", ?_⟩⟩

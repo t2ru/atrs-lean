@@ -43,17 +43,16 @@ theorem catch_fault {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsFault env 
   have h3 : SourceModel.Db.Tx.conflictClass ≠ AtrsBusinessException.className := by decide
   have h4 : SourceModel.Db.Tx.conflictClass ≠ SourceModel.App.B2.TicketReserveHelper.badRequestClass := by decide
   have h5 : SourceModel.Db.Tx.conflictClass ≠ SourceModel.Db.Tx.ioFailureClass := by decide
-  obtain ⟨m, rfl | ⟨rfl, -⟩⟩ := h
+  obtain ⟨m, ⟨rfl, -⟩ | ⟨rfl, -⟩⟩ := h
   · left; simp [catchReserve, h1, h2]
   · right; simp [catchReserve, h3, h4, h5]
 
-/-- 排他の失敗の位置を持たない実行環境の障害は、I/O の失敗。 -/
-theorem catch_fault_none {env : SourceModel.Db.Tx.Env} (hc : env.conflictAt = none) {e : JThrow} (h : IsFault env e) :
+/-- 読むだけの文の障害（I/O の失敗）の像は、I/O の失敗。 -/
+theorem catch_ioFault {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault env e) :
     catchReserve (.error e) = .ok (.error .ioFailure) := by
   have h1 : SourceModel.Db.Tx.ioFailureClass ≠ AtrsBusinessException.className := by decide
   have h2 : SourceModel.Db.Tx.ioFailureClass ≠ SourceModel.App.B2.TicketReserveHelper.badRequestClass := by decide
-  obtain ⟨m, rfl | ⟨rfl, hs⟩⟩ := h
-  · simp [catchReserve, h1, h2]
-  · simp [hc] at hs
+  obtain ⟨m, rfl, -⟩ := h
+  simp [catchReserve, h1, h2]
 
 end Abstraction.Reserve.Catch

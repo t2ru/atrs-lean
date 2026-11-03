@@ -205,7 +205,7 @@ end
 theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t)
     {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
     (hk : ic.kind = .confirm) (hpre : ia.Pre w) (h31 : dev_D031 ia) (h1 : dev_D001R ia) (h2 : dev_D002R ia)
-    (h12 : dev_D012R ia) (h27 : dev_D027R ic) (hdom : ic.input.env.conflictAt = none) {mo : Order}
+    (h12 : dev_D012R ia) (h27 : dev_D027R ic) {mo : Order}
     (hmo : mo.Allowed ic.input.db) :
     ∃ oc oa c, catchReserve (runOp t ic mo).1 = .ok oc ∧ (runOp t ic mo).2 = t ∧
       reserveStep w ia c = (w, oa) ∧ aoR oc = some oa := by
@@ -247,7 +247,7 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨⟨msg, rfl⟩, str, hstr⟩ | ⟨hv0, -⟩
       · refine ⟨.error .ioFailure, _, ((.none, .failure {}), .std), ?_, hsd, step_io w ia _, rfl⟩
-        exact catch_fault_none (hse ▸ hdom) hf
+        exact catch_ioFault hf
       · simp only [Except.mapError, Except.error.injEq] at hstr
         refine ⟨.error .badRequest, _, ((.none, .none), ⟨some ""⟩), catch_badRequest msg, hsd, step_confirm hop' hx _, ?_⟩
         simp only [Except.map, hstr, withDetail, Option.getD_some]
@@ -314,7 +314,7 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨-, str, hstr⟩ | ⟨-, c, args, rfl, hc⟩
       · refine ⟨.error .ioFailure, _, ((.none, .failure {}), .std), ?_, hsd, step_io w ia _, rfl⟩
-        exact catch_fault_none (hse ▸ hdom) hf
+        exact catch_ioFault hf
       · simp [Except.mapError] at hstr
       · rcases hres with ⟨e, he, rfl⟩ | ⟨hvr0, -⟩
         · rw [hc] at he

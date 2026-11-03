@@ -49,14 +49,14 @@ theorem insertPassenger_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf
   java_estate_simp [ReservationRepository.insertPassenger, sql, lift, ReservationRepository.nextPassengerNo, hdb]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h1]⟩⟩, by simp⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h2]⟩⟩, by simp⟩
   simp only [h1, h2, ite_false, hnv, Except.bind, EStateM.modifyGet, EStateM.bind, EStateM.pure, readInteger_ok hn]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
   · simp only [h3, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h3]⟩⟩, by simp⟩
   by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
   · simp only [h3, h4, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h4]⟩⟩, by simp⟩
@@ -97,14 +97,14 @@ theorem insertReserveFlight_hoare {D : FlightDb} {env : Env} {m : Nat} (hseq : s
     hdb]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h1]⟩⟩, by simp⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h2]⟩⟩, by simp⟩
   simp only [h1, h2, ite_false, hnv, Except.bind, EStateM.modifyGet, EStateM.bind, EStateM.pure, readInteger_ok hm]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
   · simp only [h3, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h3]⟩⟩, by simp⟩
   by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
   · simp only [h3, h4, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h4]⟩⟩, by simp⟩
@@ -150,7 +150,7 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
   java_estate_simp [ReservationRepository.insert, sql, ReservationRepository.nextReserveNo, hdb]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h1]⟩⟩, by simp⟩
   by_cases h2 : s.env.conflictAt = some s.sqlCalls
   · simp only [h1, h2, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h2]⟩⟩, by simp⟩
@@ -158,7 +158,7 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
     toChar_reserveNo hn, Option.getD_some]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
   · simp only [h3, ite_true]
-    exact ⟨hse, ⟨_, .inl rfl⟩, by simp⟩
+    exact ⟨hse, ⟨_, .inl ⟨rfl, by rw [← hse]; simp [h3]⟩⟩, by simp⟩
   by_cases h4 : s.env.conflictAt = some (s.sqlCalls + 1)
   · simp only [h3, h4, ite_true, ite_false]
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h4]⟩⟩, by simp⟩

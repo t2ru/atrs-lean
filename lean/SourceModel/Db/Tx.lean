@@ -11,9 +11,12 @@ import SourceModel.Db.Schema
 原典のソースツリーの外に置く（`SourceModel.Db.MyBatis` と同じ）。
 
 - 計算は `EStateM JThrow St` で書く。例外で終わっても、その時点の状態（表とシーケンス）を返す。
-- `sql f`: Mapper の文を 1 回実行する。実行環境が、その文で I/O の失敗（N-002 に当たる）や排他の失敗（N-001 に当たる）を
-  起こすと決めていれば、Spring の `DataAccessException` を投げる。文の SQL のエラーも、Spring の例外の変換で
-  `DataAccessException` になる。
+- `sql f`: 行ロックを取る Mapper の文（更新・挿入・採番）を 1 回実行する。実行環境が、その文で I/O の失敗（N-002 に
+  当たる）や排他の失敗（N-001 に当たる）を起こすと決めていれば、Spring の `DataAccessException` を投げる。文の SQL の
+  エラーも、Spring の例外の変換で `DataAccessException` になる。
+- `lockQuery f`: 行ロック付きの読み出し（`SELECT … FOR UPDATE`）。`sql` と同じく、I/O の失敗と排他の失敗を起こしうる。
+- `query f`: 読むだけの文（行ロックを取らない）。I/O の失敗だけを起こしうる。行ロックを取らない文は、ロック待ちの
+  タイムアウトやデッドロックによる排他の失敗を起こさない（ADR ab93 の 3d。予約確認は読むだけの文しか実行しない）。
 - `transactional body`: `@Transactional` のメソッドの呼び出し。`body` が例外で終わったら、表を開始時に戻す（シーケンスは
   戻さない。`LangSemantics.Sql.Transaction.run`）。業務例外（`BusinessException`）も `RuntimeException` なので取り消す。
 - `now`: `LocalDate.now(dateFactory.tick())`。実行環境の Clock の `i` 回目の読み出しの値を返す（既知差異 D-014）。
@@ -76,8 +79,18 @@ def sql {α : Type} (f : FlightDb → SqlResult (α × FlightDb)) : DbM α := do
   | .ok (a, db') => modify fun s => { s with db := db' }; pure a
   | .error e => throw (translate e)
 
-/-- 読むだけの文。 -/
-def query {α : Type} (f : FlightDb → SqlResult α) : DbM α := sql fun db => (f db).map fun a => (a, db)
+/-- 読むだけの文（行ロックを取らない）。I/O の失敗だけを起こしうる。 -/
+def query {α : Type} (f : FlightDb → SqlResult α) : DbM α := do
+  let s ← get
+  let k := s.sqlCalls
+  set { s with sqlCalls := k + 1 }
+  if s.env.ioFailAt = some k then throw (.other ioFailureClass s!"I/O failure at statement {k}")
+  match f s.db with
+  | .ok a => pure a
+  | .error e => throw (translate e)
+
+/-- 行ロック付きの読み出し（`SELECT … FOR UPDATE`）。I/O の失敗と排他の失敗を起こしうる。 -/
+def lockQuery {α : Type} (f : FlightDb → SqlResult α) : DbM α := sql fun db => (f db).map fun a => (a, db)
 
 /-- `@Transactional` のメソッドの呼び出し。例外で終わったら、表を開始時に戻す（シーケンスは戻さない）。 -/
 @[source "dep:org.springframework:spring-tx#Transactional@spring-tx-7.0.3"]

@@ -193,7 +193,7 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     | error e' s =>
       rintro ⟨⟨hsd, hse⟩, hE⟩
       rcases hE with hf | ⟨⟨msg, rfl⟩, str, hstr⟩
-      · obtain ⟨oc, oa, c, hc, hst, ho⟩ := fault_out (hse ▸ hf) w hop' {}
+      · obtain ⟨oc, oa, c, hc, hst, ho⟩ := fault_out (IsIoFault.fault (hse ▸ hf)) w hop' {}
         rw [ConfirmRun.advance_zero] at hst
         exact ⟨oc, w, oa, c, hc, by show worldOfDb s.db = _; rw [hsd]; exact hw,
           by show IcW s.db; rw [hsd]; exact hic, hst, ho⟩
@@ -254,8 +254,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     rw [hvr] at hv'
     cases hv'
     rw [hfl] at hH'
-    have hH := reserve_core (P := P) htf0 hvf hreq' (fun e s ⟨⟨hsd, hse⟩, h⟩ => ⟨hse, .inl ⟨hse ▸ (h.resolve_right
-      (by rintro ⟨-, str, hstr⟩; simp [Except.mapError] at hstr)), {}, by rw [ConfirmRun.advance_zero, hsd]; exact hw⟩⟩)
+    have hH := reserve_core (P := P) htf0 hvf hreq' (fun e s ⟨⟨hsd, hse⟩, h⟩ => ⟨hse, .inl ⟨IsIoFault.fault (hse ▸ (h.resolve_right
+      (by rintro ⟨-, str, hstr⟩; simp [Except.mapError] at hstr))), {}, by rw [ConfirmRun.advance_zero, hsd]; exact hw⟩⟩)
       (fun _ => hH')
     have hr := Hoare.run hH hs0
     have hdfl := (buildDraft_eq hd).2.2.2.2.2.2
@@ -334,13 +334,13 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
 theorem run_any {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t)
     (hinv : w.Inv) {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
     (hpre : ia.Pre w) (h9 : dev_D009 w ia) (h31 : dev_D031 ia) (h1 : dev_D001R ia) (h2 : dev_D002R ia)
-    (h12 : dev_D012R ia) (hdom : reserveConcrete.Dom ic) (h27 : dev_D027R ic) (h14 : dev_D014R ic)
+    (h12 : dev_D012R ia) (h27 : dev_D027R ic) (h14 : dev_D014R ic)
     {mo : Order} (hmo : mo.Allowed ic.input.db) :
     ∃ oc w' oa c, catchReserve (runOp t ic mo).1 = .ok oc ∧ worldOfDb (runOp t ic mo).2 = some w' ∧
       IcW (runOp t ic mo).2 ∧ reserveStep w ia c = (w', oa) ∧ aoR oc = some oa := by
   cases hk : ic.kind with
   | confirm =>
-    obtain ⟨oc, oa, c, hc, ht, hst, ho⟩ := confirm_run hw hic hα hk hpre h31 h1 h2 h12 h27 (hdom hk) hmo
+    obtain ⟨oc, oa, c, hc, ht, hst, ho⟩ := confirm_run hw hic hα hk hpre h31 h1 h2 h12 h27 hmo
     exact ⟨oc, w, oa, c, hc, by rw [ht]; exact hw, by rw [ht]; exact hic, hst, ho⟩
   | reserve => exact reserve_run hw hic hinv hα hk hpre h9 h14 h31 h1 h2 h12 h27 hmo
 
@@ -356,26 +356,26 @@ theorem reserveRefines :
   input_total := Glue.ofStd_input_total fun _ hd => hd.1.2.1
   applicable s t ic ia hinv hJ hα hpre hd := by
     obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre
-    obtain ⟨⟨hdom, h27⟩, h14⟩ := hd
+    obtain ⟨⟨-, h27⟩, h14⟩ := hd
     obtain ⟨hw, hic⟩ : worldOfDb t = some s ∧ IcW t := by
       rcases hJ with h | h
       · exact h
       · exact h.elim
-    obtain ⟨oc, -, -, -, hc, -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 hdom h27 h14
+    obtain ⟨oc, -, -, -, hc, -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14
       (mergeOrder_allowed ic.input.db)
     refine ⟨⟨_, mergeOrder ic.input.db, mergeOrder_allowed _, rfl⟩, fun e ⟨mo, hmo, he⟩ => ?_⟩
-    obtain ⟨oc', -, -, -, hc', -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 hdom h27 h14 hmo
+    obtain ⟨oc', -, -, -, hc', -⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14 hmo
     rw [hc'] at he
     cases he
   correct s t ic ia t' oc hinv hJ hα hpre hd hs := by
     obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre
-    obtain ⟨⟨hdom, h27⟩, h14⟩ := hd
+    obtain ⟨⟨-, h27⟩, h14⟩ := hd
     obtain ⟨hw, hic⟩ : worldOfDb t = some s ∧ IcW t := by
       rcases hJ with h | h
       · exact h
       · exact h.elim
     obtain ⟨mo, hmo, he⟩ := hs
-    obtain ⟨oc', w', oa, c, hc, hdb, hic', hst, ho⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 hdom h27 h14 hmo
+    obtain ⟨oc', w', oa, c, hc, hdb, hic', hst, ho⟩ := run_any hw hic hinv hα hp h9 h31 h1 h2 h12 h27 h14 hmo
     rw [hc] at he
     simp only [Except.map, Except.ok.injEq, Prod.mk.injEq] at he
     obtain ⟨rfl, rfl⟩ := he
