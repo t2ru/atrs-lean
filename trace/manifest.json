@@ -6189,7 +6189,7 @@
       "layer": "SourceModel"
     },
     {
-      "name": "SourceModel.Db.Schema.orderKey",
+      "name": "SourceModel.Db.Schema.orderByDisplayOrder",
       "layer": "SourceModel"
     },
     {
@@ -8153,11 +8153,7 @@
       "layer": "SourceModel"
     },
     {
-      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatDirs",
-      "layer": "SourceModel"
-    },
-    {
-      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatKey",
+      "name": "SourceModel.Domain.Repository.Flight.FlightRepository.vacantSeatOrder",
       "layer": "SourceModel"
     },
     {

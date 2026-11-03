@@ -79,14 +79,14 @@ theorem hm_le_iff {s t : String} {a b : HourMinute} (hs : hmOfStr s = some a) (h
 /-! ## 整列キーの比較 -/
 
 theorem key_cmp (a b : VacantSeatRow) :
-    compareKeys sortCfg vacantSeatDirs (vacantSeatKey a) (vacantSeatKey b) =
+    compareKeys sortCfg vacantSeatOrder.keys a b =
       (compare a.displayOrder.val b.displayOrder.val).then (Collation.codepoint a.departureTime.val b.departureTime.val) := by
-  simp only [compareKeys, compareKey, vacantSeatKey, vacantSeatDirs, Int4.toSql, Varchar.toSql, SqlValue.cmp,
+  simp only [compareKeys, compareKey, vacantSeatOrder, Int4.toSql, Varchar.toSql, SqlValue.cmp,
     sortCfg, sortConfig, collationC, Option.getD_some]
   cases compare a.displayOrder.val b.displayOrder.val <;> cases Collation.codepoint a.departureTime.val b.departureTime.val <;> rfl
 
 theorem key_le (a b : VacantSeatRow) :
-    compareKeys sortCfg vacantSeatDirs (vacantSeatKey a) (vacantSeatKey b) ≠ .gt ↔
+    compareKeys sortCfg vacantSeatOrder.keys a b ≠ .gt ↔
       a.displayOrder.val < b.displayOrder.val ∨
         (a.displayOrder.val = b.displayOrder.val ∧ a.departureTime.val ≤ b.departureTime.val) := by
   rw [key_cmp, ← Collation.codepoint_ne_gt]
@@ -101,17 +101,17 @@ theorem key_le (a b : VacantSeatRow) :
 
 /-- 許される並びの 1 つ（整列キーの比較で `mergeSort` したもの）。 -/
 def mergeSortRows (rows : List VacantSeatRow) : List VacantSeatRow :=
-  rows.mergeSort fun a b => compareKeys sortCfg vacantSeatDirs (vacantSeatKey a) (vacantSeatKey b) != .gt
+  rows.mergeSort fun a b => compareKeys sortCfg vacantSeatOrder.keys a b != .gt
 
 theorem sortAllowed_mergeSortRows : SortAllowed mergeSortRows := by
   intro rows
   have hle : ∀ a b : VacantSeatRow,
-      (compareKeys sortCfg vacantSeatDirs (vacantSeatKey a) (vacantSeatKey b) != .gt) = true ↔
+      (compareKeys sortCfg vacantSeatOrder.keys a b != .gt) = true ↔
         (a.displayOrder.val < b.displayOrder.val ∨
           (a.displayOrder.val = b.displayOrder.val ∧ a.departureTime.val ≤ b.departureTime.val)) := by
     intro a b; rw [bne_iff_ne]; exact key_le a b
   have hsorted := List.pairwise_mergeSort
-    (le := fun a b => compareKeys sortCfg vacantSeatDirs (vacantSeatKey a) (vacantSeatKey b) != .gt)
+    (le := fun a b => compareKeys sortCfg vacantSeatOrder.keys a b != .gt)
     (fun a b c hab hbc => by
       rw [hle] at hab hbc ⊢
       rcases hab with h1 | ⟨h1, h2⟩ <;> rcases hbc with h3 | ⟨h3, h4⟩
@@ -169,7 +169,7 @@ def NoTie (cs : List Candidate) : Prop :=
 theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : List Candidate}
     (hmap : rows.mapM (candOfRow md) = some cs) (hok : ∀ row ∈ rows, ∃ X ∈ cs, RowOk md row X)
     (htie : NoTie cs) {o : List VacantSeatRow}
-    (ho : isAllowedOrder sortCfg vacantSeatDirs vacantSeatKey rows o = true) :
+    (ho : isAllowedOrder sortCfg vacantSeatOrder rows o = true) :
     o.mapM (candOfRow md) = some (cs.mergeSort candidateLe) := by
   have hp : o.Perm rows := allowed_perm ho
   obtain ⟨o', ho', hpo⟩ := mapM_perm hp hmap

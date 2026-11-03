@@ -38,4 +38,13 @@ def tbl : Json := Json.mkObj [("tables", Json.mkObj [("T", Json.mkObj [
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; return (← icol t r "A").val) |>.toOption) == some (1 : Int)
 #guard ((do let t ← table tbl "T"; let r := t.rows.head!; icol t r "B") |>.toOption).isNone
 
+-- 値の数が列の数と違う行のある表は読まない
+def tblShort : Json := Json.mkObj [("tables", Json.mkObj [("T", Json.mkObj [
+  ("columns", Json.arr #["A", "B"]), ("rows", Json.arr #[Json.arr #["1", Json.null], Json.arr #["2"]])])])]
+#guard (table tblShort "T" |>.toOption).isNone
+#guard (Table.ofRows ["A", "B"] [[some "1", none]] |>.toOption).isSome
+#guard (Table.ofRows ["A", "B"] [[some "1"]] |>.toOption).isNone
+-- 表の行でない短い行の列は、NULL ではなく誤り
+#guard ((do let t ← table tbl "T"; col t [some "1"] "B") |>.toOption).isNone
+
 end Test.ConformanceKit.Runner

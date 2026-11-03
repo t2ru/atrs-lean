@@ -495,7 +495,7 @@ def toEntry (e : String × String) : CodeEntry := ⟨e.1, e.2⟩
 theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f : ρ → LangSemantics.Sql.Postgresql.Int4}
     {a : ρ → Option ω} {ws : List ω} (hm : rows.mapM a = some ws) (dOrd : ω → Nat)
     (hd : ∀ r w, a r = some w → (dOrd w : Int) = (f r).val) (hnd : (ws.map dOrd).Nodup)
-    (h : isAllowedOrder sortCfg [.asc] (orderKey f) rows o = true) (dflt : ω) :
+    (h : isAllowedOrder sortCfg (orderByDisplayOrder f) rows o = true) (dflt : ω) :
     o.map (fun r => (a r).getD dflt) = ws.mergeSort fun x y => decide (dOrd x ≤ dOrd y) := by
   have e := mapM_some_getD hm dflt
   rw [← e]
@@ -509,7 +509,7 @@ def dummyAirportSpec : Airport := ⟨{ val := "AAA" }, "", 0⟩
 
 theorem codeList_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h8 : md.MD8) {o : List AirportRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (airportCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_AIRPORT o).map toEntry = CodeList.airport md := by
   obtain ⟨ha, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.airport := allowed_perm ho
@@ -542,7 +542,7 @@ theorem boardingClassOfRow_parts {r : BoardingClassRow} {w : BoardingClass} (h :
 
 theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List BoardingClassRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_BOARDINGCLASS o).map toEntry = CodeList.boardingClass md := by
   obtain ⟨-, -, -, hb, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.boardingClass := allowed_perm ho
@@ -573,7 +573,7 @@ theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDat
 
 theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List FareTypeRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_FARETYPE o).map toEntry = CodeList.fareType md := by
   obtain ⟨-, -, -, -, hf, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.fareType := allowed_perm ho
@@ -610,7 +610,7 @@ theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf d
 
 theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List CreditTypeRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE o).map toEntry = CodeList.creditType md := by
   obtain ⟨-, -, -, -, -, -, -, hc⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.creditType := allowed_perm ho

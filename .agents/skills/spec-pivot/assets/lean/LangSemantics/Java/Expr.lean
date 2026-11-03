@@ -106,25 +106,45 @@ def tyOf (t : Expr) : MetaM Ty := do
   if ← isDefEq t (mkConst ``Bool) then return .bool
   return .other
 
-/-- 部分式を elaborate した値。`monadic` なら `e : JResult τ` で、`ty` は `τ` の分類である。 -/
+/-- 値として使う項の種類。整数リテラルは純粋な `int`・`long` の値に限るので、型を別に持たず、`long` かどうかだけを持つ。
+「リテラルの値を持つのは、`JResult` でない整数の値だけ」が、型で決まる。 -/
+inductive Kind where
+  /-- 整数リテラル（値 `n`。`long` なら `long` のリテラル） -/
+  | lit (n : Int) (long : Bool)
+  /-- リテラルでない値（型の分類 `ty`） -/
+  | val (ty : Ty)
+  deriving Inhabited
+
+/-- 値の型の分類。 -/
+def Kind.ty : Kind → Ty
+  | .lit _ long => if long then .long else .int
+  | .val ty => ty
+
+/-- 部分式の形: `JResult τ` を返す式か、純粋な式か。純粋な式は、整数リテラルならその値を持つ（`Kind`）。 -/
+inductive Shape where
+  /-- `e : JResult τ`（`ty` は `τ` の分類） -/
+  | monadic (ty : Ty)
+  /-- `e : τ` -/
+  | pure (kind : Kind)
+  deriving Inhabited
+
+/-- 部分式を elaborate した値。`shape` が `monadic` なら `e : JResult τ`、そうでなければ `e : τ` である。 -/
 structure Val where
   e : Expr
   τ : Expr
-  ty : Ty
-  monadic : Bool
+  shape : Shape
 
-/-- `java! e` を elaborate して、値の型を調べる。 -/
-def elabVal (stx : TSyntax `jexpr) : TermElabM Val := do
-  let e ← elabTerm (← `(java! $stx)) none
-  synthesizeSyntheticMVarsNoPostponing
-  let e ← instantiateMVars e
-  let t ← whnfR (← instantiateMVars (← inferType e))
-  if t.isAppOfArity ``Except 2 then
-    let τ := t.appArg!
-    return { e, τ, ty := ← tyOf τ, monadic := true }
-  else
-    let τ ← instantiateMVars (← inferType e)
-    return { e, τ, ty := ← tyOf τ, monadic := false }
+/-- 値の型（`JResult τ` なら `τ`）の分類。 -/
+def Val.ty (v : Val) : Ty :=
+  match v.shape with
+  | .monadic ty => ty
+  | .pure k => k.ty
+
+/-- `JResult` を返す式か。 -/
+def Val.monadic (v : Val) : Bool :=
+  match v.shape with
+  | .monadic _ => true
+  | .pure _ => false
 
 /-- 整数リテラル（`n`・`-n`・括弧）の値。`long` のリテラルなら `long := true`。 -/
 def litInt? : Nat → TSyntax `jexpr → Option (Int × Bool)
@@ -137,14 +157,34 @@ def litInt? : Nat → TSyntax `jexpr → Option (Int × Bool)
     | `(jexpr| - $e) => (litInt? fuel e).map fun (n, l) => (-n, l)
     | _ => none
 
-/-- 値の項の構文（monadic なら束縛した変数）と、束縛の並び。 -/
+/-- `java! e` を elaborate して、値の型を調べる。整数リテラル（`litInt?`）で、純粋な `int`・`long` の値なら、
+その値を持つ。 -/
+def elabVal (stx : TSyntax `jexpr) : TermElabM Val := do
+  let e ← elabTerm (← `(java! $stx)) none
+  synthesizeSyntheticMVarsNoPostponing
+  let e ← instantiateMVars e
+  let t ← whnfR (← instantiateMVars (← inferType e))
+  if t.isAppOfArity ``Except 2 then
+    let τ := t.appArg!
+    return { e, τ, shape := .monadic (← tyOf τ) }
+  else
+    let τ ← instantiateMVars (← inferType e)
+    let ty ← tyOf τ
+    let kind : Kind := match litInt? 16 stx, ty with
+      | some (n, false), .int => .lit n false
+      | some (n, true), .long => .lit n true
+      | _, _ => .val ty
+    return { e, τ, shape := .pure kind }
+
+/-- 値の項の構文（monadic なら束縛した変数）と、その種類。 -/
 structure Bound where
   /-- 値として使う項（束縛した変数か、値そのもの） -/
   arg : Term
-  ty : Ty
-  /-- 整数リテラルなら、その値 -/
-  lit : Option Int := none
+  kind : Kind
   deriving Inhabited
+
+/-- 値の型の分類。 -/
+def Bound.ty (b : Bound) : Ty := b.kind.ty
 
 /-- `liftJ% t`: `t` が `JResult` ならそのまま、そうでなければ `pure t`。 -/
 elab "liftJ% " t:term : term => do
@@ -154,18 +194,18 @@ elab "liftJ% " t:term : term => do
   if ty.isAppOfArity ``Except 2 then return e
   elabTerm (← `(pure (f := JResult) $(← exprToSyntax e))) none
 
-/-- 値を左から順に束縛して `k` に渡し、`>>=` でつないだ項を作る。束縛が無く `k` の項が純粋なら、そのまま返す。 -/
-def withBinds (vs : Array (Val × Option Int)) (k : Array Bound → TermElabM Term) : TermElabM Term := do
-  let mut binds : Array (Ident × Term × Term) := #[]
-  let mut args : Array Bound := #[]
-  for (v, lit) in vs do
-    if v.monadic then
+/-- 値を左から順に束縛して `k` に渡し、`>>=` でつないだ項を作る。束縛が無く `k` の項が純粋なら、そのまま返す。
+`k` が受け取る値の数は、渡した値の数 `n` に型で等しい。 -/
+def withBinds {n : Nat} (vs : Vector Val n) (k : Vector Bound n → TermElabM Term) : TermElabM Term := do
+  let bs ← vs.mapM fun v => do
+    match v.shape with
+    | .monadic ty =>
       let x := mkIdent (← mkFreshUserName `x)
-      binds := binds.push (x, ← exprToSyntax v.e, ← exprToSyntax v.τ)
-      args := args.push { arg := x, ty := v.ty }
-    else
-      args := args.push { arg := ← exprToSyntax v.e, ty := v.ty, lit := lit }
-  let core ← k args
+      let bind : Ident × Term × Term := (x, ← exprToSyntax v.e, ← exprToSyntax v.τ)
+      return (some bind, ({ arg := x, kind := .val ty } : Bound))
+    | .pure kind => return (none, ({ arg := ← exprToSyntax v.e, kind } : Bound))
+  let binds : Array (Ident × Term × Term) := bs.toArray.filterMap (·.1)
+  let core ← k (bs.map (·.2))
   if binds.isEmpty then return core
   -- 本体が純粋か JResult かは elaborate してから決まるので、`liftJ%` で JResult にそろえる
   let mut body ← `(liftJ% $core)
@@ -185,18 +225,18 @@ def promote (a b : Ty) : Option Ty :=
 /-- 値 `b` を型 `to` に昇格した項。 -/
 def widen (b : Bound) (to : Ty) : TermElabM Term := do
   if b.ty == to then return b.arg
-  match b.ty, to, b.lit with
-  | .int, .long, some n => `(J64.ofInt $(← intLit n))
-  | .int, .long, none => `(J64.ofInt ($(b.arg)).val)
-  | .int, .double, some n | .long, .double, some n => `(jd $(← intLit n))
-  | .int, .double, none | .long, .double, none => `(jd ($(b.arg)).val)
-  | _, _, _ => throwError "java!: {b.ty.name} を {to.name} に昇格できない"
+  match b.kind, to with
+  | .lit n false, .long => `(J64.ofInt $(← intLit n))
+  | .val .int, .long => `(J64.ofInt ($(b.arg)).val)
+  | .lit n _, .double => `(jd $(← intLit n))
+  | .val .int, .double | .val .long, .double => `(jd ($(b.arg)).val)
+  | _, _ => throwError "java!: {b.ty.name} を {to.name} に昇格できない"
 
 /-- 比較に使う整数の値の項（リテラルは値のまま、ほかは `.val`）。 -/
 def intValue (b : Bound) : TermElabM Term := do
-  match b.lit with
-  | some n => `(($(← intLit n) : Int))
-  | none => `(($(b.arg)).val)
+  match b.kind with
+  | .lit n _ => `(($(← intLit n) : Int))
+  | .val _ => `(($(b.arg)).val)
 
 /-! ## 演算子 -/
 
@@ -217,28 +257,13 @@ syntax "jcall% " ident "(" jexpr,* ")" : term
 /-- `jint% n l`: 整数リテラル。 -/
 syntax "jint% " num str : term
 
-/-- 束縛した値が 1 つ。 -/
-def one (xs : Array Bound) : TermElabM Bound :=
-  match xs with
-  | #[x] => return x
-  | _ => throwError "java!: 内部の誤り（値の数が {xs.size}）"
-
-/-- 束縛した値が 2 つ。 -/
-def two (xs : Array Bound) : TermElabM (Bound × Bound) :=
-  match xs with
-  | #[x, y] => return (x, y)
-  | _ => throwError "java!: 内部の誤り（値の数が {xs.size}）"
-
-/-- 部分式を、リテラルの値とともに elaborate する。 -/
-def elabArg (stx : TSyntax `jexpr) : TermElabM (Val × Option Int) := do
-  return (← elabVal stx, (litInt? 16 stx).map (·.1))
-
 elab_rules : term
   | `(jbin% $op:str $a $b) => do
-    let va ← elabArg a
-    let vb ← elabArg b
-    let stx ← withBinds #[va, vb] fun xs => do
-      let (x, y) ← two xs
+    let va ← elabVal a
+    let vb ← elabVal b
+    let stx ← withBinds #v[va, vb] fun xs => do
+      let x := xs[0]
+      let y := xs[1]
       let some t := promote x.ty y.ty
         | throwError "java!: {op.getString} を {x.ty.name} と {y.ty.name} に使えない"
       let x' ← widen x t
@@ -261,10 +286,11 @@ elab_rules : term
       | _, o => throwError "java!: {t.name} の {o} は扱わない"
     elabTerm stx none
   | `(jcmp% $op:str $a $b) => do
-    let va ← elabArg a
-    let vb ← elabArg b
-    let stx ← withBinds #[va, vb] fun xs => do
-      let (x, y) ← two xs
+    let va ← elabVal a
+    let vb ← elabVal b
+    let stx ← withBinds #v[va, vb] fun xs => do
+      let x := xs[0]
+      let y := xs[1]
       match x.ty, y.ty, op.getString with
       | .bool, .bool, "==" => `($(x.arg) == $(y.arg))
       | .bool, .bool, "!=" => `($(x.arg) != $(y.arg))
@@ -282,38 +308,38 @@ elab_rules : term
         | _ => throwError "java!: 比較 {o} は扱わない"
     elabTerm stx none
   | `(jlogic% $op:str $a $b) => do
-    let va ← elabArg a
-    let vb ← elabArg b
-    unless va.1.ty == .bool && vb.1.ty == .bool do
-      throwError "java!: {op.getString} は boolean に使う（{va.1.ty.name} と {vb.1.ty.name}）"
+    let va ← elabVal a
+    let vb ← elabVal b
+    unless va.ty == .bool && vb.ty == .bool do
+      throwError "java!: {op.getString} は boolean に使う（{va.ty.name} と {vb.ty.name}）"
     -- 右辺は左辺の値によっては評価しない（短絡評価）ので、左辺だけを先に束縛する
-    let rhs ← exprToSyntax vb.1.e
-    let stx ← withBinds #[va] fun xs => do
-      let x := (← one xs).arg
-      match op.getString, vb.1.monadic with
+    let rhs ← exprToSyntax vb.e
+    let stx ← withBinds #v[va] fun xs => do
+      let x := xs[0].arg
+      match op.getString, vb.monadic with
       | "&&", false => `($x && $rhs)
       | "||", false => `($x || $rhs)
       | "&&", true => `(if $x then $rhs else pure (f := JResult) false)
       | _, _ => `(if $x then pure (f := JResult) true else $rhs)
     elabTerm stx none
   | `(jcast% $ty:str $a) => do
-    let va ← elabArg a
-    let stx ← withBinds #[va] fun xs => do
-      let x ← one xs
-      match ty.getString, x.ty, x.lit with
+    let va ← elabVal a
+    let stx ← withBinds #v[va] fun xs => do
+      let x := xs[0]
+      match ty.getString, x.ty, x.kind with
       | "int", .int, _ | "long", .long, _ | "double", .double, _ => return x.arg
       | "int", .long, _ => `(J32.ofInt ($(x.arg)).val)
       | "int", .double, _ => `(jd2i $(x.arg))
-      | "long", .int, some n => `(J64.ofInt $(← intLit n))
-      | "long", .int, none => `(J64.ofInt ($(x.arg)).val)
+      | "long", .int, .lit n _ => `(J64.ofInt $(← intLit n))
+      | "long", .int, .val _ => `(J64.ofInt ($(x.arg)).val)
       | "long", .double, _ => `(jd2l $(x.arg))
       | "double", .int, _ | "double", .long, _ => widen x .double
       | t, s, _ => throwError "java!: ({t}) を {s.name} に使えない"
     elabTerm stx none
   | `(jneg% $a) => do
-    let va ← elabArg a
-    let stx ← withBinds #[va] fun xs => do
-      let x ← one xs
+    let va ← elabVal a
+    let stx ← withBinds #v[va] fun xs => do
+      let x := xs[0]
       match x.ty with
       | .int => `(j32neg $(x.arg))
       | .long => `(j64neg $(x.arg))
@@ -321,14 +347,14 @@ elab_rules : term
       | s => throwError "java!: 単項の - を {s.name} に使えない"
     elabTerm stx none
   | `(jnot% $a) => do
-    let va ← elabArg a
-    unless va.1.ty == .bool do throwError "java!: ! を {va.1.ty.name} に使えない"
-    let stx ← withBinds #[va] fun xs => do `(! $((← one xs).arg))
+    let va ← elabVal a
+    unless va.ty == .bool do throwError "java!: ! を {va.ty.name} に使えない"
+    let stx ← withBinds #v[va] fun xs => do `(! $(xs[0].arg))
     elabTerm stx none
   | `(jcall% $f:ident ($args,*)) => do
-    let vs ← args.getElems.mapM elabArg
-    let stx ← withBinds vs fun xs => do
-      let as := xs.map (·.arg)
+    let vs ← args.getElems.mapM elabVal
+    let stx ← withBinds vs.toVector fun xs => do
+      let as := xs.toArray.map (·.arg)
       `($f $as*)
     elabTerm stx none
   | `(jint% $n:num $l:str) => do

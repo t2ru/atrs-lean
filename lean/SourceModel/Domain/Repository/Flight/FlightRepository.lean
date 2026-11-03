@@ -218,19 +218,17 @@ theorem vacantSeatRows_eq_on (db : MasterDb) (fd : FlightDb) (p : Params) :
   simp only [flightPre, Bool.and_eq_true]
   exact ⟨⟨ht.2.1, ht.2.2.2.2.2.2.1⟩, ht.2.2.2.2.2.2.2.1⟩
 
-/-- `ORDER BY ft.display_order ASC, fm.departure_time ASC` の整列キー。 -/
-def vacantSeatKey (r : VacantSeatRow) : List SqlValue := [r.displayOrder.toSql, r.departureTime.toSql]
-
-/-- 整列の向き。 -/
-def vacantSeatDirs : List SortDir := [.asc, .asc]
+/-- `ORDER BY ft.display_order ASC, fm.departure_time ASC` の整列の指定。 -/
+def vacantSeatOrder : OrderBy VacantSeatRow :=
+  ⟨[(.asc, fun r => r.displayOrder.toSql), (.asc, fun r => r.departureTime.toSql)]⟩
 
 /-- 並べ方 `sortRows`（整列前の行の列から、並べた列を返す）が、どの結果についても `ORDER BY` の許される並びを返す。 -/
 def SortAllowed (sortRows : List VacantSeatRow → List VacantSeatRow) : Prop :=
-  ∀ rows, isAllowedOrder sortCfg vacantSeatDirs vacantSeatKey rows (sortRows rows) = true
+  ∀ rows, isAllowedOrder sortCfg vacantSeatOrder rows (sortRows rows) = true
 
 /-- 標準の並べ方（安定整列。テストと参照に使う）。 -/
 def standardSort (rows : List VacantSeatRow) : List VacantSeatRow :=
-  orderByStable sortCfg vacantSeatDirs vacantSeatKey rows
+  orderByStable sortCfg vacantSeatOrder rows
 
 /-- `flightMaster-map`（1 行分）。 -/
 def flightMasterMap (f : FlightMasterResult) : FlightMaster :=

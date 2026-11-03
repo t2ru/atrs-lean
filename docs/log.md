@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: スキルの SQL の並びのキー `OrderBy`・`SqlTable` の行の幅の証明（スキルの backlog d3fd の S4）に、`SourceModel` の並びの定義（`orderByDisplayOrder`・`vacantSeatOrder`）・`Abstraction` の補題・SQL のテストを合わせた。
 * **Update**: スキルの `JHashMap`・`DecimalFormat.Symbols`・`JThrow.other`（クラス名 `JClassName`）の型の変更（スキルの backlog d3fd の S4）に、`SourceModel` の例外のクラス名の定数・`Abstraction.FlightSearch` の補題・テストの字面を合わせた。照合の記録を `trace rehash` で更新した（`trace/manifest.json`・[spec/traceability.md](spec/traceability.md) の生成区画）。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、`Spec.Port.World` にフライトの主キーの一意性の証明を持たせ、状態の α を主キーが重複する行に定義しないようにした。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/ports.md](spec/ports.md) を改めた。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、検証済みの設定・マスタの型 `Spec.EnvPre.ValidEnv` と検証 `validate` を置き、環境の前提 `masterConfigOk` と各機械の PRE をそれで書き直した。[spec/master-data.md](spec/master-data.md) を改めた。

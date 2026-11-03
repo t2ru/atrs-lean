@@ -108,20 +108,20 @@ def orderedAllowed (db : MasterDb) (id : String) (pg : List Row) : Except String
   match id with
   | "CL_AIRPORT" => do
     let o ← back (airportCodeListRows db) (·.airportCd.val)
-    let ok := isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o
+    let ok := isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (airportCodeListRows db) o
     -- 表示の列も一致する
     return ok && o.map (fun a => [sV a.airportCd, sV a.airportName, sI a.displayOrder]) == pg
   | "CL_BOARDINGCLASS" => do
     let o ← back (boardingClassCodeListRows db) (·.boardingClassCd.val)
-    return isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o &&
+    return isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (boardingClassCodeListRows db) o &&
       o.map (fun b => [sV b.boardingClassCd, b.boardingClassName.map (·.val)]) == pg
   | "CL_FARETYPE" => do
     let o ← back (fareTypeCodeListRows db) (·.fareTypeCd.val)
-    return isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o &&
+    return isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (fareTypeCodeListRows db) o &&
       o.map (fun f => [sV f.fareTypeCd, sV f.fareTypeName]) == pg
   | "CL_CREDITTYPE" => do
     let o ← back (creditTypeCodeListRows db) (·.creditTypeCd.val)
-    return isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o &&
+    return isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (creditTypeCodeListRows db) o &&
       o.map (fun c => [sV c.creditTypeCd, sV c.creditFirm]) == pg
   | _ => throw s!"unknown ordered statement {id}"
 

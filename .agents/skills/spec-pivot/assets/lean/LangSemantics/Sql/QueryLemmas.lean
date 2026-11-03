@@ -55,7 +55,7 @@ theorem filter_cross {α β : Type} {xs : List α} {bs : List β} {c : α → Bo
 
 /-- 非 NULL の整数 1 列を昇順で整列した結果は、行の並べ替えで、キーについて整列している。 -/
 theorem allowed_int_sorted {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {f : α → Int} {rows o : List α}
-    (h : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o = true) :
+    (h : isAllowedOrder cfg ⟨[(.asc, fun r => .int (f r))]⟩ rows o = true) :
     o.Perm rows ∧ o.Pairwise fun a b => f a ≤ f b := by
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm, List.all_eq_true, bne_iff_ne, ne_eq,
     compareKeys_int_asc, Int.compare_ne_gt] at h
@@ -77,7 +77,7 @@ theorem eq_mergeSort_of_sorted {β : Type} {l l' : List β} (d : β → Nat) (hn
 /-- 許される順列を `g` で写したものは、写した列の `mergeSort` に等しい（キーが一意で、非負の整数のとき）。 -/
 theorem allowed_map_eq_mergeSort {α β : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {f : α → Int}
     {rows o : List α} (g : α → β) (d : β → Nat) (hd : ∀ r ∈ rows, (d (g r) : Int) = f r)
-    (hnd : ((rows.map g).map d).Nodup) (h : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o = true) :
+    (hnd : ((rows.map g).map d).Nodup) (h : isAllowedOrder cfg ⟨[(.asc, fun r => .int (f r))]⟩ rows o = true) :
     o.map g = (rows.map g).mergeSort fun a b => decide (d a ≤ d b) := by
   obtain ⟨hp, hs⟩ := allowed_int_sorted h
   refine eq_mergeSort_of_sorted d hnd (hp.map g) ?_
@@ -100,7 +100,7 @@ theorem adjacent_of_pairwise {α : Type} {R : α → α → Prop} : ∀ {l : Lis
 
 /-- 許される並びは存在する: 整数のキーで `mergeSort` した並び。 -/
 theorem allowed_mergeSort_self {α : Type} [BEq α] [LawfulBEq α] (cfg : SortConfig) (rows : List α) (f : α → Int) :
-    isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows (rows.mergeSort fun a b => decide (f a ≤ f b)) = true := by
+    isAllowedOrder cfg ⟨[(.asc, fun r => .int (f r))]⟩ rows (rows.mergeSort fun a b => decide (f a ≤ f b)) = true := by
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm, List.all_eq_true, bne_iff_ne, ne_eq,
     compareKeys_int_asc, Int.compare_ne_gt]
   refine ⟨(List.mergeSort_perm _ _).symm, adjacent_of_pairwise (R := fun a b => f a ≤ f b) ?_⟩
@@ -109,8 +109,8 @@ theorem allowed_mergeSort_self {α : Type} [BEq α] [LawfulBEq α] (cfg : SortCo
     (fun a b => by simp only [Bool.or_eq_true, decide_eq_true_eq]; omega) rows
   simpa using this
 
-theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {dirs : List SortDir} {rows o : List ρ}
-    {key : ρ → List SqlValue} (h : isAllowedOrder cfg dirs key rows o = true) : o.Perm rows := by
+theorem allowed_perm {ρ : Type} [DecidableEq ρ] {cfg : SortConfig} {ob : OrderBy ρ} {rows o : List ρ}
+    (h : isAllowedOrder cfg ob rows o = true) : o.Perm rows := by
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm] at h
   exact h.1.symm
 

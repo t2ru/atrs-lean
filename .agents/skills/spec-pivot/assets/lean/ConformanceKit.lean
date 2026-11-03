@@ -10,5 +10,5 @@ import ConformanceKit.SqlTable
 | モジュール | 内容 |
 | --- | --- |
 | `ConformanceKit.Runner` | ベクタのファイルの読み込み・形式の検査・`expected.ok` の比較、共有入力（`fixtures`）、`modelDef` の選択 |
-| `ConformanceKit.SqlTable` | 差分実行の結果の表（`Row`・`Table`・`col`）と、`Varchar`・`Int4` の列の読み取り |
+| `ConformanceKit.SqlTable` | 差分実行の結果の表（`Row`・行の幅が列の数に等しい `Table`・`Table.ofRows`・`col`）と、`Varchar`・`Int4` の列の読み取り |
 -/

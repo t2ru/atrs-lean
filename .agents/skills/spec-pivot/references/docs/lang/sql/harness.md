@@ -45,7 +45,7 @@ Lean のテストで写しの評価結果と比べる（再生成して差分が
 - 値は、DBMS の文字列表現（`null` は SQL の NULL）とする。数値・日付も文字列のまま保存し、読み取り側で型の範囲を検査する。
 - `ordered` が `false` の文の結果はバッグとして比べる。`true` の文（`ORDER BY` の同順位が無いもの）は列として比べる。同順位がありうる文は、許される順列（`isAllowedOrder`）の中にあることを比べる。
 - `tables` は投入したデータで、共有入力（`conformance/fixtures/`）と一致することも確かめる。
-- Lean での読み取りには、スキルの `ConformanceKit.SqlTable`（`table`・`col`・`vcol`・`icol`）を使う。
+- Lean での読み取りには、スキルの `ConformanceKit.SqlTable`（`table`・`col`・`vcol`・`icol`）を使う。表 `Table` は、どの行の幅も列の数に等しいことの証明を持ち、`table`・`Table.ofRows` は幅の違う行を拒む。
 
 ## 移植元として
 

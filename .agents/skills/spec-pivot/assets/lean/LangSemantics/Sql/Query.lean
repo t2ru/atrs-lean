@@ -86,30 +86,31 @@ def compareKey (cfg : SortConfig) (dir : SortDir) (a b : SqlValue) : Ordering :=
   | .asc => base
   | .desc => base.swap
 
-/-- 複数項目の辞書式比較。 -/
-def compareKeys (cfg : SortConfig) (dirs : List SortDir) : List SqlValue → List SqlValue → Ordering
-  | a :: as, b :: bs =>
-    match dirs with
-    | d :: ds => match compareKey cfg d a b with
-      | .eq => compareKeys cfg ds as bs
-      | o => o
-    | [] => .eq
-  | _, _ => .eq
+/-- `ORDER BY` の整列の指定: 項目ごとの、向きと、行から整列キーの値を取る式の組の並び
+（`ORDER BY k₁ d₁, k₂ d₂, …`）。向きと値を項目ごとに組にするので、向きの数とキーの値の数の食い違いは表せない。 -/
+structure OrderBy (α : Type) where
+  keys : List (SortDir × (α → SqlValue))
+
+/-- 項目の並びによる、2 つの行の辞書式比較。 -/
+def compareKeys {α : Type} (cfg : SortConfig) : List (SortDir × (α → SqlValue)) → α → α → Ordering
+  | [], _, _ => .eq
+  | (d, k) :: ks, a, b =>
+    match compareKey cfg d (k a) (k b) with
+    | .eq => compareKeys cfg ks a b
+    | o => o
 
 /-- `ORDER BY` の結果として `out` が許されるか: `rows` の並べ替えであり、整列キーについて非減少である。
 キーが等しい行の相対順序は問わない（未規定）。 -/
-def isAllowedOrder {α : Type} [BEq α] (cfg : SortConfig) (dirs : List SortDir)
-    (key : α → List SqlValue) (rows out : List α) : Bool :=
-  let sorted := (out.zip out.tail).all (fun p => compareKeys cfg dirs (key p.1) (key p.2) != .gt)
+def isAllowedOrder {α : Type} [BEq α] (cfg : SortConfig) (ob : OrderBy α) (rows out : List α) : Bool :=
+  let sorted := (out.zip out.tail).all (fun p => compareKeys cfg ob.keys p.1 p.2 != .gt)
   Bag.bagEq rows out && sorted
 
 /-- 許される順列のうちの 1 つ（挿入ソートによる安定整列）。テストや参照実装に使う。 -/
-def orderByStable {α : Type} (cfg : SortConfig) (dirs : List SortDir) (key : α → List SqlValue)
-    (rows : List α) : List α :=
+def orderByStable {α : Type} (cfg : SortConfig) (ob : OrderBy α) (rows : List α) : List α :=
   let insert (x : α) : List α → List α :=
     let rec go : List α → List α
       | [] => [x]
-      | y :: ys => if compareKeys cfg dirs (key x) (key y) == .lt then x :: y :: ys else y :: go ys
+      | y :: ys => if compareKeys cfg ob.keys x y == .lt then x :: y :: ys else y :: go ys
     go
   rows.foldl (fun acc x => insert x acc) []
 
@@ -155,22 +156,22 @@ theorem eq_of_perm_of_pairwise {α : Type} {R : α → α → Prop} :
 
 /-- `ORDER BY` の許される順列の一意性: 整列キーの比較が `rows` の上で反対称（`swap`）・推移的で、
 比較が等しい行は同じ行である（キーが単射）なら、許される順列はただ 1 つである。 -/
-theorem isAllowedOrder_unique {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {dirs : List SortDir}
-    {key : α → List SqlValue} {rows o₁ o₂ : List α}
-    (hswap : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg dirs (key y) (key x) = (compareKeys cfg dirs (key x) (key y)).swap)
-    (htrans : ∀ x ∈ rows, ∀ y ∈ rows, ∀ z ∈ rows, compareKeys cfg dirs (key x) (key y) ≠ .gt →
-      compareKeys cfg dirs (key y) (key z) ≠ .gt → compareKeys cfg dirs (key x) (key z) ≠ .gt)
-    (hinj : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg dirs (key x) (key y) = .eq → x = y)
-    (h₁ : isAllowedOrder cfg dirs key rows o₁ = true) (h₂ : isAllowedOrder cfg dirs key rows o₂ = true) :
+theorem isAllowedOrder_unique {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {ob : OrderBy α}
+    {rows o₁ o₂ : List α}
+    (hswap : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg ob.keys y x = (compareKeys cfg ob.keys x y).swap)
+    (htrans : ∀ x ∈ rows, ∀ y ∈ rows, ∀ z ∈ rows, compareKeys cfg ob.keys x y ≠ .gt →
+      compareKeys cfg ob.keys y z ≠ .gt → compareKeys cfg ob.keys x z ≠ .gt)
+    (hinj : ∀ x ∈ rows, ∀ y ∈ rows, compareKeys cfg ob.keys x y = .eq → x = y)
+    (h₁ : isAllowedOrder cfg ob rows o₁ = true) (h₂ : isAllowedOrder cfg ob rows o₂ = true) :
     o₁ = o₂ := by
   simp only [isAllowedOrder, Bool.and_eq_true, Bag.bagEq_iff_perm, List.all_eq_true, bne_iff_ne, ne_eq] at h₁ h₂
   obtain ⟨hp₁, hs₁⟩ := h₁
   obtain ⟨hp₂, hs₂⟩ := h₂
   -- 要素を rows の要素に限った関係で考える
-  let R : α → α → Prop := fun x y => x ∈ rows ∧ y ∈ rows ∧ compareKeys cfg dirs (key x) (key y) ≠ .gt
+  let R : α → α → Prop := fun x y => x ∈ rows ∧ y ∈ rows ∧ compareKeys cfg ob.keys x y ≠ .gt
   have trans : ∀ a b c, R a b → R b c → R a c := fun a b c ⟨ha, hb, hab⟩ ⟨_, hc, hbc⟩ =>
     ⟨ha, hc, htrans a ha b hb c hc hab hbc⟩
-  have sorted : ∀ (o : List α), rows.Perm o → (∀ p ∈ o.zip o.tail, ¬ compareKeys cfg dirs (key p.1) (key p.2) = .gt) →
+  have sorted : ∀ (o : List α), rows.Perm o → (∀ p ∈ o.zip o.tail, ¬ compareKeys cfg ob.keys p.1 p.2 = .gt) →
       o.Pairwise R := by
     intro o hp hs
     apply pairwise_of_adjacent trans
@@ -183,20 +184,20 @@ theorem isAllowedOrder_unique {α : Type} [BEq α] [LawfulBEq α] {cfg : SortCon
   apply hinj x hx y hy
   rw [hswap x hx y hy] at hyx
   revert hxy hyx
-  generalize compareKeys cfg dirs (key x) (key y) = c
+  generalize compareKeys cfg ob.keys x y = c
   cases c <;> decide
 
 /-- 非 NULL の整数 1 列を昇順で整列するときの比較は、整数の比較である。 -/
-theorem compareKeys_int_asc (cfg : SortConfig) (a b : Int) :
-    compareKeys cfg [.asc] [.int a] [.int b] = compare a b := by
+theorem compareKeys_int_asc {α : Type} (cfg : SortConfig) (f : α → Int) (a b : α) :
+    compareKeys cfg [(.asc, fun r => .int (f r))] a b = compare (f a) (f b) := by
   simp only [compareKeys, compareKey, SqlValue.cmp, Option.getD_some]
-  cases compare a b <;> rfl
+  cases compare (f a) (f b) <;> rfl
 
 /-- 例: 非 NULL の整数 1 列のキーが行の上で単射なら、`ORDER BY` の許される順列はただ 1 つである。 -/
 theorem isAllowedOrder_unique_int {α : Type} [BEq α] [LawfulBEq α] {cfg : SortConfig} {f : α → Int}
     {rows o₁ o₂ : List α} (hinj : ∀ x ∈ rows, ∀ y ∈ rows, f x = f y → x = y)
-    (h₁ : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o₁ = true)
-    (h₂ : isAllowedOrder cfg [.asc] (fun r => [.int (f r)]) rows o₂ = true) : o₁ = o₂ := by
+    (h₁ : isAllowedOrder cfg ⟨[(.asc, fun r => .int (f r))]⟩ rows o₁ = true)
+    (h₂ : isAllowedOrder cfg ⟨[(.asc, fun r => .int (f r))]⟩ rows o₂ = true) : o₁ = o₂ := by
   refine isAllowedOrder_unique ?_ ?_ ?_ h₁ h₂
   · intro x _ y _; simp only [compareKeys_int_asc]; exact (Int.compare_swap _ _).symm
   · intro x _ y _ z _; simp only [compareKeys_int_asc, Int.compare_ne_gt]; exact Int.le_trans
