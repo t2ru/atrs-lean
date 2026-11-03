@@ -11,7 +11,7 @@ namespace Spec.Prim.Int
 /-!
 ## 基本演算（Spec.Prim）
 
-**[Spec]** Lean: [`Spec.Prim.Int`]()。引数は数学的整数で、溢れは無い。
+**[Spec]** Lean: [`Spec.Prim.Int`](Int.lean)。引数は数学的整数で、溢れは無い。
 
 | 演算 | 事前条件 | 要約 |
 | --- | --- | --- |

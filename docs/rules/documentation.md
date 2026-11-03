@@ -15,7 +15,7 @@ generated:
 
 - 本文は **日本語** で書く（[ADR d845](../decision/d845-record-architecture-decisions-with-madr.md)）。
 - 型名・関数名・フィールド名・列挙値・エラーコード・ファイル名・URL は **英語（原典の綴り）** のまま書き、コード書式（`` ` ``）で囲む。
-- ATRS の業務用語は原典の日本語を使い、初出時に英語識別子を併記する。対応は [spec/glossary.md](../../lean/Spec/Glossary.lean) に集約する。
+- ATRS の業務用語は原典の日本語を使い、初出時に英語識別子を併記する。対応は [`Spec.Glossary`](../../lean/Spec/Glossary.lean) に集約する。
   - 例: 運賃種別（`FareType`）、搭乗クラス（`BoardingClass`）
 
 ## 規範的な語
@@ -51,7 +51,7 @@ generated:
 - スキルの ADR・backlog も、同じ形でスキルのバンドルへの相対パスで書く。ATRS の記録と紛らわしいときは「スキルの ADR xxxx」と書く。
 - 道具が読む箇所（frontmatter の `id`・`depends_on`・`superseded_by`、`trace/features.json`、登録簿の backlog の列）には ID 全体を書く。参照は `uv run python -I .agents/skills/work-records/scripts/ids.py check` で検査する（スキル work-records。設定は `.work-records.json`）。
 - 相対リンクの指す先と見出しアンカーは、`uv run python -I .agents/skills/okf-bundle/scripts/okf_check.py` で検査する（[ADR 920d](../decision/920d-docs-bundle-check-in-ci.md)）。見出しを改めるときは、そのアンカーを指すリンクも直す。
-- 仕様節への参照はファイル名＋見出しアンカーで書く（例: `fare-calculation.md#基本運賃`）。
+- 仕様節への参照は Lean のファイル＋見出しアンカーで書く（例: `lean/Spec/Fare.lean#基本運賃`）。業務仕様は `Spec` のモジュール文書（`/-! -/`）に書く（[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)。書き方はスキル spec-pivot の [spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md#モジュール文書に書く)）。モジュール文書の中のリンクは、その Lean のファイルから見た相対パスで書く。`docs:okf` が `lean/Spec` のモジュール文書のリンクとアンカーも検査する（`.okf.json` の `links.lean_roots`）。
 
 ## OKF v0.2
 

@@ -21,7 +21,7 @@ open Spec.Prim
 /-!
 ## 列挙
 
-**[Spec=Source]** Lean: [`Spec.Model`]()。列挙値の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（Lean の `toCode`・`ofCode?`）。
+**[Spec=Source]** Lean: [`Spec.Model`](Model.lean)。列挙値の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（Lean の `toCode`・`ofCode?`）。
 
 | 型 | 値 | 意味 |
 | --- | --- | --- |
@@ -128,7 +128,7 @@ theorem fareType_partition (c : FareTypeCd) : (c ∈ oneWayFareTypes) ≠ (c ∈
 /-!
 ## コード値
 
-**[Spec]** Lean: [`Spec.Model`]()。`String` を包む structure で、形式は述語 `WellFormed` で表す。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.MasterData`](MasterData.lean)）。
+**[Spec]** Lean: [`Spec.Model`](Model.lean)。`String` を包む structure で、形式は述語 `WellFormed` で表す。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.MasterData`](MasterData.lean)）。
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
@@ -206,7 +206,7 @@ instance (c : CreditTypeCd) : Decidable c.WellFormed := by unfold CreditTypeCd.W
 /-!
 ## エンティティ
 
-**[Spec]** Lean: [`Spec.Model`]()。型は [Spec] の形で示す。`?` は省略可能（`Option`）。[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
+**[Spec]** Lean: [`Spec.Model`](Model.lean)。型は [Spec] の形で示す。`?` は省略可能（`Option`）。[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
 
 ### Flight
 
@@ -375,7 +375,7 @@ structure Member where
 /-!
 ## 値域
 
-[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`]()）にある。マスタの値域は `MasterData.MD8`（[`Spec.MasterData`](MasterData.lean#不変条件spec)）である。
+[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](Model.lean)）にある。マスタの値域は `MasterData.MD8`（[`Spec.MasterData`](MasterData.lean#不変条件spec)）である。
 マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 70eb](../../docs/decision/70eb-refinement-non-vacuity-obligations.md)、[abstraction.md](../../docs/spec/abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 01d4](../../docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |

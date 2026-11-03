@@ -1,21 +1,21 @@
 ---
 type: Guideline
 title: "仕様文書の書き方"
-description: "Spec で表現できない仕様を書く Markdown の仕様文書の区分・節構成・差異の表と、道具が読む見出しと値。"
+description: "Spec で表現できない仕様・草案・要約を書く Spec のモジュール文書と、メタ情報の Markdown の文書の区分・節構成・差異の表、仕様の本、道具が読む見出しと値。"
 tags: [spec, documentation]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-31T19:19:29+09:00
+  at: 2026-11-03T12:00:00+09:00
 ---
 
 # 仕様文書の書き方
 
-正規仕様は Lean の `Spec` である。Markdown の仕様文書には、**`Spec` で表現できない仕様** を規範として書き、加えてメタ情報と、形式化前の草案を置く。
+正規仕様は Lean の `Spec` である。**`Spec` で表現できない仕様**（規範）と、形式化前の草案、形式化した規則の要約は、`Spec` のモジュール文書の節として、その節が述べる定義のすぐ前に書く（[ADR c634](../decision/c634-spec-prose-in-lean-module-docs-and-book.md)）。Markdown の仕様文書には、メタ情報（課題一覧・追跡・保証の限界など）だけを置く。
 
 ## 区分
 
-各文書は、frontmatter（またはそれに相当する見出し直下の一文）で区分を示す。混在する場合は節ごとに示す。
+各モジュール文書は、題の直下の一文で区分を示す（Markdown の文書は frontmatter の `spec_role` か、見出し直下の一文）。混在する場合は節ごとに示す。
 
 | 区分 | 意味 | 規範性 |
 | --- | --- | --- |
@@ -27,6 +27,19 @@ generated:
 - `draft` の節を Lean に形式化したら、その節を `informative` に書き換える。式・手順・エラー表などの規範的な定義は残さない。
 - `informative` の要約と Lean `Spec` が食い違ったら、Lean `Spec` が正である。要約を直す。
 - `Spec` で表現できるか迷う仕様は、まず Lean で書くことを試みる。書けなかった理由を `normative` の節に記録する。
+
+## モジュール文書に書く
+
+- 散文は、列 0 から始まる `/-! … -/` に Markdown で書く。mdgen は、これ（と列 0 から始まる `/- … -/`）を本の地の文にし、それ以外（`/-- … -/` の文書コメントを含む）をコードブロックにする。
+- 1 つの `##` 節を 1 つの `/-! … -/` にし、その節を `@[spec_doc]` で指す最初の宣言の直前に置く。モジュールの先頭のモジュール文書の題は「<文書の題>（`<モジュール名>`）」とし、その下に区分と前文を書く。
+- 形式化していない領域は、散文だけのモジュール（文書だけのモジュール）にする。形式化するときは、同じファイルに定義を足し、節を `informative` に書き換える。
+- 生成するファイル（シードの値など）には散文を書かない。生成し直すと消えるためである。
+- 散文の中に、行頭の `/-`・行末の `-/`（コメントの入れ子と終わりになる）と、行末の `--#`（mdgen が行を捨てる）を書かない。
+- リンクは、その Lean のファイルから見た相対パスで書く。仕様への参照（`@[spec_doc]`・ベクタの `specRef`・登録簿の箇所）は `<Lean のファイル>#<見出しのアンカー>` で書く。アンカーは GitHub の規則（スキル okf-bundle の `okf_check.py` と同じ）で、本（mdbook）の見出しの id と一致する。
+
+### 仕様の本
+
+`scripts/book/build.py` が、`Spec` のモジュール文書を mdgen（`assets/mdgen`）で Markdown に、mdbook で HTML にする（設定は `trace/project.json` の `book`。[traceability.md](../spec/traceability.md#プロジェクトの設定)）。本の目次は `book.entry` の import の順で、ページは Lean のファイルごとである。`--check` は、仕様への参照の行き先（ファイルと見出し）が在ることを確かめる。
 
 ## モデルの併記
 
@@ -96,7 +109,7 @@ generated:
 | `## Spec の非決定性`、種類の値 `環境`・`自由` | 抽象化の課題一覧。行は `| N-NNN | <種類> | … | <作業項目の ID> |` | `check_obligations.py`（TR-N） |
 | `## 証明課題`（具体化では `## REF:`）、種類の値 `R` | 課題一覧。行は `| <課題 ID> | R | … |` | `trace check`、`check_obligations.py` |
 | 影響の値 `出力のみ`・`中断`、種類の名前（`前提型`・`観測型`・`モデル外`…） | 登録簿から生成する（`Trace.Gap.GapKind.label`・`Trace.Gap.Impact.label`） | `check_obligations.py` |
-| 行頭の `出典:` と、バッククォートで囲んだロケータ | 仕様文書（`docs.spec`） | `trace check`（TR-R） |
+| 行頭の `出典:` と、バッククォートで囲んだロケータ | 仕様文書（`docs.spec`）と、`Spec` のモジュール文書（`docs.spec_lean`） | `trace check`（TR-R） |
 | 作業項目の frontmatter の `id:`・`state:`（`done` で完了） | 作業項目（`docs.backlog`） | 段階導入（`trace check`・`check_obligations.py`） |
 
 ## してはならないこと

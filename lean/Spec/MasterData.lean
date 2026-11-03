@@ -11,7 +11,7 @@ import Spec.Config
   高々 1 つなので、結果は順序に依存しない（`routeOf_eq_some_iff` など）。
 - SPEC 課題（SPEC-001〜003）: 参照関数をまとめた状態を持たない抽象機械 `queryMachine` について示す。
 
-> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.MasterData`]()、[`Spec.CodeList`](CodeList.lean)。[backlog 591d](../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
+> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.MasterData`](MasterData.lean)、[`Spec.CodeList`](CodeList.lean)。[backlog 591d](../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
 
 マスタは起動時に読み込まれ、実行中は変化しない不変の値 `MasterData` として純粋関数に渡す（[ADR f0e4](../../docs/decision/f0e4-functional-core-with-ports.md)）。
 原典では `*Provider` クラスがキャッシュしている（出典: atrs-domain/.../common/masterdata/*Provider.java）。

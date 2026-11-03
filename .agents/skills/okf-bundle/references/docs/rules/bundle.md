@@ -6,7 +6,7 @@ tags: [documentation, okf, lint]
 status: stable
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-11-01T20:20:00+09:00
+  at: 2026-11-03T12:00:00+09:00
 ---
 
 # OKF のバンドルの書き方と検査
@@ -92,7 +92,7 @@ frontmatter は、次の部分集合だけで書く。部分集合の外の書�
     {"root": "docs", "profile": {"okf_version": true, "index_complete": true, "rules": [{"match": "**/README.md", "type": "Overview"}]}},
     {"root": ".agents/skills/<skill>/references/docs", "profile": ".agents/skills/<skill>/references/okf-profile.json"}
   ],
-  "links": {"roots": ["AGENTS.md", "docs", ".agents"], "skip": [], "absolute": false},
+  "links": {"roots": ["AGENTS.md", "docs", ".agents"], "lean_roots": ["lean/Spec"], "skip": [], "absolute": false},
   "skip": [".agents/skills/okf-bundle/scripts/fixtures/"]
 }
 ```
@@ -101,6 +101,7 @@ frontmatter は、次の部分集合だけで書く。部分集合の外の書�
 | --- | --- |
 | `bundles` | 検査するバンドルの列 `[{root, profile}]`。`profile` はプロファイルか、その JSON のパス（リポジトリのルートから） |
 | `links.roots` | リンクを検査する Markdown の範囲（ファイルかディレクトリ） |
+| `links.lean_roots` | リンクを検査する Lean のファイルの範囲（ファイルかディレクトリ。任意）。Lean のファイルでは、mdgen が Markdown の地の文にする部分（列 0 から始まる `/-! … -/` と `/- … -/`。`/-- … -/` の文書コメントは除く）だけを文書として読む |
 | `links.skip` | リンクの検査から外すパスの接頭辞 |
 | `links.absolute` | `/` で始まるリンクを許すか |
 | `skip` | すべての検査から外すパスの接頭辞（例: 道具の違反例） |
@@ -126,12 +127,13 @@ frontmatter は、次の部分集合だけで書く。部分集合の外の書�
 | I1 | ルートの `index.md` が文書を列挙していない |
 | I2 | `index.md` の題名・説明が、文書の `title`・`description` と違う |
 | L1 | 相対リンクの指す先が無い |
-| L2 | 見出しアンカーが、指す Markdown に無い |
+| L2 | 見出しアンカーが、指す Markdown（または Lean のファイルの、上の地の文）に無い |
 | L3 | `/` で始まるリンク（`links.absolute` が false のとき） |
 
 コードブロックとインラインのコードの中は、リンク・見出しとして扱わない。
+`.lean` を指すリンクの見出しアンカーは、そのファイルの地の文（`links.lean_roots` と同じ読み方）の見出しから作る。Lean のファイルを mdgen と mdbook で本にするときも、同じアンカーになる。
 
-`--self-test` は、YAML の部分集合の読み取り、アンカーの規則、`scripts/fixtures/` の例（違反なしの `ok` と、各符号の違反を含む `violations`）を確かめる。検査を足すときは、違反例も足す。
+`--self-test` は、YAML の部分集合の読み取り、アンカーの規則、`scripts/fixtures/` の例（違反なしの `ok`、各符号の違反を含む `violations`、Lean のファイルのリンクとアンカーの `lean-docs`）を確かめる。検査を足すときは、違反例も足す。
 
 ## 文書の移動
 

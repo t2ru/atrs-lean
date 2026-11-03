@@ -15,7 +15,7 @@ open Spec.Prim.Format
 /-!
 ## 空港コードリスト（画面用）
 
-**[Spec=Source]** Lean: [`Spec.CodeList`]()。画面の空港選択肢（`CL_AIRPORT`）は、空港を `displayOrder` 昇順に並べ、`displayOrder ≥ 100` の最初の空港の直前に区切り行 `("NOP", "-----------")` を 1 つ挿入したものである。
+**[Spec=Source]** Lean: [`Spec.CodeList`](CodeList.lean)。画面の空港選択肢（`CL_AIRPORT`）は、空港を `displayOrder` 昇順に並べ、`displayOrder ≥ 100` の最初の空港の直前に区切り行 `("NOP", "-----------")` を 1 つ挿入したものである。
 入力検証の「コードリストに存在する」（[`Spec.InputValidation`](InputValidation.lean)）は **区切り行の `NOP` も存在するものとして扱う**。そのため `NOP` を指定した空席照会は入力検証を通過し、区間が見つからずに業務エラー `e.ar.b1.2002` となる。
 
 出典: `java:jp.co.ntt.atrs.domain.common.codelist.AirportCodeList#retrieveMap()`, `java:jp.co.ntt.atrs.config.app.AtrsCodeListConfig#CL_AIRPORT()`

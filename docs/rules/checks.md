@@ -17,8 +17,8 @@ generated:
 
 | 層 | タスク | 中身 |
 | --- | --- | --- |
-| 常時の段 | `ci:fast` | どの変更でも実行する短い段。文書（`docs:*`）、上流の版、共有入力とシード、静的検査（`static:*`。層の設定の整合 `static:check-scopes` を含む）、JVM の表、Lean のビルド・`lake test`・公理・義務・trace-dump、追跡の検査（`trace:build`・`trace:manifest`・`trace:check`・`trace:review`）、ルートの `lake setup-file` |
-| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run` |
+| 常時の段 | `ci:fast` | どの変更でも実行する短い段。文書（`docs:*`）、仕様への参照の行き先（`book:check`）、上流の版、共有入力とシード、静的検査（`static:*`。層の設定の整合 `static:check-scopes` を含む）、JVM の表、Lean のビルド・`lake test`・公理・義務・trace-dump、追跡の検査（`trace:build`・`trace:manifest`・`trace:check`・`trace:review`）、ルートの `lake setup-file` |
+| 変更時の段 | `tools/ci/check-scopes.toml` の `[scopes]` | 長い段。関係する変更があったときだけ実行する。`lean:layout-check`、`assets:trace-test`、`assets:layout-check`、`trace:self-test`、`ci:pg-table`、`ci:master-sql`、`ci:java-origin-run`、`book:build`（仕様の本。mdgen のビルドを含む） |
 | 全数 | `ci` | 常時の段と、すべての変更時の段 |
 
 選択実行 `mise run check` は、常時の段と、変更に関係する変更時の段を実行する。何を実行するかは `mise run check:list` で事前に見られる。選ぶのは `tools/ci/select_checks.py` である。

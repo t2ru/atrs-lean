@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-03
+* **Creation**: [ADR c634](decision/c634-spec-prose-in-lean-module-docs-and-book.md) で、仕様の散文（規範・草案・要約）を `Spec` のモジュール文書に書くことにし、本を作る道具 `scripts/book/build.py`（mdgen を取り込む `assets/mdgen`、mdbook）と、仕様への参照の行き先の検査（`--check`）を置いた。`trace check` の TR-R が `docs.spec_lean` の Lean のファイルの「出典:」も検査するようにした。[rules/spec-documents.md](rules/spec-documents.md)・[spec/traceability.md](spec/traceability.md#プロジェクトの設定)・`scripts/README.md` を改めた。スキルの版を 0.28 にした。来歴: 適用先 ATRS の ADR 68a6。
 * **Creation**: [ADR 61e6](decision/61e6-env-relation-and-state-env-pre.md) で、束 `Machine.Preserves` の環境の固定を「具体側の環境の記述が許す選択の関係」（`Choice` の `D`・`adm`・`d₀`、成分 `noFaultStd`）に、環境の前提を状態と入力の述語（`TotalUnder`・`EnvWitness` は初期状態、`always` は 2 引数、並置は `sumEnv`・`altEnv`）に広げた。obligation-check（`adm` の形、`Pinned` の引数、`EnvWitness` の引数）、[spec/architecture.md](spec/architecture.md#空虚化を防ぐ義務) の表、テストと違反例 `v6_admPlain` を直した。スキルの版を 0.27 にした。来歴: 適用先 ATRS の予約の第 3 段 3d。
 * **Update**: obligation-check の G3'（`Spec` の層の抽象機械の形）が、同じ状態の上の並置 `Machine.alt`（[ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md)）も受けるようにした（版 0.27 に含める）。来歴: 適用先 ATRS の予約の第 3 段 3d（トップレベルへの統合）。
 
