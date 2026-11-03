@@ -20,6 +20,7 @@ okf_version: "0.2"
 * [移植の手順](guide/process.md) - 機能単位で進める移植の手順 1〜10 と、各手順の成果物・次へ進む条件・完了の定義。
 * [作業の進め方（既定）](guide/workflow.md) - 人と AI エージェントがこの方法で移植を進めるときの既定の進め方: 評価・判断の記録・検査ゲート・敵対的レビュー。
 * [版上げへの追従](guide/upgrade.md) - 移植元の版上げへの追従: 最新版だけの SourceModel、インベントリの差分、差分の原典実行、証明のグラフに沿った影響の洗い出し。
+* [型の棚卸し](guide/type-inventory.md) - Lean のデータ型が、不正な状態を表現できない型（MISU。ADR bf1b）になっているかを確かめる手順と観点の一覧。
 * [差異の棚卸し](guide/gap-inventory.md) - Spec とモデル（SourceModel・TargetModel）の差異の登録簿が、実装と原典の両方に合っているかを、全範囲で確かめる手順と観点の一覧。
 * [言語パックの構成と追加のしかた](guide/adding-a-language.md) - 言語パックの 6 ファイルの構成と、新しい言語・SQL 方言を追加するときの手順。
 
@@ -62,6 +63,7 @@ okf_version: "0.2"
 
 * [スキルの意思決定記録](decision/README.md) - スキル spec-pivot の意思決定記録（MADR 4.0）の索引。
 * [layout-check のモジュールの組を、組ごとに別のプロセスで判定する](decision/89f2-layout-check-one-process-per-group.md) - layout-check（Trace.Layout.run）は、モジュールの組ごとに環境を読み込んで解放しないため、メモリが組の数に比例して増えていた。組ごとに同じ実行ファイルを子プロセスとして起動して判定し、親は結果の JSON を合わせるだけにする。Environment.freeRegions による解放は採らない。
+* [不正な状態を表現できない型（MISU）を Lean のすべてのデータ型に課す](decision/bf1b-make-illegal-states-unrepresentable.md) - 値の妥当性の条件を docstring・別の述語・付けた時点の検査に置かず、型（和型・証明フィールド付きの structure・名前付きの structure）で表す。外部から来る値は生の型のまま置き、検証の関数で検証済みの型に移す。機械の PRE・INV、独立な入力の間の関係、環境の全体にわたる性質は述語・検査のまま残す。
 * [差異の登録簿の棚卸しの手順を方法の文書に置く](decision/cb1f-gap-inventory-procedure.md) - 差異の登録簿が実装と原典に合っているかを全範囲で確かめる棚卸しの手順と観点（G1〜G9）を、guide/gap-inventory.md に置く。登録簿の R 課題と課題表の一致の検査は作業項目にする。
 * [OKF のバンドルの管理と記録の管理を、別のスキル okf-bundle・work-records に分ける](decision/22b4-split-okf-and-records-skills.md) - 移植に関係の無い文書の道具（okf_check.py・docmv.py・ids.py）と規則を、スキル spec-pivot から汎用のスキル okf-bundle（OKF のバンドル）と work-records（ADR・作業項目）に分け、設定を trace/project.json から専用のファイル .okf.json・.work-records.json に移し、移植に固有の検査を一般化する。
 * [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](decision/b187-proven-csimp-for-evaluating-models.md) - SourceModel・Spec などの定義を、評価（適合テストベクタの実行）のために書き換えない。速い実装は別の定義とし、元の定義と等しいこと（行の並びも含めて）を定理にして @[csimp] で登録し、コンパイル後のコードだけを差し替える。証明の無い implemented_by は使わない。SQL の写しの結合のために、条件を押し下げた入れ子ループの結合 Bag.crossWhere と補題 filter_cross_split・select_cross_split を LangSemantics.Sql に置く。
@@ -97,4 +99,5 @@ okf_version: "0.2"
 * [OKF バンドルとリンクの検査の道具](backlog/a49c-okf-bundle-check-tool.md) - OKF v0.2 の適合条件、バンドルのプロファイルの規則、索引の網羅、Markdown の相対リンクと見出しアンカーを検査する道具 scripts/docs/okf_check.py を作り、このバンドルの規則をプロファイルにする。
 * [Lean の宣言をモジュール名の下に置く規則と検査](backlog/ce23-lean-module-namespace-layout.md) - 宣言の完全名をモジュール名の下に限る規則（NS-1）と証明課題の配置（TR-L）を定め、検査の道具 layout-check・TR-L・改名の道具 rename.py を作り、スキルの assets の宣言を書き換える。
 * [スキルの文書を spec/・rules/・guide/・lang/ に分ける](backlog/97a7-skill-docs-category-directories.md) - references/docs の方法の文書を spec/・rules/・guide/ に、言語パックを lang/<lang>/ に移し、type・プロファイル・索引を改める。移動とリンクの張り直しの道具 scripts/docs/docmv.py を作る。
+* [スキルの Lean のデータ型を、不正な状態を表現できない型にする](backlog/d3fd-misu-skill-types.md) - ADR bf1b に従い、Trace（ギャップの登録簿・追跡属性・道具の内部の記録）、Machine（Preserves の条件付きの成分）、LangSemantics・ConformanceKit（値の型）の妥当性の条件を型に移す。
 * [登録簿の R 課題と課題表の差異の列の一致を検査する](backlog/937d-rtasks-task-table-consistency-check.md) - trace check に、ギャップの登録簿の rTasks と、課題表（証明課題の一覧）の各 R 課題の「差異」の列とが一致することの検査を足す。

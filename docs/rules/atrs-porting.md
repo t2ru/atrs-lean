@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/docs/lang/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/docs/lang/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.27`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
+使うスキルの版: `metadata.version` = `0.28`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -102,8 +102,11 @@ generated:
 | 量 | 型 |
 | --- | --- |
 | 金額・人数・日数・百分率・積算比率 | `Nat` |
-| 空港コード・便名・会員番号・予約番号 | 専用 `structure` |
+| 空港コード・便名・会員番号・予約番号・カード種別コード | 形式の証明フィールド付きの `structure`（外部から来るコードは生の型。[ADR 6d36](../decision/6d36-misu-spec-types.md)） |
 | `FlightType`, `BoardingClassCd`, `FareTypeCd`, `Gender`, `LineType` | `inductive`（綴りは原典の Java enum と同一） |
+| 機械の入力・要求・設定とマスタの環境 | 生の型（`@[raw_input]`）と、検証済みの型への検証の関数 |
+
+型は、不正な状態を表現できない型にする（スキルの [lang/lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#不正な状態を表現できない型)、[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
 
 値域は [domain-model.md](../spec/domain-model.md#値域) に従う。
 

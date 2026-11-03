@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Creation**: [ADR 6d36](decision/6d36-misu-spec-types.md) で、ATRS の `Spec` の型を、不正な状態を表現できない型（MISU）にすることにした（L1 値・L2 境界・L3 関係。プロジェクトオーナーの指示と選択）。作業を [backlog 8d24](backlog/8d24-misu-spec-types.md) にした。スキル spec-pivot の版 0.28（スキルの ADR bf1b・backlog d3fd）に合わせ、[rules/atrs-porting.md](rules/atrs-porting.md) の版の記載と §Spec の型を改めた。[index.md](index.md)・[backlog/README.md](backlog/README.md) を更新した。
 * **Update**: [backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を完了にした（ADR ab93 の 3e）。予約の移植元側の追跡の検査を失敗扱いで通すため、`trace/features.json` で、モデルにしない Web 層・REST と画面だけが使うメンバ・原典で呼ばれていないメンバを Http に、予約の履歴の DTO と問い合わせを Report に移し（[backlog a89e](backlog/a89e-http-contract-adapter.md)・[backlog ac71](backlog/ac71-reservation-history-report.md) の範囲に追記）、データクラスの getter・setter などを写しの構造体の `@[source]` で覆い、D-009 の [Spec] の箇所の印を付けた。[backlog/README.md](backlog/README.md) を更新した。
 * **Update**: [ADR ab93](decision/ab93-reservation-stage3-world-alpha-and-abs041.md) の 3d（プロジェクトオーナーの判断 1・3 は案 A）に向けて、スキル spec-pivot の版 0.27（スキルの ADR 61e6。束の環境の固定を許す選択の関係 `adm` に、環境の前提を状態と入力の述語に広げた）に、既存の束（ABS-026・001・002・004・011）とトップレベルの `Abstraction.env` を合わせた（入力だけの環境の前提は `fun _ => env` で包む。空席照会の `chFS` は `adm` に `sameEnv`）。spec-pivot の版の記載を 0.27 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
 * **Update**: ADR ab93 の 3d の決定（判断 2）として、SourceModel の排他の失敗を行ロックを取る文に限った（読むだけの文 `query` は I/O の失敗だけ、行ロック付きの読み出し `lockQuery`・`sql` は両方）。`reserveConcrete` の定義域を既定に戻し、予約の証明（`IsIoFault`）を合わせた。変わった定義の照合の記録を `trace rehash` で更新した（`trace/manifest.json`）。
