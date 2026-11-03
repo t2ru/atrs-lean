@@ -20,6 +20,8 @@
 - `refs`: `--check` が行き先を検査する参照。`manifest`（`trace/manifest.json` の `spec_doc` の行き先）と
   `vectors`（適合テストベクタの `specRef` を探すディレクトリ）
 - `okf_check`: 見出しのアンカーの規則を借りる、スキル okf-bundle の `okf_check.py` のパス
+- `fold`: 任意。目次の折りたたみ `{enable, level}`（mdbook の `output.html.fold`。level は最初から開いておく深さで、
+  0 なら最上位の章だけを見せる）
 
 パス: リポジトリ相対のパスと本のページのパスは、OS によらず `/` 区切りで扱う（Windows でも同じ結果になる）。
 
@@ -279,6 +281,16 @@ def index_page(book_title, parts, titles):
     return "\n".join(lines) + "\n"
 
 
+def fold_toml(fold):
+    """目次の折りたたみ（mdbook の `[output.html.fold]`）。fold は `{enable, level}`（level は最初から開いておく深さ。
+    0 なら最上位の章だけを見せる）。無ければ折りたたまない。"""
+    if not fold:
+        return ""
+    return ("\n[output.html.fold]\n"
+            f"enable = {'true' if fold.get('enable', True) else 'false'}\n"
+            f"level = {int(fold.get('level', 0))}\n")
+
+
 def build(repo, cfg, okf):
     parts = parts_of(repo, cfg)
     out = repo / cfg.get("out", "build/book")
@@ -329,7 +341,8 @@ def build(repo, cfg, okf):
         'build-dir = "html"\n'
         "create-missing = false\n\n"
         "[output.html]\n"
-        f"git-repository-url = {json.dumps(repo_root_url)}\n",
+        f"git-repository-url = {json.dumps(repo_root_url)}\n"
+        + fold_toml(cfg.get("fold")),
         encoding="utf-8")
     subprocess.run(["mdbook", "build", str(out)], check=True)
     print(f"book: {out / 'html' / 'index.html'} ({len(pages)} page(s), {len(parts)} part(s))")
@@ -464,6 +477,8 @@ def self_test(okf):
     t2 = {"S": "S", "S.A.B.C": "S.A.B.C", "S.A.B.D": "題 D", "S.X.Y": "S.X.Y"}
     eq("tree-groups", tree_lines(["S.A.B.C", "S.A.B.D", "S.X.Y"], t2, "S"), [
         "- [A.B]()", "  - [C](S/A/B/C.md)", "  - [題 D](S/A/B/D.md)", "- [X.Y](S/X/Y.md)"])
+    eq("fold", fold_toml({"enable": True, "level": 1}), "\n[output.html.fold]\nenable = true\nlevel = 1\n")
+    eq("fold-none", fold_toml(None), "")
     print(f"book self-test: {'NG' if fails else 'OK'} ({fails} failure(s))")
     return 1 if fails else 0
 
