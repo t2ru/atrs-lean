@@ -43,29 +43,31 @@ import Spec.EnvPre
 | `Spec.Port` | 抽象状態 `World`（いまはフライト）と不変条件、ポートの操作 |
 | `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）と抽象機械 `searchMachine`（SPEC 課題） |
 
-トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`）である。
+トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`。状態を共有する
+空席照会と予約は `Machine.alt`）である。
 `Abstraction` の主定理 `Abstraction.refines`・`Abstraction.preserves` の抽象側になる。入口の機械（HTTP の画面・API、
 レポート要求の受信）ができたら、それを並置に加える。
 -/
 
 namespace Spec
 
-/-- トップレベルの抽象機械の状態（各機能の状態の積。空席照会だけが状態 `World` を持つ）。 -/
+/-- トップレベルの抽象機械の状態（各機能の状態の積。空席照会と予約が状態 `World` を共有する）。 -/
 abbrev State := Unit × Unit × Unit × Unit × Port.World
 
-/-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額、空席照会。 -/
+/-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額、空席照会と予約（同じ状態
+`World` の上の並置）。 -/
 abbrev Input := (Config × MasterData × MasterQuery.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput ⊕
-  FlightSearch.SearchInput
+  (FlightSearch.SearchInput ⊕ UseCase.Reserve.MInput)
 
 /-- トップレベルの抽象機械の出力。 -/
-abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat ⊕ FlightSearch.SearchOutput
+abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat ⊕ (FlightSearch.SearchOutput ⊕ UseCase.Reserve.MOutput)
 
 /-- トップレベルの抽象機械: 実装済みの範囲の機能の機械を並置したもの。 -/
 def machine : Machine.Machine State Input Output :=
   MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum
-    (Fare.totalFareMachine.sum FlightSearch.searchMachine)))
+    (Fare.totalFareMachine.sum (FlightSearch.searchMachine.alt UseCase.Reserve.reserveMachine))))
 
-/-- 初期状態（fixture の 1 点。空席照会の状態はシードのフライト）。 -/
-def init : State := ((), (), (), (), Seed.Flight.world)
+/-- 初期状態（fixture の 1 点。空席照会の状態は、シードを投入した後の `World`）。 -/
+def init : State := ((), (), (), (), Seed.World.world)
 
 end Spec

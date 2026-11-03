@@ -7,6 +7,7 @@ import Spec.Error
 import Spec.Port
 import Spec.Seed.Flight
 import Spec.Seed.FlightProps
+import Spec.Seed.World
 import Machine
 
 /-!
@@ -219,10 +220,11 @@ def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
 /-- 1 歩の関数（選択は環境・自由とも `Unit`）: 状態を変えず、`answer` を出力する。 -/
 def searchStep (w : Port.World) (i : SearchInput) (_ : Unit × Unit) : Port.World × SearchOutput := (w, answer w i)
 
-/-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードのフライト。1 歩は状態を変えない。 -/
+/-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードを投入した後の `World`
+（予約と共有する。backlog aedf の第 3 段）。1 歩は状態を変えない。 -/
 @[spec_doc "docs/spec/flight-search.md#searchflight"]
 def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
-  Machine.Machine.ofChoice Port.World.Inv (· = Seed.Flight.world) SearchInput.Pre searchStep () ()
+  Machine.Machine.ofChoice Port.World.Inv (· = Seed.World.world) SearchInput.Pre searchStep () ()
 
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
@@ -254,7 +256,7 @@ theorem searchMachine_run_step :
     ∀ s i, searchMachine.Pre s i → searchMachine.step s i (searchMachine.run s i).1 (searchMachine.run s i).2 :=
   searchMachine.run_step
 
-/-- SPEC-002・SPEC-003: 初期状態（シードのフライト）は INV を満たし、1 歩は状態を変えないので INV を保つ。 -/
+/-- SPEC-002・SPEC-003: 初期状態（シードを投入した後の `World`）は INV を満たし、1 歩は状態を変えないので INV を保つ。 -/
 @[obligation "SPEC-002", "SPEC-003"]
 theorem searchMachine_sound : searchMachine.Sound where
   init_inv s h := h ▸ Seed.FlightProps.world_inv
@@ -263,8 +265,8 @@ theorem searchMachine_sound : searchMachine.Sound where
     cases hc
     exact hi
 
-/-- SPEC-007: 初期状態はシードのフライトの 1 点。 -/
+/-- SPEC-007: 初期状態は、シードを投入した後の `World` の 1 点。 -/
 @[obligation "SPEC-007"]
-theorem searchMachine_initIs : searchMachine.InitIs Seed.Flight.world := fun _ => Iff.rfl
+theorem searchMachine_initIs : searchMachine.InitIs Seed.World.world := fun _ => Iff.rfl
 
 end Spec.FlightSearch

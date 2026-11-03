@@ -2,6 +2,8 @@ import Trace
 import Abstraction.MasterData
 import Abstraction.Fare
 import Abstraction.FlightSearch
+import Abstraction.Reserve.Alpha
+import Abstraction.Reserve
 
 /-!
 # Abstraction.Gap
@@ -26,9 +28,9 @@ def D001 : Gap where
   id := "D-001"
   kind := .pre
   sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
-  premise := "`dev_D001`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の区間・搭乗クラス・搭乗日に課す（`dev_D001S`）"
+  premise := "`dev_D001`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の区間・搭乗クラス・搭乗日に課す（`dev_D001S`）。予約では、合計金額の入力 `tfOf` に `dev_D001T` を課す（`dev_D001R`）"
   deviations := [``Abstraction.Fare.Alpha.dev_D001, ``Abstraction.Fare.TotalAlpha.dev_D001T,
-    ``Abstraction.FlightSearch.Alpha.dev_D001S]
+    ``Abstraction.FlightSearch.Alpha.dev_D001S, ``Abstraction.Reserve.Alpha.dev_D001R]
   evidence := .refuted [``Abstraction.Fare.need_D001]
   rTasks := ["ABS-001", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "予約確定で、差のある運賃が合計金額として保存される")
@@ -40,9 +42,9 @@ def D002 : Gap where
   id := "D-002"
   kind := .pre
   sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
-  premise := "`dev_D002`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の基本運賃と、照会の片道・往復の運賃種別のすべての割引率に課す（`dev_D002S`。候補に現れない運賃種別にも課す十分条件）"
+  premise := "`dev_D002`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の基本運賃と、照会の片道・往復の運賃種別のすべての割引率に課す（`dev_D002S`。候補に現れない運賃種別にも課す十分条件）。予約では、合計金額の入力 `tfOf` に `dev_D002T` を課す（`dev_D002R`）"
   deviations := [``Abstraction.Fare.Alpha.dev_D002, ``Abstraction.Fare.TotalAlpha.dev_D002T,
-    ``Abstraction.FlightSearch.Alpha.dev_D002S]
+    ``Abstraction.FlightSearch.Alpha.dev_D002S, ``Abstraction.Reserve.Alpha.dev_D002R]
   evidence := .refuted [``Abstraction.Fare.need_D002]
   rTasks := ["ABS-002", "ABS-004", "ABS-011", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "同上")
@@ -124,9 +126,10 @@ def D009 : Gap where
   kind := .preConcreteState
   sites := [⟨"採番", "docs/spec/ports.md#idgenerator", ""⟩,
     ⟨"予約の登録", "docs/spec/reservation.md#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
-  premise := "`dev_D009`: [Source] の各シーケンスの次の値が、会員番号・予約番号では最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下"
-  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel`（シーケンスと `selectKey`）は backlog aedf の第 1 段で写した。述語と R 課題は第 2・3 段" (some "ABS-109")
-  rTasks := ["ABS-021", "ABS-031", "ABS-041", "ABS-042", "ABS-045"]
+  premise := "`dev_D009`（`Abstraction.Reserve.Alpha`。抽象側の状態と入力の述語）: 予約確定では、採番の次の値から 1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号 12 まで）が、予約番号ではシーケンスの最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下。会員番号（会員登録）は backlog 4e0e で課す"
+  deviations := [``Abstraction.Reserve.Alpha.dev_D009]
+  evidence := .refuted [``Abstraction.Reserve.need_D009]
+  rTasks := ["ABS-031", "ABS-041", "ABS-042", "ABS-045"]
   impact := some (.abort, "使用済みの番号による挿入の失敗、既存の行との衝突、または int32 を超える番号での採番・挿入の失敗")
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068"]
 
@@ -160,8 +163,8 @@ def D012 : Gap where
   id := "D-012"
   kind := .pre
   sites := [⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
-  premise := "`dev_D012`（`Abstraction.Fare.TotalAlpha`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件）"
-  deviations := [``Abstraction.Fare.TotalAlpha.dev_D012]
+  premise := "`dev_D012`（`Abstraction.Fare.TotalAlpha`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件）。予約では、合計金額の入力 `tfOf` に課す（`dev_D012R`）"
+  deviations := [``Abstraction.Fare.TotalAlpha.dev_D012, ``Abstraction.Reserve.Alpha.dev_D012R]
   evidence := .refuted [``Abstraction.Fare.need_D012]
   rTasks := ["ABS-004", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "折り返した合計金額が保存される")
@@ -185,8 +188,8 @@ def D014 : Gap where
   id := "D-014"
   kind := .preConcreteEnv
   sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩]
-  premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ。予約確定では、`TicketReserveHelper.reserve` が予約日として読む今日と、`registerReservation` が予約フライトごとに `isAvailableFareType` で読む今日が同じ（述語は backlog aedf の第 2 段で置く）"
-  deviations := [``Abstraction.FlightSearch.Alpha.dev_D014S]
+  premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ。予約では `dev_D014R`（`Abstraction.Reserve.Alpha`）: 1 回の操作の中で、Clock のどの読み出しも最初の読み出しと同じ日付（予約確定の予約日と、予約フライトごとの `isAvailableFareType` の今日が同じ）"
+  deviations := [``Abstraction.FlightSearch.Alpha.dev_D014S, ``Abstraction.Reserve.Alpha.dev_D014R]
   evidence := .refuted [``Abstraction.FlightSearch.need_D014]
   rTasks := ["ABS-011", "ABS-031", "ABS-041", "ABS-044", "ABS-045"]
   impact := some (.abort, "日付をまたぐと、予約・レポートに記録される日付が変わりうる")
@@ -340,9 +343,9 @@ def D027 : Gap where
   kind := .preConcreteInput
   sites := [⟨"マスタ", "docs/spec/master-data.md", ""⟩, ⟨"設定", "docs/spec/configuration.md", ""⟩,
     ⟨"空席照会の状態（FLIGHT 表）", "docs/spec/ports.md#world抽象状態", ""⟩]
-  premise := "`dev_D027`（`Abstraction.MasterData.Alpha`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会では、状態の表 FLIGHT の各行も [Spec] の型で表せる（`Abstraction.FlightSearch.Alpha.worldOfDb` が定義される。負の空席数・未知のコード・暦日の外の日付を含まない）。照会は状態を変えないので、初期状態（シードの FLIGHT 表）が前提を満たせば、到達する状態も満たす。初期状態が満たすこと（`Abstraction.FlightSearch.Init.worldOfDb_seed`）は backlog 0be7 の第 3 段で示した。空席照会の入力の述語は `dev_D027S`（`aiS` が定義される）。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）"
+  premise := "`dev_D027`（`Abstraction.MasterData.Alpha`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会・予約では、状態の表とシーケンスも [Spec] の型で表せる（`Abstraction.World.Alpha.worldOfDb` が定義される。負の数・未知のコード・暦日の外の日付・0:00 でないログイン日時・親の順に並ばない子の行を含まない）。初期状態（シードを投入した後の表）が前提を満たすこと（`Abstraction.World.Init.worldOfDb_seed`）は backlog aedf の第 3 段で示した。到達する状態が満たすことは、各 R 課題の正しさ（`J` を保つ）で示す。空席照会の入力の述語は `dev_D027S`（`aiS` が定義される）。予約の入力の述語は `dev_D027R`（`aiR` が定義され、業務例外の引数に使う運賃種別名が改行を含まない。`Abstraction.Reserve.Alpha`）。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）"
   deviations := [``Abstraction.MasterData.Alpha.dev_D027, ``Abstraction.Fare.Alpha.dev_D027BF, ``Abstraction.Fare.Alpha.dev_D027F, ``Abstraction.Fare.TotalAlpha.dev_D027TF,
-    ``Abstraction.FlightSearch.Alpha.dev_D027S]
+    ``Abstraction.FlightSearch.Alpha.dev_D027S, ``Abstraction.Reserve.Alpha.dev_D027R]
   evidence := .refuted [``Abstraction.MasterData.need_D027]
   rTasks := ["ABS-001", "ABS-002", "ABS-004", "ABS-011", "ABS-026", "ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "[Source] は起動しないか、[Spec] の型で表せないマスタ・設定で動き続ける")
@@ -391,8 +394,9 @@ def D031 : Gap where
   id := "D-031"
   kind := .pre
   sites := [⟨"往復の便の検査", "docs/spec/reservation.md#validateflightlist", ""⟩, ⟨"便マスタの到着時刻", "docs/spec/master-data.md", ""⟩]
-  premise := "`dev_D031`（抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
-  evidence := .pending "Lean に述語がまだ無い。予約の `SourceModel` は backlog aedf の第 1 段で写した。述語と R 課題は第 2・3 段" (some "ABS-131")
+  premise := "`dev_D031`（`Abstraction.Reserve.Alpha`。抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
+  deviations := [``Abstraction.Reserve.Alpha.dev_D031]
+  evidence := .refuted [``Abstraction.Reserve.need_D031]
   rTasks := ["ABS-031", "ABS-041", "ABS-045"]
   impact := some (.abort, "翌日着の便を往路とする往復の予約が、500 システムエラーになる（`2400` なら往路便の到着日時を 1 日早く検査する）")
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0", "aedfeffc-3e82-46b1-b497-3d8b7808d068"]

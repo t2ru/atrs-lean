@@ -21,6 +21,8 @@ def get {α : Type} (list : List α) (index : Nat) : JResult α :=
 
 theorem get_cons_zero {α : Type} (a : α) (l : List α) : get (a :: l) 0 = .ok a := rfl
 
+theorem get_cons_one {α : Type} (a b : α) (l : List α) : get (a :: b :: l) 1 = .ok b := rfl
+
 end JList
 
 end LangSemantics.Java

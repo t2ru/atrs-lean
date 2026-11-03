@@ -27,6 +27,11 @@ generated:
 - `rust/src/adapter/http`（リクエスト → 業務機能 → 応答）
 - トランザクショントークン・CSRF（[http-contract.md](../spec/http-contract.md#共通) の規範節）
 - HTTP レベルの適合ベクタ（`conformance/*/http/`）と結合テスト
+- 予約の Web 層と REST のうち、予約の機能（[backlog aedf](aedf-reservation-usecase.md)）でモデルにしなかったもの（[ADR ab93](../decision/ab93-reservation-stage3-world-alpha-and-abs041.md) の 3e で `trace/features.json` の Http に移した）
+  - 画面のコントローラ・入力検証（`app.b0`・`app.b2` の Validator）・form（`ReservationFlightForm` など）・DTO（`SelectFlightDto`・`LineType`）
+  - 画面の補助: `TicketHelper#createParameterMapForSelectFlight`、`TicketReserveHelper#createParameterMapForFlightSearch`・`createSelectFlightDtoList`・`createTicketReserveForm`（会員の情報での form の初期値。`TicketReserveService#findMember`・`DateTimeUtil#toLocalDateTime(LocalDate)` を使う）、`B2Mapper` の残りの `map`、`TicketReserveForm#hasAdditionalPassenger`・`INITIAL_PASSENGERS_NUMBER`
+  - REST（`api.ticket`）と、その確認用の `JdbcClient`（`AtrsInfraConfig#jdbcClient`）、トランザクションマネージャの設定（`AtrsDomainConfig#annotationDrivenTransactionManager`）
+  - 原典で呼ばれていないメンバ（`InvalidFlightException#<init>(Exception)`・`DateTimeUtil#toLocalDate(LocalDateTime)`）の扱い。R 課題に現れない定義は TR-P に掛かるので、モデルに置けない。移植の範囲外とするなら [ADR 84bf](../decision/84bf-porting-scope.md) の改訂が要る
 - 入口の環境の前提: 入力の値域（[domain-model.md](../spec/domain-model.md#値域)。搭乗者数・予約フライト数・年齢など）の述語を入口の機械の入力の型で書き、`Spec.EnvPre.masterConfigOk` と組み合わせて `@[env_pre]` を付ける（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 
 ## 対象外

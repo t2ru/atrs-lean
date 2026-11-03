@@ -109,6 +109,18 @@ inductive Forall₂ {α β : Type} (R : α → β → Prop) : List α → List �
   | nil : Forall₂ R [] []
   | cons {a : α} {b : β} {as : List α} {bs : List β} : R a b → Forall₂ R as bs → Forall₂ R (a :: as) (b :: bs)
 
+/-- 要素ごとの関係を、両辺の写像で移す。 -/
+theorem Forall₂.map_of {α β γ δ : Type} {R : α → β → Prop} {S : γ → δ → Prop} {f : α → γ} {g : β → δ}
+    (h : ∀ a b, R a b → S (f a) (g b)) : ∀ {as : List α} {bs : List β}, Forall₂ R as bs → Forall₂ S (as.map f) (bs.map g)
+  | [], [], .nil => .nil
+  | _ :: _, _ :: _, .cons hab hr => .cons (h _ _ hab) (Forall₂.map_of h hr)
+
+/-- 要素ごとの関係を弱める。 -/
+theorem Forall₂.imp {α β : Type} {R S : α → β → Prop} (h : ∀ a b, R a b → S a b) :
+    ∀ {as : List α} {bs : List β}, Forall₂ R as bs → Forall₂ S as bs
+  | [], [], .nil => .nil
+  | _ :: _, _ :: _, .cons hab hr => .cons (h _ _ hab) (Forall₂.imp h hr)
+
 theorem sum_map_le {α : Type} {V : α → Nat} {M : Nat} : ∀ (xs : List α), (∀ x ∈ xs, V x ≤ M) →
     (xs.map V).sum ≤ xs.length * M
   | [], _ => by simp

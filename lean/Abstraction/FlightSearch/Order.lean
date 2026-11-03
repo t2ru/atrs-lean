@@ -14,6 +14,7 @@ ABS-011 の補題: 空席照会の文の `ORDER BY ft.display_order ASC, fm.depa
 -/
 
 namespace Abstraction.FlightSearch.Order
+open Abstraction.World.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.FlightSearch.Candidates Spec.FlightSearch Spec.Prim.Time
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas LangSemantics.Core.MapM
 

@@ -2,7 +2,7 @@
 # Machine.Preserves.Pred
 
 `Machine.Preserves`（A preserves B: リファインメントの空虚化を防ぐ義務。references/docs/spec/architecture.md#空虚化を防ぐ義務）が使う、
-型に属さない述語: `never`・`always`・`anyOf`・`Covers`・`Covers₂`・`Nontrivial`・`Nontrivial₂`・`KernelIs`。
+型に属さない述語: `never`・`always`・`sameEnv`・`anyOf`・`Covers`・`Covers₂`・`Nontrivial`・`Nontrivial₂`・`KernelIs`。
 
 型 `Machine.Preserves`（`Machine.Preserves` のモジュール）の名前空間に置く（spec-pivot の `lang/lean/rules.md#モジュールと名前空間` の E1）。
 束 `Machine.Preserves` がこれらに依存するので、下位のモジュールに分ける。利用側は
@@ -28,8 +28,12 @@ namespace Machine.Preserves
 /-- 常に偽の関係。`Glue.ofStd` の OJ・OO の既定値（観測型の差異が無いこと）。 -/
 def never {α β : Type} (_ : α) (_ : β) : Prop := False
 
-/-- 常に真の述語。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
-def always {α : Type} (_ : α) : Prop := True
+/-- 常に真の述語（状態と入力の 2 引数）。環境の前提の必要性（`¬ A.TotalUnder always`）に使う（references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
+def always {α β : Type} (_ : α) (_ : β) : Prop := True
+
+/-- 等号の関係。選択の像の材料 `Choice` で、具体側の環境の記述が環境の選択そのものであるとき（`D = E`）の、
+許す選択の関係 `adm` に使う（環境の選択を `ce ic` に固定する）。 -/
+def sameEnv {α : Type} (d e : α) : Prop := d = e
 
 /-- 関係の和。観測型の差異の成分を、差異ごとの定数に分けたまま OJ・OO に置く（references/docs/spec/architecture.md#空虚化を防ぐ義務）。 -/
 def anyOf {α β : Type} (R S : α → β → Prop) (a : α) (b : β) : Prop := R a b ∨ S a b

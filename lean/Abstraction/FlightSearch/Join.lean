@@ -10,6 +10,7 @@ ABS-011 の補題: 空席照会の文の結合（FLIGHT × FARE_TYPE × FLIGHT_M
 -/
 
 namespace Abstraction.FlightSearch.Join
+open Abstraction.World.Alpha
 open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Abstraction.MasterData.Join
 
 open LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository

@@ -56,7 +56,7 @@ theorem need_D027 : ¬ Refines Spec.MasterQuery.queryMachine queryConcrete glueM
 /-- ABS-026 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-026"]
 theorem queryPreserves :
-    Machine.Preserves Spec.MasterQuery.queryMachine (queryConcrete.restrict dev_D027) glueMQ () envMQ where
+    Machine.Preserves Spec.MasterQuery.queryMachine (queryConcrete.restrict dev_D027) glueMQ () (fun _ => envMQ) where
   sound := Spec.MasterQuery.queryMachine_sound
   initIs := Spec.MasterQuery.queryMachine_initIs
   initSurj := queryRefines_initSurj

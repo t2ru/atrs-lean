@@ -50,6 +50,7 @@ import SourceModel.FlightSearchQuery
 import SourceModel.ReserveQuery
 import SourceModel.Db.FlightSeed
 import SourceModel.Db.MemberSeed
+import SourceModel.Db.MasterSeed
 import SourceModel.Db.Seed
 
 /-!
@@ -79,7 +80,8 @@ import SourceModel.Db.Seed
 （`Domain`・`App`・`Config`・`Api` の外）に置く。
 
 トップレベルの具体機械 `SourceModel.machine` は、`Spec.machine` と同じ並びで、各機能の具体機械を並置したもの
-（`Machine.Concrete.sum`）である。`Abstraction` の主定理の具体側になる。
+（`Machine.Concrete.sum`。状態を共有する空席照会と予約は `Machine.Concrete.alt`）である。`Abstraction` の主定理の
+具体側になる。
 -/
 
 namespace SourceModel
@@ -87,14 +89,14 @@ open LangSemantics.Java.Int LangSemantics.Java.Exception
 
 /-- トップレベルの具体機械の入力（`Spec.Input` と同じ並び）。 -/
 abbrev Input := MasterQuery.SrcInput ⊕ FareQuery.BasicFareInput ⊕ FareQuery.FareInput ⊕ FareQuery.TotalFareInput ⊕
-  SourceModel.FlightSearchQuery.SearchInput
+  (SourceModel.FlightSearchQuery.SearchInput ⊕ ReserveQuery.MInput)
 
 /-- トップレベルの具体機械の出力。 -/
-abbrev Output := MasterQuery.SrcAnswer ⊕ J32 ⊕ J32 ⊕ J32 ⊕ FlightSearchQuery.SearchOutput
+abbrev Output := MasterQuery.SrcAnswer ⊕ J32 ⊕ J32 ⊕ J32 ⊕ (FlightSearchQuery.SearchOutput ⊕ ReserveQuery.MOutput)
 
 /-- トップレベルの具体機械: 実装済みの範囲の機能の具体機械を並置したもの。 -/
 def machine : Machine.Concrete (Unit × Unit × Unit × Unit × SourceModel.Db.Schema.FlightDb) Input Output JThrow :=
   MasterQuery.queryConcrete.sum (FareQuery.basicFareConcrete.sum (FareQuery.fareConcrete.sum
-    (FareQuery.totalFareConcrete.sum FlightSearchQuery.searchConcrete)))
+    (FareQuery.totalFareConcrete.sum (FlightSearchQuery.searchConcrete.alt ReserveQuery.reserveConcrete))))
 
 end SourceModel

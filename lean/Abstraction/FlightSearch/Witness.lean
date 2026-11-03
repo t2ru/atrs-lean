@@ -11,6 +11,7 @@ W 課題 ABS-132（D-032 の必要性）の証人: 区間の運賃 100,000 円�
 -/
 
 namespace Abstraction.FlightSearch.Witness
+open Abstraction.World.Alpha
 open Abstraction.Fare.TotalAlpha Abstraction.FlightSearch.Alpha Abstraction.MasterData.Pre Spec.Model
 open SourceModel.Domain.Common.Exception SourceModel.Domain.Service.B1 SourceModel.Domain.Common.Util SourceModel.Domain.Common.Util.FareTypeUtil
   SourceModel.Domain.Common.Util.DateTimeUtil SourceModel.Domain.Service.B0 SourceModel.Domain.Service.B0.TicketSharedServiceImpl SourceModel.Domain.Service.B1.FlightVacantInfoDto

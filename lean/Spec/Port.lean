@@ -12,8 +12,9 @@ import Spec.Prim.Format
 namespace Spec.Port
 open Spec.Model Spec.Prim.Format
 
-/-- 採番の状態: 各 `IdGenerator` の操作が次に返す値（`docs/spec/ports.md#idgenerator`）。値の空間は上限を持たない。 -/
-@[spec_doc "docs/spec/ports.md#idgenerator"]
+/-- 採番の状態: 各 `IdGenerator` の操作が次に返す値（`docs/spec/ports.md#idgenerator`）。値の空間は上限を持たない
+（[Source] のシーケンスは上限で循環し、INT の列は上限で読み出しに失敗する。既知差異 D-009）。 -/
+@[spec_doc "docs/spec/ports.md#idgenerator", gap "D-009"]
 structure Sequences where
   member : Nat := 1
   reserve : Nat := 1
@@ -53,6 +54,15 @@ def RefMaster (md : Spec.MasterData) (w : World) : Prop :=
 
 instance (md : Spec.MasterData) (w : World) : Decidable (w.RefMaster md) := by
   unfold RefMaster; infer_instance
+
+/-- 会員の参照整合性（DDL の FK_MEMBER_1）: 各会員のカード種別がマスタにある。`World.RefMaster` と同じく、マスタとの組の
+述語とする。予約の PRE に含める（会員の取得は、原典ではカード種別の表と結合する。backlog aedf の第 3 段）。 -/
+@[spec_doc "docs/spec/master-data.md#不変条件spec"]
+def MemberRefMaster (md : Spec.MasterData) (w : World) : Prop :=
+  ∀ m ∈ w.members, ∃ c ∈ md.creditTypes, c.creditTypeCd = m.creditTypeCd
+
+instance (md : Spec.MasterData) (w : World) : Decidable (w.MemberRefMaster md) := by
+  unfold MemberRefMaster; infer_instance
 
 /-! ## FlightRepository -/
 

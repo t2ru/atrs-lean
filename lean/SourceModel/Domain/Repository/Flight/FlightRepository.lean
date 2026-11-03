@@ -313,7 +313,7 @@ def «exists» (departureDate : JRef JLocalDate) (flightName : JRef String) (boa
 @[source "java:jp.co.ntt.atrs.domain.repository.flight.FlightRepository#findOneForUpdate(LocalDate,String,BoardingClass,FareType)@852c2d72ff703d07"]
 def findOneForUpdate (departureDate : JRef JLocalDate) (flightName : JRef String) (boardingClass : JRef BoardingClass)
     (fareType : JRef FareType) : SourceModel.Db.Tx.DbM (JRef Flight) := do
-  let rows ← SourceModel.Db.Tx.query fun fd =>
+  let rows ← SourceModel.Db.Tx.lockQuery fun fd =>
     .ok (findOneForUpdateRows fd (bindKey departureDate flightName boardingClass fareType))
   match rows with
   | [] => pure none

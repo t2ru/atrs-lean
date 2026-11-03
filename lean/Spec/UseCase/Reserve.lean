@@ -256,6 +256,20 @@ structure Request where
   form : ReserveInput
   deriving DecidableEq
 
+/-- 要求が、入力検証の単項目制約のうち長さと桁を満たし（`docs/spec/input-validation.md#予約入力b2`）、選択フライトの
+便名が空白でない（原典の `Assert.hasText`）。代表者の電話番号は相関 1（`repTel1`・`repTel2` の長さの和が 6〜7）の上限を
+課す。PRE に含める（[Source] の列の長さ `VARCHAR(n)` と `int` に収まることに使う。backlog aedf の第 3 段）。 -/
+@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+def Request.Valid (r : Request) : Prop :=
+  (∀ s ∈ r.selects, hasText s.flightName.val = true) ∧
+    r.form.repFamilyName.length ≤ 10 ∧ r.form.repGivenName.length ≤ 10 ∧ r.form.repAge ≤ 999 ∧
+    r.form.repTel1.length + r.form.repTel2.length ≤ 7 ∧ r.form.repTel3.length ≤ 4 ∧ r.form.repMail.length ≤ 256 ∧
+    r.form.passengers.length ≤ Config.maxPassengersNumber ∧
+    ∀ p ∈ r.form.passengers, (∀ s ∈ p.familyName, s.length ≤ 10) ∧ (∀ s ∈ p.givenName, s.length ≤ 10) ∧
+      (∀ a ∈ p.age, a ≤ 999)
+
+instance (r : Request) : Decidable r.Valid := by unfold Request.Valid; infer_instance
+
 /-- 選択フライトの検証の失敗は、予約確認・予約確定ではすべて改竄（`InvalidRequest`）とする（`Business` の
 `e.ar.b2.2001` も含む。`docs/spec/http-contract.md#b2-予約`）。 -/
 @[spec_doc "docs/spec/http-contract.md#b2-予約"]
@@ -311,11 +325,12 @@ inductive MOutputValue where
 /-- 予約の機械の出力。 -/
 abbrev MOutput := Except AtrsError MOutputValue
 
-/-- PRE: 設定・マスタが妥当で、操作の標準の結果が定まる（選択フライトが 1〜2 件、空でない搭乗者欄が姓・名・年齢・性別を
+/-- PRE: 設定・マスタが妥当で、要求が入力検証の長さと桁を満たし（`Request.Valid`）、フライトの便名・搭乗クラス・運賃種別と
+会員のカード種別がマスタにあり（`World.RefMaster`・`World.MemberRefMaster`）、操作の標準の結果が定まる（選択フライトが 1〜2 件、空でない搭乗者欄が姓・名・年齢・性別を
 持ち、少なくとも 1 欄あり、マスタに便・区間・運賃種別がある）。 -/
 @[spec_doc "docs/spec/reservation.md"]
 def MInput.Pre (w : World) (i : MInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ i.req.Valid ∧ w.RefMaster i.md ∧ w.MemberRefMaster i.md ∧
     match i.op with
     | .confirm => (confirmOp i.cfg i.md w i.req).isSome = true
     | .reserve => (reserveOp i.cfg i.md i.today w i.req).isSome = true

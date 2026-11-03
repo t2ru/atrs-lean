@@ -189,7 +189,7 @@ theorem need_D012 :
 @[obligation "ABS-001"]
 theorem basicFarePreserves :
     Machine.Preserves (Spec.Fare.basicFareMachine.restrict dev_D001) (basicFareConcrete.restrict dev_D027BF) glueBF ()
-      envBF where
+      (fun _ => envBF) where
   sound := Spec.Fare.basicFareMachine_sound.restrictState _
   initIs := Spec.Fare.basicFareMachine_initIs
   initSurj := basicFareRefines_initSurj
@@ -220,7 +220,7 @@ theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFar
 /-- ABS-002 の束 `Machine.Preserves`（A preserves B。`Refines` を使わない）。 -/
 @[obligation "ABS-002"]
 theorem farePreserves :
-    Machine.Preserves (Spec.Fare.fareMachine.restrict dev_D002) (fareConcrete.restrict dev_D027F) glueF () envF where
+    Machine.Preserves (Spec.Fare.fareMachine.restrict dev_D002) (fareConcrete.restrict dev_D027F) glueF () (fun _ => envF) where
   sound := Spec.Fare.fareMachine_sound.restrictState _
   initIs := Spec.Fare.fareMachine_initIs
   initSurj := fareRefines_initSurj
@@ -250,7 +250,7 @@ theorem fareRefines_commutes {ic : FareInput} {ia : Spec.Fare.FareInput} (hα : 
 @[obligation "ABS-004"]
 theorem totalFarePreserves :
     Machine.Preserves (((Spec.Fare.totalFareMachine.restrict dev_D001T).restrict dev_D002T).restrict dev_D012)
-      (totalFareConcrete.restrict dev_D027TF) glueTF () envTF where
+      (totalFareConcrete.restrict dev_D027TF) glueTF () (fun _ => envTF) where
   sound := ((Spec.Fare.totalFareMachine_sound.restrictState _).restrictState _).restrictState _
   initIs := Spec.Fare.totalFareMachine_initIs
   initSurj := totalFareRefines_initSurj

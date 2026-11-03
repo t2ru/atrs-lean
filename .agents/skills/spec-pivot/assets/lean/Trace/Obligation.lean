@@ -25,7 +25,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 
 | 規則 | 内容 |
 | --- | --- |
-| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum` で並置したもので作る（SPEC-005） |
+| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum`・`Machine.alt` で並置したもので作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.Kernel.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
@@ -38,8 +38,8 @@ G9 の内容は次のとおりである。
   - 必要性: 差異を外した R 課題の命題の否定の閉じた定理（`¬ P` か `P → False`。`@[obligation]` の W 課題でもよい）がある
     - 前提型の差異 `d`: R 課題の機械から `.restrict d`・`.restrictState d`・`Concrete.restrict d` の層を 1 つ外す
     - 観測型の差異 `d`: R 課題の `Glue.ofStd` の OJ・OO（`anyOf` の葉）のうち `d` を `Machine.Preserves.never` に替える
-    - 否定する命題: `¬ Refines A C g`。抽象側の基底が `ofChoice` なら `¬ (Refines A C g ∧ Pinned A C g f ce)` でもよい
-      （`f` は基底の `f`、`ce` は R 課題の `Pinned` の `ce`）
+    - 否定する命題: `¬ Refines A C g`。抽象側の基底が `ofChoice` なら `¬ (Refines A C g ∧ Pinned A C g f ce adm)` でもよい
+      （`f` は基底の `f`、`ce`・`adm` は R 課題の束の `Choice` の `ce`・`adm`）
   - 被覆: 必要性か被覆を満たす差異 `M` と同じ R 課題の制限に現れ、`Covers M d`・`Covers₂ M d` の定理がある
 - R 課題の基底について `TotalUnder A Env` を示した各 `@[env_pre]` の `Env` について、その基底の `¬ TotalUnder A always` がある
   （PRE が全域なら、環境の前提を置かず `TotalUnder A always` を示す）
@@ -79,6 +79,7 @@ def choiceMk : Name := `Machine.Preserves.Choice.mk
 def outLayerMk : Name := `Machine.Preserves.OutLayer.mk
 def outLayerCMk : Name := `Machine.Preserves.OutLayerC.mk
 def sum : Name := `Machine.Machine.sum
+def alt : Name := `Machine.Machine.alt
 def restrict : Name := `Machine.Machine.restrict
 def restrictState : Name := `Machine.Machine.restrictState
 def cRestrict : Name := `Machine.Concrete.restrict
@@ -93,6 +94,7 @@ def ofStd : Name := `Machine.Glue.ofStd
 def never : Name := `Machine.Preserves.never
 def initSurj : Name := `Machine.Refines.InitSurj
 def pinned : Name := `Machine.Refines.Pinned
+def sameEnv : Name := `Machine.Preserves.sameEnv
 def noFault : Name := `Machine.Refines.NoFaultReachable
 def envWitness : Name := `Machine.Refines.EnvWitness
 def stateSafe : Name := `Machine.Refines.StateSafe
@@ -276,8 +278,8 @@ structure Companions where
   nontrivial : Array Name := #[]
   /-- `KernelIs f K` の f の定数で、K が `Eq` か `@[kernel]` の定数であるもの -/
   kernel : Array Name := #[]
-  /-- 必要性の定理（G9）の (定理, A, C, g, `Pinned` の (f, ce)) -/
-  necessity : Array (Name × Expr × Expr × Expr × Option (Expr × Expr)) := #[]
+  /-- 必要性の定理（G9）の (定理, A, C, g, `Pinned` の (f, ce, adm)) -/
+  necessity : Array (Name × Expr × Expr × Expr × Option (Expr × Expr × Expr)) := #[]
   /-- `¬ TotalUnder A always` の A -/
   envNecessity : Array Expr := #[]
   /-- `Covers M d`・`Covers₂ M d` の (定理, M, d) -/
@@ -291,8 +293,8 @@ structure Bundle where
   c : Expr
   g : Expr
   env : Expr
-  /-- `ch`: `none` は `none`、`some (f, ce, e₀, m)` は `some (Choice.mk … f ce e₀ m)`。読めなければ `.error` -/
-  ch : Except String (Option (Expr × Expr × Expr × Expr))
+  /-- `ch`: `none` は `none`、`some (f, ce, adm, e₀, m)` は `some (Choice.mk … f ce adm d₀ e₀ m)`。読めなければ `.error` -/
+  ch : Except String (Option (Expr × Expr × Expr × Expr × Expr))
   /-- `outs`・`outsC` の層の (base, P)。読めなければ `.error` -/
   outs : Except String (Array (Expr × Expr))
   outsC : Except String (Array (Expr × Expr))
@@ -352,9 +354,9 @@ partial def anyOfLeaves (e : Expr) : Array Expr :=
   let e := clean e
   if e.isAppOfArity N.anyOf 4 then anyOfLeaves e.appFn!.appArg! ++ anyOfLeaves e.appArg! else #[e]
 
-/-- 型が必要性の形（`¬ Refines A C g` か `¬ (Refines A C g ∧ Pinned A C g f ce)`。`→ False` でもよい）なら、正規形の
-(A, C, g, (f, ce)) を返す（G9）。 -/
-def necessityForm? (env : Environment) (ty : Expr) : Option (Expr × Expr × Expr × Option (Expr × Expr)) := do
+/-- 型が必要性の形（`¬ Refines A C g` か `¬ (Refines A C g ∧ Pinned A C g f ce adm)`。`→ False` でもよい）なら、正規形の
+(A, C, g, (f, ce, adm)) を返す（G9）。 -/
+def necessityForm? (env : Environment) (ty : Expr) : Option (Expr × Expr × Expr × Option (Expr × Expr × Expr)) := do
   let x ← negated? env ty
   let nz := normalize env
   if x.isAppOfArity N.refines 10 then
@@ -363,19 +365,19 @@ def necessityForm? (env : Environment) (ty : Expr) : Option (Expr × Expr × Exp
   guard (x.isAppOfArity ``And 2)
   let l := unfoldReducible env x.appFn!.appArg!
   let r := unfoldReducible env x.appArg!
-  guard (l.isAppOfArity N.refines 10 && r.isAppOfArity N.pinned 14)
+  guard (l.isAppOfArity N.refines 10 && r.isAppOfArity N.pinned 16)
   let la := l.getAppArgs
   let ra := r.getAppArgs
   let (a, c, g) := (nz la[7]!, nz la[8]!, nz la[9]!)
-  guard (nz ra[9]! == a && nz ra[10]! == c && nz ra[11]! == g)
-  return (a, c, g, some (nz ra[12]!, nz ra[13]!))
+  guard (nz ra[10]! == a && nz ra[11]! == c && nz ra[12]! == g)
+  return (a, c, g, some (nz ra[13]!, nz ra[14]!, nz ra[15]!))
 
 /-- 型が `¬ TotalUnder A always` なら、正規形の A を返す（G9）。 -/
 def envNecessityForm? (env : Environment) (ty : Expr) : Option Expr := do
   let x ← negated? env ty
   guard (x.isAppOfArity N.totalUnder 5)
   let a := x.getAppArgs
-  guard (headConst? a[4]! == some N.always && (clean a[4]!).getAppNumArgs == 1)
+  guard (headConst? a[4]! == some N.always && (clean a[4]!).getAppNumArgs == 2)
   return normalize env a[3]!
 
 /-- 利用側の定義を、頭部が `targets` のどれかになるまで展開する（最大 8 回）。 -/
@@ -389,13 +391,17 @@ def unfoldTo (env : Environment) (targets : List Name) (e : Expr) : Option Expr 
     | none => return none
   return none
 
-/-- `Spec` の層の機械の定義が、`ofChoice`・`pure` か、それらを `Machine.sum` で並置したものか（G3'）。 -/
+/-- `Spec` の層の機械の定義が、`ofChoice`・`pure` か、それらを `Machine.sum`（状態の積）・`Machine.alt`（同じ状態）で
+並置したものか（G3'）。 -/
 partial def specMachineOk (env : Environment) (e : Expr) : Bool :=
-  match unfoldTo env [N.ofChoice, N.pure, N.sum] e with
+  match unfoldTo env [N.ofChoice, N.pure, N.sum, N.alt] e with
   | some e' =>
     if e'.getAppFn.constName? == some N.sum then
       let args := e'.getAppArgs
       args.size == 8 && specMachineOk env (unfoldReducible env args[6]!) && specMachineOk env (unfoldReducible env args[7]!)
+    else if e'.getAppFn.constName? == some N.alt then
+      let args := e'.getAppArgs
+      args.size == 7 && specMachineOk env (unfoldReducible env args[5]!) && specMachineOk env (unfoldReducible env args[6]!)
     else true
   | none => false
 
@@ -406,7 +412,7 @@ partial def prodLeaves (e : Expr) : Array Expr :=
   else #[e]
 
 /-- 束の `ch`（`Option (Choice …)`）を読む。 -/
-def readChoice (env : Environment) (e : Expr) : Except String (Option (Expr × Expr × Expr × Expr)) :=
+def readChoice (env : Environment) (e : Expr) : Except String (Option (Expr × Expr × Expr × Expr × Expr)) :=
   let nz := normalize env
   match unfoldTo env [``Option.none, ``Option.some] e with
   | some v =>
@@ -414,7 +420,8 @@ def readChoice (env : Environment) (e : Expr) : Except String (Option (Expr × E
     else match unfoldTo env [N.choiceMk] v.appArg! with
       | some c =>
         let xs := c.getAppArgs
-        if xs.size == 11 then .ok (some (nz xs[7]!, nz xs[8]!, nz xs[9]!, nz xs[10]!))
+        -- 型引数 σ ιa οa ιc と、欄 E F D P f ce adm d₀ e₀ m
+        if xs.size == 14 then .ok (some (nz xs[8]!, nz xs[9]!, nz xs[10]!, nz xs[12]!, nz xs[13]!))
         else .error "ch is not Machine.Preserves.Choice.mk with all fields"
       | none => .error "ch is not some (Machine.Preserves.Choice.mk …)"
   | none => .error "ch is not none or some _"
@@ -462,8 +469,8 @@ def collectCompanions (env : Environment) : Companions := Id.run do
     unless nForall == 0 do continue
     let some h := concl.getAppFn.constName? | continue
     let a := concl.getAppArgs
-    if h == N.envWitness && a.size == 10 then
-      cs := { cs with envWitness := cs.envWitness.push (nz a[7]!, nz a[8]!, nz a[9]!) }
+    if h == N.envWitness && a.size == 11 then
+      cs := { cs with envWitness := cs.envWitness.push (nz a[7]!, nz a[8]!, nz a[10]!) }
     else if h == N.totalUnder && a.size == 5 then
       cs := { cs with totalUnder := cs.totalUnder.push (nz a[3]!, nz a[4]!) }
     else if h == N.nontrivial && a.size == 2 then
@@ -517,7 +524,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
     | none => r := { r with errors := r.errors.push s!"G2: {label} base is not a named constant" }
   -- G3: 抽象側の基底
   let mut choice : Option (Expr × Expr) := none
-  let mut pinCes : Array Expr := #[]
+  let mut pinCes : Array (Expr × Expr) := #[]
   match unfoldTo env [N.ofChoice, N.pure] aBase with
   | some v =>
     if v.getAppFn.constName? == some N.pure then r := { r with absKind := "pure" }
@@ -594,13 +601,18 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
       r := { r with errors := r.errors.push s!"G6: {b.name}: ch must be none for a Machine.pure base" }
     | .ok none, some _ =>
       r := { r with errors := r.errors.push s!"G6: {b.name}: ch must be some (Choice.mk …) with the f and e₀ of Machine.ofChoice" }
-    | .ok (some (f', ce, e₀', m)), some (f, e₀) =>
+    | .ok (some (f', ce, adm, e₀', m)), some (f, e₀) =>
+      -- `adm`: 等号 `Machine.Preserves.sameEnv` か、`Spec` の層の裸の定数（環境の記述が許す環境の選択）
+      let admOk := headConst? adm == some N.sameEnv ||
+        (bareConst? adm).any fun ac => sc.layerOf ac == some "Spec"
       if f' != f then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.f is not the f of Machine.ofChoice" }
       else if e₀' != e₀ then r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.e₀ is not the e₀ of Machine.ofChoice" }
+      else if !admOk then
+        r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.adm is neither Machine.Preserves.sameEnv nor a bare constant of the Spec layer" }
       else match bareConst? ce with
         | some cc =>
           if hasAttr stdAbsAttr env cc then
-            pinCes := pinCes.push ce
+            pinCes := pinCes.push (ce, adm)
             r := { r with hasPinned := true, hasNoFault := true }
           else r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce = {cc} has no @[std_abs]" }
         | none => r := { r with errors := r.errors.push s!"G6: {b.name}: Choice.ce is not a bare @[std_abs] constant" }
@@ -624,7 +636,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
               r := { r with errors := r.errors.push s!"G6: {b.name}: {label}: the base of the layer {pc} is neither the base nor the machine without the layer" }
           | none => r := { r with errors := r.errors.push s!"G6: {b.name}: {label}: a layer predicate is not a bare @[deviation] constant" }
     -- 入口の全域性（束の `total`・`envWitness`）
-    if headConst? b.env == some N.always && (clean b.env).getAppNumArgs == 1 then
+    if headConst? b.env == some N.always && (clean b.env).getAppNumArgs == 2 then
       r := { r with totalUnder := r.totalUnder.push (N.always, true) }
     else if let some ec := bareConst? b.env then
       if hasAttr envPreAttr env ec then r := { r with totalUnder := r.totalUnder.push (ec, true) }
@@ -632,9 +644,9 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
     let msg := "G3: free choices, but no bundle whose Choice.m is a bare constant with a KernelIs theorem (FreeFrame)"
     r := { r with errors := r.errors.push msg }
   -- G9: 成分の必要性（どの R 課題にも無い成分の誤りは、全体の判定で出す）
-  let pinOk (pin : Option (Expr × Expr)) : Bool :=
+  let pinOk (pin : Option (Expr × Expr × Expr)) : Bool :=
     match choice, pin with
-    | some (f, _), some (f', ce') => f' == f && pinCes.contains ce'
+    | some (f, _), some (f', ce', adm') => f' == f && pinCes.contains (ce', adm')
     | some _, none => true
     | none, none => r.absKind == "pure"
     | none, some _ => false
@@ -667,7 +679,7 @@ def checkR (env : Environment) (sc : Scope) (cs : Companions) (bundles : Array B
       let w := cs.envWitness.any fun (c', g', e') => c' == c && g' == g && e' == env'
       let add (r : RInfo) (e : Name) : RInfo :=
         if r.totalUnder.any (·.1 == e) then r else { r with totalUnder := r.totalUnder.push (e, w) }
-      if headConst? env' == some N.always && (clean env').getAppNumArgs == 1 then
+      if headConst? env' == some N.always && (clean env').getAppNumArgs == 2 then
         r := add r N.always
       else match bareConst? env' with
         | some ec =>

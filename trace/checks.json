@@ -5,92 +5,273 @@
       "id": "lake-test",
       "description": "適合テストベクタの照合（Lean の Tests。lake test）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "vectors": ["conformance/**/*.json"], "names": ["SourceModel.App.B0.*"] }
+      "covers": {
+        "vectors": [
+          "conformance/**/*.json"
+        ],
+        "names": [
+          "SourceModel.App.B0.*"
+        ]
+      }
     },
     {
       "id": "pg-master-sql",
       "description": "マスタの Mapper の文・コードリストの SQL の PostgreSQL での差分実行（結果の再生成と lake test の Tests.MasterSql）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "conformance:master-sql"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "names": ["SourceModel.Db.Schema.*", "SourceModel.Domain.Repository.Route.*", "SourceModel.Domain.Repository.Boardingclass.*",
-        "SourceModel.Domain.Repository.Faretype.*", "SourceModel.Domain.Repository.Peaktime.*",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster", "SourceModel.Domain.Repository.Flight.FlightRepository.FlightMasterResult",
-        "SourceModel.Config.App.AtrsCodeListConfig.*CodeListRows", "SourceModel.AtrsProperties.*"] }
+      "covers": {
+        "names": [
+          "SourceModel.Db.Schema.*",
+          "SourceModel.Domain.Repository.Route.*",
+          "SourceModel.Domain.Repository.Boardingclass.*",
+          "SourceModel.Domain.Repository.Faretype.*",
+          "SourceModel.Domain.Repository.Peaktime.*",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.findAllFlightMaster",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.FlightMasterResult",
+          "SourceModel.Config.App.AtrsCodeListConfig.*CodeListRows",
+          "SourceModel.AtrsProperties.*"
+        ]
+      }
     },
     {
       "id": "jvm-table",
       "description": "Java の言語意味論と JVM の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "assets:jvm-table"] },
-        { "cwd": ".", "argv": ["mise", "run", "assets:build"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "assets:jvm-table"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "assets:build"
+          ]
+        }
       ],
-      "covers": { "names": ["LangSemantics.Java.*"] }
+      "covers": {
+        "names": [
+          "LangSemantics.Java.*"
+        ]
+      }
     },
     {
       "id": "pg-table",
       "description": "SQL の言語意味論と PostgreSQL の突き合わせ（表の再生成と Test.LangSemantics の #guard）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "assets:pg-table"] },
-        { "cwd": ".", "argv": ["mise", "run", "assets:build"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "assets:pg-table"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "assets:build"
+          ]
+        }
       ],
-      "covers": { "names": ["LangSemantics.Sql.*"] }
+      "covers": {
+        "names": [
+          "LangSemantics.Sql.*"
+        ]
+      }
     },
     {
       "id": "seed-lean",
-      "description": "上流のシードから [Spec] のシードの値への変換（master_fixture.py・seed_lean.py の再生成との一致と、lake test のシードと PostgreSQL の照合）",
+      "description": "上流のシードから [Spec] のシードの値と [Source] のシードのマスタの表への変換（master_fixture.py・seed_lean.py・master_seed.py の再生成との一致と、lake test のシードと PostgreSQL の照合）",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "conformance:check"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "conformance:check"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "names": ["Spec.Seed.*"] }
+      "covers": {
+        "names": [
+          "Spec.Seed.*",
+          "SourceModel.Db.MasterSeed.*"
+        ]
+      }
     },
     {
       "id": "pg-flight-sql",
       "description": "空席照会の文の PostgreSQL での差分実行と、シードの FLIGHT 表の照合（結果の再生成と lake test の Tests.FlightSql。FLIGHT の要約は master_sql.py が生成器の展開と照合する）",
       "steps": [
-        { "cwd": ".", "argv": ["uv", "run", "--quiet", "python", "-I", "tools/conformance/flight_seed.py", "--check"] },
-        { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "uv",
+            "run",
+            "--quiet",
+            "python",
+            "-I",
+            "tools/conformance/flight_seed.py",
+            "--check"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "conformance:master-sql"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "names": ["SourceModel.Domain.Repository.Flight.*", "SourceModel.Db.FlightSeed.*",
-        "SourceModel.Db.Schema.FlightRow", "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap"] }
+      "covers": {
+        "names": [
+          "SourceModel.Domain.Repository.Flight.*",
+          "SourceModel.Db.FlightSeed.*",
+          "SourceModel.Db.Schema.FlightRow",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.flightMap"
+        ]
+      }
     },
     {
       "id": "pg-reservation-sql",
       "description": "予約が使う Mapper の文（FlightRepository の exists・findOneForUpdate・update、MemberRepository の findOne、ReservationRepository の insert・insertReserveFlight・insertPassenger と各 selectKey）の PostgreSQL での差分実行と、シードの会員（MEMBER・MEMBER_LOGIN。LOGIN_DATE_TIME を除く）・sq_member_1 の照合（結果の再生成と lake test の Tests.ReservationSql）",
       "steps": [
-        { "cwd": ".", "argv": ["uv", "run", "--quiet", "python", "-I", "tools/conformance/member_seed.py", "--check"] },
-        { "cwd": ".", "argv": ["mise", "run", "conformance:master-sql"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "uv",
+            "run",
+            "--quiet",
+            "python",
+            "-I",
+            "tools/conformance/member_seed.py",
+            "--check"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "conformance:master-sql"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "names": ["SourceModel.Domain.Repository.Reservation.*", "SourceModel.Domain.Repository.Member.*",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.existsRows",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdateRows",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.updateRows",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.update",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.bindKey",
-        "SourceModel.Domain.Repository.Flight.FlightRepository.keyCond", "SourceModel.Db.MemberSeed.*",
-        "SourceModel.Db.Schema.MemberRow", "SourceModel.Db.Schema.MemberLoginRow", "SourceModel.Db.Schema.ReservationRow",
-        "SourceModel.Db.Schema.ReserveFlightRow", "SourceModel.Db.Schema.PassengerRow", "SourceModel.Db.Schema.sqMember",
-        "SourceModel.Db.Schema.sqReservation", "SourceModel.Db.Schema.sqReserveFlight", "SourceModel.Db.Schema.sqPassenger"] }
+      "covers": {
+        "names": [
+          "SourceModel.Domain.Repository.Reservation.*",
+          "SourceModel.Domain.Repository.Member.*",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.existsRows",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdateRows",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.updateRows",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.exists",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.findOneForUpdate",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.update",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.KeyParams",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.bindKey",
+          "SourceModel.Domain.Repository.Flight.FlightRepository.keyCond",
+          "SourceModel.Db.MemberSeed.*",
+          "SourceModel.Db.Schema.MemberRow",
+          "SourceModel.Db.Schema.MemberLoginRow",
+          "SourceModel.Db.Schema.ReservationRow",
+          "SourceModel.Db.Schema.ReserveFlightRow",
+          "SourceModel.Db.Schema.PassengerRow",
+          "SourceModel.Db.Schema.sqMember",
+          "SourceModel.Db.Schema.sqReservation",
+          "SourceModel.Db.Schema.sqReserveFlight",
+          "SourceModel.Db.Schema.sqPassenger"
+        ]
+      }
     },
     {
       "id": "java-origin-run",
       "description": "Java の原典実行（backlog f18c・aedf）: 運賃計算・空席照会・予約のベクタを原典で照合し、原典実行が生成したベクタ（source-model/*/origin-run-*.json）を再生成と突き合わせ、lake test で SourceModel と照合する",
       "steps": [
-        { "cwd": ".", "argv": ["mise", "run", "origin-run:domain"] },
-        { "cwd": ".", "argv": ["mise", "run", "lean:test"] }
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "origin-run:domain"
+          ]
+        },
+        {
+          "cwd": ".",
+          "argv": [
+            "mise",
+            "run",
+            "lean:test"
+          ]
+        }
       ],
-      "covers": { "vectors": ["conformance/shared/fare/*.json", "conformance/source-model/fare/*.json",
-        "conformance/shared/flight-search/*.json", "conformance/source-model/flight-search/*.json",
-        "conformance/shared/reservation/*.json", "conformance/source-model/reservation/*.json"] }
+      "covers": {
+        "vectors": [
+          "conformance/shared/fare/*.json",
+          "conformance/source-model/fare/*.json",
+          "conformance/shared/flight-search/*.json",
+          "conformance/source-model/flight-search/*.json",
+          "conformance/shared/reservation/*.json",
+          "conformance/source-model/reservation/*.json"
+        ]
+      }
     }
   ]
 }
