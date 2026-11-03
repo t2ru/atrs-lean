@@ -25,7 +25,7 @@ R 課題は、型の結論が `Machine.Refines` の `@[obligation]` 定理であ
 
 | 規則 | 内容 |
 | --- | --- |
-| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum` で並置したもので作る（SPEC-005） |
+| G3' | `Spec` の層の抽象機械の定義は、すべて `ofChoice` か `pure`、またはそれらを `Machine.sum`・`Machine.alt` で並置したもので作る（SPEC-005） |
 | G7 | `@[std_abs]` は 1 引数の関数で、葉（`KernelIs` の定理があり、K は `Eq` か `@[kernel]` の定数か、`@[kernel]` の定数または汎用の核 `Machine.Kernel.undefOrEq` をその葉自身に適用したもの）か、許可した構成だけからなる合成。ao と `FreeFrame` の射影は葉でなければならない |
 | G8 | `@[deviation]`・`@[env_pre]` の各定数に `Nontrivial`・`Nontrivial₂` の定理がある |
 | G9 | 成分の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）。下の 3 つ |
@@ -79,6 +79,7 @@ def choiceMk : Name := `Machine.Preserves.Choice.mk
 def outLayerMk : Name := `Machine.Preserves.OutLayer.mk
 def outLayerCMk : Name := `Machine.Preserves.OutLayerC.mk
 def sum : Name := `Machine.Machine.sum
+def alt : Name := `Machine.Machine.alt
 def restrict : Name := `Machine.Machine.restrict
 def restrictState : Name := `Machine.Machine.restrictState
 def cRestrict : Name := `Machine.Concrete.restrict
@@ -390,13 +391,17 @@ def unfoldTo (env : Environment) (targets : List Name) (e : Expr) : Option Expr 
     | none => return none
   return none
 
-/-- `Spec` の層の機械の定義が、`ofChoice`・`pure` か、それらを `Machine.sum` で並置したものか（G3'）。 -/
+/-- `Spec` の層の機械の定義が、`ofChoice`・`pure` か、それらを `Machine.sum`（状態の積）・`Machine.alt`（同じ状態）で
+並置したものか（G3'）。 -/
 partial def specMachineOk (env : Environment) (e : Expr) : Bool :=
-  match unfoldTo env [N.ofChoice, N.pure, N.sum] e with
+  match unfoldTo env [N.ofChoice, N.pure, N.sum, N.alt] e with
   | some e' =>
     if e'.getAppFn.constName? == some N.sum then
       let args := e'.getAppArgs
       args.size == 8 && specMachineOk env (unfoldReducible env args[6]!) && specMachineOk env (unfoldReducible env args[7]!)
+    else if e'.getAppFn.constName? == some N.alt then
+      let args := e'.getAppArgs
+      args.size == 7 && specMachineOk env (unfoldReducible env args[5]!) && specMachineOk env (unfoldReducible env args[6]!)
     else true
   | none => false
 

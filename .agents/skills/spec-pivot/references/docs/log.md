@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 * **Creation**: [ADR 61e6](decision/61e6-env-relation-and-state-env-pre.md) で、束 `Machine.Preserves` の環境の固定を「具体側の環境の記述が許す選択の関係」（`Choice` の `D`・`adm`・`d₀`、成分 `noFaultStd`）に、環境の前提を状態と入力の述語（`TotalUnder`・`EnvWitness` は初期状態、`always` は 2 引数、並置は `sumEnv`・`altEnv`）に広げた。obligation-check（`adm` の形、`Pinned` の引数、`EnvWitness` の引数）、[spec/architecture.md](spec/architecture.md#空虚化を防ぐ義務) の表、テストと違反例 `v6_admPlain` を直した。スキルの版を 0.27 にした。来歴: 適用先 ATRS の予約の第 3 段 3d。
+* **Update**: obligation-check の G3'（`Spec` の層の抽象機械の形）が、同じ状態の上の並置 `Machine.alt`（[ADR a303](decision/a303-shared-state-machine-alt-and-transaction.md)）も受けるようにした（版 0.27 に含める）。来歴: 適用先 ATRS の予約の第 3 段 3d（トップレベルへの統合）。
 
 ## 2026-11-02
 * **Creation**: [ADR cd90](decision/cd90-estate-hoare-and-simp-tactics.md) で、命令型の計算（`EStateM`）の検証の道具を足した。スキルの版を 0.26 にした。

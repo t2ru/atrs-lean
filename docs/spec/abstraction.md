@@ -24,15 +24,15 @@ Lean では、名前空間 `Abstraction` に、課題 ID を `@[obligation]` に
 
 ```lean
 theorem Abstraction.refines :
-    Machine.Refines (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue
+    Machine.Refines (Spec.machine.restrictState dev) (SourceModel.machine.restrict devC) glue
 theorem Abstraction.preserves :
-    Machine.Preserves (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+    Machine.Preserves (Spec.machine.restrictState dev) (SourceModel.machine.restrict devC) glue Spec.init env
 theorem Abstraction.abstracts :
-    Machine.Abstracts (Spec.machine.restrict dev) (SourceModel.machine.restrict devC) glue Spec.init env
+    Machine.Abstracts (Spec.machine.restrictState dev) (SourceModel.machine.restrict devC) glue Spec.init env
 ```
 
-- `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。
-- `dev`・`devC`・`glue`・`env` は、R 課題ごとの前提型の差異・貼り合わせ・環境の前提を並置したもの。
+- `Spec.machine`・`SourceModel.machine` は、実装済みの範囲の機能の機械を同じ並びで並置したもの（`Machine.sum`）。状態 `World` を共有する空席照会と予約は、同じ状態の上の並置 `Machine.alt` でつなぐ。
+- `dev`・`devC`・`glue`・`env` は、R 課題ごとの前提型の差異・貼り合わせ・環境の前提を並置したもの。`dev`・`env` は状態と入力の述語である（D-009 と、予約の環境の前提 `envR` が状態を見る。スキルの [ADR 61e6](../../.agents/skills/spec-pivot/references/docs/decision/61e6-env-relation-and-state-env-pre.md)）。
 - `Machine.Refines`（[Source] refines [Spec]）は、B メソッドのリファインメントである。B に無い義務は含めない。
 - `Machine.Preserves`（[Spec] preserves [Source]）は、R 課題の空虚化を防ぐ意味的な義務のすべての束で、`Refines` を含まない。
   - 成分: `Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`、環境の前提を置かないかその必要性。基底が `Machine.ofChoice` なら `Pinned`・`NoFaultReachable`・`FreeFrame`、「出力のみ」の差異ごとに `StateSafe`（現行の R 課題には当たらない）。
@@ -47,6 +47,7 @@ theorem Abstraction.abstracts :
 | ABS-002 | 運賃 | `Abstraction.Fare.farePreserves` | `envF`: 基本運賃と割引率の値域、`dev_D002` |
 | ABS-004 | 合計金額 | `Abstraction.Fare.totalFarePreserves` | `envTF`: `masterConfigOk`、入力の値域、`dev_D001T`・`dev_D002T`・`dev_D012` |
 | ABS-011 | 空席照会 | `Abstraction.FlightSearch.searchPreserves` | `envFS`: `masterConfigOk`、照会の搭乗クラスがマスタにあること、空港コードと照会の区間の便マスタの便名が空白でないこと、`dev_D001S`・`dev_D002S` |
+| ABS-041 | 予約 | `Abstraction.Reserve.reservePreserves` | `envR`（状態と入力）: `masterConfigOk`、要求の妥当性、状態とマスタの対応（`RefMaster`・`MemberRefMaster`）、操作の値が定まること、`dev_D009`・`dev_D031`・`dev_D001R`・`dev_D002R`・`dev_D012R`。証人は初期状態（シード）で示す |
 
 束の並置 `Preserves.sum` は全 R 課題に共通の 6 成分を並べる。基底が `ofChoice` の R 課題（ABS-011）の条件付きの成分（`pinned`・`noFault`・`freeFrame`・`stateSafeC`）は、機能の束に置き、トップレベルでは忘れた束（`Preserves.core`）を並置する。
 
