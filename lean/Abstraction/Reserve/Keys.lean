@@ -67,63 +67,73 @@ theorem ofString?_val (n : Spec.Model.ReserveNo) : Spec.Model.ReserveNo.ofString
   simp only [show (⟨n.val.toList.foldl (fun acc c => acc * 10 + (c.toNat - 48)) 0⟩ : Spec.Model.ReserveNo) = n from by
     cases n; simp only [Spec.Model.ReserveNo.mk.injEq]; exact hd, ite_true]
 
-theorem reservationOfRow_no {r : ReservationRow} {fs : List Spec.Model.ReserveFlight} {R : Spec.Model.Reservation}
+theorem reservationOfRow_no {r : ReservationRow} {fs : Spec.Model.ReserveFlights} {R : Spec.Model.Reservation}
     (h : reservationOfRow r fs = some R) : R.reserveNo.val = r.reserveNo.val ∧ R.reserveFlights = fs := by
   simp only [reservationOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
   obtain ⟨_, -, _, -, _, -, _, -, _, hrn, _, -, rfl⟩ := h
   exact ⟨Spec.Model.ReserveNo.val_of_ofString? hrn, rfl⟩
 
-theorem reserveFlightOfRow_no {r : ReserveFlightRow} {ps : List Spec.Model.PassengerRecord}
-    {F : Spec.Model.ReserveFlight} (h : reserveFlightOfRow r ps = some F) :
-    r.reserveFlightNo.val = (F.reserveFlightNo : Int) ∧ F.passengers = ps := by
+theorem reserveFlightOfRow_no {r : ReserveFlightRow} {F : Spec.Model.ReserveFlight}
+    (h : reserveFlightOfRow r = some F) : r.reserveFlightNo.val = (F.reserveFlightNo : Int) := by
   simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at h
-  obtain ⟨no, hno, _, -, _, -, _, -, _, -, _, -, rfl⟩ := h
-  exact ⟨Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno, rfl⟩
+  obtain ⟨no, hno, _, -, _, -, _, -, _, -, rfl⟩ := h
+  exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
+
+/-- 予約フライトの行の α は、行の予約フライトと、搭乗者の行の α の列。 -/
+theorem rfOf_eq {ps : List PassengerRow} {g : ReserveFlightRow} {F : Spec.Model.ReserveFlight × List (Nat × Spec.Model.Passenger)}
+    (h : rfOf ps g = some F) :
+    reserveFlightOfRow g = some F.1 ∧ (passengersOf ps g).mapM passengerOfRow = some F.2 := by
+  simp only [rfOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
+  obtain ⟨xs, hxs, f, hf, rfl⟩ := h
+  exact ⟨hf, hxs⟩
+
+/-- 予約の行の α は、予約フライトの行の α の列を、片道・往復の形にしたもの。 -/
+theorem resOf_eq {rfs : List ReserveFlightRow} {ps : List PassengerRow} {x : ReservationRow}
+    {R : Spec.Model.Reservation} (h : resOf rfs ps x = some R) :
+    R.reserveNo.val = x.reserveNo.val ∧ (flightsOf rfs x).mapM (rfOf ps) = some R.reserveFlights.legs := by
+  simp only [resOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at h
+  obtain ⟨ls, hls, fs, hfs, hxr⟩ := h
+  obtain ⟨h1, h2⟩ := reservationOfRow_no hxr
+  rw [h2, reserveFlightsOf_legs hfs]
+  exact ⟨h1, hls⟩
 
 /-- 予約の表の行は、α の像の予約・予約フライト・搭乗者に当たる。 -/
 theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) :
     (∀ x ∈ fd.reservation, ∃ R ∈ w.reservations, R.reserveNo.val = x.reserveNo.val) ∧
-    (∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights,
-      g.reserveFlightNo.val = (F.reserveFlightNo : Int)) ∧
-    (∀ p ∈ fd.passenger, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights, ∃ P ∈ F.passengers,
-      p.passengerNo.val = (P.passengerNo : Int)) := by
+    (∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights.legs,
+      g.reserveFlightNo.val = (F.1.reserveFlightNo : Int)) ∧
+    (∀ p ∈ fd.passenger, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights.legs, ∃ P ∈ F.2,
+      p.passengerNo.val = (P.1 : Int)) := by
   have hr := (worldOfDb_eq_some.mp hw).2.2.1
   unfold reservationsOf at hr
   split at hr
   · rename_i hwf
     obtain ⟨hw1, hw2⟩ := hwf
     -- 予約フライトの行の α
-    have hrf : ∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights, rfOf fd.passenger g = some F := by
+    have hrf : ∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights.legs,
+        rfOf fd.passenger g = some F := by
       intro g hg
       have hg' := hg
       rw [hw1] at hg'
       obtain ⟨x, hx, hgx⟩ := List.mem_flatMap.mp hg'
       obtain ⟨R, hR, hxR⟩ := LangSemantics.Core.MapM.mapM_some_mem hr hx
-      simp only [resOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at hxR
-      obtain ⟨fs, hfs, hxr⟩ := hxR
-      obtain ⟨F, hF, hgF⟩ := LangSemantics.Core.MapM.mapM_some_mem hfs hgx
-      exact ⟨R, hR, F, (reservationOfRow_no hxr).2 ▸ hF, hgF⟩
+      obtain ⟨F, hF, hgF⟩ := LangSemantics.Core.MapM.mapM_some_mem (resOf_eq hxR).2 hgx
+      exact ⟨R, hR, F, hF, hgF⟩
     refine ⟨?_, ?_, ?_⟩
     · intro x hx
       obtain ⟨R, hR, hxR⟩ := LangSemantics.Core.MapM.mapM_some_mem hr hx
-      simp only [resOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at hxR
-      obtain ⟨fs, -, hxr⟩ := hxR
-      exact ⟨R, hR, (reservationOfRow_no hxr).1⟩
+      exact ⟨R, hR, (resOf_eq hxR).1⟩
     · intro g hg
       obtain ⟨R, hR, F, hF, hgF⟩ := hrf g hg
-      simp only [rfOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at hgF
-      obtain ⟨xs, -, hgr⟩ := hgF
-      exact ⟨R, hR, F, hF, (reserveFlightOfRow_no hgr).1⟩
+      exact ⟨R, hR, F, hF, reserveFlightOfRow_no (rfOf_eq hgF).1⟩
     · intro p hp
       have hp' := hp
       rw [hw2] at hp'
       obtain ⟨g, hg, hpg⟩ := List.mem_flatMap.mp hp'
       obtain ⟨R, hR, F, hF, hgF⟩ := hrf g hg
-      simp only [rfOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at hgF
-      obtain ⟨xs, hxs, hgr⟩ := hgF
-      obtain ⟨P, hP, hpP⟩ := LangSemantics.Core.MapM.mapM_some_mem hxs hpg
-      refine ⟨R, hR, F, hF, P, (reserveFlightOfRow_no hgr).2 ▸ hP, ?_⟩
+      obtain ⟨P, hP, hpP⟩ := LangSemantics.Core.MapM.mapM_some_mem (rfOf_eq hgF).2 hpg
+      refine ⟨R, hR, F, hF, P, hP, ?_⟩
       simp only [passengerOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
         Option.some.injEq] at hpP
       obtain ⟨no, hno, -, -, -, -, -, -, rfl⟩ := hpP

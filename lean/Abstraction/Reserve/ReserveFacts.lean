@@ -41,7 +41,7 @@ theorem memberNoOf_some {s : String} (h : s ≠ "") : memberNoOf (some s) = some
   simp only [memberNoOf, Option.bind_some]
   rw [ite_eq_right_iff.mpr (fun h' => absurd (by simpa [String.isEmpty_iff] using h') h)]
 
-theorem buildDraft_compact (ri : ReserveInput) (ks : List Spec.Model.FlightKey) :
+theorem buildDraft_compact (ri : ReserveInput) (ks : Itinerary Spec.Model.FlightKey) :
     buildDraft { ri with passengers := compactPassengers ri.passengers } ks = buildDraft ri ks := by
   simp only [buildDraft, compact_filter]
 
@@ -84,8 +84,8 @@ theorem register_eq (d : Draft) (T : Spec.Prim.Date) (tfn : Nat) {w w1 : Spec.Po
     register d T tfn w1 = (Spec.Port.World.reserveNoOf w.sequences.reserve,
       Registration.regWorld w w1 (Registration.regRes w T tfn d.repFamilyName d.repGivenName d.repAge d.repGender d.repTel d.repMail
         (d.repMembershipNumber.bind MembershipNumber.ofString?) (d.passengers.map DraftPassenger.toPassenger) d.flights)
-        d.flights.length (d.flights.length * d.passengers.length)) := by
-  simp only [register, Spec.Port.World.nextReserveNo, RegSpec.foldl_addReserveFlight, List.nil_append,
+        d.flights.toList.length (d.flights.toList.length * d.passengers.length)) := by
+  simp only [register, Spec.Port.World.nextReserveNo, RegSpec.numberFlights_eq,
     RegSpec.advRF, Spec.Port.World.insertReservation, Registration.regWorld, Registration.regRes, hseq, List.length_map]
 
 /-- 予約確定の操作の値の分解。 -/
@@ -94,7 +94,7 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
     (h : reserveOp cfg md today w r = some (w', x)) :
     ∃ v, Spec.Ticket.validateFlightList cfg md w (r.selects.map (Spec.Ticket.resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ w' = w ∧ x = .error (asInvalidRequest e)) ∨
-        (∃ it, v = .ok it ∧ ∃ d vr, buildDraft r.form it.toList = some d ∧
+        (∃ it, v = .ok it ∧ ∃ d vr, buildDraft r.form it = some d ∧
           validateReservation cfg md w d = some vr ∧
           ((∃ e, vr = .error e ∧ w' = w ∧ x = .error e) ∨
             (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) =
@@ -117,7 +117,7 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
       right
       refine ⟨it, rfl, ?_⟩
       simp only [Except.mapError, reserve, Option.bind_eq_bind] at h
-      cases hd : buildDraft r.form it.toList with
+      cases hd : buildDraft r.form it with
       | none => simp [hd] at h
       | some d =>
         cases hvr : validateReservation cfg md w d with

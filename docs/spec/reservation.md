@@ -65,7 +65,7 @@ generated:
 **[Spec=Source]** 予約入力（`TicketReserveInput`、[input-validation.md](input-validation.md#予約入力b2)）とフライト列から `Reservation`（採番前）を作る。
 
 - `passengers` = 入力の搭乗者欄のうち **空でないもの** を入力順に並べたもの。搭乗者欄が空とは、姓・名・会員番号がいずれも空白のみ（または未入力）で、年齢と性別が未入力であること。
-- `reserveFlights` = 各フライトに 1 つずつ。**すべての予約フライトが同じ `passengers` を持つ**。
+- `reserveFlights` = 各フライトに 1 つずつ。**すべての予約フライトが同じ `passengers` を持つ**。Lean では、予約内容の便は選択フライトの検証が返す片道・往復の `Itinerary`、登録した予約は片道・往復の `ReserveFlights`（搭乗者の列は 1 つで、便ごとの搭乗者番号を伴う）で表す。
 - `repTel = tel1 ++ "-" ++ tel2 ++ "-" ++ tel3`。
 - `repMembershipNumber` は入力が空なら無し。各搭乗者の `membershipNumber` も同様。予約内容の会員番号は入力の文字列のままで（Lean: `Spec.UseCase.Reserve.DraftPassenger`）、会員の照合は値で引く。形式に合わない番号は会員が見つからない業務エラーになる。登録では、照合に成功した番号（会員の番号）を `MembershipNumber` として読む（[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
 

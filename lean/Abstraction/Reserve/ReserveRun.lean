@@ -235,7 +235,7 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
     have hexU : ∀ k ∈ it.toList, (w.findForUpdate k).isSome :=
       fun k hk' => findForUpdate_isSome (hex' k hk').1
     have hdc : buildDraft { ia.req.form with passengers := compactPassengers ia.req.form.passengers }
-        it.toList = some d := by rw [buildDraft_compact]; exact hd
+        it = some d := by rw [buildDraft_compact]; exact hd
     let tfn := (Spec.Fare.totalFareOfKeys ia.cfg ia.md (tfOf ia).flights (tfOf ia).ages).getD 0
     have hcalc : validateReservation ia.cfg ia.md w d = some (.ok ()) →
         SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare
@@ -262,7 +262,7 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       (fun _ => hH')
     have hr := Hoare.run hH hs0
     have hdfl := (buildDraft_eq hd).2.2.2.2.2.2
-    have hkf' : LangSemantics.Core.List.Forall₂ (fun k FT => ia.md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs :=
+    have hkf' : LangSemantics.Core.List.Forall₂ (fun k FT => ia.md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs :=
       hdfl ▸ hkf
     have hft : ∀ FT ∈ ia.md.fareTypes, NoNL FT.fareTypeName := fareTypeNames_noNL hmd h27.2
     revert hr

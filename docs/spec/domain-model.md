@@ -144,18 +144,27 @@ generated:
 | `repTel` | String | `tel1-tel2-tel3`（ハイフン区切り） |
 | `repMail` | String | |
 | `repMembershipNumber` | MembershipNumber? | |
-| `reserveFlights` | [ReserveFlight] | 長さ 1（片道）または 2（往復: 往路, 復路の順） |
+| `reserveFlights` | ReserveFlights | 片道（1 便）または往復（往路・復路の 2 便）と、搭乗者の列（1 つ） |
 
 ### ReserveFlight
 
 | フィールド | 型 | 説明 |
 | --- | --- | --- |
 | `reserveFlightNo` | Nat | 登録時に採番 |
-| `reserveNo` | ReserveNo | |
 | `flight` | Flight の主キー | |
-| `passengers` | [Passenger] | 長さ 1〜6。**往路・復路で同一の搭乗者列**（原典は同じリストを共有する） |
 
-各 `Passenger` は登録時に `passengerNo`（採番）を得る。
+予約番号と搭乗者は予約が持つ（予約フライトに写しを置かない）。
+
+### ReserveFlights
+
+予約の便と搭乗者。形が型で決まる（[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
+
+| 構築子 | 内容 |
+| --- | --- |
+| `oneWay(flight, passengers)` | 片道。`passengers` は `[{ passenger, passengerNo }]`（長さ 1〜6） |
+| `roundTrip(outward, homeward, passengers)` | 往復。`passengers` は `[{ passenger, outwardNo, homewardNo }]`（長さ 1〜6）。**往路・復路で同一の搭乗者列**（原典は同じリストを共有する）を、1 つの列で表す |
+
+各搭乗者は、登録時に予約フライトごとの搭乗者番号（採番）を得る。採番の順は、便の順に、予約フライト番号、搭乗者ごとの搭乗者番号である。
 
 ### Member
 

@@ -153,7 +153,7 @@ theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Por
     ∃ v, validateFlightList cfg md w (r.selects.map (resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ x = .error (asInvalidRequest e)) ∨
         (∃ it, v = .ok it ∧ ∃ d vr, buildDraft { r.form with passengers := compactPassengers r.form.passengers }
-            it.toList = some d ∧ validateReservation cfg md w d = some vr ∧
+            it = some d ∧ validateReservation cfg md w d = some vr ∧
           ((∃ e, vr = .error e ∧ x = .error e) ∨
             (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) =
               some n ∧ x = .ok n)))) := by
@@ -172,7 +172,7 @@ theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Por
       right
       refine ⟨it, rfl, ?_⟩
       simp only [Except.mapError, reserveConfirm, Option.bind_eq_bind] at h
-      cases hd : buildDraft { r.form with passengers := compactPassengers r.form.passengers } it.toList with
+      cases hd : buildDraft { r.form with passengers := compactPassengers r.form.passengers } it with
       | none => simp [hd] at h
       | some d =>
         cases hvr : validateReservation cfg md w d with

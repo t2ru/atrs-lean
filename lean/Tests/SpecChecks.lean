@@ -80,7 +80,8 @@ def sample : MasterData where
 #guard (Spec.Seed.World.world.findMember "000000001").isNone
 #guard match Spec.UseCase.Reserve.checkRepMember Spec.Seed.World.world
     { repFamilyName := "デンデン", repGivenName := "ハナコ", repAge := 30, repGender := .F, repTel := "", repMail := "",
-      repMembershipNumber := some "abc", passengers := [], flights := [] } with
+      repMembershipNumber := some "abc", passengers := [],
+      flights := .oneWay ⟨Spec.Prim.Date.ymd! 2026 1 1, ⟨"NTT001", by decide⟩, .N, .OW⟩ } with
   | .error (.business .repMemberNotFound) => true
   | _ => false
 -- 参照の問い合わせの値域: 形式に合わない空港コードの区間の問い合わせは Valid でない

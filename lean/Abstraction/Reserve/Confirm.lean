@@ -24,12 +24,12 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
     {ic : ReserveInput} {w : Spec.Port.World} (he : MemberEnv fd ic.db w) {cfg : Spec.Config} {md : Spec.MasterData}
     (hmin : (helperOf p ic).ticketReserveService.representativeMinAge.val = (cfg.representativeMinAge : Int))
     {ri : Spec.UseCase.Reserve.ReserveInput} (hri : reserveInputOf ic.form = some ri)
-    (hlen : ri.passengers.length ≤ 6) {ks : List Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
+    (hlen : ri.passengers.length ≤ 6) {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
     (hd : Spec.UseCase.Reserve.buildDraft { ri with passengers := Spec.UseCase.Reserve.compactPassengers ri.passengers }
-      ks = some d)
+      it = some d)
     {f0 : SourceModel.Domain.Model.Flight} {fs : List SourceModel.Domain.Model.Flight}
     {FTs : List Spec.MasterData.FareType} (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (f0 :: fs) FTs)
-    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs) {T : Int.J32}
+    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) it.toList FTs) {T : Int.J32}
     (hcalc : ∀ vr, Spec.UseCase.Reserve.validateReservation cfg md w d = some vr → vr = .ok () →
       TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
         (some ((f0 :: fs).map some))

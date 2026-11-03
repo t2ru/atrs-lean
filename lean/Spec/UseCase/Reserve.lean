@@ -100,7 +100,7 @@ def compactPassengers (ps : List PassengerInput) : List PassengerInput :=
 
 /-! ## 予約内容の組み立て -/
 
-/-- 採番前の予約内容。すべての予約フライトが同じ搭乗者列を持つ。 -/
+/-- 採番前の予約内容。予約する便（片道・往復）と、すべての便に共通の搭乗者列を持つ。 -/
 @[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
 structure Draft where
   repFamilyName : String
@@ -111,13 +111,13 @@ structure Draft where
   repMail : String
   repMembershipNumber : Option String
   passengers : List DraftPassenger
-  flights : List FlightKey
+  flights : Itinerary FlightKey
   deriving DecidableEq
 
 /-- 予約内容を組み立てる。搭乗者は空でない欄を入力順に並べたもの。空でない欄が無ければ無し（PRE。入力検証の相関
 `e.ar.b2.5002` が除く）。 -/
 @[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
-def buildDraft (i : ReserveInput) (flights : List FlightKey) : Option Draft := do
+def buildDraft (i : ReserveInput) (flights : Itinerary FlightKey) : Option Draft := do
   let ps ← (i.passengers.filter (!·.isEmpty)).mapM PassengerInput.toPassenger
   if ps.isEmpty then none
   return { repFamilyName := i.repFamilyName, repGivenName := i.repGivenName, repAge := i.repAge,
@@ -146,7 +146,7 @@ def checkFareTypeOf (md : MasterData) (ps : List DraftPassenger) (k : FlightKey)
 /-- 2. 運賃種別の利用条件（予約フライトを順に）。 -/
 @[spec_doc "docs/spec/reservation.md#validatereservation"]
 def checkFareTypes (md : MasterData) (d : Draft) : Option (Except AtrsError Unit) :=
-  d.flights.foldlM (init := .ok ()) fun acc k => do
+  d.flights.toList.foldlM (init := .ok ()) fun acc k => do
     match acc with
     | .error e => return .error e
     | .ok () => checkFareTypeOf md d.passengers k
@@ -256,12 +256,12 @@ theorem validateReservation_memberNos_valid {cfg : Config} {md : MasterData} {w 
 /-- 予約確認（`reserveConfirm`）: 予約内容を組み立てて検証し、合計金額を返す。搭乗者欄を詰める処理は、組み立てに
 影響しない（空の欄は組み立てで除かれる）。 -/
 @[spec_doc "docs/spec/reservation.md#予約確認reserveconfirm"]
-def reserveConfirm (cfg : Config) (md : MasterData) (w : World) (i : ReserveInput) (flights : List FlightKey) :
+def reserveConfirm (cfg : Config) (md : MasterData) (w : World) (i : ReserveInput) (flights : Itinerary FlightKey) :
     Option (Except AtrsError Nat) := do
   let d ← buildDraft { i with passengers := compactPassengers i.passengers } flights
   match ← validateReservation cfg md w d with
   | .error e => return .error e
-  | .ok () => return .ok (← Spec.Fare.totalFareOfKeys cfg md flights (d.passengers.map (·.age)))
+  | .ok () => return .ok (← Spec.Fare.totalFareOfKeys cfg md flights.toList (d.passengers.map (·.age)))
 
 /-- 予約確定の結果。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve"]
@@ -284,25 +284,33 @@ def secureSeats (md : MasterData) (today : Date) (n : Nat) (w : World) (k : Flig
     if f.vacantNum < n then return .error (.business .noVacancy)
     return .ok (w.updateVacantNum k (f.vacantNum - n))
 
-/-- 搭乗者を 1 人登録する（搭乗者番号を採番する）。 -/
-def addPassenger (acc : List PassengerRecord × World) (p : Passenger) : List PassengerRecord × World :=
-  ((acc.1 ++ [⟨acc.2.nextPassengerNo.1, p⟩]), acc.2.nextPassengerNo.2)
+/-- 搭乗者を 1 人登録する（搭乗者番号を採番し、搭乗者番号と搭乗者の組を足す）。 -/
+def addPassenger (acc : List (Nat × Passenger) × World) (p : Passenger) : List (Nat × Passenger) × World :=
+  ((acc.1 ++ [(acc.2.nextPassengerNo.1, p)]), acc.2.nextPassengerNo.2)
 
 /-- 予約フライトを 1 便登録する（予約フライト番号を採番し、搭乗者を順に登録する）。 -/
-def addReserveFlight (ps : List Passenger) (reserveNo : ReserveNo) (acc : List ReserveFlight × World) (k : FlightKey) :
-    List ReserveFlight × World :=
-  let w := acc.2.nextReserveFlightNo.2
-  let recs := ps.foldl addPassenger ([], w)
-  (acc.1 ++ [⟨acc.2.nextReserveFlightNo.1, reserveNo, k, recs.1⟩], recs.2)
+def numberFlight (ps : List Passenger) (w : World) (k : FlightKey) :
+    (ReserveFlight × List (Nat × Passenger)) × World :=
+  let recs := ps.foldl addPassenger ([], w.nextReserveFlightNo.2)
+  ((⟨w.nextReserveFlightNo.1, k⟩, recs.1), recs.2)
 
-/-- 5〜6. 予約の登録: 予約番号、予約フライトごとに予約フライト番号と搭乗者番号を採番して登録する。代表者・搭乗者の
+/-- 予約する便を順に登録する（往路、復路の順に `numberFlight`）。片道・往復の予約フライトと搭乗者を組み立てる。 -/
+def numberFlights (ps : List Passenger) (w : World) : Itinerary FlightKey → ReserveFlights × World
+  | .oneWay k =>
+    let o := numberFlight ps w k
+    (.oneWayOf o.1.1 o.1.2, o.2)
+  | .roundTrip ko kh =>
+    let o := numberFlight ps w ko
+    let h := numberFlight ps o.2 kh
+    (.roundTripOf o.1.1 h.1.1 o.1.2 h.1.2, h.2)
+
+/-- 5〜6. 予約の登録: 予約番号、予約する便ごとに予約フライト番号と搭乗者番号を採番して登録する。代表者・搭乗者の
 会員番号は会員番号として読む（`validateReservation` が成功した後なので、与えられた会員番号はどれも読める。
 `validateReservation_memberNos`）。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve"]
 def register (d : Draft) (today : Date) (totalFare : Nat) (w : World) : ReserveNo × World :=
   let reserveNo := w.nextReserveNo.1
-  let rfs := d.flights.foldl (addReserveFlight (d.passengers.map DraftPassenger.toPassenger) reserveNo)
-    ([], w.nextReserveNo.2)
+  let rfs := numberFlights (d.passengers.map DraftPassenger.toPassenger) w.nextReserveNo.2 d.flights
   let r : Reservation :=
     { reserveNo, reserveDate := today, totalFare, repFamilyName := d.repFamilyName, repGivenName := d.repGivenName,
       repAge := d.repAge, repGender := d.repGender, repTel := d.repTel, repMail := d.repMail,
@@ -314,20 +322,20 @@ def register (d : Draft) (today : Date) (totalFare : Nat) (w : World) : ReserveN
 支払期限は往路の搭乗日。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
 def reserve (cfg : Config) (md : MasterData) (today : Date) (w : World) (i : ReserveInput)
-    (flights : List FlightKey) : Option (World × Except AtrsError ReserveResult) := do
+    (flights : Itinerary FlightKey) : Option (World × Except AtrsError ReserveResult) := do
   let d ← buildDraft i flights
   match ← validateReservation cfg md w d with
   | .error e => return (w, .error e)
   | .ok () =>
-    let totalFare ← Spec.Fare.totalFareOfKeys cfg md flights (d.passengers.map (·.age))
-    let secured ← flights.foldlM (init := Except.ok w) fun acc k => do
+    let totalFare ← Spec.Fare.totalFareOfKeys cfg md flights.toList (d.passengers.map (·.age))
+    let secured ← flights.toList.foldlM (init := Except.ok w) fun acc k => do
       match acc with
       | .error e => return .error e
       | .ok w' => secureSeats md today d.passengers.length w' k
     match secured with
     | .error e => return (w, .error e)
     | .ok w' =>
-      let paymentDate ← flights.head?.map (·.departureDate)
+      let paymentDate ← flights.toList.head?.map (·.departureDate)
       let (reserveNo, w'') := register d today totalFare w'
       return (w'', .ok { reserveNo, paymentDate, totalFare })
 
@@ -372,7 +380,7 @@ def checkSelects (cfg : Config) (md : MasterData) (w : World) (r : Request) :
 def confirmOp (cfg : Config) (md : MasterData) (w : World) (r : Request) : Option (Except AtrsError Nat) := do
   match ← checkSelects cfg md w r with
   | .error e => return .error e
-  | .ok it => reserveConfirm cfg md w r.form it.toList
+  | .ok it => reserveConfirm cfg md w r.form it
 
 /-- 予約確定の操作の標準の結果: 選択フライトの検証、予約確定。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
@@ -380,7 +388,7 @@ def reserveOp (cfg : Config) (md : MasterData) (today : Date) (w : World) (r : R
     Option (World × Except AtrsError ReserveResult) := do
   match ← checkSelects cfg md w r with
   | .error e => return (w, .error e)
-  | .ok it => reserve cfg md today w r.form it.toList
+  | .ok it => reserve cfg md today w r.form it
 
 /-! ## 抽象機械（backlog aedf の第 2 段） -/
 
@@ -525,30 +533,31 @@ theorem foldSecure_keys {md : MasterData} {today : Date} {n : Nat} :
         rw [secureSeats_keys hs, hacc w₀ rfl]
 
 theorem foldl_addPassenger_flights :
-    ∀ (ps : List Passenger) (acc : List PassengerRecord × World), (ps.foldl addPassenger acc).2.flights = acc.2.flights
+    ∀ (ps : List Passenger) (acc : List (Nat × Passenger) × World),
+      (ps.foldl addPassenger acc).2.flights = acc.2.flights
   | [], _ => rfl
   | p :: ps, acc => by rw [List.foldl_cons, foldl_addPassenger_flights ps]; rfl
 
-theorem foldl_addReserveFlight_flights (ps : List Passenger) (rn : ReserveNo) :
-    ∀ (ks : List FlightKey) (acc : List ReserveFlight × World),
-      (ks.foldl (addReserveFlight ps rn) acc).2.flights = acc.2.flights
-  | [], _ => rfl
-  | k :: ks, acc => by
-    rw [List.foldl_cons, foldl_addReserveFlight_flights ps rn ks]
-    simp only [addReserveFlight, foldl_addPassenger_flights]
-    rfl
+theorem numberFlight_flights (ps : List Passenger) (w : World) (k : FlightKey) :
+    (numberFlight ps w k).2.flights = w.flights := by
+  simp only [numberFlight, foldl_addPassenger_flights]
+  rfl
+
+theorem numberFlights_flights (ps : List Passenger) (w : World) (it : Itinerary FlightKey) :
+    (numberFlights ps w it).2.flights = w.flights := by
+  cases it <;> simp only [numberFlights, numberFlight_flights]
 
 theorem register_flights (d : Draft) (today : Date) (t : Nat) (w : World) :
     (register d today t w).2.flights = w.flights := by
-  simp only [register, World.insertReservation, foldl_addReserveFlight_flights]
+  simp only [register, World.insertReservation, numberFlights_flights]
   rfl
 
 theorem reserve_keys {cfg : Config} {md : MasterData} {today : Date} {w w' : World} {i : ReserveInput}
-    {ks : List FlightKey} {r : Except AtrsError ReserveResult} (h : reserve cfg md today w i ks = some (w', r)) :
+    {it : Itinerary FlightKey} {r : Except AtrsError ReserveResult} (h : reserve cfg md today w i it = some (w', r)) :
     w'.flights.map (·.key) = w.flights.map (·.key) := by
   unfold reserve at h
   simp only [Option.bind_eq_bind] at h
-  cases hd : buildDraft i ks with
+  cases hd : buildDraft i it with
   | none => simp [hd] at h
   | some d =>
     simp only [hd, Option.bind_some] at h
@@ -560,11 +569,11 @@ theorem reserve_keys {cfg : Config} {md : MasterData} {today : Date} {w w' : Wor
       | error e => simp only [Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h; rw [h.1]
       | ok u =>
         simp only at h
-        cases ht : Spec.Fare.totalFareOfKeys cfg md ks (d.passengers.map (·.age)) with
+        cases ht : Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) with
         | none => simp [ht] at h
         | some t =>
           simp only [ht, Option.bind_some] at h
-          generalize hf : ks.foldlM (init := Except.ok w) (fun acc k => do
+          generalize hf : it.toList.foldlM (init := Except.ok w) (fun acc k => do
             match acc with
             | .error e => return .error e
             | .ok w' => secureSeats md today d.passengers.length w' k) = sec at h
@@ -576,12 +585,12 @@ theorem reserve_keys {cfg : Config} {md : MasterData} {today : Date} {w w' : Wor
             | error e => simp only [Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h; rw [h.1]
             | ok w₁ =>
               simp only at h
-              cases hp : ks.head?.map (·.departureDate) with
+              cases hp : it.toList.head?.map (·.departureDate) with
               | none => simp [hp] at h
               | some p =>
                 simp only [hp, Option.bind_some, Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h
                 rw [← h.1, register_flights]
-                exact foldSecure_keys ks (.ok w) w w₁ (fun w₀ he => by cases he; rfl) hf
+                exact foldSecure_keys it.toList (.ok w) w w₁ (fun w₀ he => by cases he; rfl) hf
 
 theorem reserveOp_keys {cfg : Config} {md : MasterData} {today : Date} {w w' : World} {q : Request}
     {r : Except AtrsError ReserveResult} (h : reserveOp cfg md today w q = some (w', r)) :
@@ -835,7 +844,7 @@ theorem validateReservation_allNE {cfg : Config} {md : MasterData} {w : World} {
   | some ft =>
     simp only [hft, Option.bind_some, Option.pure_def, Option.some.injEq] at h
     subst h
-    have hft' : AllNE ft := foldFareTypes_allNE d.flights (.ok ()) ft (AllNE.ok _) hft
+    have hft' : AllNE ft := foldFareTypes_allNE d.flights.toList (.ok ()) ft (AllNE.ok _) hft
     exact AllNE.bind (checkRepAge_allNE cfg d) fun _ _ => AllNE.bind hft' fun _ _ =>
       AllNE.bind (checkRepMember_allNE w d) fun _ _ => foldPassengerMembers_allNE w _ ()
 
@@ -877,11 +886,11 @@ theorem foldSecure_allNE {md : MasterData} {today : Date} {n : Nat} :
         exact foldSecure_allNE ks c r (secureSeats_allNE hs) h
 
 theorem reserve_allNE {cfg : Config} {md : MasterData} {today : Date} {w w' : World} {i : ReserveInput}
-    {ks : List FlightKey} {r : Except AtrsError ReserveResult} (h : reserve cfg md today w i ks = some (w', r)) :
+    {it : Itinerary FlightKey} {r : Except AtrsError ReserveResult} (h : reserve cfg md today w i it = some (w', r)) :
     AllNE r := by
   unfold reserve at h
   simp only [Option.bind_eq_bind] at h
-  cases hd : buildDraft i ks with
+  cases hd : buildDraft i it with
   | none => simp [hd] at h
   | some d =>
     simp only [hd, Option.bind_some] at h
@@ -895,11 +904,11 @@ theorem reserve_allNE {cfg : Config} {md : MasterData} {today : Date} {w w' : Wo
         rw [← h.2]; exact AllNE.err (validateReservation_allNE hv e rfl)
       | ok u =>
         simp only at h
-        cases ht : Spec.Fare.totalFareOfKeys cfg md ks (d.passengers.map (·.age)) with
+        cases ht : Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) with
         | none => simp [ht] at h
         | some t =>
           simp only [ht, Option.bind_some] at h
-          generalize hf : ks.foldlM (init := Except.ok w) (fun acc k => do
+          generalize hf : it.toList.foldlM (init := Except.ok w) (fun acc k => do
             match acc with
             | .error e => return .error e
             | .ok w' => secureSeats md today d.passengers.length w' k) = sec at h
@@ -910,20 +919,20 @@ theorem reserve_allNE {cfg : Config} {md : MasterData} {today : Date} {w w' : Wo
             cases sec with
             | error e =>
               simp only [Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h
-              rw [← h.2]; exact AllNE.err (foldSecure_allNE ks (.ok w) _ (AllNE.ok _) hf e rfl)
+              rw [← h.2]; exact AllNE.err (foldSecure_allNE it.toList (.ok w) _ (AllNE.ok _) hf e rfl)
             | ok w₁ =>
               simp only at h
-              cases hp : ks.head?.map (·.departureDate) with
+              cases hp : it.toList.head?.map (·.departureDate) with
               | none => simp [hp] at h
               | some p =>
                 simp only [hp, Option.bind_some, Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h
                 rw [← h.2]; exact AllNE.ok _
 
-theorem reserveConfirm_allNE {cfg : Config} {md : MasterData} {w : World} {i : ReserveInput} {ks : List FlightKey}
-    {r : Except AtrsError Nat} (h : reserveConfirm cfg md w i ks = some r) : AllNE r := by
+theorem reserveConfirm_allNE {cfg : Config} {md : MasterData} {w : World} {i : ReserveInput}
+    {it : Itinerary FlightKey} {r : Except AtrsError Nat} (h : reserveConfirm cfg md w i it = some r) : AllNE r := by
   unfold reserveConfirm at h
   simp only [Option.bind_eq_bind] at h
-  cases hd : buildDraft { i with passengers := compactPassengers i.passengers } ks with
+  cases hd : buildDraft { i with passengers := compactPassengers i.passengers } it with
   | none => simp [hd] at h
   | some d =>
     simp only [hd, Option.bind_some] at h
@@ -937,7 +946,7 @@ theorem reserveConfirm_allNE {cfg : Config} {md : MasterData} {w : World} {i : R
         rw [← h]; exact AllNE.err (validateReservation_allNE hv e rfl)
       | ok u =>
         simp only at h
-        cases ht : Spec.Fare.totalFareOfKeys cfg md ks (d.passengers.map (·.age)) with
+        cases ht : Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) with
         | none => simp [ht] at h
         | some t => simp only [ht, Option.bind_some, Option.pure_def, Option.some.injEq] at h; rw [← h]; exact AllNE.ok _
 

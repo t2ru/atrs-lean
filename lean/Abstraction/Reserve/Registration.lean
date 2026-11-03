@@ -84,12 +84,11 @@ def rfList (p : SourceModel.MasterQuery.Providers) (fs : List SourceModel.App.B0
 /-- 登録する予約の記録（予約番号は採番の次の値、予約フライトは採番の順）。 -/
 def regRes (w : Spec.Port.World) (RD : Spec.Prim.Date) (tfn : Nat) (fn gn : String) (an : Nat)
     (g : Spec.Model.Gender) (tel mail : String) (mn : Option Spec.Model.MembershipNumber)
-    (qs : List Spec.Model.Passenger) (ks : List Spec.Model.FlightKey) : Spec.Model.Reservation :=
+    (qs : List Spec.Model.Passenger) (it : Spec.Ticket.Itinerary Spec.Model.FlightKey) : Spec.Model.Reservation :=
   { reserveNo := Spec.Port.World.reserveNoOf w.sequences.reserve, reserveDate := RD, totalFare := tfn,
     repFamilyName := fn, repGivenName := gn, repAge := an, repGender := g, repTel := tel, repMail := mail,
     repMembershipNumber := mn,
-    reserveFlights := RegSpec.rfsFrom qs (Spec.Port.World.reserveNoOf w.sequences.reserve)
-      w.sequences.reserveFlight w.sequences.passenger ks }
+    reserveFlights := RegSpec.rfsIt qs w.sequences.reserveFlight w.sequences.passenger it }
 
 /-- 予約を登録した後の `World`（空席の確保の後の `w1` に予約 `R` を足し、`w` の採番を進めたもの）。 -/
 def regWorld (w w1 : Spec.Port.World) (R : Spec.Model.Reservation) (nf np : Nat) : Spec.Port.World :=
@@ -108,7 +107,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     (svc : TicketReserveServiceImpl) {tJ : JLocalDate} {T : Spec.Prim.Date} (hclock : ∀ n, env.clock n = tJ)
     (hT : Abstraction.MasterData.AlphaLeaf.dateOfJ tJ = some T)
     {f0 : SourceModel.App.B0.SelectFlightForm} {fs : List SourceModel.App.B0.SelectFlightForm}
-    {ks : List Spec.Model.FlightKey}
+    {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {ks : List Spec.Model.FlightKey} (hit : it.toList = ks)
     (hvc : LangSemantics.Core.List.Forall₂ (VacCond md p) (f0 :: fs) ks)
     (hex : ∀ k ∈ ks, (w.findForUpdate k).isSome)
     {pfs : List SourceModel.App.B2.PassengerForm} {qs : List Spec.Model.Passenger}
@@ -130,7 +129,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     Hoare (fun s => s.db = D0 ∧ s.env = env) (TicketReserveServiceImpl.registerReservation svc (some r))
       (fun dto s => s.env = env ∧ ∃ w1, secureAll md T qs.length ks w = some (.ok w1) ∧
         worldOfDb s.db = some (regWorld w w1 (regRes w RD tfn fn gn an g tel mail
-          ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs ks)
+          ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it)
           ks.length (ks.length * qs.length)) ∧
         dto.reserveNo = some (Spec.Port.World.reserveNoOf w.sequences.reserve).val ∧
         dto.paymentDate = (mkFlight p f0).departureDate)
@@ -227,7 +226,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have hpkr : ∀ g ∈ D'.reserveFlight, g.reserveFlightNo.val ≠ ((w.sequences.reserveFlight + j : Nat) : Int) :=
           fun g hg => by have := hrfD g hg; omega
         have hirf := insertReserveFlight_hoare (D := D') (env := env) hsfD hm hdep hdj hfm hfn hfnl hbo hbc hto htc
-          hnol hpkr hfk1 hfk2 (RegSpec.recsFrom (w.sequences.passenger + j * qs.length) qs)
+          hnol hpkr hfk1 hfk2
           ⟨none, none, some (mkFlight p f), some ((pfs.map B2Mapper.mapPassenger).map some)⟩ rfl
         simp only [LangSemantics.Java.EStateSimp.deref_some, lift_ok, pure_bind]
         refine Hoare.bind' (Hoare.conseq hirf (fun _ h => h) (fun _ _ h => h)
@@ -335,8 +334,9 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have htk : ks.take ks.length = ks := List.take_length
         rw [htk] at hnfs
         have hR0 : resOf nfs nps row0 = some (regRes w RD tfn fn gn an g tel mail
-            ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs ks) := by
-          simp only [resOf, hfo, hnfs, Option.bind_eq_bind, Option.bind_some]
+            ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it) := by
+          simp only [resOf, hfo, hnfs, Option.bind_eq_bind, Option.bind_some, ← hit, ← RegSpec.legs_rfsIt,
+            reserveFlightsOf_of_legs]
           rw [hro0]
           rfl
         have happ := reservationsOf_append hreso hrow hnfs' hrf' hnps hR0

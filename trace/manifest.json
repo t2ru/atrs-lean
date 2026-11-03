@@ -2689,6 +2689,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Keys.resOf_eq",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Keys.reservationOfRow_no",
       "layer": "Abstraction"
     },
@@ -2698,6 +2702,10 @@
     },
     {
       "name": "Abstraction.Reserve.Keys.reserveNoOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Keys.rfOf_eq",
       "layer": "Abstraction"
     },
     {
@@ -3065,11 +3073,19 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.RegSpec.foldl_addReserveFlight",
+      "name": "Abstraction.Reserve.RegSpec.legs_rfsIt",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.Reserve.RegSpec.mem_recsFrom",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.numberFlight_eq",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.numberFlights_eq",
       "layer": "Abstraction"
     },
     {
@@ -3078,6 +3094,10 @@
     },
     {
       "name": "Abstraction.Reserve.RegSpec.recsFrom_length",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.recsFrom_snd",
       "layer": "Abstraction"
     },
     {
@@ -3090,6 +3110,10 @@
     },
     {
       "name": "Abstraction.Reserve.RegSpec.rfsFrom_take",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.RegSpec.rfsIt",
       "layer": "Abstraction"
     },
     {
@@ -4045,6 +4069,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.World.Alpha.mem_flightsOf",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.World.Alpha.mem_passengersOf",
       "layer": "Abstraction"
     },
@@ -4126,6 +4154,22 @@
     },
     {
       "name": "Abstraction.World.Alpha.reserveFlightOfRow_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightsOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightsOf_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightsOf_legs",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.reserveFlightsOf_of_legs",
       "layer": "Abstraction"
     },
     {
@@ -10641,11 +10685,11 @@
       "layer": "Spec"
     },
     {
-      "name": "Spec.Model.Passenger",
+      "name": "Spec.Model.OneWayPassenger",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Model.PassengerRecord",
+      "name": "Spec.Model.Passenger",
       "layer": "Spec"
     },
     {
@@ -10701,6 +10745,10 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.ReserveFlights",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.ReserveNo",
       "layer": "Spec"
     },
@@ -10710,6 +10758,10 @@
     },
     {
       "name": "Spec.Model.ReserveNo.val",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.RoundTripPassenger",
       "layer": "Spec"
     },
     {
@@ -16396,12 +16448,12 @@
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Model.Passenger",
+      "from": "Spec.Model.OneWayPassenger",
       "to": "docs/spec/domain-model.md#passenger"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Model.PassengerRecord",
+      "from": "Spec.Model.Passenger",
       "to": "docs/spec/domain-model.md#passenger"
     },
     {
@@ -16471,6 +16523,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Model.ReserveFlights",
+      "to": "docs/spec/domain-model.md#reserveflight"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Model.ReserveNo",
       "to": "docs/spec/domain-model.md#コード値"
     },
@@ -16483,6 +16540,11 @@
       "type": "spec_doc",
       "from": "Spec.Model.ReserveNo.val",
       "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.RoundTripPassenger",
+      "to": "docs/spec/domain-model.md#passenger"
     },
     {
       "type": "spec_doc",

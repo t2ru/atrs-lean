@@ -308,7 +308,7 @@ structure Flight where
   vacantNum : Nat
   deriving DecidableEq
 
-/-- 搭乗者。採番される搭乗者番号は、予約の登録で決まる（`PassengerRecord`）。 -/
+/-- 搭乗者。採番される搭乗者番号は、予約の登録で決まる（`OneWayPassenger`・`RoundTripPassenger`）。 -/
 @[spec_doc "docs/spec/domain-model.md#passenger"]
 structure Passenger where
   familyName : String
@@ -318,23 +318,92 @@ structure Passenger where
   membershipNumber : Option MembershipNumber
   deriving DecidableEq
 
-/-- 登録した搭乗者（採番した搭乗者番号を伴う）。 -/
-@[spec_doc "docs/spec/domain-model.md#passenger"]
-structure PassengerRecord where
-  passengerNo : Nat
-  passenger : Passenger
-  deriving DecidableEq
-
-/-- 予約フライト。往路・復路で同一の搭乗者列を持つ（搭乗者番号は予約フライトごとに採番する）。 -/
+/-- 予約フライト: 予約フライト番号と、フライトの主キー（予約番号・搭乗者は予約が持つ）。 -/
 @[spec_doc "docs/spec/domain-model.md#reserveflight"]
 structure ReserveFlight where
   reserveFlightNo : Nat
-  reserveNo : ReserveNo
   flight : FlightKey
-  passengers : List PassengerRecord
   deriving DecidableEq
 
-/-- 予約。`reserveFlights` は長さ 1（片道）または 2（往復: 往路, 復路の順）。 -/
+/-- 片道の予約の搭乗者（搭乗者番号は 1 つ）。 -/
+@[spec_doc "docs/spec/domain-model.md#passenger"]
+structure OneWayPassenger where
+  passenger : Passenger
+  passengerNo : Nat
+  deriving DecidableEq
+
+/-- 往復の予約の搭乗者（往路・復路の搭乗者番号）。 -/
+@[spec_doc "docs/spec/domain-model.md#passenger"]
+structure RoundTripPassenger where
+  passenger : Passenger
+  outwardNo : Nat
+  homewardNo : Nat
+  deriving DecidableEq
+
+/-- 予約の便と搭乗者: 片道は 1 便、往復は往路・復路の 2 便。搭乗者の列は 1 つで、便ごとの搭乗者番号を伴う
+（往路・復路で同一の搭乗者列を持つ）。 -/
+@[spec_doc "docs/spec/domain-model.md#reserveflight"]
+inductive ReserveFlights where
+  | oneWay (flight : ReserveFlight) (passengers : List OneWayPassenger)
+  | roundTrip (outward homeward : ReserveFlight) (passengers : List RoundTripPassenger)
+  deriving DecidableEq
+
+namespace ReserveFlights
+
+/-- 便ごとの予約フライトと、その搭乗者（搭乗者番号と搭乗者の組。搭乗者の順）。往路、復路の順。 -/
+def legs : ReserveFlights → List (ReserveFlight × List (Nat × Passenger))
+  | .oneWay f ps => [(f, ps.map fun p => (p.passengerNo, p.passenger))]
+  | .roundTrip o h ps =>
+    [(o, ps.map fun p => (p.outwardNo, p.passenger)), (h, ps.map fun p => (p.homewardNo, p.passenger))]
+
+/-- 予約フライトの列（往路、復路の順）。 -/
+def flights : ReserveFlights → List ReserveFlight
+  | .oneWay f _ => [f]
+  | .roundTrip o h _ => [o, h]
+
+/-- 搭乗者の列。 -/
+def passengers : ReserveFlights → List Passenger
+  | .oneWay _ ps => ps.map (·.passenger)
+  | .roundTrip _ _ ps => ps.map (·.passenger)
+
+/-- 片道: 予約フライトと、採番した搭乗者番号と搭乗者の組の列から。 -/
+def oneWayOf (f : ReserveFlight) (recs : List (Nat × Passenger)) : ReserveFlights :=
+  .oneWay f (recs.map fun x => ⟨x.2, x.1⟩)
+
+/-- 往復: 往路・復路の予約フライトと、それぞれで採番した搭乗者番号と搭乗者の組の列から（位置ごとに組にする。
+搭乗者は往路の組のもの）。 -/
+def roundTripOf (o h : ReserveFlight) (out home : List (Nat × Passenger)) : ReserveFlights :=
+  .roundTrip o h (List.zipWith (fun a b => ⟨a.2, a.1, b.1⟩) out home)
+
+theorem flights_eq (x : ReserveFlights) : x.flights = x.legs.map (·.1) := by
+  cases x <;> rfl
+
+@[simp] theorem legs_oneWayOf (f : ReserveFlight) (recs : List (Nat × Passenger)) :
+    (oneWayOf f recs).legs = [(f, recs)] := by
+  simp [oneWayOf, legs, List.map_map, Function.comp_def]
+
+theorem zipWith_out : ∀ (out home : List (Nat × Passenger)), out.map (·.2) = home.map (·.2) →
+    (List.zipWith (fun a b => (⟨a.2, a.1, b.1⟩ : RoundTripPassenger)) out home).map
+      (fun p => (p.outwardNo, p.passenger)) = out ∧
+    (List.zipWith (fun a b => (⟨a.2, a.1, b.1⟩ : RoundTripPassenger)) out home).map
+      (fun p => (p.homewardNo, p.passenger)) = home
+  | [], [], _ => ⟨rfl, rfl⟩
+  | [], _ :: _, h => by simp at h
+  | _ :: _, [], h => by simp at h
+  | a :: out, b :: home, h => by
+    simp only [List.map_cons, List.cons.injEq] at h
+    obtain ⟨h1, h2⟩ := zipWith_out out home h.2
+    simp only [List.zipWith_cons_cons, List.map_cons, h1, h2]
+    exact ⟨trivial, by rw [h.1]⟩
+
+theorem legs_roundTripOf (o h : ReserveFlight) {out home : List (Nat × Passenger)}
+    (he : out.map (·.2) = home.map (·.2)) : (roundTripOf o h out home).legs = [(o, out), (h, home)] := by
+  obtain ⟨h1, h2⟩ := zipWith_out out home he
+  simp only [roundTripOf, legs, h1, h2]
+
+end ReserveFlights
+
+/-- 予約。`reserveFlights` は片道（1 便）か往復（往路・復路の 2 便）で、搭乗者の列を 1 つ持つ。 -/
 @[spec_doc "docs/spec/domain-model.md#reservation"]
 structure Reservation where
   reserveNo : ReserveNo
@@ -347,7 +416,7 @@ structure Reservation where
   repTel : String
   repMail : String
   repMembershipNumber : Option MembershipNumber
-  reserveFlights : List ReserveFlight
+  reserveFlights : ReserveFlights
   deriving DecidableEq
 
 /-- 会員のログイン情報。 -/

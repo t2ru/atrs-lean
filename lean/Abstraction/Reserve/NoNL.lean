@@ -132,7 +132,7 @@ theorem forall₂_mem_right {α β : Type} {R : α → β → Prop} :
 /-- 予約内容の検証の業務例外のコードと引数は、改行を含まない。 -/
 theorem validate_nl {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {d : Spec.UseCase.Reserve.Draft}
     {FTs : List Spec.MasterData.FareType}
-    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs)
+    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs)
     (hft : ∀ FT ∈ md.fareTypes, NoNL FT.fareTypeName) {v : Except AtrsError Unit}
     (hv : Spec.UseCase.Reserve.validateReservation cfg md w d = some v) : BizNL v := by
   simp only [Spec.UseCase.Reserve.validateReservation, Abstraction.Reserve.ValidateReservation.checkFareTypes_eq hkf,

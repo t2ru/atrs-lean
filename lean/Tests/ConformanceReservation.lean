@@ -120,15 +120,15 @@ def specReservationJson (r : Reservation) : Json :=
     ("totalFare", toJson r.totalFare), ("repFamilyName", .str r.repFamilyName), ("repGivenName", .str r.repGivenName),
     ("repAge", toJson r.repAge), ("repGender", .str r.repGender.toCode), ("repTel", .str r.repTel), ("repMail", .str r.repMail),
     ("repMembershipNumber", strOrNull (r.repMembershipNumber.map (·.val))),
-    ("reserveFlights", .arr (r.reserveFlights.map fun rf => Json.mkObj [
+    ("reserveFlights", .arr (r.reserveFlights.legs.map fun (rf, ps) => Json.mkObj [
       ("reserveFlightNo", toJson rf.reserveFlightNo), ("departureDate", .str (fmtIsoDate rf.flight.departureDate)),
       ("flightName", .str rf.flight.flightName.val), ("boardingClassCd", .str rf.flight.boardingClassCd.toCode),
       ("fareTypeCd", .str rf.flight.fareTypeCd.toCode),
-      ("passengers", .arr (rf.passengers.map fun p => Json.mkObj [
-        ("passengerNo", toJson p.passengerNo), ("familyName", .str p.passenger.familyName),
-        ("givenName", .str p.passenger.givenName), ("age", toJson p.passenger.age),
-        ("gender", .str p.passenger.gender.toCode),
-        ("membershipNumber", strOrNull (p.passenger.membershipNumber.map (·.val)))]).toArray)]).toArray)]
+      ("passengers", .arr (ps.map fun (no, p) => Json.mkObj [
+        ("passengerNo", toJson no), ("familyName", .str p.familyName),
+        ("givenName", .str p.givenName), ("age", toJson p.age),
+        ("gender", .str p.gender.toCode),
+        ("membershipNumber", strOrNull (p.membershipNumber.map (·.val)))]).toArray)]).toArray)]
 
 def specWorldJson (w : Spec.Port.World) : Json :=
   Json.mkObj [("flights", .arr (w.flights.map fun f => flightJson f.key f.vacantNum).toArray),
@@ -158,7 +158,11 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
       let ks ← r.selects.mapM fun s => do
         return ({ departureDate := s.depDate, flightName := ← Tests.ConformanceFare.decodeFlightName s.flightName,
                   boardingClassCd := s.boardingClassCd, fareTypeCd := s.fareTypeCd } : FlightKey)
-      let d ← need (Spec.UseCase.Reserve.buildDraft r.form ks) "outside PRE (passenger)"
+      let it ← match ks with
+        | [k] => pure (Spec.Ticket.Itinerary.oneWay k)
+        | [o, h] => pure (Spec.Ticket.Itinerary.roundTrip o h)
+        | _ => throw "outside PRE (selectFlights must have 1 or 2 flights)"
+      let d ← need (Spec.UseCase.Reserve.buildDraft r.form it) "outside PRE (passenger)"
       match ← need (Spec.UseCase.Reserve.validateReservation cfg md w d) "outside PRE" with
       | .ok () => return .null
       | .error e => return specErrorJson e),

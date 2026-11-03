@@ -83,7 +83,7 @@ theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.UseCase.Reserve.
       cases specFareTypeOf FT ps <;> rfl
 
 theorem checkFareTypes_eq {md : Spec.MasterData} {d : Spec.UseCase.Reserve.Draft} {FTs : List Spec.MasterData.FareType}
-    (h : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs) :
+    (h : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
     Spec.UseCase.Reserve.checkFareTypes md d = some (firstErr (FTs.map (specFareTypeOf · d.passengers))) :=
   foldlM_fareTypes h (.ok ())
 
@@ -104,7 +104,7 @@ theorem validate_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {svc
     (hgd : r.repGender = some d.repGender)
     (hR : LangSemantics.Core.List.Forall₂ PassengerFacts xs d.passengers) (hne : xs ≠ []) (hlen : xs.length ≤ 6)
     (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (fl :: fls) FTs)
-    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs) :
+    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
     ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
       Hoare P (TicketReserveServiceImpl.validateReservation svc (some r)) (PostB P v) (PostBE P v) := by
   have hgen : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs d.passengers :=

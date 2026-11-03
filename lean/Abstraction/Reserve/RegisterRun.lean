@@ -82,14 +82,13 @@ theorem insertReserveFlight_hoare {D : FlightDb} {env : Env} {m : Nat} (hseq : s
     {rn : Spec.Model.ReserveNo} (hnol : rn.val.length ≤ 10) (hpk : ∀ g ∈ D.reserveFlight, g.reserveFlightNo.val ≠ (m : Int))
     (hfk1 : D.reservation.any (·.reserveNo.val == rn.val) = true)
     (hfk2 : ∃ r ∈ D.flight, ∃ fx, flightOfRow r = some fx ∧ fx.key = k)
-    (ps : List Spec.Model.PassengerRecord) (rfObj : SourceModel.Domain.Model.ReserveFlight)
-    (hrf : rfObj.flight = some fl) :
+    (rfObj : SourceModel.Domain.Model.ReserveFlight) (hrf : rfObj.flight = some fl) :
     Hoare (fun s => s.db = D ∧ s.env = env)
       (ReservationRepository.insertReserveFlight { rfObj with reserveNo := some rn.val })
       (fun r s => r.1 = J32.ofInt 1 ∧ r.2.reserveFlightNo = some (J32.ofInt m) ∧
         r.2.passengerList = rfObj.passengerList ∧ s.env = env ∧ ∃ row,
         s.db = { D with reserveFlight := D.reserveFlight ++ [row], sqReserveFlight := some (m : Int) } ∧
-        reserveFlightOfRow row ps = some ⟨m, rn, k, ps⟩ ∧ row.reserveNo.val = rn.val ∧
+        reserveFlightOfRow row = some ⟨m, k⟩ ∧ row.reserveNo.val = rn.val ∧
         row.reserveFlightNo.val = (m : Int))
       (fun e s => s.env = env ∧ IsFault env e ∧
         (s.db = D ∨ s.db = { D with sqReserveFlight := some (m : Int) })) := by
@@ -112,7 +111,7 @@ theorem insertReserveFlight_hoare {D : FlightDb} {env : Env} {m : Nat} (hseq : s
     exact ⟨hse, ⟨_, .inr ⟨rfl, by rw [← hse]; simp [h4]⟩⟩, by simp⟩
   have hmo : (J32.ofInt (m : Int)).val = (m : Int) := LangSemantics.Java.IntLemmas.ofInt_nat hm
   obtain ⟨row, hrow, hro, hrno, hrfn⟩ := insertReserveFlightRow_ok (fd := { D with sqReserveFlight := some (m : Int) })
-    hd hdj hfm hfn hfnl hb hbc ht htc hnol (Abstraction.Reserve.Keys.ofString?_val rn) hmo hm hpk hfk1 hfk2 ps
+    hd hdj hfm hfn hfnl hb hbc ht htc hnol hmo hm hpk hfk1 hfk2
     { rfObj with reserveNo := some rn.val } hrf
   simp only [h3, h4, ite_false]
   rw [hrow]
@@ -185,8 +184,8 @@ structure PassCond (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passen
   gn : q.givenName.length ≤ 10
   age : q.age ≤ 999
 
-theorem passengerOfRow_no {p : PassengerRow} {x : Spec.Model.PassengerRecord} (h : passengerOfRow p = some x) :
-    p.passengerNo.val = (x.passengerNo : Int) := by
+theorem passengerOfRow_no {p : PassengerRow} {x : Nat × Spec.Model.Passenger} (h : passengerOfRow p = some x) :
+    p.passengerNo.val = (x.1 : Int) := by
   simp only [passengerOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
   obtain ⟨no, hno, -, -, -, -, -, -, rfl⟩ := h
   exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
@@ -304,10 +303,9 @@ theorem passengersOf_old {nps prows : List PassengerRow} {g : ReserveFlightRow}
   rw [h2, List.append_nil]
   rfl
 
-theorem mem_rfsFrom {ps : List Spec.Model.Passenger} {no : Spec.Model.ReserveNo} :
-    ∀ {rfn pn : Nat} {ks : List Spec.Model.FlightKey} {rf : Spec.Model.ReserveFlight},
-      rf ∈ RegSpec.rfsFrom ps no rfn pn ks → ∀ x ∈ rf.passengers, pn ≤ x.passengerNo ∧
-        x.passengerNo < pn + ks.length * ps.length
+theorem mem_rfsFrom {ps : List Spec.Model.Passenger} :
+    ∀ {rfn pn : Nat} {ks : List Spec.Model.FlightKey} {rf : Spec.Model.ReserveFlight × List (Nat × Spec.Model.Passenger)},
+      rf ∈ RegSpec.rfsFrom ps rfn pn ks → ∀ x ∈ rf.2, pn ≤ x.1 ∧ x.1 < pn + ks.length * ps.length
   | _, _, [], _, h => by simp [RegSpec.rfsFrom] at h
   | rfn, pn, k :: ks, rf, h => by
     intro x hx
@@ -320,14 +318,10 @@ theorem mem_rfsFrom {ps : List Spec.Model.Passenger} {no : Spec.Model.ReserveNo}
       simp only [List.length_cons, Nat.succ_mul]
       omega
 
-theorem rfOf_passengers {nps : List PassengerRow} {g : ReserveFlightRow} {rf : Spec.Model.ReserveFlight}
-    (h : rfOf nps g = some rf) : (passengersOf nps g).mapM passengerOfRow = some rf.passengers := by
-  simp only [rfOf, Option.bind_eq_bind, Option.bind_eq_some_iff] at h
-  obtain ⟨xs, hxs, hr⟩ := h
-  simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
-    Option.some.injEq] at hr
-  obtain ⟨_, -, _, -, _, -, _, -, _, -, _, -, rfl⟩ := hr
-  exact hxs
+theorem rfOf_passengers {nps : List PassengerRow} {g : ReserveFlightRow}
+    {rf : Spec.Model.ReserveFlight × List (Nat × Spec.Model.Passenger)}
+    (h : rfOf nps g = some rf) : (passengersOf nps g).mapM passengerOfRow = some rf.2 :=
+  (Abstraction.Reserve.Keys.rfOf_eq h).2
 
 /-- 予約フライトの列の挿入の不変条件: `j` 便を挿入した。 -/
 def FlightInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (rfn pn : Nat) (ps : List Spec.Model.Passenger)
@@ -336,7 +330,7 @@ def FlightInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (rfn pn : Nat) (p
     seqOf s.db.sqPassenger = some (pn + j * ps.length) ∧ ∃ nfs nps,
     s.db = { D with reserveFlight := D.reserveFlight ++ nfs, passenger := D.passenger ++ nps,
                     sqReserveFlight := s.db.sqReserveFlight, sqPassenger := s.db.sqPassenger } ∧
-    nfs.mapM (rfOf nps) = some (RegSpec.rfsFrom ps rn rfn pn (ks.take j)) ∧
+    nfs.mapM (rfOf nps) = some (RegSpec.rfsFrom ps rfn pn (ks.take j)) ∧
     nps = nfs.flatMap (passengersOf nps) ∧
     ∀ g ∈ nfs, g.reserveNo.val = rn.val ∧ (rfn : Int) ≤ g.reserveFlightNo.val ∧ g.reserveFlightNo.val < ((rfn + j : Nat) : Int)
 
@@ -355,8 +349,7 @@ theorem flights_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {rfn pn :
             seqOf s.db.sqPassenger = some (pn + (j + 1) * ps.length) ∧ ∃ row prows,
             s.db = { D' with reserveFlight := D'.reserveFlight ++ [row], passenger := D'.passenger ++ prows,
                              sqReserveFlight := some ((rfn + j : Nat) : Int), sqPassenger := s.db.sqPassenger } ∧
-            reserveFlightOfRow row (RegSpec.recsFrom (pn + j * ps.length) ps) =
-              some ⟨rfn + j, rn, k, RegSpec.recsFrom (pn + j * ps.length) ps⟩ ∧
+            reserveFlightOfRow row = some ⟨rfn + j, k⟩ ∧
             prows.mapM passengerOfRow = some (RegSpec.recsFrom (pn + j * ps.length) ps) ∧
             (∀ p ∈ prows, p.reserveFlightNo = row.reserveFlightNo) ∧ row.reserveNo.val = rn.val ∧
             row.reserveFlightNo.val = ((rfn + j : Nat) : Int))
@@ -419,13 +412,13 @@ theorem flights_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {rfn pn :
     · rw [hdb']
       conv => lhs; rw [hdb]
       simp
-    · rw [List.mapM_append, RegSpec.rfsFrom_take ps rn rfn pn ks j k hk]
+    · rw [List.mapM_append, RegSpec.rfsFrom_take ps rfn pn ks j k hk]
       have h1 : nfs.mapM (rfOf (nps ++ prows)) = nfs.mapM (rfOf nps) := by
         apply Abstraction.Reserve.Register.mapM_congr'
         intro g hgm
         simp only [rfOf, passengersOf_old (hold g hgm)]
-      have h2 : rfOf (nps ++ prows) row = some ⟨rfn + j, rn, k, RegSpec.recsFrom (pn + j * ps.length) ps⟩ := by
-        simp only [rfOf, passengersOf_new hprf hnew, hpr, Option.bind_eq_bind, Option.bind_some, hro]
+      have h2 : rfOf (nps ++ prows) row = some (⟨rfn + j, k⟩, RegSpec.recsFrom (pn + j * ps.length) ps) := by
+        simp only [rfOf, passengersOf_new hprf hnew, hpr, Option.bind_eq_bind, Option.bind_some, hro, Option.pure_def]
       rw [h1, hnfs]
       simp [h2]
     · rw [List.flatMap_append, List.flatMap_singleton, passengersOf_new hprf hnew]

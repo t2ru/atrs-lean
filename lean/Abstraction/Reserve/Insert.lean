@@ -149,7 +149,7 @@ theorem insertPassengerRow_ok {fd : FlightDb} {f : SourceModel.App.B2.PassengerF
 
 open Abstraction.World.Alpha SourceModel.Db.Schema in
 /-- 予約フライトの行の挿入: フライト情報の搭乗日・便名・搭乗クラス・運賃種別が主キー `k` のもので、予約番号 `no`・
-予約フライト番号 `m` を書き込んで挿入すると、行が末尾に足され、その α は [Spec] の予約フライト（搭乗者 `ps`）。 -/
+予約フライト番号 `m` を書き込んで挿入すると、行が末尾に足され、その α は [Spec] の予約フライト。 -/
 theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model.Flight} {k : Spec.Model.FlightKey}
     {dj : JLocalDate} (hd : fl.departureDate = some dj) (hdj : dateOfJ dj = some k.departureDate)
     {fm : SourceModel.Domain.Model.FlightMaster} (hfm : fl.flightMaster = some fm)
@@ -157,16 +157,14 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
     {b : SourceModel.Domain.Model.BoardingClass} (hb : fl.boardingClass = some b)
     (hbc : b.boardingClassCd = some k.boardingClassCd) {t : SourceModel.Domain.Model.FareType}
     (ht : fl.fareType = some t) (htc : t.fareTypeCd = some k.fareTypeCd)
-    {no : String} (hnol : no.length ≤ 10) {rn0 : Spec.Model.ReserveNo}
-    (hrn0 : Spec.Model.ReserveNo.ofString? no = some rn0) {rfNoJ : J32} {m : Nat} (hm : rfNoJ.val = (m : Int))
+    {no : String} (hnol : no.length ≤ 10) {rfNoJ : J32} {m : Nat} (hm : rfNoJ.val = (m : Int))
     (hmax : m ≤ 2147483647) (hpk : ∀ g ∈ fd.reserveFlight, g.reserveFlightNo.val ≠ (m : Int))
     (hfk1 : fd.reservation.any (·.reserveNo.val == no) = true)
     (hfk2 : ∃ r ∈ fd.flight, ∃ fx, flightOfRow r = some fx ∧ fx.key = k)
-    (ps : List Spec.Model.PassengerRecord) (rfObj : SourceModel.Domain.Model.ReserveFlight)
-    (hrf : rfObj.flight = some fl) :
+    (rfObj : SourceModel.Domain.Model.ReserveFlight) (hrf : rfObj.flight = some fl) :
     ∃ row, insertReserveFlightRow fd { rfObj with reserveNo := some no, reserveFlightNo := some rfNoJ } =
         .ok (1, { fd with reserveFlight := fd.reserveFlight ++ [row] }) ∧
-      reserveFlightOfRow row ps = some ⟨m, rn0, k, ps⟩ ∧ row.reserveNo.val = no ∧
+      reserveFlightOfRow row = some ⟨m, k⟩ ∧ row.reserveNo.val = no ∧
       row.reserveFlightNo.val = (m : Int) := by
   obtain ⟨rn, hrn, hrnv⟩ := convInt_ok hm hmax
   obtain ⟨dx, hdx, hdxv⟩ := convDate_ok hdj
@@ -203,7 +201,7 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
       Bool.false_eq_true, ite_false, Bool.not_true]
   · simp only [reserveFlightOfRow, natOfInt4, hrnv, hdxv, Abstraction.FlightSearch.Alpha.boardingClassCdName_eq,
       Abstraction.FlightSearch.Alpha.fareTypeCdName_eq, Option.bind_eq_bind, Option.pure_def]
-    simp [bcCdOf, ftCdOf, Spec.Model.BoardingClassCd.ofCode?_toCode, Spec.Model.FareTypeCd.ofCode?_toCode, hrn0]
+    simp [bcCdOf, ftCdOf, Spec.Model.BoardingClassCd.ofCode?_toCode, Spec.Model.FareTypeCd.ofCode?_toCode]
 
 open Abstraction.World.Alpha SourceModel.Db.Schema in
 /-- 予約の行の挿入: 予約情報の各欄が値域内で、予約番号 `no` を書き込んで挿入すると、行が末尾に足され、その α は

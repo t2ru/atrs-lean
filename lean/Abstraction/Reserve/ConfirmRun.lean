@@ -60,18 +60,18 @@ theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase
     (hmd : masterDataOf ic.db = some ia.md)
     (hsel : ic.form.selectFlightFormList.mapM selectOfForm = some ia.req.selects)
     (hri : reserveInputOf ic.form = some ia.req.form) (hcv : ia.cfg.Valid) (hmv : ia.md.Valid ia.cfg)
-    (hrv : ia.req.Valid) {ks : List Spec.Model.FlightKey} {Q : Spec.Model.FlightKey → Prop}
+    (hrv : ia.req.Valid) {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {Q : Spec.Model.FlightKey → Prop}
     (hks : LangSemantics.Core.List.Forall₂
-      (fun s k => ∃ r, Spec.Ticket.resolve ia.md s = some r ∧ r.key = k ∧ Q k) ia.req.selects ks)
-    (hl1 : 1 ≤ ks.length) (hl2 : ks.length ≤ 2)
-    {d : Draft} (hd : buildDraft { ia.req.form with passengers := compactPassengers ia.req.form.passengers } ks = some d)
-    {n : Nat} (hn : Spec.Fare.totalFareOfKeys ia.cfg ia.md ks (d.passengers.map (·.age)) = some n) :
+      (fun s k => ∃ r, Spec.Ticket.resolve ia.md s = some r ∧ r.key = k ∧ Q k) ia.req.selects it.toList)
+    (hl1 : 1 ≤ it.toList.length) (hl2 : it.toList.length ≤ 2)
+    {d : Draft} (hd : buildDraft { ia.req.form with passengers := compactPassengers ia.req.form.passengers } it = some d)
+    {n : Nat} (hn : Spec.Fare.totalFareOfKeys ia.cfg ia.md it.toList (d.passengers.map (·.age)) = some n) :
     aiTF ⟨ic.db, ic.config, ic.form.selectFlightFormList,
         ((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).map some⟩ = some (tfOf ia) ∧
       (tfOf ia).Pre ∧ (tfOf ia).ages = d.passengers.map (·.age) := by
   obtain ⟨-, -, -, -, -, -, -, -, -, h10⟩ := reserveInputOf_eq hri
   have hf := filter_mapM h10
-  have hkeys : (tfOf ia).flights = ks := selectKeys_eq hks
+  have hkeys : (tfOf ia).flights = it.toList := selectKeys_eq hks
   simp only [buildDraft, compact_filter, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def] at hd
   obtain ⟨ps, hps, hd⟩ := hd
   split at hd
@@ -260,8 +260,8 @@ theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       hfl ▸ ft_forall hfq (forms_keys hsel hsk) hkf
     have hlen : ia.req.form.passengers.length ≤ 6 := hrv.2.2.2.2.2.2.2.1
     have hft : ∀ FT ∈ ia.md.fareTypes, NoNL FT.fareTypeName := fareTypeNames_noNL hmd h27.2
-    have hdf : d.flights = it.toList := (reservation_facts hri hd []).2.2.2.2.2.2.2.2
-    have hkf' : LangSemantics.Core.List.Forall₂ (fun k FT => ia.md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs :=
+    have hdf : d.flights = it := (reservation_facts hri hd []).2.2.2.2.2.2.2.2
+    have hkf' : LangSemantics.Core.List.Forall₂ (fun k FT => ia.md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs :=
       hdf ▸ hkf
     let T : Int.J32 := Int.J32.ofInt ((Spec.Fare.totalFareOfKeys ia.cfg ia.md (tfOf ia).flights (tfOf ia).ages).getD 0)
     have hcalc : ∀ vr', validateReservation ia.cfg ia.md w d = some vr' → vr' = .ok () →
