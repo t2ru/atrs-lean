@@ -78,7 +78,7 @@ theorem reserveFlightOfRow_no {r : ReserveFlightRow} {ps : List Spec.Model.Passe
     r.reserveFlightNo.val = (F.reserveFlightNo : Int) ∧ F.passengers = ps := by
   simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at h
-  obtain ⟨no, hno, _, -, _, -, _, -, _, -, rfl⟩ := h
+  obtain ⟨no, hno, _, -, _, -, _, -, _, -, _, -, rfl⟩ := h
   exact ⟨Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno, rfl⟩
 
 /-- 予約の表の行は、α の像の予約・予約フライト・搭乗者に当たる。 -/

@@ -34,15 +34,21 @@ theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = s
     ∃ dj, f.depDate = some dj ∧ dateOfJ dj = some k.departureDate ∧ f.flightName = some k.flightName.val ∧
       f.boardingClassCd = some k.boardingClassCd ∧ f.fareTypeCd = some k.fareTypeCd := by
   simp only [keyOfForm, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨d, ⟨dj, hdj, hd⟩, n, hn, bc, hbc, ft, hft, rfl⟩ := h
-  exact ⟨dj, hdj, hd, hn, hbc, hft⟩
+  obtain ⟨d, ⟨dj, hdj, hd⟩, n, ⟨sn, hn, en⟩, bc, hbc, ft, hft, rfl⟩ := h
+  exact ⟨dj, hdj, hd, by rw [hn, flightNameOf_eq_some en], hbc, hft⟩
 
-theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
-    (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
-  obtain ⟨dj, hdj, -, hn, hbc, hft⟩ := keyOfForm_eq h
+/-- 便名・搭乗クラス・運賃種別の欄があり、便名が空白でなければ、`toFlight` は `mkFlight` のフライト情報を作る。 -/
+theorem toFlight_ok_of (p : Providers) {f : SelectFlightForm} {n : String} {bc : BoardingClassCd} {ft : FareTypeCd}
+    (hn : f.flightName = some n) (ht : hasText n = true) (hbc : f.boardingClassCd = some bc)
+    (hft : f.fareTypeCd = some ft) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
   simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, toFlight, hn, FlightMasterProvider.getFlightMaster, assertHasText_ok ht, FareTypeProvider.getFareType, hft, BoardingClassProvider.getBoardingClass, hbc, ok_bind,
     pure_bind, SourceModel.FareQuery.ticketHelper, mkFlight, Option.bind_some]
   rfl
+
+theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
+    (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
+  obtain ⟨-, -, -, hn, hbc, hft⟩ := keyOfForm_eq h
+  exact toFlight_ok_of p hn ht hbc hft
 
 theorem assertNotEmpty_cons {α : Type} (x : α) (xs : List α) (m : String) :
     LangSemantics.Java.Spring.Assert.notEmptyValue (some (x :: xs)) m = .ok (x :: xs) := rfl

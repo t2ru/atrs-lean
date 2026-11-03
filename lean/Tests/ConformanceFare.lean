@@ -30,6 +30,7 @@ def boardingClassCd (s : String) : Except String BoardingClassCd := need (Boardi
 def fareTypeCd (s : String) : Except String FareTypeCd := need (FareTypeCd.ofCode? s) s!"fare type: {s}"
 def airportCd (s : String) : Except String AirportCd := need (AirportCd.ofString? s) s!"airport code: {s}"
 def creditTypeCd (s : String) : Except String CreditTypeCd := need (CreditTypeCd.ofString? s) s!"credit type code: {s}"
+def decodeFlightName (s : String) : Except String FlightName := need (FlightName.ofString? s) s!"flight name: {s}"
 
 /-! ## Spec -/
 
@@ -46,7 +47,7 @@ def decodeMaster (j : Json) : Except String MasterData := do
   let flightMasters ← fms.mapM fun f => do
     let dep ← getStr f "departureTime"
     let arr ← getStr f "arrivalTime"
-    return ({ flightName := ⟨← getStr f "flightName"⟩, routeNo := ← getNat f "routeNo",
+    return ({ flightName := ← decodeFlightName (← getStr f "flightName"), routeNo := ← getNat f "routeNo",
               departureTime := ← need (HourMinute.parseHHmm dep) s!"time: {dep}",
               arrivalTime := ← need (ArrivalTime.parseHHmm arr) s!"time: {arr}", craftType := ← getStr f "craftType" } : Spec.MasterData.FlightMaster)
   let boardingClasses ← (← getArr j "boardingClasses").mapM fun b => do
@@ -79,7 +80,7 @@ def decodeConfig (j : Json) : Except String Config := do
     defaultBoardingClassCd := ← boardingClassCd (← getStr j "defaultBoardingClassCd") }
 
 def specFlight (f : Json) : Except String Flight := do
-  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"), flightName := ⟨← getStr f "flightName"⟩,
+  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"), flightName := ← decodeFlightName (← getStr f "flightName"),
                     boardingClassCd := ← boardingClassCd (← getStr f "boardingClassCd"),
                     fareTypeCd := ← fareTypeCd (← getStr f "fareTypeCd") }, vacantNum := 0 }
 

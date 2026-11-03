@@ -182,11 +182,11 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
     apply List.any_eq_true.mpr
     refine ⟨r, hr, ?_⟩
     simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hfx
-    obtain ⟨d, hd', bc, hbc', ft, hft', v, -, rfl⟩ := hfx
+    obtain ⟨d, hd', n, hn', bc, hbc', ft, hft', v, -, rfl⟩ := hfx
     subst hfxk
     have := Spec.Prim.Date.epochDay_ofEpochDay? hd'
     simp only [Abstraction.FlightSearch.Alpha.boardingClassCdName_eq, Abstraction.FlightSearch.Alpha.fareTypeCdName_eq,
-      bcCdOf_eq_some hbc', ftCdOf_eq_some hft', hdxe, this, beq_self_eq_true, Bool.and_self]
+      bcCdOf_eq_some hbc', ftCdOf_eq_some hft', flightNameOf_eq_some hn', hdxe, this, beq_self_eq_true, Bool.and_self]
   refine ⟨⟨rn, ⟨no, hnol⟩, dx, ⟨k.flightName.val, hfnl⟩,
     ⟨SourceModel.Domain.Model.BoardingClassCd.name k.boardingClassCd, hbl⟩,
     ⟨SourceModel.Domain.Model.FareTypeCd.name k.fareTypeCd, hfl⟩⟩, ?_, ?_, rfl, hrnv⟩

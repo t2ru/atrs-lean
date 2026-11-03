@@ -41,11 +41,7 @@ theorem fareTypeCodes_nodup {db : MasterDb} {md : MasterData} (hm : masterDataOf
 theorem flightNames_nodup {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1) :
     (db.flightMaster.map (·.flightName.val)).Nodup := by
   obtain ⟨-, -, hfm, -⟩ := masterDataOf_eq_some.mp hm
-  have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-    mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-  have := h1.2.2.1
-  rw [e] at this
-  exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  exact Abstraction.MasterData.Query.flightMasterNames_nodup hfm h1.2.2.1
 
 theorem routeKeys_nodup {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h2 : md.MD2) :
     (db.route.map routeKey).Nodup := by
@@ -116,10 +112,10 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hftq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
-    (hfmq : ∀ name : FlightName, Text.hasText name.val = true →
+    (hfmq : ∀ name : String, Text.hasText name = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-      ∃ fm r da aa dt art, SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
-        fm.flightName = some name.val ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
+      ∃ fm r da aa dt art, SourceModel.Domain.Common.Masterdata.FlightMasterProvider.getFlightMaster p.flightMaster name = .ok (some fm) ∧
+        fm.flightName = some name ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
         fm.arrivalTime = some art ∧ arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧
         r.departureAirport = some da ∧ da.name = airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧
         aa.name = airportName? md rt.arrAirportCd)
@@ -141,8 +137,9 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   subst eF'
   simp only [flightOfRow, rowFlight, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at hF
-  obtain ⟨d, hd, bc, hbc, ftc, hftc, v, hvn, rfl⟩ := hF
+  obtain ⟨d, hd, n, hn, bc, hbc, ftc, hftc, v, hvn, rfl⟩ := hF
   simp only at hbcF hfm hft hftin
+  rw [flightNameOf_eq_some hn] at hfm
   subst hbcF
   refine ⟨(⟨some { fareTypeCd := some ftc }, SourceModel.Db.MyBatis.date r.result.departureDate,
     SourceModel.Db.MyBatis.int r.result.vacantNum, some { flightName := some r.result.flightName.val },
@@ -157,7 +154,7 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
     have := hfn route hroute fm hfmm hrno; rw [hfmn] at this; exact this
   have hroutem : route ∈ md.routes := List.mem_of_find?_eq_some hroute
   obtain ⟨fmJ, rJ, da, aa, dt, art, hgfm, hfmJn, hdt, hdt', hat, hat', hrJ, hda, hdan, haa, haan⟩ :=
-    hfmq ⟨r.result.flightName.val⟩ hname fm hfm route (by rw [hrno]; exact find?_routeNo hv.md1 hroutem)
+    hfmq r.result.flightName.val hname fm hfm route (by rw [hrno]; exact find?_routeNo hv.md1 hroutem)
   -- 搭乗クラス
   obtain ⟨bJ, -, hbJ, hbJc, -, -⟩ := Abstraction.Fare.Load.boardingClass_of_answer (by rw [hbcq, hbcM]; rfl)
   have hbcMc := List.find?_some hbcM
@@ -179,7 +176,8 @@ theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterData
   · simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, enrich, JRef.deref, SourceModel.Domain.Common.Masterdata.FareTypeProvider.getFareType, SourceModel.Domain.Common.Masterdata.BoardingClassProvider.getBoardingClass,
       hgfm, ok_bind, pure_bind]
     rfl
-  · refine ⟨⟨fmJ, rJ, da, aa, dt, art, rfl, hfmJn, hdt, hdt', hat, hat', hrJ, hda, by rw [hdan, hdn], haa,
+  · refine ⟨⟨fmJ, rJ, da, aa, dt, art, rfl, by rw [hfmJn, flightNameOf_eq_some hn], hdt, hdt', hat, hat', hrJ, hda,
+      by rw [hdan, hdn], haa,
       by rw [haan, han]⟩, ⟨bJ, hbJ, by rw [hbJc, hbcMc]⟩, ⟨_, rfl, ?_⟩, ⟨fJ, dJ, _, hfJ, by rw [hfJc, hftcc], hfJn,
       hdJ, Abstraction.Fare.Loop.calculateFare_ok hbf hdJv hr100, ?_⟩, ⟨_, rfl, ?_⟩⟩
     · simp only [dateOfJ_ofEpochDay]; exact hd

@@ -33,7 +33,7 @@ open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
 theorem flightMasterOfRow_arr {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
     arrOfStr f.arrivalTime.val = some x.arrivalTime := by
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨_, _, _, _, ar, har, rfl⟩ := h
+  obtain ⟨_, _, _, _, _, _, ar, har, rfl⟩ := h
   exact har
 
 /-- 空港コードの行があれば、[Spec] の空港名は、`apOf` の行の空港名。 -/
@@ -66,9 +66,9 @@ theorem airportName_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
 /-- 便マスタのキャッシュの答え（空席照会が使う成分）: 便名・出発時刻・到着時刻と、区間の出発・到着の空港名。 -/
 theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
-    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
+    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : String, hasText name = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-      ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
+      ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster fmp name = .ok (some fm) ∧ fm.flightName = some name ∧
         fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
         arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧ r.departureAirport = some da ∧
         da.name = Spec.FlightSearch.airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧
@@ -81,31 +81,22 @@ theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
-  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
-    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-    have := h1.2.2.1
-    rw [e] at this
-    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := flightMasterNames_nodup hfm h1.2.2.1
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname X hX rt hrt' => ?_⟩
   have hget : FlightMasterProvider.getFlightMaster (⟨JHashMap.ofList (o.map fun f =>
-      (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))⟩ : FlightMasterProvider) name.val =
+      (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))⟩ : FlightMasterProvider) name =
       .ok ((JHashMap.ofList (o.map fun f =>
-        (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val) := by
+        (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name) := by
     simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames] at hget
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
-      == name.val) = (fun f => f.flightName.val == name.val) from rfl] at hget
-  have hspec : md.flightMasterOf name =
-      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
-    unfold MasterData.flightMasterOf
-    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
-      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
+      == name) = (fun f => f.flightName.val == name) from rfl] at hget
+  have hspec := flightMasterOf_db hfm name
   rw [hspec] at hX
-  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with
+  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name) with
   | none => simp [hf] at hX
   | some f =>
     rw [hf, Option.bind_some] at hX
@@ -166,9 +157,9 @@ theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDat
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
       (∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
         some (.fareType ((md.fareTypeOf cd).map (·.info)))) ∧
-      (∀ name : FlightName, hasText name.val = true →
+      (∀ name : String, hasText name = true →
         ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-        ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
+        ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name = .ok (some fm) ∧ fm.flightName = some name ∧
           fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
           arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧ r.departureAirport = some da ∧
           da.name = Spec.FlightSearch.airportName? md rt.depAirportCd ∧ r.arrivalAirport = some aa ∧

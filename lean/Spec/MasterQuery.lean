@@ -41,7 +41,7 @@ def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
 @[raw_input "機械の入力（参照の問い合わせ）。妥当性 Query.Valid は PRE"]
 inductive Query where
   | routeOf (dep arr : String)
-  | flightMasterOf (name : FlightName)
+  | flightMasterOf (name : String)
   | fareTypeOf (cd : FareTypeCd)
   | boardingClassOf (cd : BoardingClassCd)
   | peakTimeOn (d : Date)
@@ -52,11 +52,11 @@ inductive Query where
   | codeList (n : CodeListName)
 
 /-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。
-便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
+便名は、形式（`FlightName.valid`）に合い、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => AirportCd.valid dep = true ∧ AirportCd.valid arr = true
-  | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true
+  | .flightMasterOf name => FlightName.valid name = true ∧ hasText name = true
   | _ => True
 
 instance (q : Query) : Decidable q.Valid := by

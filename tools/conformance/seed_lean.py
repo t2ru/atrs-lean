@@ -56,7 +56,7 @@ def hm(v: str) -> str:
 ROWS = {
     "airports": ("Airport", lambda r: f"⟨{{ val := {s(r['code'])} }}, {s(r['name'])}, {r['displayOrder']}⟩"),
     "routes": ("Route", lambda r: f"⟨{r['routeNo']}, {{ val := {s(r['depAirportCd'])} }}, {{ val := {s(r['arrAirportCd'])} }}, {r['basicFare']}⟩"),
-    "flightMasters": ("FlightMaster", lambda r: f"⟨⟨{s(r['flightName'])}⟩, {r['routeNo']}, {hm(r['departureTime'])}, "
+    "flightMasters": ("FlightMaster", lambda r: f"⟨{{ val := {s(r['flightName'])} }}, {r['routeNo']}, {hm(r['departureTime'])}, "
                       f"{hm(r['arrivalTime'])}, {s(r['craftType'])}⟩"),
     "boardingClasses": ("BoardingClass", lambda r: f"⟨.{r['boardingClassCd']}, {s(r['boardingClassName'])}, "
                         f"{r['extraCharge']}, {r['displayOrder']}⟩"),

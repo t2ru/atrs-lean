@@ -88,7 +88,7 @@ def specWorld (i : Json) : Except String Spec.Port.World := do
                           passenger := ← seqOf i "passenger" } }
 
 def specSelect (s : Json) : Except String Spec.Ticket.SelectFlight := do
-  return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ⟨← getStr s "flightName"⟩,
+  return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ← getStr s "flightName",
            boardingClassCd := ← boardingClassCd (← getStr s "boardingClassCd"), fareTypeCd := ← fareTypeCd (← getStr s "fareTypeCd") }
 
 def specPassengerInput (p : Json) : Except String Spec.UseCase.Reserve.PassengerInput := do
@@ -149,12 +149,16 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
       checkWorld w
       let sels ← (← getArr i "selectFlights").mapM specSelect
       match ← need (Spec.Ticket.validateFlightList cfg md w (sels.map (Spec.Ticket.resolve md))) "outside PRE" with
-      | .ok () => return .null
+      | .ok _ => return .null
       | .error e => return specErrorJson e),
     ("reservation.validateReservation", fun i => do
       let w ← specWorld i
       let r ← specRequest i
-      let d ← need (Spec.UseCase.Reserve.buildDraft r.form (r.selects.map (·.key))) "outside PRE (passenger)"
+      -- 予約内容の検証は選択フライトの検証の後なので、選択フライトの主キーは便名を便名の型で読んだもの
+      let ks ← r.selects.mapM fun s => do
+        return ({ departureDate := s.depDate, flightName := ← Tests.ConformanceFare.decodeFlightName s.flightName,
+                  boardingClassCd := s.boardingClassCd, fareTypeCd := s.fareTypeCd } : FlightKey)
+      let d ← need (Spec.UseCase.Reserve.buildDraft r.form ks) "outside PRE (passenger)"
       match ← need (Spec.UseCase.Reserve.validateReservation cfg md w d) "outside PRE" with
       | .ok () => return .null
       | .error e => return specErrorJson e),

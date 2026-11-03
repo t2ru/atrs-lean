@@ -27,8 +27,8 @@ def route1 : Route := ⟨1, { val := "HND" }, { val := "ITM" }, 25000⟩
 def route2 : Route := ⟨2, { val := "ITM" }, { val := "HND" }, 25000⟩
 def hm (h m : Nat) (hv : h ≤ 23 ∧ m ≤ 59 := by decide) : HourMinute := ⟨h, m, hv⟩
 def ah (h m : Nat) (hv : h ≤ 47 ∧ m ≤ 59 := by decide) : ArrivalTime := ⟨h, m, hv⟩
-def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, ah 8 10, "B777"⟩
-def fm2 : FlightMaster := ⟨⟨"NTT002"⟩, 1, hm 9 0, ah 10 10, "B777"⟩
+def fm1 : FlightMaster := ⟨{ val := "NTT001" }, 1, hm 7 0, ah 8 10, "B777"⟩
+def fm2 : FlightMaster := ⟨{ val := "NTT002" }, 1, hm 9 0, ah 10 10, "B777"⟩
 def ow : FareType := ⟨.OW, "片道運賃", 0, 90, 0, 1, 1⟩
 def gd : FareType := ⟨.GD, "グループ割", 30, 60, 1, 3, 7⟩
 def bcN : BoardingClass := ⟨.N, "一般席", 0, 1⟩
@@ -78,10 +78,10 @@ def sample : MasterData where
 #guard !decide ({ sample with airports := [hnd, { itm with code := { val := "NOP" } }] }.MD8)
 
 -- 参照の問い合わせの値域: 空白だけの便名は Valid でない（原典の Assert.hasText）
-#guard !decide (Spec.MasterQuery.Query.flightMasterOf ⟨" "⟩).Valid
-#guard !decide (Spec.MasterQuery.Query.flightMasterOf ⟨"\t\u3000"⟩).Valid
-#guard decide (Spec.MasterQuery.Query.flightMasterOf ⟨"NTT1"⟩).Valid
-#guard decide (Spec.MasterQuery.Query.flightMasterOf ⟨"\u00A0"⟩).Valid  -- 改行を禁止する空白は Blank でない
+#guard !decide (Spec.MasterQuery.Query.flightMasterOf " ").Valid
+#guard !decide (Spec.MasterQuery.Query.flightMasterOf "\t\u3000").Valid
+#guard decide (Spec.MasterQuery.Query.flightMasterOf "NTT1").Valid
+#guard decide (Spec.MasterQuery.Query.flightMasterOf "\u00A0").Valid  -- 改行を禁止する空白は Blank でない
 -- 文字クラス Blank の端
 #guard [0x09, 0x0D, 0x1C, 0x20, 0x1680, 0x2006, 0x2008, 0x200A, 0x2028, 0x2029, 0x205F, 0x3000].all
   fun n => isBlank (Char.ofNat n)
@@ -121,7 +121,8 @@ def rt : FareType := ⟨.RT, "往復運賃", 5, 90, 0, 1, 2⟩
 def fareMd : MasterData :=
   { sample with routes := [{ route1 with basicFare := 20600 }, { route2 with basicFare := 20600 }],
                 fareTypes := [ow, rt] }
-def flight (name : String) (ft : FareTypeCd) : Flight := ⟨⟨ymd 2026 11 1, ⟨name⟩, .N, ft⟩, 10⟩
+def flight (name : String) (ft : FareTypeCd) (h : FlightName.valid name = true := by decide) : Flight :=
+  ⟨⟨ymd 2026 11 1, ⟨name, h⟩, .N, ft⟩, 10⟩
 def pax (age : Nat) : Passenger := ⟨"山田", "太郎", age, .M, none⟩
 
 #guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30] == some 20600

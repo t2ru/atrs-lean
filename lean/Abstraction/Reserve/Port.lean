@@ -35,18 +35,19 @@ theorem toCode_inj_ft {a b : FareTypeCd} (h : a.toCode = b.toCode) : a = b := by
 theorem keyCond_holds {r : FlightRow} {f : Flight} (hf : flightOfRow r = some f) (k : FlightKey) :
     (keyCond (keyParams k) r).holds = (f.key == k) := by
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hf
-  obtain ⟨d, hd, bc, hbc, ft, hft, v, -, rfl⟩ := hf
+  obtain ⟨d, hd, n, hn, bc, hbc, ft, hft, v, -, rfl⟩ := hf
   have ed := Date.epochDay_ofEpochDay? hd
+  have en := flightNameOf_eq_some hn
   have ebc := bcCdOf_eq_some hbc
   have eft := ftCdOf_eq_some hft
-  obtain ⟨kd, ⟨kn⟩, kbc, kft⟩ := k
+  obtain ⟨kd, kn, kbc, kft⟩ := k
   simp only [keyCond, keyParams, Truth.holds_and, PgDate.toSql, Varchar.toSql, collationC,
-    SqlValue.eq_date_holds, SqlValue.eq_text_holds, ebc, eft]
+    SqlValue.eq_date_holds, SqlValue.eq_text_holds, ebc, eft, ← en]
   rw [Bool.eq_iff_iff]
-  simp only [Bool.and_eq_true, beq_iff_eq, FlightKey.mk.injEq, FlightName.mk.injEq]
+  simp only [Bool.and_eq_true, beq_iff_eq, FlightKey.mk.injEq]
   constructor
   · rintro ⟨h1, h2, h3, h4⟩
-    exact ⟨Date.epochDay_inj (by omega), h2, toCode_inj_bc h3, toCode_inj_ft h4⟩
+    exact ⟨Date.epochDay_inj (by omega), FlightName.ext h2, toCode_inj_bc h3, toCode_inj_ft h4⟩
   · rintro ⟨rfl, rfl, rfl, rfl⟩
     exact ⟨by omega, rfl, rfl, rfl⟩
 
@@ -131,8 +132,8 @@ theorem updateWhere_alpha {k : FlightKey} {n : Nat} {v : Int4} (hv : v.val = n) 
       have : flightOfRow { r with vacantNum := v } = some { f with vacantNum := n } := by
         simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
           Option.some.injEq] at hf ⊢
-        obtain ⟨d, hd, bc, hbc, ft, hft, w, -, rfl⟩ := hf
-        refine ⟨d, hd, bc, hbc, ft, hft, n, ?_, rfl⟩
+        obtain ⟨d, hd, nm, hnm, bc, hbc, ft, hft, w, -, rfl⟩ := hf
+        refine ⟨d, hd, nm, hnm, bc, hbc, ft, hft, n, ?_, rfl⟩
         simp [natOfInt4, hv]
       simp [this]
     · rename_i hk

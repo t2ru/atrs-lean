@@ -41,12 +41,11 @@ theorem fareTypeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataO
   · rintro h; rw [h] at e; rw [hcd] at e; exact (Option.some.inj e).symm
 
 theorem flightMasterOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (s : String) :
-    md.flightMasterOf ⟨s⟩ = (db.flightMaster.find? fun fm => fm.flightName.val == s).bind flightMasterOfRow := by
+    md.flightMasterOf s = (db.flightMaster.find? fun fm => fm.flightName.val == s).bind flightMasterOfRow := by
   obtain ⟨-, -, hfms, -⟩ := masterDataOf_eq_some.mp hm
   unfold Spec.MasterData.flightMasterOf
   refine find?_mapM hfms fun r x hx => ?_
   rw [(flightMasterOfRow_fields hx).2]
-  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, FlightName.mk.injEq]
 
 theorem routeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (dep arr : String) :
     md.routeOf dep arr = (db.route.find? fun r => routeKey r == (dep, arr)).bind routeOfRow := by
@@ -96,7 +95,7 @@ theorem fareTypeOfRow_fields {r : FareTypeRow} {x : FareType} (h : fareTypeOfRow
 theorem flightMasterOfRow_dep {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
     hmOfStr f.departureTime.val = some x.departureTime := by
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨_, _, dt, hdt, _, _, rfl⟩ := h
+  obtain ⟨_, _, _, _, dt, hdt, _, _, rfl⟩ := h
   exact hdt
 
 theorem routeOfRow_no {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.routeNo : Int) = r.routeNo.val := by
@@ -153,12 +152,12 @@ theorem rowAt_rel {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db =
     Option.Rel (RowRel f) (rowAt db (paramsOf c dep arr bdn) dep arr f) (candidateOf md c route bdn F) := by
   have hf0 := hf
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hf
-  obtain ⟨d, hd, bc, hbc, ftc, hft, v, hv, rfl⟩ := hf
+  obtain ⟨d, hd, n, hn, bc, hbc, ftc, hft, v, hv, rfl⟩ := hf
   obtain ⟨-, hrts, hfms, -, hfts, -⟩ := masterDataOf_eq_some.mp hm
   rw [routeOf_find hm] at hroute
   obtain ⟨r0, hr0, hrX⟩ := Option.bind_eq_some_iff.mp hroute
   unfold rowAt candidateOf
-  rw [flightMasterOf_find hm, fareTypeOf_find hm _ hft, hr0]
+  rw [flightMasterOf_find hm, flightNameOf_eq_some hn, fareTypeOf_find hm _ hft, hr0]
   cases hA : db.fareType.find? fun ft => ft.fareTypeCd.val == f.fareTypeCd.val with
   | none =>
     cases (db.flightMaster.find? fun fm => fm.flightName.val == f.flightName.val) <;>
@@ -189,7 +188,7 @@ def rowFlight (r : FlightResult) : FlightRow :=
 /-- 結果の行の α: フライトの行の写しと、その便名・運賃種別のマスタの組（[Spec] の候補の形）。 -/
 def candOfRow (md : Spec.MasterData) (row : VacantSeatRow) : Option Candidate := do
   let F ← flightOfRow (rowFlight row.result)
-  let fm ← md.flightMasterOf F.key.flightName
+  let fm ← md.flightMasterOf F.key.flightName.val
   let ft ← md.fareTypeOf F.key.fareTypeCd
   pure ⟨F, fm, ft⟩
 
@@ -200,7 +199,7 @@ def RowOk (md : Spec.MasterData) (row : VacantSeatRow) (X : Candidate) : Prop :=
 
 theorem candidateOf_parts {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight} {X : Candidate}
     (h : candidateOf md c route bdn F = some X) :
-    X.flight = F ∧ md.flightMasterOf F.key.flightName = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType := by
+    X.flight = F ∧ md.flightMasterOf F.key.flightName.val = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType := by
   unfold candidateOf at h
   simp only [Option.bind_eq_bind, Option.bind_eq_some_iff] at h
   obtain ⟨fm, hfm, ft, hft, h⟩ := h

@@ -38,7 +38,8 @@ def errorJson (kind code : String) : Json :=
 /-! ## Spec -/
 
 def specFlight (f : Json) : Except String Flight := do
-  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"), flightName := ⟨← getStr f "flightName"⟩,
+  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"),
+                    flightName := ← Tests.ConformanceFare.decodeFlightName (← getStr f "flightName"),
                     boardingClassCd := ← boardingClassCd (← getStr f "boardingClassCd"),
                     fareTypeCd := ← fareTypeCd (← getStr f "fareTypeCd") },
            vacantNum := ← getNat f "vacantNum" }

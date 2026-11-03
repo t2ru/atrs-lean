@@ -224,7 +224,7 @@ theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : Li
 
 theorem candidateOf_cond {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight}
     {X : Candidate} (h : candidateOf md c route bdn F = some X) :
-    X.flight = F ∧ md.flightMasterOf F.key.flightName = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType ∧
+    X.flight = F ∧ md.flightMasterOf F.key.flightName.val = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType ∧
       F.key.departureDate = c.depDate ∧ X.master.routeNo = route.routeNo ∧ F.key.boardingClassCd = c.boardingClassCd ∧
       F.key.fareTypeCd ∈ fareTypesFor c.flightType := by
   unfold candidateOf at h
@@ -266,7 +266,7 @@ theorem noTie_cands {cfg : Spec.Config} {md : Spec.MasterData} (hv : md.Valid cf
   have hk : F.key = G.key := by
     show (⟨F.key.departureDate, F.key.flightName, F.key.boardingClassCd, F.key.fareTypeCd⟩ : FlightKey) =
       ⟨G.key.departureDate, G.key.flightName, G.key.boardingClassCd, G.key.fareTypeCd⟩
-    rw [dX, dY, bX, bY, ← nX, ← nY, hfm, ← cX, ← cY, hft]
+    rw [dX, dY, bX, bY, ← FlightName.ext nX, ← FlightName.ext nY, hfm, ← cX, ← cY, hft]
   have hFG : F = G := LangSemantics.Core.List.inj_of_nodup_map hw hF hG hk
   obtain ⟨xf, xm, xt⟩ := X
   obtain ⟨yf, ym, yt⟩ := Y

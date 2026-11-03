@@ -24,8 +24,10 @@ theorem flight_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = so
   obtain ⟨r, hr, hrf⟩ := LangSemantics.Core.MapM.mapM_some_mem' hm hmem
   refine ⟨⟨r, hr, fx, hrf, hk⟩, ?_⟩
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hrf
-  obtain ⟨_, -, _, -, _, -, _, -, rfl⟩ := hrf
+  obtain ⟨_, -, n, hn, _, -, _, -, _, -, rfl⟩ := hrf
   rw [← hk]
+  show n.val.length ≤ 6
+  rw [Abstraction.MasterData.AlphaLeaf.flightNameOf_eq_some hn]
   exact r.flightName.property
 
 /-- `findMember` で見つかる会員番号は、MEMBER の行の会員番号で、10 文字以内（`VARCHAR(10)`）。 -/

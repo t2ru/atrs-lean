@@ -131,23 +131,22 @@ end
 
 section
 variable {md : Spec.MasterData} {p : Providers}
-  (hmn : ∀ name : FlightName, hasText name.val = true → md.flightMasterOf name = none →
-    FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok none)
-  (hmc : ∀ name : FlightName, hasText name.val = true →
+  (hmn : ∀ name : String, hasText name = true → md.flightMasterOf name = none →
+    FlightMasterProvider.getFlightMaster p.flightMaster name = .ok none)
+  (hmc : ∀ name : String, hasText name = true →
     ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-    ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
-      fm.flightName = some name.val ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
+    ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name = .ok (some fm) ∧
+      fm.flightName = some name ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
       fm.arrivalTime = some art ∧ arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧
       r.departureAirport = some da ∧ da.code = some rt.depAirportCd.val ∧ r.arrivalAirport = some aa ∧
       aa.code = some rt.arrAirportCd.val)
 
 include hmn in
 /-- 便マスタが無ければ、フライト情報の便マスタは `null`。 -/
-theorem mkFlight_master_none {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    (ht : hasText k.flightName.val = true) (h : md.flightMasterOf k.flightName = none) :
+theorem mkFlight_master_none {f : SelectFlightForm} {n : String} (hn : f.flightName = some n)
+    (ht : hasText n = true) (h : md.flightMasterOf n = none) :
     (mkFlight p f).flightMaster = none := by
-  obtain ⟨dj, hdj, hd, hn, hbc, hft⟩ := keyOfForm_eq hk
-  have := hmn k.flightName ht h
+  have := hmn n ht h
   rw [getFlightMaster_eq ht] at this
   simp only [mkFlight, hn, Option.bind_some]
   exact Except.ok.inj this
@@ -155,13 +154,13 @@ theorem mkFlight_master_none {f : SelectFlightForm} {k : FlightKey} (hk : keyOfF
 include hmc in
 /-- 便マスタがあれば、フライト情報の便マスタは、便名・時刻・区間の空港コードを持つ。 -/
 theorem mkFlight_master_some {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    (ht : hasText k.flightName.val = true) {X : FlightMaster} (h : md.flightMasterOf k.flightName = some X)
+    (ht : hasText k.flightName.val = true) {X : FlightMaster} (h : md.flightMasterOf k.flightName.val = some X)
     {rt : Route} (hrt : Spec.Ticket.routeOfMaster md X = some rt) :
     ∃ fm dt art, (mkFlight p f).flightMaster = some fm ∧ fm.flightName = some k.flightName.val ∧
       fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
       arrOfStr art = some X.arrivalTime ∧ HasRoute fm rt := by
   obtain ⟨dj, hdj, hd, hn, hbc, hft⟩ := keyOfForm_eq hk
-  obtain ⟨fm, r, da, aa, dt, art, hg, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10⟩ := hmc k.flightName ht X h rt hrt
+  obtain ⟨fm, r, da, aa, dt, art, hg, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10⟩ := hmc k.flightName.val ht X h rt hrt
   rw [getFlightMaster_eq ht] at hg
   refine ⟨fm, dt, art, ?_, h1, h2, h3, h4, h5, r, da, aa, h6, h7, h8, h9, h10⟩
   simp only [mkFlight, hn, Option.bind_some]

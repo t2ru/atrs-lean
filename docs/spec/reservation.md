@@ -24,7 +24,7 @@ generated:
 画面から送られる選択フライトは `SelectFlight = { depDate, flightName, boardingClassCd, fareTypeCd }` の列（往路、復路の順）である。
 これをマスタで解決したものを `Flight`（便マスタ・運賃種別・搭乗クラスの実体を伴う）として扱う。
 
-**[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。便名が空白だけ（U+3000 など）の場合も同じである。[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で例外（500）になる（既知差異 [D-039](abstraction.md#既知差異)）。
+**[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。選択フライトの便名は生の文字列で、便マスタを値で引き、主キーの便名は便マスタの便名とする（Lean では便マスタが無ければ解決の結果が無い。[ADR 6d36](../decision/6d36-misu-spec-types.md)）。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。便名が空白だけ（U+3000 など）の場合も同じである。[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で例外（500）になる（既知差異 [D-039](abstraction.md#既知差異)）。
 
 出典: `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)`
 
@@ -34,7 +34,9 @@ generated:
 
 ### シグネチャ
 
-`validateFlightList(flights: [Flight], allFlights; master, config) : Except AtrsError Unit`
+`validateFlightList(flights: [Flight], allFlights; master, config) : Except AtrsError Itinerary`
+
+成功したときは、検証した便の主キーを、片道（1 便）か往復（往路・復路）の `Itinerary` で返す。予約確認・予約確定は、この主キーを使う（Lean: `Spec.Ticket.Itinerary`）。
 
 ### 事前条件
 

@@ -39,7 +39,7 @@ def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
 def mdFS : Spec.MasterData :=
   { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
     routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩],
-    flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+    flightMasters := [⟨{ val := "NTT001" }, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.OW, "OW", 0, 355, 0, 1, 1⟩],
     peakTimes := [⟨"P", day0, day0, 100⟩],
@@ -49,7 +49,7 @@ def mdFS : Spec.MasterData :=
 def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, "HND", "ITM", .OW⟩⟩
 
 /-- [Spec] の状態。 -/
-def wFS : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩] }
+def wFS : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT001" }, .N, .OW⟩, 10⟩] }
 
 theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 
@@ -103,7 +103,7 @@ theorem assertHasText_eq (s m : String) :
 
 /-- [Source] の結果の写し（区切り文字 `.`）: 運賃の表示は `100.000`。 -/
 def vDot : Spec.FlightSearch.FlightVacantInfo :=
-  ⟨⟨"NTT001"⟩, "Haneda", "Itami", "08:00", "09:00", "1970/01/01", .N, [(.OW, ⟨"OW", "100.000", 10⟩)]⟩
+  ⟨{ val := "NTT001" }, "Haneda", "Itami", "08:00", "09:00", "1970/01/01", .N, [(.OW, ⟨"OW", "100.000", 10⟩)]⟩
 
 /-- 区切り文字 `.` での [Source] の 1 歩（許される並びの 1 つ）の結果の写しは `vDot` の 1 件。 -/
 theorem run_icFS_dot :

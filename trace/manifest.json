@@ -473,6 +473,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Fare.TotalFareRun.toFlight_ok_of",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Fare.TotalFareRun.totalFareOfKeys_le",
       "layer": "Abstraction"
     },
@@ -1717,6 +1721,22 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.AlphaLeaf.flightNameOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.flightNameOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.flightNameOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.flightNameOf_val",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.AlphaLeaf.ftCdOf",
       "layer": "Abstraction"
     },
@@ -2029,7 +2049,15 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Query.flightMasterNames_nodup",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.Query.flightMasterOfRow_fields",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Query.flightMasterOf_db",
       "layer": "Abstraction"
     },
     {
@@ -2321,6 +2349,10 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Alpha.selectKeys",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Alpha.selectOfForm",
       "layer": "Abstraction"
     },
@@ -2386,10 +2418,6 @@
     },
     {
       "name": "Abstraction.Reserve.ConfirmRun.confirm_run",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Reserve.ConfirmRun.forms_keys",
       "layer": "Abstraction"
     },
     {
@@ -2541,19 +2569,31 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.Reserve.Input.forall₂_of_mapM",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.forms_keys",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.keyOfForm_of_resolve",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.Input.mapM_of_forall₂",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.Reserve.Input.requestOf_eq",
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.Input.resolve_eq",
+      "name": "Abstraction.Reserve.Input.selectKeys_eq",
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.Input.selectOfForm_key",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.Reserve.Input.selects_keys",
+      "name": "Abstraction.Reserve.Input.selectOfForm_eq",
       "layer": "Abstraction"
     },
     {
@@ -3434,6 +3474,30 @@
     },
     {
       "name": "Abstraction.Reserve.SpecFacts.fareTypeOf_of_exists",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.forall₂_left_mem",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.forall₂_len",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.forall₂_of_map",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.forall₂_right_mem",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.resolve_key",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.Reserve.SpecFacts.selects_ok",
       "layer": "Abstraction"
     },
     {
@@ -10517,6 +10581,14 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.FlightName.ofString?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.FlightName.valid",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.FlightType",
       "layer": "Spec"
     },
@@ -10958,6 +11030,10 @@
     },
     {
       "name": "Spec.Seed.routes",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Ticket.Itinerary",
       "layer": "Spec"
     },
     {
@@ -12293,6 +12369,11 @@
     {
       "type": "obligation",
       "from": "Abstraction.MasterData.AlphaLeaf.dateOfSlash_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.AlphaLeaf.flightNameOf_kernel",
       "to": "ABS-048"
     },
     {
@@ -16224,6 +16305,16 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Model.FlightName.ofString?",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.FlightName.valid",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Model.FlightType",
       "to": "docs/spec/domain-model.md#列挙"
     },
@@ -16699,6 +16790,11 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Ticket.Itinerary",
+      "to": "docs/spec/reservation.md#選択フライト"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Ticket.ResolvedFlight",
       "to": "docs/spec/reservation.md#選択フライト"
     },
@@ -17060,6 +17156,11 @@
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.dateOfSlash",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.AlphaLeaf.flightNameOf",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -21874,7 +21975,7 @@
       "definition": "Spec.Seed.Flight.names",
       "locator": "seed:00250_insert_flight.sql#FLIGHT",
       "hash": "ebc1effd92f8d4a3",
-      "merkle": "7763e371a626c291",
+      "merkle": "af6046fed10c3b91",
       "checks": [
         "seed-lean"
       ]
@@ -21982,7 +22083,7 @@
       "definition": "Spec.Seed.flightMasters",
       "locator": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
       "hash": "ce88990bf3547005",
-      "merkle": "1dd782b8ed3125ff",
+      "merkle": "bc41427677135aa5",
       "checks": [
         "seed-lean"
       ]

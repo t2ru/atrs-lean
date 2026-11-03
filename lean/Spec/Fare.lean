@@ -29,7 +29,7 @@ def fare (basicFare discountRate : Nat) : Nat :=
 /-- 便名の区間（便マスタの区間番号で引く）。 -/
 @[spec_doc "docs/spec/fare-calculation.md#合計金額"]
 def routeOfFlightName (md : MasterData) (name : FlightName) : Option Route := do
-  let fm ← md.flightMasterOf name
+  let fm ← md.flightMasterOf name.val
   md.routes.find? fun r => r.routeNo == fm.routeNo
 
 /-- 便の区間。 -/

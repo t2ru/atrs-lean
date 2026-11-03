@@ -108,9 +108,9 @@ theorem vacantInfoOf_fields {d : FlightVacantInfoDto} {g : FlightVacantInfo} (h 
       ∀ es fts, es.mapM Alpha.fareTypeInfoOf = some fts →
         vacantInfoOf { d with fareTypes := ⟨es⟩ } = some { g with fareTypes := fts } := by
   simp only [vacantInfoOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-  obtain ⟨n, hn, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
+  obtain ⟨n, ⟨sn, hn, en⟩, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
   refine ⟨hfts, fun es fts' h' => ?_⟩
-  simp only [vacantInfoOf, hn, hdn, han, hdt, hat, hdd, hbc, h', Option.bind_eq_bind, Option.bind_some,
+  simp only [vacantInfoOf, hn, en, hdn, han, hdt, hat, hdd, hbc, h', Option.bind_eq_bind, Option.bind_some,
     Option.pure_def]
 
 theorem mapM_snd {κ υ κ' υ' : Type} {ka : κ → Option κ'} {va : υ → Option υ'} :
@@ -153,7 +153,8 @@ theorem header_ok {sep : LangSemantics.Java.DecimalFormat.Symbols} {bf : J32} {b
   · simp only [createFlightVacantInfo, hfm, hr, hda, haa, hbc, JRef.deref, hdt, hat, ok_bind,
       toFormatTimeString_hm hdt', toFormatTimeString_arr hat', hjd, toFormatDateString_eq hjd']
     rfl
-  · simp only [vacantInfoOf, hn, hdn, han, hbcc, Option.bind_eq_bind, Option.bind_some, Option.pure_def, headerOf]
+  · simp only [vacantInfoOf, hn, hdn, han, hbcc, Option.bind_eq_bind, Option.bind_some, Option.pure_def, headerOf,
+      flightNameOf_val]
     rfl
 
 /-- 1 歩: 状態が写しで結ばれていれば、本体は例外を投げず、次の状態も写しで結ばれる。 -/

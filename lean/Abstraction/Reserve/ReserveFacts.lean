@@ -133,13 +133,13 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
     (h : reserveOp cfg md today w r = some (w', x)) :
     ∃ v, Spec.Ticket.validateFlightList cfg md w (r.selects.map (Spec.Ticket.resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ w' = w ∧ x = .error (asInvalidRequest e)) ∨
-        (v = .ok () ∧ ∃ d vr, buildDraft r.form (r.selects.map (·.key)) = some d ∧
+        (∃ it, v = .ok it ∧ ∃ d vr, buildDraft r.form it.toList = some d ∧
           validateReservation cfg md w d = some vr ∧
           ((∃ e, vr = .error e ∧ w' = w ∧ x = .error e) ∨
-            (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md (r.selects.map (·.key)) (d.passengers.map (·.age)) =
-              some n ∧ ∃ sec, Abstraction.Reserve.Vacancy.secureAll md today d.passengers.length (r.selects.map (·.key)) w = some sec ∧
+            (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) =
+              some n ∧ ∃ sec, Abstraction.Reserve.Vacancy.secureAll md today d.passengers.length it.toList w = some sec ∧
               ((∃ e, sec = .error e ∧ w' = w ∧ x = .error e) ∨
-                (∃ w1, sec = .ok w1 ∧ ∃ pd, (r.selects.map (·.key)).head?.map (·.departureDate) = some pd ∧
+                (∃ w1, sec = .ok w1 ∧ ∃ pd, it.toList.head?.map (·.departureDate) = some pd ∧
                   w' = (register d today n w1).2 ∧ x = .ok ⟨(register d today n w1).1, pd, n⟩)))))) := by
   unfold reserveOp checkSelects at h
   cases hv : Spec.Ticket.validateFlightList cfg md w (r.selects.map (Spec.Ticket.resolve md)) with
@@ -152,12 +152,11 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
       left
       simp only [Except.mapError, Option.pure_def, Option.some.injEq, Prod.mk.injEq] at h
       exact ⟨e, rfl, h.1.symm, h.2.symm⟩
-    | ok u =>
-      cases u
+    | ok it =>
       right
-      refine ⟨rfl, ?_⟩
+      refine ⟨it, rfl, ?_⟩
       simp only [Except.mapError, reserve, Option.bind_eq_bind] at h
-      cases hd : buildDraft r.form (r.selects.map (·.key)) with
+      cases hd : buildDraft r.form it.toList with
       | none => simp [hd] at h
       | some d =>
         cases hvr : validateReservation cfg md w d with
@@ -174,13 +173,13 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
             cases u
             right
             refine ⟨rfl, ?_⟩
-            cases ht : Spec.Fare.totalFareOfKeys cfg md (r.selects.map (·.key)) (d.passengers.map (·.age)) with
+            cases ht : Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) with
             | none => simp [ht] at h
             | some n =>
               refine ⟨n, rfl, ?_⟩
               simp only [ht, Option.bind_some] at h
               erw [Abstraction.Reserve.Vacancy.foldlM_secure] at h
-              cases hs : Abstraction.Reserve.Vacancy.secureAll md today d.passengers.length (r.selects.map (·.key)) w with
+              cases hs : Abstraction.Reserve.Vacancy.secureAll md today d.passengers.length it.toList w with
               | none => simp [hs] at h
               | some sec =>
                 refine ⟨sec, rfl, ?_⟩
@@ -193,11 +192,11 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
                 | ok w1 =>
                   right
                   refine ⟨w1, rfl, ?_⟩
-                  cases hp : r.selects.head? with
+                  cases hp : it.toList.head? with
                   | none => simp [hp] at h
-                  | some s0 =>
-                    simp only [List.head?_map, hp, Option.map_some, Option.bind_some, Option.pure_def,
+                  | some k0 =>
+                    simp only [hp, Option.map_some, Option.bind_some, Option.pure_def,
                       Option.some.injEq, Prod.mk.injEq] at h
-                    exact ⟨s0.key.departureDate, by simp [List.head?_map, hp], h.1.symm, h.2.symm⟩
+                    exact ⟨k0.departureDate, rfl, h.1.symm, h.2.symm⟩
 
 end Abstraction.Reserve.ReserveFacts

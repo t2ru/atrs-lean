@@ -289,10 +289,26 @@ theorem routeOfRow_no {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (
   exact (natOfInt4_eq_some.mp hno).symm
 
 theorem flightMasterOfRow_fields {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
-    (x.routeNo : Int) = f.routeNo.val ∧ x.flightName = ⟨f.flightName.val⟩ := by
+    (x.routeNo : Int) = f.routeNo.val ∧ x.flightName.val = f.flightName.val := by
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hno, _, _, _, _, rfl⟩ := h
-  exact ⟨(natOfInt4_eq_some.mp hno).symm, rfl⟩
+  obtain ⟨n, hn, no, hno, _, _, _, _, rfl⟩ := h
+  exact ⟨(natOfInt4_eq_some.mp hno).symm, flightNameOf_eq_some hn⟩
+
+/-- MD-1: 便名は DB の表の中で重複しない。 -/
+theorem flightMasterNames_nodup {db : MasterDb} {fms : List FlightMaster}
+    (hfm : db.flightMaster.mapM flightMasterOfRow = some fms) (hnd : (fms.map (·.flightName)).Nodup) :
+    (db.flightMaster.map (·.flightName.val)).Nodup := by
+  have e : fms.map (·.flightName.val) = db.flightMaster.map (·.flightName.val) :=
+    mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
+  rw [← e]
+  exact nodup_map_of_imp hnd fun _ _ _ _ e => FlightName.ext e
+
+/-- [Spec] の便マスタの参照は、DB の表を便名で探した行の α。 -/
+theorem flightMasterOf_db {db : MasterDb} {md : MasterData}
+    (hfm : db.flightMaster.mapM flightMasterOfRow = some md.flightMasters) (name : String) :
+    md.flightMasterOf name = (db.flightMaster.find? fun f => f.flightName.val == name).bind flightMasterOfRow := by
+  unfold MasterData.flightMasterOf
+  rw [find?_mapM hfm (p := fun f => f.flightName.val == name) fun _ _ h => by rw [(flightMasterOfRow_fields h).2]]
 
 /-- MD-1: 区間番号は DB の表の中で重複しない。 -/
 theorem routeNos_nodup {db : MasterDb} {rs : List Route} (hr : db.route.mapM routeOfRow = some rs)
@@ -318,15 +334,15 @@ theorem answer_flightMaster {db : MasterDb} {f : FlightMasterRow} {x : FlightMas
       some x := by
   have hno : (rtOf db f.routeNo.val).routeNo = f.routeNo := Subtype.ext hrt.2
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hn, dt, hdt, ar, har, rfl⟩ := h
-  simp only [AnswerOf.flightMaster, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, SourceModel.Domain.Repository.Route.RouteRepository.routeMap,
+  obtain ⟨nm, hnm, no, hn, dt, hdt, ar, har, rfl⟩ := h
+  simp only [AnswerOf.flightMaster, hnm, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, SourceModel.Domain.Repository.Route.RouteRepository.routeMap,
     flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hno, natOfJ32_int, hn, hdt, har,
     Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
-    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
-      ∃ ans, FlightMasterProvider.getFlightMaster fmp name.val = .ok ans ∧
+    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : String, hasText name = true →
+      ∃ ans, FlightMasterProvider.getFlightMaster fmp name = .ok ans ∧
       answerOf? (.flightMaster ans) = some (.flightMaster (md.flightMasterOf name)) := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
@@ -337,29 +353,19 @@ theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf 
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
   -- 便名は重複しない（MD-1）
-  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
-    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-    have := h1.2.2.1
-    rw [e] at this
-    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := flightMasterNames_nodup hfm h1.2.2.1
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname => ?_⟩
   refine ⟨(JHashMap.ofList (o.map fun f =>
-    (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val, ?_, ?_⟩
+    (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name, ?_, ?_⟩
   · simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
-      == name.val) = (fun f => f.flightName.val == name.val) from rfl]
-  have hspec : md.flightMasterOf name =
-      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
-    unfold MasterData.flightMasterOf
-    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
-      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
-  rw [hspec]
-  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with
+      == name) = (fun f => f.flightName.val == name) from rfl]
+  rw [flightMasterOf_db hfm name]
+  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name) with
   | none => simp only [Option.map_none, Option.bind_none, answerOf?, AnswerOf.opt, Option.map_some]
   | some f =>
     have hfr := List.mem_of_find?_eq_some hf

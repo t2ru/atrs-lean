@@ -46,8 +46,9 @@ def routeOfRow (r : RouteRow) : Option Route :=
 /-- `FLIGHT_MASTER` の行。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def flightMasterOfRow (f : FlightMasterRow) : Option FlightMaster :=
-  (natOfInt4 f.routeNo).bind fun no => (hmOfStr f.departureTime.val).bind fun dt =>
-    (arrOfStr f.arrivalTime.val).map fun ar => ⟨⟨f.flightName.val⟩, no, dt, ar, f.craftType.val⟩
+  (flightNameOf f.flightName.val).bind fun n => (natOfInt4 f.routeNo).bind fun no =>
+    (hmOfStr f.departureTime.val).bind fun dt => (arrOfStr f.arrivalTime.val).map fun ar =>
+      ⟨n, no, dt, ar, f.craftType.val⟩
 
 /-- `BOARDING_CLASS` の行（`BOARDING_CLASS_NAME` が `NULL` なら定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -133,10 +134,11 @@ theorem flightMasterOfRow_kernel : KernelIs flightMasterOfRow (undefOrEq flightM
   apply kernelIs_undefOrEq
   intro f f' a h h'
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
-  obtain ⟨no, hno, dt, hdt, ar, har, rfl⟩ := h
-  obtain ⟨no', hno', dt', hdt', ar', har', h⟩ := h'
-  simp only [FlightMaster.mk.injEq, FlightName.mk.injEq] at h
-  obtain ⟨h1, rfl, rfl, rfl, h5⟩ := h
+  obtain ⟨n, hn, no, hno, dt, hdt, ar, har, rfl⟩ := h
+  obtain ⟨n', hn', no', hno', dt', hdt', ar', har', h⟩ := h'
+  simp only [FlightMaster.mk.injEq] at h
+  obtain ⟨rfl, rfl, rfl, rfl, h5⟩ := h
+  have h1 := (flightNameOf_eq_some hn').symm.trans (flightNameOf_eq_some hn)
   cases f; cases f'
   simp only [FlightMasterRow.mk.injEq] at *
   exact ⟨Subtype.ext h1.symm, natOfInt4_inj hno hno', Subtype.ext (inj_of_kernel hmOfStr_kernel hdt hdt'),
@@ -253,7 +255,7 @@ theorem configOf_inj {c c' : AtrsConfig} {x : Config} (h : configOf c = some x) 
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def queryOf? : SrcQuery → Option Spec.MasterQuery.Query
   | .routeOf dep arr => some (.routeOf dep arr)
-  | .flightMasterOf name => some (.flightMasterOf ⟨name⟩)
+  | .flightMasterOf name => some (.flightMasterOf name)
   | .fareTypeOf cd => some (.fareTypeOf cd)
   | .boardingClassOf cd => some (.boardingClassOf cd)
   | .peakTimeOn d => (dateOfJ d).map .peakTimeOn
@@ -264,7 +266,7 @@ def queryOf? : SrcQuery → Option Spec.MasterQuery.Query
 /-- `queryOf?` の逆（定義域の上）。 -/
 def queryBack : Spec.MasterQuery.Query → SrcQuery
   | .routeOf dep arr => .routeOf dep arr
-  | .flightMasterOf name => .flightMasterOf name.val
+  | .flightMasterOf name => .flightMasterOf name
   | .fareTypeOf cd => .fareTypeOf cd
   | .boardingClassOf cd => .boardingClassOf cd
   | .peakTimeOn d => .peakTimeOn (JLocalDate.ofEpochDay d.epochDay)
@@ -325,12 +327,12 @@ def route (r : SourceModel.Domain.Model.Route) : Option Spec.MasterData.Route :=
   pure ⟨no, dep, arr, bf⟩
 
 def flightMaster (f : SourceModel.Domain.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
-  let name ← f.flightName
+  let name ← f.flightName.bind flightNameOf
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
   let ar ← f.arrivalTime.bind arrOfStr
   let ct ← f.plane.bind (·.craftType)
-  pure ⟨⟨name⟩, no, dt, ar, ct⟩
+  pure ⟨name, no, dt, ar, ct⟩
 
 def boardingClass (b : SourceModel.Domain.Model.BoardingClass) : Option MasterData.BoardingClassInfo := do
   let cd ← b.boardingClassCd
@@ -435,10 +437,12 @@ theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.R
 theorem flightMaster_inj {f f' : SourceModel.Domain.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
     (h : flightMaster f = some c) (h' : flightMaster f' = some c) : flightMasterObs f = flightMasterObs f' := by
   simp only [flightMaster, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨nm, hn, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
-  obtain ⟨nm', hn', no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩, h⟩ := h'
-  simp only [Spec.MasterData.FlightMaster.mk.injEq, FlightName.mk.injEq] at h
+  obtain ⟨nm, ⟨sn, hn, en⟩, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
+  obtain ⟨nm', ⟨sn', hn', en'⟩, no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩,
+    h⟩ := h'
+  simp only [Spec.MasterData.FlightMaster.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
+  obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
   obtain ⟨rn, rb, ra, rd⟩ := r; obtain ⟨rn', rb', ra', rd'⟩ := r'
   obtain ⟨pc, pn, ps⟩ := p; obtain ⟨pc', pn', ps'⟩ := p'
   simp only at hv hv' e4 f4

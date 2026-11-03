@@ -237,10 +237,10 @@ instance (cfg : Config) (md : MasterData) : Decidable (md.Valid cfg) :=
 def routeOf (md : MasterData) (dep arr : String) : Option Route :=
   md.routes.find? fun r => r.depAirportCd.val == dep && r.arrAirportCd.val == arr
 
-/-- 便名に一致する便マスタ。 -/
+/-- 便名（文字列）に一致する便マスタ。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
-def flightMasterOf (md : MasterData) (name : FlightName) : Option FlightMaster :=
-  md.flightMasters.find? fun f => f.flightName == name
+def flightMasterOf (md : MasterData) (name : String) : Option FlightMaster :=
+  md.flightMasters.find? fun f => f.flightName.val == name
 
 /-- 運賃種別。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
@@ -311,9 +311,16 @@ theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : String} {r
     simp only [Bool.and_eq_true, beq_iff_eq] at ha hb
     rw [AirportCd.ext (ha.1.trans hb.1.symm), AirportCd.ext (ha.2.trans hb.2.symm)]
 
-theorem flightMasterOf_eq_some_iff {md : MasterData} (h : md.MD1) {name : FlightName} {f : FlightMaster} :
-    md.flightMasterOf name = some f ↔ f ∈ md.flightMasters ∧ f.flightName = name :=
-  find?_key_eq_some_iff h.2.2.1
+theorem flightMasterOf_eq_some_iff {md : MasterData} (h : md.MD1) {name : String} {f : FlightMaster} :
+    md.flightMasterOf name = some f ↔ f ∈ md.flightMasters ∧ f.flightName.val = name := by
+  unfold flightMasterOf
+  rw [find?_eq_some_iff_of_pairwise]
+  · simp
+  · have h₁ := h.2.2.1
+    rw [List.Nodup, List.pairwise_map] at h₁
+    refine h₁.imp fun hne ⟨ha, hb⟩ => hne ?_
+    simp only [beq_iff_eq] at ha hb
+    exact FlightName.ext (ha.trans hb.symm)
 
 theorem fareTypeOf_eq_some_iff {md : MasterData} (h : md.MD1) {cd : FareTypeCd} {f : FareType} :
     md.fareTypeOf cd = some f ↔ f ∈ md.fareTypes ∧ f.fareTypeCd = cd :=

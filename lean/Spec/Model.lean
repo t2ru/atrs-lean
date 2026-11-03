@@ -6,8 +6,8 @@ import Spec.Prim
 列挙・コード値・エンティティ・値域（`docs/spec/domain-model.md`）。
 
 - 列挙の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
-- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・カード種別コード）は、形式の証明を
-  欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。便名・会員番号の形式は
+- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・便名・カード種別コード）は、形式の
+  証明を欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。会員番号の形式は
   述語（`WellFormed`）で表す。マスタに存在することは `Spec.MasterData` の参照関数と不変条件で表す。
 - エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
 -/
@@ -145,15 +145,42 @@ theorem AirportCd.ofString?_isSome_iff {s : String} : (AirportCd.ofString? s).is
   unfold AirportCd.ofString?
   split <;> simp_all
 
-/-- 便名。 -/
+/-- 便名の形式: 1〜6 文字で、`"`・`,`・改行を含まない（[Spec] の前提。ADR f353。`toList` で見る）。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def FlightName.valid (s : String) : Bool :=
+  1 ≤ s.toList.length && s.toList.length ≤ 6 &&
+    s.toList.all (fun c => c != '"' && c != ',' && c != '\n' && c != '\r')
+
+/-- 便名。形式（`FlightName.valid`）の証明を持つ。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
 structure FlightName where
   val : String
+  wf : FlightName.valid val = true := by decide
   deriving DecidableEq, Repr
 
-/-- 便名の形式: 1〜6 文字で、`"`・`,`・改行を含まない（[Spec] の前提）。 -/
-def FlightName.WellFormed (n : FlightName) : Prop :=
-  1 ≤ n.val.length ∧ n.val.length ≤ 6 ∧ n.val.all (fun c => c != '"' && c != ',' && c != '\n' && c != '\r') = true
+/-- 便名を読む。形式に合わなければ無し。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def FlightName.ofString? (s : String) : Option FlightName := if h : FlightName.valid s then some ⟨s, h⟩ else none
+
+/-- 便名は値で決まる。 -/
+theorem FlightName.ext {a b : FlightName} (h : a.val = b.val) : a = b := by
+  cases a; cases b; cases h; rfl
+
+/-- 読めた便名の値は、読んだ文字列そのもの。 -/
+theorem FlightName.val_of_ofString? {s : String} {n : FlightName} (h : FlightName.ofString? s = some n) : n.val = s := by
+  unfold FlightName.ofString? at h
+  split at h
+  · cases h; rfl
+  · cases h
+
+/-- 便名の値を読むと、その便名。 -/
+@[simp] theorem FlightName.ofString?_val (n : FlightName) : FlightName.ofString? n.val = some n := by
+  simp [FlightName.ofString?, n.wf]
+
+/-- 読めるのは、形式に合うときに限る。 -/
+theorem FlightName.ofString?_isSome_iff {s : String} : (FlightName.ofString? s).isSome ↔ FlightName.valid s = true := by
+  unfold FlightName.ofString?
+  split <;> simp_all
 
 /-- 会員番号。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
@@ -234,7 +261,6 @@ structure PasswordHash where
   val : String
   deriving DecidableEq, Repr
 
-instance (n : FlightName) : Decidable n.WellFormed := by unfold FlightName.WellFormed; infer_instance
 instance (n : MembershipNumber) : Decidable n.WellFormed := by
   unfold MembershipNumber.WellFormed; infer_instance
 

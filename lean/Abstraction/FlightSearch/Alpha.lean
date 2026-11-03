@@ -96,7 +96,7 @@ theorem fareTypeInfoOf_kernel : KernelIs fareTypeInfoOf (undefOrEq fareTypeInfoO
 /-- 便ごとの空席情報。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def vacantInfoOf (d : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Option Spec.FlightSearch.FlightVacantInfo := do
-  let n ← d.flightName
+  let n ← d.flightName.bind flightNameOf
   let dn ← d.depAirportName
   let an ← d.arrAirportName
   let dt ← d.depTime
@@ -104,17 +104,18 @@ def vacantInfoOf (d : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Optio
   let dd ← d.depDate
   let bc ← d.boardingClassCd
   let fts ← d.fareTypes.entries.mapM fareTypeInfoOf
-  pure ⟨⟨n⟩, dn, an, dt, art, dd, bc, fts⟩
+  pure ⟨n, dn, an, dt, art, dd, bc, fts⟩
 
 @[obligation "ABS-048"]
 theorem vacantInfoOf_kernel : KernelIs vacantInfoOf (undefOrEq vacantInfoOf) := by
   apply kernelIs_undefOrEq
   intro d d' a h h'
   simp only [vacantInfoOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨n, hn, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
-  obtain ⟨n', hn', dn', hdn', an', han', dt', hdt', art', hat', dd', hdd', bc', hbc', fts', hfts', h⟩ := h'
-  simp only [Spec.FlightSearch.FlightVacantInfo.mk.injEq, FlightName.mk.injEq] at h
+  obtain ⟨n, ⟨sn, hn, en⟩, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
+  obtain ⟨n', ⟨sn', hn', en'⟩, dn', hdn', an', han', dt', hdt', art', hat', dd', hdd', bc', hbc', fts', hfts', h⟩ := h'
+  simp only [Spec.FlightSearch.FlightVacantInfo.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩ := h
+  obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
   obtain ⟨_, _, _, _, _, _, _, ⟨es⟩⟩ := d
   obtain ⟨_, _, _, _, _, _, _, ⟨es'⟩⟩ := d'
   simp only at *

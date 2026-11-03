@@ -261,7 +261,7 @@ structure Request where
 課す。PRE に含める（[Source] の列の長さ `VARCHAR(n)` と `int` に収まることに使う。backlog aedf の第 3 段）。 -/
 @[spec_doc "docs/spec/input-validation.md#予約入力b2"]
 def Request.Valid (r : Request) : Prop :=
-  (∀ s ∈ r.selects, hasText s.flightName.val = true) ∧
+  (∀ s ∈ r.selects, hasText s.flightName = true) ∧
     r.form.repFamilyName.length ≤ 10 ∧ r.form.repGivenName.length ≤ 10 ∧ r.form.repAge ≤ 999 ∧
     r.form.repTel1.length + r.form.repTel2.length ≤ 7 ∧ r.form.repTel3.length ≤ 4 ∧ r.form.repMail.length ≤ 256 ∧
     r.form.passengers.length ≤ Config.maxPassengersNumber ∧
@@ -277,9 +277,10 @@ def asInvalidRequest : AtrsError → AtrsError
   | .business e => .invalidRequest e.code
   | e => e
 
-/-- 選択フライトの検証（予約確認・予約確定の前段）。 -/
+/-- 選択フライトの検証（予約確認・予約確定の前段）。成功すれば予約する便の主キーを返す。 -/
 @[spec_doc "docs/spec/http-contract.md#b2-予約"]
-def checkSelects (cfg : Config) (md : MasterData) (w : World) (r : Request) : Option (Except AtrsError Unit) :=
+def checkSelects (cfg : Config) (md : MasterData) (w : World) (r : Request) :
+    Option (Except AtrsError (Itinerary FlightKey)) :=
   (validateFlightList cfg md w (r.selects.map (resolve md))).map fun x => x.mapError asInvalidRequest
 
 /-- 予約確認の操作: 選択フライトの検証、予約確認。 -/
@@ -287,7 +288,7 @@ def checkSelects (cfg : Config) (md : MasterData) (w : World) (r : Request) : Op
 def confirmOp (cfg : Config) (md : MasterData) (w : World) (r : Request) : Option (Except AtrsError Nat) := do
   match ← checkSelects cfg md w r with
   | .error e => return .error e
-  | .ok () => reserveConfirm cfg md w r.form (r.selects.map (·.key))
+  | .ok it => reserveConfirm cfg md w r.form it.toList
 
 /-- 予約確定の操作の標準の結果: 選択フライトの検証、予約確定。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
@@ -295,7 +296,7 @@ def reserveOp (cfg : Config) (md : MasterData) (today : Date) (w : World) (r : R
     Option (World × Except AtrsError ReserveResult) := do
   match ← checkSelects cfg md w r with
   | .error e => return (w, .error e)
-  | .ok () => reserve cfg md today w r.form (r.selects.map (·.key))
+  | .ok it => reserve cfg md today w r.form it.toList
 
 /-! ## 抽象機械（backlog aedf の第 2 段） -/
 
@@ -570,7 +571,7 @@ def NotEnvError : AtrsError → Prop
   | .system .ioFailure => False
   | _ => True
 
-theorem checkFlight_err {w : World} {f : ResolvedFlight} {e : AtrsError}
+theorem checkFlight_err {w : World} {f : Option ResolvedFlight} {e : AtrsError}
     (h : checkFlight w f = .error e) : NotEnvError e := by
   unfold checkFlight at h
   split at h
@@ -632,9 +633,9 @@ theorem checkReverse_allNE {md : MasterData} {om hm : FlightMaster} {r : Except 
   · exact AllNE.ok _
   · exact AllNE.err trivial
 
-theorem bind_reverse {o : Option (Except AtrsError Unit)} {f : Unit → Except AtrsError Unit} {x : Except AtrsError Unit}
-    (ho : ∀ r, o = some r → AllNE r) (hf : ∀ u, AllNE (f u)) (h : o.bind (fun r => some (r.bind f)) = some x) :
-    AllNE x := by
+theorem bind_reverse {β : Type} {o : Option (Except AtrsError Unit)} {f : Unit → Except AtrsError β}
+    {x : Except AtrsError β} (ho : ∀ r, o = some r → AllNE r) (hf : ∀ u, AllNE (f u))
+    (h : o.bind (fun r => some (r.bind f)) = some x) : AllNE x := by
   cases hov : o with
   | none => rw [hov] at h; cases h
   | some r =>
@@ -643,12 +644,13 @@ theorem bind_reverse {o : Option (Except AtrsError Unit)} {f : Unit → Except A
     subst h
     exact AllNE.bind (ho r hov) fun u _ => hf u
 
-theorem validateFlightList_allNE {cfg : Config} {md : MasterData} {w : World} {fs : List ResolvedFlight}
-    {x : Except AtrsError Unit} (h : validateFlightList cfg md w fs = some x) : AllNE x := by
+theorem validateFlightList_allNE {cfg : Config} {md : MasterData} {w : World} {fs : List (Option ResolvedFlight)}
+    {x : Except AtrsError (Itinerary FlightKey)} (h : validateFlightList cfg md w fs = some x) : AllNE x := by
   unfold validateFlightList at h
   split at h
   · cases h
-    exact AllNE.bind (fun e he => checkFlight_err he) fun _ _ e he => checkFareTypes_err he
+    exact AllNE.bind (fun e he => checkFlight_err he) fun _ _ =>
+      AllNE.bind (fun e he => checkFareTypes_err he) fun _ _ => AllNE.ok _
   · split at h
     · cases h; exact AllNE.err (checkFlight_err (by assumption))
     · split at h
@@ -656,7 +658,8 @@ theorem validateFlightList_allNE {cfg : Config} {md : MasterData} {w : World} {f
       · split at h
         · cases h; exact AllNE.err (checkInterval_err (by assumption))
         · simp only [Option.bind_eq_bind] at h
-          exact bind_reverse (fun r hr => checkReverse_allNE hr) (fun _ e he => checkFareTypes_err he) h
+          exact bind_reverse (fun r hr => checkReverse_allNE hr)
+            (fun _ => AllNE.map fun e he => checkFareTypes_err he) h
   · cases h
 
 theorem checkRepAge_allNE (cfg : Config) (d : Draft) : AllNE (checkRepAge cfg d) := by
@@ -854,7 +857,8 @@ theorem reserveConfirm_allNE {cfg : Config} {md : MasterData} {w : World} {i : R
         | none => simp [ht] at h
         | some t => simp only [ht, Option.bind_some, Option.pure_def, Option.some.injEq] at h; rw [← h]; exact AllNE.ok _
 
-theorem checkSelects_allNE {cfg : Config} {md : MasterData} {w : World} {q : Request} {x : Except AtrsError Unit}
+theorem checkSelects_allNE {cfg : Config} {md : MasterData} {w : World} {q : Request}
+    {x : Except AtrsError (Itinerary FlightKey)}
     (h : checkSelects cfg md w q = some x) : AllNE x := by
   unfold checkSelects at h
   cases hv : validateFlightList cfg md w (q.selects.map (resolve md)) with

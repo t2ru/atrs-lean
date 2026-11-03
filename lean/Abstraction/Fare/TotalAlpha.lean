@@ -27,8 +27,8 @@ open Machine LangSemantics.Java Spec Spec.Prim
 /-- 選択フライト情報: 出発日・便名・搭乗クラス・運賃種別（`null` には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def keyOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option FlightKey :=
-  (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
-    f.fareTypeCd.map fun ft => ⟨d, ⟨n⟩, bc, ft⟩
+  (f.depDate.bind dateOfJ).bind fun d => (f.flightName.bind flightNameOf).bind fun n =>
+    f.boardingClassCd.bind fun bc => f.fareTypeCd.map fun ft => ⟨d, n, bc, ft⟩
 
 /-- 搭乗者の年齢（`null` と負の値には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -113,14 +113,14 @@ def day0 : Spec.Prim.Date := ⟨1970, 1, 1, by decide⟩
 def mdTF012 : MasterData :=
   { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
     routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000000⟩],
-    flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+    flightMasters := [⟨{ val := "NTT001" }, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.OW, "OW", 0, 355, 0, 1, 1⟩],
     peakTimes := [⟨"P", day0, day0, 1000⟩],
     planes := [], creditTypes := [] }
 
 /-- `icTF012` の [Spec] の入力。 -/
-def iaTF012 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF012, [⟨day0, ⟨"NTT001"⟩, .N, .OW⟩], [5]⟩
+def iaTF012 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF012, [⟨day0, { val := "NTT001" }, .N, .OW⟩], [5]⟩
 
 theorem aiTF_icTF012 : aiTF icTF012 = some iaTF012 := by
   rfl

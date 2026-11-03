@@ -46,12 +46,7 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
-  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
-    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-    have := h1.2.2.1
-    rw [e] at this
-    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := flightMasterNames_nodup hfm h1.2.2.1
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname rt hrt' => ?_⟩
@@ -64,11 +59,7 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
       == name.val) = (fun f => f.flightName.val == name.val) from rfl] at hget
-  have hspec : md.flightMasterOf name =
-      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
-    unfold MasterData.flightMasterOf
-    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
-      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
+  have hspec := flightMasterOf_db hfm name.val
   unfold Spec.Fare.routeOfFlightName at hrt'
   rw [hspec] at hrt'
   cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with

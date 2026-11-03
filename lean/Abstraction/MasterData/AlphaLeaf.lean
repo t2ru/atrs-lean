@@ -19,7 +19,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | `arrOfStr` | `HHmm` の文字列（到着時刻。24 時以降を含む。ADR ce36） | 4 桁の数字でない・到着時刻の範囲外（例: `4815`） |
 | `dateOfSlash` | `yyyy/MM/dd` の文字列 | その形でない・妥当でない年月日 |
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
-| `airportCdOf`・`creditTypeCdOf` | 空港コード・カード種別コードの文字列 | 形式に合わない（`AirportCd.valid`・`CreditTypeCd.valid`） |
+| `airportCdOf`・`flightNameOf`・`creditTypeCdOf` | 空港コード・便名・カード種別コードの文字列 | 形式に合わない（`AirportCd.valid`・`FlightName.valid`・`CreditTypeCd.valid`） |
 -/
 
 namespace Abstraction.MasterData.AlphaLeaf
@@ -267,6 +267,10 @@ theorem ftCdOf_kernel : KernelIs ftCdOf (undefOrEq ftCdOf) :=
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def airportCdOf (s : String) : Option AirportCd := AirportCd.ofString? s
 
+/-- 便名（形式 `FlightName.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def flightNameOf (s : String) : Option FlightName := FlightName.ofString? s
+
 /-- カード種別コード（形式 `CreditTypeCd.valid` に合わなければ定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def creditTypeCdOf (s : String) : Option CreditTypeCd := CreditTypeCd.ofString? s
@@ -274,12 +278,22 @@ def creditTypeCdOf (s : String) : Option CreditTypeCd := CreditTypeCd.ofString? 
 theorem airportCdOf_eq_some {s : String} {c : AirportCd} (h : airportCdOf s = some c) : c.val = s :=
   AirportCd.val_of_ofString? h
 
+theorem flightNameOf_eq_some {s : String} {n : FlightName} (h : flightNameOf s = some n) : n.val = s :=
+  FlightName.val_of_ofString? h
+
+/-- 便名の値を読むと、その便名。 -/
+@[simp] theorem flightNameOf_val (n : FlightName) : flightNameOf n.val = some n := FlightName.ofString?_val n
+
 theorem creditTypeCdOf_eq_some {s : String} {c : CreditTypeCd} (h : creditTypeCdOf s = some c) : c.val = s :=
   CreditTypeCd.val_of_ofString? h
 
 @[obligation "ABS-048"]
 theorem airportCdOf_kernel : KernelIs airportCdOf (undefOrEq airportCdOf) :=
   kernelIs_undefOrEq fun _ _ _ hx hy => (airportCdOf_eq_some hx).symm.trans (airportCdOf_eq_some hy)
+
+@[obligation "ABS-048"]
+theorem flightNameOf_kernel : KernelIs flightNameOf (undefOrEq flightNameOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (flightNameOf_eq_some hx).symm.trans (flightNameOf_eq_some hy)
 
 @[obligation "ABS-048"]
 theorem creditTypeCdOf_kernel : KernelIs creditTypeCdOf (undefOrEq creditTypeCdOf) :=

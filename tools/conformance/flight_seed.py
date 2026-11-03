@@ -131,7 +131,7 @@ def spec_lean(days, slots, names, tables, h):
           "def slots : List (BoardingClassCd × FareTypeCd) := [" + ", ".join(f"(.{b}, .{f})" for b, f in slots) + "]", ""]
     L += ["/-- 便名の列。 -/", f'@[source "{SEED_LOCATOR}@{h}"]', "def names : List FlightName := ["]
     for k in range(0, len(names), 10):
-        L.append("  " + ", ".join(f'⟨"{n}"⟩' for n in names[k:k + 10]) + ("," if k + 10 < len(names) else ""))
+        L.append("  " + ", ".join(f'{{ val := "{n}" }}' for n in names[k:k + 10]) + ("," if k + 10 < len(names) else ""))
     L += ["]", ""]
     for p, tbl in enumerate(tables):
         L += [f"/-- パターン {p}（`i % 3 = {p}`）の空席数（便名の列の順に、枠の順の 10 個）。 -/", f'@[source "{SEED_LOCATOR}@{h}"]',

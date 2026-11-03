@@ -83,20 +83,22 @@ theorem genderOf_inj {a b : String} {g : Gender} (ha : Gender.ofCode? a = some g
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def flightOfRow (r : FlightRow) : Option Flight := do
   let d ← dateOfPg r.departureDate
+  let n ← flightNameOf r.flightName.val
   let bc ← bcCdOf r.boardingClassCd.val
   let ft ← ftCdOf r.fareTypeCd.val
   let v ← natOfInt4 r.vacantNum
-  pure ⟨⟨d, ⟨r.flightName.val⟩, bc, ft⟩, v⟩
+  pure ⟨⟨d, n, bc, ft⟩, v⟩
 
 @[obligation "ABS-048"]
 theorem flightOfRow_kernel : KernelIs flightOfRow (undefOrEq flightOfRow) := by
   apply kernelIs_undefOrEq
   intro r r' a h h'
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨d, hd, bc, hbc, ft, hft, v, hv, rfl⟩ := h
-  obtain ⟨d', hd', bc', hbc', ft', hft', v', hv', h⟩ := h'
-  simp only [Flight.mk.injEq, FlightKey.mk.injEq, FlightName.mk.injEq] at h
-  obtain ⟨⟨rfl, h2, rfl, rfl⟩, rfl⟩ := h
+  obtain ⟨d, hd, n, hn, bc, hbc, ft, hft, v, hv, rfl⟩ := h
+  obtain ⟨d', hd', n', hn', bc', hbc', ft', hft', v', hv', h⟩ := h'
+  simp only [Flight.mk.injEq, FlightKey.mk.injEq] at h
+  obtain ⟨⟨rfl, rfl, rfl, rfl⟩, rfl⟩ := h
+  have h2 := (flightNameOf_eq_some hn').symm.trans (flightNameOf_eq_some hn)
   cases r; cases r'
   simp only [FlightRow.mk.injEq] at *
   exact ⟨inj_of_kernel dateOfPg_kernel hd hd', Subtype.ext h2.symm,
@@ -236,10 +238,11 @@ def passengerOfRow (p : PassengerRow) : Option PassengerRecord := do
 def reserveFlightOfRow (r : ReserveFlightRow) (ps : List PassengerRecord) : Option ReserveFlight := do
   let no ← natOfInt4 r.reserveFlightNo
   let d ← dateOfPg r.departureDate
+  let n ← flightNameOf r.flightName.val
   let bc ← bcCdOf r.boardingClassCd.val
   let ft ← ftCdOf r.fareTypeCd.val
   let rn ← Spec.Model.ReserveNo.ofString? r.reserveNo.val
-  pure ⟨no, rn, ⟨d, ⟨r.flightName.val⟩, bc, ft⟩, ps⟩
+  pure ⟨no, rn, ⟨d, n, bc, ft⟩, ps⟩
 
 /-- RESERVATION の行と、その予約フライト。 -/
 def reservationOfRow (r : ReservationRow) (fs : List ReserveFlight) : Option Reservation := do
@@ -295,10 +298,11 @@ theorem reserveFlightOfRow_inj {r r' : ReserveFlightRow} {xs xs' : List Passenge
     (h : reserveFlightOfRow r xs = some y) (h' : reserveFlightOfRow r' xs' = some y) : r = r' ∧ xs = xs' := by
   simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at h h'
-  obtain ⟨n, hn, d, hd, bc, hbc, ft, hft, rn, hrn, rfl⟩ := h
-  obtain ⟨n', hn', d', hd', bc', hbc', ft', hft', rn', hrn', h⟩ := h'
-  simp only [ReserveFlight.mk.injEq, FlightKey.mk.injEq, FlightName.mk.injEq] at h
-  obtain ⟨rfl, rfl, ⟨rfl, h4, rfl, rfl⟩, rfl⟩ := h
+  obtain ⟨n, hn, d, hd, fn, hfn, bc, hbc, ft, hft, rn, hrn, rfl⟩ := h
+  obtain ⟨n', hn', d', hd', fn', hfn', bc', hbc', ft', hft', rn', hrn', h⟩ := h'
+  simp only [ReserveFlight.mk.injEq, FlightKey.mk.injEq] at h
+  obtain ⟨rfl, rfl, ⟨rfl, rfl, rfl, rfl⟩, rfl⟩ := h
+  have h4 := (flightNameOf_eq_some hfn').symm.trans (flightNameOf_eq_some hfn)
   have h2 : r'.reserveNo.val = r.reserveNo.val :=
     (ReserveNo.val_of_ofString? hrn').symm.trans (ReserveNo.val_of_ofString? hrn)
   obtain ⟨⟩ := r; obtain ⟨⟩ := r'

@@ -33,10 +33,10 @@ open Spec.Model Spec.Prim Spec.Prim.Text SourceModel.Domain.Common.Masterdata
 /-- 空席の確保の前提（`VacCond`）: 選択フライトの主キーのフライトがあれば、マスタに搭乗クラス・運賃種別・便マスタがあり、
 フライト情報の便マスタは主キーの便名を持つ。 -/
 theorem vacCond_of {md : Spec.MasterData} {p : Providers} {w : Spec.Port.World}
-    (hmc : ∀ name : FlightName, hasText name.val = true →
+    (hmc : ∀ name : String, hasText name = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
-      ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name.val = .ok (some fm) ∧
-        fm.flightName = some name.val ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
+      ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name = .ok (some fm) ∧
+        fm.flightName = some name ∧ fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧
         fm.arrivalTime = some art ∧ arrOfStr art = some X.arrivalTime ∧ fm.route = some r ∧
         r.departureAirport = some da ∧ da.code = some rt.depAirportCd.val ∧ r.arrivalAirport = some aa ∧
         aa.code = some rt.arrAirportCd.val)
@@ -47,7 +47,7 @@ theorem vacCond_of {md : Spec.MasterData} {p : Providers} {w : Spec.Port.World}
   simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he'
   obtain ⟨g, hg, rfl⟩ := he'
   obtain ⟨⟨m, hm, hmn⟩, ⟨b, hb, hbn⟩, -⟩ := href g hg
-  obtain ⟨X, hX⟩ : ∃ X, md.flightMasterOf g.key.flightName = some X := by
+  obtain ⟨X, hX⟩ : ∃ X, md.flightMasterOf g.key.flightName.val = some X := by
     apply Option.isSome_iff_exists.mp
     unfold Spec.MasterData.flightMasterOf
     rw [List.find?_isSome]
@@ -85,16 +85,16 @@ theorem fault_out {env : Env} {e : JThrow} (hf : IsFault env e) (w : Spec.Port.W
   · exact ⟨_, _, ((.conflict a, .none), .std), catch_conflict m, by simp [reserveStep, hop], rfl, admits_conflict hc a⟩
 
 /-- 予約確定の流れ（`reserveBody`）: 前段の選択フライトの検証の三つ組と、前段が成功したときの後段の三つ組をつなぐ。 -/
-theorem reserve_core {P : St → Prop} {p : Providers} {ic : SourceModel.ReserveQuery.ReserveInput}
+theorem reserve_core {α : Type} {P : St → Prop} {p : Providers} {ic : SourceModel.ReserveQuery.ReserveInput}
     {fl0 : SourceModel.Domain.Model.Flight} {fls : List SourceModel.Domain.Model.Flight}
     (htf : SourceModel.App.B0.TicketHelper.toFlightList (SourceModel.FareQuery.ticketHelper p)
       ic.form.selectFlightFormList = .ok ((fl0 :: fls).map some))
-    {v : Except Spec.Error.AtrsError Unit}
+    {v : Except Spec.Error.AtrsError α}
     (hvf : Hoare P (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList
       (helperOf p ic).reserveIntervalTime (some ((fl0 :: fls).map some))) (Post P v) (PostE P v))
     (hreq : ∀ e, v = .error e → IsReq e) {Q : ReserveCompleteOutputDto → St → Prop} {E : JThrow → St → Prop}
     (hE : ∀ e s, PostS P v e s → E e s)
-    (hrest : v = .ok () → Hoare P (TicketReserveHelper.reserve (helperOf p ic) ic.form ((fl0 :: fls).map some)) Q E) :
+    (hrest : (∃ a, v = .ok a) → Hoare P (TicketReserveHelper.reserve (helperOf p ic) ic.form ((fl0 :: fls).map some)) Q E) :
     Hoare P (reserveBody p ic) Q E := by
   unfold reserveBody
   simp only [htf, MemberCheck.lift_ok, pure_bind]
@@ -184,10 +184,10 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
   have hs0 : P { db := t, env := ic.input.env } := ⟨rfl, rfl⟩
   rw [hrun]
   unfold runOn
-  rcases hcases with ⟨e, rfl, hww, rfl⟩ | ⟨rfl, d, vr, hd, hvr, hres⟩
+  rcases hcases with ⟨e, rfl, hww, rfl⟩ | ⟨it, rfl, d, vr, hd, hvr, hres⟩
   · -- 前段の失敗
     rw [hww] at hx
-    have hH := reserve_core (P := P) (Q := fun _ _ => False) htf hvf hreq' (fun _ _ h => h) (fun h => by cases h)
+    have hH := reserve_core (P := P) (Q := fun _ _ => False) htf hvf hreq' (fun _ _ h => h) (fun ⟨_, h⟩ => by cases h)
     have hr := Hoare.run hH hs0
     revert hr
     cases (reserveBody p ic.input).run { db := t, env := ic.input.env } with
@@ -206,36 +206,36 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
         simp only [Except.map, hstr, withDetail, Option.getD_some]
         rfl
   · -- 前段の成功
-    have hok := validateFlightList_ok hv
+    have hsk := selects_ok hv
     obtain ⟨hl1, hl2⟩ := validateFlightList_len hv
-    rw [List.length_map] at hl1 hl2
-    have hex' : ∀ s ∈ ia.req.selects, w.existsFlight s.key = true := fun s hs => hok _ (List.mem_map_of_mem hs)
-    have hexk : ∀ k ∈ ia.req.selects.map (·.key), ∃ FT, ia.md.fareTypeOf k.fareTypeCd = some FT := by
+    rw [List.length_map, forall₂_len hsk] at hl1 hl2
+    have hex' : ∀ k ∈ it.toList, w.existsFlight k = true ∧ Spec.Prim.Text.hasText k.flightName.val = true := by
       intro k hk'
-      simp only [List.mem_map] at hk'
-      obtain ⟨s, hs, rfl⟩ := hk'
-      exact fareTypeOf_of_exists href (hex' s hs)
+      obtain ⟨s, hs, r, hr, rfl, he⟩ := forall₂_right_mem hsk k hk'
+      obtain ⟨-, hrk, hrv⟩ := resolve_key hr
+      refine ⟨he, ?_⟩
+      rw [hrk]
+      simp only
+      rw [hrv]
+      exact hnames s hs
+    have hexk : ∀ k ∈ it.toList, ∃ FT, ia.md.fareTypeOf k.fareTypeCd = some FT :=
+      fun k hk' => fareTypeOf_of_exists href (hex' k hk').1
     obtain ⟨FTs, hkf⟩ := exists_forall₂ hexk
     have htf0 := htf
     obtain ⟨f0, fs, hff⟩ : ∃ f0 fs, ic.input.form.selectFlightFormList = f0 :: fs := by
       cases h : ic.input.form.selectFlightFormList with
       | nil => rw [h] at hfl; cases hfl
       | cons f0 fs => exact ⟨f0, fs, rfl⟩
-    have hks := forms_keys hsel
+    have hks := forms_keys hsel hsk
     rw [hff] at hks hfl
-    have hvc : LangSemantics.Core.List.Forall₂ (VacCond ia.md p) (f0 :: fs) (ia.req.selects.map (·.key)) :=
-      forall₂_imp_mem hks fun f k hk' hkm => by
-        simp only [List.mem_map] at hkm
-        obtain ⟨s, hs, rfl⟩ := hkm
-        exact vacCond_of hmc hmv.md3 href hk' (hnames s hs) (hex' s hs)
+    have hvc : LangSemantics.Core.List.Forall₂ (VacCond ia.md p) (f0 :: fs) it.toList :=
+      forall₂_imp_mem hks fun f k hk' hkm =>
+        vacCond_of hmc hmv.md3 href hk' (hex' k hkm).2 (hex' k hkm).1
     have hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts ((f0 :: fs).map (mkFlight p)) FTs := ft_forall hfq hks hkf
-    have hexU : ∀ k ∈ ia.req.selects.map (·.key), (w.findForUpdate k).isSome := by
-      intro k hk'
-      simp only [List.mem_map] at hk'
-      obtain ⟨s, hs, rfl⟩ := hk'
-      exact findForUpdate_isSome (hex' s hs)
+    have hexU : ∀ k ∈ it.toList, (w.findForUpdate k).isSome :=
+      fun k hk' => findForUpdate_isSome (hex' k hk').1
     have hdc : buildDraft { ia.req.form with passengers := compactPassengers ia.req.form.passengers }
-        (ia.req.selects.map (·.key)) = some d := by rw [buildDraft_compact]; exact hd
+        it.toList = some d := by rw [buildDraft_compact]; exact hd
     let tfn := (Spec.Fare.totalFareOfKeys ia.cfg ia.md (tfOf ia).flights (tfOf ia).ages).getD 0
     have hcalc : validateReservation ia.cfg ia.md w d = some (.ok ()) →
         SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare
@@ -247,13 +247,13 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       cases hvr'
       rcases hres with ⟨e, he', -⟩ | ⟨-, n, hn, -⟩
       · cases he'
-      obtain ⟨hA, hPre, -⟩ := tf_facts hcfg hmd hsel hri hcv hmv hrv hl1 hl2 hdc hn
+      obtain ⟨hA, hPre, -⟩ := tf_facts hcfg hmd hsel hri hcv hmv hrv hsk hl1 hl2 hdc hn
       have hle : tfn ≤ 1200000000 := totalFareOfKeys_le hPre
       refine ⟨?_, LangSemantics.Java.IntLemmas.ofInt_nat (by omega), by omega⟩
       rw [hfl]
       exact Abstraction.Reserve.TotalFare.calc_eq hA hPre h1 h2 h12 hmo hl htf0 ic.input.db
     obtain ⟨v', hv', hH'⟩ := helperReserve_hoare hw hinv hkw he hbq hfq hminT hrv hri hd hvc hexU (h9 hop')
-      (by rw [List.length_map]; exact hl2) hFT hkf hcalc h14 hT
+      hl2 hFT hkf hcalc h14 hT
     rw [hvr] at hv'
     cases hv'
     rw [hfl] at hH'
@@ -276,12 +276,10 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       rcases hsc with ⟨e, he', -⟩ | ⟨w1', hw1', pd, hpd', hww, rfl⟩
       · cases he'
       cases hw1'
-      obtain ⟨-, hPre, hages⟩ := tf_facts hcfg hmd hsel hri hcv hmv hrv hl1 hl2 hdc hn
+      obtain ⟨-, hPre, hages⟩ := tf_facts hcfg hmd hsel hri hcv hmv hrv hsk hl1 hl2 hdc hn
       have hTn : tfn = n := by
         show (Spec.Fare.totalFareOfKeys ia.cfg ia.md (tfOf ia).flights (tfOf ia).ages).getD 0 = n
-        rw [hages]
-        simp only [tfOf] at hn ⊢
-        rw [hn]
+        rw [hages, show (tfOf ia).flights = it.toList from selectKeys_eq hsk, hn]
         rfl
       have hle : tfn ≤ 1200000000 := totalFareOfKeys_le hPre
       rw [hTn] at hdb hle
@@ -294,8 +292,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
         cases h
         rw [register_eq d ia.today n hseq]
         exact keysOk_regWorld hkw (secureAll_world hsa).1 (secureAll_world hsa).2.1 _ _ _ _ _ _ _ _ _ _ _
-      · obtain ⟨k0, ks', hk0s⟩ : ∃ k0 ks', ia.req.selects.map (·.key) = k0 :: ks' := by
-          cases h : ia.req.selects.map (·.key) with
+      · obtain ⟨k0, ks', hk0s⟩ : ∃ k0 ks', it.toList = k0 :: ks' := by
+          cases h : it.toList with
           | nil => rw [h] at hks; cases hks
           | cons k0 ks' => exact ⟨k0, ks', rfl⟩
         rw [hk0s] at hks hpd'

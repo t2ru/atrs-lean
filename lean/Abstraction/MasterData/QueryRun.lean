@@ -60,7 +60,7 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.M
     exact ⟨_, by simp only [he, ok_bind]; rfl, ha⟩
   | flightMasterOf name =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
-    obtain ⟨ans, he, ha⟩ := hmq ⟨name⟩ hq.2
+    obtain ⟨ans, he, ha⟩ := hmq name hq.2
     exact ⟨_, by simp only [he, ok_bind]; rfl, ha⟩
   | fareTypeOf cd =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq

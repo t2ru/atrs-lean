@@ -69,7 +69,7 @@ def specAnswerJson : Spec.MasterQuery.Answer → Json
 def specQuery (i : Json) (op : String) : Except String Spec.MasterQuery.Query := do
   match op with
   | "master.routeOf" => return .routeOf (← getStr i "dep") (← getStr i "arr")
-  | "master.flightMasterOf" => return .flightMasterOf ⟨← getStr i "name"⟩
+  | "master.flightMasterOf" => return .flightMasterOf (← getStr i "name")
   | "master.fareTypeOf" => return .fareTypeOf (← fareTypeCd (← getStr i "cd"))
   | "master.boardingClassOf" => return .boardingClassOf (← boardingClassCd (← getStr i "cd"))
   | "master.peakTimeOn" => return .peakTimeOn (← decodeDate (← getStr i "date"))

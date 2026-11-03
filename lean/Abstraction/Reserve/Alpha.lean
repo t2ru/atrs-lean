@@ -13,7 +13,7 @@ import SourceModel.ReserveQuery
 
 - 状態: 空席照会と共有する `Abstraction.World.Alpha.worldOfDb` と、具体側の不変条件 `IcW`（貼り合わせの `J` が同じ）。
 - 入力: 設定・マスタは ABS-026 の `configOf`・`masterDataOf`、今日は Clock の最初の読み出し（`dateOfJ`。D-014 の前提で、
-  どの読み出しも同じ日付）、選択フライトは `keyOfForm`、予約フォームは各欄をそのまま（年齢は `natOfJ32`）。
+  どの読み出しも同じ日付）、選択フライトは各欄をそのまま（出発日は `dateOfJ`、便名は文字列のまま）、予約フォームは各欄をそのまま（年齢は `natOfJ32`）。
   実行環境の障害（I/O の失敗・排他の失敗の位置）は抽象側の入力に無い（[Spec] の環境の選択 N-001・N-002 に当たる）。
 - 出力: 合計金額・予約番号・支払期限と、業務例外（コードと引数）・不正要求（`InvalidRequest`。詳細は自由な選択 N-004 で
   置き換える）・I/O の失敗（`System("e.ar.fw.9999")`）・排他の失敗（`Conflict`）。
@@ -58,10 +58,11 @@ theorem opOf_kernel : KernelIs opOf (undefOrEq opOf) := by
   intro x y b hx hy
   cases x <;> cases y <;> simp only [opOf, Option.some.injEq] at hx hy <;> (try subst hx) <;> first | rfl | cases hy
 
-/-- 選択フライト情報（`null` には定義しない）。 -/
+/-- 選択フライト情報（`null` には定義しない。便名は文字列のまま）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def selectOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option Spec.Ticket.SelectFlight :=
-  (keyOfForm f).map fun k => ⟨k.departureDate, k.flightName, k.boardingClassCd, k.fareTypeCd⟩
+  (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
+    f.fareTypeCd.map fun ft => ⟨d, n, bc, ft⟩
 
 /-- 搭乗者情報フォーム（年齢は `optAgeOf`）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -209,9 +210,14 @@ def dev_D009 (w : Spec.Port.World) (i : MInput) : Prop :=
 def dev_D031 (i : MInput) : Prop :=
   ∀ o h, i.req.selects = [o, h] → ∀ m, i.md.flightMasterOf o.flightName = some m → m.arrivalTime.toMinutes < 1440
 
-/-- 予約の合計金額の入力: 選択フライトの主キーと、空でない搭乗者欄の年齢。 -/
+/-- 選択フライトを便マスタで解決した主キーの列（解決できない選択フライトは除く。選択フライトの検証が成功すれば、
+予約する便の主キーの列）。 -/
+def selectKeys (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : List FlightKey :=
+  ss.filterMap fun s => (Spec.Ticket.resolve md s).map (·.key)
+
+/-- 予約の合計金額の入力: 選択フライトを解決した主キーと、空でない搭乗者欄の年齢。 -/
 def tfOf (i : MInput) : Spec.Fare.TotalFareInput :=
-  ⟨i.cfg, i.md, i.req.selects.map (·.key), (i.req.form.passengers.filter (!·.isEmpty)).map fun p => p.age.getD 0⟩
+  ⟨i.cfg, i.md, selectKeys i.md i.req.selects, (i.req.form.passengers.filter (!·.isEmpty)).map fun p => p.age.getD 0⟩
 
 /-- D-001（予約）: 合計金額の入力 `tfOf` に `dev_D001T` が成り立つ。 -/
 @[deviation "D-001"]

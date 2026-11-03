@@ -98,7 +98,7 @@ structure Candidate where
 @[spec_doc "docs/spec/flight-search.md#定義評価順"]
 def candidateOf (md : MasterData) (c : Criteria) (route : Route) (beforeDayNum : Int) (f : Flight) :
     Option Candidate := do
-  let fm ← md.flightMasterOf f.key.flightName
+  let fm ← md.flightMasterOf f.key.flightName.val
   let ft ← md.fareTypeOf f.key.fareTypeCd
   if f.key.departureDate = c.depDate ∧ fm.routeNo = route.routeNo ∧ f.key.boardingClassCd = c.boardingClassCd ∧
       f.key.fareTypeCd ∈ fareTypesFor c.flightType ∧ availableOnDayNum ft beforeDayNum = true then

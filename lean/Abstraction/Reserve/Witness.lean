@@ -55,7 +55,7 @@ def iaR (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : MInput :=
   ⟨Spec.Config.default, md, day0, ⟨ss, inputR⟩, .reserve⟩
 
 /-- NTT001・N・OW の選択フライト。 -/
-def selR : Spec.Ticket.SelectFlight := ⟨day0, ⟨"NTT001"⟩, .N, .OW⟩
+def selR : Spec.Ticket.SelectFlight := ⟨day0, "NTT001", .N, .OW⟩
 
 theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
   ⟨⟨(wFS, iaR mdFS []), fun _ => by decide⟩,
@@ -64,7 +64,7 @@ theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
 
 /-- 往路便の到着時刻が 24:15（翌日着）の便マスタ。 -/
 def md2415 : Spec.MasterData :=
-  { mdFS with flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩] }
+  { mdFS with flightMasters := [⟨{ val := "NTT001" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩] }
 
 theorem dev_D031_nontrivial : Nontrivial dev_D031 :=
   ⟨⟨iaR mdFS [], fun o h e => by simp [iaR] at e⟩,
@@ -133,8 +133,8 @@ theorem suHasText_fun : LangSemantics.Java.Spring.StringUtils.hasText =
 def mdW2415 : Spec.MasterData :=
   { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
     routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000⟩, ⟨2, { val := "ITM" }, { val := "HND" }, 10000⟩],
-    flightMasters := [⟨⟨"NTT523"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
-      ⟨⟨"NTT528"⟩, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+    flightMasters := [⟨{ val := "NTT523" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
+      ⟨{ val := "NTT528" }, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.RT, "RT", 10, 355, 0, 1, 1⟩],
     peakTimes := [], planes := [], creditTypes := [] }
@@ -144,10 +144,10 @@ def day1R : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
 /-- ABS-131 の証人の [Spec] の入力（`ic2415` の像）。 -/
 def ia2415 : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, ⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩], inputR⟩, .confirm⟩
+  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, "NTT523", .N, .RT⟩, ⟨day1R, "NTT528", .N, .RT⟩], inputR⟩, .confirm⟩
 
 /-- ABS-131 の証人の [Spec] の状態（`fd2415` の像）。 -/
-def w2415 : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, 10⟩, ⟨⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩, 10⟩] }
+def w2415 : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT523" }, .N, .RT⟩, 10⟩, ⟨⟨day1R, { val := "NTT528" }, .N, .RT⟩, 10⟩] }
 
 theorem worldOfDb_fd2415 : worldOfDb fd2415 = some w2415 := by decide
 

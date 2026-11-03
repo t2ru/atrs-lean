@@ -32,7 +32,7 @@ def icSeed : SourceModel.ReserveQuery.MInput :=
      env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1, by decide⟩ }, .confirm⟩
 
 def iaSeed : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, ⟨"NTT001"⟩, .N, .OW⟩], inputR⟩, .confirm⟩
+  ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, "NTT001", .N, .OW⟩], inputR⟩, .confirm⟩
 
 theorem aiR_icSeed : aiR icSeed = some iaSeed := by
   have h1 : Abstraction.MasterData.Alpha.configOf icSeed.input.config = some Spec.Seed.config := by decide

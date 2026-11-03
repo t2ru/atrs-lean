@@ -322,7 +322,7 @@ theorem rfOf_passengers {nps : List PassengerRow} {g : ReserveFlightRow} {rf : S
   obtain ⟨xs, hxs, hr⟩ := h
   simp only [reserveFlightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
     Option.some.injEq] at hr
-  obtain ⟨_, -, _, -, _, -, _, -, _, -, rfl⟩ := hr
+  obtain ⟨_, -, _, -, _, -, _, -, _, -, _, -, rfl⟩ := hr
   exact hxs
 
 /-- 予約フライトの列の挿入の不変条件: `j` 便を挿入した。 -/

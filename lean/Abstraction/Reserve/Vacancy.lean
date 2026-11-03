@@ -41,12 +41,12 @@ theorem flightMap_ok {r : FlightRow} {f : Flight} (hf : flightOfRow r = some f) 
       bindKey L.departureDate (L.flightMaster.bind (·.flightName)) L.boardingClass L.fareType = keyParams f.key ∧
       ∃ v, L.vacantNum = some v ∧ v.val = (f.vacantNum : Int) := by
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hf
-  obtain ⟨d, hd, bc, hbc, ft, hft, v, hv, rfl⟩ := hf
+  obtain ⟨d, hd, n, hn, bc, hbc, ft, hft, v, hv, rfl⟩ := hf
   have ed := Spec.Prim.Date.epochDay_ofEpochDay? hd
   refine ⟨_, by simp only [flightMap, resultOf, bcCdOf_mapping hbc, ftCdOf_mapping hft]; rfl, ?_, ?_⟩
   · simp only [bindKey, keyParams, SourceModel.Db.MyBatis.date, SourceModel.Db.MyBatis.str, sqlOf, Option.bind_some,
       Abstraction.FlightSearch.Alpha.boardingClassCdName_eq, Abstraction.FlightSearch.Alpha.fareTypeCdName_eq,
-      JLocalDate.toEpochDay_ofEpochDay, ed]
+      JLocalDate.toEpochDay_ofEpochDay, ed, flightNameOf_eq_some hn]
   · refine ⟨_, rfl, ?_⟩
     have := natOfJ32_int (v := r.vacantNum)
     simp only [SourceModel.Db.MyBatis.int, Option.bind_some] at this
