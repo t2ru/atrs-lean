@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: [ADR f779](decision/f779-whole-lean-source-book.md) と [backlog 63a3](backlog/63a3-whole-lean-source-book.md) で、mdgen と mdbook の本の範囲を Lean のソース全体（`lean/` とスキルの `assets/lean`）に広げ、層ごとの部（仕様・移植元モデル・抽象化・移植先モデルと具体化・テストと道具・スキルのライブラリ）に分けた（`trace/project.json` の `book.parts`）。`book:build` の範囲を広げ、[spec/README.md](spec/README.md)・[rules/checks.md](rules/checks.md)・spec-pivot の版の記載（0.29。[rules/atrs-porting.md](rules/atrs-porting.md)）を改めた。
 * **Update**: main の業務仕様のモジュール文書への移行（[ADR 68a6](decision/68a6-business-spec-in-lean-module-docs-and-book.md)）を、MISU の作業（[ADR 6d36](decision/6d36-misu-spec-types.md)）の枝に取り込んだ。移された `docs/spec` の 5 本に入れていた変更（コード値・予約の形・エラーの事由・設定とマスタの検証・`World` の一意性）を、移し先の `lean/Spec` のモジュール文書に移し、`@[spec_doc]`・登録簿の箇所・リンクを対応表 `tools/docs/spec-anchors.json` で書き換えた。
 * **Update**: [backlog 8d24](backlog/8d24-misu-spec-types.md) を完了にし（[ADR 6d36](decision/6d36-misu-spec-types.md) の段の記録に締めを足した）、[backlog/README.md](backlog/README.md)・`AGENTS.md` の現在の状態を改めた。
 * **Update**: スキルの SQL の並びのキー `OrderBy`・`SqlTable` の行の幅の証明（スキルの backlog d3fd の S4）に、`SourceModel` の並びの定義（`orderByDisplayOrder`・`vacantSeatOrder`）・`Abstraction` の補題・SQL のテストを合わせた。

@@ -76,11 +76,11 @@ paths = [
   "conformance/fixtures/**",
 ]
 
-# 仕様の本（Spec のモジュール文書を mdgen と mdbook で HTML にする。ADR 68a6）
+# Lean のソース全体の本（mdgen と mdbook。ADR 68a6・ADR f779）
 [scopes."book:build"]
 paths = [
-  "lean/Spec.lean",
-  "lean/Spec/**",
+  "lean/**/*.lean",
+  ".agents/skills/spec-pivot/assets/lean/**/*.lean",
   ".agents/skills/spec-pivot/scripts/book/**",
   ".agents/skills/spec-pivot/assets/mdgen/**",
   ".agents/skills/okf-bundle/scripts/okf_check.py",

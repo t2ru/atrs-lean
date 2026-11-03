@@ -19,7 +19,7 @@ sources:
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
 ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
-業務仕様の散文（形式化した規則の要約、Lean に形式化する前の業務規則の **草案**、`Spec` で表現できない仕様の **規範**）は、`Spec` の各モジュールのモジュール文書（`/-! … -/`）に、定義のすぐ前に書く（[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。それを mdgen と mdbook で HTML の本にする（`mise run book:build`。出力は `build/book/html/`、CI の artifact `spec-book`）。
+業務仕様の散文（形式化した規則の要約、Lean に形式化する前の業務規則の **草案**、`Spec` で表現できない仕様の **規範**）は、`Spec` の各モジュールのモジュール文書（`/-! … -/`）に、定義のすぐ前に書く（[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。それを mdgen と mdbook で HTML の本にする（`mise run book:build`。出力は `build/book/html/`、CI の artifact `spec-book`）。本は Lean のソース全体（モデル・証明・テストとスキルのライブラリ）を層ごとの部に分けた 1 冊で、仕様（`Spec`）が最初の部である（[ADR f779](../decision/f779-whole-lean-source-book.md)）。
 本ディレクトリには、仕様と検証を運用するための **メタ情報**（課題一覧・既知差異・保証の限界・適合テストベクタ・追跡）だけを置く。
 移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と、そのモジュール文書の規範節に従う（[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)）。区分（normative / meta / draft / informative）と書き方は、スキル spec-pivot の [spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md) による。
 

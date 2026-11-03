@@ -64,14 +64,59 @@
   },
   "conformance": "conformance",
   "book": {
-    "note": "spec-pivot の scripts/book/build.py が読む、仕様の本（Spec のモジュール文書を mdgen と mdbook で HTML にしたもの。ADR 68a6）の設定",
-    "title": "ATRS 仕様（Spec）",
+    "note": "spec-pivot の scripts/book/build.py が読む、Lean のソース全体の本（モジュール文書を地の文、定義をコードにして mdgen と mdbook で HTML にしたもの。ADR 68a6・ADR f779）の設定",
+    "title": "ATRS（Lean のモデル・仕様・証明）",
     "language": "ja",
-    "roots": [
-      "lean/Spec.lean",
-      "lean/Spec"
+    "parts": [
+      {
+        "title": "仕様（Spec）",
+        "base": "lean",
+        "modules": [
+          "Spec"
+        ]
+      },
+      {
+        "title": "移植元モデル（SourceModel）",
+        "base": "lean",
+        "modules": [
+          "SourceModel"
+        ]
+      },
+      {
+        "title": "抽象化（Abstraction）",
+        "base": "lean",
+        "modules": [
+          "Abstraction"
+        ]
+      },
+      {
+        "title": "移植先モデルと具体化（TargetModel・Refinement）",
+        "base": "lean",
+        "modules": [
+          "TargetModel",
+          "Refinement"
+        ]
+      },
+      {
+        "title": "テストと道具（Tests・Tools）",
+        "base": "lean",
+        "modules": [
+          "Tests",
+          "Tools"
+        ]
+      },
+      {
+        "title": "スキル spec-pivot のライブラリ",
+        "base": ".agents/skills/spec-pivot/assets/lean",
+        "modules": [
+          "LangSemantics",
+          "Machine",
+          "Trace",
+          "ConformanceKit",
+          "Test"
+        ]
+      }
     ],
-    "entry": "lean/Spec.lean",
     "out": "build/book",
     "repo_url": "https://github.com/t2ru/atrs-lean/blob/main",
     "refs": {

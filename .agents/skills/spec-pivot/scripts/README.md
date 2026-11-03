@@ -15,7 +15,7 @@
 | `ci/check_upstream.py` | 上流の submodule の commit と `trace/upstream.json` の一致 | Python 3（uv）、`git` |
 | `ci/with_postgres.sh` | PostgreSQL に接続できる環境でコマンドを実行する（無ければ一時クラスタ。`WITH_POSTGRES_TCP=1` なら 127.0.0.1 でも待ち受け、`PGHOST`・`PGPORT` を渡す。[sql/dialects/postgresql/harness.md](../references/docs/lang/sql/dialects/postgresql/harness.md)） | PostgreSQL |
 | `ci/jvm_table.sh`・`ci/pg_table.sh` | `assets/lean/Test.LangSemantics` の JVM・PostgreSQL との突き合わせ表が、生成器の出力と一致することを確かめる。処理系が無ければ、CI では失敗し、ローカルでは飛ばす（終了コード 2） | JDK / PostgreSQL |
-| `book/build.py` | 仕様の本: `Spec` のモジュール文書を mdgen（`assets/mdgen` の Lake パッケージ）で Markdown に、mdbook で HTML にする（設定は `trace/project.json` の `book`）。`--check` は `@[spec_doc]` とベクタの `specRef` の行き先（ファイルと見出し）を検査する。`--self-test` で目次とリンクの書き換えを確かめる（[references/docs/rules/spec-documents.md](../references/docs/rules/spec-documents.md#仕様の本)） | Python 3（uv。標準ライブラリだけ）、スキル okf-bundle の `okf_check.py`、Lean と Lake（mdgen）、mdbook |
+| `book/build.py` | 本: Lean のファイル（`Spec` のモジュール文書、または部 `book.parts` に分けた Lean のソース全体）を mdgen（`assets/mdgen` の Lake パッケージ）で Markdown に、mdbook で HTML にする（設定は `trace/project.json` の `book`）。`--check` は `@[spec_doc]` とベクタの `specRef` の行き先（ファイルと見出し）を検査する。`--self-test` で目次（部・名前の階層）とリンクの書き換え（部をまたぐものを含む）を確かめる（[references/docs/rules/spec-documents.md](../references/docs/rules/spec-documents.md#仕様の本)） | Python 3（uv。標準ライブラリだけ）、スキル okf-bundle の `okf_check.py`、Lean と Lake（mdgen）、mdbook |
 | `lean/rename.py` | Lean の宣言・モジュールの完全名を、対応表（`{旧: 新}`）からリポジトリのテキスト（`.lean`・`.md`・`.json` など）で一度に書き換える（`apply`）。旧い名前の残りを列挙する（`check`）。名前空間の接頭辞を書けば、その下もまとめて写る。`--self-test` で確かめる（[references/docs/lang/lean/rules.md](../references/docs/lang/lean/rules.md#モジュールと名前空間)） | Python 3（uv。標準ライブラリだけ）、`git` |
 
 ## 使い方（リポジトリのルートで）
@@ -30,7 +30,7 @@ cargo build --release --manifest-path <skill>/scripts/trace/Cargo.toml
 uv run python -I <skill>/scripts/ci/check_lean.py
 uv run python -I <skill>/scripts/ci/check_obligations.py /tmp/ob.json
 uv run python -I <skill>/scripts/book/build.py --check   # 仕様への参照の行き先
-uv run python -I <skill>/scripts/book/build.py           # 仕様の本（<book.out>/html/index.html。生成物）
+uv run python -I <skill>/scripts/book/build.py           # 本（<book.out>/html/index.html。生成物）
 ```
 
 - `lake exe trace-dump`・`obligation-check`・`axiom-check` の入口（`main`）は、モデルを import するプロジェクトの側に置く。

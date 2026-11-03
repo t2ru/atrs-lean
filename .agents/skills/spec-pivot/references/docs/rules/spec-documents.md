@@ -39,7 +39,7 @@ generated:
 
 ### 仕様の本
 
-`scripts/book/build.py` が、`Spec` のモジュール文書を mdgen（`assets/mdgen`）で Markdown に、mdbook で HTML にする（設定は `trace/project.json` の `book`。[traceability.md](../spec/traceability.md#プロジェクトの設定)）。本の目次は `book.entry` の import の順で、ページは Lean のファイルごとである。`--check` は、仕様への参照の行き先（ファイルと見出し）が在ることを確かめる。
+`scripts/book/build.py` が、Lean のファイルを mdgen（`assets/mdgen`）で Markdown に、mdbook で HTML にする（設定は `trace/project.json` の `book`。[traceability.md](../spec/traceability.md#プロジェクトの設定)）。モジュール文書が地の文に、定義がコードになる。本は `Spec` だけでも、モデル・証明を含む Lean のソース全体でもよい。全体なら、層ごとの部（`book.parts`）に分け、仕様を最初の部に置く（[ADR d2b6](../decision/d2b6-book-parts-and-namespace-toc.md)）。目次は、部ごとに入口のモジュールの import の順で、モジュール名の階層で入れ子にする。ページは Lean のファイルごとである。`--check` は、仕様への参照の行き先（ファイルと見出し）が在ることを確かめる。
 
 ## モデルの併記
 

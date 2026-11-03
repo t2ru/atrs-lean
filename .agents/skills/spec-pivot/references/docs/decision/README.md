@@ -43,3 +43,4 @@ generated:
 | cb1f | [差異の登録簿の棚卸しの手順を方法の文書に置く](cb1f-gap-inventory-procedure.md) | accepted | 2026-11-01 |
 | c634 | [仕様の散文を Spec のモジュール文書に書き、mdgen と mdbook で本にする道具を置く](c634-spec-prose-in-lean-module-docs-and-book.md) | accepted | 2026-11-03 |
 | bf1b | [不正な状態を表現できない型（MISU）を Lean のすべてのデータ型に課す](bf1b-make-illegal-states-unrepresentable.md) | accepted | 2026-11-03 |
+| d2b6 | [本を部に分け、目次をモジュール名の階層で入れ子にする](d2b6-book-parts-and-namespace-toc.md) | accepted | 2026-11-03 |
