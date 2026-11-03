@@ -39,9 +39,6 @@ def strKey (s : String) : Nat := s.toList.foldl (fun acc c => acc * 1114112 + c.
 def nodupB {α : Type} [DecidableEq α] (key : α → Nat) (l : List α) : Bool :=
   increasing (l.map key) || decide l.Nodup
 
-/-- 空港コードの形式（`AirportCd.WellFormed`）を `toList` で見る。 -/
-def wellFormedB (c : AirportCd) : Bool := c.val.toList.length == 3 && c.val.toList.all isUpperAlpha
-
 /-- マスタの不変条件 MD-1〜MD-8 の検査。 -/
 def validB (cfg : Config) (md : MasterData) : Bool :=
   nodupB (fun c : AirportCd => strKey c.val) (md.airports.map (·.code)) &&
@@ -55,7 +52,7 @@ def validB (cfg : Config) (md : MasterData) : Bool :=
   decide (md.airports.map (·.displayOrder)).Nodup && decide (md.boardingClasses.map (·.displayOrder)).Nodup &&
   decide (md.fareTypes.map (·.displayOrder)).Nodup && decide (md.creditTypes.map (·.displayOrder)).Nodup &&
   decide md.MD2 && decide md.MD3 && decide md.MD4 && decide md.MD5 && decide md.MD6 && decide (md.MD7 cfg) &&
-  md.airports.all (fun a => wellFormedB a.code && a.code.val != MasterData.airportNopCode) &&
+  md.airports.all (fun a => a.code.val != MasterData.airportNopCode) &&
   decide ((∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
     (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
     (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate))
@@ -92,10 +89,6 @@ theorem nodupB_sound {α : Type} [DecidableEq α] {key : α → Nat} {l : List �
   · exact nodup_of_map ((increasing_pairwise h).imp fun hlt => Nat.ne_of_lt hlt)
   · exact h
 
-theorem wellFormedB_sound {c : AirportCd} (h : wellFormedB c = true) : c.WellFormed := by
-  simp only [wellFormedB, Bool.and_eq_true, beq_iff_eq] at h
-  exact ⟨by rw [← String.length_toList]; exact h.1, by rw [String.all_bool_eq]; exact h.2⟩
-
 /-- 検査の正しさ。 -/
 theorem validB_sound {cfg : Config} {md : MasterData} (h : validB cfg md = true) : md.Valid cfg := by
   simp only [validB, Bool.and_eq_true, decide_eq_true_eq, List.all_eq_true, and_assoc] at h
@@ -104,7 +97,7 @@ theorem validB_sound {cfg : Config} {md : MasterData} (h : validB cfg md = true)
     m2, m3, m4, m5, m6, m7, ⟨fun a ha => ?_, m8b⟩⟩
   have := m8a a ha
   simp only [bne_iff_ne, ne_eq] at this
-  exact ⟨wellFormedB_sound this.1, this.2⟩
+  exact this
 
 
 /-! ## シードと非自明性 -/
@@ -116,7 +109,7 @@ theorem seed_env : masterConfigOk (Seed.config, Seed.masterData) :=
 
 /-- 環境の前提を破る例: 空港コードの重複（MD-1）。 -/
 def badMasterData : MasterData :=
-  { Seed.masterData with airports := ⟨⟨"HND"⟩, "x", 1000⟩ :: Seed.masterData.airports }
+  { Seed.masterData with airports := ⟨{ val := "HND" }, "x", 1000⟩ :: Seed.masterData.airports }
 
 theorem badMasterData_not_env : ¬ masterConfigOk (Seed.config, badMasterData) := by
   rintro ⟨-, hv⟩

@@ -197,9 +197,9 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
 def airportNopCode : String := "NOP"
 
 /-- MD-8: 値域（`docs/spec/domain-model.md#値域` のうちマスタのもの）。 -/
-@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-029", "D-030", "D-036"]
+@[spec_doc "docs/spec/master-data.md#不変条件spec", gap "D-029", "D-030"]
 def MD8 (md : MasterData) : Prop :=
-  (∀ a ∈ md.airports, a.code.WellFormed ∧ a.code.val ≠ airportNopCode) ∧
+  (∀ a ∈ md.airports, a.code.val ≠ airportNopCode) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
   (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
   (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate)
@@ -234,8 +234,8 @@ instance (cfg : Config) (md : MasterData) : Decidable (md.Valid cfg) :=
 
 /-- `(dep, arr)` に一致する区間。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
-def routeOf (md : MasterData) (dep arr : AirportCd) : Option Route :=
-  md.routes.find? fun r => r.depAirportCd == dep && r.arrAirportCd == arr
+def routeOf (md : MasterData) (dep arr : String) : Option Route :=
+  md.routes.find? fun r => r.depAirportCd.val == dep && r.arrAirportCd.val == arr
 
 /-- 便名に一致する便マスタ。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数"]
@@ -300,8 +300,8 @@ theorem find?_key_eq_some_iff {α κ : Type} [DecidableEq κ] {f : α → κ} {l
     refine h.imp fun hne ⟨ha, hb⟩ => hne ?_
     simp at ha hb; rw [ha, hb]
 
-theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : AirportCd} {r : Route} :
-    md.routeOf dep arr = some r ↔ r ∈ md.routes ∧ r.depAirportCd = dep ∧ r.arrAirportCd = arr := by
+theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : String} {r : Route} :
+    md.routeOf dep arr = some r ↔ r ∈ md.routes ∧ r.depAirportCd.val = dep ∧ r.arrAirportCd.val = arr := by
   unfold routeOf
   rw [find?_eq_some_iff_of_pairwise]
   · simp
@@ -309,7 +309,7 @@ theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : AirportCd}
     rw [List.Nodup, List.pairwise_map] at h₁
     refine h₁.imp fun hne ⟨ha, hb⟩ => hne ?_
     simp only [Bool.and_eq_true, beq_iff_eq] at ha hb
-    rw [ha.1, ha.2, hb.1, hb.2]
+    rw [AirportCd.ext (ha.1.trans hb.1.symm), AirportCd.ext (ha.2.trans hb.2.symm)]
 
 theorem flightMasterOf_eq_some_iff {md : MasterData} (h : md.MD1) {name : FlightName} {f : FlightMaster} :
     md.flightMasterOf name = some f ↔ f ∈ md.flightMasters ∧ f.flightName = name :=

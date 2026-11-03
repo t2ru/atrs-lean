@@ -31,7 +31,7 @@ open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
 
 /-! ## 入力 -/
 
-/-- 照会条件（`null` には定義しない。空港コードはそのまま包む）。 -/
+/-- 照会条件（`null` には定義しない。空港コードは文字列のまま）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def criteriaOf (c : SourceModel.Domain.Service.B1.TicketSearchCriteriaDto) : Option Spec.FlightSearch.Criteria := do
   let d ← c.depDate.bind dateOfJ
@@ -39,7 +39,7 @@ def criteriaOf (c : SourceModel.Domain.Service.B1.TicketSearchCriteriaDto) : Opt
   let dep ← c.departureAirportCd
   let arr ← c.arrivalAirportCd
   let ft ← c.flightType
-  pure ⟨d, bc, ⟨dep⟩, ⟨arr⟩, ft⟩
+  pure ⟨d, bc, dep, arr, ft⟩
 
 @[obligation "ABS-048"]
 theorem criteriaOf_kernel : KernelIs criteriaOf (undefOrEq criteriaOf) := by
@@ -48,7 +48,7 @@ theorem criteriaOf_kernel : KernelIs criteriaOf (undefOrEq criteriaOf) := by
   simp only [criteriaOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨d, hd, bc, hbc, dep, hdep, arr, harr, ft, hft, rfl⟩ := h
   obtain ⟨d', hd', bc', hbc', dep', hdep', arr', harr', ft', hft', h⟩ := h'
-  simp only [Spec.FlightSearch.Criteria.mk.injEq, AirportCd.mk.injEq] at h
+  simp only [Spec.FlightSearch.Criteria.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
   obtain ⟨j, hj, hjd⟩ := hd
   obtain ⟨j', hj', hjd'⟩ := hd'

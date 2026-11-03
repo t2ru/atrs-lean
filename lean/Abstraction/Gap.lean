@@ -483,16 +483,21 @@ def D035 : Gap where
     pre := [``Spec.Fare.BasicFareInput.Pre, ``Spec.Fare.TotalFareInput.Pre]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227", bid!"bbcce088-c475-4378-9cc6-e3d821acc0f5"] }
 
-/-- マスタの空港コードが英大文字 3 文字（`WellFormed`）でないとき、[Source] の `RouteProvider.load` は、区間をキー `[出発]-[到着]`
-（`RouteProvider.makeCacheKey`）で `put` するので、`-` を含むコードでは別の区間とキーが重なり、後勝ちで上書きする -/
+/-- マスタの空港コードが英大文字 3 文字でないとき、[Source] の `RouteProvider.load` は、区間をキー `[出発]-[到着]`
+（`RouteProvider.makeCacheKey`）で `put` するので、`-` を含むコードでは別の区間とキーが重なり、後勝ちで上書きする。
+[Spec] の空港コード `AirportCd` は形式を型に持つので、そのようなマスタを表せない（D-027 に覆われる。ADR 6d36） -/
 @[gap_entry]
 def D036 : Gap where
   id := gid!"D-036"
-  sites := ne![⟨ne!"マスタの不変条件", ne!"docs/spec/master-data.md#不変条件spec", "（MD-8 の空港コードの形）"⟩]
-  body := .outsidePre {
-    excludingPre := ne!"PRE（MD-8 の第 1 連言のうち、空港のコードが `WellFormed` であること）"
-    pre := [``Spec.MasterData.MD8]
-    backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
+  sites := ne![⟨ne!"コード値", ne!"docs/spec/domain-model.md#コード値", "（空港コードの形式）"⟩, ⟨ne!"マスタの不変条件", ne!"docs/spec/master-data.md#不変条件spec", ""⟩]
+  body := .pre {
+    side := .concreteInput
+    premise := ne!"`dev_D036`（`Abstraction.MasterData.Alpha`）: DB のマスタの空港の行のコードが、どれも英大文字 3 文字（`AirportCd.valid`）である"
+    evidence := .covered ne![``Abstraction.MasterData.Alpha.dev_D036] ``Abstraction.MasterData.Alpha.dev_D027 ne![``Abstraction.MasterData.covers_D036]
+    rTasks := ne![oid!"ABS-026"]
+    impact := .abort
+    impactReason := ne!"[Source] は区間の照会で別の区間を返しうる。[Spec] の型はそのマスタを表せない"
+    backlog := ne![bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- D-037 の主張（形式化していない。証明も公理も持たない）: [Source] の予約確定は、予約内容の検査（`validateReservation`）と登録（`registerReservation`）を別のトランザクションで行うので、並行実行の下では、[Spec]（1 トランザクション）と観測が異なりうる。どのモデルも並行実行を表さないので、命題として書けない -/
 @[gap "D-037"] opaque claim_D037 : Prop

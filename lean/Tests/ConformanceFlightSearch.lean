@@ -45,7 +45,7 @@ def specFlight (f : Json) : Except String Flight := do
 
 def specCriteria (c : Json) : Except String Spec.FlightSearch.Criteria := do
   return { depDate := ← decodeDate (← getStr c "depDate"), boardingClassCd := ← boardingClassCd (← getStr c "boardingClassCd"),
-           depAirportCd := ⟨← getStr c "depAirportCd"⟩, arrAirportCd := ⟨← getStr c "arrAirportCd"⟩,
+           depAirportCd := ← getStr c "depAirportCd", arrAirportCd := ← getStr c "arrAirportCd",
            flightType := ← flightType (← getStr c "flightType") }
 
 def specErrorJson : Spec.Error.AtrsError → Json

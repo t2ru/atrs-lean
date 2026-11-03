@@ -49,13 +49,13 @@ theorem flightMasterOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterD
   rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq, FlightName.mk.injEq]
 
 theorem routeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (dep arr : String) :
-    md.routeOf ⟨dep⟩ ⟨arr⟩ = (db.route.find? fun r => routeKey r == (dep, arr)).bind routeOfRow := by
+    md.routeOf dep arr = (db.route.find? fun r => routeKey r == (dep, arr)).bind routeOfRow := by
   obtain ⟨-, hrts, -⟩ := masterDataOf_eq_some.mp hm
   unfold Spec.MasterData.routeOf
   refine find?_mapM hrts fun r x hx => ?_
   obtain ⟨e1, e2⟩ := routeOfRow_codes hx
   rw [e1, e2, Bool.eq_iff_iff]
-  simp only [routeKey, Bool.and_eq_true, beq_iff_eq, AirportCd.mk.injEq, Prod.mk.injEq]
+  simp only [routeKey, Bool.and_eq_true, beq_iff_eq, Prod.mk.injEq]
 
 /-! ## 結合の結果と候補 -/
 
@@ -101,7 +101,7 @@ theorem flightMasterOfRow_dep {f : FlightMasterRow} {x : FlightMaster} (h : flig
 
 theorem routeOfRow_no {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.routeNo : Int) = r.routeNo.val := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hno, _, _, rfl⟩ := h
+  obtain ⟨no, hno, _, _, _, _, _, _, rfl⟩ := h
   exact (natOfInt4_eq_some.mp hno).symm
 
 theorem inList_codes_holds (a : String) (xs : List FareTypeCd) :
@@ -148,7 +148,7 @@ theorem cond_holds {c : Criteria} {dep arr : String} {bdn : Int} {f : FlightRow}
 
 /-- FLIGHT の行 1 つについて、文の結果の行と [Spec] の候補が対応する（両方とも無いか、両方ともあって `RowRel`）。 -/
 theorem rowAt_rel {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
-    {dep arr : String} {route : Route} (hroute : md.routeOf ⟨dep⟩ ⟨arr⟩ = some route) (bdn : Int)
+    {dep arr : String} {route : Route} (hroute : md.routeOf dep arr = some route) (bdn : Int)
     {f : FlightRow} {F : Flight} (hf : flightOfRow f = some F) :
     Option.Rel (RowRel f) (rowAt db (paramsOf c dep arr bdn) dep arr f) (candidateOf md c route bdn F) := by
   have hf0 := hf
@@ -221,7 +221,7 @@ theorem rowOk_of_rel {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn 
 /-- 列の対応: FLIGHT の行の列の写しが `fs` なら、文の結果の行の列（`rowAt` で絞ったもの）は、`candOfRow` で
 [Spec] の候補の列（`candidateOf` で絞ったもの）に写り、各行は `RowOk`。 -/
 theorem rows_cands {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
-    {dep arr : String} {route : Route} (hroute : md.routeOf ⟨dep⟩ ⟨arr⟩ = some route) (bdn : Int)
+    {dep arr : String} {route : Route} (hroute : md.routeOf dep arr = some route) (bdn : Int)
     {fl : List FlightRow} {fs : List Flight} (h : fl.mapM flightOfRow = some fs) :
     (fl.filterMap (rowAt db (paramsOf c dep arr bdn) dep arr)).mapM (candOfRow md) =
         some (fs.filterMap (candidateOf md c route bdn)) ∧

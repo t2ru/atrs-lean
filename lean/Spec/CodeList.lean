@@ -78,11 +78,11 @@ def contains (l : List CodeEntry) (s : String) : Bool := l.any (·.code == s)
 
 /-- 例: 表示順 1・100・2 の空港では、表示順 100 の空港の直前に区切り行が入る。 -/
 example :
-    insertNop ([⟨⟨"HND"⟩, "羽田", 1⟩, ⟨⟨"ITM"⟩, "伊丹", 2⟩, ⟨⟨"AXT"⟩, "秋田", 100⟩] : List Airport) =
+    insertNop ([⟨{ val := "HND" }, "羽田", 1⟩, ⟨{ val := "ITM" }, "伊丹", 2⟩, ⟨{ val := "AXT" }, "秋田", 100⟩] : List Airport) =
       [⟨"HND", "羽田"⟩, ⟨"ITM", "伊丹"⟩, airportNop, ⟨"AXT", "秋田"⟩] := by decide
 
 /-- 例: 表示順 100 以上の空港が無ければ、区切り行は入らない。 -/
-example : insertNop ([⟨⟨"HND"⟩, "羽田", 1⟩] : List Airport) = [⟨"HND", "羽田"⟩] := by decide
+example : insertNop ([⟨{ val := "HND" }, "羽田", 1⟩] : List Airport) = [⟨"HND", "羽田"⟩] := by decide
 
 #guard creditMonth.head? == some ⟨"01", "01"⟩ && creditMonth.length == 12
 #guard creditYear.getLast? == some ⟨"99", "99"⟩ && creditYear.length == 100

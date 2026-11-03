@@ -30,7 +30,7 @@ theorem membersOf_numbers : ∀ {ms : List MemberRow} {ls : List MemberLoginRow}
     split at hx
     · rename_i hc
       simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hx
-      obtain ⟨_, _, _, _, _, _, rfl⟩ := hx
+      obtain ⟨_, _, _, _, _, _, _, _, rfl⟩ := hx
       refine ⟨?_, ?_⟩ <;> simp [ih1, ih2, hc]
     · cases hx
   | [], _ :: _, _, h => by simp [membersOf] at h
@@ -53,7 +53,7 @@ theorem membersOf_find : ∀ {ms : List MemberRow} {ls : List MemberLoginRow} {x
     split at hx'
     · rename_i hc
       simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hx'
-      obtain ⟨_, _, _, _, _, _, rfl⟩ := hx'
+      obtain ⟨_, _, _, _, _, _, _, _, rfl⟩ := hx'
       by_cases hs : m.customerNo.val = s
       · simp [List.find?_cons, hs, ← hc, hx]
       · have hs' : ¬ l.customerNo.val = s := by rw [← hc]; exact hs
@@ -167,13 +167,13 @@ theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World}
     exact hc
   have hcode : ∀ a b, creditTypeOfRow a = some b → b.creditTypeCd.val = a.creditTypeCd.val := by
     intro a b h
-    simp only [creditTypeOfRow, Option.map_eq_some_iff] at h
-    obtain ⟨_, _, rfl⟩ := h
-    rfl
+    simp only [creditTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨_, hk, _, _, rfl⟩ := h
+    exact CreditTypeCd.val_of_ofString? hk
   have hc : (mdb.creditType.map (·.creditTypeCd.val)).Nodup := by
     rw [← mapM_map_eq (g := fun b => b.creditTypeCd.val) hcode hcts]
     have h8 := h1.2.2.2.2.2.2.2.1
-    exact nodup_map_comp (g := CreditTypeCd.val) (fun a b e => by cases a; cases b; simp_all) h8
+    exact nodup_map_comp (g := CreditTypeCd.val) (fun _ _ e => CreditTypeCd.ext e) h8
   rw [findOneRows_eq mdb fd s hm hl hc]
   have hf := membersOf_find hms s
   unfold Spec.Port.World.findMember
@@ -189,12 +189,12 @@ theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World}
     have hxm : x ∈ w.members := List.mem_of_find?_eq_some hx
     obtain ⟨ct, hct, hctx⟩ := href x hxm
     obtain ⟨c, hcm, hcc⟩ := LangSemantics.Core.MapM.mapM_some_mem' hcts hct
-    have hxct : x.creditTypeCd = ⟨m.creditTypeCd.val⟩ := by
+    have hxct : x.creditTypeCd.val = m.creditTypeCd.val := by
       unfold memberOfRow at hml
       split at hml
       · simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hml
-        obtain ⟨_, _, _, _, _, _, rfl⟩ := hml
-        rfl
+        obtain ⟨_, _, _, _, _, _, _, hk, rfl⟩ := hml
+        exact CreditTypeCd.val_of_ofString? hk
       · cases hml
     obtain ⟨c', e3⟩ : ∃ c', mdb.creditType.find? (·.creditTypeCd.val == m.creditTypeCd.val) = some c' := by
       apply Option.isSome_iff_exists.mp
@@ -216,7 +216,7 @@ theorem memberMap_ok {m : MemberRow} {l : MemberLoginRow} {x : Member} (h : memb
   unfold memberOfRow at h
   split at h
   · simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-    obtain ⟨b, hb, g, hg, dt, hdt, rfl⟩ := h
+    obtain ⟨b, hb, g, hg, dt, hdt, _, _, rfl⟩ := h
     have hv : SourceModel.Domain.Model.Gender.valueOf m.gender.val = .ok g := by
       unfold Gender.ofCode? at hg
       unfold SourceModel.Domain.Model.Gender.valueOf

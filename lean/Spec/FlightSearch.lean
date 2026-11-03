@@ -61,8 +61,8 @@ def isAvailableFareType (ft : FareType) (depDate today : Date) : Bool :=
 structure Criteria where
   depDate : Date
   boardingClassCd : BoardingClassCd
-  depAirportCd : AirportCd
-  arrAirportCd : AirportCd
+  depAirportCd : String
+  arrAirportCd : String
   flightType : FlightType
   deriving DecidableEq, Repr
 
@@ -210,7 +210,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
 @[spec_doc "docs/spec/flight-search.md#事前条件", gap "D-033"]
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
-    Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true ∧
+    Text.hasText i.criteria.depAirportCd = true ∧ Text.hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/

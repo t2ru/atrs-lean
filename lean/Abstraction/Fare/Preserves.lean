@@ -79,7 +79,7 @@ def icTF100 : TotalFareInput := icTF ⟨100, by decide⟩ ⟨100, by decide⟩ �
 
 /-- `icTF100` の DB の [Spec] の写し。 -/
 def mdTF100 : Spec.MasterData :=
-  ⟨mdTF012.airports, [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
+  ⟨mdTF012.airports, [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
     [⟨"P", day0, day0, 100⟩], [], []⟩
 
 /-- `icTF100` の [Spec] の入力。 -/

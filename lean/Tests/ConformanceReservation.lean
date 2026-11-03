@@ -79,7 +79,7 @@ def specMember (m : Json) : Except String Member := do
   return { membershipNumber := ⟨← getStr m "membershipNumber"⟩, kanjiFamilyName := "", kanjiGivenName := "",
            kanaFamilyName := ← getStr m "kanaFamilyName", kanaGivenName := ← getStr m "kanaGivenName",
            birthday := Spec.Prim.Date.ymd! 1970 1 1, gender := ← gender (← getStr m "gender"), tel := "", zipCode := "", address := "",
-           mail := "", creditNo := "", creditTypeCd := ⟨"VIS"⟩, creditTerm := "",
+           mail := "", creditNo := "", creditTypeCd := { val := "VIS" }, creditTerm := "",
            login := { password := ⟨""⟩, lastPassword := none, loginDateTime := none, loginFlg := false } }
 
 def specWorld (i : Json) : Except String Spec.Port.World := do

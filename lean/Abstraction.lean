@@ -127,7 +127,7 @@ import Abstraction.Reserve
 | `Abstraction.MasterData.Query` | ABS-026 の問い合わせごとの一致（参照・ピーク時期・積算比率・コードリスト） |
 | `Abstraction.MasterData.QueryRun` | ABS-026・ABS-127 の補題: 貼り合わせ `glueMQ`、読み込みと実行の正しさ、Mapper の結果の並び |
 | `Abstraction.MasterData.Preserves` | ABS-026 の束 `Machine.Preserves` の部品: 環境の前提 `envMQ` と証人 |
-| `Abstraction.MasterData` | 機能の証明課題: 束 `queryPreserves` と 1 歩の可換式 `queryRefines_commutes`、R 課題 ABS-026 `queryRefines` と `InitSurj`、W 課題 ABS-127 `need_D027` |
+| `Abstraction.MasterData` | 機能の証明課題: 束 `queryPreserves` と 1 歩の可換式 `queryRefines_commutes`、R 課題 ABS-026 `queryRefines` と `InitSurj`、W 課題 ABS-127 `need_D027`・ABS-142 `covers_D036` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
 | `Abstraction.MasterData.SeedAlpha` | シードのマスタの具体側の DB（`SourceModel.Db.MasterSeed.masterDb`）の α が、[Spec] のシードのマスタ `Spec.Seed.masterData` であること（ABS-041 の束の環境の前提の証人） |
 | `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠、安全でない因子の一覧 |
@@ -209,9 +209,9 @@ def dev : Spec.State → Spec.Input → Prop :=
       (altEnv (fun _ i => dev_D001S i ∧ dev_D002S i)
         (fun w i => dev_D009 w i ∧ dev_D031 i ∧ dev_D001R i ∧ dev_D002R i ∧ dev_D012R i)))))
 
-/-- 具体側の前提型の差異（D-027・D-014・D-032。各 R 課題の `Concrete.restrict` の述語を並置したもの）。 -/
+/-- 具体側の前提型の差異（D-027・D-036・D-014・D-032。各 R 課題の `Concrete.restrict` の述語を並置したもの）。 -/
 def devC : SourceModel.Input → Prop :=
-  sumPred dev_D027 (sumPred dev_D027BF (sumPred dev_D027F (sumPred dev_D027TF
+  sumPred (fun ic => dev_D027 ic ∧ dev_D036 ic) (sumPred dev_D027BF (sumPred dev_D027F (sumPred dev_D027TF
     (sumPred (fun ic => dev_D027S ic ∧ dev_D014S ic ∧ dev_D032 ic) fun ic => dev_D027R ic ∧ dev_D014R ic))))
 
 /-- 貼り合わせ（各 R 課題の標準の貼り合わせを並置したもの。空席照会と予約は同じ `J` の `Glue.alt`）。 -/
@@ -243,6 +243,7 @@ theorem preserves :
     rfl (fun i => by
       rcases i with i | i | i | i | i | i
       any_goals exact Iff.rfl
+      · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩
       · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩
       · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩)
 
@@ -262,6 +263,7 @@ theorem refines : Machine.Refines (Spec.machine.restrictState dev) (SourceModel.
     rfl rfl (fun i => by
       rcases i with i | i | i | i | i | i
       any_goals exact Iff.rfl
+      · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩
       · exact ⟨fun ⟨a, b, c, d⟩ => ⟨⟨⟨a, b⟩, c⟩, d⟩, fun ⟨⟨⟨a, b⟩, c⟩, d⟩ => ⟨a, b, c, d⟩⟩
       · exact ⟨fun ⟨a, b, c⟩ => ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ => ⟨a, b, c⟩⟩)
 

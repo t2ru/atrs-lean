@@ -69,27 +69,30 @@ theorem isUpperAlpha_not_blank {c : Char} (h : isUpperAlpha c = true) : isBlank 
   simp only [isBlank, inRange, Bool.or_eq_false_iff, Bool.and_eq_false_iff, decide_eq_false_iff_not, Nat.not_le]
   omega
 
-/-- 空港コード（`WellFormed`）は空白でない。 -/
-theorem AirportCd.hasText_of_wellFormed {c : AirportCd} (h : c.WellFormed) : hasText c.val = true := by
+/-- 空港コードの形式（`AirportCd.valid`）を満たす文字列は空白でない。 -/
+theorem AirportCd.hasText_of_valid {s : String} (h : AirportCd.valid s = true) : hasText s = true := by
+  simp only [AirportCd.valid, Bool.and_eq_true, beq_iff_eq] at h
   obtain ⟨hl, ha⟩ := h
-  rw [String.all_bool_eq] at ha
   rw [hasText, string_any_toList]
-  cases hs : c.val.toList with
-  | nil =>
-    have : c.val.length = 0 := by rw [← String.length_toList, hs]; rfl
-    omega
+  cases hs : s.toList with
+  | nil => rw [hs] at hl; cases hl
   | cons x xs =>
     rw [hs] at ha
     have hx : isUpperAlpha x = true := (List.all_eq_true.mp ha) x (List.mem_cons_self ..)
     simp [isUpperAlpha_not_blank hx]
 
-/-- 空港コード（`WellFormed`）は `-` を含まない（`RouteProvider.makeCacheKey` の区切り）。 -/
-theorem AirportCd.no_dash_of_wellFormed {c : AirportCd} (h : c.WellFormed) : '-' ∉ c.val.toList := by
+/-- 空港コードの形式（`AirportCd.valid`）を満たす文字列は `-` を含まない（`RouteProvider.makeCacheKey` の区切り）。 -/
+theorem AirportCd.no_dash_of_valid {s : String} (h : AirportCd.valid s = true) : '-' ∉ s.toList := by
   intro hm
-  have h2 := h.2
-  rw [String.all_bool_eq] at h2
-  have := (List.all_eq_true.mp h2) '-' hm
+  simp only [AirportCd.valid, Bool.and_eq_true] at h
+  have := (List.all_eq_true.mp h.2) '-' hm
   simp [isUpperAlpha, inRange] at this
+
+/-- 空港コードは空白でない。 -/
+theorem AirportCd.hasText_val (c : AirportCd) : hasText c.val = true := AirportCd.hasText_of_valid c.wf
+
+/-- 空港コードは `-` を含まない（`RouteProvider.makeCacheKey` の区切り）。 -/
+theorem AirportCd.no_dash (c : AirportCd) : '-' ∉ c.val.toList := AirportCd.no_dash_of_valid c.wf
 
 /-! ## 値の対応 -/
 

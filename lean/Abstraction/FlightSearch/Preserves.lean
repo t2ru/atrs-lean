@@ -18,7 +18,7 @@ open Machine Spec Spec.EnvPre Spec.FlightSearch
 /-- ABS-011 の環境の前提。 -/
 def envFS (i : Spec.FlightSearch.SearchInput) : Prop :=
   masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
-    hasText i.criteria.depAirportCd.val = true ∧ hasText i.criteria.arrAirportCd.val = true ∧
+    hasText i.criteria.depAirportCd = true ∧ hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria ∧ dev_D001S i ∧ dev_D002S i
 
 theorem aiS_icFS_comma : aiS (icFS LangSemantics.Java.DecimalFormat.Symbols.ascii) = some iaFS := by decide

@@ -37,8 +37,8 @@ def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
 
 /-- マスタの [Spec] の写し。 -/
 def mdFS : Spec.MasterData :=
-  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
-    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩],
+  { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
+    routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩],
     flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.OW, "OW", 0, 355, 0, 1, 1⟩],
@@ -46,7 +46,7 @@ def mdFS : Spec.MasterData :=
     planes := [], creditTypes := [] }
 
 /-- [Spec] の入力。 -/
-def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, ⟨"HND"⟩, ⟨"ITM"⟩, .OW⟩⟩
+def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, "HND", "ITM", .OW⟩⟩
 
 /-- [Spec] の状態。 -/
 def wFS : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩] }
@@ -68,7 +68,7 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
-    rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+    rcases ha with rfl | rfl <;> decide
   · intro _ _ fm hfm _
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at hfm
     subst hfm
@@ -76,14 +76,14 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
 
 theorem iaFS_devs : dev_D001S iaFS ∧ dev_D002S iaFS := by
   refine ⟨fun r hr _ => ?_, fun r b hr _ hb ft hft _ => ?_⟩
-  · have : r = ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ := by
-      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ :=
+  · have : r = ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ := by
+      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ :=
         by decide
       rw [e] at hr; exact (Option.some.inj hr).symm
     subst this
     decide
-  · have : r = ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ := by
-      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ :=
+  · have : r = ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ := by
+      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ :=
         by decide
       rw [e] at hr; exact (Option.some.inj hr).symm
     subst this
@@ -194,23 +194,23 @@ theorem dev_D027S_nontrivial : Nontrivial dev_D027S :=
   ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, by unfold dev_D027S; decide⟩, ⟨{ icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with criteria := none }, by unfold dev_D027S; decide⟩⟩
 
 /-- D-001 の前提を破るマスタ: 区間の運賃 100 円・積算比率 29%（`100·29` は 100 で割り切れ、29 は安全でない）。 -/
-def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
+def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
 
 /-- D-002 の前提を破るマスタ: 基本運賃 1430 円・割引率 30%。 -/
 def mdFS1430 : Spec.MasterData :=
-  { mdFS with routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩], fareTypes := [⟨.OW, "OW", 30, 355, 0, 1, 1⟩] }
+  { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩], fareTypes := [⟨.OW, "OW", 30, 355, 0, 1, 1⟩] }
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D001S_nontrivial : Nontrivial dev_D001S := by
   refine ⟨⟨iaFS, iaFS_devs.1⟩, ⟨{ iaFS with md := mdFS29 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩ (by decide) (by decide)
+  have := h ⟨1, { val := "HND" }, { val := "ITM" }, 100⟩ (by decide) (by decide)
   revert this
   decide
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D002S_nontrivial : Nontrivial dev_D002S := by
   refine ⟨⟨iaFS, iaFS_devs.2⟩, ⟨{ iaFS with md := mdFS1430 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩ 1430 (by decide) (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
+  have := h ⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩ 1430 (by decide) (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
     (by simp [mdFS1430]) (by decide)
   revert this
   decide

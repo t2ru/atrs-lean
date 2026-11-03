@@ -25,7 +25,7 @@ open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
 
 /-- 便マスタの Provider の答えの、区間の空港コード。 -/
 theorem flightMaster_codes {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
+    (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
       ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
@@ -37,7 +37,7 @@ theorem flightMaster_codes {db : MasterDb} {md : MasterData} (hm : masterDataOf 
   have hapnd := airportCodes_nodup ha h1.1
   have hrnd := routeNos_nodup hrts h1.2.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
@@ -83,7 +83,7 @@ theorem flightMaster_codes {db : MasterDb} {md : MasterData} (hm : masterDataOf 
       have hrt0 : rtOf db f.routeNo.val = r0 := by simp only [rtOf, hr0, Option.getD_some]
       have hr0m := List.mem_of_find?_eq_some hr0
       obtain ⟨hd, ha'⟩ := routeOfRow_codes hrt'
-      obtain ⟨hda, haa, -⟩ := route_airport hm h3 h8 hr0m
+      obtain ⟨hda, haa, -⟩ := route_airport hm h3 hr0m
       refine ⟨_, _, _, _, _, _, by rw [hget]; rfl, ?_, rfl, ?_, rfl, ?_, rfl, rfl, ?_, rfl, ?_⟩
       · simp only [Function.comp, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, flightMasterResultOf,
           SourceModel.Db.MyBatis.str, hfn]
@@ -98,14 +98,14 @@ theorem flightMaster_codes {db : MasterDb} {md : MasterData} (hm : masterDataOf 
 
 /-- 便マスタが無い便名の Provider の答えは `null`。 -/
 theorem flightMaster_none {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
+    (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       md.flightMasterOf name = none → FlightMasterProvider.getFlightMaster fmp name.val = .ok none := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
   have hrnd := routeNos_nodup hrts h1.2.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
@@ -163,9 +163,9 @@ theorem load_res {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDa
   obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
   obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
   obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
-  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
-  obtain ⟨fmp, hml, hmc⟩ := flightMaster_codes hm hv.md1 hv.md3 hv.md8 hpf
-  obtain ⟨fmp', hml', hmn⟩ := flightMaster_none hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hpr
+  obtain ⟨fmp, hml, hmc⟩ := flightMaster_codes hm hv.md1 hv.md3 hpf
+  obtain ⟨fmp', hml', hmn⟩ := flightMaster_none hm hv.md1 hv.md3 hpf
   rw [hml] at hml'
   cases hml'
   exact ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, fun cd => hbq cd, fun cd => hfq cd, hmn, hmc⟩

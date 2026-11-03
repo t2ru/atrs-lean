@@ -121,7 +121,7 @@ theorem assertNotEmpty_ok {α : Type} {l : List α} (h : l ≠ []) (m : String) 
 theorem configOf_fields {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Config} (h : configOf c = some cfg) :
     c.adultPassengerMinAge.val = (cfg.adultPassengerMinAge : Int) ∧ c.childFareRate.val = (cfg.childFareRate : Int) := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, rfl⟩ := h
+  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, a7, e7, a8, e8, rfl⟩ := h
   exact ⟨natOfJ32_eq_some.mp e4, natOfJ32_eq_some.mp e5⟩
 
 theorem ageOfPassenger_eq {p : JRef SourceModel.Domain.Model.Passenger} {a : Nat} (h : ageOfPassenger p = some a) :

@@ -40,7 +40,7 @@ def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
 /-- 参照の問い合わせ。 -/
 @[raw_input "機械の入力（参照の問い合わせ）。妥当性 Query.Valid は PRE"]
 inductive Query where
-  | routeOf (dep arr : AirportCd)
+  | routeOf (dep arr : String)
   | flightMasterOf (name : FlightName)
   | fareTypeOf (cd : FareTypeCd)
   | boardingClassOf (cd : BoardingClassCd)
@@ -55,7 +55,7 @@ inductive Query where
 便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
 @[spec_doc "docs/spec/master-data.md#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
-  | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
+  | .routeOf dep arr => AirportCd.valid dep = true ∧ AirportCd.valid arr = true
   | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true
   | _ => True
 

@@ -1529,6 +1529,14 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Alpha.dev_D036",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Alpha.dev_D036_nontrivial",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.Alpha.fareTypeOfRow",
       "layer": "Abstraction"
     },
@@ -1545,15 +1553,15 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.Alpha.ic_dashAirport",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.Alpha.ic_ok",
       "layer": "Abstraction"
     },
     {
       "name": "Abstraction.MasterData.Alpha.ic_unknownBoardingClass",
-      "layer": "Abstraction"
-    },
-    {
-      "name": "Abstraction.MasterData.Alpha.mapM_airportOfRow",
       "layer": "Abstraction"
     },
     {
@@ -1617,6 +1625,18 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.AlphaLeaf.airportCdOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.airportCdOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.airportCdOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.AlphaLeaf.arrOfHm?_eq_some",
       "layer": "Abstraction"
     },
@@ -1638,6 +1658,18 @@
     },
     {
       "name": "Abstraction.MasterData.AlphaLeaf.bcCdOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.creditTypeCdOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.creditTypeCdOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.creditTypeCdOf_kernel",
       "layer": "Abstraction"
     },
     {
@@ -1737,11 +1769,11 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.CodeList.CodeEntry.toPair",
+      "name": "Abstraction.MasterData.CodeList.AirportOf",
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.CodeList.airportOf",
+      "name": "Abstraction.MasterData.CodeList.CodeEntry.toPair",
       "layer": "Abstraction"
     },
     {
@@ -1841,11 +1873,19 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.Pre.AirportCd.hasText_of_wellFormed",
+      "name": "Abstraction.MasterData.Pre.AirportCd.hasText_of_valid",
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.MasterData.Pre.AirportCd.no_dash_of_wellFormed",
+      "name": "Abstraction.MasterData.Pre.AirportCd.hasText_val",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Pre.AirportCd.no_dash",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Pre.AirportCd.no_dash_of_valid",
       "layer": "Abstraction"
     },
     {
@@ -1970,6 +2010,10 @@
     },
     {
       "name": "Abstraction.MasterData.Query.dummyAirport",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.Query.dummyAirportSpec",
       "layer": "Abstraction"
     },
     {
@@ -2106,6 +2150,10 @@
     },
     {
       "name": "Abstraction.MasterData.SeedAlpha.masterDataOf_seed",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.covers_D036",
       "layer": "Abstraction"
     },
     {
@@ -10429,11 +10477,27 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.AirportCd.ofString?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.AirportCd.valid",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.BoardingClassCd",
       "layer": "Spec"
     },
     {
       "name": "Spec.Model.CreditTypeCd",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.CreditTypeCd.ofString?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.CreditTypeCd.valid",
       "layer": "Spec"
     },
     {
@@ -11158,6 +11222,11 @@
     },
     {
       "type": "deviation",
+      "from": "Abstraction.MasterData.Alpha.dev_D036",
+      "to": "D-036"
+    },
+    {
+      "type": "deviation",
       "from": "Abstraction.Reserve.Alpha.dev_D001R",
       "to": "D-001"
     },
@@ -11290,6 +11359,11 @@
       "type": "gap",
       "from": "Abstraction.Gap.claim_D037",
       "to": "D-037"
+    },
+    {
+      "type": "gap",
+      "from": "Abstraction.MasterData.covers_D036",
+      "to": "D-036"
     },
     {
       "type": "gap",
@@ -11688,11 +11762,6 @@
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD8",
-      "to": "D-036"
-    },
-    {
-      "type": "gap",
       "from": "Spec.MasterData.airportNopCode",
       "to": "D-029"
     },
@@ -11710,6 +11779,11 @@
       "type": "gap",
       "from": "Spec.MasterQuery.queryMachine",
       "to": "D-027"
+    },
+    {
+      "type": "gap",
+      "from": "Spec.Model.AirportCd",
+      "to": "D-036"
     },
     {
       "type": "gap",
@@ -12188,12 +12262,22 @@
     },
     {
       "type": "obligation",
+      "from": "Abstraction.MasterData.AlphaLeaf.airportCdOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
       "from": "Abstraction.MasterData.AlphaLeaf.arrOfStr_kernel",
       "to": "ABS-048"
     },
     {
       "type": "obligation",
       "from": "Abstraction.MasterData.AlphaLeaf.bcCdOf_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.AlphaLeaf.creditTypeCdOf_kernel",
       "to": "ABS-048"
     },
     {
@@ -12230,6 +12314,11 @@
       "type": "obligation",
       "from": "Abstraction.MasterData.AlphaLeaf.natOfJ32_kernel",
       "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.covers_D036",
+      "to": "ABS-142"
     },
     {
       "type": "obligation",
@@ -16085,12 +16174,32 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Model.AirportCd.ofString?",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.AirportCd.valid",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Model.BoardingClassCd",
       "to": "docs/spec/domain-model.md#列挙"
     },
     {
       "type": "spec_doc",
       "from": "Spec.Model.CreditTypeCd",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.CreditTypeCd.ofString?",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.CreditTypeCd.valid",
       "to": "docs/spec/domain-model.md#コード値"
     },
     {
@@ -16920,12 +17029,22 @@
     },
     {
       "type": "std_abs",
+      "from": "Abstraction.MasterData.AlphaLeaf.airportCdOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.arrOfStr",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.bcCdOf",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.AlphaLeaf.creditTypeCdOf",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -21800,7 +21919,7 @@
       "definition": "Spec.Seed.Member.members",
       "locator": "seed:00230_insert_member.sql#MEMBER",
       "hash": "0fa5d725ee1debb7",
-      "merkle": "f6ef1ffc3b660a1c",
+      "merkle": "fd11e2795afd9240",
       "checks": [
         "seed-lean"
       ]
@@ -21809,7 +21928,7 @@
       "definition": "Spec.Seed.Member.members",
       "locator": "seed:00230_insert_member.sql#MEMBER_LOGIN",
       "hash": "d692d2c1627b0945",
-      "merkle": "f6ef1ffc3b660a1c",
+      "merkle": "fd11e2795afd9240",
       "checks": [
         "seed-lean"
       ]
@@ -21827,7 +21946,7 @@
       "definition": "Spec.Seed.airports",
       "locator": "seed:00200_insert_fixed_value.sql#AIRPORT",
       "hash": "e5f2a74a341d1ab1",
-      "merkle": "6a968c9929061188",
+      "merkle": "8dd0c5d38e06f9a8",
       "checks": [
         "seed-lean"
       ]
@@ -21845,7 +21964,7 @@
       "definition": "Spec.Seed.creditTypes",
       "locator": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
       "hash": "5cac07149240715c",
-      "merkle": "8df750e2f1dcca69",
+      "merkle": "e8a41fc866e8792d",
       "checks": [
         "seed-lean"
       ]
@@ -21890,7 +22009,7 @@
       "definition": "Spec.Seed.routes",
       "locator": "seed:00210_insert_route.sql#ROUTE",
       "hash": "376e285ef8a7ec0a",
-      "merkle": "45853ff796b4ba68",
+      "merkle": "1985c932edf08ac2",
       "checks": [
         "seed-lean"
       ]

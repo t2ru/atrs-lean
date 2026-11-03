@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.AirportCd`・`CreditTypeCd` を形式の証明を持つ型にし、空席照会の条件・マスタの問い合わせの空港コードを生の文字列にした。D-036 を前提型（具体側の入力。D-027 に覆われる。W 課題 ABS-142）に付け替え、[spec/abstraction.md](spec/abstraction.md)（生成表と課題の表）・[spec/master-data.md](spec/master-data.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Error.AtrsError` のコードを事由の列挙（`BusinessError`・`NotFoundError`・`SystemError`）にし、α と予約・空席照会の証明を直した。適合テストベクタの JSON の綴りは変わらない。段の記録と [spec/errors-and-messages.md](spec/errors-and-messages.md) の分類の注記を足した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) に、`ReserveNo` を採番の値で持つ決定（プロジェクトオーナー、案 A）を記録し、`Spec.Model.ReserveNo` を `num : Nat` と表記 `val`・表記の読み取り `ofString?` にした。α と予約の登録の補題を直した。
 * **Update**: スキルの `JDouble` の正規形・`SequenceDef` の範囲（スキルの backlog d3fd の S4）に合わせ、`Abstraction.Fare.Factors` を直した（定理の主張は不変）。照合の記録を `trace rehash` で更新した。スキルの検査 MISU-1 の段階導入の一覧を `trace/project.json` の `lean.misu_pending` に置き、`PasswordHash`・`MasterQuery.Query`・`UseCase.Reserve.Request` に `@[raw_input]` を付けた。[ADR 6d36](decision/6d36-misu-spec-types.md) の段の記録を足した。

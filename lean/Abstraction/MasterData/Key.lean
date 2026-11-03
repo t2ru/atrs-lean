@@ -9,7 +9,7 @@ import LangSemantics.Core.List
 # Abstraction.MasterData.Key
 
 `RouteProvider` のキャッシュのキー `RouteProvider.makeCacheKey dep arr = dep ++ "-" ++ arr` は、空港コードが `-` を含まなければ
-単射である（`WellFormed` な空港コードは英大文字だけからなる）。
+単射である（空港コードは形式 `AirportCd.valid` により英大文字だけからなる）。
 -/
 
 namespace Abstraction.MasterData.Key

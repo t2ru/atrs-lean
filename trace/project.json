@@ -10,14 +10,10 @@
       "note": "検査 MISU-1（spec-pivot の ADR bf1b）の段階導入。ATRS の ADR 6d36 の L1・L2 で型に移すまで、ここに挙げる（移したら外す）",
       "backlog": "8d240cee-be76-41cb-857e-ebe44ad87e53",
       "names": [
-        "Spec.Model.AirportCd",
         "Spec.Model.FlightName",
         "Spec.Model.MembershipNumber",
-        "Spec.Model.CreditTypeCd",
-        "Spec.Model.AirportCd.WellFormed",
         "Spec.Model.FlightName.WellFormed",
-        "Spec.Model.MembershipNumber.WellFormed",
-        "Spec.Model.CreditTypeCd.WellFormed"
+        "Spec.Model.MembershipNumber.WellFormed"
       ]
     }
   },

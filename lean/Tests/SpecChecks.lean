@@ -21,10 +21,10 @@ open Spec.MasterData (Airport Route FlightMaster
 
 /-! ## マスタの不変条件 -/
 
-def hnd : Airport := ⟨⟨"HND"⟩, "東京（羽田）", 1⟩
-def itm : Airport := ⟨⟨"ITM"⟩, "大阪（伊丹）", 2⟩
-def route1 : Route := ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 25000⟩
-def route2 : Route := ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 25000⟩
+def hnd : Airport := ⟨{ val := "HND" }, "東京（羽田）", 1⟩
+def itm : Airport := ⟨{ val := "ITM" }, "大阪（伊丹）", 2⟩
+def route1 : Route := ⟨1, { val := "HND" }, { val := "ITM" }, 25000⟩
+def route2 : Route := ⟨2, { val := "ITM" }, { val := "HND" }, 25000⟩
 def hm (h m : Nat) (hv : h ≤ 23 ∧ m ≤ 59 := by decide) : HourMinute := ⟨h, m, hv⟩
 def ah (h m : Nat) (hv : h ≤ 47 ∧ m ≤ 59 := by decide) : ArrivalTime := ⟨h, m, hv⟩
 def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, ah 8 10, "B777"⟩
@@ -45,11 +45,11 @@ def sample : MasterData where
   fareTypes := [ow, gd]
   peakTimes := [peak1, peak2]
   planes := [⟨"B777", 300, 20⟩]
-  creditTypes := [⟨⟨"VIS"⟩, "VISA", 1⟩]
+  creditTypes := [⟨{ val := "VIS" }, "VISA", 1⟩]
 
 #guard decide (sample.Valid Config.default)
 -- MD-2: 同じ区間
-#guard !decide ({ sample with routes := [route1, { route2 with depAirportCd := ⟨"HND"⟩, arrAirportCd := ⟨"ITM"⟩ }] }.MD2)
+#guard !decide ({ sample with routes := [route1, { route2 with depAirportCd := { val := "HND" }, arrAirportCd := { val := "ITM" } }] }.MD2)
 -- MD-3: 存在しない空港
 #guard !decide ({ sample with airports := [hnd] }.MD3)
 -- MD-4: 重なるピーク時期
@@ -64,10 +64,18 @@ def sample : MasterData where
 #guard !decide ({ sample with fareTypes := [{ ow with discountRate := 61 }] }.MD7 Config.default)
 -- MD-8: 基本運賃と加算料金の合計が値域を超える
 #guard !decide ({ sample with routes := [{ route1 with basicFare := 9995001 }] }.MD8)
--- MD-8: 空港コードが英大文字 3 文字でない
-#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"I-T"⟩ }] }.MD8)
+-- 空港コードの形式（英大文字 3 文字）に合わない値は、空港コードとして表せない（型が形式を持つ）
+#guard (Spec.Model.AirportCd.ofString? "I-T").isNone
+#guard (Spec.Model.AirportCd.ofString? "itm").isNone
+#guard (Spec.Model.AirportCd.ofString? "HNDX").isNone
+#guard (Spec.Model.AirportCd.ofString? "HND").map (·.val) == some "HND"
+#guard (Spec.Model.CreditTypeCd.ofString? "VISA").isNone
+#guard (Spec.Model.CreditTypeCd.ofString? "VIS").map (·.val) == some "VIS"
+-- 参照の問い合わせの値域: 形式に合わない空港コードの区間の問い合わせは Valid でない
+#guard !decide (Spec.MasterQuery.Query.routeOf "I-T" "HND").Valid
+#guard decide (Spec.MasterQuery.Query.routeOf "ITM" "HND").Valid
 -- MD-8: 空港コードが区切り行のコード NOP
-#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"NOP"⟩ }] }.MD8)
+#guard !decide ({ sample with airports := [hnd, { itm with code := { val := "NOP" } }] }.MD8)
 
 -- 参照の問い合わせの値域: 空白だけの便名は Valid でない（原典の Assert.hasText）
 #guard !decide (Spec.MasterQuery.Query.flightMasterOf ⟨" "⟩).Valid
@@ -82,8 +90,8 @@ def sample : MasterData where
 #guard sample.multiplicationRatioOn (ymd 2026 12 26) == 140
 #guard sample.multiplicationRatioOn (ymd 2026 12 25) == 125
 #guard sample.multiplicationRatioOn (ymd 2027 1 1) == 100
-#guard (sample.routeOf ⟨"ITM"⟩ ⟨"HND"⟩).map (·.routeNo) == some 2
-#guard (sample.routeOf ⟨"HND"⟩ ⟨"HND"⟩).isNone
+#guard (sample.routeOf "ITM" "HND").map (·.routeNo) == some 2
+#guard (sample.routeOf "HND" "HND").isNone
 #guard CodeList.contains (CodeList.airport sample) "HND" && !CodeList.contains (CodeList.airport sample) "NOP"
 
 /-! ### 運賃計算の意図から書く例（`docs/spec/fare-calculation.md` の例の表。ADR 9ac6 の採用 C）

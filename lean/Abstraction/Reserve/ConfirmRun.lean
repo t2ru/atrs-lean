@@ -28,7 +28,7 @@ theorem configOf_more {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Spec.Co
     c.reserveIntervalTime.val = (cfg.reserveIntervalTime : Int) ∧
       c.representativeMinAge.val = (cfg.representativeMinAge : Int) := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, rfl⟩ := h
+  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, a7, e7, a8, e8, rfl⟩ := h
   exact ⟨natOfJ32_eq_some.mp e2, natOfJ32_eq_some.mp e3⟩
 
 theorem ftFacts {md : Spec.MasterData} {p : Providers}

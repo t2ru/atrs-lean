@@ -19,6 +19,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | `arrOfStr` | `HHmm` の文字列（到着時刻。24 時以降を含む。ADR ce36） | 4 桁の数字でない・到着時刻の範囲外（例: `4815`） |
 | `dateOfSlash` | `yyyy/MM/dd` の文字列 | その形でない・妥当でない年月日 |
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
+| `airportCdOf`・`creditTypeCdOf` | 空港コード・カード種別コードの文字列 | 形式に合わない（`AirportCd.valid`・`CreditTypeCd.valid`） |
 -/
 
 namespace Abstraction.MasterData.AlphaLeaf
@@ -259,5 +260,29 @@ theorem bcCdOf_kernel : KernelIs bcCdOf (undefOrEq bcCdOf) :=
 @[obligation "ABS-048"]
 theorem ftCdOf_kernel : KernelIs ftCdOf (undefOrEq ftCdOf) :=
   kernelIs_undefOrEq fun _ _ _ hx hy => (ftCdOf_eq_some hx).trans (ftCdOf_eq_some hy).symm
+
+/-! ## 形式の決まったコード値 -/
+
+/-- 空港コード（形式 `AirportCd.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def airportCdOf (s : String) : Option AirportCd := AirportCd.ofString? s
+
+/-- カード種別コード（形式 `CreditTypeCd.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def creditTypeCdOf (s : String) : Option CreditTypeCd := CreditTypeCd.ofString? s
+
+theorem airportCdOf_eq_some {s : String} {c : AirportCd} (h : airportCdOf s = some c) : c.val = s :=
+  AirportCd.val_of_ofString? h
+
+theorem creditTypeCdOf_eq_some {s : String} {c : CreditTypeCd} (h : creditTypeCdOf s = some c) : c.val = s :=
+  CreditTypeCd.val_of_ofString? h
+
+@[obligation "ABS-048"]
+theorem airportCdOf_kernel : KernelIs airportCdOf (undefOrEq airportCdOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (airportCdOf_eq_some hx).symm.trans (airportCdOf_eq_some hy)
+
+@[obligation "ABS-048"]
+theorem creditTypeCdOf_kernel : KernelIs creditTypeCdOf (undefOrEq creditTypeCdOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (creditTypeCdOf_eq_some hx).symm.trans (creditTypeCdOf_eq_some hy)
 
 end Abstraction.MasterData.AlphaLeaf

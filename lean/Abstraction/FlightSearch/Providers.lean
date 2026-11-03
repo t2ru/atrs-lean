@@ -38,13 +38,13 @@ theorem flightMasterOfRow_arr {f : FlightMasterRow} {x : FlightMaster} (h : flig
 
 /-- 空港コードの行があれば、[Spec] の空港名は、`apOf` の行の空港名。 -/
 theorem airportName_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md)
-    (hnd : (db.airport.map (·.airportCd.val)).Nodup) {c : String} (h : ∃ a ∈ db.airport, a.airportCd.val = c) :
-    Spec.FlightSearch.airportName? md ⟨c⟩ = some (apOf db c).airportName.val := by
+    (hnd : (db.airport.map (·.airportCd.val)).Nodup) {c : AirportCd} (h : ∃ a ∈ db.airport, a.airportCd.val = c.val) :
+    Spec.FlightSearch.airportName? md c = some (apOf db c.val).airportName.val := by
   obtain ⟨ha, -⟩ := masterDataOf_eq_some.mp hm
   have hat := apOf_at h
-  have hfind : db.airport.find? (fun a => a.airportCd.val == c) = some (apOf db c) := by
+  have hfind : db.airport.find? (fun a => a.airportCd.val == c.val) = some (apOf db c.val) := by
     have := filter_airport hnd hat
-    cases hf : db.airport.find? (fun a => a.airportCd.val == c) with
+    cases hf : db.airport.find? (fun a => a.airportCd.val == c.val) with
     | none =>
       rw [List.find?_eq_none] at hf
       exact absurd (by simpa using hat.2) (hf _ hat.1)
@@ -54,17 +54,18 @@ theorem airportName_eq {db : MasterDb} {md : MasterData} (hm : masterDataOf db =
       simp only [beq_iff_eq] at hc
       rw [inj_of_nodup_map hnd ha' hat.1 (by rw [hc, hat.2])]
   unfold Spec.FlightSearch.airportName?
-  rw [find?_mapM ha (p := fun a => a.airportCd.val == c) fun r x h => by
-    rw [airportOfRow_code h, Bool.eq_iff_iff]; simp [AirportCd.mk.injEq], hfind]
+  rw [find?_mapM ha (p := fun a => a.airportCd.val == c.val) fun r x h => by
+    rw [← airportOfRow_code h, Bool.eq_iff_iff]; simp only [beq_iff_eq]
+    exact ⟨congrArg AirportCd.val, AirportCd.ext⟩, hfind]
   obtain ⟨x, -, hx⟩ := mapM_some_mem ha hat.1
   simp only [Option.bind_some, hx, Option.map_some]
-  simp only [airportOfRow, Option.map_eq_some_iff] at hx
-  obtain ⟨_, _, rfl⟩ := hx
+  simp only [airportOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hx
+  obtain ⟨_, _, _, _, rfl⟩ := hx
   rfl
 
 /-- 便マスタのキャッシュの答え（空席照会が使う成分）: 便名・出発時刻・到着時刻と、区間の出発・到着の空港名。 -/
 theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
+    (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
       ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.flightName = some name.val ∧
@@ -76,7 +77,7 @@ theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hapnd := airportCodes_nodup ha h1.1
   have hrnd := routeNos_nodup hrts h1.2.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
@@ -122,15 +123,15 @@ theorem flightMaster_full {db : MasterDb} {md : MasterData} (hm : masterDataOf d
       have hrt0 : rtOf db f.routeNo.val = r0 := by simp only [rtOf, hr0, Option.getD_some]
       have hr0m := List.mem_of_find?_eq_some hr0
       obtain ⟨hd, ha'⟩ := routeOfRow_codes hrt'
-      obtain ⟨hda, haa, -⟩ := route_airport hm h3 h8 hr0m
+      obtain ⟨hda, haa, -⟩ := route_airport hm h3 hr0m
       refine ⟨_, _, _, _, _, _, by rw [hget]; rfl, ?_, rfl, ?_, rfl, ?_, rfl, rfl, ?_, rfl, ?_⟩
       · simp only [Function.comp, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, flightMasterResultOf,
           SourceModel.Db.MyBatis.str, hfn]
       · exact Abstraction.FlightSearch.Candidates.flightMasterOfRow_dep hX
       · exact flightMasterOfRow_arr hX
-      · rw [hd, airportName_eq hm hapnd hda]
+      · rw [airportName_eq hm hapnd (c := rt.depAirportCd) (by rw [hd]; exact hda), hd]
         simp only [flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hrt0]
-      · rw [ha', airportName_eq hm hapnd haa]
+      · rw [airportName_eq hm hapnd (c := rt.arrAirportCd) (by rw [ha']; exact haa), ha']
         simp only [flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hrt0]
 
 /-- 運賃種別のキャッシュの答えから、コード・名前・割引率を取り出す。 -/
@@ -158,8 +159,8 @@ theorem fareType_of_answer' {r : JRef SourceModel.Domain.Model.FareType} {ft : F
 theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDataOf db = some md)
     (hv : md.Valid cfg) {o : Order} (ho : o.Allowed db) :
     ∃ p, load o = .ok p ∧ p.peakTime = PeakTimeProvider.load o.peakTime ∧
-      (∀ dep arr : AirportCd, hasText dep.val = true → hasText arr.val = true →
-        ∃ ans, RouteProvider.getRouteByAirportCd p.route dep.val arr.val = .ok ans ∧
+      (∀ dep arr : String, hasText dep = true → hasText arr = true →
+        ∃ ans, RouteProvider.getRouteByAirportCd p.route dep arr = .ok ans ∧
           answerOf? (.route ans) = some (.route (md.routeOf dep arr))) ∧
       (∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
         some (.boardingClass ((md.boardingClassOf cd).map (·.info)))) ∧
@@ -176,8 +177,8 @@ theorem load_fs {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDat
   obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
   obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
   obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
-  obtain ⟨rtp, hrl, hrq⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
-  obtain ⟨fmp, hml, hmf⟩ := flightMaster_full hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨rtp, hrl, hrq⟩ := route_query hm hv.md1 hv.md2 hv.md3 hpr
+  obtain ⟨fmp, hml, hmf⟩ := flightMaster_full hm hv.md1 hv.md3 hpf
   exact ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, hrq, fun cd => hbq cd, fun cd => hfq cd, hmf⟩
 
 end Abstraction.FlightSearch.Providers

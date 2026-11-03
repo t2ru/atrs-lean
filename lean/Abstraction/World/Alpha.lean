@@ -145,11 +145,12 @@ def memberOfRow (m : MemberRow) (l : MemberLoginRow) : Option Member :=
     let b ← dateOfPg m.birthday
     let g ← Gender.ofCode? m.gender.val
     let dt ← optDate l.loginDateTime
+    let ct ← Abstraction.MasterData.AlphaLeaf.creditTypeCdOf m.creditTypeCd.val
     pure { membershipNumber := ⟨m.customerNo.val⟩, kanjiFamilyName := m.kanjiFamilyName.val,
            kanjiGivenName := m.kanjiGivenName.val, kanaFamilyName := m.kanaFamilyName.val,
            kanaGivenName := m.kanaGivenName.val, birthday := b, gender := g, tel := m.tel.val, zipCode := m.zipCode.val,
            address := m.address.val, mail := m.mail.val, creditNo := m.creditNo.val,
-           creditTypeCd := ⟨m.creditTypeCd.val⟩, creditTerm := m.creditTerm.val,
+           creditTypeCd := ct, creditTerm := m.creditTerm.val,
            login := { password := ⟨l.password.val⟩, lastPassword := l.lastPassword.map fun p => ⟨p.val⟩,
                       loginDateTime := dt, loginFlg := l.loginFlg } }
   else none
@@ -163,11 +164,12 @@ theorem memberOfRow_inj {m m' : MemberRow} {l l' : MemberLoginRow} {x : Member}
   case isFalse => cases h'
   rename_i hc hc'
   simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨b, hb, g, hg, dt, hdt, rfl⟩ := h
-  obtain ⟨b', hb', g', hg', dt', hdt', h⟩ := h'
-  simp only [Member.mk.injEq, MembershipNumber.mk.injEq, CreditTypeCd.mk.injEq, MemberLogin.mk.injEq,
+  obtain ⟨b, hb, g, hg, dt, hdt, ct, hct, rfl⟩ := h
+  obtain ⟨b', hb', g', hg', dt', hdt', ct', hct', h⟩ := h'
+  simp only [Member.mk.injEq, MembershipNumber.mk.injEq, MemberLogin.mk.injEq,
     PasswordHash.mk.injEq] at h
-  obtain ⟨h1, h2, h3, h4, h5, rfl, rfl, h8, h9, h10, h11, h12, h13, h14, h15, h16, rfl, h18⟩ := h
+  obtain ⟨h1, h2, h3, h4, h5, rfl, rfl, h8, h9, h10, h11, h12, rfl, h14, h15, h16, rfl, h18⟩ := h
+  have h13 := (CreditTypeCd.val_of_ofString? hct').symm.trans (CreditTypeCd.val_of_ofString? hct)
   have hlp : l'.lastPassword = l.lastPassword := by
     cases e1 : l'.lastPassword <;> cases e2 : l.lastPassword <;> rw [e1, e2] at h16 <;> simp_all
     exact Subtype.ext h16

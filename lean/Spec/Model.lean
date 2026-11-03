@@ -6,8 +6,9 @@ import Spec.Prim
 列挙・コード値・エンティティ・値域（`docs/spec/domain-model.md`）。
 
 - 列挙の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
-- コード値は `String` を包む structure とし、形式は述語（`WellFormed`）で表す。マスタに存在することは
-  `Spec.MasterData` の参照関数と不変条件で表す。
+- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・カード種別コード）は、形式の証明を
+  欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。便名・会員番号の形式は
+  述語（`WellFormed`）で表す。マスタに存在することは `Spec.MasterData` の参照関数と不変条件で表す。
 - エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
 -/
 
@@ -109,14 +110,40 @@ theorem fareType_partition (c : FareTypeCd) : (c ∈ oneWayFareTypes) ≠ (c ∈
 /-- 英大文字。 -/
 def isUpperAlpha (c : Char) : Bool := inRange 0x41 0x5A c
 
-/-- 空港コード。 -/
+/-- 空港コードの形式: 英大文字 3 文字（`toList` で見る）。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
+def AirportCd.valid (s : String) : Bool := s.toList.length == 3 && s.toList.all isUpperAlpha
+
+/-- 空港コード。形式（`AirportCd.valid`）の証明を持つ。形式に合わない DB のマスタのコードは表せない（D-036。D-027 に覆われる）。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値", gap "D-036"]
 structure AirportCd where
   val : String
+  wf : AirportCd.valid val = true := by decide
   deriving DecidableEq, Repr
 
-/-- 空港コードの形式: 英大文字 3 文字。 -/
-def AirportCd.WellFormed (c : AirportCd) : Prop := c.val.length = 3 ∧ c.val.all isUpperAlpha = true
+/-- 空港コードを読む。形式に合わなければ無し。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def AirportCd.ofString? (s : String) : Option AirportCd := if h : AirportCd.valid s then some ⟨s, h⟩ else none
+
+/-- 空港コードは値で決まる。 -/
+theorem AirportCd.ext {a b : AirportCd} (h : a.val = b.val) : a = b := by
+  cases a; cases b; cases h; rfl
+
+/-- 読めた空港コードの値は、読んだ文字列そのもの。 -/
+theorem AirportCd.val_of_ofString? {s : String} {c : AirportCd} (h : AirportCd.ofString? s = some c) : c.val = s := by
+  unfold AirportCd.ofString? at h
+  split at h
+  · cases h; rfl
+  · cases h
+
+/-- 空港コードの値を読むと、その空港コード。 -/
+@[simp] theorem AirportCd.ofString?_val (c : AirportCd) : AirportCd.ofString? c.val = some c := by
+  simp [AirportCd.ofString?, c.wf]
+
+/-- 読めるのは、形式に合うときに限る。 -/
+theorem AirportCd.ofString?_isSome_iff {s : String} : (AirportCd.ofString? s).isSome ↔ AirportCd.valid s = true := by
+  unfold AirportCd.ofString?
+  split <;> simp_all
 
 /-- 便名。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
@@ -163,14 +190,43 @@ theorem ReserveNo.val_of_ofString? {s : String} {n : ReserveNo} (h : ReserveNo.o
     subst h; exact hv
   · simp only [hv, ite_false, reduceCtorEq] at h
 
-/-- カード種別コード。 -/
+/-- カード種別コードの形式: 3 文字（`toList` で見る）。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def CreditTypeCd.valid (s : String) : Bool := s.toList.length == 3
+
+/-- カード種別コード。形式（`CreditTypeCd.valid`）の証明を持つ。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
 structure CreditTypeCd where
   val : String
+  wf : CreditTypeCd.valid val = true := by decide
   deriving DecidableEq, Repr
 
-/-- カード種別コードの形式: 3 文字。 -/
-def CreditTypeCd.WellFormed (c : CreditTypeCd) : Prop := c.val.length = 3
+/-- カード種別コードを読む。形式に合わなければ無し。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def CreditTypeCd.ofString? (s : String) : Option CreditTypeCd :=
+  if h : CreditTypeCd.valid s then some ⟨s, h⟩ else none
+
+/-- カード種別コードは値で決まる。 -/
+theorem CreditTypeCd.ext {a b : CreditTypeCd} (h : a.val = b.val) : a = b := by
+  cases a; cases b; cases h; rfl
+
+/-- 読めたカード種別コードの値は、読んだ文字列そのもの。 -/
+theorem CreditTypeCd.val_of_ofString? {s : String} {c : CreditTypeCd} (h : CreditTypeCd.ofString? s = some c) :
+    c.val = s := by
+  unfold CreditTypeCd.ofString? at h
+  split at h
+  · cases h; rfl
+  · cases h
+
+/-- カード種別コードの値を読むと、そのカード種別コード。 -/
+@[simp] theorem CreditTypeCd.ofString?_val (c : CreditTypeCd) : CreditTypeCd.ofString? c.val = some c := by
+  simp [CreditTypeCd.ofString?, c.wf]
+
+/-- 読めるのは、形式に合うときに限る。 -/
+theorem CreditTypeCd.ofString?_isSome_iff {s : String} :
+    (CreditTypeCd.ofString? s).isSome ↔ CreditTypeCd.valid s = true := by
+  unfold CreditTypeCd.ofString?
+  split <;> simp_all
 
 /-- パスワードのハッシュ（不透明。ADR 2d1f）。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値", raw_input "パスワードエンコーダのポートが返す不透明な値（ADR 2d1f）"]
@@ -178,11 +234,9 @@ structure PasswordHash where
   val : String
   deriving DecidableEq, Repr
 
-instance (c : AirportCd) : Decidable c.WellFormed := by unfold AirportCd.WellFormed; infer_instance
 instance (n : FlightName) : Decidable n.WellFormed := by unfold FlightName.WellFormed; infer_instance
 instance (n : MembershipNumber) : Decidable n.WellFormed := by
   unfold MembershipNumber.WellFormed; infer_instance
-instance (c : CreditTypeCd) : Decidable c.WellFormed := by unfold CreditTypeCd.WellFormed; infer_instance
 
 /-! ## エンティティ -/
 

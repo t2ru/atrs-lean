@@ -131,8 +131,8 @@ theorem suHasText_fun : LangSemantics.Java.Spring.StringUtils.hasText =
 
 /-- ABS-131 の証人の [Spec] のマスタ（`db2415` の写し）。 -/
 def mdW2415 : Spec.MasterData :=
-  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
-    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 10000⟩, ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 10000⟩],
+  { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
+    routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000⟩, ⟨2, { val := "ITM" }, { val := "HND" }, 10000⟩],
     flightMasters := [⟨⟨"NTT523"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
       ⟨⟨"NTT528"⟩, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
@@ -166,7 +166,7 @@ theorem md2415_valid : mdW2415.Valid Spec.Config.default := by
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
   simp only [mdW2415, List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+  rcases ha with rfl | rfl <;> decide
 
 theorem inputR_passengers : ∀ p ∈ inputR.passengers, (∀ s ∈ p.familyName, s.length ≤ 10) ∧
     (∀ s ∈ p.givenName, s.length ≤ 10) ∧ (∀ a ∈ p.age, a ≤ 999) := by
@@ -245,7 +245,7 @@ theorem mdFS_valid : mdFS.Valid Spec.Config.default := by
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
   simp only [mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+  rcases ha with rfl | rfl <;> decide
 
 theorem req109_valid : (iaR mdFS [selR]).req.Valid := by
   refine ⟨?_, by decide, by decide, by decide, by decide, by decide, by decide, by decide, inputR_passengers⟩
