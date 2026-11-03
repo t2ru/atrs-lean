@@ -1,13 +1,13 @@
 ---
 type: Overview
 title: "ATRS 仕様文書"
-description: "docs/spec の役割（Spec 外の規範・メタ情報・草案）、正規性、対象版、文書の区分一覧。"
+description: "docs/spec の役割（メタ情報）、業務仕様を書く Spec のモジュール文書と仕様の本、正規性、対象版、文書の区分一覧。"
 tags: [spec, index]
 status: draft
 spec_role: meta
 generated:
   by: claude-code/claude-opus-5-5
-  at: 2026-10-30T08:12:23+09:00
+  at: 2026-11-03T12:00:00+09:00
 sources:
   - id: atrs-upstream
     resource: https://github.com/terasolunaorg/atrs/tree/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf
@@ -18,13 +18,15 @@ sources:
 
 > **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
 
-ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である。本ディレクトリは、**`Spec` で表現できない仕様**（規範）と、仕様・検証を運用するためのメタ情報、そして Lean に形式化する前の業務規則の **草案** を置く（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
-移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と本ディレクトリの規範節に従う（[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)）。区分（normative / meta / draft / informative）と書き方は、スキル spec-pivot の [spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md) による。
+ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** である（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
+業務仕様の散文（形式化した規則の要約、Lean に形式化する前の業務規則の **草案**、`Spec` で表現できない仕様の **規範**）は、`Spec` の各モジュールのモジュール文書（`/-! … -/`）に、定義のすぐ前に書く（[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。それを mdgen と mdbook で HTML の本にする（`mise run book:build`。出力は `build/book/html/`、CI の artifact `spec-book`）。
+本ディレクトリには、仕様と検証を運用するための **メタ情報**（課題一覧・既知差異・保証の限界・適合テストベクタ・追跡）だけを置く。
+移植先モデル `TargetModel`（Lean）と移植先ソース（Rust）は、Lean `Spec` と、そのモジュール文書の規範節に従う（[ADR 0bd3](../decision/0bd3-generate-verus-mirror-from-target-model.md)）。区分（normative / meta / draft / informative）と書き方は、スキル spec-pivot の [spec-documents.md](../../.agents/skills/spec-pivot/references/docs/rules/spec-documents.md) による。
 
 | 優先 | 正規の定義 |
 | --- | --- |
-| 1 | Lean `Spec`（`lean/Spec/`） |
-| 2 | 本ディレクトリの `normative` の文書・節 |
+| 1 | Lean `Spec`（`lean/Spec/`）の定義 |
+| 2 | `Spec` のモジュール文書の `normative` の節 |
 | — | `draft` は Lean に形式化するまでの暫定。`informative` は非規範の要約 |
 
 ## 対象版
@@ -53,29 +55,39 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 
 ## 文書
 
-| 文書 | 内容 | 原典の機能 ID | 区分 |
+業務仕様（`Spec` のモジュール文書。本の目次の順）:
+
+| モジュール | 内容 | 原典の機能 ID | 区分 |
 | --- | --- | --- | --- |
 | [`Spec.Glossary`](../../lean/Spec/Glossary.lean) | 用語集（日英対応） | — | meta |
+| [`Spec.Prim`](../../lean/Spec/Prim.lean) とその下 | 基本演算・暦日と時刻・書式・文字クラス | — | informative＋draft |
+| [`Spec.Model`](../../lean/Spec/Model.lean) | 列挙・コード値・エンティティ・値域 | — | informative＋draft |
 | [`Spec.Config`](../../lean/Spec/Config.lean) | 設定パラメータ | — | informative＋draft |
-| [`Spec.Model`](../../lean/Spec/Model.lean) | 型・列挙・値域・不変条件・基本演算 | — | informative＋draft |
-| [`Spec.MasterData`](../../lean/Spec/MasterData.lean) | マスタデータの構造と不変条件、シードデータ | — | informative＋draft |
-| [`Spec.Fare`](../../lean/Spec/Fare.lean) | 基本運賃・運賃・合計運賃 | B0 | draft |
-| [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) | 空席照会 | B1 | draft |
-| [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
-| [`Spec.Member`](../../lean/Spec/Member.lean) | 会員登録・会員情報変更 | C0, C1, C2 | draft |
-| [`Spec.Authentication`](../../lean/Spec/Authentication.lean) | ログイン・ログアウト | A0, A1, A2 | draft |
-| [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) | 予約履歴レポート | D1 | draft |
-| [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) | 入力検証・文字クラス | 全画面 | draft |
+| [`Spec.MasterData`](../../lean/Spec/MasterData.lean)・[`Spec.CodeList`](../../lean/Spec/CodeList.lean) | マスタデータの構造と不変条件・参照関数・コードリスト・シードデータ | — | informative＋draft |
+| [`Spec.Fare`](../../lean/Spec/Fare.lean) | 基本運賃・運賃・合計運賃 | B0 | informative |
 | [`Spec.Error`](../../lean/Spec/Error.lean) | エラー分類・コード・メッセージ | 全体 | draft |
 | [`Spec.Port`](../../lean/Spec/Port.lean) | ポート（副作用）の契約 | 全体 | draft＋normative |
-| [`Spec.Http`](../../lean/Spec/Http.lean) | 画面遷移・REST API の契約 | 全画面 | draft＋normative |
-| [abstraction.md](abstraction.md) | 抽象化証明課題・既知差異 | — | meta |
-| [refinement.md](refinement.md) | 具体化証明課題・移植先の既知差異・移植先ソースの確認課題 | — | meta |
-| [assurance.md](assurance.md) | 保証の限界（ソース ⇔ モデルの決定論的な手段と、その届かない部分） | — | meta |
-| [conformance.md](conformance.md) | 適合テストベクタの形式 | — | meta |
-| [traceability.md](traceability.md) | 両端の追跡（移植元ソース ⇔ `SourceModel`、`TargetModel` ⇔ 移植先ソース）。原典と実装を直接はつながない | — | meta |
+| [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) | 空席照会 | B1 | draft |
+| [`Spec.Ticket`](../../lean/Spec/Ticket.lean)・[`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
+| [`Spec.Member`](../../lean/Spec/Member.lean) | 会員登録・会員情報変更（文書だけのモジュール） | C0, C1, C2 | draft |
+| [`Spec.Authentication`](../../lean/Spec/Authentication.lean) | ログイン・ログアウト（文書だけのモジュール） | A0, A1, A2 | draft |
+| [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) | 予約履歴レポート（文書だけのモジュール） | D1 | draft |
+| [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) | 入力検証（文書だけのモジュール） | 全画面 | draft |
+| [`Spec.Http`](../../lean/Spec/Http.lean) | 画面遷移・REST API の契約（文書だけのモジュール） | 全画面 | draft＋normative |
+
+旧 `docs/spec/<文書>.md#<見出し>` から新しい場所への対応は `tools/docs/spec-anchors.json` にある（[backlog c89a](../backlog/c89a-business-spec-in-lean-module-docs.md)）。
+
+メタ情報（本ディレクトリ）:
+
+| 文書 | 内容 | 区分 |
+| --- | --- | --- |
+| [abstraction.md](abstraction.md) | 抽象化証明課題・既知差異 | meta |
+| [refinement.md](refinement.md) | 具体化証明課題・移植先の既知差異・移植先ソースの確認課題 | meta |
+| [assurance.md](assurance.md) | 保証の限界（ソース ⇔ モデルの決定論的な手段と、その届かない部分） | meta |
+| [conformance.md](conformance.md) | 適合テストベクタの形式 | meta |
+| [traceability.md](traceability.md) | 両端の追跡（移植元ソース ⇔ `SourceModel`、`TargetModel` ⇔ 移植先ソース）。原典と実装を直接はつながない | meta |
 
 ## 状態
 
-本ディレクトリは初版（`status: draft`）であり、人によるレビュー（frontmatter の `verified`）を経ていない。Lean `Spec` はまだ無いため、現時点では草案が形式化の唯一の入力である。
+業務仕様とメタ情報は初版（`status: draft`）であり、人によるレビュー（frontmatter の `verified`）を経ていない。形式化していない領域では、モジュール文書の草案が形式化の唯一の入力である。
 原典の調査で確定していない箇所には `TODO(spec)` を付けている。

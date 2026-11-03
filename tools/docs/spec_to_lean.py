@@ -307,7 +307,7 @@ def rewrite_md_links(lines, src_dir, dst_dir, amap, rebase=True, self_doc=None, 
             else:
                 new = dest + ("#" + frag if frag else "")
             npath, _, nfrag = new.partition("#")
-            rel = "" if npath == dst_file else relpath(npath, dst_dir) if npath != "." else ""
+            rel = ("" if nfrag else os.path.basename(npath)) if npath == dst_file else relpath(npath, dst_dir)
             if path.endswith("/") and not rel.endswith("/"):
                 rel += "/"
             spans.append((m.start(3), m.end(3), rel + ("#" + nfrag if nfrag else "")))

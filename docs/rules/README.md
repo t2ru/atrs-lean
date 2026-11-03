@@ -35,7 +35,7 @@ generated:
 1. 状態が `accepted` の ADR（[docs/decision/](../decision/)）
 2. 本ディレクトリの規約（[atrs-porting.md](atrs-porting.md) を含む）
 3. スキル [spec-pivot](../../.agents/skills/spec-pivot/SKILL.md)・[okf-bundle](../../.agents/skills/okf-bundle/SKILL.md)・[work-records](../../.agents/skills/work-records/SKILL.md)
-4. 正規仕様（Lean の `Spec` と [docs/spec/](../spec/README.md) の規範節。[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）
+4. 正規仕様（Lean の `Spec` と、そのモジュール文書の規範節。[docs/spec/](../spec/README.md)、[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）
 5. [AGENTS.md](../../AGENTS.md)
 6. backlog の記述
 

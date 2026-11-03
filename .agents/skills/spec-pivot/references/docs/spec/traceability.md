@@ -175,6 +175,8 @@ locator = kind ":" body
 | `source.mirror` | 任意。移植元のモデルを原典のソースツリーの形に並べる規則（TR-M）。`lean_root`（モデルの層。例 `SourceModel`）、`package_prefix`（モジュールの名前から除くパッケージの接頭辞）、`roots`（ソースツリーを写すモジュールの、層の直下の成分）、`case`（`upper-camel` か `same`）、`shared`（どの定義から引いてもよい横断的な設定のクラス。TR-M1 の根拠にしない） |
 | `target.root` / `target.src` / `target.crate` / `target.generated` | 移植先のプロジェクトのルート（TR-X の範囲）、ソースのルート、crate 名、生成した写しのディレクトリ（`src` からの相対） |
 | `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
+| `docs.spec_lean` | 任意。仕様の散文を書いた `Spec` のモジュール文書の Lean のファイル・ディレクトリ（「出典:」の範囲に加える。[spec-documents.md](../rules/spec-documents.md#モジュール文書に書く)） |
+| `book` | 任意。仕様の本の設定（`scripts/book/build.py`）: `title`・`language`、`roots`（本にする Lean のファイル・ディレクトリ）、`entry`（目次の順を決めるモジュール）、`out`（出力）、`repo_url`（本の外へのリンクの基点）、`refs`（`--check` が行き先を検査する `manifest` と `vectors`）、`okf_check`（アンカーの規則を借りる okf-bundle の道具のパス） |
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
 | `conformance` | 適合テストベクタのディレクトリ |
 

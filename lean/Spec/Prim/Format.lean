@@ -17,7 +17,7 @@ def padNat (w n : Nat) : String :=
 /-!
 ## 書式
 
-**[Spec]** Lean: [`Spec.Prim.Format`]()。いずれもゼロ埋めの固定桁である。
+**[Spec]** Lean: [`Spec.Prim.Format`](Format.lean)。いずれもゼロ埋めの固定桁である。
 
 | 名前 | 形式 | 例 |
 | --- | --- | --- |

@@ -92,5 +92,6 @@ Chosen option: "Lean `Spec` を正規とし、`Spec` で表現できない仕様
 ## More Information
 
 * 本 ADR は [ADR 3b0a](3b0a-spec-as-normative-source.md) を置き換える。
+* 補足（2026-11-03）: 規範節・草案・要約の **置き場所** は、[ADR 68a6](68a6-business-spec-in-lean-module-docs-and-book.md) で `docs/spec` から `Spec` のモジュール文書（`/-! -/`）に改めた。正規性の序列と区分は本 ADR のとおりである。
 * [ADR 0bd3](0bd3-generate-verus-mirror-from-target-model.md)（移植先モデルと移植先ソースの構成）
 * [spec/README.md](../spec/README.md)

@@ -17,7 +17,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 手段の届かない部分（保証の限界）は [docs/spec/assurance.md](docs/spec/assurance.md) にすべて列挙する。
 
-- 正規仕様は Lean の `Spec`。`Spec` で表現できない仕様だけを `docs/spec` で定義する（[ADR 61bc](docs/decision/61bc-lean-spec-as-normative-source.md)）。
+- 正規仕様は Lean の `Spec`。業務仕様の散文（要約・形式化前の草案・`Spec` で表現できない仕様の規範）は、`Spec` の各モジュールのモジュール文書（`/-! -/`）に定義のすぐ前に書き、mdgen と mdbook で HTML の本にする（`mise run book:build`）。`docs/spec` にはメタ情報だけを置く（[ADR 61bc](docs/decision/61bc-lean-spec-as-normative-source.md)、[ADR 68a6](docs/decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。
 - モデルと証明はすべて Lean に置く。移植先ソースは Rust。`TargetModel` から Verus の写しを生成し、Verus で Rust との一致を証明する。あわせて、追跡注釈・適合テスト・Kani で確認する（[ADR 0bd3](docs/decision/0bd3-generate-verus-mirror-from-target-model.md)）。
 - `SourceModel`・`TargetModel` は、それぞれ `Spec` を B メソッドの意味でリファインする。差異は `D-NNN`・`T-NNN` として、定理の名前付きの仮定と文書の両方に置く（[ADR 01d4](docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)）。リファインメントが空虚・自明に成り立たないよう、付帯の義務（選択の像としての `Spec`、環境の固定、標準の貼り合わせ、入口の全域性など）を課す（[ADR 70eb](docs/decision/70eb-refinement-non-vacuity-obligations.md)）。
 - トレースは両端の 2 本だけ。**移植元ソースと移植先ソースは直接つながない**（[ADR e2a4](docs/decision/e2a4-traceability-hash-as-deterministic-check-record.md)）。
@@ -54,7 +54,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | [docs/index.md](docs/index.md) | **文書インデックス**。`docs/` は OKF v0.2 の Knowledge Bundle（[ADR a0f1](docs/decision/a0f1-documentation-format-okf-v0-2.md)） |
 | [docs/log.md](docs/log.md) | 文書の変更履歴 |
 | [docs/decision/](docs/decision/) | 意思決定記録（ADR, MADR 形式）。設計判断の唯一の記録場所 |
-| [docs/spec/](docs/spec/) | Lean `Spec` で表現できない仕様（規範）、文書メタ情報、形式化前の草案 |
+| [docs/spec/](docs/spec/) | 仕様と検証のメタ情報（課題一覧・既知差異・保証の限界・適合テストベクタ・追跡）。業務仕様は `lean/Spec` のモジュール文書にある（[ADR 68a6](docs/decision/68a6-business-spec-in-lean-module-docs-and-book.md)） |
 | [docs/backlog/](docs/backlog/) | 作業項目。着手順と依存関係 |
 | [docs/rules/](docs/rules/) | ATRS の運用規約 |
 | [.agents/skills/okf-bundle/](.agents/skills/okf-bundle/SKILL.md)・[.agents/skills/work-records/](.agents/skills/work-records/SKILL.md) | 文書の管理（アプリ非依存のスキル）。okf-bundle は OKF のバンドルとリンクの検査 `scripts/okf_check.py`・文書の移動 `scripts/docmv.py`（設定はルートの `.okf.json`）、work-records は ADR・backlog の形式と ID の道具 `scripts/ids.py`（設定はルートの `.work-records.json`）。各スキルの判断・作業は、それぞれの `references/docs/{decision,backlog}` に置く（[ADR 625d](docs/decision/625d-adopt-okf-bundle-and-work-records-skills.md)） |
@@ -62,7 +62,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 | `README.md`・`LICENSE-MIT`・`LICENSE-APACHE`・`NOTICE`（ルート） | 公開用の概要と、ライセンス（MIT OR Apache-2.0 のデュアルライセンス）。上流から派生した部分と上流の Apache-2.0 の条件は `NOTICE` に列挙する（[ADR 1add](docs/decision/1add-license-mit-or-apache-2-0.md)） |
 | `lakefile.lean`（ルート） | Lake ワークスペース。Lean の LSP がリポジトリのルートから `import` を解決するために、`lean/` とスキルの `assets/lean` を `require` する |
 | `.okf.json`・`.work-records.json`（ルート） | スキル okf-bundle・work-records の道具が読む ATRS の設定（検査するバンドルとプロファイル、ADR・backlog の置き場所と検査の範囲。[ADR 625d](docs/decision/625d-adopt-okf-bundle-and-work-records-skills.md)） |
-| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](docs/decision/44a0-mise-tasks-and-uv-for-tools.md)） |
+| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。一覧は `mise tasks`）と、mise が管理する道具（uv と mdbook）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](docs/decision/44a0-mise-tasks-and-uv-for-tools.md)、[ADR 68a6](docs/decision/68a6-business-spec-in-lean-module-docs-and-book.md)） |
 | `lean/` | Lean プロジェクト（パッケージ `atrs`）。トップレベルの主定理は `lean/Abstraction.lean` の `Abstraction.refines`・`Abstraction.preserves`・`Abstraction.abstracts`（`Machine.Refines`・`Machine.Preserves`・`Machine.Abstracts`。A abstracts B = A preserves B ∧ B refines A。`Spec.machine` と `SourceModel.machine` は実装済みの機能の並置）に、`lean/Refinement.lean` にも同じ形で置く（[ADR 91be](docs/decision/91be-top-level-preserves-refines-abstracts.md)）。`Spec`（正規仕様）/ `SourceModel`（原典の Java のソースツリーと同じ形。[ADR e41c](docs/decision/e41c-source-model-mirrors-java-tree.md)）/ `Abstraction`（`Abstraction.Gap` はギャップの登録簿）/ `TargetModel` / `Refinement` / `Tests` / `Tools`（道具の入口）。`LangSemantics`（`Core`・`Java`・`Sql`・`Rust`）・`Machine`・`Trace`（追跡属性・ギャップの登録簿の型・trace-dump・obligation-check の本体）・`ConformanceKit`（適合テストの実行器）はスキルの `assets/lean` を Lake 依存として取り込む。アプリに依存しない補題・道具は ATRS に置かず、スキルに足す（[backlog be49](docs/backlog/be49-lean-project-scaffold.md)、[ADR 7fe4](.agents/skills/spec-pivot/references/docs/decision/7fe4-move-trace-attributes-to-skill.md)） |
 | `rust/`（予定） | 移植先ソース。業務機能、`model/`（`TargetModel` の Verus 写し）、`proof/`、`kani/`、`tests/`（[backlog fb50](docs/backlog/fb50-rust-project-scaffold.md)） |
 | `upstream/atrs` | 移植元ソース（git submodule、commit 固定。[backlog 455f](docs/backlog/455f-upstream-submodule-and-inventory.md)） |
@@ -73,7 +73,7 @@ Thymeleaf 版を、**Lean 4 で形式化したモデルと仕様** を介して 
 
 ## 主要な規則（要約。詳細は各規約・ADR）
 
-1. 正規仕様は Lean `Spec` と、`docs/spec` の規範節（`Spec` で表現できない仕様）である。実装は仕様に従い、仕様にない振る舞いを実装してはならない（[ADR 61bc](docs/decision/61bc-lean-spec-as-normative-source.md)）。
+1. 正規仕様は Lean `Spec` と、そのモジュール文書の規範節（`Spec` で表現できない仕様）である。実装は仕様に従い、仕様にない振る舞いを実装してはならない（[ADR 61bc](docs/decision/61bc-lean-spec-as-normative-source.md)）。
 2. Lean のトップレベル名前空間は次に統一する（[ADR 0bd3](docs/decision/0bd3-generate-verus-mirror-from-target-model.md)）。
    - `LangSemantics.<lang>` 言語意味論モデル（アプリ非依存。`Java`, `Sql`, `Rust`）
    - `SourceModel` 移植元モデル（移植元ソース Java/SQL の振る舞いを意味論ごと写す）
@@ -117,4 +117,5 @@ Java の原典実行（[backlog f18c](docs/backlog/f18c-java-oracle-harness.md)�
 [Spec] と [Source] の差異を全範囲（実装済みと未着手）で棚卸しし、登録簿の誤りを直し、D-034〜D-041 を登録し、既存の差異を広げた（[ADR f786](docs/decision/f786-gap-inventory-and-registry-fixes.md)）。ライブラリの挙動に拠る候補は原典実行で確かめる（[backlog ceb8](docs/backlog/ceb8-origin-run-checks-for-gap-candidates.md)）。棚卸しの手順はスキルの [gap-inventory.md](.agents/skills/spec-pivot/references/docs/guide/gap-inventory.md) にある。
 次に着手できるのは、会員と入力検証の [4e0e](docs/backlog/4e0e-member-usecases-and-input-validation.md)、Lean 側の [a936](.agents/skills/spec-pivot/references/docs/backlog/a936-lang-semantics-rust.md)（言語意味論）、版上げの差分の原典実行の [773f](docs/backlog/773f-differential-oracle.md)、Rust の [fb50](docs/backlog/fb50-rust-project-scaffold.md)（Verus と Kani の併用確認を含む）。
 検査は、コミット前と PR では `mise run check`（常時の段と、変更に関係する長い段。範囲は `tools/ci/check-scopes.toml`）、main への push・週次・backlog の完了・版上げでは全数 `mise run ci` を実行する（[docs/rules/checks.md](docs/rules/checks.md)、[ADR 9c1c](docs/decision/9c1c-check-tiers-and-change-scoped-long-checks.md)）。Lean のテストは、すべて `lake test`（`lean:test`）が実行する。シードの DB を使う SourceModel の照合は、SQL の写しの結合を証明付きの `@[csimp]` で速くし、長い検査の段 `long-tests` は無くした（[ADR aaf8](docs/decision/aaf8-drop-long-tests-tier.md)、スキルの [ADR b187](.agents/skills/spec-pivot/references/docs/decision/b187-proven-csimp-for-evaluating-models.md)）。段ごとのタスクはルートの `mise.toml`（一覧は `mise tasks`）。mise は uv だけを管理し、Python の道具は `uv run python -I` で実行する（[ADR 44a0](docs/decision/44a0-mise-tasks-and-uv-for-tools.md)）。
+業務仕様の散文を `docs/spec` から `lean/Spec` のモジュール文書へ移し、mdgen（スキルの `assets/mdgen`）と mdbook で HTML の本（`build/book/html/`、CI の artifact `spec-book`）を作るようにした。仕様への参照（`@[spec_doc]`・`specRef`）の行き先は `mise run book:check`、モジュール文書のリンクとアンカーは `docs:okf`、「出典:」は TR-R が検査する（[backlog c89a](docs/backlog/c89a-business-spec-in-lean-module-docs.md)、[ADR 68a6](docs/decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。
 進捗は [docs/backlog/README.md](docs/backlog/README.md) を参照。

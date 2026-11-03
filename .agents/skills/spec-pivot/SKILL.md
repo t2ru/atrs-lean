@@ -3,7 +3,7 @@ name: spec-pivot
 description: "Spec Pivot: Lean 4 を中間の形式化言語として、あるプログラミング言語で書かれたアプリケーションを別の言語へ移植する方法。移植元モデル（SourceModel）・抽象仕様（Spec）・移植先モデル（TargetModel）の 3 層と、抽象化（Abstraction）／具体化（Refinement）の証明、ソースとモデルの両端トレーサビリティ、言語中立な適合テストベクタ、移植元の版上げ追従を扱う。Use when porting an application between programming languages via a Lean formal specification, e.g. Java/SQL to Rust; when writing SourceModel, Spec, TargetModel, Abstraction or Refinement in Lean; when setting up traceability, conformance vectors, Java origin runs (running the original program to record and check expected values), Verus or Kani checks; or when following an upstream release of the source application; when assessing whether a port can be justified, or reviewing a porting claim adversarially. Keywords: Spec Pivot, 言語間移植, language porting, migration, modernization, assessment, 移植が成り立つ条件, Lean 4, formal specification, refinement proof, abstraction, traceability, conformance test vectors, adversarial review, Verus, Kani, Java, SQL, Rust."
 compatibility: Lean 4 と Lake が必要（assets の Lean モデルは Lean 4.35.0・core のみで検証済み）。言語ごとの道具（Java の原典実行用の JDK と Maven（assets/java/conformance-kit）、Rust ツールチェーン、Verus、Kani など）は references/docs/lang/<lang>/ に記載。スキルの文書・記録の保守と、適用先の文書の検査には、スキル okf-bundle（OKF のバンドル）と work-records（意思決定記録・作業項目）を使う。
 metadata:
-  version: "0.27"
+  version: "0.28"
   formalization: "lean4"
   language-packs: "java sql sql/postgresql rust lean"
 ---
@@ -50,7 +50,7 @@ metadata:
 | # | 前提 | 欠けたときの典型的な扱い |
 | --- | --- | --- |
 | P1 | 移植元ソースが手元にあり、版を固定できる | その対象には適用できない。追跡（[traceability.md](references/docs/spec/traceability.md)）が成り立たない |
-| P2 | 観測可能な振る舞いを、入力・出力・ポートの効果として区切れる | 区切れない振る舞いは、規範の仕様文書に書く（[spec-documents.md](references/docs/rules/spec-documents.md)） |
+| P2 | 観測可能な振る舞いを、入力・出力・ポートの効果として区切れる | 区切れない振る舞いは、`Spec` のモジュール文書の規範節に書く（[spec-documents.md](references/docs/rules/spec-documents.md)） |
 | P3 | 移植元とモデルの一致を、決定論的な手段（[verification.md](references/docs/spec/verification.md#決定論的な手段)。例: 原典実行、処理系の差分実行）で確かめられる | 確かめられない部分は、保証の限界になる |
 | P4 | 使う言語の意味を、`LangSemantics` に書け、処理系と突き合わせられる | 言語パックを追加・拡充する（[adding-a-language.md](references/docs/guide/adding-a-language.md)）。突き合わせられない演算は、保証の限界になる |
 | P5 | 移植先ソースとモデルの一致を、決定論的な手段（例: 生成した写しと検証器、ベクタを通すハーネス）で確かめられる | 確かめられない部分は、保証の限界になる |
@@ -112,7 +112,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
   どちらか一方だけにある差異があってはならない。
 
-1. **正規仕様は Lean の `Spec`**。`Spec` で表現できない仕様（並行性、伝送・セキュリティ方式、実行環境、非機能）だけを Markdown の仕様文書に規範として書く（[spec-documents.md](references/docs/rules/spec-documents.md)）。
+1. **正規仕様は Lean の `Spec`**。`Spec` で表現できない仕様（並行性、伝送・セキュリティ方式、実行環境、非機能）だけを、`Spec` のモジュール文書（`/-! … -/`）の節に規範として書く。散文（規範・草案・要約）は定義のすぐ前に置き、mdgen と mdbook で HTML の本にする（[spec-documents.md](references/docs/rules/spec-documents.md)）。
 2. **移植元を写すモデルと、意図を表すモデルを分ける**。`SourceModel` は不具合も含めて再現し、`Spec` は意図を表す。両者の差は既知差異 `D-NNN` として記録し、`Abstraction` のリファインメント定理に名前付きの仮定（前提型）または成分（観測型）として出す。さらに、差異の証拠の定理を証明する。
 3. **`Spec` は言語中立に書く**。任意精度整数、明示的な丸め、浮動小数禁止、Unicode スカラ値、タイムゾーンの無い暦日、順序の明示、副作用はポート経由（[portability.md](references/docs/spec/portability.md)）。
 4. **トレースは両端の 2 本だけ**（移植元ソース ⇔ `SourceModel`、`TargetModel` ⇔ 移植先ソース）。リンクはモデル側の注釈に書き、**検査済みハッシュ**（決定論的な検査が合格した版）を付ける。移植元と移植先を直接つないではならない（[traceability.md](references/docs/spec/traceability.md)）。
@@ -126,7 +126,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 0. **評価する**（任意）。対象ごとに適用の前提を確かめ、適用する範囲を決める（[workflow.md](references/docs/guide/workflow.md#評価)）。
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。
-2. **草案を書く**。仕様文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/docs/rules/spec-documents.md)）。
+2. **草案を書く**。`Spec` のモジュール文書に [Spec] と [Source] を併記し、差異を登録する（[spec-documents.md](references/docs/rules/spec-documents.md)）。
 3. **形式化する**。`LangSemantics.<移植元>` → `SourceModel` → `Spec` の順に書く（[lean/rules.md](references/docs/lang/lean/rules.md)）。`SourceModel` は原典のソースツリーの形に並べ、式・語彙を原典と同じ字面で書く（Java は `java!`・`Assert.*`。[lang/java/layout.md](references/docs/lang/java/layout.md#移植元として原典を読む)）。人が見比べるときは `trace review` の対照表を使う。
 4. **抽象化を証明する**。`Abstraction` で `ABS-NNN` を証明する。課題は、リファインメントの主定理（R。`Machine.Refines`、B refines A）とその束（`Machine.Preserves`、A preserves B）、差異の証拠（W）が必須で、補題（L）・特徴付け（C）は補助である。`Abstraction.lean` のトップレベルには、機能の機械を並置した `Spec.machine` と `SourceModel.machine` の `Machine.Refines`・`Machine.Preserves`・`Machine.Abstracts`（A abstracts B = A preserves B ∧ B refines A）を置く（[architecture.md](references/docs/spec/architecture.md#トップレベルの主定理)）。
 5. **移植先モデルを書く**。`LangSemantics.<移植先>` → `TargetModel` を書き、`Refinement` で `REF-NNN`（R・W）を証明する。
@@ -184,7 +184,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 
 ### 道具（scripts）
 
-`scripts/` は、追跡と検査の **そのまま使える道具** である（[scripts/README.md](scripts/README.md)）。追跡の CLI `scripts/trace`（Rust）、Lean の静的検査 `scripts/ci/check_lean.py`、課題一覧との突き合わせ `scripts/ci/check_obligations.py`、上流の版の検査、PostgreSQL・JVM の突き合わせ表の検査、Lean の名前の一括改名を持つ。文書（OKF のバンドル）と記録（意思決定記録・作業項目）の道具は、別のスキル okf-bundle・work-records にある。
+`scripts/` は、追跡と検査の **そのまま使える道具** である（[scripts/README.md](scripts/README.md)）。追跡の CLI `scripts/trace`（Rust）、Lean の静的検査 `scripts/ci/check_lean.py`、課題一覧との突き合わせ `scripts/ci/check_obligations.py`、仕様の本（`Spec` のモジュール文書を mdgen と mdbook で HTML にする）`scripts/book/build.py`、上流の版の検査、PostgreSQL・JVM の突き合わせ表の検査、Lean の名前の一括改名を持つ。文書（OKF のバンドル）と記録（意思決定記録・作業項目）の道具は、別のスキル okf-bundle・work-records にある。
 道具はアプリに依存せず、プロジェクト固有の値（移植元・移植先の配置、crate 名、文書のパス、言語の組、Lean のルート）を、プロジェクトの `trace/project.json` から読む（[traceability.md](references/docs/spec/traceability.md#プロジェクトの設定)）。プロジェクトの CI は、これらを一括検査のスクリプトから呼ぶ。
 
 処理系ごとに意味が異なる言語（例: SQL）は、`references/docs/lang/<lang>/dialects/<name>/` に方言パック（`semantics.md`・`engine.md`・`harness.md`）を置く。

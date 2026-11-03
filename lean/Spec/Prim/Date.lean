@@ -19,7 +19,7 @@ namespace Date
 /-!
 ## 暦日と時刻
 
-**[Spec=Source]**（[ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`]()、[`Spec.Prim.Time`](Time.lean)。
+**[Spec=Source]**（[ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`](Date.lean)、[`Spec.Prim.Time`](Time.lean)。
 
 ### Date
 

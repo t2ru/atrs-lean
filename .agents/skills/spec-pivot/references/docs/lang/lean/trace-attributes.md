@@ -125,7 +125,7 @@ def D001 : Trace.Gap where
 def D013 : Trace.Gap where
   id := "D-013"
   kind := .outOfModel
-  sites := [⟨"トランザクション", "docs/spec/ports.md#トランザクション", "（規範節）"⟩]
+  sites := [⟨"トランザクション", "lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
   premise := "— モデル外（並行実行はモデルに現れない）"
   evidence := .unformalized ``claim_D013 ""
 ```

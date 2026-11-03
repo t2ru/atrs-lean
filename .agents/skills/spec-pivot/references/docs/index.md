@@ -12,7 +12,7 @@ okf_version: "0.2"
 
 # Rules
 
-* [仕様文書の書き方](rules/spec-documents.md) - Spec で表現できない仕様を書く Markdown の仕様文書の区分・節構成・差異の表と、道具が読む見出しと値。
+* [仕様文書の書き方](rules/spec-documents.md) - Spec で表現できない仕様・草案・要約を書く Spec のモジュール文書と、メタ情報の Markdown の文書の区分・節構成・差異の表、仕様の本、道具が読む見出しと値。
 * [スキルの文書の保守](rules/maintenance.md) - references/docs（OKF v0.2 のバンドル）の構成と置き場所、スキル okf-bundle・work-records による形式と記録の検査、持ち出せること、適用先との分担。
 
 # Guide
@@ -67,6 +67,7 @@ okf_version: "0.2"
 * [モデルの評価を速くする実装は、元の定義と等しいことの定理を付けた @[csimp] で与える](decision/b187-proven-csimp-for-evaluating-models.md) - SourceModel・Spec などの定義を、評価（適合テストベクタの実行）のために書き換えない。速い実装は別の定義とし、元の定義と等しいこと（行の並びも含めて）を定理にして @[csimp] で登録し、コンパイル後のコードだけを差し替える。証明の無い implemented_by は使わない。SQL の写しの結合のために、条件を押し下げた入れ子ループの結合 Bag.crossWhere と補題 filter_cross_split・select_cross_split を LangSemantics.Sql に置く。
 * [Java の適合テストの道具 conformance-kit を assets に置き、HTTP レベルの原典実行の方法を言語パックに書く](decision/7d3a-java-conformance-kit-and-http-origin-run-method.md) - Java の原典実行に共通の部分（ベクタの読み書き・実行器・期待値の採取・反射による組み立て・HTTP の採取・組み込み Tomcat での webapp の起動）を、スキルの assets/java/conformance-kit に Maven モジュールとして置く。言語パックの harness.md に、原典のリポジトリで Provider を読む組み立て、ORM の一次キャッシュ、HTTP レベルの原典実行（web.xml を変えずに context-param で構成を差し替える）の方法を書く。with_postgres.sh に TCP で待ち受ける形を足す。
 * [同じ状態を共有する機能の合成子 Machine.alt、トランザクションの取消、LocalTime・List.get・StringUtils・TIMESTAMP の写し](decision/a303-shared-state-machine-alt-and-transaction.md) - 状態の成分を共有する 2 つの機能の機械を、同じ状態の上で入力と出力を和にして並置する合成子 Machine.alt（と Concrete・Glue・Refines・Preserves.core の alt）を足す（実装は適用先の段に合わせる）。状態を変える移植元の計算のために、トランザクションの取消 LangSemantics.Sql.Transaction.run を置く。言語パックに java.time.LocalTime（HHmm の SMART 解決）・LocalDateTime、List.get、Spring の StringUtils、PostgreSQL の TIMESTAMP を足す。
+* [仕様の散文を Spec のモジュール文書に書き、mdgen と mdbook で本にする道具を置く](decision/c634-spec-prose-in-lean-module-docs-and-book.md) - Spec で表せない仕様・形式化前の草案・形式化した規則の要約を、Markdown の仕様文書ではなく Spec のモジュール文書（/-! -/）の節として、定義のすぐ前に書く。Markdown の仕様文書にはメタ情報だけを残す。mdgen（assets/mdgen）と mdbook で HTML の本を作る道具 scripts/book/build.py と、仕様への参照の行き先の検査、TR-R のモジュール文書への拡張を置く。
 * [束 Preserves の環境の固定を「許す選択の関係」に、環境の前提を状態つきの述語に広げる](decision/61e6-env-relation-and-state-env-pre.md) - 障害の位置を具体側の入力が持ち、障害が実際に起きるかと、起きるまでに進んだもの（採番など）が実行で決まるユースケースでは、環境の選択を入力だけの関数 ce で決められない。束の pinned を、具体側の環境の記述 ce ic が許す選択の関係 adm に広げ、障害の指定の無い記述は標準の選択だけを許す（noFaultStd）。また、状態とマスタの対応（外部キー）を PRE に持つユースケースのため、環境の前提を状態と入力の述語にし、その証人は初期状態で示す。
 * [命令型の計算の検証の道具: EStateM の Hoare 三つ組と、計算の形を求める簡約のタクティク](decision/cd90-estate-hoare-and-simp-tactics.md) - 移植元・移植先の命令型の計算（EStateM。状態の表に対する計算やトランザクション）の性質をメソッドごとに積み上げるために、LangSemantics.Core.EStateHoare（Hoare 三つ組と合成の規則）と、状態を与えた形に簡約するタクティク estate_simp（LangSemantics.Core.EStateSimp）・java_estate_simp（LangSemantics.Java.EStateSimp）を assets に置く。Std.Do の mvcgen は使えるが、写しのメソッドを展開すると Assert などの細部が検証条件に混ざるので、経路ごとの計算の形を先に求める。
 * [「オラクル」を「原典実行」（origin-run）と呼び替える](decision/288a-rename-oracle-to-origin-run.md) - 移植元のプログラムを実行して期待値を採取・照合する手段を、DBMS の Oracle と紛れない「原典実行」（識別子 origin-run）と呼ぶ。新旧 2 版を比べるものは「差分の原典実行」とする。ベクタの source の値は <移植元>-origin-run、道具のディレクトリ・クラス名もこれにそろえる。

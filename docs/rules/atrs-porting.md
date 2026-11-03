@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/docs/lang/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/docs/lang/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.27`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
+使うスキルの版: `metadata.version` = `0.28`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -41,7 +41,7 @@ generated:
 | パス | 内容 |
 | --- | --- |
 | `lakefile.lean`, `lean-toolchain`, `lake-manifest.json`（ルート） | Lake ワークスペース。Lean の LSP がルートから import を解決できるよう、スキルの `assets/lean`（`langSemantics`）と `lean/` を `require` する。ルートの `lean-toolchain` は `leanprover/lean4:v4.35.0` で、全パッケージと同じ版にする |
-| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv だけ）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
+| `mise.toml`・`pyproject.toml`・`.python-version`・`uv.lock`（ルート） | 検査・生成のタスク（`mise run ci` が全数、`mise run check` が選択実行。[checks.md](checks.md)。一覧は `mise tasks`）と、mise が管理する道具（uv と mdbook。[ADR 68a6](../decision/68a6-business-spec-in-lean-module-docs-and-book.md)）。Python の道具は `uv run python -I` で実行する（[ADR 44a0](../decision/44a0-mise-tasks-and-uv-for-tools.md)） |
 | `upstream/atrs` | 移植元ソース（submodule。commit 固定。取得は `git submodule update --init`。Windows では先に `git config --global core.longpaths true` を設定する。上流のパスが長く、既定の 260 文字制限を超えるため） |
 | `lean/` | Lean プロジェクト（全モデルと証明）。パッケージ名 `atrs`。依存は Batteries と、スキルの `assets/lean`（`langSemantics`。`lean/` に写さず Lake 依存とする） |
 | `rust/` | 移植先ソース。パッケージ名 `atrs` |
