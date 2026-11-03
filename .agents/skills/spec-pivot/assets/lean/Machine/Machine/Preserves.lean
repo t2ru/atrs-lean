@@ -45,17 +45,18 @@ theorem ofChoice_step {Inv Init : σ → Prop} {Pre : σ → ιa → Prop} {f : 
     {e₀ : E} {f₀ : F} {s : σ} {i : ιa} {s' : σ} {o : οa} :
     (ofChoice Inv Init Pre f e₀ f₀).step s i s' o ↔ ∃ c, f s i c = (s', o) := Iff.rfl
 
-/-- 入口の全域性: INV と環境の前提 `Env`（マスタ・設定の妥当性。入力の射影だけで書く）の下で、PRE が成り立つ。 -/
-def TotalUnder (A : Machine σ ιa οa) (Env : ιa → Prop) : Prop :=
-  ∀ s i, A.Inv s → Env i → A.Pre s i
+/-- 入口の全域性: INV と環境の前提 `Env`（マスタ・設定の妥当性、入力の値域、状態とマスタの対応など。状態と入力の述語）の
+下で、PRE が成り立つ。 -/
+def TotalUnder (A : Machine σ ιa οa) (Env : σ → ιa → Prop) : Prop :=
+  ∀ s i, A.Inv s → Env s i → A.Pre s i
 
 /-- PRE を強めた機械の全域性は、強めた述語を環境の前提に加えれば保たれる。 -/
-theorem TotalUnder.restrictState {A : Machine σ ιa οa} {Env : ιa → Prop} (h : A.TotalUnder Env)
-    (P : σ → ιa → Prop) : (A.restrictState P).TotalUnder fun i => Env i ∧ ∀ s, P s i :=
-  fun s i hi he => ⟨h s i hi he.1, he.2 s⟩
+theorem TotalUnder.restrictState {A : Machine σ ιa οa} {Env : σ → ιa → Prop} (h : A.TotalUnder Env)
+    (P : σ → ιa → Prop) : (A.restrictState P).TotalUnder fun s i => Env s i ∧ P s i :=
+  fun s i hi he => ⟨h s i hi he.1, he.2⟩
 
-theorem TotalUnder.restrict {A : Machine σ ιa οa} {Env : ιa → Prop} (h : A.TotalUnder Env)
-    (P : ιa → Prop) : (A.restrict P).TotalUnder fun i => Env i ∧ P i :=
+theorem TotalUnder.restrict {A : Machine σ ιa οa} {Env : σ → ιa → Prop} (h : A.TotalUnder Env)
+    (P : ιa → Prop) : (A.restrict P).TotalUnder fun s i => Env s i ∧ P i :=
   fun s i hi he => ⟨h s i hi he.1, he.2⟩
 
 /-- 環境の前提の必要性（references/docs/spec/architecture.md#空虚化を防ぐ義務）: INV を満たし PRE を破る証人があれば、前提なしの全域性は成り立たない。 -/

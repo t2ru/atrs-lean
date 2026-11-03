@@ -40,4 +40,14 @@ def sumPred {α β : Type} (P : α → Prop) (Q : β → Prop) : α ⊕ β → P
   | .inl a => P a
   | .inr b => Q b
 
+/-- 状態と入力の述語（環境の前提）の並置（`Machine.sum`。状態は組）。 -/
+def sumEnv {σ₁ σ₂ α β : Type} (P : σ₁ → α → Prop) (Q : σ₂ → β → Prop) : σ₁ × σ₂ → α ⊕ β → Prop
+  | s, .inl a => P s.1 a
+  | s, .inr b => Q s.2 b
+
+/-- 状態と入力の述語（環境の前提）の並置（`Machine.alt`。同じ状態）。 -/
+def altEnv {σ α β : Type} (P : σ → α → Prop) (Q : σ → β → Prop) : σ → α ⊕ β → Prop
+  | s, .inl a => P s a
+  | s, .inr b => Q s b
+
 end Machine.Sum

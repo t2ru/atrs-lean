@@ -49,8 +49,9 @@ theorem InitIs.sum {A₁ : Machine σ₁ ι₁ ο₁} {A₂ : Machine σ₂ ι�
   obtain ⟨a, b⟩ := s
   simp
 
-theorem TotalUnder.sum {A₁ : Machine σ₁ ι₁ ο₁} {A₂ : Machine σ₂ ι₂ ο₂} {E₁ : ι₁ → Prop} {E₂ : ι₂ → Prop}
-    (h₁ : A₁.TotalUnder E₁) (h₂ : A₂.TotalUnder E₂) : (A₁.sum A₂).TotalUnder (sumPred E₁ E₂) := fun s i hi he => by
+theorem TotalUnder.sum {A₁ : Machine σ₁ ι₁ ο₁} {A₂ : Machine σ₂ ι₂ ο₂} {E₁ : σ₁ → ι₁ → Prop}
+    {E₂ : σ₂ → ι₂ → Prop} (h₁ : A₁.TotalUnder E₁) (h₂ : A₂.TotalUnder E₂) :
+    (A₁.sum A₂).TotalUnder (sumEnv E₁ E₂) := fun s i hi he => by
   cases i with
   | inl j => exact h₁ s.1 j hi.1 he
   | inr j => exact h₂ s.2 j hi.2 he

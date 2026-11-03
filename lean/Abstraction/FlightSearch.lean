@@ -99,7 +99,7 @@ theorem need_D014 :
 @[obligation "ABS-011"]
 theorem searchPreserves :
     Machine.Preserves ((Spec.FlightSearch.searchMachine.restrict dev_D001S).restrict dev_D002S)
-      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS Spec.Seed.World.world envFS (some chFS) []
+      (((searchConcrete.restrict dev_D027S).restrict dev_D014S).restrict dev_D032) glueFS Spec.Seed.World.world (fun _ => envFS) (some chFS) []
       [⟨(searchConcrete.restrict dev_D027S).restrict dev_D014S, dev_D032⟩] where
   sound := (Spec.FlightSearch.searchMachine_sound.restrictState _).restrictState _
   initIs := Spec.FlightSearch.searchMachine_initIs
@@ -112,7 +112,7 @@ theorem searchPreserves :
   pinned c hc s t ic ia t' oc hi hJ ha hp hd hs := by
     cases hc
     obtain ⟨s', oa, ⟨x, hx⟩, hJ', ho⟩ := searchRefines.correct s t ic ia t' oc hi hJ ha hp hd hs
-    refine ⟨(), ?_⟩
+    refine ⟨(), (), rfl, ?_⟩
     change glueFS.J (Spec.FlightSearch.searchStep s ia ((), ())).1 t' ∧
       glueFS.αo oc (Spec.FlightSearch.searchStep s ia ((), ())).2
     obtain ⟨⟨⟩, ⟨⟩⟩ := x
@@ -121,6 +121,9 @@ theorem searchPreserves :
   noFault c hc ic ia hd ha := by
     cases hc
     exact ⟨ic, hd, ha, rfl⟩
+  noFaultStd c hc e _ := by
+    cases hc
+    rfl
   freeFrame c hc := by
     cases hc
     intro _ _ _ x y

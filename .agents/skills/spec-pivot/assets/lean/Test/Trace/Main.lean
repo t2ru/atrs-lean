@@ -159,12 +159,12 @@ def obligationTests (env : Environment) : IO Unit := do
       ("v3_relSpec", ["G3", "G6"]), ("v3_free", ["G3", "G6"]), ("v4_domSet", ["G4", "G6"]),
       ("v4_taut", ["G4", "G6"]), ("v4_usesSpec", ["G4", "G6"]), ("v5_helperGlue", ["G5", "G6"]),
       ("v5_plainObs", ["G5", "G6"]), ("v5_plainAi", ["G5", "G6"]), ("v5_aoNoKernel", ["G6", "G7"]),
-      ("v6_noCompanions", ["G6"]), ("v6_invFalse", ["G6"]), ("v6_ceCheat", ["G6"]),
+      ("v6_noCompanions", ["G6"]), ("v6_invFalse", ["G6"]), ("v6_ceCheat", ["G6"]), ("v6_admPlain", ["G6"]),
       ("need_refines", []), ("obs_refines", []), ("v9_unneeded", ["G6"]), ("v9_noPinned", []),
       ("v9_sameId", ["G6"]), ("cover_refines", ["G6"]), ("v9_circular", ["G6"]), ("obs2_refines", []),
       ("pre_refines", ["G6"])] do
     check s!"{s}: {expected}" (codesOf s == some expected)
-  check "R obligations: all found (v0_notRefines, need_devLang and need_arrow are not)" (r.rs.size == 27)
+  check "R obligations: all found (v0_notRefines, need_devLang and need_arrow are not)" (r.rs.size == 28)
   let necessityOf (s : String) : Option (Array Name) := (r.rs.find? (·.name == ab s)).map (·.necessity)
   check "necessity: devLang is needed in need_refines, not in good_refines"
     (necessityOf "need_refines" == some #[ab "devLang"] && necessityOf "good_refines" == some #[])
@@ -229,9 +229,9 @@ def obligationTests (env : Environment) : IO Unit := do
   check "gaps: resolution of an unformalized undetermined gap"
     ((gapOf "D-921").getObjValD "resolution" == "原典実行で確かめる")
   check "preserves: the Machine.Preserves bundles are listed (obs_preserves, gp_mismatch, gp_noR, good_preserves, …)"
-    (r.preserves.size == 10 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
+    (r.preserves.size == 11 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
       ab "good_abbrev_preserves", ab "v1_preserves", ab "v2_preserves", ab "need_preserves", ab "v9_noPinned_preserves",
-      ab "obs2_preserves"].all r.preserves.contains)
+      ab "obs2_preserves", ab "v6_admPlain_preserves"].all r.preserves.contains)
   check "obligations: v0_notRefines listed as not R"
     (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
   check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.AnyResult, `Test.Trace.ObligationFixture.Spec.Conflict])

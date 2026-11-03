@@ -16,7 +16,7 @@ open Machine
 open Test.Machine.Preserves (Out Req Num)
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -37,10 +37,10 @@ theorem spec_sound : spec.Sound := Test.Machine.Preserves.spec_sound
 theorem spec_initIs : spec.InitIs 5 := fun _ => Iff.rfl
 
 /-- 環境の前提。 -/
-@[env_pre "MD-901"] def envOk (n : Nat) : Prop := n < 1000
+@[env_pre "MD-901"] def envOk (_ n : Nat) : Prop := n < 1000
 
-theorem envOk_nontrivial : Nontrivial envOk :=
-  ⟨⟨0, show 0 < 1000 by decide⟩, ⟨1000, show ¬ 1000 < 1000 by decide⟩⟩
+theorem envOk_nontrivial : Nontrivial₂ envOk :=
+  ⟨⟨(0, 0), show 0 < 1000 by decide⟩, ⟨(0, 1000), show ¬ 1000 < 1000 by decide⟩⟩
 /-- `spec` の PRE は全域なので、環境の前提を置かずに全域性を示す（G9）。 -/
 theorem spec_total : spec.TotalUnder always := fun _ _ _ _ => trivial
 
@@ -80,10 +80,10 @@ theorem specPre_needs_env : ¬ specPre.TotalUnder always :=
   Machine.TotalUnder.not_always (A := specPre) (s := 5) (i := 1000) trivial (show ¬ (1000 < 1000) by decide)
 
 /-- 必要性の定理の無い環境の前提（違反例。`specFree` の PRE は常に成り立つ）。 -/
-@[env_pre "MD-902"] def envNoNeed (n : Nat) : Prop := n < 2000
+@[env_pre "MD-902"] def envNoNeed (_ n : Nat) : Prop := n < 2000
 
-theorem envNoNeed_nontrivial : Nontrivial envNoNeed :=
-  ⟨⟨0, show 0 < 2000 by decide⟩, ⟨2000, show ¬ 2000 < 2000 by decide⟩⟩
+theorem envNoNeed_nontrivial : Nontrivial₂ envNoNeed :=
+  ⟨⟨(0, 0), show 0 < 2000 by decide⟩, ⟨(0, 2000), show ¬ 2000 < 2000 by decide⟩⟩
 theorem specFree_total : specFree.TotalUnder envNoNeed := fun _ _ _ _ => trivial
 
 /-- 純粋な計算の抽象機械（観測型の差異の必要性の正例）。 -/
@@ -95,7 +95,7 @@ theorem half_initIs : half.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivi
 end Test.Trace.ObligationFixture.Spec
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open Test.Trace.ObligationFixture.Spec
 
 namespace Test.Trace.ObligationFixture.SourceModel
@@ -137,7 +137,7 @@ def usesSpec : Concrete Nat Req Out Unit :=
 end Test.Trace.ObligationFixture.SourceModel
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open Test.Trace.ObligationFixture.Spec Test.Trace.ObligationFixture.SourceModel
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -174,14 +174,14 @@ theorem good_refines : Refines spec (good.restrict devLang) (Glue.ofStd betaS (f
 theorem good_initSurj : Refines.InitSurj spec (good.restrict devLang) glue :=
   Test.Machine.Preserves.good_initSurj
 
-theorem good_pinned : Refines.Pinned spec (good.restrict devLang) glue fRes ceS :=
+theorem good_pinned : Refines.Pinned spec (good.restrict devLang) glue fRes ceS sameEnv :=
   fun s t ic ia t' oc hi hJ ha hp hd hs =>
     Test.Machine.Preserves.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
 
 theorem good_noFault : Refines.NoFaultReachable (good.restrict devLang) glue ceS false :=
   fun r _ hd ha => ⟨{ r with env := false }, ⟨trivial, hd.2⟩, ha, rfl⟩
 
-theorem good_envWitness : Refines.EnvWitness (good.restrict devLang) glue always :=
+theorem good_envWitness : Refines.EnvWitness (good.restrict devLang) glue 5 always :=
   ⟨⟨0, false, false⟩, 0, ⟨trivial, rfl⟩, rfl, trivial⟩
 
 theorem good_stateSafe : Refines.StateSafeConcrete spec good glue devLang :=
@@ -191,7 +191,8 @@ theorem good_stateSafe : Refines.StateSafeConcrete spec good glue devLang :=
     exact ⟨s', o, hst, hJ'⟩
 
 /-- 選択の像の材料（`spec` の `f`・`e₀`、`@[std_abs]` の `ceS`）。自由な選択は無いので、枠の射影は恒等でよい。 -/
-def choiceS : Machine.Preserves.Choice Nat Nat Out Req := ⟨Conflict, Unit, Nat × Out, fRes, ceS, false, fun r => r⟩
+def choiceS : Machine.Preserves.Choice Nat Nat Out Req :=
+  ⟨Conflict, Unit, Conflict, Nat × Out, fRes, ceS, sameEnv, false, false, fun r => r⟩
 
 theorem fRes_frame : Machine.FreeFrame fRes (fun r : Nat × Out => r) :=
   fun _ _ _ x y => by cases x; cases y; rfl
@@ -209,6 +210,7 @@ theorem good_preserves :
   envNeeded := .inl rfl
   pinned _ h := by cases h; exact good_pinned
   noFault _ h := by cases h; exact good_noFault
+  noFaultStd _ h e he := by cases h; exact (show false = e from he).symm
   freeFrame _ h := by cases h; exact fRes_frame
   stateSafeC _ h := by simp only [List.mem_singleton] at h; subst h; exact good_stateSafe
 
@@ -241,7 +243,7 @@ theorem v2_plainRestrict : Refines spec (good.restrict plainLang) glue :=
 theorem v2_initSurj : Refines.InitSurj spec (good.restrict plainLang) glue :=
   Test.Machine.Preserves.good_initSurj
 
-theorem v2_pinned : Refines.Pinned spec (good.restrict plainLang) glue fRes ceS :=
+theorem v2_pinned : Refines.Pinned spec (good.restrict plainLang) glue fRes ceS sameEnv :=
   fun s t ic ia t' oc hi hJ ha hp hd hs =>
     Test.Machine.Preserves.good_pinned s t ic ia t' oc hi hJ ha hp hd.1 hs
 
@@ -258,6 +260,7 @@ theorem v2_preserves : Machine.Preserves spec (good.restrict plainLang) glue 5 a
   envNeeded := .inl rfl
   pinned _ h := by cases h; exact v2_pinned
   noFault _ h := by cases h; exact v2_noFault
+  noFaultStd _ h e he := by cases h; exact (show false = e from he).symm
   freeFrame _ h := by cases h; exact fRes_frame
 
 /-- 引数を取る差異の述語（引数で `False` にできる）。 -/
@@ -341,7 +344,7 @@ theorem v6_invFalse : Refines specInvF junk glue := Test.Machine.Preserves.junk_
 
 theorem v6_invFalse_initSurj : Refines.InitSurj specInvF junk glue := fun s hs => ⟨s, hs, Or.inl ⟨hs ▸ rfl, trivial⟩⟩
 
-theorem v6_invFalse_pinned : Refines.Pinned specInvF junk glue fRes ceS := fun _ _ _ _ _ _ hi => absurd hi id
+theorem v6_invFalse_pinned : Refines.Pinned specInvF junk glue fRes ceS sameEnv := fun _ _ _ _ _ _ hi => absurd hi id
 
 theorem v6_invFalse_noFault : Refines.NoFaultReachable junk glue ceS false :=
   fun r _ _ ha => ⟨{ r with env := false }, trivial, ha, rfl⟩
@@ -354,7 +357,31 @@ theorem v6_ceCheat : Refines spec buggy glue := Test.Machine.Preserves.buggy_ref
 
 theorem v6_ceCheat_initSurj : Refines.InitSurj spec buggy glue := fun s hs => ⟨s, hs, Or.inl ⟨rfl, trivial⟩⟩
 
-theorem v6_ceCheat_pinned : Refines.Pinned spec buggy glue fRes ceCheat := Test.Machine.Preserves.buggy_pinned_ceCheat
+theorem v6_ceCheat_pinned : Refines.Pinned spec buggy glue fRes ceCheat sameEnv := Test.Machine.Preserves.buggy_pinned_ceCheat
+
+/-- 違反（G6）: `Choice.adm` が `sameEnv` でも `Spec` の層の定数でもない（証明の層の補助の関係）。 -/
+def admPlain (d e : Conflict) : Prop := d = e
+
+def choiceAdmPlain : Machine.Preserves.Choice Nat Nat Out Req :=
+  ⟨Conflict, Unit, Conflict, Nat × Out, fRes, ceS, admPlain, false, false, fun r => r⟩
+
+@[obligation "ABS-927"]
+theorem v6_admPlain : Refines spec (good.restrict devLang) glue := good_refines
+
+@[obligation "ABS-927"]
+theorem v6_admPlain_preserves :
+    Machine.Preserves spec (good.restrict devLang) glue 5 always (some choiceAdmPlain) [] [⟨good, devLang⟩] where
+  sound := spec_sound
+  initIs := spec_initIs
+  initSurj := good_initSurj
+  total := spec_total
+  envWitness := good_envWitness
+  envNeeded := .inl rfl
+  pinned _ h := by cases h; exact good_pinned
+  noFault _ h := by cases h; exact good_noFault
+  noFaultStd _ h e he := by cases h; exact (show false = e from he).symm
+  freeFrame _ h := by cases h; exact fRes_frame
+  stateSafeC _ h := by simp only [List.mem_singleton] at h; subst h; exact good_stateSafe
 
 /-- 分岐を含む合成の標準の抽象化。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -411,7 +438,7 @@ theorem need_refines : Refines spec (langErr.restrict devLang) glue := Test.Mach
 theorem need_initSurj : Refines.InitSurj spec (langErr.restrict devLang) glue :=
   Test.Machine.Preserves.langErr_initSurj
 
-theorem need_pinned : Refines.Pinned spec (langErr.restrict devLang) glue fRes ceS :=
+theorem need_pinned : Refines.Pinned spec (langErr.restrict devLang) glue fRes ceS sameEnv :=
   Test.Machine.Preserves.langErr_pinned
 
 theorem need_noFault : Refines.NoFaultReachable (langErr.restrict devLang) glue ceS false :=
@@ -427,11 +454,12 @@ theorem need_preserves : Machine.Preserves spec (langErr.restrict devLang) glue 
   envNeeded := .inl rfl
   pinned _ h := by cases h; exact need_pinned
   noFault _ h := by cases h; exact need_noFault
+  noFaultStd _ h e he := by cases h; exact (show false = e from he).symm
   freeFrame _ h := by cases h; exact fRes_frame
 
 /-- `devLang` の必要性。W 課題の形で `@[obligation]` を付けても、G0 の誤りにならない。 -/
 @[obligation "ABS-951", gap "D-901"]
-theorem need_devLang : ¬ (Refines spec langErr glue ∧ Refines.Pinned spec langErr glue fRes ceS) :=
+theorem need_devLang : ¬ (Refines spec langErr glue ∧ Refines.Pinned spec langErr glue fRes ceS sameEnv) :=
   Test.Machine.Preserves.devLang_needed_for_langErr
 
 /-- 正例（観測型・基底が `pure`）の標準の抽象化。 -/
@@ -472,7 +500,7 @@ theorem obs_preserves :
 @[obligation "ABS-954"]
 theorem gp_mismatch :
     Machine.Preserves Test.Machine.Preserves.halfSmall Test.Machine.Preserves.halfC
-      (Test.Machine.Preserves.glueNum Test.Machine.Preserves.aoPartial) () (· < 100) :=
+      (Test.Machine.Preserves.glueNum Test.Machine.Preserves.aoPartial) () (fun _ n => n < 100) :=
   Test.Machine.Preserves.halfC_preserves
 
 /-- 違反（GP）: 同じ ID の R 課題が無い束。 -/
@@ -504,7 +532,7 @@ theorem v9_noPinned : Refines spec (langErr2.restrict devLang2) glue := Test.Mac
 theorem v9_noPinned_initSurj : Refines.InitSurj spec (langErr2.restrict devLang2) glue :=
   Test.Machine.Preserves.langErr_initSurj
 
-theorem v9_noPinned_pinned : Refines.Pinned spec (langErr2.restrict devLang2) glue fRes ceS :=
+theorem v9_noPinned_pinned : Refines.Pinned spec (langErr2.restrict devLang2) glue fRes ceS sameEnv :=
   Test.Machine.Preserves.langErr_pinned
 
 theorem v9_noPinned_noFault : Refines.NoFaultReachable (langErr2.restrict devLang2) glue ceS false :=
@@ -520,6 +548,7 @@ theorem v9_noPinned_preserves : Machine.Preserves spec (langErr2.restrict devLan
   envNeeded := .inl rfl
   pinned _ h := by cases h; exact v9_noPinned_pinned
   noFault _ h := by cases h; exact v9_noPinned_noFault
+  noFaultStd _ h e he := by cases h; exact (show false = e from he).symm
   freeFrame _ h := by cases h; exact fRes_frame
 
 @[gap "D-906"] theorem v9_noPinned_nec : ¬ Refines spec langErr2 glue :=
@@ -625,7 +654,7 @@ end Test.Trace.ObligationFixture.Abstraction
 @[deviation "D-904"] def Test.Trace.ObligationFixture.Helpers.devFalse (_ : Req) : Prop := False
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Spec
 
@@ -645,7 +674,7 @@ end Test.Trace.ObligationFixture.Spec
 `@[deviation]` の各 ID の宣言と、GK の違反例。宣言の値は、補助の定義（`preGap`）の展開でも読めることを確かめる。 -/
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 open _root_.Trace
 
 namespace Test.Trace.ObligationFixture.Abstraction
@@ -729,7 +758,7 @@ end Test.Trace.ObligationFixture.Abstraction
 
 
 open Trace.Gap
-open Machine.Preserves (never always anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
+open Machine.Preserves (never always sameEnv anyOf Covers Covers₂ Nontrivial Nontrivial₂ KernelIs)
 
 namespace Test.Trace.ObligationFixture.Abstraction
 

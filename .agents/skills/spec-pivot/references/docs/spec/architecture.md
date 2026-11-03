@@ -160,14 +160,14 @@ B の記法では、M（INVARIANT I）を M'（INVARIANT J）がリファイン�
 | 抽象機械の形 | 基底の機械は、選択の像として作る。`step s i s' o ↔ ∃ c, f s i c = (s', o)`、`run s i = f s i (e₀, f₀)`。選択の型は環境の選択 E（衝突・I/O の失敗・配備の設定）と自由な選択 F（ハッシュ値など）の組で、葉の型に `@[nondet "N-NNN"]` を付け、種類（環境・自由）とともに登録簿に載せる。決定的な純粋計算は `Machine.pure` でよい | `Machine.ofChoice` |
 | 自由な選択の枠 | 自由な選択が変えうる部分を、射影の核として示す | `Machine.FreeFrame` |
 | 不変条件と初期化 | 基底の機械は `Sound` で、初期状態は fixture の 1 点である（INV が空にならない） | `Machine.Sound`・`Machine.InitIs` |
-| 環境の固定 | 具体側も、環境（障害・衝突・配備の設定）とマスタ・設定を入力の成分として受ける。具体側の正常終了は、E を具体側の入力の環境 `ce i_c` に固定した `f` の結果で模倣される。`ce` は `@[std_abs]` の標準の抽象化とする | `Refines.Pinned` |
-| 障害の無い環境での実現 | 抽象側の各入力は、`ce` が標準の環境を返す具体側の入力でも実現される。障害の無い環境では、環境の非決定性を選べない | `Refines.NoFaultReachable` |
+| 環境の固定 | 具体側も、環境（障害・衝突・配備の設定）とマスタ・設定を入力の成分として受ける。具体側の正常終了は、具体側の入力の環境の記述 `ce i_c` が許す環境の選択（`adm (ce i_c) e`）の `f` の結果で模倣される。`ce` は `@[std_abs]` の標準の抽象化、`adm` は `Spec` の層の定数か等号 `Machine.Preserves.sameEnv`（E を `ce i_c` に固定する）とする。障害の位置を具体側の入力が持ち、障害が実際に起きるかと起きるまでに進んだもの（採番など）が実行で決まるときは、`adm` で、障害の指定の無い成分には標準の選択だけを許す（[ADR 61e6](../decision/61e6-env-relation-and-state-env-pre.md)） | `Refines.Pinned` |
+| 障害の無い環境での実現 | 抽象側の各入力は、`ce` が障害の指定の無い記述 `d₀` を返す具体側の入力でも実現される。`d₀` が許すのは標準の選択 `e₀` だけで、障害の無い環境では環境の非決定性を選べない | `Refines.NoFaultReachable`・束の `noFaultStd` |
 | 貼り合わせの形 | `J`・`αᵢ`・`αₒ` は、標準の抽象化の **部分写像** β・aᵢ・aₒ（`Option` を返す。`none` は α/β の未定義）、具体側の不変条件 `Ic`、観測型の差異の成分 OJ・OO だけから作る。β・aᵢ・aₒ・OJ・OO には、属性を付けた定数そのものを渡す。補助定義で包まない | `Glue.ofStd` |
 | 標準の抽象化 | 1 引数の関数とする。葉（α・β の表の行）には核（同一視するもの。等号か `@[kernel]` の関係）を定理で示す。定義域の上で単射な部分写像の核は、汎用の核 `Machine.Kernel.undefOrEq`（「どちらも定義されないか、等しい」。assets の `Machine.Kernel`）か汎用の `@[kernel]` の関係を、その葉自身に適用して書いてよい（`KernelIs f (Machine.Kernel.undefOrEq f)`。`kernelIs_undefOrEq` で示せる）。合成は、葉・構成子・射影・インスタンス・`Option.map/bind`・`List.map/mapM`・`Prod.map`・`Function.comp`・`id` だけで作り、分岐を含めない。aₒ と `FreeFrame` の射影には核の定理を課す | `KernelIs`、`Machine.Kernel.undefOrEq`、`@[std_abs]`、`@[kernel]` |
-| 入口の全域性 | 外部からの入力を受ける入口の機械（画面・API・キューの受信など）では、INV と環境の前提（マスタ・設定の妥当性と入力の値域。入力の成分だけで書いた `@[env_pre]` の定数）の下で PRE が成り立つ。環境の前提を満たす像を持つ具体側の入力がある | `Machine.TotalUnder`・`Refines.EnvWitness` |
+| 入口の全域性 | 外部からの入力を受ける入口の機械（画面・API・キューの受信など）では、INV と環境の前提（マスタ・設定の妥当性と入力の値域。入力の成分だけで書いた `@[env_pre]` の定数）の下で PRE が成り立つ。環境の前提は状態と入力の述語で、状態とマスタの対応（外部キー）や状態の前提も書ける。初期状態で環境の前提を満たす像を持つ具体側の入力がある（[ADR 61e6](../decision/61e6-env-relation-and-state-env-pre.md)） | `Machine.TotalUnder`・`Refines.EnvWitness` |
 | 初期化 | 抽象側の初期状態に、対応する具体側の初期状態がある | `Refines.InitSurj` |
 | 名前付きの成分 | 差異の述語・成分と環境の前提は、成り立つ例と成り立たない例を持つ（W 課題を両向きにする） | `Nontrivial`・`Nontrivial₂` |
-| 成分の必要性 | R 課題で使う差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（W 課題に含める）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `ofChoice` なら `Refines ∧ Pinned` でもよい（`Refines` だけでは、環境の非決定性が不具合を模倣して偽にならないことがある）<br>少なくとも 1 つの R 課題について示す。他の必要な差異 M に覆われる差異は、同じ R 課題で `Covers M d` を示す。差異の定数には ID を 1 つだけ付ける。環境の前提には、前提なしでは PRE が成り立たないこと（`¬ TotalUnder A always`）を示す。PRE が全域な機械は、環境の前提を置かず `TotalUnder A always` を示す | `always`・`anyOf`・`Covers`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always` |
+| 成分の必要性 | R 課題で使う差異の ID ごとに、その差異を外した R 課題の命題が偽であることを示す（W 課題に含める）。<br>- 前提型: `restrict` の層を外す<br>- 観測型: 成分を `never` に替える（重なる観測型の差異は `anyOf` で並べ、葉ごとに替える）<br>- 否定する命題: `Refines`。基底が `ofChoice` なら `Refines ∧ Pinned`（束の `ce`・`adm`）でもよい（`Refines` だけでは、環境の非決定性が不具合を模倣して偽にならないことがある）<br>少なくとも 1 つの R 課題について示す。他の必要な差異 M に覆われる差異は、同じ R 課題で `Covers M d` を示す。差異の定数には ID を 1 つだけ付ける。環境の前提には、前提なしでは PRE が成り立たないこと（`¬ TotalUnder A always`）を示す。PRE が全域な機械は、環境の前提を置かず `TotalUnder A always` を示す | `always`・`anyOf`・`Covers`、`Refines.not_of_error`・`not_of_stuck`・`not_of_mismatch`・`Pinned.not_of_mismatch`、`Machine.TotalUnder.not_always` |
 | 差異の前提の外の 1 歩 | 前提型の差異を「出力のみ」と「中断」に分けて登録する。出力のみの差異では、前提を破る 1 歩の後も状態は `J` を保つ。中断の差異では、前提を破った後の軌跡に保証が無く、保証の限界の文書に載せる | `Refines.StateSafe`・`StateSafeConcrete` |
 | 同語反復の禁止 | 具体機械は `Concrete.ofMachine` と `Spec` の関数（型・構成子・射影・インスタンス以外）を参照しない | — |
 | 束 | R 課題ごとに、上の義務のうち意味的なもの（下の表）を 1 つの主張 `Preserves A C g s₀ Env ch outs outsC` に束ね、R 課題と同じ課題 ID・同じ A・C・g の `@[obligation]` で示す。`Refines` は含めない。入口でない R 課題にも課す（環境の前提は、マスタ・設定の妥当性と入力の値域・差異の前提を、抽象側の入力の成分だけで書いた述語でよい。`@[env_pre]` は入口の機械に限る） | `Machine.Preserves`、`Machine.Abstracts` |
@@ -179,11 +179,12 @@ B の記法では、M（INVARIANT I）を M'（INVARIANT J）がリファイン�
 | `sound` | 常に | 抽象のみ | 抽象側の INV が初期化で成り立ち、PRE の下の歩みで保たれる | 不健全な INV |
 | `initIs` | 常に | 抽象のみ | 初期状態は fixture の 1 点（`sound` と合わせて、INV が空でない） | 仮定 INV が空で、Refines が空虚に成り立つこと |
 | `initSurj` | 常に | 抽象→具体 | 抽象側の各初期状態に、`J` で結ばれる具体側の初期状態がある（`Refines` の INIT の逆向き） | 具体側の初期状態が空であること |
-| `total` | 常に | 抽象のみ | INV と環境の前提の下で PRE が成り立つ | 強すぎる PRE |
-| `envWitness` | 常に | 抽象→具体 | 環境の前提を満たす抽象側の入力が、具体側の定義域の入力の像として実現される | αᵢ が PRE・環境の前提の外へ写すこと、定義域が空であること |
+| `total` | 常に | 抽象のみ | INV と環境の前提（状態と入力の述語）の下で PRE が成り立つ | 強すぎる PRE |
+| `envWitness` | 常に | 抽象→具体 | 初期状態で環境の前提を満たす抽象側の入力が、具体側の定義域の入力の像として実現される | αᵢ が PRE・環境の前提の外へ写すこと、定義域が空であること |
 | `envNeeded` | 常に | 抽象のみ | 環境の前提は、置かないか、無ければ PRE が成り立たない | 不要な前提で主張の範囲を狭めること |
-| `pinned` | 基底が `ofChoice` | 具体→抽象（模倣を絞る） | 具体側の正常終了は、環境の選択を `ce i_c` に固定した `f` の結果で模倣される（`correct` より強い。B には無い） | 環境の非決定性が具体側の不具合を吸収すること |
-| `noFault` | 基底が `ofChoice` | 抽象→具体 | 抽象側の入力の各像は、環境が標準 `e₀` の具体側の入力でも実現される | `ce` の悪用 |
+| `pinned` | 基底が `ofChoice` | 具体→抽象（模倣を絞る） | 具体側の正常終了は、環境の記述 `ce i_c` が許す（`adm`）環境の選択の `f` の結果で模倣される（`correct` より強い。B には無い） | 環境の非決定性が具体側の不具合を吸収すること |
+| `noFault` | 基底が `ofChoice` | 抽象→具体 | 抽象側の入力の各像は、環境の記述が障害の指定の無い `d₀` の具体側の入力でも実現される | `ce` の悪用 |
+| `noFaultStd` | 基底が `ofChoice` | 抽象のみ | 障害の指定の無い記述 `d₀` が許す環境の選択は、標準 `e₀` だけ | `adm` が障害の無い環境でも障害の選択を許すこと |
 | `freeFrame` | 基底が `ofChoice` | 抽象のみ | 自由な選択が変えうるのは、射影 `m` が忘れる部分だけ | 自由な選択による結果の吸収 |
 | `stateSafe`・`stateSafeC` | 「出力のみ」の差異ごと | 具体→抽象（模倣を広げる） | 差異の前提を破る入力でも、具体側の正常終了の後の状態は `J` を保つ | 差異の前提の外の 1 歩が状態を壊すこと |
 

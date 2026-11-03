@@ -51,8 +51,9 @@ theorem InitIs.alt {A₁ : Machine σ ι₁ ο₁} {A₂ : Machine σ ι₂ ο�
   show A₁.Init s ∧ A₂.Init s ↔ s = s₀
   rw [h₁ s, h₂ s, and_self]
 
-theorem TotalUnder.alt {A₁ : Machine σ ι₁ ο₁} {A₂ : Machine σ ι₂ ο₂} {E₁ : ι₁ → Prop} {E₂ : ι₂ → Prop}
-    (h₁ : A₁.TotalUnder E₁) (h₂ : A₂.TotalUnder E₂) : (A₁.alt A₂).TotalUnder (sumPred E₁ E₂) := fun s i hi he => by
+theorem TotalUnder.alt {A₁ : Machine σ ι₁ ο₁} {A₂ : Machine σ ι₂ ο₂} {E₁ : σ → ι₁ → Prop}
+    {E₂ : σ → ι₂ → Prop} (h₁ : A₁.TotalUnder E₁) (h₂ : A₂.TotalUnder E₂) :
+    (A₁.alt A₂).TotalUnder (altEnv E₁ E₂) := fun s i hi he => by
   cases i with
   | inl j => exact h₁ s j hi.1 he
   | inr j => exact h₂ s j hi.2 he

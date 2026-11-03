@@ -170,7 +170,8 @@ def devC : SourceModel.Input → Prop :=
 def glue := glueMQ.sum (glueBF.sum (glueF.sum (glueTF.sum glueFS)))
 
 /-- 環境の前提（各 R 課題の環境の前提を並置したもの）。 -/
-def env : Spec.Input → Prop := sumPred envMQ (sumPred envBF (sumPred envF (sumPred envTF envFS)))
+def env : Spec.State → Spec.Input → Prop :=
+  sumEnv (fun _ => envMQ) (sumEnv (fun _ => envBF) (sumEnv (fun _ => envF) (sumEnv (fun _ => envTF) (fun _ => envFS))))
 
 /-- トップレベルの主定理（A preserves B）: 実装済みの範囲で、[Spec] は [Source] の振る舞いを空虚にせず保つ
 （`Sound`・`InitIs`・`InitSurj`・`TotalUnder`・`EnvWitness`・環境の前提の必要性）。R 課題ごとの束 `*Preserves` を並置して示し、

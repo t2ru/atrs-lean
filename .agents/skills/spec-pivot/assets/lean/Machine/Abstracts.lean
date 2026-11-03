@@ -28,7 +28,7 @@ import Machine.Concrete.Run
 
 namespace Machine
 
-variable {σ τ ιa ιc οa οc ε E F : Type}
+variable {σ τ ιa ιc οa οc ε E F D : Type}
 
 namespace Abstracts
 
@@ -42,7 +42,7 @@ end Abstracts
 open Machine.Preserves (Choice OutLayer OutLayerC) in
 /-- A abstracts B = A preserves B ∧ B refines A。 -/
 structure Abstracts (A : Machine σ ιa οa) (C : Concrete τ ιc οc ε) (g : Glue σ τ ιa ιc οa οc) (s₀ : σ)
-    (Env : ιa → Prop) (ch : Option (Choice σ ιa οa ιc) := none) (outs : List (OutLayer σ ιa οa) := [])
+    (Env : σ → ιa → Prop) (ch : Option (Choice σ ιa οa ιc) := none) (outs : List (OutLayer σ ιa οa) := [])
     (outsC : List (OutLayerC τ ιc οc ε) := []) : Prop where
   /-- A preserves B: 空虚化を防ぐ意味的な義務のすべて。 -/
   preserves : Preserves A C g s₀ Env ch outs outsC
@@ -53,14 +53,14 @@ namespace Abstracts
 
 open Machine.Preserves (Choice OutLayer OutLayerC)
 
-variable {A : Machine σ ιa οa} {C : Concrete τ ιc οc ε} {g : Glue σ τ ιa ιc οa οc} {s₀ : σ} {Env : ιa → Prop}
+variable {A : Machine σ ιa οa} {C : Concrete τ ιc οc ε} {g : Glue σ τ ιa ιc οa οc} {s₀ : σ} {Env : σ → ιa → Prop}
   {ch : Option (Choice σ ιa οa ιc)} {outs : List (OutLayer σ ιa οa)} {outsC : List (OutLayerC τ ιc οc ε)}
 
 /-- 複数歩の模倣: 抽象機械が `Sound` で、入口の全域性 `TotalUnder Env` が成り立つとき、各入力が定義域と
-環境の前提を満たす具体側の正常終了の列は、PRE を満たす抽象側の歩みの列で模倣される。 -/
-theorem run_of (hS : A.Sound) (h : Refines A C g) {Env : ιa → Prop} (hT : A.TotalUnder Env)
+環境の前提（INV を満たすどの状態でも）を満たす具体側の正常終了の列は、PRE を満たす抽象側の歩みの列で模倣される。 -/
+theorem run_of (hS : A.Sound) (h : Refines A C g) {Env : σ → ιa → Prop} (hT : A.TotalUnder Env)
     {s : σ} {t : τ} {ics : List ιc} {t' : τ} {ocs : List οc} (hi : A.Inv s) (hJ : g.J s t)
-    (hr : C.Run t ics t' ocs) (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → Env ia) :
+    (hr : C.Run t ics t' ocs) (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → ∀ s, A.Inv s → Env s ia) :
     ∃ ias s' oas, Forall₂ g.αi ics ias ∧ A.Run s ias s' oas ∧ g.J s' t' ∧ A.Inv s' ∧
       Forall₂ g.αo ocs oas := by
   induction hr generalizing s with
@@ -68,7 +68,7 @@ theorem run_of (hS : A.Sound) (h : Refines A C g) {Env : ιa → Prop} (hT : A.T
   | @cons t ic t₁ oc ics t₂ ocs hs _ ih =>
     obtain ⟨hd, he⟩ := hin ic (List.Mem.head _)
     obtain ⟨ia, ha⟩ := h.input_total ic hd
-    have hpre := hT s ia hi (he ia ha)
+    have hpre := hT s ia hi (he ia ha s hi)
     obtain ⟨s₁, oa, hst, hJ₁, ho⟩ := h.correct s t ic ia t₁ oc hi hJ ha hpre hd hs
     have hi₁ := hS.step_inv s ia s₁ oa hi hpre hst
     obtain ⟨ias, s', oas, hai, hrun, hJ', hi', hao⟩ :=
@@ -79,7 +79,7 @@ theorem run_of (hS : A.Sound) (h : Refines A C g) {Env : ιa → Prop} (hT : A.T
 各入力が定義域と環境の前提を満たせば、PRE を満たす抽象側の歩みの列で模倣される。 -/
 theorem run (h : Abstracts A C g s₀ Env ch outs outsC) {s : σ} {t : τ} {ics : List ιc} {t' : τ} {ocs : List οc}
     (hi : A.Inv s) (hJ : g.J s t) (hr : C.Run t ics t' ocs)
-    (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → Env ia) :
+    (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → ∀ s, A.Inv s → Env s ia) :
     ∃ ias s' oas, Forall₂ g.αi ics ias ∧ A.Run s ias s' oas ∧ g.J s' t' ∧ A.Inv s' ∧ Forall₂ g.αo ocs oas :=
   run_of h.preserves.sound h.refines h.preserves.total hi hJ hr hin
 
@@ -92,7 +92,8 @@ theorem init_glue (h : Abstracts A C g s₀ Env ch outs outsC) {t : τ} (ht : C.
 /-- 初期状態からの複数歩の模倣: 具体側の初期状態からの正常終了の列は、各入力が定義域と環境の前提を満たせば、
 `s₀` からの PRE を満たす抽象側の歩みの列で、`J`・`αi`・`αo` を保って模倣される。 -/
 theorem run_init (h : Abstracts A C g s₀ Env ch outs outsC) {t : τ} {ics : List ιc} {t' : τ} {ocs : List οc}
-    (ht : C.Init t) (hr : C.Run t ics t' ocs) (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → Env ia) :
+    (ht : C.Init t) (hr : C.Run t ics t' ocs)
+    (hin : ∀ ic, ic ∈ ics → C.Dom ic ∧ ∀ ia, g.αi ic ia → ∀ s, A.Inv s → Env s ia) :
     ∃ ias s' oas, Forall₂ g.αi ics ias ∧ A.Run s₀ ias s' oas ∧ g.J s' t' ∧ A.Inv s' ∧ Forall₂ g.αo ocs oas :=
   let ⟨hJ, hi⟩ := h.init_glue ht
   h.run hi hJ hr hin
@@ -100,7 +101,7 @@ theorem run_init (h : Abstracts A C g s₀ Env ch outs outsC) {t : τ} {ics : Li
 /-- 非空虚性: 環境の前提を満たす具体側の入力が、`s₀` に対応する具体側の初期状態から正常終了し、その結果は
 抽象側の歩みで模倣される。リファインメントが、空でない具体側の振る舞いについて述べていることを示す。 -/
 theorem exists_ok (h : Abstracts A C g s₀ Env ch outs outsC) :
-    ∃ t ic ia t' oc s' oa, C.Init t ∧ C.Dom ic ∧ g.αi ic ia ∧ Env ia ∧ C.step t ic (.ok (t', oc)) ∧
+    ∃ t ic ia t' oc s' oa, C.Init t ∧ C.Dom ic ∧ g.αi ic ia ∧ Env s₀ ia ∧ C.step t ic (.ok (t', oc)) ∧
       A.step s₀ ia s' oa ∧ g.J s' t' ∧ g.αo oc oa := by
   obtain ⟨ic, ia, hd, ha, he⟩ := h.preserves.envWitness
   have hi := h.preserves.init_inv
@@ -113,14 +114,14 @@ theorem exists_ok (h : Abstracts A C g s₀ Env ch outs outsC) :
     obtain ⟨s', oa, hst, hJ', ho⟩ := h.refines.correct s₀ t ic ia t' oc hi hJ ha hpre hd hr
     exact ⟨t, ic, ia, t', oc, s', oa, ht, hd, ha, he, hr, hst, hJ', ho⟩
 
-/-- 1 歩の可換式（完全性）: PRE の下で、具体側は必ず結果を持ち、どの結果も正常終了で、環境を固定した
-`f` の結果のどれかと `J`・`αo` で対応する。障害の無い環境（`ce ic = e₀`）では、自由な選択を除いて
-標準の選択と一致する。 -/
-theorem complete_of {f : σ → ιa → E × F → σ × οa} {ce : ιc → E} (h : Refines A C g)
-    (hp : Refines.Pinned A C g f ce) {s : σ} {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t)
+/-- 1 歩の可換式（完全性）: PRE の下で、具体側は必ず結果を持ち、どの結果も正常終了で、具体側の環境の記述
+`ce ic` が許す環境の選択の `f` の結果のどれかと `J`・`αo` で対応する。障害の指定の無い環境（`ce ic = d₀`）では、
+自由な選択を除いて標準の選択と一致する（束の `noFaultStd`）。 -/
+theorem complete_of {f : σ → ιa → E × F → σ × οa} {ce : ιc → D} {adm : D → E → Prop} (h : Refines A C g)
+    (hp : Refines.Pinned A C g f ce adm) {s : σ} {t : τ} {ic : ιc} {ia : ιa} (hi : A.Inv s) (hJ : g.J s t)
     (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) :
     (∃ r, C.step t ic r) ∧ ∀ r, C.step t ic r → ∃ t' oc, r = .ok (t', oc) ∧
-      ∃ x, g.J (f s ia (ce ic, x)).1 t' ∧ g.αo oc (f s ia (ce ic, x)).2 := by
+      ∃ e x, adm (ce ic) e ∧ g.J (f s ia (e, x)).1 t' ∧ g.αo oc (f s ia (e, x)).2 := by
   obtain ⟨hex, hne⟩ := h.applicable s t ic ia hi hJ ha hpre hd
   refine ⟨hex, fun r hr => ?_⟩
   match r, hr with
@@ -131,7 +132,7 @@ theorem complete_of {f : σ → ιa → E × F → σ × οa} {ce : ιc → E} (
 theorem complete {c : Choice σ ιa οa ιc} (h : Abstracts A C g s₀ Env (some c) outs outsC) {s : σ} {t : τ} {ic : ιc}
     {ia : ιa} (hi : A.Inv s) (hJ : g.J s t) (ha : g.αi ic ia) (hpre : A.Pre s ia) (hd : C.Dom ic) :
     (∃ r, C.step t ic r) ∧ ∀ r, C.step t ic r → ∃ t' oc, r = .ok (t', oc) ∧
-      ∃ x, g.J (c.f s ia (c.ce ic, x)).1 t' ∧ g.αo oc (c.f s ia (c.ce ic, x)).2 :=
+      ∃ e x, c.adm (c.ce ic) e ∧ g.J (c.f s ia (e, x)).1 t' ∧ g.αo oc (c.f s ia (e, x)).2 :=
   complete_of h.refines (h.preserves.pinned c rfl) hi hJ ha hpre hd
 
 end Abstracts

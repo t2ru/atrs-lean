@@ -35,7 +35,8 @@ def iaFSbad : Spec.FlightSearch.SearchInput :=
 /-- 選択の像の材料（基底の `searchStep`・標準の環境 `()`、`@[std_abs]` の `ceFS`）。自由な選択は `Unit`。 -/
 def chFS : Machine.Preserves.Choice Spec.Port.World Spec.FlightSearch.SearchInput Spec.FlightSearch.SearchOutput
     SourceModel.FlightSearchQuery.SearchInput :=
-  ⟨Unit, Unit, Spec.Port.World × Spec.FlightSearch.SearchOutput, searchStep, ceFS, (), fun r => r⟩
+  ⟨Unit, Unit, Unit, Spec.Port.World × Spec.FlightSearch.SearchOutput, searchStep, ceFS, Machine.Preserves.sameEnv, (), (),
+    fun r => r⟩
 
 /-- 具体側の 1 歩は状態を変えない。 -/
 theorem step_state {t : SourceModel.Db.Schema.FlightDb} {ic : SourceModel.FlightSearchQuery.SearchInput}
