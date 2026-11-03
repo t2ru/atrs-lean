@@ -147,7 +147,7 @@ theorem reserveStep_frame : Machine.Machine.FreeFrame reserveStep eraseDetailR :
 def chR : Machine.Preserves.Choice Spec.Port.World Spec.UseCase.Reserve.MInput Spec.UseCase.Reserve.MOutput
     SourceModel.ReserveQuery.MInput :=
   ⟨Spec.Nondet.ConflictChoice × Spec.Nondet.IoFailureChoice, Spec.Nondet.InvalidRequestDetail, Spec.Nondet.FaultSpec,
-    Spec.Port.World × Spec.UseCase.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, (none, none),
+    Spec.Port.World × Spec.UseCase.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, ⟨none, none⟩,
     (Spec.Nondet.ConflictChoice.std, Spec.Nondet.IoFailureChoice.std), eraseDetailR⟩
 
 /-- 障害の位置を消した具体側の入力（障害の無い環境での実現）。 -/

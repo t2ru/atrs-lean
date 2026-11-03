@@ -78,7 +78,7 @@ theorem step_reserve {w w' : Spec.Port.World} {ia : Spec.UseCase.Reserve.MInput}
 theorem fault_out {env : Env} {e : JThrow} (hf : IsFault env e) (w : Spec.Port.World)
     {ia : Spec.UseCase.Reserve.MInput} (hop : ia.op = .reserve) (a : Spec.Nondet.SeqAdvance) :
     ∃ oc oa c, catchReserve (.error e) = .ok oc ∧ reserveStep w ia c = (advance w a, oa) ∧ aoR oc = some oa ∧
-      Spec.Nondet.admits (env.ioFailAt, env.conflictAt) c.1 := by
+      Spec.Nondet.admits ⟨env.ioFailAt, env.conflictAt⟩ c.1 := by
   obtain ⟨m, ⟨rfl, hi⟩ | ⟨rfl, hc⟩⟩ := hf
   · exact ⟨_, _, ((.none, .failure a), .std), catch_ioFault ⟨m, rfl, hi⟩, by simp [reserveStep], rfl,
       admits_ioFault ⟨m, rfl, hi⟩ a⟩

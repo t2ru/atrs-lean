@@ -68,12 +68,12 @@ theorem catch_conflict (m : String) :
 theorem admits_std (d : Spec.Nondet.FaultSpec) : Spec.Nondet.admits d (.none, .none) := ⟨fun _ => rfl, fun _ => rfl⟩
 
 theorem admits_ioFault {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault env e) (a : Spec.Nondet.SeqAdvance) :
-    Spec.Nondet.admits (env.ioFailAt, env.conflictAt) (.none, .failure a) := by
+    Spec.Nondet.admits ⟨env.ioFailAt, env.conflictAt⟩ (.none, .failure a) := by
   obtain ⟨_, _, hi⟩ := h
   exact ⟨fun hn => by simp only at hn; simp [hn] at hi, fun _ => rfl⟩
 
 theorem admits_conflict {env : SourceModel.Db.Tx.Env} (hc : env.conflictAt.isSome = true)
-    (a : Spec.Nondet.SeqAdvance) : Spec.Nondet.admits (env.ioFailAt, env.conflictAt) (.conflict a, .none) :=
+    (a : Spec.Nondet.SeqAdvance) : Spec.Nondet.admits ⟨env.ioFailAt, env.conflictAt⟩ (.conflict a, .none) :=
   ⟨fun _ => rfl, fun hn => by simp only at hn; simp [hn] at hc⟩
 
 end Abstraction.Reserve.Catch

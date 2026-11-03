@@ -166,7 +166,7 @@ abbrev glueR := Machine.Glue.ofStd worldOfDb IcW aiR aoR
 /-- 具体側の入力の環境の記述（障害の位置。束の環境の固定 `pinned` の `ce`。ADR ab93 の 3d）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def ceR (ic : SourceModel.ReserveQuery.MInput) : Spec.Nondet.FaultSpec :=
-  (ic.input.env.ioFailAt, ic.input.env.conflictAt)
+  ⟨ic.input.env.ioFailAt, ic.input.env.conflictAt⟩
 
 /-- `ceR` の核: 障害の位置が同じ入力を同一視する。 -/
 @[kernel "docs/spec/abstraction.md#抽象化関数-α"]
