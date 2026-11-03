@@ -44,10 +44,10 @@ generated:
 
 ## 完了条件
 
-- [ ] [reservation.md](../spec/reservation.md) の例がベクタで通る
-- [ ] ABS-020・ABS-021・ABS-022・ABS-023・ABS-041・ABS-109・ABS-114 と、予約の SPEC-001〜SPEC-004 を証明した
-- [ ] 予約の `source-model/` ベクタが Java の原典実行と一致する
-- [ ] リポジトリの SQL の写しを PostgreSQL での差分実行で照合した
+- [x] [reservation.md](../spec/reservation.md) の例がベクタで通る
+- [x] ABS-020・ABS-021・ABS-022・ABS-023・ABS-041・ABS-109・ABS-114 と、予約の SPEC-001〜SPEC-004 を証明した
+- [x] 予約の `source-model/` ベクタが Java の原典実行と一致する
+- [x] リポジトリの SQL の写しを PostgreSQL での差分実行で照合した
 
 ## 第 1 段の結果
 
@@ -85,8 +85,9 @@ generated:
 * 3a（済）: 全表の α `worldOfDb`、具体側の不変条件 `IcW`、空席照会の初期状態の変更。ABS-011 とトップレベルの主定理は新しい貼り合わせで通る。
 * 3b（途中）: 予約の PRE に `Request.Valid`・`World.RefMaster`・`World.MemberRefMaster` を足した。予約の入出力の α と貼り合わせ、FLIGHT・会員・便マスタの Provider・選択フライトの補題を置いた。検証の道具（Hoare 三つ組・`java_estate_simp`）をスキルに置き（スキルの ADR cd90、版 0.26）、選択フライトの検証の対応を示した。ABS-021・ABS-023 を L 課題に改めた（プロジェクトオーナーの決定）。差異の述語（`dev_D027R`・`dev_D014R`・`dev_D009`・`dev_D031`・`dev_D001R`・`dev_D002R`・`dev_D012R`）と非自明性の定理、D-031 の証人の材料を置いた。W 課題 ABS-109・ABS-131 の否定の定理は 3c で ABS-041 と同時に置く。
 * 3c（途中）: 予約の各メソッドの事前・事後条件と ABS-041、ABS-020・ABS-022。予約内容の検証（代表者の年齢・運賃種別の利用条件・会員照合）の三つ組と [Spec] の対応、予約の合計金額の補題を置き、予約確認の 1 歩の対応（`confirm_run`）、予約確定の 1 歩の対応（`reserve_run`。空席の確保・登録・採番。D-009・D-014）と、ABS-041 の主定理 `reserveRefines`（`Abstraction.Reserve.ReserveRun`。課題の属性は束とともに 3d で付ける）を示した。W 課題 ABS-109・ABS-131 の否定の定理 `need_D009`・`need_D031` も示した。
-* 3d（途中）: スキルの束の規則の拡張（スキルの ADR 61e6）と、排他の失敗を行ロックを取る文に限る SourceModel の修正のうえで、ABS-041 の束 `reservePreserves` を示し、主定理・束・W 課題に課題の属性を付けた（`Abstraction.Reserve`）。L 課題 ABS-020・ABS-022 の予約の分も示した。残りはトップレベルへの統合。
-* 3d（未着手）: トップレベルへの統合と束。
+* 3d（済）: スキルの束の規則の拡張（スキルの ADR 61e6）と、排他の失敗を行ロックを取る文に限る SourceModel の修正のうえで、ABS-041 の束 `reservePreserves` を示し、主定理・束・W 課題に課題の属性を付けた（`Abstraction.Reserve`）。L 課題 ABS-020・ABS-022 の予約の分も示した。予約をトップレベルの主定理に加えた（`Machine.alt`）。予約確定の結果と実行後の状態を原典から 76 件採取し、`SourceModel` と一致した。
+* 完了条件の 4 項目は満たした。完了の定義のうち、Reserve の移植元側の追跡の検査（TR-S1・TR-K）を失敗扱いで通すことが残る（2026-11-03 の時点で、TR-S1 の未対応 265 件。Web 層・REST の form・DTO・コントローラ、ドメインのモデルの getter・setter、予約の履歴の DTO など）。
+* 3e（未着手）: 移植元側の追跡の検査を失敗扱いにする準備。
 
 ## 参照
 

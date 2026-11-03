@@ -77,7 +77,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 初期状態の対応 | `Abstraction.World.Init.worldOfDb_seed`（FLIGHT は生成の形の上で合成、会員はカーネルで照合）と `icW_seed`。旧 `Abstraction.FlightSearch.Init` を移した |
 | 予約・会員を含む状態の空席照会 | 暫定の制限（[assurance.md](../spec/assurance.md) の行）を外した。上流のシードの会員を投入した状態も α の定義域に入る |
 
-### 3b の決定（途中）
+### 3b の決定
 
 | 項目 | 決定 |
 | --- | --- |
@@ -99,7 +99,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.Select`: `toFlightList` が作るフライト情報の性質（便マスタの有無、存在の確認の文の結果、運賃種別のコード）
 * `Abstraction.Reserve.ValidateFlights`: 選択フライトの検証の Hoare 三つ組と、[Spec] の `validateFlightList` の対応
 
-### 3c の決定（途中）
+### 3c の決定
 
 | 項目 | 決定 |
 | --- | --- |
@@ -143,7 +143,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 * `Abstraction.Reserve.ConfirmRun`: 予約確認の 1 歩の対応（`confirm_run`）。具体機械の予約確認の 1 歩は、どの許される並び・障害の位置でも、状態を変えずに出力の値で終わり、その像は [Spec] の予約確認の 1 歩（成功・業務例外は標準の選択、I/O の失敗は N-002 の失敗と採番の前進 0、前段の改竄は N-004 の詳細の置き換え）の出力である
 * `Abstraction.Reserve.Confirm`: 予約確認の後段（組み立て・検証・合計金額）の三つ組と、予約確認の流れ全体（`confirm_core`）
 
-### 3d の決定（途中）
+### 3d の決定
 
 3c の主定理に課題の属性を付けると、束 `Preserves` を予約に当てはめる必要がある。そのとき出た 3 つの判断を、
 プロジェクトオーナーが決めた（判断 1〜3 とも案 A）。
@@ -157,6 +157,8 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 | 初期状態での証人 | シードのマスタの具体側の DB `SourceModel.Db.MasterSeed.masterDb` を、共有入力から生成器 `tools/conformance/master_seed.py` で作る（`conformance:check` で一致を確かめる）。その α がシードのマスタであることを、カーネルでの評価で示す（`Abstraction.MasterData.SeedAlpha.masterDataOf_seed`）。証人はシードの最初のフライト（2026-11-01・NTT001・N・OW）を選ぶ予約確認で、操作の結果が定まることはカーネルで評価する（シードのフライトの列の先頭で探索が止まる） |
 | 課題の属性 | `reserveRefines`・`reserveRefines_initSurj`・`reservePreserves` を機能のモジュール `Abstraction.Reserve` に置き、W 課題 `need_D009`（ABS-109）・`need_D031`（ABS-131）を同じモジュールに移して `@[obligation]`・`@[gap]` を付けた。登録簿の D-009・D-031 の証明の状態を「偽を証明済み」にした |
 | L 課題 ABS-020・ABS-022 | 予約の 1 歩の対応 `reserve_run`（ABS-020・ABS-022）と `confirm_run`（ABS-022）に課題の属性を付けた。障害で終われば状態の α は `advance w a`、業務例外なら `w` で、どの結果も出力の値で終わる（L9002 に到達しない）。ABS-022 の他のユースケースの分は、その R 課題とともに示す |
+| トップレベルへの統合 | `Spec.machine`・`SourceModel.machine` の空席照会の成分を、同じ状態の上の並置 `Machine.alt`（空席照会と予約）にした。`Abstraction.refines` は `searchRefines.alt reserveRefines`、`Abstraction.preserves` は `searchPreserves.core.alt reservePreserves.core` を並置に加えて示す。<br>- 抽象側の差異の述語 `dev` は状態と入力の述語にし、`restrictState` で課す（D-009 が状態を見る）。<br>- 環境の前提 `env` は、`Machine.Sum.altEnv` で予約の `envR` を並べる。<br>- obligation-check の G3'（`Spec` の層の機械の形）が `Machine.alt` を受けるようにした（スキル） |
+| 予約確定の原典採取 | 予約確認の採取（76 件）と同じ入力で、予約確定の結果と実行後の状態を原典から採取した（`conformance/source-model/reservation/origin-run-reserve.json`。正常終了 44 件・業務例外 32 件）。`lake test` が `SourceModel` と照合する |
 
 ### Consequences
 
@@ -168,6 +170,7 @@ Chosen option: "α の置き場所 (a)・予約の表 (a)・不変条件 (a)"。
 
 * `lake build`・`lake test`・axiom-check・layout-check・obligation-check・`trace check` が通る。
 * ABS-011（`searchRefines`・`searchPreserves`）とトップレベルの主定理が、新しい貼り合わせで通る。
+* ABS-041 の主定理 `reserveRefines` と束 `reservePreserves` が課題の属性つきで通り、トップレベルの主定理の並置に入っている。
 
 ## More Information
 

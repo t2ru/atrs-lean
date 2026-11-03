@@ -6,6 +6,7 @@
 * **Update**: ADR ab93 の 3d の決定（判断 2）として、SourceModel の排他の失敗を行ロックを取る文に限った（読むだけの文 `query` は I/O の失敗だけ、行ロック付きの読み出し `lockQuery`・`sql` は両方）。`reserveConcrete` の定義域を既定に戻し、予約の証明（`IsIoFault`）を合わせた。変わった定義の照合の記録を `trace rehash` で更新した（`trace/manifest.json`）。
 * **Update**: ADR ab93 の 3d で、R 課題 ABS-041 の束 `reservePreserves` を示し、主定理・束・W 課題 ABS-109・ABS-131 を機能のモジュール `Abstraction.Reserve` に課題の属性つきで置いた（登録簿の D-009・D-031 は「偽を証明済み」）。L 課題 ABS-020・ABS-022（予約の分）に課題の属性を付け、[spec/abstraction.md](spec/abstraction.md) の課題の表を改めた。初期状態での証人のため、シードのマスタの具体側の DB の生成器 `tools/conformance/master_seed.py`（`SourceModel.Db.MasterSeed`）と、その α の定理を置き、`trace/checks.json` の検査 `seed-lean` の対象に加えた。
 * **Update**: ADR ab93 の 3d で、予約をトップレベルの主定理に加えた。`Spec.machine`・`SourceModel.machine` の空席照会の成分を、同じ状態の上の並置 `Machine.alt`（空席照会と予約）にし、`Abstraction.refines`・`preserves`・`abstracts` を `Machine.Refines.alt`・`Machine.Preserves.alt` で示した（抽象側の差異の述語 `dev` は状態と入力の述語、`restrictState`）。[spec/abstraction.md](spec/abstraction.md#トップレベルの主定理) の主定理と束の表を改めた。
+* **Update**: ADR ab93 の 3d を終えた。予約確定の結果と実行後の状態を原典から 76 件採取し（`conformance/source-model/reservation/origin-run-reserve.json`。生成器は `tools/origin-run` の `Generate`）、`SourceModel` と一致した。[backlog aedf](backlog/aedf-reservation-usecase.md) の完了条件は満たしたが、Reserve の移植元側の追跡の検査（TR-S1・TR-K）を失敗扱いで通す準備が残るので、状態は doing のままとした。[spec/assurance.md](spec/assurance.md) の原典実行の行を改めた。
 
 ## 2026-11-02
 

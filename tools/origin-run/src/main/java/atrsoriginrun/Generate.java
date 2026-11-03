@@ -38,6 +38,7 @@ final class Generate {
         g.totalFare();
         g.searchFlight();
         g.confirm();
+        g.reserve();
     }
 
     static final class Gen {
@@ -381,6 +382,22 @@ final class Generate {
                     + "区間 1 の代表便（シードにある便のうち便名の順で最初のもの。搭乗日 2026-11-11）の搭乗クラス × 運賃種別（片道は片道系、往復は往復系と逆区間の代表便の 2 日後）"
                     + "× 搭乗者の型のすべてと、ほかの区間（シードに便のあるもの）の代表便（搭乗日 2026-12-26）の搭乗クラス・運賃種別・搭乗者の型の巡回",
                     List.of("D-001", "D-002", "D-012"));
+            reservationCases(doc, "confirm");
+            emit("reservation/origin-run-confirm.json", doc);
+        }
+
+        /** 予約確定: 予約確認と同じ入力（会員・予約の表は空、採番は初期値）。結果と実行後の状態を採取する。 */
+        void reserve() throws Exception {
+            ObjectNode doc = header("reservation/reserve.json", "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。"
+                    + "入力は origin-run-confirm.json と同じ（選択フライトのシードの FLIGHT の行、今日は投入日、会員・予約の表は空、採番は初期値）。"
+                    + "期待値は予約確定の結果と実行後の状態（FLIGHT・予約の表・採番）",
+                    List.of("D-001", "D-002", "D-012"));
+            reservationCases(doc, "reserve");
+            emit("reservation/origin-run-reserve.json", doc);
+        }
+
+        /** 区間 1 の代表便の搭乗クラス × 運賃種別 × 搭乗者の型のすべてと、ほかの区間の代表便の巡回（予約確認・予約確定で共通）。 */
+        void reservationCases(ObjectNode doc, String prefix) throws Exception {
             ArrayNode cases = doc.withArray("cases");
             List<String[]> kinds = List.of(new String[] {"N", "OW"}, new String[] {"N", "RD1"}, new String[] {"N", "RD7"},
                     new String[] {"N", "ED"}, new String[] {"N", "LD"}, new String[] {"N", "GD"}, new String[] {"S", "SOW"},
@@ -392,7 +409,7 @@ final class Generate {
                 List<ObjectNode> trip = trip(r1, d1, k[0], k[1], k[1].endsWith("RT"));
                 if (trip == null) continue;
                 for (Mix m : MIXES) {
-                    ObjectNode c = confirmCase(trip, m, "confirm-" + tripLabel(trip) + "-" + m.id(),
+                    ObjectNode c = confirmCase(trip, m, prefix + "-" + tripLabel(trip) + "-" + m.id(),
                             String.join("・", k) + "・" + tripLabel(trip) + "・" + m.label());
                     if (c != null) cases.add(c);
                 }
@@ -404,13 +421,12 @@ final class Generate {
                 Mix m = MIXES.get(n % MIXES.size());
                 List<ObjectNode> trip = trip(routes.get(r), peak, k[0], k[1], k[1].endsWith("RT"));
                 if (trip == null) continue;
-                ObjectNode c = confirmCase(trip, m, "confirm-" + tripLabel(trip) + "-" + m.id(),
+                ObjectNode c = confirmCase(trip, m, prefix + "-" + tripLabel(trip) + "-" + m.id(),
                         String.join("・", k) + "・" + tripLabel(trip) + "・" + m.label());
                 if (c == null) continue;
                 cases.add(c);
                 n++;
             }
-            emit("reservation/origin-run-confirm.json", doc);
         }
 
         static ObjectNode searchCase(String id, JsonNode route, LocalDate dep, String cls, String type, ArrayNode rows, String description) {
