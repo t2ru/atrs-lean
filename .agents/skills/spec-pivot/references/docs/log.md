@@ -1,6 +1,7 @@
 # Directory Update Log
 
 ## 2026-11-03
+* **Creation**: [ADR d2b6](decision/d2b6-book-parts-and-namespace-toc.md) で、本の道具 `scripts/book/build.py` を部（`book.parts`。複数の Lean のルート）に対応させ、目次をモジュール名の階層の入れ子（モジュールの無い中間の名前はページの無い見出し）にし、部をまたぐリンクを本のページへ向けた。[rules/spec-documents.md](rules/spec-documents.md#仕様の本)・[spec/traceability.md](spec/traceability.md#プロジェクトの設定)・`scripts/README.md` を改めた。スキルの版を 0.29 にした。来歴: 適用先 ATRS の ADR f779。
 * **Update**: 追跡属性の文書の節の型 `Trace.Id.DocAnchor` が、Lean のモジュール文書（`<path>.lean#<anchor>`。[ADR c634](decision/c634-spec-prose-in-lean-module-docs-and-book.md)）も受けるようにした（型付きの属性（[backlog d3fd](backlog/d3fd-misu-skill-types.md)）と、仕様の散文のモジュール文書への移行を合わせた）。
 * **Update**: [backlog d3fd](backlog/d3fd-misu-skill-types.md) を完了にした（完了条件の S3 の項目は、型を変えない判断に合わせて書き直した）。[backlog/README.md](backlog/README.md) を改めた。
 * **Update**: [backlog d3fd](backlog/d3fd-misu-skill-types.md) の S4 を終えた。SQL の並びのキーを向きとキーの組の列 `LangSemantics.Sql.OrderBy` にし（向きとキーの数の食い違いを表せない）、`ConformanceKit.SqlTable.Table` に行の幅の証明を持たせ（`Table.ofRows`・`table` は幅の違う行を拒み、`col` は短い行で誤りを返す）、`java!` の展開の内部の値を和型 `Kind`・`Shape` と長さの決まった `Vector` にした（展開の結果は不変）。PostgreSQL の突き合わせ表の生成器 `Test/LangSemantics/pg/pg_table.py` を合わせた。[lang/sql/semantics.md](lang/sql/semantics.md)・[lang/sql/harness.md](lang/sql/harness.md) を改めた（版 0.28 に含める）。

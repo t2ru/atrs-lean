@@ -105,34 +105,49 @@ def _dfs(mods, entry, read):
     return out + sorted(mods - seen)
 
 
-def summary(mods, titles, entry):
-    """SUMMARY.md の本文。entry を前書き、他をモジュール名の階層の入れ子で並べる。"""
-    lines = ["# Summary", "", f"[{titles[entry]}]({entry.replace('.', '/')}.md)", ""]
-    rest = [m for m in mods if m != entry]
-    index = {m: k for k, m in enumerate(rest)}
+def tree_lines(mods, titles, top=None, depth=0):
+    """mods をモジュール名の階層の入れ子の箇条書きにした行の列。並びは mods の順（各階層で最初に現れた順）。
+    モジュールの無い中間の名前（例 `SourceModel.Domain`）は、すぐ下の名前が 2 つ以上あれば、ページの無い見出し
+    （mdbook の draft chapter `- [Domain]()`）にし、1 つなら畳む（`A.B` のように続けて示す）。題がモジュール名そのものの章は、親から見た相対の名前で示す。"""
+    mset = set(mods)
+    prefix = (top + ".") if top else ""
+    # 名前の木: ノード = 名前の成分の列（top からの相対）
+    order, kids = [], {}
+    for m in mods:
+        rel = m[len(prefix):].split(".") if m.startswith(prefix) else m.split(".")
+        for k in range(1, len(rel) + 1):
+            node, par = tuple(rel[:k]), tuple(rel[:k - 1])
+            if node not in kids:
+                kids[node] = []
+                kids.setdefault(par, []).append(node)
+    full = lambda node: prefix + ".".join(node)
 
-    def parent(m):
-        p = m.rsplit(".", 1)[0] if "." in m else None
-        while p is not None and p not in index:
-            p = p.rsplit(".", 1)[0] if "." in p else None
-        return p
+    lines = []
 
-    children = {}
-    roots = []
-    for m in rest:
-        p = parent(m)
-        if p is None or p == entry:
-            roots.append(m)
+    def emit(node, d, shown):
+        name = full(node)
+        if name in mset or len(kids.get(node, [])) >= 2:
+            label = name[len(shown) + 1:] if shown and name.startswith(shown + ".") else name
+            if name in mset:
+                t = titles[name]
+                lines.append(f"{'  ' * d}- [{label if t == name else t}]({name.replace('.', '/')}.md)")
+            else:
+                lines.append(f"{'  ' * d}- [{label}]()")
+            for c in kids.get(node, []):
+                emit(c, d + 1, name)
         else:
-            children.setdefault(p, []).append(m)
+            for c in kids.get(node, []):
+                emit(c, d, shown)
 
-    def emit(m, depth):
-        lines.append(f"{'  ' * depth}- [{titles[m]}]({m.replace('.', '/')}.md)")
-        for c in children.get(m, []):
-            emit(c, depth + 1)
+    for c in kids.get((), []):
+        emit(c, depth, top or "")
+    return lines
 
-    for m in roots:
-        emit(m, 0)
+
+def summary(mods, titles, entry):
+    """SUMMARY.md の本文（部の無い本）。entry を前書き、他をモジュール名の階層の入れ子で並べる。"""
+    lines = ["# Summary", "", f"[{titles[entry]}]({entry.replace('.', '/')}.md)", ""]
+    lines += tree_lines([m for m in mods if m != entry], titles, entry)
     return "\n".join(lines) + "\n"
 
 
@@ -146,9 +161,10 @@ def title_of(md_text, default):
 
 # ---------------------------------------------------------------- リンク
 
-def rewrite_links(okf, md_text, src_rel, page_rel, root_files, base, repo_url, repo):
+def rewrite_links(okf, md_text, src_rel, page_rel, pages, repo_url, repo):
     """mdgen の出力の Markdown のリンクを、本のページか repo_url の URL に替える。
-    src_rel は元の Lean のファイル（リポジトリ相対）、page_rel は本のページ（src からの相対）。"""
+    src_rel は元の Lean のファイル（リポジトリ相対）、page_rel は本のページ（src からの相対）、
+    pages は本に入れた Lean のファイル（リポジトリ相対）→ ページ の対応。"""
     lines = md_text.split("\n")
     masked = okf.mask_code(lines)
     out = []
@@ -160,9 +176,8 @@ def rewrite_links(okf, md_text, src_rel, page_rel, root_files, base, repo_url, r
                 continue
             path, _, frag = target.partition("#")
             dest = os.path.normpath(os.path.join(os.path.dirname(src_rel), path))
-            if dest in root_files:
-                page = os.path.relpath(dest, base)[:-len(".lean")] + ".md"
-                new = os.path.relpath(page, os.path.dirname(page_rel) or ".").replace(os.sep, "/")
+            if dest in pages:
+                new = os.path.relpath(pages[dest], os.path.dirname(page_rel) or ".").replace(os.sep, "/")
             elif dest.startswith(".."):
                 continue
             else:
@@ -198,39 +213,113 @@ def mdgen(src_dir, out_dir):
     subprocess.run(cmd, check=True)
 
 
+def parts_of(repo, cfg):
+    """[(部の題か None, base, [(モジュール, 入口のファイルか None, [ファイル])])]。
+    `parts` が無ければ、`roots`・`entry` を題の無い 1 部とする（入口のモジュールを 1 つの単位にする）。"""
+    out = []
+    if "parts" in cfg:
+        for part in cfg["parts"]:
+            base = part["base"].rstrip("/")
+            units = []
+            for m in part["modules"]:
+                path = m.replace(".", "/")
+                entry = f"{base}/{path}.lean"
+                files = ([entry] if (repo / entry).is_file() else []) + \
+                    (root_files(repo, [f"{base}/{path}"]) if (repo / base / path).is_dir() else [])
+                if not files:
+                    sys.exit(f"book: module {m} not found under {base}")
+                units.append((m, entry if (repo / entry).is_file() else None, files))
+            out.append((part.get("title"), base, units))
+    else:
+        roots = cfg["roots"]
+        base = os.path.dirname(roots[0].rstrip("/"))
+        files = root_files(repo, roots)
+        entry = cfg.get("entry")
+        out.append((None, base, [(module_of(entry, base) if entry else "", entry, files)]))
+    return out
+
+
+def page_of(f, base):
+    return os.path.relpath(f, base)[:-len(".lean")] + ".md"
+
+
+def unit_modules(mod, entry, files, base, texts):
+    """1 つの単位（入口のモジュールとその下）のモジュールの並び。入口が無ければ名前の順。"""
+    mods = {module_of(f, base) for f in files}
+    if entry is None:
+        return sorted(mods)
+    return order_modules(mods, module_of(entry, base), lambda m: texts.get(m, ""))
+
+
+def summary_parts(book_title, parts, titles):
+    """SUMMARY.md の本文。前書き index.md と、部（`# <部の題>`）ごとの章。
+    parts は [(部の題か None, [(入口のモジュールか None, [入口の他のモジュール])])]。入口を章にし、他をその下に入れ子で置く。"""
+    lines = ["# Summary", "", f"[{book_title}](index.md)", ""]
+    for title, units in parts:
+        if title:
+            lines += [f"# {title}", ""]
+        for entry, mods in units:
+            if entry:
+                lines.append(f"- [{titles[entry]}]({entry.replace('.', '/')}.md)")
+                lines += tree_lines(mods, titles, entry, 1)
+            else:
+                lines += tree_lines(mods, titles)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def index_page(book_title, parts, titles):
+    lines = [f"# {book_title}", ""]
+    for title, units in parts:
+        heads = "、".join(f"[{titles[e]}]({e.replace('.', '/')}.md)" for e, _ in units if e)
+        lines.append(f"- {title or ''}" + (f": {heads}" if heads else ""))
+    return "\n".join(lines) + "\n"
+
+
 def build(repo, cfg, okf):
-    roots = cfg["roots"]
-    base = os.path.dirname(roots[0].rstrip("/"))
-    files = root_files(repo, roots)
+    parts = parts_of(repo, cfg)
     out = repo / cfg.get("out", "build/book")
     src = out / "src"
     if src.exists():
         shutil.rmtree(src)
+    pages = {}
+    for _, base, units in parts:
+        for _, _, files in units:
+            for f in files:
+                pg = page_of(f, base)
+                if pg in pages.values():
+                    sys.exit(f"book: two files map to the page {pg}")
+                pages[f] = pg
     with tempfile.TemporaryDirectory() as tmp:
         stage = Path(tmp) / "stage"
-        for f in files:
-            dst = stage / os.path.relpath(f, base)
+        for f, pg in pages.items():
+            dst = stage / (pg[:-len(".md")] + ".lean")
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(repo / f, dst)
         mdgen(stage.resolve(), src.resolve())
     texts, titles = {}, {}
-    rset = set(files)
-    for f in files:
-        page = os.path.relpath(f, base)[:-len(".lean")] + ".md"
-        p = src / page
-        text = p.read_text(encoding="utf-8")
-        text = rewrite_links(okf, text, f, page, rset, base, cfg["repo_url"], repo)
+    for f, pg in pages.items():
+        p = src / pg
+        text = rewrite_links(okf, p.read_text(encoding="utf-8"), f, pg, pages, cfg["repo_url"], repo)
         p.write_text(text, encoding="utf-8")
-        mod = module_of(f, base)
+        mod = pg[:-len(".md")].replace("/", ".")
         texts[mod] = (repo / f).read_text(encoding="utf-8")
         titles[mod] = title_of(text, mod)
-    entry = module_of(cfg["entry"], base)
-    mods = order_modules(set(texts), entry, lambda m: texts.get(m, ""))
-    (src / "SUMMARY.md").write_text(summary(mods, titles, entry), encoding="utf-8")
+    book_title = cfg.get("title", "Spec")
+    plan = []
+    for title, base, units in parts:
+        us = []
+        for m, entry, files in units:
+            mods = unit_modules(m, entry, files, base, texts)
+            e = module_of(entry, base) if entry else None
+            us.append((e, [x for x in mods if x != e]))
+        plan.append((title, us))
+    (src / "index.md").write_text(index_page(book_title, plan, titles), encoding="utf-8")
+    (src / "SUMMARY.md").write_text(summary_parts(book_title, plan, titles), encoding="utf-8")
     repo_root_url = re.sub(r"/blob/.*$", "", cfg["repo_url"])
     (out / "book.toml").write_text(
         "[book]\n"
-        f"title = {json.dumps(cfg.get('title', 'Spec'), ensure_ascii=False)}\n"
+        f"title = {json.dumps(book_title, ensure_ascii=False)}\n"
         f"language = {json.dumps(cfg.get('language', 'en'))}\n"
         'src = "src"\n\n'
         "[build]\n"
@@ -240,7 +329,7 @@ def build(repo, cfg, okf):
         f"git-repository-url = {json.dumps(repo_root_url)}\n",
         encoding="utf-8")
     subprocess.run(["mdbook", "build", str(out)], check=True)
-    print(f"book: {out / 'html' / 'index.html'} ({len(files)} page(s))")
+    print(f"book: {out / 'html' / 'index.html'} ({len(pages)} page(s), {len(parts)} part(s))")
     return 0
 
 
@@ -331,23 +420,47 @@ def self_test(okf):
     titles = {m: m for m in mods}
     eq("summary", summary(mods, titles, "Spec").split("\n")[2:], [
         "[Spec](Spec.md)", "",
-        "- [Spec.Glossary](Spec/Glossary.md)",
-        "- [Spec.Prim](Spec/Prim.md)",
-        "  - [Spec.Prim.Int](Spec/Prim/Int.md)",
-        "  - [Spec.Prim.Date](Spec/Prim/Date.md)",
-        "- [Spec.Fare](Spec/Fare.md)",
-        "- [Spec.Seed.Flight](Spec/Seed/Flight.md)",
-        "- [Spec.Orphan](Spec/Orphan.md)", ""])
+        "- [Glossary](Spec/Glossary.md)",
+        "- [Prim](Spec/Prim.md)",
+        "  - [Int](Spec/Prim/Int.md)",
+        "  - [Date](Spec/Prim/Date.md)",
+        "- [Fare](Spec/Fare.md)",
+        "- [Seed.Flight](Spec/Seed/Flight.md)",
+        "- [Orphan](Spec/Orphan.md)", ""])
     eq("title", title_of("```lean\nx\n```\n# 運賃計算（`Spec.Fare`）\n", "Spec.Fare"), "運賃計算（Spec.Fare）")
-    roots = {"lean/Spec.lean", "lean/Spec/Fare.lean", "lean/Spec/Prim/Int.lean"}
+    A = ".agents/skills/x/assets/lean"
+    roots = {"lean/Spec.lean": "Spec.md", "lean/Spec/Fare.lean": "Spec/Fare.md", "lean/Spec/Prim/Int.lean": "Spec/Prim/Int.md",
+             f"{A}/Machine/Kernel.lean": "Machine/Kernel.md"}
     md = ("[a](Prim/Int.lean#floor) [b](../../docs/x.md#y) [c](#here) [d](https://e.x/) `[e](Fare.lean)`\n"
           "```lean\n[f](Fare.lean)\n```\n[g](../Spec.lean)")
-    got = rewrite_links(okf, md, "lean/Spec/Fare.lean", "Spec/Fare.md", roots, "lean", "https://h/r/blob/main", Path("/nonexistent"))
+    got = rewrite_links(okf, md, "lean/Spec/Fare.lean", "Spec/Fare.md", roots, "https://h/r/blob/main", Path("/nonexistent"))
     eq("links", got.split("\n"), [
         "[a](Prim/Int.md#floor) [b](https://h/r/blob/main/docs/x.md#y) [c](#here) [d](https://e.x/) `[e](Fare.lean)`",
         "```lean", "[f](Fare.lean)", "```", "[g](../Spec.md)"])
-    got = rewrite_links(okf, "[a](../Fare.lean)", "lean/Spec/Prim/Int.lean", "Spec/Prim/Int.md", roots, "lean", "https://h/r/blob/main", Path("/nonexistent"))
+    got = rewrite_links(okf, "[a](../Fare.lean)", "lean/Spec/Prim/Int.lean", "Spec/Prim/Int.md", roots, "https://h/r/blob/main", Path("/nonexistent"))
     eq("links-nested", got, "[a](../Fare.md)")
+    # 部をまたぐリンク（別の base の Lean のファイル）も本のページへ
+    got = rewrite_links(okf, "[k](../../.agents/skills/x/assets/lean/Machine/Kernel.lean#k)", "lean/Spec/Fare.lean", "Spec/Fare.md",
+                        roots, "https://h/r/blob/main", Path("/nonexistent"))
+    eq("links-cross-part", got, "[k](../Machine/Kernel.md#k)")
+    titles = {m: m for m in ["Spec", "Spec.Fare", "Spec.Prim", "Spec.Prim.Int", "Tools.A", "Tools.B"]}
+    got = summary_parts("Book", [("仕様", [("Spec", ["Spec.Prim", "Spec.Fare", "Spec.Prim.Int"])]),
+                                 ("道具", [(None, ["Tools.A", "Tools.B"])])], titles)
+    eq("summary-parts", got.split("\n"), [
+        "# Summary", "", "[Book](index.md)", "",
+        "# 仕様", "",
+        "- [Spec](Spec.md)",
+        "  - [Prim](Spec/Prim.md)",
+        "    - [Int](Spec/Prim/Int.md)",
+        "  - [Fare](Spec/Fare.md)", "",
+        "# 道具", "",
+        "- [Tools]()",
+        "  - [A](Tools/A.md)",
+        "  - [B](Tools/B.md)", ""])
+    # 題がモジュール名でない章は題で示し、中間の名前が 1 つの下にしか無ければ畳む
+    t2 = {"S": "S", "S.A.B.C": "S.A.B.C", "S.A.B.D": "題 D", "S.X.Y": "S.X.Y"}
+    eq("tree-groups", tree_lines(["S.A.B.C", "S.A.B.D", "S.X.Y"], t2, "S"), [
+        "- [A.B]()", "  - [C](S/A/B/C.md)", "  - [題 D](S/A/B/D.md)", "- [X.Y](S/X/Y.md)"])
     print(f"book self-test: {'NG' if fails else 'OK'} ({fails} failure(s))")
     return 1 if fails else 0
 

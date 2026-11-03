@@ -122,8 +122,8 @@ jobs:
           path: build/review/
           if-no-files-found: ignore
 
-      # 仕様の本（Spec のモジュール文書の HTML。book:build。ADR 68a6）。PR では Spec の変更があったときだけ作る
-      - name: Upload the spec book (book:build)
+      # Lean のソース全体の本（book:build。ADR 68a6・ADR f779）。PR では Lean のソースの変更があったときだけ作る
+      - name: Upload the Lean source book (book:build)
         if: always()
         uses: actions/upload-artifact@v4
         with:
