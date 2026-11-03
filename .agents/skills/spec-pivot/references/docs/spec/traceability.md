@@ -176,7 +176,7 @@ locator = kind ":" body
 | `target.root` / `target.src` / `target.crate` / `target.generated` | 移植先のプロジェクトのルート（TR-X の範囲）、ソースのルート、crate 名、生成した写しのディレクトリ（`src` からの相対） |
 | `docs.spec` / `docs.abstraction` / `docs.refinement` / `docs.traceability` | 仕様文書のディレクトリ（「出典:」の範囲）、抽象化・具体化の課題一覧、追跡の文書（生成区画） |
 | `docs.spec_lean` | 任意。仕様の散文を書いた `Spec` のモジュール文書の Lean のファイル・ディレクトリ（「出典:」の範囲に加える。[spec-documents.md](../rules/spec-documents.md#モジュール文書に書く)） |
-| `book` | 任意。本の設定（`scripts/book/build.py`）: `title`・`language`、`parts`（部の列 `[{title, base, modules}]`。`base` は Lean のルート、`modules` はトップレベルのモジュール名の列で、各 `M` は `<base>/M.lean` と `<base>/M/` の下に当たる。[ADR d2b6](../decision/d2b6-book-parts-and-namespace-toc.md)）か、部の無い本では `roots`（本にする Lean のファイル・ディレクトリ）と `entry`（目次の順を決めるモジュール）、`out`（出力）、`repo_url`（本の外へのリンクの基点）、`refs`（`--check` が行き先を検査する `manifest` と `vectors`）、`okf_check`（アンカーの規則を借りる okf-bundle の道具のパス） |
+| `book` | 任意。本の設定（`scripts/book/build.py`）: `title`・`language`、`parts`（部の列 `[{title, base, modules}]`。`base` は Lean のルート、`modules` はトップレベルのモジュール名の列で、各 `M` は `<base>/M.lean` と `<base>/M/` の下に当たる。[ADR d2b6](../decision/d2b6-book-parts-and-namespace-toc.md)）か、部の無い本では `roots`（本にする Lean のファイル・ディレクトリ）と `entry`（目次の順を決めるモジュール）、`out`（出力）、`repo_url`（本の外へのリンクの基点）、`refs`（`--check` が行き先を検査する `manifest` と `vectors`）、`okf_check`（アンカーの規則を借りる okf-bundle の道具のパス）、`fold`（任意。目次の折りたたみ `{enable, level}`。mdbook の `output.html.fold`、`level` は最初から開いておく深さ） |
 | `docs.decision` / `docs.backlog` | 意思決定記録と作業項目のディレクトリ（作業項目の frontmatter の `id`・`state`。`done` が完了） |
 | `conformance` | 適合テストベクタのディレクトリ |
 

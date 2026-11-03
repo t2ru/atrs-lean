@@ -117,6 +117,10 @@
         ]
       }
     ],
+    "fold": {
+      "enable": true,
+      "level": 0
+    },
     "out": "build/book",
     "repo_url": "https://github.com/t2ru/atrs-lean/blob/main",
     "refs": {
