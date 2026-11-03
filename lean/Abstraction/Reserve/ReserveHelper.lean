@@ -90,13 +90,14 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
   obtain ⟨hnames, hfnl, hgnl, hagel, htel12, htel3, hmaill, hplen, hpass⟩ := hrv
   obtain ⟨h1, h2, -, -, h5, h6, h7, h8, -, h10⟩ := reserveInputOf_eq hri
   have hf10 := filter_mapM h10
-  have hpc : LangSemantics.Core.List.Forall₂ PassCond (ic.form.passengerFormList.filter (!·.isEmpty)) d.passengers :=
+  have hpc : LangSemantics.Core.List.Forall₂ PassCond (ic.form.passengerFormList.filter (!·.isEmpty))
+      (d.passengers.map Spec.UseCase.Reserve.DraftPassenger.toPassenger) :=
     passConds hf10 hdps fun q hq => hpass q (List.mem_filter.mp hq).1
   have hlen' : ((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).length ≤ 6 := by
     have := LangSemantics.Core.MapM.mapM_some_length h10
     rw [List.length_map]
     exact Nat.le_trans (List.length_filter_le _ _) (this ▸ hplen)
-  have hql : d.passengers.length ≤ 6 := by
+  have hql : (d.passengers.map Spec.UseCase.Reserve.DraftPassenger.toPassenger).length ≤ 6 := by
     rw [← forall₂_length hpc]; simpa using hlen'
   have hFT' : LangSemantics.Core.List.Forall₂ FareTypeFacts (mkFlight p f0 :: fs.map (mkFlight p)) FTs := hFT
   obtain ⟨v, hv, hH⟩ := validate_hoare (P := fun s => s.db = t ∧ s.env = ic.env) ⟨fun _ h => h.1, fun _ h => h⟩ he
@@ -130,11 +131,11 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
   simp only [hc', MemberCheck.lift_ok, pure_bind]
   have hmem := validate_members hv
   have hpm : ∀ f ∈ ic.form.passengerFormList.filter (!·.isEmpty), ∀ s, f.membershipNumber = some s → s ≠ "" →
-      ∃ x, w.findMember ⟨s⟩ = some x := by
+      ∃ x, w.findMember s = some x := by
     intro f hf s hs hne
-    obtain ⟨q, hq, hpcq⟩ := forall₂_mem_left hpc hf
-    obtain ⟨i, hi, hiq⟩ := hpcq.input
-    have hqm : q.membershipNumber = some ⟨s⟩ := by
+    obtain ⟨i, hi_mem, hi⟩ := LangSemantics.Core.MapM.mapM_some_mem hf10 hf
+    obtain ⟨q, hq, hiq⟩ := LangSemantics.Core.MapM.mapM_some_mem hdps hi_mem
+    have hqm : q.membershipNumber = some s := by
       simp only [passengerInputOf, Option.map_eq_some_iff] at hi
       obtain ⟨a, -, rfl⟩ := hi
       simp only [Spec.UseCase.Reserve.PassengerInput.toPassenger, Option.bind_eq_bind, Option.bind_eq_some_iff,
@@ -142,7 +143,7 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
       obtain ⟨_, _, _, _, _, _, _, _, rfl⟩ := hiq
       simp only [hs, memberNoOf_some hne]
     exact Option.isSome_iff_exists.mp (hmem.2 q hq _ hqm)
-  have hrm : ∀ s, M0.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember ⟨s⟩ = some x := by
+  have hrm : ∀ s, M0.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember s = some x := by
     intro s hs hne
     have := hn
     rw [hs, memberNoOf_some hne] at this
@@ -153,12 +154,13 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
     (hdgn ▸ hgnl) (by rw [← hR]; exact hage) hagev (by rw [hdage]; omega) (by rw [← hR]; exact hgd) (tel := d.repTel)
     ?_ ?_ (mail := d.repMail) ?_ (hdmail ▸ hmaill) (by rw [← hR]; exact hm) hrm
   · refine Hoare.bind' (Hoare.conseq hreg (fun _ h => h) (fun _ _ h => h) fun e s ⟨hse, h⟩ => ⟨hse, ?_⟩)
-      fun dto => Hoare.pure' fun s ⟨hse, w1, hsa, hdb, hno, hpd⟩ => ⟨trivial, hse, w1, hsa, ?_, ?_, hpd, rfl⟩
+      fun dto => Hoare.pure' fun s ⟨hse, w1, hsa, hdb, hno, hpd⟩ =>
+        ⟨trivial, hse, w1, by simpa only [List.length_map] using hsa, ?_, ?_, hpd, rfl⟩
     · rcases h with h | ⟨be, hba, hc, hsa, hdb⟩
       · exact .inl h
-      · exact .inr ⟨be, by rw [hc, hba], hdb, .inr ⟨trivial, hba, hsa⟩⟩
+      · exact .inr ⟨be, by rw [hc, hba], hdb, .inr ⟨trivial, hba, by simpa only [List.length_map] using hsa⟩⟩
     · rw [register_eq d TD tfn (secureAll_world hsa).2.2.1, ← hn]
-      exact hdb
+      simpa only [List.length_map] using hdb
     · rw [register_eq d TD tfn (secureAll_world hsa).2.2.1]
       exact hno
   · show R.reserveFlightList = _

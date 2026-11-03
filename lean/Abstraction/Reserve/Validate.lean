@@ -96,21 +96,21 @@ def FareTypeFacts (fl : SourceModel.Domain.Model.Flight) (FT : Spec.MasterData.F
     ft.passengerMinNum = some m ∧ m.val = (FT.passengerMinNum : Int)
 
 /-- 予約フライトごとの [Spec] の検査の値。 -/
-def specFareTypeOf (FT : Spec.MasterData.FareType) (qs : List Spec.Model.Passenger) : Except Spec.Error.AtrsError Unit :=
+def specFareTypeOf (FT : Spec.MasterData.FareType) (qs : List Spec.UseCase.Reserve.DraftPassenger) : Except Spec.Error.AtrsError Unit :=
   match FT.fareTypeCd with
   | .LD => if qs.any (·.gender == .M) then .error (.business .ladiesOnly) else .ok ()
   | .GD => if qs.length < FT.passengerMinNum then
       .error (.business (.tooFewPassengers (FT.fareTypeName) (toString FT.passengerMinNum))) else .ok ()
   | _ => .ok ()
 
-theorem checkFareTypeOf_eq {md : Spec.MasterData} {qs : List Spec.Model.Passenger} {k : Spec.Model.FlightKey}
+theorem checkFareTypeOf_eq {md : Spec.MasterData} {qs : List Spec.UseCase.Reserve.DraftPassenger} {k : Spec.Model.FlightKey}
     {FT : Spec.MasterData.FareType} (h : md.fareTypeOf k.fareTypeCd = some FT) :
     Spec.UseCase.Reserve.checkFareTypeOf md qs k = some (specFareTypeOf FT qs) := by
   simp only [Spec.UseCase.Reserve.checkFareTypeOf, h, Option.bind_eq_bind, Option.bind_some, Option.pure_def,
     specFareTypeOf]
   cases FT.fareTypeCd <;> rfl
 
-theorem any_gender_eq {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.Model.Passenger}
+theorem any_gender_eq {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.UseCase.Reserve.DraftPassenger}
     (h : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs qs) :
     xs.any (fun x => x.gender == some .M) = qs.any (·.gender == .M) := by
   induction h with
@@ -152,7 +152,7 @@ theorem forIn_agree {α : Type} (f : α → PUnit → JResult (ForInStep PUnit))
     · exact .inr ⟨be, by simp only [hf, bind, Except.bind], rfl⟩
 
 /-- 運賃種別の利用条件の検査（予約フライトを順に）。すべての予約フライトが同じ搭乗者の列 `xs`（[Spec] の `qs`）を持つ。 -/
-theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.Model.Passenger}
+theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.UseCase.Reserve.DraftPassenger}
     (hg : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs qs) (hne : xs ≠ [])
     (hlen : xs.length ≤ 6) {fls : List SourceModel.Domain.Model.Flight} {FTs : List Spec.MasterData.FareType}
     (h : LangSemantics.Core.List.Forall₂ FareTypeFacts fls FTs) :

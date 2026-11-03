@@ -131,7 +131,7 @@ def render_spec(members: list[dict], logins: list[dict], load: tuple[int, int, i
         y, mo, d = m["BIRTHDAY"]
         last = "none" if l["LAST_PASSWORD"] == "" else f"some ⟨{s(l['LAST_PASSWORD'])}⟩"
         lines.append(
-            f"  {{ membershipNumber := ⟨{s(m['CUSTOMER_NO'])}⟩, kanjiFamilyName := {s(m['KANJI_FAMILY_NAME'])}, "
+            f"  {{ membershipNumber := {{ val := {s(m['CUSTOMER_NO'])} }}, kanjiFamilyName := {s(m['KANJI_FAMILY_NAME'])}, "
             f"kanjiGivenName := {s(m['KANJI_GIVEN_NAME'])}, kanaFamilyName := {s(m['KANA_FAMILY_NAME'])}, "
             f"kanaGivenName := {s(m['KANA_GIVEN_NAME'])}, birthday := Date.ymd! {y} {mo} {d}, gender := .{m['GENDER']}, "
             f"tel := {s(m['TEL'])}, zipCode := {s(m['ZIP_CODE'])}, address := {s(m['ADDRESS'])}, mail := {s(m['MAIL'])}, "

@@ -31,7 +31,7 @@ def PostBE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow →
 
 /-- 会員の取得の答え: 会員が無ければ `null`、あれば照合が [Spec] の `matchesMember` になる会員。 -/
 def MemberAns (w : Spec.Port.World) (s : String) (r : JRef SourceModel.Domain.Model.Member) : Prop :=
-  match w.findMember ⟨s⟩ with
+  match w.findMember s with
   | none => r = none
   | some x => ∃ M, r = some M ∧ ∀ fn gn g,
       TicketReserveServiceImpl.sameAsMember (some fn) (some gn) (some g) M =
@@ -63,7 +63,7 @@ theorem findOne_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {mdb 
   have htk : ({ db := s0.db, env := s0.env, clockReads := s0.clockReads, sqlCalls := s0.sqlCalls + 1 } : St) =
       tick s0 := rfl
   rw [htk]
-  cases hx : w.findMember ⟨s⟩ with
+  cases hx : w.findMember s with
   | none =>
     rw [hx] at hf
     simp only [hf]
@@ -105,7 +105,7 @@ theorem repMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {sv
     | ok a s' =>
       intro ⟨hs', ha⟩
       unfold MemberAns at ha
-      cases hx : w.findMember ⟨str⟩ with
+      cases hx : w.findMember str with
       | none =>
         rw [hx] at ha; subst ha
         exact ⟨hs', .inr ⟨_, rfl, rfl⟩⟩
@@ -121,7 +121,7 @@ theorem repMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {sv
 /-! ## 搭乗者の会員照合 -/
 
 /-- 1 人の搭乗者の会員照合（位置 `i` は 0 から数える）。 -/
-def checkOne (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) : Except Spec.Error.AtrsError Unit :=
+def checkOne (w : Spec.Port.World) (p : Spec.UseCase.Reserve.DraftPassenger) (i : Nat) : Except Spec.Error.AtrsError Unit :=
   match p.membershipNumber with
   | none => .ok ()
   | some n =>
@@ -131,13 +131,13 @@ def checkOne (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) : Except
       else .error (.business (.passengerMemberMismatch (toString (i + 1))))
 
 /-- 搭乗者の会員照合を、位置 `i` から順に。 -/
-def pmFrom (w : Spec.Port.World) : List Spec.Model.Passenger → Nat → Except Spec.Error.AtrsError Unit
+def pmFrom (w : Spec.Port.World) : List Spec.UseCase.Reserve.DraftPassenger → Nat → Except Spec.Error.AtrsError Unit
   | [], _ => .ok ()
   | p :: ps, i => (checkOne w p i).bind fun _ => pmFrom w ps (i + 1)
 
 theorem foldlM_zipIdx (w : Spec.Port.World) :
-    ∀ (ps : List Spec.Model.Passenger) (n : Nat),
-      (ps.zipIdx n).foldlM (init := ()) (fun _ (pi : Spec.Model.Passenger × Nat) =>
+    ∀ (ps : List Spec.UseCase.Reserve.DraftPassenger) (n : Nat),
+      (ps.zipIdx n).foldlM (init := ()) (fun _ (pi : Spec.UseCase.Reserve.DraftPassenger × Nat) =>
         match pi.1.membershipNumber with
         | none => .ok ()
         | some m =>
@@ -154,13 +154,13 @@ theorem foldlM_zipIdx (w : Spec.Port.World) :
     cases u
     exact foldlM_zipIdx w ps (n + 1)
 
-theorem checkPassengerMembers_eq (w : Spec.Port.World) (ps : List Spec.Model.Passenger) :
+theorem checkPassengerMembers_eq (w : Spec.Port.World) (ps : List Spec.UseCase.Reserve.DraftPassenger) :
     Spec.UseCase.Reserve.checkPassengerMembers w ps = pmFrom w ps 0 :=
   foldlM_zipIdx w ps 0
 
 /-- 搭乗者の会員照合の材料: 会員のオブジェクトの会員番号が [Spec] の会員番号に当たり、氏名（カナ）・性別が [Spec] と
 同じ。 -/
-def PassengerFacts (x : SourceModel.Domain.Model.Passenger) (q : Spec.Model.Passenger) : Prop :=
+def PassengerFacts (x : SourceModel.Domain.Model.Passenger) (q : Spec.UseCase.Reserve.DraftPassenger) : Prop :=
   ∃ M0, x.member = some M0 ∧ Spec.UseCase.Reserve.memberNoOf M0.membershipNumber = q.membershipNumber ∧
     x.familyName = some q.familyName ∧ x.givenName = some q.givenName ∧ x.gender = some q.gender
 
@@ -169,7 +169,7 @@ theorem lift_ok {α : Type} (a : α) : (lift (.ok a) : DbM α) = pure a := rfl
 theorem lift_pure {α : Type} (a : α) : (lift (pure a) : DbM α) = pure a := rfl
 
 /-- 位置を数えながら搭乗者を順に照合する `for` 文。 -/
-theorem forIn_pos {P : St → Prop} {w : Spec.Port.World} {R : SourceModel.Domain.Model.Passenger → Spec.Model.Passenger → Prop}
+theorem forIn_pos {P : St → Prop} {w : Spec.Port.World} {R : SourceModel.Domain.Model.Passenger → Spec.UseCase.Reserve.DraftPassenger → Prop}
     {f : JRef SourceModel.Domain.Model.Passenger → Int.J32 → DbM (ForInStep Int.J32)}
     (hf : ∀ x q (pos : Int.J32) (i : Nat), R x q → pos.val = (i : Int) + 1 → i < 6 →
       Hoare P (f (some x) pos)
@@ -221,7 +221,7 @@ theorem forIn_same {β : Type} {P : St → Prop} {v : Except Spec.Error.AtrsErro
 /-- 搭乗者の会員照合。すべての予約フライトが同じ搭乗者の列 `xs`（[Spec] の `qs`）を持つ。 -/
 theorem passengerMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {svc : TicketReserveServiceImpl}
     {w : Spec.Port.World} (he : MemberEnv fd svc.memberRepository w) {xs : List SourceModel.Domain.Model.Passenger}
-    {qs : List Spec.Model.Passenger} (hR : LangSemantics.Core.List.Forall₂ PassengerFacts xs qs) (hne : xs ≠ [])
+    {qs : List Spec.UseCase.Reserve.DraftPassenger} (hR : LangSemantics.Core.List.Forall₂ PassengerFacts xs qs) (hne : xs ≠ [])
     (hlen : xs.length ≤ 6) {fl : SourceModel.Domain.Model.Flight} {fls : List SourceModel.Domain.Model.Flight} :
     Hoare P (TicketReserveServiceImpl.validatePassengerMemberInfo svc
         ((fl :: fls).map fun fl => some { flight := some fl, passengerList := some (xs.map some) }))
@@ -271,7 +271,7 @@ theorem passengerMember_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P f
     | ok a s' =>
       intro ⟨hs', ha⟩
       unfold MemberAns at ha
-      cases hx : w.findMember ⟨str⟩ with
+      cases hx : w.findMember str with
       | none =>
         rw [hx] at ha; subst ha
         exact ⟨hs', .inr ⟨.passengerMemberNotFound (toString pos.val), rfl, by rw [hts]⟩⟩

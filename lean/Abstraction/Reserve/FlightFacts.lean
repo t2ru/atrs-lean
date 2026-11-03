@@ -30,17 +30,19 @@ theorem flight_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = so
   rw [Abstraction.MasterData.AlphaLeaf.flightNameOf_eq_some hn]
   exact r.flightName.property
 
-/-- `findMember` で見つかる会員番号は、MEMBER の行の会員番号で、10 文字以内（`VARCHAR(10)`）。 -/
+/-- `findMember` で見つかる会員番号は、MEMBER の行の会員番号で、10 文字以内（`VARCHAR(10)`）で、会員番号の形式に合う。 -/
 theorem member_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) {s : String}
-    {x : Spec.Model.Member} (hx : w.findMember ⟨s⟩ = some x) :
-    s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true := by
+    {x : Spec.Model.Member} (hx : w.findMember s = some x) :
+    s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true ∧ Spec.Model.MembershipNumber.valid s = true := by
+  have hval : Spec.Model.MembershipNumber.valid s = true :=
+    Spec.Model.MembershipNumber.ofString?_isSome_iff.mp (by rw [Spec.Port.World.findMember_ofString? hx]; rfl)
   have hms := (worldOfDb_eq_some.mp hw).2.1
   have hf := Abstraction.Reserve.Member.membersOf_find hms s
   unfold Spec.Port.World.findMember at hx
   rw [hx] at hf
   obtain ⟨m, l, e1, -, -⟩ := hf
   have hs : m.customerNo.val = s := by simpa using List.find?_some e1
-  refine ⟨hs ▸ m.customerNo.property, List.any_eq_true.mpr ⟨m, List.mem_of_find?_eq_some e1, by simp [hs]⟩⟩
+  refine ⟨hs ▸ m.customerNo.property, List.any_eq_true.mpr ⟨m, List.mem_of_find?_eq_some e1, by simp [hs]⟩, hval⟩
 
 section
 open Abstraction.MasterData.Alpha Abstraction.Fare.TotalFareRun Abstraction.Fare.TotalAlpha Spec.Model

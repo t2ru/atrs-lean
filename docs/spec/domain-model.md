@@ -94,13 +94,13 @@ generated:
 
 ## コード値
 
-**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。`String` を包む structure で、`AirportCd`・`FlightName`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない。[ADR 6d36](../decision/6d36-misu-spec-types.md)）。`MembershipNumber` の形式は、まだ述語 `WellFormed` で表す（型に移す途中）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[master-data.md](master-data.md)）。
+**[Spec]** Lean: [`Spec.Model`](../../lean/Spec/Model.lean)。`String` を包む structure で、`AirportCd`・`FlightName`・`MembershipNumber`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない。[ADR 6d36](../decision/6d36-misu-spec-types.md)）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[master-data.md](master-data.md)）。
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
 | `AirportCd` | 英大文字 3 文字（マスタに存在するもの。形式は型が持つ。マスタのコードが形式に合わない場合は既知差異 D-036）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` ではない（生の文字列）。区間の検索で見つからなければ業務エラーになる（[master-data.md](master-data.md#空港コードリスト画面用)） | `HND` |
 | `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（形式 `FlightName.valid` は型が持つ。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無く、形式に合わない DB の便名は既知差異 D-027）。選択フライトの便名は生の文字列で、便マスタを値で引く。マスタの参照の問い合わせでは、空白でない（`hasText`）ことも課す | `NTT001` |
-| `MembershipNumber` | 数字 10 文字 | `0000000001` |
+| `MembershipNumber` | 数字 10 文字（形式は型が持つ。予約入力の会員番号は生の文字列で照合し、照合に成功した番号を登録で読む） | `0000000001` |
 | `ReserveNo` | 採番の値（自然数。上限なし）で持ち、表記は 10 桁にゼロ埋めした十進文字列（採番が 10^10 以上なら 11 桁以上。[Source] との違いは既知差異 D-009）。表記を読むときは、この形でない文字列を拒む（[ADR 6d36](../decision/6d36-misu-spec-types.md)） | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの。形式は型が持つ） | `VIS` |
 | `PasswordHash` | 不透明な文字列（[ADR 2d1f](../decision/2d1f-password-hashing-port.md)） | — |

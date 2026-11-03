@@ -35,7 +35,7 @@ open ConformanceKit.Runner LangSemantics.Java.Exception LangSemantics.Java.Int
 open Spec.Config Spec.Model Spec.Prim.Format
 
 namespace Tests.ConformanceReservation
-open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig)
+open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig decodeMembershipNumber)
 open Tests.ConformanceFlightSearch (specFlight flightRow jdate getObjVal)
 
 /-! ## 共通 -/
@@ -76,7 +76,7 @@ def strOrNull (o : Option String) : Json := optJson Json.str o
 /-! ## Spec -/
 
 def specMember (m : Json) : Except String Member := do
-  return { membershipNumber := ⟨← getStr m "membershipNumber"⟩, kanjiFamilyName := "", kanjiGivenName := "",
+  return { membershipNumber := ← decodeMembershipNumber (← getStr m "membershipNumber"), kanjiFamilyName := "", kanjiGivenName := "",
            kanaFamilyName := ← getStr m "kanaFamilyName", kanaGivenName := ← getStr m "kanaGivenName",
            birthday := Spec.Prim.Date.ymd! 1970 1 1, gender := ← gender (← getStr m "gender"), tel := "", zipCode := "", address := "",
            mail := "", creditNo := "", creditTypeCd := { val := "VIS" }, creditTerm := "",

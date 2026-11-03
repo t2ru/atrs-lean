@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.MembershipNumber` を形式の証明を持つ型にし、予約内容の会員番号を入力の文字列のまま持つようにした（登録で読む）。検査 MISU-1 の段階導入の一覧が空になった。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/domain-model.md](spec/domain-model.md)・[spec/reservation.md](spec/reservation.md)・[spec/ports.md](spec/ports.md) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.FlightName` を形式の証明を持つ型にし、選択フライトの便名を生の文字列にした。`validateFlightList` が検証した便の主キーを `Itinerary` で返すようにした。登録簿の D-027 の前提の文を改め、[spec/abstraction.md](spec/abstraction.md)（生成表）・[spec/reservation.md](spec/reservation.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.AirportCd`・`CreditTypeCd` を形式の証明を持つ型にし、空席照会の条件・マスタの問い合わせの空港コードを生の文字列にした。D-036 を前提型（具体側の入力。D-027 に覆われる。W 課題 ABS-142）に付け替え、[spec/abstraction.md](spec/abstraction.md)（生成表と課題の表）・[spec/master-data.md](spec/master-data.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Error.AtrsError` のコードを事由の列挙（`BusinessError`・`NotFoundError`・`SystemError`）にし、α と予約・空席照会の証明を直した。適合テストベクタの JSON の綴りは変わらない。段の記録と [spec/errors-and-messages.md](spec/errors-and-messages.md) の分類の注記を足した。

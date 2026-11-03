@@ -62,14 +62,33 @@ structure ReserveInput where
   passengers : List PassengerInput
   deriving DecidableEq
 
-/-- 会員番号の入力: 空でない文字列なら会員番号とする（空文字は未入力と同じ）。 -/
+/-- 会員番号の入力: 空でない文字列なら会員番号の入力とする（空文字は未入力と同じ）。形式は見ない（入力検証の形式の
+検査は PRE `Request.Valid` に含めない）。形式に合わない文字列の会員は無いので、会員照合で会員が見つからない。 -/
 @[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
-def memberNoOf (s : Option String) : Option MembershipNumber :=
-  s.bind fun v => if v.isEmpty then none else some ⟨v⟩
+def memberNoOf (s : Option String) : Option String :=
+  s.bind fun v => if v.isEmpty then none else some v
+
+/-- 組み立てた搭乗者。会員番号は入力の文字列のまま持つ（`memberNoOf`。会員照合の前なので、会員番号として読めるとは
+限らない）。 -/
+@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+structure DraftPassenger where
+  familyName : String
+  givenName : String
+  age : Nat
+  gender : Gender
+  membershipNumber : Option String
+  deriving DecidableEq
+
+/-- 登録する搭乗者。会員番号は会員番号として読む。`validateReservation` が成功した後は、与えられた会員番号はどれも
+会員の会員番号なので、必ず読める（`validateReservation_memberNos`）。 -/
+@[spec_doc "docs/spec/reservation.md#予約確定reserve"]
+def DraftPassenger.toPassenger (p : DraftPassenger) : Passenger :=
+  { familyName := p.familyName, givenName := p.givenName, age := p.age, gender := p.gender,
+    membershipNumber := p.membershipNumber.bind MembershipNumber.ofString? }
 
 /-- 空でない搭乗者欄を搭乗者にする。姓・名・年齢・性別のどれかが無ければ無し（PRE）。 -/
 @[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
-def PassengerInput.toPassenger (p : PassengerInput) : Option Passenger := do
+def PassengerInput.toPassenger (p : PassengerInput) : Option DraftPassenger := do
   return { familyName := ← p.familyName, givenName := ← p.givenName, age := ← p.age, gender := ← p.gender,
            membershipNumber := memberNoOf p.membershipNumber }
 
@@ -90,8 +109,8 @@ structure Draft where
   repGender : Gender
   repTel : String
   repMail : String
-  repMembershipNumber : Option MembershipNumber
-  passengers : List Passenger
+  repMembershipNumber : Option String
+  passengers : List DraftPassenger
   flights : List FlightKey
   deriving DecidableEq
 
@@ -116,7 +135,7 @@ def checkRepAge (cfg : Config) (d : Draft) : Except AtrsError Unit :=
 
 /-- 2. 運賃種別の利用条件（1 便）。運賃種別がマスタに無ければ無し（PRE: MD-3）。 -/
 @[spec_doc "docs/spec/reservation.md#validatereservation"]
-def checkFareTypeOf (md : MasterData) (ps : List Passenger) (k : FlightKey) : Option (Except AtrsError Unit) := do
+def checkFareTypeOf (md : MasterData) (ps : List DraftPassenger) (k : FlightKey) : Option (Except AtrsError Unit) := do
   let ft ← md.fareTypeOf k.fareTypeCd
   return match ft.fareTypeCd with
   | .LD => if ps.any (·.gender == .M) then .error (.business .ladiesOnly) else .ok ()
@@ -149,7 +168,7 @@ def checkRepMember (w : World) (d : Draft) : Except AtrsError Unit :=
 
 /-- 4. 搭乗者の会員照合（1 から数えた位置 `pos`。空の欄を詰めた後の位置）。 -/
 @[spec_doc "docs/spec/reservation.md#validatereservation"]
-def checkPassengerMembers (w : World) (ps : List Passenger) : Except AtrsError Unit :=
+def checkPassengerMembers (w : World) (ps : List DraftPassenger) : Except AtrsError Unit :=
   ps.zipIdx.foldlM (init := ()) fun _ (p, i) =>
     match p.membershipNumber with
     | none => .ok ()
@@ -169,6 +188,68 @@ def validateReservation (cfg : Config) (md : MasterData) (w : World) (d : Draft)
     ft
     checkRepMember w d
     checkPassengerMembers w d.passengers
+
+/-- `foldlM` の検査の列が成功すれば、各要素の検査も成功する。 -/
+theorem foldlM_ok_all {ε α : Type} {f : Unit → α → Except ε Unit} :
+    ∀ (l : List α), l.foldlM f () = .ok () → ∀ x ∈ l, f () x = .ok ()
+  | [], _, x, hx => by simp at hx
+  | y :: l, h, x, hx => by
+    rw [List.foldlM_cons] at h
+    cases hy : f () y with
+    | error e => rw [hy] at h; cases h
+    | ok u =>
+      cases u
+      rw [hy] at h
+      rcases List.mem_cons.mp hx with rfl | hx
+      · exact hy
+      · exact foldlM_ok_all l h x hx
+
+/-- `validateReservation` が成功すれば、代表者と搭乗者の与えられた会員番号はどれも会員の会員番号である（したがって
+会員番号として読める。`Spec.Port.World.findMember_ofString?`）。 -/
+theorem validateReservation_memberNos {cfg : Config} {md : MasterData} {w : World} {d : Draft}
+    (h : validateReservation cfg md w d = some (.ok ())) :
+    (∀ s, d.repMembershipNumber = some s → ∃ m, w.findMember s = some m) ∧
+      ∀ q ∈ d.passengers, ∀ s, q.membershipNumber = some s → ∃ m, w.findMember s = some m := by
+  simp only [validateReservation, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
+    Option.some.injEq] at h
+  obtain ⟨ft, -, h⟩ := h
+  cases h1 : checkRepAge cfg d with
+  | error e => rw [h1] at h; cases h
+  | ok u =>
+  rw [h1] at h
+  cases ft with
+  | error e => cases h
+  | ok u' =>
+  cases h3 : checkRepMember w d with
+  | error e => rw [h3] at h; cases h
+  | ok u'' =>
+  rw [h3] at h
+  refine ⟨fun n hn => ?_, fun q hq n hn => ?_⟩
+  · simp only [checkRepMember, hn] at h3
+    cases hf : w.findMember n with
+    | none => rw [hf] at h3; cases h3
+    | some m => exact ⟨m, rfl⟩
+  · have h4 : checkPassengerMembers w d.passengers = .ok () := h
+    unfold checkPassengerMembers at h4
+    obtain ⟨i, hi, rfl⟩ := List.getElem_of_mem hq
+    have hz : (d.passengers[i], i) ∈ d.passengers.zipIdx := by
+      rw [List.mem_iff_getElem?]
+      exact ⟨i, by simp [hi]⟩
+    have := foldlM_ok_all _ h4 _ hz
+    simp only [hn] at this
+    cases hf : w.findMember n with
+    | none => rw [hf] at this; cases this
+    | some m => exact ⟨m, rfl⟩
+
+/-- `validateReservation` が成功すれば、代表者と搭乗者の与えられた会員番号はどれも会員番号の形式に合う。 -/
+theorem validateReservation_memberNos_valid {cfg : Config} {md : MasterData} {w : World} {d : Draft}
+    (h : validateReservation cfg md w d = some (.ok ())) :
+    (∀ s, d.repMembershipNumber = some s → MembershipNumber.valid s = true) ∧
+      ∀ q ∈ d.passengers, ∀ s, q.membershipNumber = some s → MembershipNumber.valid s = true := by
+  have hv : ∀ s, (∃ m, w.findMember s = some m) → MembershipNumber.valid s = true := fun s ⟨m, hm⟩ =>
+    MembershipNumber.ofString?_isSome_iff.mp (by rw [World.findMember_ofString? hm]; rfl)
+  obtain ⟨h1, h2⟩ := validateReservation_memberNos h
+  exact ⟨fun s hs => hv s (h1 s hs), fun q hq s hs => hv s (h2 q hq s hs)⟩
 
 /-! ## 予約確認・予約確定 -/
 
@@ -214,15 +295,18 @@ def addReserveFlight (ps : List Passenger) (reserveNo : ReserveNo) (acc : List R
   let recs := ps.foldl addPassenger ([], w)
   (acc.1 ++ [⟨acc.2.nextReserveFlightNo.1, reserveNo, k, recs.1⟩], recs.2)
 
-/-- 5〜6. 予約の登録: 予約番号、予約フライトごとに予約フライト番号と搭乗者番号を採番して登録する。 -/
+/-- 5〜6. 予約の登録: 予約番号、予約フライトごとに予約フライト番号と搭乗者番号を採番して登録する。代表者・搭乗者の
+会員番号は会員番号として読む（`validateReservation` が成功した後なので、与えられた会員番号はどれも読める。
+`validateReservation_memberNos`）。 -/
 @[spec_doc "docs/spec/reservation.md#予約確定reserve"]
 def register (d : Draft) (today : Date) (totalFare : Nat) (w : World) : ReserveNo × World :=
   let reserveNo := w.nextReserveNo.1
-  let rfs := d.flights.foldl (addReserveFlight d.passengers reserveNo) ([], w.nextReserveNo.2)
+  let rfs := d.flights.foldl (addReserveFlight (d.passengers.map DraftPassenger.toPassenger) reserveNo)
+    ([], w.nextReserveNo.2)
   let r : Reservation :=
     { reserveNo, reserveDate := today, totalFare, repFamilyName := d.repFamilyName, repGivenName := d.repGivenName,
       repAge := d.repAge, repGender := d.repGender, repTel := d.repTel, repMail := d.repMail,
-      repMembershipNumber := d.repMembershipNumber, reserveFlights := rfs.1 }
+      repMembershipNumber := d.repMembershipNumber.bind MembershipNumber.ofString?, reserveFlights := rfs.1 }
   (reserveNo, rfs.2.insertReservation r)
 
 /-- 予約確定（`reserve`）の標準の結果。1 つのトランザクションとして実行し、失敗したときは元の状態を返す。
@@ -667,7 +751,7 @@ theorem checkRepAge_allNE (cfg : Config) (d : Draft) : AllNE (checkRepAge cfg d)
   · exact AllNE.err trivial
   · exact AllNE.ok _
 
-theorem checkFareTypeOf_allNE {md : MasterData} {ps : List Passenger} {k : FlightKey} {r : Except AtrsError Unit}
+theorem checkFareTypeOf_allNE {md : MasterData} {ps : List DraftPassenger} {k : FlightKey} {r : Except AtrsError Unit}
     (h : checkFareTypeOf md ps k = some r) : AllNE r := by
   unfold checkFareTypeOf at h
   cases hft : md.fareTypeOf k.fareTypeCd with
@@ -684,7 +768,7 @@ theorem checkFareTypeOf_allNE {md : MasterData} {ps : List Passenger} {k : Fligh
       · exact AllNE.ok _
     · exact AllNE.ok _
 
-theorem foldFareTypes_allNE {md : MasterData} {ps : List Passenger} :
+theorem foldFareTypes_allNE {md : MasterData} {ps : List DraftPassenger} :
     ∀ (ks : List FlightKey) (acc : Except AtrsError Unit) (r : Except AtrsError Unit), AllNE acc →
       ks.foldlM (init := acc) (fun acc k => do
         match acc with
@@ -717,7 +801,7 @@ theorem checkRepMember_allNE (w : World) (d : Draft) : AllNE (checkRepMember w d
       · exact AllNE.err trivial
 
 theorem foldPassengerMembers_allNE (w : World) :
-    ∀ (xs : List (Passenger × Nat)) (u : Unit), AllNE (xs.foldlM (init := u) fun _ (p, i) =>
+    ∀ (xs : List (DraftPassenger × Nat)) (u : Unit), AllNE (xs.foldlM (init := u) fun _ (p, i) =>
       match p.membershipNumber with
       | none => (.ok () : Except AtrsError Unit)
       | some n =>

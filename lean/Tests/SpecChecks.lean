@@ -71,6 +71,18 @@ def sample : MasterData where
 #guard (Spec.Model.AirportCd.ofString? "HND").map (·.val) == some "HND"
 #guard (Spec.Model.CreditTypeCd.ofString? "VISA").isNone
 #guard (Spec.Model.CreditTypeCd.ofString? "VIS").map (·.val) == some "VIS"
+-- 会員番号の形式（数字 10 文字）に合わない値は、会員番号として表せない
+#guard (Spec.Model.MembershipNumber.ofString? "000000001").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "00000000001").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "000000000a").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "0000000001").map (·.val) == some "0000000001"
+-- 形式に合わない会員番号の入力は、会員が見つからない業務エラー（入力の会員番号は生の文字列のまま照合する）
+#guard (Spec.Seed.World.world.findMember "000000001").isNone
+#guard match Spec.UseCase.Reserve.checkRepMember Spec.Seed.World.world
+    { repFamilyName := "デンデン", repGivenName := "ハナコ", repAge := 30, repGender := .F, repTel := "", repMail := "",
+      repMembershipNumber := some "abc", passengers := [], flights := [] } with
+  | .error (.business .repMemberNotFound) => true
+  | _ => false
 -- 参照の問い合わせの値域: 形式に合わない空港コードの区間の問い合わせは Valid でない
 #guard !decide (Spec.MasterQuery.Query.routeOf "I-T" "HND").Valid
 #guard decide (Spec.MasterQuery.Query.routeOf "ITM" "HND").Valid

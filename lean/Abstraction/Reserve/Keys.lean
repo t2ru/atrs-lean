@@ -70,7 +70,7 @@ theorem ofString?_val (n : Spec.Model.ReserveNo) : Spec.Model.ReserveNo.ofString
 theorem reservationOfRow_no {r : ReservationRow} {fs : List Spec.Model.ReserveFlight} {R : Spec.Model.Reservation}
     (h : reservationOfRow r fs = some R) : R.reserveNo.val = r.reserveNo.val ∧ R.reserveFlights = fs := by
   simp only [reservationOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-  obtain ⟨_, -, _, -, _, -, _, -, _, hrn, rfl⟩ := h
+  obtain ⟨_, -, _, -, _, -, _, -, _, hrn, _, -, rfl⟩ := h
   exact ⟨Spec.Model.ReserveNo.val_of_ofString? hrn, rfl⟩
 
 theorem reserveFlightOfRow_no {r : ReserveFlightRow} {ps : List Spec.Model.PassengerRecord}
@@ -126,7 +126,7 @@ theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd =
       refine ⟨R, hR, F, hF, P, (reserveFlightOfRow_no hgr).2 ▸ hP, ?_⟩
       simp only [passengerOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
         Option.some.injEq] at hpP
-      obtain ⟨no, hno, -, -, -, -, rfl⟩ := hpP
+      obtain ⟨no, hno, -, -, -, -, -, -, rfl⟩ := hpP
       exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
   · cases hr
 

@@ -60,7 +60,7 @@ theorem transactional_hoare {α : Type} {P : St → Prop} {fd : FlightDb} (hP : 
     exact he
 
 /-- 運賃種別の利用条件の検査の列（[Spec]）は、予約フライトごとの検査の最初の失敗。 -/
-theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.Model.Passenger} :
+theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.UseCase.Reserve.DraftPassenger} :
     ∀ {ks : List Spec.Model.FlightKey} {FTs : List Spec.MasterData.FareType},
       LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs →
       ∀ acc : Except Spec.Error.AtrsError Unit,

@@ -55,7 +55,7 @@ generated:
 
 | 操作 | 契約 |
 | --- | --- |
-| `find(membershipNumber)` | 会員（ログイン情報を含む）または無し |
+| `find(membershipNumber)` | 会員（ログイン情報を含む）または無し。引数は入力の文字列で、会員番号の値と比べる |
 | `insert(member)` | 会員番号が未使用でなければならない |
 | `update(member)` | 基本情報（氏名・生年月日・性別・電話・郵便番号・住所・メール・カード情報）を置き換える |
 | `updatePassword(membershipNumber, newHash)` | `lastPassword := password`, `password := newHash` |

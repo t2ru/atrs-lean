@@ -79,7 +79,7 @@ theorem compact_filter (ps : List PassengerInput) :
   rw [this, List.append_nil]
 
 /-- 空でない欄の搭乗者は、[Spec] の搭乗者の会員番号・氏名・性別を持つ。 -/
-theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Model.Passenger},
+theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     LangSemantics.Core.List.Forall₂ PassengerFacts (fs.map B2Mapper.mapPassenger) ps
   | [], ins, ps, h1, h2 => by
@@ -104,7 +104,7 @@ theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInpu
     exact ⟨_, rfl, rfl, hfn, hgn, hg⟩
 
 /-- 空でない欄の搭乗者の年齢（`ageOfPassenger`）は、[Spec] の搭乗者の年齢。 -/
-theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Model.Passenger},
+theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     (fs.map fun f => some (B2Mapper.mapPassenger f)).mapM Abstraction.Fare.TotalAlpha.ageOfPassenger =
         some (ps.map (·.age)) ∧ ins.map (·.age.getD 0) = ps.map (·.age)

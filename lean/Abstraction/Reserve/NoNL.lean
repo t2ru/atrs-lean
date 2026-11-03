@@ -56,7 +56,7 @@ theorem checkRepAge_nl (cfg : Spec.Config) (d : Spec.UseCase.Reserve.Draft) :
   · exact BizNL.ok
 
 theorem specFareTypeOf_nl {FT : Spec.MasterData.FareType} (hft : NoNL FT.fareTypeName)
-    (qs : List Spec.Model.Passenger) : BizNL (specFareTypeOf FT qs) := by
+    (qs : List Spec.UseCase.Reserve.DraftPassenger) : BizNL (specFareTypeOf FT qs) := by
   unfold specFareTypeOf
   split
   · split
@@ -92,7 +92,7 @@ theorem checkRepMember_nl (w : Spec.Port.World) (d : Spec.UseCase.Reserve.Draft)
       · exact BizNL.ok
       · exact bizNL_of (by simp [BusinessError.args])
 
-theorem checkOne_nl (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) : BizNL (checkOne w p i) := by
+theorem checkOne_nl (w : Spec.Port.World) (p : Spec.UseCase.Reserve.DraftPassenger) (i : Nat) : BizNL (checkOne w p i) := by
   unfold checkOne
   split
   · exact BizNL.ok
@@ -104,7 +104,7 @@ theorem checkOne_nl (w : Spec.Port.World) (p : Spec.Model.Passenger) (i : Nat) :
       · exact bizNL_of fun a ha => by
           simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
 
-theorem pmFrom_nl (w : Spec.Port.World) : ∀ (ps : List Spec.Model.Passenger) (i : Nat), BizNL (pmFrom w ps i)
+theorem pmFrom_nl (w : Spec.Port.World) : ∀ (ps : List Spec.UseCase.Reserve.DraftPassenger) (i : Nat), BizNL (pmFrom w ps i)
   | [], _ => BizNL.ok
   | p :: ps, i => BizNL.bind (checkOne_nl w p i) (pmFrom_nl w ps (i + 1))
 

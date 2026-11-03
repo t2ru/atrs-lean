@@ -116,7 +116,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     (hk : KeysOk w)
     (hd9 : w.sequences.reserve ≤ 9999999999 ∧ w.sequences.reserveFlight + 1 ≤ 2147483647 ∧
       w.sequences.passenger + 11 ≤ 2147483647) (hkl : ks.length ≤ 2)
-    (hpm : ∀ f ∈ pfs, ∀ s, f.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember ⟨s⟩ = some x)
+    (hpm : ∀ f ∈ pfs, ∀ s, f.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember s = some x)
     (r : SourceModel.Domain.Model.Reservation) (hrfl : r.reserveFlightList = some (rfList p (f0 :: fs) pfs))
     {rJ : JLocalDate} {RD : Spec.Prim.Date} (hrd : r.reserveDate = some rJ)
     (hRD : Abstraction.MasterData.AlphaLeaf.dateOfJ rJ = some RD)
@@ -126,11 +126,12 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     (hanm : an ≤ 2147483647) {g : Spec.Model.Gender} (hg : r.repGender = some g) {tel : String}
     (htel : r.repTel = some tel) (htell : tel.length ≤ 13) {mail : String} (hmail : r.repMail = some mail)
     (hmaill : mail.length ≤ 256) {M0 : SourceModel.Domain.Model.Member} (hm : r.repMember = some M0)
-    (hrm : ∀ s, M0.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember ⟨s⟩ = some x) :
+    (hrm : ∀ s, M0.membershipNumber = some s → s ≠ "" → ∃ x, w.findMember s = some x) :
     Hoare (fun s => s.db = D0 ∧ s.env = env) (TicketReserveServiceImpl.registerReservation svc (some r))
       (fun dto s => s.env = env ∧ ∃ w1, secureAll md T qs.length ks w = some (.ok w1) ∧
         worldOfDb s.db = some (regWorld w w1 (regRes w RD tfn fn gn an g tel mail
-          (Spec.UseCase.Reserve.memberNoOf M0.membershipNumber) qs ks) ks.length (ks.length * qs.length)) ∧
+          ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs ks)
+          ks.length (ks.length * qs.length)) ∧
         dto.reserveNo = some (Spec.Port.World.reserveNoOf w.sequences.reserve).val ∧
         dto.paymentDate = (mkFlight p f0).departureDate)
       (fun e s => s.env = env ∧ ((IsFault env e ∧ ∃ a, worldOfDb s.db = some (Spec.UseCase.Reserve.advance w a)) ∨
@@ -180,7 +181,8 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have := Abstraction.Reserve.Keys.reserveNoOf_inj this
         omega
       have hmem0 : ∀ str, M0.membershipNumber = some str → str ≠ "" →
-          str.length ≤ 10 ∧ s.db.member.any (·.customerNo.val == str) = true := by
+          str.length ≤ 10 ∧ s.db.member.any (·.customerNo.val == str) = true ∧
+            Spec.Model.MembershipNumber.valid str = true := by
         intro str h1 h2
         obtain ⟨x, hx⟩ := hrm str h1 h2
         exact Abstraction.Reserve.FlightFacts.member_row hdb1 (by rw [Spec.Port.World.findMember, hm1]; exact hx)
@@ -256,11 +258,12 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
           (Hoare.conseq (passengers_hoare (D := s4.db) hpc ?_ hpmax hpold4) (fun _ h => h) (fun _ _ h => h)
             (fun _ _ h => h)) (fun _ => Hoare.pure' fun s5 h5 => ?_) s4 ?_
         · intro D'' n'' f' q' hf' hc' hsq'' hn'' hpk'' hm'' hrf''
-          obtain ⟨⟨i, hi, hq⟩, hfnq, hgnq, hageq⟩ := hc'
+          obtain ⟨⟨i, d, hi, hq, rfl⟩, hfnq, hgnq, hageq⟩ := hc'
           have hmem4 : D''.member = s.db.member := by
             rw [hm'', hdb4]; exact hmemD.trans (by rw [hdb2])
           have hmem : ∀ str, f'.membershipNumber = some str → str ≠ "" →
-              str.length ≤ 10 ∧ D''.member.any (·.customerNo.val == str) = true := by
+              str.length ≤ 10 ∧ D''.member.any (·.customerNo.val == str) = true ∧
+                Spec.Model.MembershipNumber.valid str = true := by
             intro str h1' h2'
             obtain ⟨x, hx⟩ := hpm f' hf' str h1' h2'
             rw [hmem4]
@@ -332,7 +335,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have htk : ks.take ks.length = ks := List.take_length
         rw [htk] at hnfs
         have hR0 : resOf nfs nps row0 = some (regRes w RD tfn fn gn an g tel mail
-            (Spec.UseCase.Reserve.memberNoOf M0.membershipNumber) qs ks) := by
+            ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs ks) := by
           simp only [resOf, hfo, hnfs, Option.bind_eq_bind, Option.bind_some]
           rw [hro0]
           rfl

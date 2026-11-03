@@ -6,9 +6,9 @@ import Spec.Prim
 列挙・コード値・エンティティ・値域（`docs/spec/domain-model.md`）。
 
 - 列挙の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
-- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・便名・カード種別コード）は、形式の
-  証明を欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。会員番号の形式は
-  述語（`WellFormed`）で表す。マスタに存在することは `Spec.MasterData` の参照関数と不変条件で表す。
+- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・便名・カード種別コード・会員番号）は、
+  形式の証明を欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。マスタに存在する
+  ことは `Spec.MasterData` の参照関数と不変条件で表す。
 - エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
 -/
 
@@ -182,14 +182,43 @@ theorem FlightName.ofString?_isSome_iff {s : String} : (FlightName.ofString? s).
   unfold FlightName.ofString?
   split <;> simp_all
 
-/-- 会員番号。 -/
+/-- 会員番号の形式: 数字 10 文字（`toList` で見る）。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def MembershipNumber.valid (s : String) : Bool := s.toList.length == 10 && s.toList.all isDigit
+
+/-- 会員番号。形式（`MembershipNumber.valid`）の証明を持つ。 -/
 @[spec_doc "docs/spec/domain-model.md#コード値"]
 structure MembershipNumber where
   val : String
+  wf : MembershipNumber.valid val = true := by decide
   deriving DecidableEq, Repr
 
-/-- 会員番号の形式: 数字 10 文字。 -/
-def MembershipNumber.WellFormed (n : MembershipNumber) : Prop := n.val.length = 10 ∧ n.val.all isDigit = true
+/-- 会員番号を読む。形式に合わなければ無し。 -/
+@[spec_doc "docs/spec/domain-model.md#コード値"]
+def MembershipNumber.ofString? (s : String) : Option MembershipNumber :=
+  if h : MembershipNumber.valid s then some ⟨s, h⟩ else none
+
+/-- 会員番号は値で決まる。 -/
+theorem MembershipNumber.ext {a b : MembershipNumber} (h : a.val = b.val) : a = b := by
+  cases a; cases b; cases h; rfl
+
+/-- 読めた会員番号の値は、読んだ文字列そのもの。 -/
+theorem MembershipNumber.val_of_ofString? {s : String} {n : MembershipNumber} (h : MembershipNumber.ofString? s = some n) :
+    n.val = s := by
+  unfold MembershipNumber.ofString? at h
+  split at h
+  · cases h; rfl
+  · cases h
+
+/-- 会員番号の値を読むと、その会員番号。 -/
+@[simp] theorem MembershipNumber.ofString?_val (n : MembershipNumber) : MembershipNumber.ofString? n.val = some n := by
+  simp [MembershipNumber.ofString?, n.wf]
+
+/-- 読めるのは、形式に合うときに限る。 -/
+theorem MembershipNumber.ofString?_isSome_iff {s : String} :
+    (MembershipNumber.ofString? s).isSome ↔ MembershipNumber.valid s = true := by
+  unfold MembershipNumber.ofString?
+  split <;> simp_all
 
 /-- 予約番号。採番の値で持つ（上限を持たない。ADR 6d36）。表記 `val` は 10 桁にゼロ埋めした十進文字列で、採番が
 10^10 以上なら 11 桁以上になる（[Source] のシーケンスは上限で循環する。既知差異 D-009）。どの採番の値も予約番号として
@@ -260,9 +289,6 @@ theorem CreditTypeCd.ofString?_isSome_iff {s : String} :
 structure PasswordHash where
   val : String
   deriving DecidableEq, Repr
-
-instance (n : MembershipNumber) : Decidable n.WellFormed := by
-  unfold MembershipNumber.WellFormed; infer_instance
 
 /-! ## エンティティ -/
 

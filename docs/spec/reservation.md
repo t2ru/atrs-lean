@@ -67,7 +67,7 @@ generated:
 - `passengers` = 入力の搭乗者欄のうち **空でないもの** を入力順に並べたもの。搭乗者欄が空とは、姓・名・会員番号がいずれも空白のみ（または未入力）で、年齢と性別が未入力であること。
 - `reserveFlights` = 各フライトに 1 つずつ。**すべての予約フライトが同じ `passengers` を持つ**。
 - `repTel = tel1 ++ "-" ++ tel2 ++ "-" ++ tel3`。
-- `repMembershipNumber` は入力が空なら無し。各搭乗者の `membershipNumber` も同様。
+- `repMembershipNumber` は入力が空なら無し。各搭乗者の `membershipNumber` も同様。予約内容の会員番号は入力の文字列のままで（Lean: `Spec.UseCase.Reserve.DraftPassenger`）、会員の照合は値で引く。形式に合わない番号は会員が見つからない業務エラーになる。登録では、照合に成功した番号（会員の番号）を `MembershipNumber` として読む（[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
 
 出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)`・`java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)`（private の `createReservation` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()`, `java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()`
 

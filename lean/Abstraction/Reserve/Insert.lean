@@ -74,21 +74,42 @@ theorem gender_code (g : Spec.Model.Gender) :
       Spec.Model.Gender.ofCode? (SourceModel.Domain.Model.Gender.getCode g) = some g := by
   cases g <;> exact ⟨by decide, rfl⟩
 
+/-- NULLIF の会員番号の列の値（空文字・`null` は無し）。会員番号は形式に合うので、列の値の α は、入力の会員番号を
+読んだもの。 -/
+theorem customerNo_ok {fd : SourceModel.Db.Schema.FlightDb} {col : String} {v : Exception.JRef String}
+    (hmem : ∀ s, v = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true ∧
+      Spec.Model.MembershipNumber.valid s = true) :
+    ∃ cn : Option (Varchar 10), storeNullIf col 10 v = .ok cn ∧
+      Abstraction.World.Alpha.optMemberNo cn =
+        some ((Spec.UseCase.Reserve.memberNoOf v).bind Spec.Model.MembershipNumber.ofString?) ∧
+      ∀ c, cn = some c → fd.member.any (·.customerNo.val == c.val) = true := by
+  cases hmn : v with
+  | none => exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
+  | some s =>
+    by_cases hv : s = ""
+    · subst hv
+      exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
+    · obtain ⟨hl, hfk', hval⟩ := hmem s hmn hv
+      refine ⟨some ⟨s, hl⟩, storeNullIf_some hv hl, ?_, fun c hc => by cases hc; exact hfk'⟩
+      obtain ⟨n, hn⟩ := Option.isSome_iff_exists.mp (Spec.Model.MembershipNumber.ofString?_isSome_iff.mpr hval)
+      simp [Spec.UseCase.Reserve.memberNoOf, Abstraction.World.Alpha.optMemberNo, membershipNumberOf, hn, hv]
+
 open Abstraction.World.Alpha Abstraction.Reserve.Alpha SourceModel.Db.Schema in
 /-- 搭乗者の行の挿入: 空でない欄の搭乗者（`mapPassenger`）に搭乗者番号 `n`・予約フライト番号 `m` を書き込んで挿入すると、
 行が末尾に足され、その α は [Spec] の搭乗者 `q` の記録。 -/
 theorem insertPassengerRow_ok {fd : FlightDb} {f : SourceModel.App.B2.PassengerForm}
-    {i : Spec.UseCase.Reserve.PassengerInput} {q : Spec.Model.Passenger} (hi : passengerInputOf f = some i)
+    {i : Spec.UseCase.Reserve.PassengerInput} {q : Spec.UseCase.Reserve.DraftPassenger} (hi : passengerInputOf f = some i)
     (hq : i.toPassenger = some q) (hfn : q.familyName.length ≤ 10) (hgn : q.givenName.length ≤ 10)
     (hage : q.age ≤ 999)
-    (hmem : ∀ s, f.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s))
+    (hmem : ∀ s, f.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) ∧
+      Spec.Model.MembershipNumber.valid s = true)
     {no rfNo : J32} {n m : Nat} (hno : no.val = (n : Int)) (hrf : rfNo.val = (m : Int)) (hn : n ≤ 2147483647)
     (hm : m ≤ 2147483647) (hpk : ∀ p ∈ fd.passenger, p.passengerNo.val ≠ (n : Int))
     (hfk : fd.reserveFlight.any (·.reserveFlightNo.val == (m : Int))) :
     ∃ row, insertPassengerRow fd
         { SourceModel.App.B2.B2Mapper.mapPassenger f with passengerNo := some no, reserveFlightNo := some rfNo } =
         .ok (1, { fd with passenger := fd.passenger ++ [row] }) ∧
-      passengerOfRow row = some ⟨n, q⟩ ∧ row.reserveFlightNo.val = (m : Int) := by
+      passengerOfRow row = some ⟨n, q.toPassenger⟩ ∧ row.reserveFlightNo.val = (m : Int) := by
   simp only [passengerInputOf, Option.map_eq_some_iff] at hi
   obtain ⟨a, ha, rfl⟩ := hi
   simp only [Spec.UseCase.Reserve.PassengerInput.toPassenger, Option.bind_eq_bind, Option.bind_eq_some_iff,
@@ -109,21 +130,7 @@ theorem insertPassengerRow_ok {fd : FlightDb} {f : SourceModel.App.B2.PassengerF
   obtain ⟨rn, hrn, hrnv⟩ := convInt_ok hrf hm
   obtain ⟨an, han, hanv⟩ := convInt_ok hxa (by omega)
   obtain ⟨hgl, hgc⟩ := gender_code g
-  obtain ⟨cn, hcn, hcnm, hcnfk⟩ : ∃ cn : Option (LangSemantics.Sql.Postgresql.Varchar 10),
-      storeNullIf "customer_no" 10 (f.membershipNumber) = .ok cn ∧
-      cn.map (fun c => (⟨c.val⟩ : Spec.Model.MembershipNumber)) = Spec.UseCase.Reserve.memberNoOf f.membershipNumber ∧
-      ∀ c, cn = some c → fd.member.any (·.customerNo.val == c.val) = true := by
-    cases hmn : f.membershipNumber with
-    | none => exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
-    | some v =>
-      by_cases hv : v = ""
-      · subst hv
-        exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
-      · obtain ⟨hl, hfk'⟩ := hmem v hmn hv
-        refine ⟨some ⟨v, hl⟩, storeNullIf_some hv hl, ?_, fun c hc => by cases hc; exact hfk'⟩
-        have : v.isEmpty = false := by
-          rw [Bool.eq_false_iff]; intro he; exact hv (String.isEmpty_iff.mp he)
-        simpa [Spec.UseCase.Reserve.memberNoOf, this] using hv
+  obtain ⟨cn, hcn, hcnm, hcnfk⟩ := customerNo_ok (col := "customer_no") hmem
   have hpk' : (fd.passenger.any fun r => r.passengerNo.val == (n : Int)) = false := by
     rw [Bool.eq_false_iff]
     intro h
@@ -138,7 +145,7 @@ theorem insertPassengerRow_ok {fd : FlightDb} {f : SourceModel.App.B2.PassengerF
     | none => rfl
     | some c => simp [hcnfk c rfl]
   · simp only [passengerOfRow, natOfInt4, hpnv, hanv, hgc, hcnm, Option.bind_eq_bind, Option.pure_def]
-    simp
+    simp [Spec.UseCase.Reserve.DraftPassenger.toPassenger]
 
 open Abstraction.World.Alpha SourceModel.Db.Schema in
 /-- 予約フライトの行の挿入: フライト情報の搭乗日・便名・搭乗クラス・運賃種別が主キー `k` のもので、予約番号 `no`・
@@ -198,24 +205,6 @@ theorem insertReserveFlightRow_ok {fd : FlightDb} {fl : SourceModel.Domain.Model
       Abstraction.FlightSearch.Alpha.fareTypeCdName_eq, Option.bind_eq_bind, Option.pure_def]
     simp [bcCdOf, ftCdOf, Spec.Model.BoardingClassCd.ofCode?_toCode, Spec.Model.FareTypeCd.ofCode?_toCode, hrn0]
 
-/-- NULLIF の会員番号の列の値（空文字・`null` は無し）。 -/
-theorem customerNo_ok {fd : SourceModel.Db.Schema.FlightDb} {col : String} {v : Exception.JRef String}
-    (hmem : ∀ s, v = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true) :
-    ∃ cn : Option (Varchar 10), storeNullIf col 10 v = .ok cn ∧
-      cn.map (fun c => (⟨c.val⟩ : Spec.Model.MembershipNumber)) = Spec.UseCase.Reserve.memberNoOf v ∧
-      ∀ c, cn = some c → fd.member.any (·.customerNo.val == c.val) = true := by
-  cases hmn : v with
-  | none => exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
-  | some s =>
-    by_cases hv : s = ""
-    · subst hv
-      exact ⟨none, rfl, rfl, fun _ h => by cases h⟩
-    · obtain ⟨hl, hfk'⟩ := hmem s hmn hv
-      refine ⟨some ⟨s, hl⟩, storeNullIf_some hv hl, ?_, fun c hc => by cases hc; exact hfk'⟩
-      have : s.isEmpty = false := by
-        rw [Bool.eq_false_iff]; intro he; exact hv (String.isEmpty_iff.mp he)
-      simpa [Spec.UseCase.Reserve.memberNoOf, this] using hv
-
 open Abstraction.World.Alpha SourceModel.Db.Schema in
 /-- 予約の行の挿入: 予約情報の各欄が値域内で、予約番号 `no` を書き込んで挿入すると、行が末尾に足され、その α は
 [Spec] の予約の記録（予約フライト `fs`）。 -/
@@ -227,14 +216,16 @@ theorem insertRow_ok {fd : FlightDb} {r : SourceModel.Domain.Model.Reservation} 
     (hanm : an ≤ 2147483647) {g : Spec.Model.Gender} (hg : r.repGender = some g) {tel : String}
     (htel : r.repTel = some tel) (htell : tel.length ≤ 13) {mail : String} (hmail : r.repMail = some mail)
     (hmaill : mail.length ≤ 256) {M0 : SourceModel.Domain.Model.Member} (hm : r.repMember = some M0)
-    (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true)
+    (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true ∧
+      Spec.Model.MembershipNumber.valid s = true)
     (hpk : ∀ x ∈ fd.reservation, x.reserveNo.val ≠ no) {rn0 : Spec.Model.ReserveNo}
     (hrn0 : Spec.Model.ReserveNo.ofString? no = some rn0) :
     ∃ row, insertRow fd { r with reserveNo := some no } = .ok (1, { fd with reservation := fd.reservation ++ [row] }) ∧
       row.reserveNo.val = no ∧ ∀ fs, reservationOfRow row fs = some
         { reserveNo := rn0, reserveDate := T, totalFare := tfn, repFamilyName := fn, repGivenName := gn,
           repAge := an, repGender := g, repTel := tel, repMail := mail,
-          repMembershipNumber := Spec.UseCase.Reserve.memberNoOf M0.membershipNumber, reserveFlights := fs } := by
+          repMembershipNumber := (Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind
+            Spec.Model.MembershipNumber.ofString?, reserveFlights := fs } := by
   obtain ⟨dx, hdx, hdxv⟩ := convDate_ok hT
   obtain ⟨tx, htx, htxv⟩ := convInt_ok htfv htfm
   obtain ⟨ax, hax, haxv⟩ := convInt_ok hagev hanm

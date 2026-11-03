@@ -31,6 +31,8 @@ def fareTypeCd (s : String) : Except String FareTypeCd := need (FareTypeCd.ofCod
 def airportCd (s : String) : Except String AirportCd := need (AirportCd.ofString? s) s!"airport code: {s}"
 def creditTypeCd (s : String) : Except String CreditTypeCd := need (CreditTypeCd.ofString? s) s!"credit type code: {s}"
 def decodeFlightName (s : String) : Except String FlightName := need (FlightName.ofString? s) s!"flight name: {s}"
+def decodeMembershipNumber (s : String) : Except String MembershipNumber :=
+  need (MembershipNumber.ofString? s) s!"membership number: {s}"
 
 /-! ## Spec -/
 

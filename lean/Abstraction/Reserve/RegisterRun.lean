@@ -32,9 +32,10 @@ theorem readInteger_ok {n : Nat} (hn : n ≤ 2147483647) :
 /-- 搭乗者 1 人の挿入（採番・挿入）。 -/
 theorem insertPassenger_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqPassenger = some n)
     (hn : n ≤ 2147483647) {f : SourceModel.App.B2.PassengerForm} {i : Spec.UseCase.Reserve.PassengerInput}
-    {q : Spec.Model.Passenger} (hi : passengerInputOf f = some i) (hq : i.toPassenger = some q)
+    {q : Spec.UseCase.Reserve.DraftPassenger} (hi : passengerInputOf f = some i) (hq : i.toPassenger = some q)
     (hfn : q.familyName.length ≤ 10) (hgn : q.givenName.length ≤ 10) (hage : q.age ≤ 999)
-    (hmem : ∀ s, f.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true)
+    (hmem : ∀ s, f.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true ∧
+      Spec.Model.MembershipNumber.valid s = true)
     {rfNoJ : J32} {m : Nat} (hrf : rfNoJ.val = (m : Int)) (hm : m ≤ 2147483647)
     (hpk : ∀ p ∈ D.passenger, p.passengerNo.val ≠ (n : Int))
     (hfk : D.reserveFlight.any (·.reserveFlightNo.val == (m : Int)) = true) :
@@ -43,7 +44,7 @@ theorem insertPassenger_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf
         { SourceModel.App.B2.B2Mapper.mapPassenger f with reserveFlightNo := some rfNoJ })
       (fun r s => r.1 = J32.ofInt 1 ∧ s.env = env ∧ ∃ row,
         s.db = { D with passenger := D.passenger ++ [row], sqPassenger := some (n : Int) } ∧
-        passengerOfRow row = some ⟨n, q⟩ ∧ row.reserveFlightNo.val = (m : Int))
+        passengerOfRow row = some ⟨n, q.toPassenger⟩ ∧ row.reserveFlightNo.val = (m : Int))
       (fun e s => s.env = env ∧ IsFault env e ∧ (s.db = D ∨ s.db = { D with sqPassenger := some (n : Int) })) := by
   intro s ⟨hdb, hse⟩
   obtain ⟨hnv, -⟩ := nextval_seq (d := sqPassenger) rfl rfl rfl hseq (by simp [sqPassenger]; omega)
@@ -129,7 +130,8 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
     (hanm : an ≤ 2147483647) {g : Spec.Model.Gender} (hg : r.repGender = some g) {tel : String}
     (htel : r.repTel = some tel) (htell : tel.length ≤ 13) {mail : String} (hmail : r.repMail = some mail)
     (hmaill : mail.length ≤ 256) {M0 : SourceModel.Domain.Model.Member} (hm : r.repMember = some M0)
-    (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true)
+    (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true ∧
+      Spec.Model.MembershipNumber.valid s = true)
     (hpk : ∀ x ∈ D.reservation, x.reserveNo.val ≠ (Spec.Port.World.reserveNoOf n).val) :
     Hoare (fun s => s.db = D ∧ s.env = env) (ReservationRepository.insert r)
       (fun res s => res.1 = J32.ofInt 1 ∧ res.2 = { r with reserveNo := some (Spec.Port.World.reserveNoOf n).val } ∧
@@ -138,7 +140,8 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
         row.reserveNo.val = (Spec.Port.World.reserveNoOf n).val ∧ ∀ fs, reservationOfRow row fs = some
           { reserveNo := Spec.Port.World.reserveNoOf n, reserveDate := T, totalFare := tfn, repFamilyName := fn,
             repGivenName := gn, repAge := an, repGender := g, repTel := tel, repMail := mail,
-            repMembershipNumber := Spec.UseCase.Reserve.memberNoOf M0.membershipNumber, reserveFlights := fs })
+            repMembershipNumber := (Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind
+              Spec.Model.MembershipNumber.ofString?, reserveFlights := fs })
       (fun e s => s.env = env ∧ IsFault env e ∧
         (s.db = D ∨ s.db = { D with sqReservation := some (n : Int) })) := by
   intro s ⟨hdb, hse⟩
@@ -174,9 +177,10 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
 
 /-! ## 搭乗者の列の挿入 -/
 
-/-- 搭乗者 1 人の挿入の材料: 空でない欄の α が [Spec] の搭乗者 `q` で、氏名・年齢が列に収まる。 -/
+/-- 搭乗者 1 人の挿入の材料: 空でない欄の α を組み立てた [Spec] の搭乗者を、登録する搭乗者にしたものが `q` で、
+氏名・年齢が列に収まる。 -/
 structure PassCond (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passenger) : Prop where
-  input : ∃ i, passengerInputOf f = some i ∧ i.toPassenger = some q
+  input : ∃ i d, passengerInputOf f = some i ∧ i.toPassenger = some d ∧ d.toPassenger = q
   fn : q.familyName.length ≤ 10
   gn : q.givenName.length ≤ 10
   age : q.age ≤ 999
@@ -184,7 +188,7 @@ structure PassCond (f : SourceModel.App.B2.PassengerForm) (q : Spec.Model.Passen
 theorem passengerOfRow_no {p : PassengerRow} {x : Spec.Model.PassengerRecord} (h : passengerOfRow p = some x) :
     p.passengerNo.val = (x.passengerNo : Int) := by
   simp only [passengerOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-  obtain ⟨no, hno, -, -, -, -, rfl⟩ := h
+  obtain ⟨no, hno, -, -, -, -, -, -, rfl⟩ := h
   exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
 
 /-- 搭乗者の列の挿入の不変条件: `j` 人を挿入した。 -/

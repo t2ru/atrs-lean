@@ -1757,6 +1757,22 @@
       "layer": "Abstraction"
     },
     {
+      "name": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf_eq_some",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf_kernel",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf_val",
+      "layer": "Abstraction"
+    },
+    {
       "name": "Abstraction.MasterData.AlphaLeaf.natOfInt4",
       "layer": "Abstraction"
     },
@@ -3253,10 +3269,6 @@
       "layer": "Abstraction"
     },
     {
-      "name": "Abstraction.Reserve.ReserveFacts.foldlM_ok_all",
-      "layer": "Abstraction"
-    },
-    {
       "name": "Abstraction.Reserve.ReserveFacts.forall₂_mem_left",
       "layer": "Abstraction"
     },
@@ -4058,6 +4070,14 @@
     },
     {
       "name": "Abstraction.World.Alpha.optDate_inj",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.optMemberNo",
+      "layer": "Abstraction"
+    },
+    {
+      "name": "Abstraction.World.Alpha.optMemberNo_inj",
       "layer": "Abstraction"
     },
     {
@@ -10613,6 +10633,14 @@
       "layer": "Spec"
     },
     {
+      "name": "Spec.Model.MembershipNumber.ofString?",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.Model.MembershipNumber.valid",
+      "layer": "Spec"
+    },
+    {
       "name": "Spec.Model.Passenger",
       "layer": "Spec"
     },
@@ -11078,6 +11106,14 @@
     },
     {
       "name": "Spec.UseCase.Reserve.Draft",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.DraftPassenger",
+      "layer": "Spec"
+    },
+    {
+      "name": "Spec.UseCase.Reserve.DraftPassenger.toPassenger",
       "layer": "Spec"
     },
     {
@@ -12384,6 +12420,11 @@
     {
       "type": "obligation",
       "from": "Abstraction.MasterData.AlphaLeaf.hmOfStr_kernel",
+      "to": "ABS-048"
+    },
+    {
+      "type": "obligation",
+      "from": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf_kernel",
       "to": "ABS-048"
     },
     {
@@ -16345,6 +16386,16 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.Model.MembershipNumber.ofString?",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.Model.MembershipNumber.valid",
+      "to": "docs/spec/domain-model.md#コード値"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.Model.Passenger",
       "to": "docs/spec/domain-model.md#passenger"
     },
@@ -16850,6 +16901,16 @@
     },
     {
       "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.DraftPassenger",
+      "to": "docs/spec/reservation.md#予約内容の組み立て"
+    },
+    {
+      "type": "spec_doc",
+      "from": "Spec.UseCase.Reserve.DraftPassenger.toPassenger",
+      "to": "docs/spec/reservation.md#予約確定reserve"
+    },
+    {
+      "type": "spec_doc",
       "from": "Spec.UseCase.Reserve.MInput",
       "to": "docs/spec/reservation.md"
     },
@@ -17171,6 +17232,11 @@
     {
       "type": "std_abs",
       "from": "Abstraction.MasterData.AlphaLeaf.hmOfStr",
+      "to": "docs/spec/abstraction.md#抽象化関数-α"
+    },
+    {
+      "type": "std_abs",
+      "from": "Abstraction.MasterData.AlphaLeaf.membershipNumberOf",
       "to": "docs/spec/abstraction.md#抽象化関数-α"
     },
     {
@@ -22020,7 +22086,7 @@
       "definition": "Spec.Seed.Member.members",
       "locator": "seed:00230_insert_member.sql#MEMBER",
       "hash": "0fa5d725ee1debb7",
-      "merkle": "fd11e2795afd9240",
+      "merkle": "ae995b96865baf63",
       "checks": [
         "seed-lean"
       ]
@@ -22029,7 +22095,7 @@
       "definition": "Spec.Seed.Member.members",
       "locator": "seed:00230_insert_member.sql#MEMBER_LOGIN",
       "hash": "d692d2c1627b0945",
-      "merkle": "fd11e2795afd9240",
+      "merkle": "ae995b96865baf63",
       "checks": [
         "seed-lean"
       ]

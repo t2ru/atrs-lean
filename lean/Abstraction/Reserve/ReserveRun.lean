@@ -291,7 +291,9 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
       · rw [hdb'] at h
         cases h
         rw [register_eq d ia.today n hseq]
-        exact keysOk_regWorld hkw (secureAll_world hsa).1 (secureAll_world hsa).2.1 _ _ _ _ _ _ _ _ _ _ _
+        simpa only [List.length_map] using
+          keysOk_regWorld hkw (secureAll_world hsa).1 (secureAll_world hsa).2.1 ia.today n d.repFamilyName d.repGivenName
+            d.repAge d.repGender d.repTel d.repMail _ (d.passengers.map DraftPassenger.toPassenger) d.flights
       · obtain ⟨k0, ks', hk0s⟩ : ∃ k0 ks', it.toList = k0 :: ks' := by
           cases h : it.toList with
           | nil => rw [h] at hks; cases hks

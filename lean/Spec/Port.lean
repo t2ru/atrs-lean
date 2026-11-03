@@ -86,9 +86,20 @@ def updateVacantNum (w : World) (k : FlightKey) (n : Nat) : World :=
 
 /-! ## MemberRepository -/
 
-/-- `MemberRepository.find(membershipNumber)`。 -/
+/-- `MemberRepository.find(membershipNumber)`。会員番号は入力の文字列で引く（形式に合わない文字列の会員は無い）。 -/
 @[spec_doc "docs/spec/ports.md#memberrepository"]
-def findMember (w : World) (n : MembershipNumber) : Option Member := w.members.find? (·.membershipNumber == n)
+def findMember (w : World) (n : String) : Option Member := w.members.find? (·.membershipNumber.val == n)
+
+/-- 見つかった会員の会員番号は、引いた文字列そのもの。 -/
+theorem findMember_val {w : World} {n : String} {m : Member} (h : w.findMember n = some m) :
+    m.membershipNumber.val = n := by
+  unfold findMember at h
+  simpa using List.find?_some h
+
+/-- 会員が見つかる文字列は、会員番号として読め、その会員の会員番号になる。 -/
+theorem findMember_ofString? {w : World} {n : String} {m : Member} (h : w.findMember n = some m) :
+    MembershipNumber.ofString? n = some m.membershipNumber := by
+  rw [← findMember_val h, MembershipNumber.ofString?_val]
 
 /-! ## ReservationRepository -/
 
