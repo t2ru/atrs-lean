@@ -57,7 +57,7 @@ def isAvailableFareType (ft : FareType) (depDate today : Date) : Bool :=
 /-! ## searchFlight -/
 
 /-- 照会条件。 -/
-@[spec_doc "docs/spec/flight-search.md#シグネチャ"]
+@[spec_doc "docs/spec/flight-search.md#シグネチャ", raw_input "画面・REST の照会条件。空港コードは生の文字列で、区間はマスタで値で引く"]
 structure Criteria where
   depDate : Date
   boardingClassCd : BoardingClassCd
@@ -183,6 +183,7 @@ def searchPeriod (cfg : Config) (today : Date) : Date × Option Date := (today, 
 /-! ## 抽象機械（SPEC 課題） -/
 
 /-- 空席照会の入力（状態のフライト以外）: 設定・マスタ・今日の日付・照会条件。 -/
+@[raw_input "機械の入力。妥当性 SearchInput.Pre は PRE"]
 structure SearchInput where
   cfg : Config
   md : MasterData

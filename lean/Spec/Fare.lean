@@ -81,6 +81,7 @@ theorem totalFare_eq (cfg : Config) (md : MasterData) (flights : List Flight) (p
 /-! ## 抽象機械（R 課題 ABS-001・ABS-002 の抽象側） -/
 
 /-- 基本運賃の入力。マスタ・設定は不変の入力である。 -/
+@[raw_input "機械の入力。妥当性 BasicFareInput.Pre は PRE"]
 structure BasicFareInput where
   cfg : Config
   md : MasterData
@@ -103,6 +104,7 @@ def basicFareMachine : Machine.Machine Unit BasicFareInput Nat :=
   Machine.Machine.pure BasicFareInput.Pre fun i => (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).getD 0
 
 /-- 運賃の入力。 -/
+@[raw_input "機械の入力。妥当性 FareInput.Pre は PRE"]
 structure FareInput where
   basicFare : Nat
   discountRate : Nat
@@ -147,6 +149,7 @@ theorem fareMachine_sound : fareMachine.Sound := Machine.Machine.sound_pure _ _
 theorem fareMachine_initIs : fareMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
 /-- 合計金額の入力: 設定・マスタ・フライトのキーの列・搭乗者の年齢の列。 -/
+@[raw_input "機械の入力。妥当性 TotalFareInput.Pre は PRE"]
 structure TotalFareInput where
   cfg : Config
   md : MasterData

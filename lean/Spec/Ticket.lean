@@ -25,7 +25,7 @@ namespace Spec.Ticket
 open Spec.Config Spec.Model Spec.Prim Spec.Prim.Time Spec.Error Spec.MasterData Spec.Port
 
 /-- 画面から送られる選択フライト（往路、復路の順）。便名は外部の入力なので文字列のまま持つ（便マスタで引く）。 -/
-@[spec_doc "docs/spec/reservation.md#選択フライト"]
+@[spec_doc "docs/spec/reservation.md#選択フライト", raw_input "画面・REST の選択フライト。検証済みの便は validateFlightList が Itinerary で返す"]
 structure SelectFlight where
   depDate : Date
   flightName : String

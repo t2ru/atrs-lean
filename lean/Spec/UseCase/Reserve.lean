@@ -32,7 +32,7 @@ open Spec.Config Spec.Model Spec.Prim Spec.Prim.Text Spec.Error Spec.MasterData 
 /-! ## 予約入力 -/
 
 /-- 搭乗者欄（入力検証の後。空白のみの文字列は前処理で未入力になっている）。 -/
-@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+@[spec_doc "docs/spec/input-validation.md#予約入力b2", raw_input "画面・REST の搭乗者欄。搭乗者 DraftPassenger は toPassenger で組み立てる"]
 structure PassengerInput where
   familyName : Option String := none
   givenName : Option String := none
@@ -48,7 +48,7 @@ def PassengerInput.isEmpty (p : PassengerInput) : Bool :=
     !(p.membershipNumber.any hasText)
 
 /-- 予約入力（`TicketReserveInput`）。搭乗者欄は 6 欄。 -/
-@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+@[spec_doc "docs/spec/input-validation.md#予約入力b2", raw_input "画面・REST の予約入力。予約内容 Draft は buildDraft で組み立てる"]
 structure ReserveInput where
   repFamilyName : String
   repGivenName : String
@@ -400,7 +400,7 @@ inductive Op where
   deriving DecidableEq, Repr
 
 /-- 予約の機械の入力: 設定・マスタ・今日の日付（1 回だけ読んだ値。D-014）・要求・操作の種類。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "docs/spec/reservation.md", raw_input "機械の入力。妥当性 MInput.Pre は PRE"]
 structure MInput where
   cfg : Config
   md : MasterData

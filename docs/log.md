@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L2 として、機械の入力・画面の入力の型に `@[raw_input]` を付け、段の記録を足した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 の最後として、予約内容の便を `Itinerary`、登録した予約の便と搭乗者を和型 `ReserveFlights` にし、予約フライトの予約番号の写しと `PassengerRecord` を除いた。登録簿の D-027 の前提の文、[spec/domain-model.md](spec/domain-model.md)・[spec/reservation.md](spec/reservation.md) を改めた。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.MembershipNumber` を形式の証明を持つ型にし、予約内容の会員番号を入力の文字列のまま持つようにした（登録で読む）。検査 MISU-1 の段階導入の一覧が空になった。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/domain-model.md](spec/domain-model.md)・[spec/reservation.md](spec/reservation.md)・[spec/ports.md](spec/ports.md) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.FlightName` を形式の証明を持つ型にし、選択フライトの便名を生の文字列にした。`validateFlightList` が検証した便の主キーを `Itinerary` で返すようにした。登録簿の D-027 の前提の文を改め、[spec/abstraction.md](spec/abstraction.md)（生成表）・[spec/reservation.md](spec/reservation.md)・[spec/domain-model.md](spec/domain-model.md) を改めた。照合の記録を `trace rehash` で更新した。
