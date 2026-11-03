@@ -1,4 +1,5 @@
 import Trace.Attr
+import Trace.Id
 
 /-!
 # Trace.Gap
@@ -13,7 +14,10 @@ import Trace.Attr
 - **箇所の印**: ギャップが生じる `Spec`・`SourceModel`・`TargetModel` の定義に `@[gap "<ID>", …]` を付ける
   （`Trace.Attr`）。上流の版上げで印の付いた定義が変わると、見直すギャップが道具で出る。
 
-- **証明の状態**（`Evidence`）: ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で
+- **型**（ADR bf1b。不正な状態を表現できない型）: 種類ごとに要る欄と許す証明の状態を、和型 `Gap.Body` の構築子と、
+  種類ごとの証明の状態の型（`TypedEvidence`・`UndeterminedEvidence`）で表す。ID・空でない文字列と列は `Trace.Id` の型で、
+  形式に合わない値はエラボレートの時点で型の誤りになる。
+- **証明の状態**: ギャップは、リファインメントの証明の中で証明できない部分である。それを公理や `sorry` で
   仮定せず（ギャップが実在すれば矛盾する）、状態を裏付ける Lean の宣言で示す。裏付けの宣言には `@[gap "<ID>"]` を付ける。
   - `refuted`: 差異を外した R 課題の否定の定理（偽を証明済み。W 課題の必要性）
   - `covered`: 必要な差異がこの差異を覆う定理（`Machine.Preserves.Covers`）
@@ -21,18 +25,20 @@ import Trace.Attr
   - `unformalized`: Lean の命題として書けない主張。証明も公理も持たない `opaque` な命題（どの定理からも参照しない）
   - `excludedBy`: 差異ではない（`Spec` の PRE・INV の外。その前提の述語）
 
-`@[gap_entry]` は、付けた時点で値を読み、種類と状態・欄の組み合わせを検査する（`Gap.problems`）。
+`@[gap_entry]` は、付けた時点で値を読めることを確かめる（字面の形。読めない値は誤り）。
 docstring の有無・層・ID の重複、差異の定数と裏付けの宣言の照合は `obligation-check` が検査する（GK）。
+環境の全体にわたる性質なので、型ではなく検査に置く（ADR bf1b の規則 3）。
 -/
 
 namespace Trace
-open Trace.Attr
+open Trace.Attr Trace.Id
 
 open Lean
 
 namespace Gap
 
-/-- ギャップの種類（references/docs/spec/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。 -/
+/-- ギャップの種類（references/docs/spec/architecture.md#リファインメントb-メソッド の差異の種類に、差異ではないが明示するものを足したもの）。
+登録の値 `Gap.Body` から導く見え方で、表と JSON の列に使う。 -/
 inductive GapKind where
   /-- 前提型（抽象側の入力・状態の述語。抽象側の PRE を強める） -/
   | pre
@@ -103,51 +109,116 @@ def Impact.label : Impact → String
 /-- 文書の節への参照。表では `[label](path)note` と書く（path は文書からの相対パスに直す）。 -/
 structure DocRef where
   /-- リンクの文字列 -/
-  label : String
+  label : NEString
   /-- リポジトリのルートからのパスと、任意のアンカー（例: `docs/spec/pricing.md#税込み価格`） -/
-  path : String
+  path : NEString
   /-- リンクの後に続ける注記（例: `（規範節）`） -/
   note : String := ""
-  deriving Repr, BEq, Inhabited
+  deriving Repr
 
-/-- ギャップの証明の状態（ギャップが「証明できない部分」であることの裏付け）。名前は ``` ``名前`` ``` で書く
-（エラボレートの時点で、存在しない名前は誤りになる）。 -/
-inductive Evidence where
+/-- 前提型の差異の述語が掛かる側。 -/
+inductive PreSide where
+  /-- 抽象側の入力・状態 -/
+  | abstract
+  /-- 具体側だけにある入力 -/
+  | concreteInput
+  /-- 具体側だけにある状態 -/
+  | concreteState
+  /-- 具体側だけにある環境 -/
+  | concreteEnv
+  deriving Repr, BEq, DecidableEq
+
+/-- 前提型・観測型の証明の状態。名前は ``` ``名前`` ``` で書く（エラボレートの時点で、存在しない名前は誤りになる）。
+`deviations` は、その ID の `@[deviation]` の定数のすべて（R 課題ごとに定数を分けてよい）。 -/
+inductive TypedEvidence where
   /-- 偽を証明済み: 差異を外した R 課題の否定の定理（`¬ Refines …`。W 課題の必要性。obligation-check の G9 の形） -/
-  | refuted (necessity : List Name)
+  | refuted (deviations : NEList Name) (necessity : NEList Name)
   /-- 被覆: 必要な差異の述語 `coverer` が、この差異を覆う定理（`Machine.Preserves.Covers coverer d`・`Covers₂`） -/
-  | covered (coverer : Name) (covers : List Name)
-  /-- 未確定: 前提で制限して証明したが、必要性（偽）も一致（真）もまだ示していない。理由と、予定の W 課題 -/
-  | pending (reason : String) (wTask : Option String)
-  /-- 形式化していない: Lean の命題として書けない主張（`opaque … : Prop`）と、確定させる作業（無ければ空） -/
-  | unformalized (claim : Name) (resolution : String)
-  /-- 差異ではない: `Spec` の PRE・INV の外。その前提の述語（Lean にまだ無ければ空） -/
-  | excludedBy (pre : List Name)
-  deriving Repr, Inhabited
+  | covered (deviations : NEList Name) (coverer : Name) (covers : NEList Name)
+  /-- 未証明: 前提で制限して証明したが、必要性（偽）も一致（真）もまだ示していない。理由と、予定の W 課題。
+  Lean に述語がまだ無ければ `deviations` は空 -/
+  | pending (deviations : List Name) (reason : NEString) (wTask : Option ObligationId)
+  deriving Repr
+
+/-- 未確定の差異の証明の状態。 -/
+inductive UndeterminedEvidence where
+  /-- 未証明（前提で制限して証明した）。理由と、予定の W 課題 -/
+  | pending (reason : NEString) (wTask : Option ObligationId)
+  /-- 形式化していない: 命題をまだ書けない主張（`opaque … : Prop`）と、確定させる作業 -/
+  | unformalized (claim : Name) (resolution : NEString)
+  deriving Repr
+
+/-- 前提型の差異。 -/
+structure PreGap where
+  /-- 述語が掛かる側 -/
+  side : PreSide
+  /-- 前提（表の「前提」の列） -/
+  premise : NEString
+  evidence : TypedEvidence
+  /-- 差異を仮定に持つ R 課題（予定を含む） -/
+  rTasks : NEList ObligationId
+  /-- 前提を破ったときの影響と、その理由 -/
+  impact : Impact
+  impactReason : NEString
+  /-- Lean 側（箇所の印・裏付けの宣言）を完了させる作業項目（影響の表の列。TR-K の段階導入） -/
+  backlog : NEList BacklogId
+  deriving Repr
+
+/-- 観測型の差異。 -/
+structure ObsGap where
+  /-- 成分（表の「前提」の列） -/
+  component : NEString
+  evidence : TypedEvidence
+  /-- 差異を成分に持つ R 課題（予定を含む） -/
+  rTasks : NEList ObligationId
+  backlog : List BacklogId := []
+  deriving Repr
+
+/-- モデル外の差異（証明の状態は「形式化していない」だけ）。 -/
+structure OutOfModelGap where
+  /-- モデル外とする理由（表の「前提」の列） -/
+  reason : NEString
+  /-- 主張（`opaque claim : Prop`） -/
+  claim : Name
+  /-- 確定させる作業（無ければ空） -/
+  resolution : String := ""
+  backlog : List BacklogId := []
+  deriving Repr
+
+/-- `Spec` の PRE・INV の外での振る舞い（差異ではない。証明の状態は「PRE の外」だけ）。 -/
+structure OutsidePreGap where
+  /-- それを除く `Spec` の前提（表の「前提」の列） -/
+  excludingPre : NEString
+  /-- 前提の述語（Lean にまだ無ければ空） -/
+  pre : List Name
+  backlog : List BacklogId := []
+  deriving Repr
+
+/-- 未確定の差異。 -/
+structure UndeterminedGap where
+  evidence : UndeterminedEvidence
+  backlog : List BacklogId := []
+  deriving Repr
+
+/-- ギャップの本体。種類ごとに、要る欄と許す証明の状態だけを持つ。 -/
+inductive Body where
+  | pre (g : PreGap)
+  | observational (g : ObsGap)
+  | outOfModel (g : OutOfModelGap)
+  | outsidePre (g : OutsidePreGap)
+  | undetermined (g : UndeterminedGap)
+  deriving Repr
 
 /-- JSON の値。 -/
-def Evidence.code : Evidence → String
-  | .refuted _ => "refuted"
+def TypedEvidence.code : TypedEvidence → String
+  | .refuted .. => "refuted"
   | .covered .. => "covered"
   | .pending .. => "pending"
-  | .unformalized .. => "unformalized"
-  | .excludedBy _ => "excluded_by"
 
-/-- 文書の表に出す名前。 -/
-def Evidence.label : Evidence → String
-  | .refuted _ => "偽を証明済み"
-  | .covered .. => "被覆"
-  | .pending .. => "未証明"
-  | .unformalized .. => "形式化していない"
-  | .excludedBy _ => "PRE の外"
-
-/-- 裏付けの宣言の名前（`@[gap]` を付けるもの）。 -/
-def Evidence.witnesses : Evidence → List Name
-  | .refuted ns => ns
-  | .covered _ ns => ns
-  | .unformalized c _ => [c]
-  | .excludedBy ns => ns
-  | .pending .. => []
+/-- 差異の述語・成分。 -/
+def TypedEvidence.deviations : TypedEvidence → List Name
+  | .refuted ds _ | .covered ds _ _ => ds.toList
+  | .pending ds _ _ => ds
 
 end Gap
 
@@ -155,85 +226,154 @@ open Gap in
 /-- ギャップの登録の値。 -/
 structure Gap where
   /-- `D-NNN`（`Abstraction`）/ `T-NNN`（`Refinement`） -/
-  id : String
-  kind : GapKind
-  /-- 箇所（仕様文書・意思決定記録の節）。1 つ以上 -/
-  sites : List DocRef
-  /-- 種類ごとの本文（Markdown）。前提型: 前提、観測型: 成分、モデル外: 理由、PRE の外: それを除く `Spec` の前提 -/
-  premise : String := ""
-  /-- 前提型・観測型の差異の述語・成分（その ID の `@[deviation]` の定数のすべて。R 課題ごとに定数を分けてよい）。
-  Lean にまだ無ければ空（状態は `pending`） -/
-  deviations : List Name := []
-  /-- 証明の状態 -/
-  evidence : Evidence
-  /-- 差異を仮定・成分に持つ R 課題（予定を含む）。前提型・観測型だけ -/
-  rTasks : List String := []
-  /-- 前提型の差異の影響と、その理由。前提型だけ -/
-  impact : Option (Impact × String) := none
-  /-- Lean 側（箇所の印・裏付けの宣言）を完了させる backlog 項目の ID。段階導入に使う -/
-  backlog : List String := []
-  deriving Repr, Inhabited
+  id : GapId
+  /-- 箇所（仕様文書・意思決定記録の節） -/
+  sites : NEList DocRef
+  body : Body
+  deriving Repr
 
-/-- `D-NNN` / `T-NNN` の形か。 -/
-def Gap.idWellFormed (id : String) : Bool :=
-  match id.toList with
-  | [p, '-', a, b, c] => (p == 'D' || p == 'T') && a.isDigit && b.isDigit && c.isDigit
-  | _ => false
+namespace Gap
 
-/-- 種類ごとの必須の欄・禁じる欄の誤り（空なら正しい）。 -/
-def Gap.problems (g : Gap) : List String := Id.run do
-  let mut out := []
-  unless Gap.idWellFormed g.id do out := out ++ [s!"id {g.id.quote} is not D-NNN / T-NNN"]
-  if g.sites.isEmpty then out := out ++ ["sites must not be empty"]
-  for s in g.sites do
-    if s.label.isEmpty || s.path.isEmpty then out := out ++ ["sites: label and path must not be empty"]
-  if g.premise.isEmpty && g.kind != .undetermined then
-    out := out ++ [s!"premise is required for {g.kind.code}"]
-  -- 種類と状態の組み合わせ
-  let ok : Bool := match g.kind, g.evidence with
-    | k, .refuted ns => k.isTyped && !ns.isEmpty
-    | k, .covered _ ns => k.isTyped && !ns.isEmpty
-    | k, .pending .. => k.isTyped || k == .undetermined
-    | .outOfModel, .unformalized .. => true
-    | .undetermined, .unformalized _ res => !res.isEmpty
-    | .outsidePre, .excludedBy _ => true
-    | _, _ => false
-  unless ok do
-    out := out ++ [s!"evidence {g.evidence.code} does not fit kind {g.kind.code} (or lacks its theorems / resolution)"]
-  match g.evidence with
-  | .refuted _ | .covered .. =>
-    if g.deviations.isEmpty then
-      out := out ++ [s!"evidence {g.evidence.code} needs the deviations (the @[deviation] constants)"]
-  | _ => pure ()
-  if !g.deviations.isEmpty && !g.kind.isTyped then
-    out := out ++ [s!"deviations are only for pre / observational, not {g.kind.code}"]
-  if g.kind.isTyped then
-    if g.rTasks.isEmpty then out := out ++ [s!"rTasks is required for {g.kind.code}"]
-  else
-    unless g.rTasks.isEmpty do out := out ++ [s!"rTasks is only for pre / observational, not {g.kind.code}"]
-  if g.kind.isPre then
-    match g.impact with
-    | none => out := out ++ [s!"impact is required for {g.kind.code}"]
-    | some (_, reason) => if reason.isEmpty then out := out ++ ["impact: the reason must not be empty"]
-    if g.backlog.isEmpty then out := out ++ [s!"backlog is required for {g.kind.code} (the impact table)"]
-  else if g.impact.isSome then
-    out := out ++ [s!"impact is only for pre, not {g.kind.code}"]
-  if g.kind == .undetermined then
-    unless g.premise.isEmpty do out := out ++ ["premise is not used for undetermined"]
-  return out
+/-- ID の文字列。 -/
+def idStr (g : Gap) : String := g.id.val
 
-/-- 予定を含む W 課題（`pending` の予定）。`refuted`・`covered` の W 課題は、裏付けの定理の `@[obligation]` から引く。 -/
-def Gap.plannedW (g : Gap) : Option String :=
-  match g.evidence with
-  | .pending _ w => w
+/-- 種類。 -/
+def kind (g : Gap) : GapKind :=
+  match g.body with
+  | .pre p =>
+    match p.side with
+    | .abstract => .pre
+    | .concreteInput => .preConcreteInput
+    | .concreteState => .preConcreteState
+    | .concreteEnv => .preConcreteEnv
+  | .observational _ => .observational
+  | .outOfModel _ => .outOfModel
+  | .outsidePre _ => .outsidePre
+  | .undetermined _ => .undetermined
+
+/-- 種類ごとの本文（前提型: 前提、観測型: 成分、モデル外: 理由、PRE の外: それを除く `Spec` の前提、未確定: 空）。 -/
+def premise (g : Gap) : String :=
+  match g.body with
+  | .pre p => p.premise.val
+  | .observational o => o.component.val
+  | .outOfModel m => m.reason.val
+  | .outsidePre x => x.excludingPre.val
+  | .undetermined _ => ""
+
+/-- 前提型・観測型の証明の状態。 -/
+def typedEvidence? (g : Gap) : Option TypedEvidence :=
+  match g.body with
+  | .pre p => some p.evidence
+  | .observational o => some o.evidence
   | _ => none
 
-/-- 確定させる作業（`unformalized`・`pending` の文）。 -/
-def Gap.resolution (g : Gap) : String :=
-  match g.evidence with
-  | .unformalized _ res => res
-  | .pending reason _ => if g.kind == .undetermined then reason else ""
+/-- 前提型・観測型の差異の述語・成分。 -/
+def deviations (g : Gap) : List Name := (g.typedEvidence?.map TypedEvidence.deviations).getD []
+
+/-- 差異を仮定・成分に持つ R 課題。 -/
+def rTasks (g : Gap) : List String :=
+  match g.body with
+  | .pre p => p.rTasks.toList.map (·.val)
+  | .observational o => o.rTasks.toList.map (·.val)
+  | _ => []
+
+/-- 前提型の差異の影響と、その理由。 -/
+def impact (g : Gap) : Option (Impact × String) :=
+  match g.body with
+  | .pre p => some (p.impact, p.impactReason.val)
+  | _ => none
+
+/-- Lean 側を完了させる作業項目。 -/
+def backlog (g : Gap) : List String :=
+  let ids := match g.body with
+    | .pre p => p.backlog.toList
+    | .observational o => o.backlog
+    | .outOfModel m => m.backlog
+    | .outsidePre x => x.backlog
+    | .undetermined u => u.backlog
+  ids.map (·.val)
+
+/-- 形式化していない主張（モデル外・未確定の `unformalized`）。 -/
+def claim? (g : Gap) : Option Name :=
+  match g.body with
+  | .outOfModel m => some m.claim
+  | .undetermined { evidence := .unformalized c _, .. } => some c
+  | _ => none
+
+/-- 証明の状態の JSON の値。 -/
+def evidenceCode (g : Gap) : String :=
+  match g.body with
+  | .pre p => p.evidence.code
+  | .observational o => o.evidence.code
+  | .outOfModel _ => "unformalized"
+  | .outsidePre _ => "excluded_by"
+  | .undetermined { evidence := .pending .., .. } => "pending"
+  | .undetermined { evidence := .unformalized .., .. } => "unformalized"
+
+/-- 証明の状態の、文書の表に出す名前。 -/
+def evidenceLabel (g : Gap) : String :=
+  match g.evidenceCode with
+  | "refuted" => "偽を証明済み"
+  | "covered" => "被覆"
+  | "pending" => "未証明"
+  | "unformalized" => "形式化していない"
+  | _ => "PRE の外"
+
+/-- 裏付けの宣言の名前（`@[gap]` を付けるもの）。 -/
+def witnesses (g : Gap) : List Name :=
+  match g.body with
+  | .pre { evidence := e, .. } | .observational { evidence := e, .. } =>
+    match e with
+    | .refuted _ ns => ns.toList
+    | .covered _ _ ns => ns.toList
+    | .pending .. => []
+  | .outOfModel m => [m.claim]
+  | .outsidePre x => x.pre
+  | .undetermined { evidence := .unformalized c _, .. } => [c]
+  | .undetermined { evidence := .pending .., .. } => []
+
+/-- 未証明の理由。 -/
+def pendingReason (g : Gap) : String :=
+  match g.typedEvidence? with
+  | some (.pending _ r _) => r.val
+  | _ =>
+    match g.body with
+    | .undetermined { evidence := .pending r _, .. } => r.val
+    | _ => ""
+
+/-- 被覆の差異の述語。 -/
+def coverer? (g : Gap) : Option Name :=
+  match g.typedEvidence? with
+  | some (.covered _ c _) => some c
+  | _ => none
+
+/-- PRE の外の前提の述語。 -/
+def excludedPre (g : Gap) : List Name :=
+  match g.body with
+  | .outsidePre x => x.pre
+  | _ => []
+
+/-- 未証明か。 -/
+def isPending (g : Gap) : Bool := g.evidenceCode == "pending"
+
+/-- 予定を含む W 課題（`pending` の予定）。`refuted`・`covered` の W 課題は、裏付けの定理の `@[obligation]` から引く。 -/
+def plannedW (g : Gap) : Option String :=
+  match g.typedEvidence? with
+  | some (.pending _ _ w) => w.map (·.val)
+  | _ =>
+    match g.body with
+    | .undetermined { evidence := .pending _ w, .. } => w.map (·.val)
+    | _ => none
+
+/-- 確定させる作業（`unformalized` の作業、未確定の `pending` の理由）。 -/
+def resolution (g : Gap) : String :=
+  match g.body with
+  | .outOfModel m => m.resolution
+  | .undetermined { evidence := .unformalized _ res, .. } => res.val
+  | .undetermined { evidence := .pending r _, .. } => r.val
   | _ => ""
+
+end Gap
 
 /-! ## 値の読み取り
 
@@ -294,17 +434,34 @@ def prod {α β : Type} (env : Environment) (f : Expr → Except String α) (g :
   | some (``Prod.mk, #[a, b]) => do return (← f a, ← g b)
   | _ => .error s!"expected a pair, got {e}"
 
-def kind (env : Environment) (e : Expr) : Except String GapKind :=
+/-- `val` と証明の構築子（`NEString`・`GapId` など）の `val` を読み、形式を検査して作り直す。 -/
+def checked {α : Type} (env : Environment) (what : String) (mk : String → Option α) (e : Expr) :
+    Except String α := do
   match ctor? env e with
-  | some (``GapKind.pre, _) => .ok .pre
-  | some (``GapKind.preConcreteInput, _) => .ok .preConcreteInput
-  | some (``GapKind.preConcreteState, _) => .ok .preConcreteState
-  | some (``GapKind.preConcreteEnv, _) => .ok .preConcreteEnv
-  | some (``GapKind.observational, _) => .ok .observational
-  | some (``GapKind.outOfModel, _) => .ok .outOfModel
-  | some (``GapKind.outsidePre, _) => .ok .outsidePre
-  | some (``GapKind.undetermined, _) => .ok .undetermined
-  | _ => .error s!"expected a GapKind constructor, got {e}"
+  | some (_, args) =>
+    let some v := args[0]? | throw s!"expected a {what} literal, got {e}"
+    let s ← str env v
+    match mk s with
+    | some x => return x
+    | none => throw s!"{s.quote} is not a valid {what}"
+  | none => throw s!"expected a {what} literal, got {e}"
+
+def neString (env : Environment) (e : Expr) : Except String NEString :=
+  checked env "NEString" (fun s => if h : s ≠ "" then some ⟨s, h⟩ else none) e
+
+def gapId (env : Environment) (e : Expr) : Except String GapId :=
+  checked env "GapId" (fun s => if h : GapId.valid s = true then some ⟨s, h⟩ else none) e
+
+def obligationId (env : Environment) (e : Expr) : Except String ObligationId :=
+  checked env "ObligationId" (fun s => if h : ObligationId.valid s = true then some ⟨s, h⟩ else none) e
+
+def backlogId (env : Environment) (e : Expr) : Except String BacklogId :=
+  checked env "BacklogId" (fun s => if h : BacklogId.valid s = true then some ⟨s, h⟩ else none) e
+
+def neList {α : Type} (env : Environment) (f : Expr → Except String α) (e : Expr) : Except String (NEList α) :=
+  match ctor? env e with
+  | some (``NEList.mk, #[h, t]) => do return ⟨← f h, ← list env f t⟩
+  | _ => .error s!"expected a non-empty list literal (ne![…]), got {e}"
 
 partial def name (env : Environment) (e : Expr) : Except String Name :=
   match ctor? env e with
@@ -315,35 +472,104 @@ partial def name (env : Environment) (e : Expr) : Except String Name :=
     return .num (← name env p) k
   | _ => .error s!"expected a name literal (``x``), got {e}"
 
-def evidence (env : Environment) (e : Expr) : Except String Evidence :=
-  match ctor? env e with
-  | some (``Evidence.refuted, #[ns]) => do return .refuted (← list env (name env) ns)
-  | some (``Evidence.covered, #[c, ns]) => do return .covered (← name env c) (← list env (name env) ns)
-  | some (``Evidence.pending, #[r, w]) => do return .pending (← str env r) (← option env (str env) w)
-  | some (``Evidence.unformalized, #[c, r]) => do return .unformalized (← name env c) (← str env r)
-  | some (``Evidence.excludedBy, #[ns]) => do return .excludedBy (← list env (name env) ns)
-  | _ => .error s!"expected an Evidence constructor, got {e}"
-
 def impact (env : Environment) (e : Expr) : Except String Impact :=
   match ctor? env e with
   | some (``Impact.outputOnly, _) => .ok .outputOnly
   | some (``Impact.abort, _) => .ok .abort
   | _ => .error s!"expected an Impact constructor, got {e}"
 
+def preSide (env : Environment) (e : Expr) : Except String PreSide :=
+  match ctor? env e with
+  | some (``PreSide.abstract, _) => .ok .abstract
+  | some (``PreSide.concreteInput, _) => .ok .concreteInput
+  | some (``PreSide.concreteState, _) => .ok .concreteState
+  | some (``PreSide.concreteEnv, _) => .ok .concreteEnv
+  | _ => .error s!"expected a PreSide constructor, got {e}"
+
+def typedEvidence (env : Environment) (e : Expr) : Except String TypedEvidence :=
+  match ctor? env e with
+  | some (``TypedEvidence.refuted, #[ds, ns]) => do
+    return .refuted (← neList env (name env) ds) (← neList env (name env) ns)
+  | some (``TypedEvidence.covered, #[ds, c, ns]) => do
+    return .covered (← neList env (name env) ds) (← name env c) (← neList env (name env) ns)
+  | some (``TypedEvidence.pending, #[ds, r, w]) => do
+    return .pending (← list env (name env) ds) (← neString env r) (← option env (obligationId env) w)
+  | _ => .error s!"expected a TypedEvidence constructor, got {e}"
+
+def undeterminedEvidence (env : Environment) (e : Expr) : Except String UndeterminedEvidence :=
+  match ctor? env e with
+  | some (``UndeterminedEvidence.pending, #[r, w]) => do
+    return .pending (← neString env r) (← option env (obligationId env) w)
+  | some (``UndeterminedEvidence.unformalized, #[c, r]) => do
+    return .unformalized (← name env c) (← neString env r)
+  | _ => .error s!"expected an UndeterminedEvidence constructor, got {e}"
+
 def docRef (env : Environment) (e : Expr) : Except String DocRef :=
   match ctor? env e with
-  | some (``DocRef.mk, #[l, p, n]) => do return { label := ← str env l, path := ← str env p, note := ← str env n }
+  | some (``DocRef.mk, #[l, p, n]) => do
+    let label ← neString env l
+    let path ← neString env p
+    let note ← str env n
+    return { label, path, note }
   | _ => .error s!"expected a DocRef literal, got {e}"
+
+def body (env : Environment) (e : Expr) : Except String Body := do
+  let backlogs := list env (backlogId env)
+  match ctor? env e with
+  | some (``Body.pre, #[g]) =>
+    match ctor? env g with
+    | some (``PreGap.mk, #[side, premise, ev, rTasks, imp, reason, backlog]) =>
+      let side ← preSide env side
+      let premise ← neString env premise
+      let ev ← typedEvidence env ev
+      let rTasks ← neList env (obligationId env) rTasks
+      let imp ← impact env imp
+      let reason ← neString env reason
+      let backlog ← neList env (backlogId env) backlog
+      return .pre { side, premise, evidence := ev, rTasks, impact := imp, impactReason := reason, backlog }
+    | _ => throw s!"expected a PreGap literal, got {g}"
+  | some (``Body.observational, #[g]) =>
+    match ctor? env g with
+    | some (``ObsGap.mk, #[c, ev, rTasks, backlog]) =>
+      let component ← neString env c
+      let evidence ← typedEvidence env ev
+      let rTasks ← neList env (obligationId env) rTasks
+      let backlog ← backlogs backlog
+      return .observational { component, evidence, rTasks, backlog }
+    | _ => throw s!"expected an ObsGap literal, got {g}"
+  | some (``Body.outOfModel, #[g]) =>
+    match ctor? env g with
+    | some (``OutOfModelGap.mk, #[r, c, res, backlog]) =>
+      let reason ← neString env r
+      let claim ← name env c
+      let resolution ← str env res
+      let backlog ← backlogs backlog
+      return .outOfModel { reason, claim, resolution, backlog }
+    | _ => throw s!"expected an OutOfModelGap literal, got {g}"
+  | some (``Body.outsidePre, #[g]) =>
+    match ctor? env g with
+    | some (``OutsidePreGap.mk, #[x, pre, backlog]) =>
+      let excludingPre ← neString env x
+      let pre ← list env (name env) pre
+      let backlog ← backlogs backlog
+      return .outsidePre { excludingPre, pre, backlog }
+    | _ => throw s!"expected an OutsidePreGap literal, got {g}"
+  | some (``Body.undetermined, #[g]) =>
+    match ctor? env g with
+    | some (``UndeterminedGap.mk, #[ev, backlog]) =>
+      let evidence ← undeterminedEvidence env ev
+      let backlog ← backlogs backlog
+      return .undetermined { evidence, backlog }
+    | _ => throw s!"expected an UndeterminedGap literal, got {g}"
+  | _ => throw s!"expected a Gap.Body constructor, got {e}"
 
 def gap (env : Environment) (e : Expr) : Except String Gap :=
   match ctor? env e with
-  | some (``Gap.mk, #[id, k, sites, premise, devs, ev, rTasks, imp, backlog]) => do
-    return {
-      id := ← str env id, kind := ← kind env k, sites := ← list env (docRef env) sites
-      premise := ← str env premise, deviations := ← list env (name env) devs
-      evidence := ← evidence env ev, rTasks := ← list env (str env) rTasks
-      impact := ← option env (prod env (impact env) (str env)) imp
-      backlog := ← list env (str env) backlog }
+  | some (``Gap.mk, #[id, sites, b]) => do
+    let id ← gapId env id
+    let sites ← neList env (docRef env) sites
+    let body ← body env b
+    return { id, sites, body }
   | _ => .error s!"expected a Trace.Gap literal, got {e}"
 
 end GapExpr
@@ -357,14 +583,13 @@ def ofConst? (env : Environment) (n : Name) : Except String Gap :=
   | some _ => .error s!"{n} must be a definition of type Trace.Gap"
   | none => .error s!"unknown constant {n}"
 
-/-- `@[gap_entry]`: ギャップの登録の宣言。付けた時点で値を読み、`Gap.problems` を検査する。 -/
+/-- `@[gap_entry]`: ギャップの登録の宣言。付けた時点で、値を式から読めることを確かめる（種類ごとの欄と証明の状態の
+組み合わせは型が表すので、ここでは検査しない）。 -/
 initialize gapEntryAttr : TagAttribute ←
   registerTagAttribute `gap_entry "ギャップの登録の宣言（型 Trace.Gap の定数）" fun decl => do
     match Gap.ofConst? (← getEnv) decl with
     | .error e => throwError "@[gap_entry]: {e}"
-    | .ok g =>
-      let ps := g.problems
-      unless ps.isEmpty do throwError "@[gap_entry] {g.id}: {"; ".intercalate ps}"
+    | .ok _ => pure ()
 
 /-- 登録の宣言（名前順）と、その値。読めない宣言は誤りとして返す。 -/
 def gapEntries (env : Environment) : Array (Name × Except String Gap) :=
@@ -376,14 +601,14 @@ def gapEntries (env : Environment) : Array (Name × Except String Gap) :=
 def gapMarkers (env : Environment) : Array (Name × Array String) := Id.run do
   let mut out := #[]
   for (n, _) in env.constants.toList do
-    if let some ids := gapAttr.getParam? env n then out := out.push (n, ids)
+    if let some ids := strsOf gapAttr env n then out := out.push (n, ids)
   return out.qsort fun a b => a.1.toString < b.1.toString
 
 /-- `@[deviation]` を付けた定数（名前順）と、その ID。 -/
 def deviationConsts (env : Environment) : Array (Name × Array String) := Id.run do
   let mut out := #[]
   for (n, _) in env.constants.toList do
-    if let some ids := deviationAttr.getParam? env n then out := out.push (n, ids)
+    if let some i := deviationOf? env n then out := out.push (n, #[toString i])
   return out.qsort fun a b => a.1.toString < b.1.toString
 
 /-- 登録の宣言の docstring（Markdown）。 -/
@@ -392,7 +617,7 @@ def gapDoc? (env : Environment) (n : Name) : Option String :=
 
 /-- `DocRef` の JSON。 -/
 def DocRef.toJson (r : DocRef) : Json :=
-  Json.mkObj [("label", Lean.toJson r.label), ("path", Lean.toJson r.path), ("note", Lean.toJson r.note)]
+  Json.mkObj [("label", Lean.toJson r.label.val), ("path", Lean.toJson r.path.val), ("note", Lean.toJson r.note)]
 
 /--
 登録簿の JSON（`trace-dump` と `obligation-check` の `gaps`）。読めた宣言だけを、名前順に出す。
@@ -403,7 +628,7 @@ def gapsJson (env : Environment) (moduleOf : Name → String) : Json := Id.run d
   let wTaskOf (g : Gap) : Option String :=
     match g.plannedW with
     | some w => some w
-    | none => g.evidence.witnesses.findSome? fun t => (obligationAttr.getParam? env t).bind (·[0]?)
+    | none => g.witnesses.findSome? fun t => (strsOf obligationAttr env t).bind (·[0]?)
   let markers := gapMarkers env
   let devs := deviationConsts env
   let mut out := #[]
@@ -411,18 +636,18 @@ def gapsJson (env : Environment) (moduleOf : Name → String) : Json := Id.run d
     let .ok g := r | continue
     let doc := gapDoc? env n
     let withId (xs : Array (Name × Array String)) :=
-      Lean.toJson ((xs.filter fun (_, ids) => ids.contains g.id).map (·.1.toString))
+      Lean.toJson ((xs.filter fun (_, ids) => ids.contains g.idStr).map (·.1.toString))
     out := out.push <| Json.mkObj [
       ("name", Lean.toJson n.toString), ("module", Lean.toJson (moduleOf n)),
-      ("id", Lean.toJson g.id), ("kind", Lean.toJson g.kind.code), ("kind_label", Lean.toJson g.kind.label),
-      ("sites", Json.arr (g.sites.toArray.map DocRef.toJson)),
+      ("id", Lean.toJson g.idStr), ("kind", Lean.toJson g.kind.code), ("kind_label", Lean.toJson g.kind.label),
+      ("sites", Json.arr (g.sites.toList.toArray.map DocRef.toJson)),
       ("doc", Lean.toJson ((doc.getD "").trimAscii.toString)),
       ("premise", Lean.toJson g.premise), ("r_tasks", Lean.toJson g.rTasks),
-      ("evidence", Json.mkObj [("state", Lean.toJson g.evidence.code), ("label", Lean.toJson g.evidence.label),
-        ("witnesses", Lean.toJson (g.evidence.witnesses.map (·.toString))),
-        ("reason", Lean.toJson (match g.evidence with | .pending r _ => r | _ => "")),
-        ("coverer", match g.evidence with | .covered c _ => Lean.toJson c.toString | _ => Json.null),
-        ("pre", Lean.toJson (match g.evidence with | .excludedBy ns => ns.map Name.toString | _ => ([] : List String)))]),
+      ("evidence", Json.mkObj [("state", Lean.toJson g.evidenceCode), ("label", Lean.toJson g.evidenceLabel),
+        ("witnesses", Lean.toJson (g.witnesses.map (·.toString))),
+        ("reason", Lean.toJson g.pendingReason),
+        ("coverer", match g.coverer? with | some c => Lean.toJson c.toString | none => Json.null),
+        ("pre", Lean.toJson (g.excludedPre.map Name.toString))]),
       ("w_task", match wTaskOf g with | some w => Lean.toJson w | none => Json.null),
       ("impact", match g.impact with
         | some (i, reason) => Json.mkObj [("kind", Lean.toJson i.code), ("label", Lean.toJson i.label),

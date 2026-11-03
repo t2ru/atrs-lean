@@ -247,57 +247,63 @@ theorem rneTrunc_factor {X c fm fs : Nat} (hX : X ≠ 0) (hc : c ≠ 0) (hfs : f
 
 /-- 因子が正の有限値 `fm·2^(−fs)`（`fs ≤ 1000`）で、正確な値 `c/100` に近い。 -/
 def FactorOk (F : JDouble) (c : Nat) : Prop :=
-  ∃ fm fs : Nat, F = .finite false fm (-(fs : Int)) ∧ fs ≤ 1000 ∧ Close c fm fs
+  ∃ (fm fs : Nat) (h : Canonical fm (-(fs : Int))), F = .finite false fm (-(fs : Int)) h ∧ fs ≤ 1000 ∧ Close c fm fs
 
 /-- 因子が安全（`Safe`）。 -/
 def FactorSafe (F : JDouble) (c : Nat) : Prop :=
-  ∃ fm fs : Nat, F = .finite false fm (-(fs : Int)) ∧ Safe c fm fs
+  ∃ (fm fs : Nat) (h : Canonical fm (-(fs : Int))), F = .finite false fm (-(fs : Int)) h ∧ Safe c fm fs
 
 /-- 判定（カーネルの評価用）。 -/
 def factorOk? (F : JDouble) (c : Nat) : Bool :=
   match F with
-  | .finite false fm e => decide (e < 0) && decide ((-e).toNat ≤ 1000) && decide (Close c fm (-e).toNat)
+  | .finite false fm e _ => decide (e < 0) && decide ((-e).toNat ≤ 1000) && decide (Close c fm (-e).toNat)
   | _ => false
 
 def factorSafe? (F : JDouble) (c : Nat) : Bool :=
   match F with
-  | .finite false fm e => decide (e < 0) && decide (Safe c fm (-e).toNat)
+  | .finite false fm e _ => decide (e < 0) && decide (Safe c fm (-e).toNat)
   | _ => false
 
 theorem factorOk_of {F : JDouble} {c : Nat} (h : factorOk? F c = true) : FactorOk F c := by
   unfold factorOk? at h
   split at h
-  · rename_i fm e
+  · rename_i fm e hcan
     simp only [Bool.and_eq_true, decide_eq_true_eq] at h
     obtain ⟨⟨he, hfs⟩, hc⟩ := h
-    exact ⟨fm, (-e).toNat, by congr 1; omega, hfs, hc⟩
+    obtain ⟨k, rfl⟩ : ∃ k : Nat, e = -(k : Int) := ⟨(-e).toNat, by omega⟩
+    simp only [Int.neg_neg, Int.toNat_natCast] at hfs hc
+    exact ⟨fm, k, hcan, rfl, hfs, hc⟩
   · cases h
 
 theorem factorSafe_of {F : JDouble} {c : Nat} (h : factorSafe? F c = true) : FactorSafe F c := by
   unfold factorSafe? at h
   split at h
-  · rename_i fm e
+  · rename_i fm e hcan
     simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    exact ⟨fm, (-e).toNat, by congr 1; omega, h.2⟩
+    obtain ⟨k, rfl⟩ : ∃ k : Nat, e = -(k : Int) := ⟨(-e).toNat, by omega⟩
+    have h2 := h.2
+    simp only [Int.neg_neg, Int.toNat_natCast] at h2
+    exact ⟨fm, k, hcan, rfl, h2⟩
   · cases h
 
 /-! ## 百分率の因子の式 -/
 
-theorem mul_zero_right' (s : Bool) (m : Nat) (e : Int) :
-    JDouble.mul (.finite s m e) (.finite false 0 0) = .finite (s != false) 0 0 := by
+theorem mul_zero_right' (s : Bool) (m : Nat) (e : Int) (h : Canonical m e) :
+    JDouble.mul (.finite s m e h) (.finite false 0 0 canon_zero) = .finite (s != false) 0 0 canon_zero := by
   simp [JDouble.mul, toRat?, ofRat]
 
-theorem mul_zero_left' (t : Bool) (m : Nat) (e : Int) :
-    JDouble.mul (.finite false 0 0) (.finite t m e) = .finite (false != t) 0 0 := by
+theorem mul_zero_left' (t : Bool) (m : Nat) (e : Int) (h : Canonical m e) :
+    JDouble.mul (.finite false 0 0 canon_zero) (.finite t m e h) = .finite (false != t) 0 0 canon_zero := by
   simp [JDouble.mul, toRat?, ofRat]
 
-theorem toJ32_zero (s : Bool) : (toJ32 (.finite s 0 0)).val = 0 := by cases s <;> decide
+theorem toJ32_zero (s : Bool) : (toJ32 (.finite s 0 0 canon_zero)).val = 0 := by cases s <;> decide
 
 /-- `X < 2^53` の `(double) X` は正の有限値（`X = 0` なら `+0`）。 -/
-theorem jd_nat_finite {X : Nat} (h : X < 2 ^ 53) : ∃ m e, jd (X : Int) = .finite false m e := by
+theorem jd_nat_finite {X : Nat} (h : X < 2 ^ 53) : ∃ m e hc, jd (X : Int) = .finite false m e hc := by
   by_cases h0 : X = 0
-  · subst h0; exact ⟨0, 0, by decide⟩
-  · exact ⟨_, _, ofInt_nat h0 h⟩
+  · subst h0; exact ⟨0, 0, canon_zero, by decide⟩
+  · obtain ⟨hc, he⟩ := ofInt_nat h0 h
+    exact ⟨_, _, hc, he⟩
 
 /-- 因子 `F`（`c/100` に近い）について、[Source] の `(int)(X * F)` は [Spec] の `⌊X·c/100⌋` に等しいか、
 `X·c` が 100 で割り切れ、因子が安全でなく、1 小さい。 -/
@@ -305,7 +311,7 @@ theorem jd2i_factor {X c : Nat} {F : JDouble} (hF : FactorOk F c) (hX : X ≠ 0)
     (hr : X * c < 100 * 2 ^ 28) :
     (jd2i (jdmul (jd (X : Int)) F)).val = ((X * c / 100 : Nat) : Int) ∨
     (X * c % 100 = 0 ∧ 0 < X * c ∧ ¬ FactorSafe F c ∧ (jd2i (jdmul (jd (X : Int)) F)).val + 1 = ((X * c / 100 : Nat) : Int)) := by
-  obtain ⟨fm, fs, rfl, hfs, hcl⟩ := hF
+  obtain ⟨fm, fs, hcan, rfl, hfs, hcl⟩ := hF
   obtain ⟨hfm, hlo, hhi⟩ := close_range hX hc hfs hr hcl
   have hX53 : X < 2 ^ 53 := by
     have : X ≤ X * c := Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hc)
@@ -318,8 +324,8 @@ theorem jd2i_factor {X c : Nat} {F : JDouble} (hF : FactorOk F c) (hX : X ≠ 0)
   have hmax : J32.maxValue = 2147483647 := rfl
   rw [hmax]
   by_cases hj : X * c % 100 = 0
-  · by_cases hs : FactorSafe (.finite false fm (-(fs : Int))) c
-    · obtain ⟨fm', fs', he, hs'⟩ := hs
+  · by_cases hs : FactorSafe (.finite false fm (-(fs : Int)) hcan) c
+    · obtain ⟨fm', fs', _, he, hs'⟩ := hs
       simp only [JDouble.finite.injEq, true_and] at he
       obtain ⟨rfl, he⟩ := he
       have : fs = fs' := by omega
@@ -332,17 +338,17 @@ theorem jd2i_factor {X c : Nat} {F : JDouble} (hF : FactorOk F c) (hX : X ≠ 0)
   · left; rw [r1 hj]; omega
 
 /-- `c = 0`・`X = 0` を含めた形（因子 `F` は `c = 0` なら `+0`）。 -/
-theorem jd2i_factor' {X c : Nat} {F : JDouble} (hX53 : X < 2 ^ 53) (h0 : c = 0 → F = .finite false 0 0)
+theorem jd2i_factor' {X c : Nat} {F : JDouble} (hX53 : X < 2 ^ 53) (h0 : c = 0 → F = posZero)
     (hF : c ≠ 0 → FactorOk F c) (hr : X * c < 100 * 2 ^ 28) :
     (jd2i (jdmul (jd (X : Int)) F)).val = ((X * c / 100 : Nat) : Int) ∨
     (X * c % 100 = 0 ∧ 0 < X * c ∧ ¬ FactorSafe F c ∧ (jd2i (jdmul (jd (X : Int)) F)).val + 1 = ((X * c / 100 : Nat) : Int)) := by
   by_cases hc : c = 0
   · subst hc; rw [h0 rfl]
-    obtain ⟨m, e, he⟩ := jd_nat_finite hX53
-    left; rw [he]; simp [jdmul, jd2i, mul_zero_right', toJ32_zero]
+    obtain ⟨m, e, hc, he⟩ := jd_nat_finite hX53
+    left; rw [he]; simp [jdmul, jd2i, posZero, mul_zero_right', toJ32_zero]
   by_cases hX : X = 0
   · subst hX
-    obtain ⟨fm, fs, rfl, -, -⟩ := hF hc
+    obtain ⟨fm, fs, _, rfl, -, -⟩ := hF hc
     left; simp [jd, ofInt, ofRat, jdmul, jd2i, mul_zero_left', toJ32_zero]
   exact jd2i_factor (hF hc) hX hc hr
 

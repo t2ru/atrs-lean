@@ -31,7 +31,7 @@ Lean の実装は `assets/lean/LangSemantics/Sql/`（モジュール `LangSemant
 
 ### Lean 実装の範囲
 
-実装済み: `SqlValue`（NULL・整数・文字列・真偽・日付）、`Truth`（三値論理）、比較・`between`・`inList`・`isNull`、`Bag`（選択・射影・直積・内部結合・`EXISTS`・`COUNT(*)`）、`isAllowedOrder`・`orderByStable`、`updateWhere`・`deleteWhere`・`insertUnique`、`nextval`、取消 `Transaction.run`（`EStateM` の計算。例外で終わったら、状態を `restore 開始時 終了時` にする。表は開始時、シーケンスは終了時のように、戻す成分は呼び出し側が決める）。方言 PostgreSQL の `TIMESTAMP` の列の型 `PgTimestamp`。
+実装済み: `SqlValue`（NULL・整数・文字列・真偽・日付）、`Truth`（三値論理）、比較・`between`・`inList`・`isNull`、`Bag`（選択・射影・直積・内部結合・`EXISTS`・`COUNT(*)`）、`isAllowedOrder`・`orderByStable`（並びのキーは、向きとキーの組の列 `OrderBy`）、`updateWhere`・`deleteWhere`・`insertUnique`、`nextval`、取消 `Transaction.run`（`EStateM` の計算。例外で終わったら、状態を `restore 開始時 終了時` にする。表は開始時、シーケンスは終了時のように、戻す成分は呼び出し側が決める）。方言 PostgreSQL の `TIMESTAMP` の列の型 `PgTimestamp`。
 
 **未整備**: `NUMERIC`、`TIMESTAMP` の演算と格納、外部結合、`DISTINCT`、`COUNT(*)` 以外の集約、外部キー・NOT NULL の検査関数。
 

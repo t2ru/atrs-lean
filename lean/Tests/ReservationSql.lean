@@ -248,7 +248,7 @@ def pgResult (r : Json) : Except String PgResult := do
   if let .ok n := r.getObjValAs? Nat "count" then return .count n
   let cols ← (r.getObjValAs? (Array String) "columns").map (·.toList)
   let rows ← (← getArr r "rows").mapM rowOf
-  return .rows { columns := cols, rows := rows }
+  return .rows (← Table.ofRows cols rows)
 
 def showPg : PgResult → String
   | .rows t => s!"{t.rows.length} rows"

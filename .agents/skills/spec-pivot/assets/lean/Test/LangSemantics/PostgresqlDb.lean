@@ -291,22 +291,22 @@ where go (s : SequenceDef) (st : SequenceState) : Nat → SqlResult (List Int)
 def rows : List (Nat × SqlValue × SqlValue) := [(1, (.int 2), (.text "b")), (2, .null, (.text "a")), (3, (.int 1), (.text "c")), (4, (.int 2), (.text "a")), (5, .null, .null), (6, (.int 2), (.text "b")), (7, (.int (-1)), (.text "B"))]
 def byId (ids : List Nat) : List (Nat × SqlValue × SqlValue) := ids.filterMap fun i => rows.find? (·.1 == i)
 -- ORDER BY k1
-#guard isAllowedOrder (sortConfig) [.asc] (fun r => [r.2.1]) rows (byId [7, 3, 4, 1, 6, 2, 5])
+#guard isAllowedOrder (sortConfig) ⟨[(.asc, (·.2.1))]⟩ rows (byId [7, 3, 4, 1, 6, 2, 5])
 -- ORDER BY k1 DESC
-#guard isAllowedOrder (sortConfig) [.desc] (fun r => [r.2.1]) rows (byId [5, 2, 4, 1, 6, 3, 7])
+#guard isAllowedOrder (sortConfig) ⟨[(.desc, (·.2.1))]⟩ rows (byId [5, 2, 4, 1, 6, 3, 7])
 -- ORDER BY k2
-#guard isAllowedOrder (sortConfig) [.asc] (fun r => [r.2.2]) rows (byId [7, 2, 4, 1, 6, 3, 5])
+#guard isAllowedOrder (sortConfig) ⟨[(.asc, (·.2.2))]⟩ rows (byId [7, 2, 4, 1, 6, 3, 5])
 -- ORDER BY k2 DESC
-#guard isAllowedOrder (sortConfig) [.desc] (fun r => [r.2.2]) rows (byId [5, 3, 6, 1, 4, 2, 7])
+#guard isAllowedOrder (sortConfig) ⟨[(.desc, (·.2.2))]⟩ rows (byId [5, 3, 6, 1, 4, 2, 7])
 -- ORDER BY k1, k2
-#guard isAllowedOrder (sortConfig) [.asc, .asc] (fun r => [r.2.1, r.2.2]) rows (byId [7, 3, 4, 1, 6, 2, 5])
+#guard isAllowedOrder (sortConfig) ⟨[(.asc, (·.2.1)), (.asc, (·.2.2))]⟩ rows (byId [7, 3, 4, 1, 6, 2, 5])
 -- ORDER BY k1 DESC, k2
-#guard isAllowedOrder (sortConfig) [.desc, .asc] (fun r => [r.2.1, r.2.2]) rows (byId [2, 5, 4, 1, 6, 3, 7])
+#guard isAllowedOrder (sortConfig) ⟨[(.desc, (·.2.1)), (.asc, (·.2.2))]⟩ rows (byId [2, 5, 4, 1, 6, 3, 7])
 -- ORDER BY k1, k2 DESC, id
-#guard isAllowedOrder (sortConfig) [.asc, .desc, .asc] (fun r => [r.2.1, r.2.2, .int r.1]) rows (byId [7, 3, 1, 6, 4, 5, 2])
-#guard orderByStable (sortConfig) [.asc, .desc, .asc] (fun r => [r.2.1, r.2.2, .int r.1]) rows == byId [7, 3, 1, 6, 4, 5, 2]
+#guard isAllowedOrder (sortConfig) ⟨[(.asc, (·.2.1)), (.desc, (·.2.2)), (.asc, fun r => .int r.1)]⟩ rows (byId [7, 3, 1, 6, 4, 5, 2])
+#guard orderByStable (sortConfig) ⟨[(.asc, (·.2.1)), (.desc, (·.2.2)), (.asc, fun r => .int r.1)]⟩ rows == byId [7, 3, 1, 6, 4, 5, 2]
 -- 照合順序 C（データベースの既定）
-#guard orderByStable (sortConfig) [.asc] (fun s => [.text s]) ["b", "B", "a", "A", "", "ab", "aB", "あ", "ア", "亜", "𠮷", "_", "1", " ", "z", "Ａ"] == ["", " ", "1", "A", "B", "_", "a", "aB", "ab", "b", "z", "あ", "ア", "亜", "Ａ", "𠮷"]
+#guard orderByStable (sortConfig) ⟨[(.asc, .text)]⟩ ["b", "B", "a", "A", "", "ab", "aB", "あ", "ア", "亜", "𠮷", "_", "1", " ", "z", "Ａ"] == ["", " ", "1", "A", "B", "_", "a", "aB", "ab", "b", "z", "あ", "ア", "亜", "Ａ", "𠮷"]
 
 /-! ## TO_CHAR（FM と 0・9 の書式） -/
 

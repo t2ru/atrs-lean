@@ -47,13 +47,13 @@ structure St where
 abbrev DbM := EStateM JThrow St
 
 /-- I/O の失敗のときの例外のクラス（接続の失敗など）。 -/
-def ioFailureClass : String := "org.springframework.dao.DataAccessResourceFailureException"
+def ioFailureClass : LangSemantics.Java.Exception.JClassName := cls!"org.springframework.dao.DataAccessResourceFailureException"
 /-- 排他の失敗のときの例外のクラス（デッドロック・ロック待ちのタイムアウトなど）。 -/
-def conflictClass : String := "org.springframework.dao.PessimisticLockingFailureException"
+def conflictClass : LangSemantics.Java.Exception.JClassName := cls!"org.springframework.dao.PessimisticLockingFailureException"
 /-- 一意制約違反の例外のクラス。 -/
-def duplicateKeyClass : String := "org.springframework.dao.DuplicateKeyException"
+def duplicateKeyClass : LangSemantics.Java.Exception.JClassName := cls!"org.springframework.dao.DuplicateKeyException"
 /-- その他の制約違反・値の範囲外の例外のクラス。 -/
-def integrityClass : String := "org.springframework.dao.DataIntegrityViolationException"
+def integrityClass : LangSemantics.Java.Exception.JClassName := cls!"org.springframework.dao.DataIntegrityViolationException"
 
 /-- SQL のエラーを Spring の例外に変換する（`SQLErrorCodeSQLExceptionTranslator`）。 -/
 @[source "dep:org.springframework:spring-jdbc#SQLErrorCodeSQLExceptionTranslator@spring-jdbc-7.0.3",

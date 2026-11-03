@@ -55,7 +55,7 @@ def refs (es : Array Entry) (s : String) : Array Name :=
 def merkleOf (m : NameMap UInt64) (s : String) : UInt64 := (m.find? s.toName).getD 0
 
 def node (n : String) (own : UInt64) (edges : List String) : Node :=
-  { name := n.toName, layer := "L", own, edges := edges.toArray.map String.toName }
+  { name := n.toName, layer := .extra "L", own, edges := edges.toArray.map String.toName }
 
 /-- 合成したグラフで Merkle の合成を確かめる。 -/
 def merkleTests : IO Unit := do
@@ -82,12 +82,12 @@ def merkleTests : IO Unit := do
   check "cycle: change in one member changes the other" (merkleOf n1 "a" != merkleOf n2 "a")
   check "cycle: change propagates out of the component" (merkleOf n1 "c" != merkleOf n2 "c")
   check "sccs: cycle is one component" ((sccs s1).any (·.size == 2))
-  check "scope: same layer" (defaultMerkleScope "TargetModel" "TargetModel")
-  check "scope: LangSemantics" (defaultMerkleScope "TargetModel" "LangSemantics.Rust")
-  check "scope: Machine" (defaultMerkleScope "Spec" "Machine")
-  check "scope: not Spec from TargetModel" (!defaultMerkleScope "TargetModel" "Spec")
+  check "scope: same layer" (defaultMerkleScope .targetModel .targetModel)
+  check "scope: LangSemantics" (defaultMerkleScope .targetModel (.langSemantics (some "Rust")))
+  check "scope: Machine" (defaultMerkleScope .spec .machine)
+  check "scope: not Spec from TargetModel" (!defaultMerkleScope .targetModel .spec)
   check "layer: LangSemantics has two components"
-    (defaultLayerOf [] `LangSemantics.Rust.Int.U64.add == some "LangSemantics.Rust")
+    ((defaultLayerOf [] `LangSemantics.Rust.Int.U64.add).map toString == some "LangSemantics.Rust")
   check "layer: core is out of scope" (defaultLayerOf [] `Nat.add == none)
 
 /-- フィクスチャを trace-dump の処理にかける。 -/
@@ -105,9 +105,9 @@ def fixtureTests (env : Environment) : IO Unit := do
   check "attributes: deviation" (attrsOf? es "Spec.smallInput" == [("deviation", ["T-999"])])
   check "attributes: obligation" (attrsOf? es "Refinement.double_eq" == [("obligation", ["REF-999"])])
   check "attributes: none" (attrsOf? es "TargetModel.useSpec" == [])
-  check "layer: TargetModel" (((find? es "TargetModel.double").map (·.layer)) == some "TargetModel")
+  check "layer: TargetModel" (((find? es "TargetModel.double").map (·.layer)) == some .targetModel)
   check "layer: LangSemantics.Rust"
-    (((find? es "LangSemantics.Rust.wrapAdd").map (·.layer)) == some "LangSemantics.Rust")
+    (((find? es "LangSemantics.Rust.wrapAdd").map (·.layer)) == some (.langSemantics (some "Rust")))
   check "references: LangSemantics" ((refs es "TargetModel.double").contains (fx "LangSemantics.Rust.wrapAdd"))
   check "references: through match_1" ((refs es "TargetModel.useMatch").contains (fx "TargetModel.double"))
   check "references: obligation theorem sees both models"
@@ -178,10 +178,10 @@ def obligationTests (env : Environment) : IO Unit := do
      | none => false)
   check "good_refines: kind, deviation, std_abs, choices, companions, entry and state safety facts"
     (match r.rs.find? (·.name == ab "good_refines") with
-     | some ri => ri.absKind == "ofChoice" && ri.devs == #[ab "devLang"] &&
+     | some ri => ri.absKind == .ofChoice && ri.devs == #[ab "devLang"] &&
          ri.stdAbs == #[ab "betaS", ab "aiS", ab "aoS"] &&
          ri.envLeaves == #[`Test.Trace.ObligationFixture.Spec.Conflict] && ri.freeLeaves.isEmpty &&
-         ri.hasInitSurj && ri.hasSound && ri.hasInitIs && ri.hasPinned && ri.hasNoFault &&
+         ri.bundled && ri.pinned &&
          ri.totalUnder == #[(`Machine.Preserves.always, true)] && ri.stateSafe == #[ab "devLang"]
      | none => false)
   check "v3_free: free choice reported" (match r.rs.find? (·.name == ab "v3_free") with
@@ -190,7 +190,7 @@ def obligationTests (env : Environment) : IO Unit := do
     "G7: Test.Trace.ObligationFixture.Abstraction.via", "G8: Test.Trace.ObligationFixture.Abstraction.devK", "G8: Test.Trace.ObligationFixture.Abstraction.devNoW",
     "G0: Test.Trace.ObligationFixture.Abstraction.v0_notRefines", "G3: Test.Trace.ObligationFixture.Spec.specRel",
     "G0: Test.Trace.ObligationFixture.Helpers.devFalse", "G8: Test.Trace.ObligationFixture.Helpers.devFalse",
-    "G9: D-905", "G9: D-911", "G9: D-912", "G9: Test.Trace.ObligationFixture.Abstraction.devTwo",
+    "G9: D-905", "G9: D-911", "G9: D-912",
     "G9: Test.Trace.ObligationFixture.Spec.envNoNeed", "G8: Test.Trace.ObligationFixture.Abstraction.devUndetermined",
     "GK: D-922 is declared by both", "GK: Test.Trace.ObligationFixture.Abstraction.gD923 (@[gap_entry] D-923) has no docstring",
     "GK: Test.Trace.ObligationFixture.Refinement.gD924 (@[gap_entry] D-924) must be in the Abstraction layer",
@@ -229,14 +229,15 @@ def obligationTests (env : Environment) : IO Unit := do
   check "gaps: resolution of an unformalized undetermined gap"
     ((gapOf "D-921").getObjValD "resolution" == "原典実行で確かめる")
   check "preserves: the Machine.Preserves bundles are listed (obs_preserves, gp_mismatch, gp_noR, good_preserves, …)"
-    (r.preserves.size == 11 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
+    (let ps := (r.obligations.filter (·.shape == .preserves)).map (·.name)
+     ps.size == 11 && [ab "obs_preserves", ab "gp_mismatch", ab "gp_noR", ab "good_preserves",
       ab "good_abbrev_preserves", ab "v1_preserves", ab "v2_preserves", ab "need_preserves", ab "v9_noPinned_preserves",
-      ab "obs2_preserves", ab "v6_admPlain_preserves"].all r.preserves.contains)
+      ab "obs2_preserves", ab "v6_admPlain_preserves"].all ps.contains)
   check "obligations: v0_notRefines listed as not R"
-    (r.obligations.any fun (n, _, isR) => n == ab "v0_notRefines" && !isR)
+    (r.obligations.any fun o => o.name == ab "v0_notRefines" && o.shape != .refines)
   check "nondet listed" (r.nondets.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.AnyResult, `Test.Trace.ObligationFixture.Spec.Conflict])
-  check "gaps: entries readable and listed in the report (D-901..D-913, D-920..D-924 and the duplicate)"
-    ((r.gaps.getArr?.toOption.map (·.size)) == some 19)
+  check "gaps: entries readable and listed in the report (D-901..D-907, D-910..D-913, D-920..D-924 and the duplicate)"
+    ((r.gaps.getArr?.toOption.map (·.size)) == some 17)
   check "env_pre listed" (r.envPres.map (·.1) == #[`Test.Trace.ObligationFixture.Spec.envNoNeed, `Test.Trace.ObligationFixture.Spec.envOk])
 
 /-- `layout-check` の判定を、フィクスチャ `Test.Trace.LayoutFixture` と assets の実際の定数で確かめる。 -/
@@ -261,7 +262,7 @@ def layoutMergeTests : IO Unit := do
   IO.println "layout-check (merging the module groups)"
   let it (n m : String) : Trace.Layout.OutItem := { name := n, module := m }
   let g0 : Trace.Layout.GroupOut :=
-    { modules := #[("A", 3), ("B", 2)], violations := #[it "A.x" "A"], exceptions := #[{ (it "B.y" "B") with reason := #["r"] }] }
+    { modules := #[("A", 3), ("B", 2)], violations := #[it "A.x" "A"], exceptions := #[{ (it "B.y" "B") with reason := ⟨"r", []⟩ }] }
   let g1 : Trace.Layout.GroupOut :=
     { modules := #[("A", 3), ("C", 4)], violations := #[it "A.x" "A", it "C.z" "C", it "C.w" "C"] }
   let (r, checked) := Trace.Layout.mergeGroups #[g0, g1]
@@ -269,12 +270,12 @@ def layoutMergeTests : IO Unit := do
   check "items of a module come only from its first group, in order"
     (r.violations.map (·.name) == #["A.x", "C.z", "C.w"])
   check "exceptions are kept with their reasons"
-    (r.exceptions.map (·.name) == #["B.y"] && r.exceptions.map (·.reason) == #[#["r"]])
+    (r.exceptions.map (·.name) == #["B.y"] && r.exceptions.map (·.reason.toList) == #[["r"]])
   check "modules are listed once" (r.modules.map (·.1) == #["A", "B", "C"])
   check "the group result survives a JSON round trip"
     (match Trace.Layout.GroupOut.fromJson? (Json.parse g0.toJson.compress |>.toOption.getD Json.null) with
      | .ok g => g.modules == g0.modules && g.violations.map (·.name) == #["A.x"] &&
-         g.exceptions.map (·.reason) == #[#["r"]]
+         g.exceptions.map (·.reason.toList) == #[["r"]]
      | .error _ => false)
 
 /-- E1・E4 を assets の実際の定数で確かめる（型のモジュールの下位モジュールの補題、型名のモジュールのインスタンス）。 -/

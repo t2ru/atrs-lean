@@ -49,12 +49,12 @@ theorem fareFactor_ok {r : Nat} (h : r < 100) : FactorOk (fareFactor r) (100 - r
 
 /-- 積算比率 0〜1000 の因子。 -/
 theorem basicFactor_ok' {c : Nat} (h : c ≤ 1000) :
-    (c = 0 → basicFactor c = .finite false 0 0) ∧ (c ≠ 0 → FactorOk (basicFactor c) c) :=
+    (c = 0 → basicFactor c = JDouble.posZero) ∧ (c ≠ 0 → FactorOk (basicFactor c) c) :=
   ⟨fun h0 => by subst h0; decide, fun h0 => basicFactor_ok h0 h⟩
 
 /-- 割引率 0〜100 の因子（`100 − r` に対して）。 -/
 theorem fareFactor_ok' {r : Nat} (h : r ≤ 100) :
-    (100 - r = 0 → fareFactor r = .finite false 0 0) ∧ (100 - r ≠ 0 → FactorOk (fareFactor r) (100 - r)) :=
+    (100 - r = 0 → fareFactor r = JDouble.posZero) ∧ (100 - r ≠ 0 → FactorOk (fareFactor r) (100 - r)) :=
   ⟨fun h0 => by rw [show r = 100 by omega]; decide, fun h0 => fareFactor_ok (by omega)⟩
 
 /-! ## 基本運賃（D-001） -/

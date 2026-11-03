@@ -40,14 +40,14 @@ Lean の実装は `assets/lean/LangSemantics/Java/`（モジュール `LangSeman
 | `jSplitChar` | `String.split(regex)` | 正規表現として特別な意味を持たない 1 文字の区切りに限る。末尾の空要素を除く |
 | `jSubstring`, `jSubstringFrom` | `String.substring(b, e)`, `substring(b)` | 位置は UTF-16 符号単位。範囲外は `StringIndexOutOfBoundsException`。切り口が補助文字の中にある場合（結果が不対サロゲートを含む）は表さない |
 | `DecimalFormat.formatGrouped sep n` | `new DecimalFormat("###,###").format(n)` | 整数を 3 桁ごとに区切る。区切り文字は既定の書式ロケールによるので引数に取る（日本語・英語では `,`）。負の数は `-` を前に付ける |
-| `DecimalFormat.formatGroupedS sym n` | `new DecimalFormat("###,###", symbols).format(n)` | 書式の記号の組 `Symbols`（区切り文字・数字の 0・負の記号の文字列）で書式化する。数字は `zeroDigit` から数え、負の数は負の記号の文字列を前に付ける。`Symbols.ascii`（`,`・`0`・`-`）では `formatGrouped ','` に等しい（`formatGroupedS_ascii`） |
+| `DecimalFormat.formatGroupedS sym n` | `new DecimalFormat("###,###", symbols).format(n)` | 書式の記号の組 `Symbols`（区切り文字・数字の 0・負の記号の文字列）で書式化する。`Symbols` は、`zeroDigit` から 10 個の数字が文字として正しく、区切り文字がそれらの数字でなく、負の記号の文字列が空でないことの証明（`Symbols.valid`）を持つ。数字は `zeroDigit` から数え、負の数は負の記号の文字列を前に付ける。`Symbols.ascii`（`,`・`0`・`-`）では `formatGrouped ','` に等しい（`formatGroupedS_ascii`） |
 | `JLocalDate` | `java.time.LocalDate` | 先発グレゴリオ暦の暦日。`plusDays`, `isBefore`, `isAfter`, `ChronoUnit.YEARS.between`（満年数）。通算日数との変換は双方向に逆（`toEpochDay_ofEpochDay`、妥当な暦日で `ofEpochDay_toEpochDay`） |
 | `JLocalTime`, `JLocalDateTime` | `java.time.LocalTime`, `LocalDateTime` | 時・分（秒は 0）。`JLocalTime.parseHHmm` は `LocalTime.from(DateTimeFormatter.ofPattern("HHmm").parse(s))`（SMART）で、ASCII の数字 4 文字に限る。`24:00` は 0:00 に解決し、ほかの 24 時台・25 時以上・60 分以上は `DateTimeParseException`。`localDate.atTime(t)`・`atStartOfDay()` は `JLocalDateTime.atTime d t`・`JLocalDateTime.atStartOfDay d` とし、`plusMinutes`・`isBefore` は通算の分で計算する（年の範囲を超える加算の `DateTimeException` は写さない） |
 | `JList.get` | `List.get(i)` | 範囲外は `IndexOutOfBoundsException` |
 | `JRef` | 参照の `null` | 参照型は `Option` で表す。`JRef.deref` は `null` で `NullPointerException` |
-| `JHashMap`, `JLinkedHashMap` | `HashMap`, `LinkedHashMap` | `put` は同じキーの値を置き換える（後勝ち）。`get` は無ければ `null`。`HashMap` の反復の順序は与えない。`LinkedHashMap` は挿入順で、同じキーの `put` は位置を保つ |
+| `JHashMap`, `JLinkedHashMap` | `HashMap`, `LinkedHashMap` | キーの一意性の証明（`nodup`）を持つ。`put` は同じキーの値を置き換える（後勝ち）。証明を持たない列の上の計算は `getE`・`putE`。`get` は無ければ `null`。`HashMap` の反復の順序は与えない。`LinkedHashMap` は挿入順で、同じキーの `put` は位置を保つ |
 
-- 例外は `JThrow <例外クラス> <引数>` の値として表す。`IllegalArgumentException`（`Assert` 相当）と `NullPointerException` は、「前提違反」として扱う。前提違反には α を定義しない。PRE の下で到達しないことを、リファインメントの適用可能性の証明義務で示す。
+- 例外は `JThrow <例外クラス> <引数>` の値として表す。任意のクラスの例外 `JThrow.other` のクラス名は、ドットで区切った 2 つ以上の識別子の形の証明を持つ `JClassName`（字面は `cls!"java.lang.IllegalStateException"`）である。`IllegalArgumentException`（`Assert` 相当）と `NullPointerException` は、「前提違反」として扱う。前提違反には α を定義しない。PRE の下で到達しないことを、リファインメントの適用可能性の証明義務で示す。
 - 原典で使われている演算だけを実装すればよい。汎用の IEEE 754 は作らない（除算・平方根など、原典に無い演算は不要）。
 
 ## 式の構文 java!

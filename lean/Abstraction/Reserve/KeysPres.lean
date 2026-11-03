@@ -20,9 +20,9 @@ theorem keysOk_advance {w : Spec.Port.World} (h : KeysOk w) (a : Spec.Nondet.Seq
   exact ⟨by simp only [Spec.UseCase.Reserve.advance]; omega,
     fun p hp => by have := a2 p hp; simp only [Spec.UseCase.Reserve.advance]; omega⟩
 
-theorem mem_rfsFrom_no {ps : List Spec.Model.Passenger} {no : Spec.Model.ReserveNo} :
-    ∀ {rfn pn : Nat} {ks : List Spec.Model.FlightKey} {rf : Spec.Model.ReserveFlight},
-      rf ∈ RegSpec.rfsFrom ps no rfn pn ks → rfn ≤ rf.reserveFlightNo ∧ rf.reserveFlightNo < rfn + ks.length
+theorem mem_rfsFrom_no {ps : List Spec.Model.Passenger} :
+    ∀ {rfn pn : Nat} {ks : List Spec.Model.FlightKey} {rf : Spec.Model.ReserveFlight × List (Nat × Spec.Model.Passenger)},
+      rf ∈ RegSpec.rfsFrom ps rfn pn ks → rfn ≤ rf.1.reserveFlightNo ∧ rf.1.reserveFlightNo < rfn + ks.length
   | _, _, [], _, h => by simp [RegSpec.rfsFrom] at h
   | rfn, pn, k :: ks, rf, h => by
     simp only [RegSpec.rfsFrom, List.mem_cons] at h
@@ -36,8 +36,9 @@ theorem mem_rfsFrom_no {ps : List Spec.Model.Passenger} {no : Spec.Model.Reserve
 theorem keysOk_regWorld {w w1 : Spec.Port.World} (h : KeysOk w) (hr1 : w1.reservations = w.reservations)
     (hm1 : w1.members = w.members) (RD : Spec.Prim.Date) (tfn : Nat) (fn gn : String) (an : Nat)
     (g : Spec.Model.Gender) (tel mail : String) (mn : Option Spec.Model.MembershipNumber)
-    (qs : List Spec.Model.Passenger) (ks : List Spec.Model.FlightKey) :
-    KeysOk (regWorld w w1 (regRes w RD tfn fn gn an g tel mail mn qs ks) ks.length (ks.length * qs.length)) := by
+    (qs : List Spec.Model.Passenger) (it : Spec.Ticket.Itinerary Spec.Model.FlightKey) :
+    KeysOk (regWorld w w1 (regRes w RD tfn fn gn an g tel mail mn qs it) it.toList.length
+      (it.toList.length * qs.length)) := by
   obtain ⟨h1, h2⟩ := h
   refine ⟨by simp only [regWorld, hm1]; exact h1, fun r hr => ?_⟩
   simp only [regWorld, hr1, List.mem_append, List.mem_singleton] at hr ⊢
@@ -47,6 +48,7 @@ theorem keysOk_regWorld {w w1 : Spec.Port.World} (h : KeysOk w) (hr1 : w1.reserv
     obtain ⟨a1, a2⟩ := hf f hf'
     exact ⟨by omega, fun p hp => by have := a2 p hp; omega⟩
   · refine ⟨⟨w.sequences.reserve, by omega, rfl⟩, fun f hf' => ?_⟩
+    simp only [regRes, RegSpec.legs_rfsIt] at hf'
     have := mem_rfsFrom_no hf'
     exact ⟨by omega, fun p hp => by have := mem_rfsFrom hf' p hp; omega⟩
 

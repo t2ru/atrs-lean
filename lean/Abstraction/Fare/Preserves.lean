@@ -41,7 +41,7 @@ theorem envBF_icBF101 : ∃ ia, aiBF icBF101 = some ia ∧ envBF ia := by
           decide (dev_D001 ia)) = true := by decide +kernel
       rw [he] at this; simpa using this
     simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    exact ⟨ia, rfl, ⟨h.1.1.1, EnvPre.validB_sound h.1.1.2⟩, h.1.2, h.2⟩
+    exact ⟨ia, rfl, masterConfigOk.of_valid h.1.1.1 (EnvPre.validB_sound h.1.1.2), h.1.2, h.2⟩
 
 /-- 環境の前提を破る [Spec] の入力: MD-1 を破るマスタ。 -/
 def iaBFbad : Spec.Fare.BasicFareInput := ⟨Seed.config, badMasterData, 0, .N, day0⟩
@@ -79,7 +79,7 @@ def icTF100 : TotalFareInput := icTF ⟨100, by decide⟩ ⟨100, by decide⟩ �
 
 /-- `icTF100` の DB の [Spec] の写し。 -/
 def mdTF100 : Spec.MasterData :=
-  ⟨mdTF012.airports, [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
+  ⟨mdTF012.airports, [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
     [⟨"P", day0, day0, 100⟩], [], []⟩
 
 /-- `icTF100` の [Spec] の入力。 -/
@@ -89,7 +89,7 @@ theorem aiTF_icTF100 : aiTF icTF100 = some iaTF100 := by
   rfl
 
 theorem envTF_iaTF100 : envTF iaTF100 := by
-  refine ⟨⟨by decide, EnvPre.validB_sound (by decide +kernel)⟩,
+  refine ⟨masterConfigOk.of_valid (by decide) (EnvPre.validB_sound (by decide +kernel)),
     ⟨by decide, by decide, by decide, by decide, by decide, ?_, by decide⟩, by decide, by decide, by decide⟩
   intro k hk
   simp only [iaTF100, iaTF012, List.mem_cons, List.not_mem_nil, or_false] at hk

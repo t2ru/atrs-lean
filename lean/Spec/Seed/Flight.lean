@@ -1,12 +1,12 @@
 import Spec.Model
-import Spec.Port
 
 /-!
 # Spec.Seed.Flight
 
 シードのフライト（`World` の初期状態。backlog 0be7 の第 2 段）。投入日 2026-11-01 から 121 日の各日に、
 空席数のパターン `i % 3`（`i` は投入日を 0 とする日の番号）を、便名 × 10 枠（搭乗クラス・運賃種別）で並べる。
-全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `world` を作る。
+全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `flights` を作る。主キーの一意性の証明は
+`Spec.Seed.FlightProps.flights_nodup` が生成の形から示す（`World` は `Spec.Seed.World.world` が組み立てる）。
 
 `tools/conformance/flight_seed.py` が上流のシード 00250 から生成する。手で編集しない。
 -/
@@ -149,19 +149,19 @@ def slots : List (BoardingClassCd × FareTypeCd) := [(.N, .OW), (.N, .RT), (.N, 
 /-- 便名の列。 -/
 @[source "seed:00250_insert_flight.sql#FLIGHT@ebc1effd92f8d4a3"]
 def names : List FlightName := [
-  ⟨"NTT001"⟩, ⟨"NTT006"⟩, ⟨"NTT013"⟩, ⟨"NTT016"⟩, ⟨"NTT018"⟩, ⟨"NTT019"⟩, ⟨"NTT021"⟩, ⟨"NTT031"⟩, ⟨"NTT036"⟩, ⟨"NTT043"⟩,
-  ⟨"NTT046"⟩, ⟨"NTT048"⟩, ⟨"NTT049"⟩, ⟨"NTT051"⟩, ⟨"NTT061"⟩, ⟨"NTT066"⟩, ⟨"NTT073"⟩, ⟨"NTT076"⟩, ⟨"NTT078"⟩, ⟨"NTT079"⟩,
-  ⟨"NTT081"⟩, ⟨"NTT091"⟩, ⟨"NTT096"⟩, ⟨"NTT103"⟩, ⟨"NTT106"⟩, ⟨"NTT108"⟩, ⟨"NTT109"⟩, ⟨"NTT111"⟩, ⟨"NTT121"⟩, ⟨"NTT126"⟩,
-  ⟨"NTT133"⟩, ⟨"NTT136"⟩, ⟨"NTT138"⟩, ⟨"NTT139"⟩, ⟨"NTT141"⟩, ⟨"NTT151"⟩, ⟨"NTT156"⟩, ⟨"NTT163"⟩, ⟨"NTT166"⟩, ⟨"NTT168"⟩,
-  ⟨"NTT169"⟩, ⟨"NTT171"⟩, ⟨"NTT181"⟩, ⟨"NTT186"⟩, ⟨"NTT193"⟩, ⟨"NTT196"⟩, ⟨"NTT198"⟩, ⟨"NTT199"⟩, ⟨"NTT201"⟩, ⟨"NTT211"⟩,
-  ⟨"NTT216"⟩, ⟨"NTT223"⟩, ⟨"NTT226"⟩, ⟨"NTT228"⟩, ⟨"NTT229"⟩, ⟨"NTT231"⟩, ⟨"NTT241"⟩, ⟨"NTT246"⟩, ⟨"NTT253"⟩, ⟨"NTT256"⟩,
-  ⟨"NTT258"⟩, ⟨"NTT259"⟩, ⟨"NTT261"⟩, ⟨"NTT271"⟩, ⟨"NTT276"⟩, ⟨"NTT283"⟩, ⟨"NTT286"⟩, ⟨"NTT288"⟩, ⟨"NTT289"⟩, ⟨"NTT291"⟩,
-  ⟨"NTT301"⟩, ⟨"NTT306"⟩, ⟨"NTT313"⟩, ⟨"NTT316"⟩, ⟨"NTT318"⟩, ⟨"NTT319"⟩, ⟨"NTT321"⟩, ⟨"NTT331"⟩, ⟨"NTT336"⟩, ⟨"NTT343"⟩,
-  ⟨"NTT346"⟩, ⟨"NTT348"⟩, ⟨"NTT349"⟩, ⟨"NTT351"⟩, ⟨"NTT361"⟩, ⟨"NTT366"⟩, ⟨"NTT373"⟩, ⟨"NTT376"⟩, ⟨"NTT378"⟩, ⟨"NTT379"⟩,
-  ⟨"NTT381"⟩, ⟨"NTT391"⟩, ⟨"NTT396"⟩, ⟨"NTT403"⟩, ⟨"NTT406"⟩, ⟨"NTT408"⟩, ⟨"NTT409"⟩, ⟨"NTT411"⟩, ⟨"NTT421"⟩, ⟨"NTT426"⟩,
-  ⟨"NTT433"⟩, ⟨"NTT436"⟩, ⟨"NTT438"⟩, ⟨"NTT439"⟩, ⟨"NTT441"⟩, ⟨"NTT451"⟩, ⟨"NTT456"⟩, ⟨"NTT463"⟩, ⟨"NTT466"⟩, ⟨"NTT468"⟩,
-  ⟨"NTT469"⟩, ⟨"NTT471"⟩, ⟨"NTT481"⟩, ⟨"NTT486"⟩, ⟨"NTT493"⟩, ⟨"NTT496"⟩, ⟨"NTT498"⟩, ⟨"NTT499"⟩, ⟨"NTT501"⟩, ⟨"NTT511"⟩,
-  ⟨"NTT516"⟩, ⟨"NTT523"⟩, ⟨"NTT526"⟩, ⟨"NTT528"⟩, ⟨"NTT529"⟩, ⟨"NTT531"⟩
+  { val := "NTT001" }, { val := "NTT006" }, { val := "NTT013" }, { val := "NTT016" }, { val := "NTT018" }, { val := "NTT019" }, { val := "NTT021" }, { val := "NTT031" }, { val := "NTT036" }, { val := "NTT043" },
+  { val := "NTT046" }, { val := "NTT048" }, { val := "NTT049" }, { val := "NTT051" }, { val := "NTT061" }, { val := "NTT066" }, { val := "NTT073" }, { val := "NTT076" }, { val := "NTT078" }, { val := "NTT079" },
+  { val := "NTT081" }, { val := "NTT091" }, { val := "NTT096" }, { val := "NTT103" }, { val := "NTT106" }, { val := "NTT108" }, { val := "NTT109" }, { val := "NTT111" }, { val := "NTT121" }, { val := "NTT126" },
+  { val := "NTT133" }, { val := "NTT136" }, { val := "NTT138" }, { val := "NTT139" }, { val := "NTT141" }, { val := "NTT151" }, { val := "NTT156" }, { val := "NTT163" }, { val := "NTT166" }, { val := "NTT168" },
+  { val := "NTT169" }, { val := "NTT171" }, { val := "NTT181" }, { val := "NTT186" }, { val := "NTT193" }, { val := "NTT196" }, { val := "NTT198" }, { val := "NTT199" }, { val := "NTT201" }, { val := "NTT211" },
+  { val := "NTT216" }, { val := "NTT223" }, { val := "NTT226" }, { val := "NTT228" }, { val := "NTT229" }, { val := "NTT231" }, { val := "NTT241" }, { val := "NTT246" }, { val := "NTT253" }, { val := "NTT256" },
+  { val := "NTT258" }, { val := "NTT259" }, { val := "NTT261" }, { val := "NTT271" }, { val := "NTT276" }, { val := "NTT283" }, { val := "NTT286" }, { val := "NTT288" }, { val := "NTT289" }, { val := "NTT291" },
+  { val := "NTT301" }, { val := "NTT306" }, { val := "NTT313" }, { val := "NTT316" }, { val := "NTT318" }, { val := "NTT319" }, { val := "NTT321" }, { val := "NTT331" }, { val := "NTT336" }, { val := "NTT343" },
+  { val := "NTT346" }, { val := "NTT348" }, { val := "NTT349" }, { val := "NTT351" }, { val := "NTT361" }, { val := "NTT366" }, { val := "NTT373" }, { val := "NTT376" }, { val := "NTT378" }, { val := "NTT379" },
+  { val := "NTT381" }, { val := "NTT391" }, { val := "NTT396" }, { val := "NTT403" }, { val := "NTT406" }, { val := "NTT408" }, { val := "NTT409" }, { val := "NTT411" }, { val := "NTT421" }, { val := "NTT426" },
+  { val := "NTT433" }, { val := "NTT436" }, { val := "NTT438" }, { val := "NTT439" }, { val := "NTT441" }, { val := "NTT451" }, { val := "NTT456" }, { val := "NTT463" }, { val := "NTT466" }, { val := "NTT468" },
+  { val := "NTT469" }, { val := "NTT471" }, { val := "NTT481" }, { val := "NTT486" }, { val := "NTT493" }, { val := "NTT496" }, { val := "NTT498" }, { val := "NTT499" }, { val := "NTT501" }, { val := "NTT511" },
+  { val := "NTT516" }, { val := "NTT523" }, { val := "NTT526" }, { val := "NTT528" }, { val := "NTT529" }, { val := "NTT531" }
 ]
 
 /-- パターン 0（`i % 3 = 0`）の空席数（便名の列の順に、枠の順の 10 個）。 -/
@@ -565,7 +565,7 @@ def pattern (i : Nat) : List (List Nat) :=
 def dayFlights (d : Date) (vs : List (List Nat)) : List Flight :=
   (names.zip vs).flatMap fun (n, row) => (slots.zip row).map fun ((b, f), v) => ⟨⟨d, n, b, f⟩, v⟩
 
-/-- シードのフライト（`World` の初期状態）。 -/
-def world : Spec.Port.World := { flights := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i) }
+/-- シードのフライト（`World` の初期状態のフライト）。 -/
+def flights : List Flight := (days.zipIdx).flatMap fun (d, i) => dayFlights d (pattern i)
 
 end Spec.Seed.Flight

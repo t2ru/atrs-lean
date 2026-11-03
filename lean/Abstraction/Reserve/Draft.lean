@@ -79,7 +79,7 @@ theorem compact_filter (ps : List PassengerInput) :
   rw [this, List.append_nil]
 
 /-- 空でない欄の搭乗者は、[Spec] の搭乗者の会員番号・氏名・性別を持つ。 -/
-theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Model.Passenger},
+theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     LangSemantics.Core.List.Forall₂ PassengerFacts (fs.map B2Mapper.mapPassenger) ps
   | [], ins, ps, h1, h2 => by
@@ -104,7 +104,7 @@ theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInpu
     exact ⟨_, rfl, rfl, hfn, hgn, hg⟩
 
 /-- 空でない欄の搭乗者の年齢（`ageOfPassenger`）は、[Spec] の搭乗者の年齢。 -/
-theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Model.Passenger},
+theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     (fs.map fun f => some (B2Mapper.mapPassenger f)).mapM Abstraction.Fare.TotalAlpha.ageOfPassenger =
         some (ps.map (·.age)) ∧ ins.map (·.age.getD 0) = ps.map (·.age)
@@ -153,8 +153,8 @@ theorem reserveInputOf_eq {form : TicketReserveForm} {ri : ReserveInput} (h : re
 /-- 予約内容の組み立て: [Spec] の予約内容 `d` が組み立てられれば、原典の予約情報は、代表者の欄と、すべての予約フライトに
 同じ空でない搭乗者の列を持ち、その搭乗者は `d` の搭乗者に当たる。 -/
 theorem reservation_facts {form : TicketReserveForm} {ri : ReserveInput} (hri : reserveInputOf form = some ri)
-    {ks : List Spec.Model.FlightKey} {d : Draft}
-    (hd : buildDraft { ri with passengers := compactPassengers ri.passengers } ks = some d)
+    {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Draft}
+    (hd : buildDraft { ri with passengers := compactPassengers ri.passengers } it = some d)
     (fl : List (JRef SourceModel.Domain.Model.Flight)) :
     let r := TicketReserveHelper.createReservation form.resetPassengersIndex fl
     let xs := (form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger
@@ -163,7 +163,7 @@ theorem reservation_facts {form : TicketReserveForm} {ri : ReserveInput} (hri : 
       (∃ M0, r.repMember = some M0 ∧ memberNoOf M0.membershipNumber = d.repMembershipNumber) ∧
       r.repFamilyName = some d.repFamilyName ∧ r.repGivenName = some d.repGivenName ∧
       r.repGender = some d.repGender ∧
-      LangSemantics.Core.List.Forall₂ PassengerFacts xs d.passengers ∧ xs ≠ [] ∧ d.flights = ks := by
+      LangSemantics.Core.List.Forall₂ PassengerFacts xs d.passengers ∧ xs ≠ [] ∧ d.flights = it := by
   obtain ⟨h1, h2, ⟨a, ha, hage⟩, h4, -, -, -, -, h9, h10⟩ := reserveInputOf_eq hri
   have hf := filter_mapM h10
   simp only [buildDraft, compact_filter, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def] at hd

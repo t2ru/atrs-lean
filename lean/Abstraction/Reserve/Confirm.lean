@@ -24,12 +24,12 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
     {ic : ReserveInput} {w : Spec.Port.World} (he : MemberEnv fd ic.db w) {cfg : Spec.Config} {md : Spec.MasterData}
     (hmin : (helperOf p ic).ticketReserveService.representativeMinAge.val = (cfg.representativeMinAge : Int))
     {ri : Spec.UseCase.Reserve.ReserveInput} (hri : reserveInputOf ic.form = some ri)
-    (hlen : ri.passengers.length ≤ 6) {ks : List Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
+    (hlen : ri.passengers.length ≤ 6) {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
     (hd : Spec.UseCase.Reserve.buildDraft { ri with passengers := Spec.UseCase.Reserve.compactPassengers ri.passengers }
-      ks = some d)
+      it = some d)
     {f0 : SourceModel.Domain.Model.Flight} {fs : List SourceModel.Domain.Model.Flight}
     {FTs : List Spec.MasterData.FareType} (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (f0 :: fs) FTs)
-    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs) {T : Int.J32}
+    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) it.toList FTs) {T : Int.J32}
     (hcalc : ∀ vr, Spec.UseCase.Reserve.validateReservation cfg md w d = some vr → vr = .ok () →
       TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
         (some ((f0 :: fs).map some))
@@ -63,26 +63,29 @@ theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd)
 
 /-- 予約確認の流れの例外の事後条件: 障害か、前段の不正要求（[Spec] の前段が改竄）か、後段の業務例外（[Spec] の前段が
 成功し、予約内容の検証が同じコードと引数の `Business`）。 -/
-def ConfirmE (P : St → Prop) (v vr : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
+def ConfirmE {α : Type} (P : St → Prop) (v : Except Spec.Error.AtrsError α) (vr : Except Spec.Error.AtrsError Unit) :
+    JThrow → St → Prop :=
   fun e s => P s ∧ (IsIoFault s.env e ∨
     ((∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
       ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str)) ∨
-    (v = .ok () ∧ ∃ c args, e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs c args ∧
-      vr = .error (.business c args)))
+    ((∃ a, v = .ok a) ∧ ∃ be : Spec.Error.BusinessError,
+      e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs be.code be.args ∧
+      vr = .error (.business be)))
 
 /-- 予約確認の流れ（`confirmBody`）: 前段の選択フライトの検証の三つ組と、前段が成功したときの後段の三つ組をつなぐ。 -/
-theorem confirm_core {P : St → Prop} {p : SourceModel.MasterQuery.Providers} {ic : ReserveInput}
+theorem confirm_core {α : Type} {P : St → Prop} {p : SourceModel.MasterQuery.Providers} {ic : ReserveInput}
     {fl0 : SourceModel.Domain.Model.Flight} {fls : List SourceModel.Domain.Model.Flight}
     (htf : SourceModel.App.B0.TicketHelper.toFlightList (SourceModel.FareQuery.ticketHelper p)
       ic.form.selectFlightFormList = .ok ((fl0 :: fls).map some))
-    {v : Except Spec.Error.AtrsError Unit}
+    {v : Except Spec.Error.AtrsError α}
     (hvf : Hoare P (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList
       (helperOf p ic).reserveIntervalTime (some ((fl0 :: fls).map some))) (Post P v) (PostE P v))
     (hreq : ∀ e, v = .error e → Abstraction.Reserve.Selects.IsReq e)
     {vr : Except Spec.Error.AtrsError Unit} {T : Int.J32}
-    (hrest : v = .ok () → Hoare P (TicketReserveHelper.reserveConfirm (helperOf p ic) ic.form ((fl0 :: fls).map some))
+    (hrest : (∃ a, v = .ok a) → Hoare P (TicketReserveHelper.reserveConfirm (helperOf p ic) ic.form ((fl0 :: fls).map some))
       (fun r s => P s ∧ vr = .ok () ∧ r.2.totalFare = T) (PostBE P vr)) :
-    Hoare P (confirmBody p ic) (fun o s => P s ∧ v = .ok () ∧ vr = .ok () ∧ o.totalFare = T) (ConfirmE P v vr) := by
+    Hoare P (confirmBody p ic) (fun o s => P s ∧ (∃ a, v = .ok a) ∧ vr = .ok () ∧ o.totalFare = T)
+      (ConfirmE P v vr) := by
   unfold confirmBody
   simp only [htf, lift_ok, pure_bind]
   refine Hoare.bind' (Hoare.conseq (Abstraction.Reserve.Selects.helper_vf hvf hreq) (fun _ h => h)
@@ -93,8 +96,8 @@ theorem confirm_core {P : St → Prop} {p : SourceModel.MasterQuery.Providers} {
   · intro s ⟨hs, hv⟩
     refine Hoare.bind' (Hoare.conseq (hrest hv) (fun _ h => h) (fun _ _ h => h) fun e s ⟨hs', he⟩ => ⟨hs', ?_⟩)
       (fun r => Hoare.pure' fun s' ⟨hs', hvr, hT⟩ => ⟨hs', hv, hvr, hT⟩) s hs
-    rcases he with he | ⟨c, args, rfl, hc⟩
+    rcases he with he | ⟨be, rfl, hc⟩
     · exact .inl he
-    · exact .inr (.inr ⟨hv, c, args, rfl, hc⟩)
+    · exact .inr (.inr ⟨hv, be, rfl, hc⟩)
 
 end Abstraction.Reserve.Confirm

@@ -49,10 +49,11 @@ end SF
 
 /-- 日付を除いた成分の α（`flightOfRow` の日付以外の部分）。 -/
 def cellOf (c : Varchar 6 × Varchar 1 × Varchar 4 × Int4) : Option (FlightName × BoardingClassCd × FareTypeCd × Nat) := do
+  let n ← flightNameOf c.1.val
   let bc ← bcCdOf c.2.1.val
   let ft ← ftCdOf c.2.2.1.val
   let v ← natOfInt4 c.2.2.2
-  pure (⟨c.1.val⟩, bc, ft, v)
+  pure (n, bc, ft, v)
 
 theorem days_map :
     SourceModel.Db.FlightSeed.days.mapM dateOfPg = some Spec.Seed.Flight.days := by
@@ -94,8 +95,8 @@ theorem mapM_day {d : PgDate} {d' : Date} (hd : dateOfPg d = some d')
     obtain ⟨x, hx, xs, hxs, rfl⟩ := h
     simp only [List.map_cons, List.mapM_cons, Option.pure_def, Option.bind_eq_bind, ih hxs]
     simp only [cellOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hx
-    obtain ⟨bc, hbc, ft, hft, v, hv, rfl⟩ := hx
-    simp [flightOfRow, hd, hbc, hft, hv]
+    obtain ⟨n, hn, bc, hbc, ft, hft, v, hv, rfl⟩ := hx
+    simp [flightOfRow, hd, hn, hbc, hft, hv]
 
 /-- 日付の列と、日の番号ごとの 1 日分の写しから、全体の写し。 -/
 theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = some ds') (k : Nat) :
@@ -117,7 +118,7 @@ theorem mapM_days {ds : List PgDate} {ds' : List Date} (h : ds.mapM dateOfPg = s
 theorem flights_seed :
     SourceModel.Db.Seed.seedDb.flight.mapM flightOfRow = some Spec.Seed.World.world.flights := by
   simp only [SourceModel.Db.Seed.seedDb, SourceModel.Db.FlightSeed.seedFlightDb, Spec.Seed.World.world,
-    Spec.Seed.Flight.world, mapM_days days_map 0]
+    Spec.Seed.Flight.flights, mapM_days days_map 0]
 
 /-- シードの MEMBER・MEMBER_LOGIN は、シードの会員に写る。 -/
 theorem members_seed :

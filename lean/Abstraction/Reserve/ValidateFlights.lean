@@ -9,7 +9,7 @@ ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.valida
 
 文は存在の確認（`exists`）だけで、状態の表を変えない。事後条件は次のとおりである。
 
-- 正常に終われば、[Spec] の結果は `.ok ()`。
+- 正常に終われば、[Spec] の結果は成功（`.ok`。予約する便の主キー）。
 - 例外で終われば、不正要求に包まれる例外（`BadReq`）で [Spec] の結果がエラーか、実行環境の障害（`IsFault`）。
 -/
 
@@ -25,12 +25,12 @@ structure Stable (P : St → Prop) (fd : FlightDb) : Prop where
   db : ∀ s, P s → s.db = fd
   tick : ∀ s, P s → P (tick s)
 
-/-- 選択フライトの検証の事後条件。 -/
-def Post (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : Unit → St → Prop :=
-  fun _ s => P s ∧ v = .ok ()
+/-- 選択フライトの検証の事後条件（[Spec] の結果は成功）。 -/
+def Post {α : Type} (P : St → Prop) (v : Except Spec.Error.AtrsError α) : Unit → St → Prop :=
+  fun _ s => P s ∧ ∃ a, v = .ok a
 
 /-- 選択フライトの検証の例外の事後条件。 -/
-def PostE (P : St → Prop) (v : Except Spec.Error.AtrsError Unit) : JThrow → St → Prop :=
+def PostE {α : Type} (P : St → Prop) (v : Except Spec.Error.AtrsError α) : JThrow → St → Prop :=
   fun e s => P s ∧ ((BadReq e ∧ ∃ e', v = .error e') ∨ IsIoFault s.env e)
 
 theorem badReq_invalid (msg : String) : BadReq (InvalidFlightException.new msg) := ⟨_, msg, rfl, .inl rfl⟩
@@ -40,19 +40,20 @@ theorem agreeV_post {P : St → Prop} {r : JResult Unit} {v : Except Spec.Error.
     match (match r with | .ok a => pure a | .error e => throw e : DbM Unit) s with
     | .ok a s' => Post P v a s' | .error e s' => PostE P v e s' := by
   rcases h with ⟨rfl, rfl⟩ | ⟨cls, msg, rfl, hc, e, rfl⟩
-  · exact ⟨hs, rfl⟩
+  · exact ⟨hs, (), rfl⟩
   · exact ⟨hs, .inl ⟨⟨cls, msg, rfl, hc⟩, e, rfl⟩⟩
 
 /-- 1 便: 便マスタがあり、存在の確認の結果が `World.existsFlight`、存在すれば運賃種別の検査が対応する。 -/
 theorem one_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.Port.World} (ri : Int.J32)
+    {cfg : Spec.Config} {md : Spec.MasterData}
     {f0 : SourceModel.Domain.Model.Flight} {fm : SourceModel.Domain.Model.FlightMaster} (hfm : f0.flightMaster = some fm)
     {k0 : Spec.Model.FlightKey} {X : Spec.MasterData.FlightMaster}
     (he : existsRows fd (bindKey f0.departureDate fm.flightName f0.boardingClass f0.fareType) = w.existsFlight k0)
     (hft : w.existsFlight k0 = true →
-      AgreeV (TicketSharedServiceImpl.validateFlightFareType [some f0]) (Spec.Ticket.checkFareTypes [k0])) :
-    Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0]))
-      (Post P (Spec.Ticket.checkFlight w ⟨k0, some X⟩ >>= fun _ => Spec.Ticket.checkFareTypes [k0]))
-      (PostE P (Spec.Ticket.checkFlight w ⟨k0, some X⟩ >>= fun _ => Spec.Ticket.checkFareTypes [k0])) := by
+      AgreeV (TicketSharedServiceImpl.validateFlightFareType [some f0]) (Spec.Ticket.checkFareTypes [k0]))
+    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary Spec.Model.FlightKey)}
+    (hv : Spec.Ticket.validateFlightList cfg md w [some ⟨k0, X⟩] = some v) :
+    Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0])) (Post P v) (PostE P v) := by
   intro s hs
   have hdb := hP.db s hs
   have ht := hP.tick s hs
@@ -67,25 +68,30 @@ theorem one_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
   cases hw : w.existsFlight k0
   · simp only [Bool.not_false, ite_true]
     refine ⟨ht, .inl ⟨badReq_invalid _, .invalidRequest "flight not found", ?_⟩⟩
-    simp [Spec.Ticket.checkFlight, hw, Except.bind]
+    simp only [Spec.Ticket.validateFlightList, Spec.Ticket.checkFlight, hw, Bool.false_eq_true, ite_false,
+      Option.some.injEq] at hv
+    exact hv.symm
   · simp only [Bool.not_true, Bool.false_eq_true, ite_false]
-    have hv : ((Spec.Ticket.checkFlight w ⟨k0, some X⟩).bind fun _ => Spec.Ticket.checkFareTypes [k0]) =
-        Spec.Ticket.checkFareTypes [k0] := by
-      simp [Spec.Ticket.checkFlight, hw, Except.bind]
-    rw [hv]
+    simp only [Spec.Ticket.validateFlightList, Spec.Ticket.checkFlight, hw, ite_true, Option.some.injEq] at hv
     rcases hft hw with ⟨hr, hc⟩ | ⟨cls, msg, hr, hcl, e, hc⟩
-    · rw [hr, hc]; exact ⟨ht, rfl⟩
-    · rw [hr, hc]; exact ⟨ht, .inl ⟨⟨cls, msg, rfl, hcl⟩, e, rfl⟩⟩
+    · rw [hr]
+      refine ⟨ht, .oneWay k0, ?_⟩
+      rw [← hv]; simp only [Bind.bind, Except.bind, hc]; rfl
+    · rw [hr]
+      refine ⟨ht, .inl ⟨⟨cls, msg, rfl, hcl⟩, e, ?_⟩⟩
+      rw [← hv]; simp only [Bind.bind, Except.bind, hc]
 
 /-- 1 便: 便マスタが無い。 -/
 theorem one_none {P : St → Prop} {fd : FlightDb} (_hP : Stable P fd) {w : Spec.Port.World} (ri : Int.J32)
-    {f0 : SourceModel.Domain.Model.Flight} (hfm : f0.flightMaster = none) (k0 : Spec.Model.FlightKey) :
-    Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0]))
-      (Post P (Spec.Ticket.checkFlight w ⟨k0, none⟩ >>= fun _ => Spec.Ticket.checkFareTypes [k0]))
-      (PostE P (Spec.Ticket.checkFlight w ⟨k0, none⟩ >>= fun _ => Spec.Ticket.checkFareTypes [k0])) := by
+    {cfg : Spec.Config} {md : Spec.MasterData}
+    {f0 : SourceModel.Domain.Model.Flight} (hfm : f0.flightMaster = none)
+    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary Spec.Model.FlightKey)}
+    (hv : Spec.Ticket.validateFlightList cfg md w [none] = some v) :
+    Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0])) (Post P v) (PostE P v) := by
   intro s hs
   java_estate_simp [TicketSharedServiceImpl.validateFlightList, lift, hfm]
-  exact ⟨hs, .inl ⟨badReq_invalid _, .invalidRequest "flightMaster is null", rfl⟩⟩
+  simp only [Spec.Ticket.validateFlightList, Spec.Ticket.checkFlight, Option.some.injEq] at hv
+  exact ⟨hs, .inl ⟨badReq_invalid _, .invalidRequest "flightMaster is null", hv.symm⟩⟩
 
 /-- 往復: 往路・復路とも便マスタがあり、存在の確認の結果が `World.existsFlight`、存在すれば搭乗間隔・逆区間・運賃種別の
 検査が対応する。 -/
@@ -103,8 +109,8 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     (hrt : AgreeV (TicketSharedServiceImpl.validateFlightRouteForRoundTripFlight f0 f1) rv)
     (hft : w.existsFlight k0 = true → w.existsFlight k1 = true →
       AgreeV (TicketSharedServiceImpl.validateFlightFareType [some f0, some f1]) (Spec.Ticket.checkFareTypes [k0, k1]))
-    {v : Except Spec.Error.AtrsError Unit}
-    (hv : Spec.Ticket.validateFlightList cfg md w [⟨k0, some X0⟩, ⟨k1, some X1⟩] = some v) :
+    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary Spec.Model.FlightKey)}
+    (hv : Spec.Ticket.validateFlightList cfg md w [some ⟨k0, X0⟩, some ⟨k1, X1⟩] = some v) :
     Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0, some f1])) (Post P v) (PostE P v) := by
   intro s hs
   have hdb := hP.db s hs
@@ -147,7 +153,7 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
     rcases hrt with ⟨hr, hc'⟩ | ⟨cls', msg', hr, hcl', e', hc'⟩
     · simp only [hr, hc', Except.bind]
       rcases hft hw0 hw1 with ⟨hf, hc''⟩ | ⟨cls'', msg'', hf, hcl'', e'', hc''⟩
-      · simp only [hf, hc'']; exact ⟨htt, rfl⟩
+      · simp only [hf, hc'']; exact ⟨htt, _, rfl⟩
       · simp only [hf, hc'']; exact ⟨htt, .inl ⟨⟨cls'', msg'', rfl, hcl''⟩, e'', rfl⟩⟩
     · simp only [hr, hc', Except.bind]; exact ⟨htt, .inl ⟨⟨cls', msg', rfl, hcl'⟩, e', rfl⟩⟩
   · simp only [hi, hc, Option.some.injEq] at hv ⊢
@@ -157,9 +163,9 @@ theorem two_some {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.
 /-- 往復: 往路の便マスタが無い。 -/
 theorem two_none0 {P : St → Prop} {fd : FlightDb} (_hP : Stable P fd) {w : Spec.Port.World} (ri : Int.J32)
     {cfg : Spec.Config} {md : Spec.MasterData} {f0 f1 : SourceModel.Domain.Model.Flight}
-    (hfm0 : f0.flightMaster = none) {k0 k1 : Spec.Model.FlightKey} {M1 : Option Spec.MasterData.FlightMaster}
-    {v : Except Spec.Error.AtrsError Unit}
-    (hv : Spec.Ticket.validateFlightList cfg md w [⟨k0, none⟩, ⟨k1, M1⟩] = some v) :
+    (hfm0 : f0.flightMaster = none) {M1 : Option Spec.Ticket.ResolvedFlight}
+    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary Spec.Model.FlightKey)}
+    (hv : Spec.Ticket.validateFlightList cfg md w [none, M1] = some v) :
     Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0, some f1])) (Post P v) (PostE P v) := by
   intro s hs
   java_estate_simp [TicketSharedServiceImpl.validateFlightList, lift, hfm0]
@@ -170,10 +176,10 @@ theorem two_none0 {P : St → Prop} {fd : FlightDb} (_hP : Stable P fd) {w : Spe
 theorem two_none1 {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {w : Spec.Port.World} (ri : Int.J32)
     {cfg : Spec.Config} {md : Spec.MasterData} {f0 f1 : SourceModel.Domain.Model.Flight}
     {fm0 : SourceModel.Domain.Model.FlightMaster} (hfm0 : f0.flightMaster = some fm0) (hfm1 : f1.flightMaster = none)
-    {k0 k1 : Spec.Model.FlightKey} {X0 : Spec.MasterData.FlightMaster}
+    {k0 : Spec.Model.FlightKey} {X0 : Spec.MasterData.FlightMaster}
     (he0 : existsRows fd (bindKey f0.departureDate fm0.flightName f0.boardingClass f0.fareType) = w.existsFlight k0)
-    {v : Except Spec.Error.AtrsError Unit}
-    (hv : Spec.Ticket.validateFlightList cfg md w [⟨k0, some X0⟩, ⟨k1, none⟩] = some v) :
+    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary Spec.Model.FlightKey)}
+    (hv : Spec.Ticket.validateFlightList cfg md w [some ⟨k0, X0⟩, none] = some v) :
     Hoare P (TicketSharedServiceImpl.validateFlightList ri (some [some f0, some f1])) (Post P v) (PostE P v) := by
   intro s hs
   have hdb := hP.db s hs

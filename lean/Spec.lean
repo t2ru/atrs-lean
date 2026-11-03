@@ -41,7 +41,7 @@ mdgen と mdbook で HTML の本にする（`mise run book:build`。ADR 68a6）�
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
 | `Spec.Seed` | シードのマスタ・設定（`tools/conformance/seed_lean.py` が生成） |
 | `Spec.Seed.Flight`・`Spec.Seed.FlightProps` | シードのフライト（`World` の初期状態。`tools/conformance/flight_seed.py` が生成）と、その主キーの一意性・参照整合性 |
-| `Spec.EnvPre` | 入口の環境の前提 `masterConfigOk`（`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
+| `Spec.EnvPre` | 検証済みの設定とマスタ `ValidEnv` と境界の検証 `validate`、入口の環境の前提 `masterConfigOk`（検証が成功すること。`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
 | `Spec.Nondet` | 非決定性 N-001〜N-005 の選択の型（`@[nondet]`）と標準の値 |
 | `Spec.Config` | 設定値と不変条件 |
 | `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |

@@ -34,15 +34,21 @@ theorem keyOfForm_eq {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = s
     ∃ dj, f.depDate = some dj ∧ dateOfJ dj = some k.departureDate ∧ f.flightName = some k.flightName.val ∧
       f.boardingClassCd = some k.boardingClassCd ∧ f.fareTypeCd = some k.fareTypeCd := by
   simp only [keyOfForm, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨d, ⟨dj, hdj, hd⟩, n, hn, bc, hbc, ft, hft, rfl⟩ := h
-  exact ⟨dj, hdj, hd, hn, hbc, hft⟩
+  obtain ⟨d, ⟨dj, hdj, hd⟩, n, ⟨sn, hn, en⟩, bc, hbc, ft, hft, rfl⟩ := h
+  exact ⟨dj, hdj, hd, by rw [hn, flightNameOf_eq_some en], hbc, hft⟩
 
-theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
-    (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
-  obtain ⟨dj, hdj, -, hn, hbc, hft⟩ := keyOfForm_eq h
+/-- 便名・搭乗クラス・運賃種別の欄があり、便名が空白でなければ、`toFlight` は `mkFlight` のフライト情報を作る。 -/
+theorem toFlight_ok_of (p : Providers) {f : SelectFlightForm} {n : String} {bc : BoardingClassCd} {ft : FareTypeCd}
+    (hn : f.flightName = some n) (ht : hasText n = true) (hbc : f.boardingClassCd = some bc)
+    (hft : f.fareTypeCd = some ft) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
   simp only [LangSemantics.Java.Spring.Assert.notNullValue_some, LangSemantics.Java.Spring.Assert.notNull_some, toFlight, hn, FlightMasterProvider.getFlightMaster, assertHasText_ok ht, FareTypeProvider.getFareType, hft, BoardingClassProvider.getBoardingClass, hbc, ok_bind,
     pure_bind, SourceModel.FareQuery.ticketHelper, mkFlight, Option.bind_some]
   rfl
+
+theorem toFlight_ok (p : Providers) {f : SelectFlightForm} {k : FlightKey} (h : keyOfForm f = some k)
+    (ht : hasText k.flightName.val = true) : toFlight (SourceModel.FareQuery.ticketHelper p) f = .ok (some (mkFlight p f)) := by
+  obtain ⟨-, -, -, hn, hbc, hft⟩ := keyOfForm_eq h
+  exact toFlight_ok_of p hn ht hbc hft
 
 theorem assertNotEmpty_cons {α : Type} (x : α) (xs : List α) (m : String) :
     LangSemantics.Java.Spring.Assert.notEmptyValue (some (x :: xs)) m = .ok (x :: xs) := rfl
@@ -121,7 +127,7 @@ theorem assertNotEmpty_ok {α : Type} {l : List α} (h : l ≠ []) (m : String) 
 theorem configOf_fields {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Config} (h : configOf c = some cfg) :
     c.adultPassengerMinAge.val = (cfg.adultPassengerMinAge : Int) ∧ c.childFareRate.val = (cfg.childFareRate : Int) := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, rfl⟩ := h
+  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, a7, e7, a8, e8, rfl⟩ := h
   exact ⟨natOfJ32_eq_some.mp e4, natOfJ32_eq_some.mp e5⟩
 
 theorem ageOfPassenger_eq {p : JRef SourceModel.Domain.Model.Passenger} {a : Nat} (h : ageOfPassenger p = some a) :
@@ -139,7 +145,8 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
     runTotalFare ic o = .ok (J32.ofInt ((Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0)) := by
   simp only [aiTF, Option.bind_eq_some_iff, Option.map_eq_some_iff] at hα
   obtain ⟨cfg, hcfg, md, hm, ks, hks, ages, hages, rfl⟩ := hα
-  obtain ⟨hcv, hv, hf1, hf2, hp1, hp2, hpa, hpt, hsome⟩ := hp
+  obtain ⟨hok, hf1, hf2, hp1, hp2, hpa, hpt, hsome⟩ := hp
+  obtain ⟨hcv, hv⟩ := hok.valid
   simp only [Range.minReserveFlights, Range.maxReserveFlights, Range.minPassengers, Range.maxPassengers,
     Range.maxAge] at hcv hv hf1 hf2 hp1 hp2 hpa hpt hsome
   obtain ⟨p, hl, hptp, hbq, hfq, hmf⟩ := load_correct' hm hv ho
@@ -269,7 +276,8 @@ theorem runTotalFare_eq {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (h
 /-- [Spec] の合計金額は 12 億円以下（予約フライト 2・搭乗者 6 名・基本運賃 1 億円以下）。 -/
 theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
     (Spec.Fare.totalFareOfKeys ia.cfg ia.md ia.flights ia.ages).getD 0 ≤ 1200000000 := by
-  obtain ⟨hcv, hv, -, hf2, -, hp2, -, -, hsome⟩ := hp
+  obtain ⟨hok, -, hf2, -, hp2, -, -, hsome⟩ := hp
+  obtain ⟨hcv, hv⟩ := hok.valid
   simp only [Range.maxReserveFlights, Range.maxPassengers] at hf2 hp2
   obtain ⟨parts, hparts⟩ : ∃ parts, ia.flights.mapM (Spec.Fare.flightTotalOfKey ia.cfg ia.md ia.ages) = some parts := by
     simp only [Spec.Fare.totalFareOfKeys, Option.bind_eq_bind, Option.isSome_iff_exists, Option.bind_eq_some_iff,
@@ -293,7 +301,7 @@ theorem totalFareOfKeys_le {ia : Spec.Fare.TotalFareInput} (hp : ia.Pre) :
 theorem runTotalFare_icTF012 : runTotalFare icTF012 (mergeOrder icTF012.db) = .ok (J32.ofInt 17050400) := by
   have ht : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
   have hA : ∀ m, LangSemantics.Java.Spring.Assert.hasText "NTT001" m = .ok () := fun m => assertHasText_ok ht m
-  have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩] := rfl
+  have hfl : icTF012.flights = [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT001", some .OW, some .N⟩] := rfl
   simp only [runTotalFare, hfl, toFlightList, List.mapM_cons, List.mapM_nil, toFlight, pure_bind, FlightMasterProvider.getFlightMaster, hA,
     ok_bind]
   rfl

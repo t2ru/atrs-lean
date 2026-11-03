@@ -84,34 +84,12 @@ theorem toFormatTimeString_hm {s : String} {t : HourMinute} (h : hmOfStr s = som
 
 /-! ## 日付 -/
 
-theorem beq_mod (y n : Nat) : (((y : Int) % (n : Int)) == 0) = ((y % n) == 0) := by
-  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq]
-  constructor <;> intro h <;> omega
-
-theorem isLeapYear_nat (y : Nat) : JLocalDate.isLeapYear (y : Int) = Date.isLeap y := by
-  unfold JLocalDate.isLeapYear Date.isLeap
-  have h4 : (((y : Int) % 4) == 0) = ((y % 4) == 0) := beq_mod y 4
-  have h100 : (((y : Int) % 100) == 0) = ((y % 100) == 0) := beq_mod y 100
-  have h400 : (((y : Int) % 400) == 0) = ((y % 400) == 0) := beq_mod y 400
-  simp only [bne, h4, h100, h400]
-  have imp : (y % 400 == 0) = true → (y % 4 == 0) = true := by simp only [beq_iff_eq]; omega
-  generalize (y % 4 == 0) = a at imp ⊢
-  generalize (y % 100 == 0) = b
-  generalize (y % 400 == 0) = c at imp ⊢
-  cases a <;> cases b <;> cases c <;> simp_all
-
-theorem daysInMonth_nat (y : Nat) : ∀ m, JLocalDate.daysInMonth (y : Int) m = Date.daysInMonth y m
-  | 0 => rfl | 1 => rfl | 3 => rfl | 4 => rfl | 5 => rfl | 6 => rfl | 7 => rfl | 8 => rfl | 9 => rfl
-  | 10 => rfl | 11 => rfl | 12 => rfl | _ + 13 => rfl
-  | 2 => by simp only [JLocalDate.daysInMonth, Date.daysInMonth, isLeapYear_nat]
-
 /-- `LocalDate` の写しが [Spec] の暦日 `D` に写るなら、その年月日は `D` の年月日。 -/
 theorem dateOfJ_fields {j : JLocalDate} {D : Date} (h : dateOfJ j = some D) :
-    j = ⟨(D.year : Int), D.month, D.day⟩ := by
+    j = Abstraction.Prim.Date.jOfDate D := by
   obtain ⟨hj, -⟩ := dateOfJ_eq_some h
   rw [hj, ← Abstraction.Prim.Date.toEpochDay_eq_epochDay D]
-  obtain ⟨_, _, hm1, hm2, hd1, hd2⟩ := D.valid
-  exact JLocalDate.ofEpochDay_toEpochDay _ hm1 hm2 hd1 (by simp only [daysInMonth_nat]; exact hd2)
+  exact JLocalDate.ofEpochDay_toEpochDay _
 
 /-- `toFormatDateString` は、写した暦日の `fmtDate`。 -/
 theorem toFormatDateString_eq {j : JLocalDate} {D : Date} (h : dateOfJ j = some D) :

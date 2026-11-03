@@ -21,18 +21,18 @@ open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.Domain.Common.Exception
 theorem lift_agreeB {P : St → Prop} {r : JResult Unit} {x : Except Spec.Error.AtrsError Unit} (h : AgreeB r x) :
     Hoare P (lift r) (PostB P x) (PostBE P x) := by
   intro s hs
-  rcases h with ⟨rfl, rfl⟩ | ⟨c, args, rfl, rfl⟩
+  rcases h with ⟨rfl, rfl⟩ | ⟨be, rfl, rfl⟩
   · exact ⟨hs, rfl⟩
-  · exact ⟨hs, .inr ⟨c, args, rfl, rfl⟩⟩
+  · exact ⟨hs, .inr ⟨be, rfl, rfl⟩⟩
 
 /-- 検査の逐次: [Spec] の検査の結果も、最初に失敗した検査の結果。 -/
 theorem seqB {P : St → Prop} {m1 m2 : DbM Unit} {v1 v2 : Except Spec.Error.AtrsError Unit}
     (h1 : Hoare P m1 (PostB P v1) (PostBE P v1)) (h2 : Hoare P m2 (PostB P v2) (PostBE P v2)) :
     Hoare P (m1 >>= fun _ => m2) (PostB P (v1 >>= fun _ => v2)) (PostBE P (v1 >>= fun _ => v2)) := by
   refine Hoare.bind' (Hoare.conseq h1 (fun _ h => h) (fun _ _ h => h) fun e s ⟨hs, he⟩ => ⟨hs, ?_⟩) fun _ => ?_
-  · rcases he with he | ⟨c, args, rfl, hv⟩
+  · rcases he with he | ⟨be, rfl, hv⟩
     · exact .inl he
-    · exact .inr ⟨c, args, rfl, by rw [hv]; rfl⟩
+    · exact .inr ⟨be, rfl, by rw [hv]; rfl⟩
   · intro s ⟨hs, hv⟩
     rw [hv]
     exact h2 s hs
@@ -60,7 +60,7 @@ theorem transactional_hoare {α : Type} {P : St → Prop} {fd : FlightDb} (hP : 
     exact he
 
 /-- 運賃種別の利用条件の検査の列（[Spec]）は、予約フライトごとの検査の最初の失敗。 -/
-theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.Model.Passenger} :
+theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.UseCase.Reserve.DraftPassenger} :
     ∀ {ks : List Spec.Model.FlightKey} {FTs : List Spec.MasterData.FareType},
       LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs →
       ∀ acc : Except Spec.Error.AtrsError Unit,
@@ -83,7 +83,7 @@ theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.Model.Passenger}
       cases specFareTypeOf FT ps <;> rfl
 
 theorem checkFareTypes_eq {md : Spec.MasterData} {d : Spec.UseCase.Reserve.Draft} {FTs : List Spec.MasterData.FareType}
-    (h : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs) :
+    (h : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
     Spec.UseCase.Reserve.checkFareTypes md d = some (firstErr (FTs.map (specFareTypeOf · d.passengers))) :=
   foldlM_fareTypes h (.ok ())
 
@@ -104,7 +104,7 @@ theorem validate_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {svc
     (hgd : r.repGender = some d.repGender)
     (hR : LangSemantics.Core.List.Forall₂ PassengerFacts xs d.passengers) (hne : xs ≠ []) (hlen : xs.length ≤ 6)
     (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (fl :: fls) FTs)
-    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights FTs) :
+    (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
     ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
       Hoare P (TicketReserveServiceImpl.validateReservation svc (some r)) (PostB P v) (PostBE P v) := by
   have hgen : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs d.passengers :=

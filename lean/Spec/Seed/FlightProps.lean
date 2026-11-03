@@ -1,15 +1,16 @@
 import Spec.Seed
 import Spec.Seed.Flight
-import Spec.Port
 
 /-!
 # Spec.Seed.FlightProps
 
-シードのフライト `Spec.Seed.Flight.world` の性質（backlog 0be7 の第 2 段）。全件（15 万行）には展開せず、
+シードのフライト `Spec.Seed.Flight.flights` の性質（backlog 0be7 の第 2 段）。全件（15 万行）には展開せず、
 生成の形（日付の列 × 便名の列 × 枠の列）から示す。
 
-- `world_inv`: 主キーで一意（`World.Inv`）。日付・便名・枠の列がそれぞれ重複しないことから従う。
-- `world_refMaster`: 参照整合性（`World.RefMaster`。シードのマスタに対して）。便名・枠の列がマスタにあることから従う。
+- `flights_nodup`: 主キーで一意（`World` の証明フィールド `flights_nodup`。ADR 6d36 の L3）。日付・便名・枠の列が
+  それぞれ重複しないことから従う。`Spec.Seed.World.world` が、これで `World` を組み立てる。
+- `flights_refMaster`: 参照整合性（`World.RefMaster` の中身。シードのマスタに対して）。便名・枠の列がマスタにあることから
+  従う。`World` についての主張は `Spec.Seed.World.world_refMaster`。
 -/
 
 namespace Spec.Seed.FlightProps
@@ -38,9 +39,9 @@ theorem mem_dayFlights {d : Date} {vs : List (List Nat)} {x : Flight} (h : x ∈
   exact ⟨rfl, (List.of_mem_zip hz).1, (List.of_mem_zip hz2).1⟩
 
 /-- シードの各フライトは、日付の列・便名の列・枠の列にある日付・便名・枠の行である。 -/
-theorem mem_world {x : Flight} (h : x ∈ world.flights) :
+theorem mem_flights {x : Flight} (h : x ∈ flights) :
     x.key.departureDate ∈ days ∧ x.key.flightName ∈ names ∧ (x.key.boardingClassCd, x.key.fareTypeCd) ∈ slots := by
-  simp only [world, List.mem_flatMap] at h
+  simp only [flights, List.mem_flatMap] at h
   obtain ⟨⟨d, i⟩, hd, hx⟩ := h
   obtain ⟨e1, e2, e3⟩ := mem_dayFlights hx
   refine ⟨?_, e2, e3⟩
@@ -67,11 +68,10 @@ theorem dayKeys_pairwise (d : Date) (vs : List (List Nat)) :
     simp only [FlightKey.mk.injEq] at hxy
     exact hne hxy.2.1
 
-/-- シードのフライトは主キーで一意である（`World.Inv`）。 -/
-theorem world_inv : world.Inv := by
-  unfold Spec.Port.World.Inv
+/-- シードのフライトは主キーで一意である（`World` の証明フィールド `flights_nodup`）。 -/
+theorem flights_nodup : (flights.map (·.key)).Nodup := by
   rw [List.nodup_iff_pairwise_ne]
-  simp only [world, List.map_flatMap, List.pairwise_flatMap]
+  simp only [flights, List.map_flatMap, List.pairwise_flatMap]
   refine ⟨fun ⟨d, i⟩ _ => dayKeys_pairwise d (pattern i), ?_⟩
   have hdays : (days.zipIdx).Pairwise (fun a b => a.1 ≠ b.1) := by
     have := List.nodup_iff_pairwise_ne.mp days_nodup
@@ -91,10 +91,13 @@ theorem slots_in_master : ∀ s ∈ slots, (∃ b ∈ Spec.Seed.masterData.board
     (∃ t ∈ Spec.Seed.masterData.fareTypes, t.fareTypeCd = s.2) := by
   decide +kernel
 
-/-- シードのフライトは、シードのマスタを参照する（`World.RefMaster`。FK_FLIGHT_1〜3）。 -/
-theorem world_refMaster : world.RefMaster Spec.Seed.masterData := by
+/-- シードのフライトは、シードのマスタを参照する（`World.RefMaster` の中身。FK_FLIGHT_1〜3）。 -/
+theorem flights_refMaster : ∀ x ∈ flights,
+    (∃ m ∈ Spec.Seed.masterData.flightMasters, m.flightName = x.key.flightName) ∧
+    (∃ b ∈ Spec.Seed.masterData.boardingClasses, b.boardingClassCd = x.key.boardingClassCd) ∧
+    (∃ t ∈ Spec.Seed.masterData.fareTypes, t.fareTypeCd = x.key.fareTypeCd) := by
   intro x hx
-  obtain ⟨_, hn, hs⟩ := mem_world hx
+  obtain ⟨_, hn, hs⟩ := mem_flights hx
   exact ⟨names_in_master _ hn, (slots_in_master _ hs).1, (slots_in_master _ hs).2⟩
 
 end Spec.Seed.FlightProps

@@ -52,12 +52,38 @@ theorem epochDay_int (D : Date) :
   simp only [Date.epochDay, Date.ordinal, Date.epochOrdinal]
   omega
 
+theorem beq_mod (y n : Nat) : (((y : Int) % (n : Int)) == 0) = ((y % n) == 0) := by
+  rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq]
+  constructor <;> intro h <;> omega
+
+theorem isLeapYear_nat (y : Nat) : JLocalDate.isLeapYear (y : Int) = Date.isLeap y := by
+  unfold JLocalDate.isLeapYear Date.isLeap
+  have h4 : (((y : Int) % 4) == 0) = ((y % 4) == 0) := beq_mod y 4
+  have h100 : (((y : Int) % 100) == 0) = ((y % 100) == 0) := beq_mod y 100
+  have h400 : (((y : Int) % 400) == 0) = ((y % 400) == 0) := beq_mod y 400
+  simp only [bne, h4, h100, h400]
+  have imp : (y % 400 == 0) = true → (y % 4 == 0) = true := by simp only [beq_iff_eq]; omega
+  generalize (y % 4 == 0) = a at imp ⊢
+  generalize (y % 100 == 0) = b
+  generalize (y % 400 == 0) = c at imp ⊢
+  cases a <;> cases b <;> cases c <;> simp_all
+
+theorem daysInMonth_nat (y : Nat) : ∀ m, JLocalDate.daysInMonth (y : Int) m = Date.daysInMonth y m
+  | 0 => rfl | 1 => rfl | 3 => rfl | 4 => rfl | 5 => rfl | 6 => rfl | 7 => rfl | 8 => rfl | 9 => rfl
+  | 10 => rfl | 11 => rfl | 12 => rfl | _ + 13 => rfl
+  | 2 => by simp only [JLocalDate.daysInMonth, Date.daysInMonth, isLeapYear_nat]
+
+/-- [Spec] の暦日と同じ年月日の `LocalDate`（[Spec] の暦日は `LocalDate` として妥当）。 -/
+def jOfDate (D : Date) : JLocalDate :=
+  ⟨(D.year : Int), D.month, D.day, by
+    obtain ⟨_, _, hm1, hm2, hd1, hd2⟩ := D.valid
+    exact ⟨hm1, hm2, hd1, by rw [daysInMonth_nat]; exact hd2⟩⟩
+
 /-- [Spec] の暦日と同じ年月日の `LocalDate` の通算日数は、[Spec] の通算日数に等しい。 -/
-theorem toEpochDay_eq_epochDay (D : Date) :
-    (JLocalDate.mk (D.year : Int) D.month D.day).toEpochDay = D.epochDay := by
+theorem toEpochDay_eq_epochDay (D : Date) : (jOfDate D).toEpochDay = D.epochDay := by
   rw [epochDay_int]
   obtain ⟨y, m, d, ⟨hy1, hy2, hm1, hm2, hd1, hd2⟩⟩ := D
-  simp only
+  simp only [jOfDate]
   rw [dby_int y hy1]
   have hlc := leap_count y hy1
   have hs := era_sum (y : Int) (by omega)

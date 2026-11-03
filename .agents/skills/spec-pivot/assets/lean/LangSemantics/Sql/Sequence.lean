@@ -12,7 +12,8 @@ lang: `lang:sql#ISO-9075-2-11.72`
 namespace LangSemantics.Sql.Sequence
 open LangSemantics.Sql.Core
 
-/-- シーケンスの定義。 -/
+/-- シーケンスの定義。`CREATE SEQUENCE` は、開始値が最小値と最大値の間に無いか、増分が 0 の定義を拒む
+（`lang:postgresql#sql-createsequence`）ので、その範囲を型で持つ。 -/
 structure SequenceDef where
   name : String
   minValue : Int := 1
@@ -20,7 +21,8 @@ structure SequenceDef where
   increment : Int := 1
   start : Int := 1
   cycle : Bool := false
-  deriving Repr, BEq
+  valid : minValue ≤ start ∧ start ≤ maxValue ∧ increment ≠ 0 := by decide
+  deriving Repr, DecidableEq
 
 /-- シーケンスの状態（最後に返した値。未使用なら `none`）。 -/
 abbrev SequenceState := Option Int

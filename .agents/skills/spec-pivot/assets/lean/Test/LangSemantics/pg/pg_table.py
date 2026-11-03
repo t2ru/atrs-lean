@@ -152,23 +152,23 @@ def order_by():
     values = ", ".join(f"({i}, {sql_lit(a)}, {sql_lit(b)})" for i, a, b in data)
     line(f"def rows : List (Nat × SqlValue × SqlValue) := {rows_lean}")
     line("def byId (ids : List Nat) : List (Nat × SqlValue × SqlValue) := ids.filterMap fun i => rows.find? (·.1 == i)")
-    specs = [("k1", "[.asc]", "fun r => [r.2.1]"), ("k1 DESC", "[.desc]", "fun r => [r.2.1]"),
-             ("k2", "[.asc]", "fun r => [r.2.2]"), ("k2 DESC", "[.desc]", "fun r => [r.2.2]"),
-             ("k1, k2", "[.asc, .asc]", "fun r => [r.2.1, r.2.2]"), ("k1 DESC, k2", "[.desc, .asc]", "fun r => [r.2.1, r.2.2]"),
-             ("k1, k2 DESC, id", "[.asc, .desc, .asc]", "fun r => [r.2.1, r.2.2, .int r.1]")]
-    for order, dirs, key in specs:
+    specs = [("k1", "⟨[(.asc, (·.2.1))]⟩"), ("k1 DESC", "⟨[(.desc, (·.2.1))]⟩"),
+             ("k2", "⟨[(.asc, (·.2.2))]⟩"), ("k2 DESC", "⟨[(.desc, (·.2.2))]⟩"),
+             ("k1, k2", "⟨[(.asc, (·.2.1)), (.asc, (·.2.2))]⟩"), ("k1 DESC, k2", "⟨[(.desc, (·.2.1)), (.asc, (·.2.2))]⟩"),
+             ("k1, k2 DESC, id", "⟨[(.asc, (·.2.1)), (.desc, (·.2.2)), (.asc, fun r => .int r.1)]⟩")]
+    for order, ob in specs:
         st, res = psql(f"SELECT id FROM (VALUES {values}) AS t(id, k1, k2) ORDER BY {order}")
         ids = "[" + ", ".join(r[0] for r in res) + "]"
         line(f"-- ORDER BY {order}")
-        line(f"#guard isAllowedOrder (sortConfig) {dirs} ({key}) rows (byId {ids})")
+        line(f"#guard isAllowedOrder (sortConfig) {ob} rows (byId {ids})")
         if order.endswith("id"):
-            line(f"#guard orderByStable (sortConfig) {dirs} ({key}) rows == byId {ids}")
+            line(f"#guard orderByStable (sortConfig) {ob} rows == byId {ids}")
     texts = ["b", "B", "a", "A", "", "ab", "aB", "あ", "ア", "亜", "𠮷", "_", "1", " ", "z", "Ａ"]
     values = ", ".join(f"({i}, {sql_lit(('text', t))})" for i, t in enumerate(texts))
     st, res = psql(f"SELECT s FROM (VALUES {values}) AS t(i, s) ORDER BY s")
     pg = [r[0] for r in res]
     line("-- 照合順序 C（データベースの既定）")
-    line(f"#guard orderByStable (sortConfig) [.asc] (fun s => [.text s]) [{', '.join(lean_str(t) for t in texts)}] == "
+    line(f"#guard orderByStable (sortConfig) ⟨[(.asc, .text)]⟩ [{', '.join(lean_str(t) for t in texts)}] == "
          f"[{', '.join(lean_str(t) for t in pg)}]")
 
 

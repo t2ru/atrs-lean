@@ -21,12 +21,12 @@ def coll := collationC
 
 -- ORDER BY: 同順位の並びは未規定（どちらも許される）
 def rows : List (String × Int) := [("a", 2), ("b", 1), ("c", 2)]
-def key (r : String × Int) : List SqlValue := [.int r.2]
-#guard isAllowedOrder (sortConfig) [.asc] key rows [("b", 1), ("a", 2), ("c", 2)]
-#guard isAllowedOrder (sortConfig) [.asc] key rows [("b", 1), ("c", 2), ("a", 2)]
-#guard !isAllowedOrder (sortConfig) [.asc] key rows [("a", 2), ("b", 1), ("c", 2)]
-#guard !isAllowedOrder (sortConfig) [.asc] key rows [("b", 1), ("a", 2)]
-#guard isAllowedOrder (sortConfig) [.asc] key rows (orderByStable (sortConfig) [.asc] key rows)
+def ord : OrderBy (String × Int) := ⟨[(.asc, fun r => .int r.2)]⟩
+#guard isAllowedOrder (sortConfig) ord rows [("b", 1), ("a", 2), ("c", 2)]
+#guard isAllowedOrder (sortConfig) ord rows [("b", 1), ("c", 2), ("a", 2)]
+#guard !isAllowedOrder (sortConfig) ord rows [("a", 2), ("b", 1), ("c", 2)]
+#guard !isAllowedOrder (sortConfig) ord rows [("b", 1), ("a", 2)]
+#guard isAllowedOrder (sortConfig) ord rows (orderByStable (sortConfig) ord rows)
 -- NULL は昇順で後
 #guard compareKey (sortConfig) .asc .null (.int 1) == .gt
 

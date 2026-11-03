@@ -36,8 +36,8 @@ theorem load_correct {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mast
   obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
   obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
   obtain ⟨ftp, hfl, -⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
-  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
-  obtain ⟨fmp, hml, -⟩ := flightMaster_query hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hpr
+  obtain ⟨fmp, hml, -⟩ := flightMaster_query hm hv.md1 hv.md3 hpf
   refine ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd⟩
 
 /-- 前提を満たす入力では、どの許される並びでも `run` は例外を投げず、答えの写しは [Spec] の答え。 -/
@@ -49,18 +49,18 @@ theorem run_correct {ic : SrcInput} {cfg : Config} {md : MasterData} {q : Spec.M
   obtain ⟨hpr, hpf, hpb, hpft, hppt, hoa, hob, hof, hoc⟩ := ho
   obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
   obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
-  obtain ⟨rtp, hrl, hrq⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
-  obtain ⟨fmp, hml, hmq⟩ := flightMaster_query hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨rtp, hrl, hrq⟩ := route_query hm hv.md1 hv.md2 hv.md3 hpr
+  obtain ⟨fmp, hml, hmq⟩ := flightMaster_query hm hv.md1 hv.md3 hpf
   simp only [run, load, hbl, hfl, hrl, hml, ok_bind, pure_bind, Providers.shared]
   generalize ic.query = sq at hqq ⊢
   cases sq with
   | routeOf dep arr =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
-    obtain ⟨ans, he, ha⟩ := hrq ⟨dep⟩ ⟨arr⟩ (AirportCd.hasText_of_wellFormed hq.1) (AirportCd.hasText_of_wellFormed hq.2)
+    obtain ⟨ans, he, ha⟩ := hrq dep arr (AirportCd.hasText_of_valid hq.1) (AirportCd.hasText_of_valid hq.2)
     exact ⟨_, by simp only [he, ok_bind]; rfl, ha⟩
   | flightMasterOf name =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq
-    obtain ⟨ans, he, ha⟩ := hmq ⟨name⟩ hq.2
+    obtain ⟨ans, he, ha⟩ := hmq name hq.2
     exact ⟨_, by simp only [he, ok_bind]; rfl, ha⟩
   | fareTypeOf cd =>
     simp only [queryOf?, Option.some.injEq] at hqq; subst hqq

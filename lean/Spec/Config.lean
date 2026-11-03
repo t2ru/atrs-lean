@@ -71,8 +71,8 @@ def default : Config where
   childFareRate := 60
   dateOfBirthMinDate := ⟨1900, 1, 1, by decide⟩
   defaultFlightType := .RT
-  defaultDepAirportCd := ⟨"HND"⟩
-  defaultArrAirportCd := ⟨"HND"⟩
+  defaultDepAirportCd := { val := "HND" }
+  defaultArrAirportCd := { val := "HND" }
   defaultBoardingClassCd := .N
 
 /-!

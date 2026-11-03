@@ -54,9 +54,9 @@ def hm(v: str) -> str:
 
 
 ROWS = {
-    "airports": ("Airport", lambda r: f"⟨⟨{s(r['code'])}⟩, {s(r['name'])}, {r['displayOrder']}⟩"),
-    "routes": ("Route", lambda r: f"⟨{r['routeNo']}, ⟨{s(r['depAirportCd'])}⟩, ⟨{s(r['arrAirportCd'])}⟩, {r['basicFare']}⟩"),
-    "flightMasters": ("FlightMaster", lambda r: f"⟨⟨{s(r['flightName'])}⟩, {r['routeNo']}, {hm(r['departureTime'])}, "
+    "airports": ("Airport", lambda r: f"⟨{{ val := {s(r['code'])} }}, {s(r['name'])}, {r['displayOrder']}⟩"),
+    "routes": ("Route", lambda r: f"⟨{r['routeNo']}, {{ val := {s(r['depAirportCd'])} }}, {{ val := {s(r['arrAirportCd'])} }}, {r['basicFare']}⟩"),
+    "flightMasters": ("FlightMaster", lambda r: f"⟨{{ val := {s(r['flightName'])} }}, {r['routeNo']}, {hm(r['departureTime'])}, "
                       f"{hm(r['arrivalTime'])}, {s(r['craftType'])}⟩"),
     "boardingClasses": ("BoardingClass", lambda r: f"⟨.{r['boardingClassCd']}, {s(r['boardingClassName'])}, "
                         f"{r['extraCharge']}, {r['displayOrder']}⟩"),
@@ -66,7 +66,7 @@ ROWS = {
     "peakTimes": ("PeakTime", lambda r: f"⟨{s(r['peakTimeCd'])}, {date(r['peakStartDate'])}, {date(r['peakEndDate'])}, "
                   f"{r['multiplicationRatio']}⟩"),
     "planes": ("Plane", lambda r: f"⟨{s(r['craftType'])}, {r['nSeatNum']}, {r['sSeatNum']}⟩"),
-    "creditTypes": ("CreditType", lambda r: f"⟨⟨{s(r['creditTypeCd'])}⟩, {s(r['creditFirm'])}, {r['displayOrder']}⟩"),
+    "creditTypes": ("CreditType", lambda r: f"⟨{{ val := {s(r['creditTypeCd'])} }}, {s(r['creditFirm'])}, {r['displayOrder']}⟩"),
 }
 
 
@@ -124,7 +124,7 @@ def render() -> str:
         "def config : Config :=",
         f"  ⟨{cfg['limitDay']}, {cfg['reserveIntervalTime']}, {cfg['representativeMinAge']}, "
         f"{cfg['adultPassengerMinAge']}, {cfg['childFareRate']}, {date(cfg['dateOfBirthMinDate'])}, "
-        f".{cfg['defaultFlightType']}, ⟨{s(cfg['defaultDepAirportCd'])}⟩, ⟨{s(cfg['defaultArrAirportCd'])}⟩, "
+        f".{cfg['defaultFlightType']}, {{ val := {s(cfg['defaultDepAirportCd'])} }}, {{ val := {s(cfg['defaultArrAirportCd'])} }}, "
         f".{cfg['defaultBoardingClassCd']}⟩",
         "",
         "end Spec.Seed",

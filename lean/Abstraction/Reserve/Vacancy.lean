@@ -23,10 +23,10 @@ open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Sql.Core Lang
 open SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
 open Spec.Model
 
-/-- 状態の表 FLIGHT だけを替えたときの α。 -/
+/-- 状態の表 FLIGHT だけを替えたときの α（写したフライトが主キーで一意なとき）。 -/
 theorem worldOfDb_setFlights {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w)
-    {rows : List FlightRow} {fs : List Flight} (hr : rows.mapM flightOfRow = some fs) :
-    worldOfDb { fd with flight := rows } = some { w with flights := fs } := by
+    {rows : List FlightRow} {fs : List Flight} (hr : rows.mapM flightOfRow = some fs) (hn : (fs.map (·.key)).Nodup) :
+    worldOfDb { fd with flight := rows } = some { w with flights := fs, flights_nodup := hn } := by
   obtain ⟨-, hm, hrs, hsq⟩ := worldOfDb_eq_some.mp hw
   exact worldOfDb_eq_some.mpr ⟨hr, hm, hrs, hsq⟩
 
@@ -41,12 +41,12 @@ theorem flightMap_ok {r : FlightRow} {f : Flight} (hf : flightOfRow r = some f) 
       bindKey L.departureDate (L.flightMaster.bind (·.flightName)) L.boardingClass L.fareType = keyParams f.key ∧
       ∃ v, L.vacantNum = some v ∧ v.val = (f.vacantNum : Int) := by
   simp only [flightOfRow, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hf
-  obtain ⟨d, hd, bc, hbc, ft, hft, v, hv, rfl⟩ := hf
+  obtain ⟨d, hd, n, hn, bc, hbc, ft, hft, v, hv, rfl⟩ := hf
   have ed := Spec.Prim.Date.epochDay_ofEpochDay? hd
   refine ⟨_, by simp only [flightMap, resultOf, bcCdOf_mapping hbc, ftCdOf_mapping hft]; rfl, ?_, ?_⟩
   · simp only [bindKey, keyParams, SourceModel.Db.MyBatis.date, SourceModel.Db.MyBatis.str, sqlOf, Option.bind_some,
       Abstraction.FlightSearch.Alpha.boardingClassCdName_eq, Abstraction.FlightSearch.Alpha.fareTypeCdName_eq,
-      JLocalDate.toEpochDay_ofEpochDay, ed]
+      JLocalDate.toEpochDay_ofEpochDay, ed, flightNameOf_eq_some hn]
   · refine ⟨_, rfl, ?_⟩
     have := natOfJ32_int (v := r.vacantNum)
     simp only [SourceModel.Db.MyBatis.int, Option.bind_some] at this
@@ -73,7 +73,7 @@ theorem updateRows_alpha {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb f
     unfold Spec.Port.World.findForUpdate at hf
     rw [hf]
     rfl
-  refine ⟨_, ?_, worldOfDb_setFlights hw h1⟩
+  refine ⟨_, ?_, worldOfDb_setFlights hw h1 (w.updateVacantNum k n).flights_nodup⟩
   simp only [updateRows, hne, Bool.false_eq_true, ite_false]
   unfold LangSemantics.Sql.Postgresql.Int4.ofInt
   rw [dite_eq_left_of_eq_true (eq_true hr)]
@@ -209,8 +209,8 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
       (TicketReserveServiceImpl.validateAndUpdateVacancy svc
         (some { flight := some (mkFlight p f), passengerList := some (xs.map some) }))
       (fun _ s => ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
-      (fun e s => AtW env w s ∧ (IsFault env e ∨ ∃ c, e = AtrsBusinessException.newArgs c [] ∧
-        Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.error (.business c [])))) := by
+      (fun e s => AtW env w s ∧ (IsFault env e ∨ ∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
+        Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.error (.business be)))) := by
   intro s ⟨hdb, hse⟩
   obtain ⟨t, sd, ed, hte, hs1, hs2, he1, he2⟩ := mkFlight_days hfq hk hft
   obtain ⟨dj, hdj, hd, -⟩ := keyOfForm_eq hk
@@ -236,8 +236,8 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
     rw [List.length_map]; exact LangSemantics.Java.IntLemmas.ofInt_nat (by omega)
   have hss : Spec.UseCase.Reserve.secureSeats md T xs.length w k =
       if (!Spec.FlightSearch.isAvailableFareType FT k.departureDate T) = true then
-        some (.error (.business "e.ar.b2.2008"))
-      else if fX.vacantNum < xs.length then some (.error (.business "e.ar.b2.2009"))
+        some (.error (.business .fareTypeUnavailable))
+      else if fX.vacantNum < xs.length then some (.error (.business .noVacancy))
       else some (.ok (w.updateVacantNum k (fX.vacantNum - xs.length))) := by
     simp only [Spec.UseCase.Reserve.secureSeats, hft, hfX, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
   rw [hss]
@@ -247,7 +247,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
       AtrsBusinessException.newArgs c [] := fun c => (AtrsBusinessException.newArgs_nil c).symm
   cases hA : Spec.FlightSearch.isAvailableFareType FT k.departureDate T
   · simp only [Bool.not_false, ite_true]
-    exact ⟨hat _ _, .inr ⟨_, hbiz _, rfl⟩⟩
+    exact ⟨hat _ _, .inr ⟨_, rfl, hbiz _, rfl⟩⟩
   simp only [Bool.not_true, Bool.false_eq_true, ite_false]
   by_cases h1 : s.env.ioFailAt = some s.sqlCalls
   · simp only [h1, ite_true]
@@ -261,7 +261,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   by_cases h9 : fX.vacantNum < xs.length
   · have : v0.val < (xs.length : Int) := by omega
     simp only [this, h9, decide_true, ite_true]
-    exact ⟨hat _ _, .inr ⟨_, hbiz _, rfl⟩⟩
+    exact ⟨hat _ _, .inr ⟨_, rfl, hbiz _, rfl⟩⟩
   have h9' : ¬ v0.val < (xs.length : Int) := by omega
   simp only [h9', h9, decide_false, Bool.false_eq_true, ite_false]
   by_cases h3 : s.env.ioFailAt = some (s.sqlCalls + 1)
@@ -366,8 +366,9 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
             TicketReserveServiceImpl.validateAndUpdateVacancy svc rf
             pure (ForInStep.yield ()))
         (fun _ s => ∃ w', secureAll md T xs.length ks w = some (.ok w') ∧ AtW env w' s)
-        (fun e s => ∃ w', AtW env w' s ∧ w'.sequences = w.sequences ∧ (IsFault env e ∨ ∃ c,
-          e = AtrsBusinessException.newArgs c [] ∧ secureAll md T xs.length ks w = some (.error (.business c []))))
+        (fun e s => ∃ w', AtW env w' s ∧ w'.sequences = w.sequences ∧ (IsFault env e ∨ ∃ be : Spec.Error.BusinessError,
+          be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
+            secureAll md T xs.length ks w = some (.error (.business be))))
   | [], [], .nil, w, _, _ => fun s hs => ⟨w, rfl, hs⟩
   | f :: fs, k :: ks, .cons hc hr, w, hinv, hex => by
     obtain ⟨hk, ⟨BC, hb⟩, ⟨FT, hft⟩, ⟨fm, hfm, hfn⟩⟩ := hc
@@ -378,13 +379,13 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
         ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
       (Hoare.bind' (Hoare.conseq hv (fun _ h => h) (fun _ _ h => h) fun e s ⟨hat, he⟩ => ⟨w, hat, rfl, ?_⟩)
         fun _ => Hoare.pure' fun s h => ⟨rfl, h⟩) fun r => ?_
-    · rcases he with he | ⟨c, rfl, hc⟩
+    · rcases he with he | ⟨be, hba, rfl, hc⟩
       · exact .inl he
-      · exact .inr ⟨c, rfl, by simp only [secureAll, hc, Option.bind_some]⟩
+      · exact .inr ⟨be, hba, rfl, by simp only [secureAll, hc, Option.bind_some]⟩
     · intro s ⟨hr0, w', hw', hat⟩
       subst hr0
       have hkeys := Spec.UseCase.Reserve.secureSeats_keys hw'
-      have hinv' : w'.Inv := by unfold Spec.Port.World.Inv at hinv ⊢; rw [hkeys]; exact hinv
+      have hinv' : w'.Inv := w'.inv
       have hex' : ∀ k ∈ ks, (w'.findForUpdate k).isSome := fun k' hk' =>
         findForUpdate_isSome_of_keys hkeys (hex k' (List.mem_cons_of_mem _ hk'))
       have hseq : w'.sequences = w.sequences := secureSeats_seq hw'
@@ -392,9 +393,9 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
       refine Hoare.conseq ih (fun _ h => h) (fun _ s ⟨w'', hw'', hat''⟩ => ⟨w'', ?_, hat''⟩)
         (fun e s ⟨w'', hat'', hseq'', he⟩ => ⟨w'', hat'', hseq''.trans hseq, ?_⟩) s hat
       · simp only [secureAll, hw', Option.bind_some, hw'']
-      · rcases he with he | ⟨c, rfl, hc⟩
+      · rcases he with he | ⟨c, hca, rfl, hc⟩
         · exact .inl he
-        · exact .inr ⟨c, rfl, by simp only [secureAll, hw', Option.bind_some, hc]⟩
+        · exact .inr ⟨c, hca, rfl, by simp only [secureAll, hw', Option.bind_some, hc]⟩
 
 end
 

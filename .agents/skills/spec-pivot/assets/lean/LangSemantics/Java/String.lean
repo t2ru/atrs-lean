@@ -69,7 +69,7 @@ def jSubstring (s : String) (b e : Nat) : LangSemantics.Java.Exception.JResult S
   if b ≤ e ∧ e ≤ utf16Len s then
     let cs := s.toList
     .ok (String.ofList ((cs.take (charsBeforeUtf16 cs e)).drop (charsBeforeUtf16 cs b)))
-  else .error (.other "java.lang.StringIndexOutOfBoundsException" s!"begin {b}, end {e}, length {utf16Len s}")
+  else .error (.other cls!"java.lang.StringIndexOutOfBoundsException" s!"begin {b}, end {e}, length {utf16Len s}")
 
 /-- `String.substring(beginIndex)` = `substring(beginIndex, length())`。 -/
 def jSubstringFrom (s : String) (b : Nat) : LangSemantics.Java.Exception.JResult String := jSubstring s b (utf16Len s)

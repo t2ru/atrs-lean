@@ -19,7 +19,7 @@ open SourceModel.Domain.Common.Exception SourceModel.Domain.Service.B1 SourceMod
   LangSemantics.Core.List
 
 /-- 区切り文字が `.` の記号（ドイツ語など）。 -/
-def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-"⟩
+def symDot : LangSemantics.Java.DecimalFormat.Symbols := ⟨'.', '0', "-", by decide⟩
 
 /-- マスタの DB。 -/
 def dbFS : MasterDb := dbTF ⟨100000, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩
@@ -29,33 +29,33 @@ def fdFS : FlightDb := { flight := [⟨⟨0, by decide⟩, ⟨"NTT001", by decid
 
 /-- 配備の環境の書式の記号 `sym` で、1970-01-01 に HND→ITM の片道・N を照会する入力。 -/
 def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
-  { db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, today := ⟨1970, 1, 1⟩,
-    sharedClock := (⟨1970, 1, 1⟩, ⟨1970, 1, 1⟩),
+  { db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, today := ⟨1970, 1, 1, by decide⟩,
+    sharedClock := (⟨1970, 1, 1, by decide⟩, ⟨1970, 1, 1, by decide⟩),
     criteria := some { flightType := some .OW, departureAirportCd := some "HND", arrivalAirportCd := some "ITM",
-                       depDate := some ⟨1970, 1, 1⟩, boardingClassCd := some .N },
+                       depDate := some ⟨1970, 1, 1, by decide⟩, boardingClassCd := some .N },
     formatSymbols := sym }
 
 /-- マスタの [Spec] の写し。 -/
 def mdFS : Spec.MasterData :=
-  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
-    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩],
-    flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+  { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
+    routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩],
+    flightMasters := [⟨{ val := "NTT001" }, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.OW, "OW", 0, 355, 0, 1, 1⟩],
     peakTimes := [⟨"P", day0, day0, 100⟩],
     planes := [], creditTypes := [] }
 
 /-- [Spec] の入力。 -/
-def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, ⟨"HND"⟩, ⟨"ITM"⟩, .OW⟩⟩
+def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, "HND", "ITM", .OW⟩⟩
 
 /-- [Spec] の状態。 -/
-def wFS : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT001"⟩, .N, .OW⟩, 10⟩] }
+def wFS : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT001" }, .N, .OW⟩, 10⟩] }
 
 theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 
 theorem worldOfDb_fdFS : worldOfDb fdFS = some wFS := rfl
 
-theorem wFS_inv : wFS.Inv := by decide
+theorem wFS_inv : wFS.Inv := wFS.inv
 
 theorem hasText_ok (s : String) (h : hasText s = true) (m : String) :
     LangSemantics.Java.Spring.Assert.hasText s m = .ok () := assertHasText_ok h m
@@ -64,11 +64,12 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
   have hN : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
   have hH : hasText "HND" = true := by rw [hasText, string_any_toList]; decide
   have hI : hasText "ITM" = true := by rw [hasText, string_any_toList]; decide
-  refine ⟨by decide, ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩, rfl, hH, hI, ?_⟩
+  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+    ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩, rfl, hH, hI, ?_⟩
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
-    rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+    rcases ha with rfl | rfl <;> decide
   · intro _ _ fm hfm _
     simp only [iaFS, mdFS, List.mem_cons, List.not_mem_nil, or_false] at hfm
     subst hfm
@@ -76,14 +77,14 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
 
 theorem iaFS_devs : dev_D001S iaFS ∧ dev_D002S iaFS := by
   refine ⟨fun r hr _ => ?_, fun r b hr _ hb ft hft _ => ?_⟩
-  · have : r = ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ := by
-      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ :=
+  · have : r = ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ := by
+      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ :=
         by decide
       rw [e] at hr; exact (Option.some.inj hr).symm
     subst this
     decide
-  · have : r = ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ := by
-      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100000⟩ :=
+  · have : r = ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ := by
+      have e : iaFS.md.routeOf iaFS.criteria.depAirportCd iaFS.criteria.arrAirportCd = some ⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩ :=
         by decide
       rw [e] at hr; exact (Option.some.inj hr).symm
     subst this
@@ -103,7 +104,7 @@ theorem assertHasText_eq (s m : String) :
 
 /-- [Source] の結果の写し（区切り文字 `.`）: 運賃の表示は `100.000`。 -/
 def vDot : Spec.FlightSearch.FlightVacantInfo :=
-  ⟨⟨"NTT001"⟩, "Haneda", "Itami", "08:00", "09:00", "1970/01/01", .N, [(.OW, ⟨"OW", "100.000", 10⟩)]⟩
+  ⟨{ val := "NTT001" }, "Haneda", "Itami", "08:00", "09:00", "1970/01/01", .N, [(.OW, ⟨"OW", "100.000", 10⟩)]⟩
 
 /-- 区切り文字 `.` での [Source] の 1 歩（許される並びの 1 つ）の結果の写しは `vDot` の 1 件。 -/
 theorem run_icFS_dot :
@@ -143,7 +144,7 @@ def day1 : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
 /-- 照会の途中で日付をまたいだ入力: `TicketSharedServiceImpl` が読む今日（`validateDepatureDate`・`getSearchLimitDate`）は
 1970-01-01、その後に `searchFlight` が読む今日は 1970-01-02（Clock は進むだけ）。 -/
-def icFS14 : SearchInput := { icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with today := ⟨1970, 1, 2⟩ }
+def icFS14 : SearchInput := { icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with today := ⟨1970, 1, 2, by decide⟩ }
 
 /-- `icFS14` の [Spec] の入力（今日は 1970-01-02）。 -/
 def iaFS14 : Spec.FlightSearch.SearchInput := { iaFS with today := day1 }
@@ -175,7 +176,7 @@ theorem run_icFS14 :
   · cases h
 
 /-- [Spec] の出力は `NotFound` ではない（搭乗日が今日より前なので `Business("e.ar.b1.2001")`）。 -/
-theorem answer_ne14 : Spec.FlightSearch.answer wFS iaFS14 ≠ .error (.notFound "e.ar.b1.2003") := by
+theorem answer_ne14 : Spec.FlightSearch.answer wFS iaFS14 ≠ .error (.notFound .noFlight) := by
   have h : (match Spec.FlightSearch.answer wFS iaFS14 with
       | .error (.notFound _) => false
       | _ => true) = true := by decide +kernel
@@ -194,23 +195,23 @@ theorem dev_D027S_nontrivial : Nontrivial dev_D027S :=
   ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, by unfold dev_D027S; decide⟩, ⟨{ icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with criteria := none }, by unfold dev_D027S; decide⟩⟩
 
 /-- D-001 の前提を破るマスタ: 区間の運賃 100 円・積算比率 29%（`100·29` は 100 で割り切れ、29 は安全でない）。 -/
-def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
+def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
 
 /-- D-002 の前提を破るマスタ: 基本運賃 1430 円・割引率 30%。 -/
 def mdFS1430 : Spec.MasterData :=
-  { mdFS with routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩], fareTypes := [⟨.OW, "OW", 30, 355, 0, 1, 1⟩] }
+  { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩], fareTypes := [⟨.OW, "OW", 30, 355, 0, 1, 1⟩] }
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D001S_nontrivial : Nontrivial dev_D001S := by
   refine ⟨⟨iaFS, iaFS_devs.1⟩, ⟨{ iaFS with md := mdFS29 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩ (by decide) (by decide)
+  have := h ⟨1, { val := "HND" }, { val := "ITM" }, 100⟩ (by decide) (by decide)
   revert this
   decide
 
 open Machine.Preserves (Nontrivial) in
 theorem dev_D002S_nontrivial : Nontrivial dev_D002S := by
   refine ⟨⟨iaFS, iaFS_devs.2⟩, ⟨{ iaFS with md := mdFS1430 }, fun h => ?_⟩⟩
-  have := h ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩ 1430 (by decide) (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
+  have := h ⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩ 1430 (by decide) (by decide) (by decide) ⟨.OW, "OW", 30, 355, 0, 1, 1⟩
     (by simp [mdFS1430]) (by decide)
   revert this
   decide

@@ -68,8 +68,8 @@ def specAnswerJson : Spec.MasterQuery.Answer → Json
 
 def specQuery (i : Json) (op : String) : Except String Spec.MasterQuery.Query := do
   match op with
-  | "master.routeOf" => return .routeOf ⟨← getStr i "dep"⟩ ⟨← getStr i "arr"⟩
-  | "master.flightMasterOf" => return .flightMasterOf ⟨← getStr i "name"⟩
+  | "master.routeOf" => return .routeOf (← getStr i "dep") (← getStr i "arr")
+  | "master.flightMasterOf" => return .flightMasterOf (← getStr i "name")
   | "master.fareTypeOf" => return .fareTypeOf (← fareTypeCd (← getStr i "cd"))
   | "master.boardingClassOf" => return .boardingClassOf (← boardingClassCd (← getStr i "cd"))
   | "master.peakTimeOn" => return .peakTimeOn (← decodeDate (← getStr i "date"))
@@ -82,13 +82,13 @@ def opNames : List String :=
   ["master.routeOf", "master.flightMasterOf", "master.fareTypeOf", "master.boardingClassOf", "master.peakTimeOn",
    "master.multiplicationRatioOn", "master.config", "master.codeList"]
 
-/-- `Spec` の `master.*`。PRE（設定とマスタの不変条件、問い合わせの値域）を満たさない入力は失敗とする。 -/
+/-- `Spec` の `master.*`。PRE（設定とマスタの検証 `masterConfigOk`、問い合わせの値域）を満たさない入力は失敗とする。 -/
 def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let md ← decodeMaster fx.master
   let cfg ← decodeConfig fx.config
   return opNames.map fun op => (op, fun i => do
     let q ← specQuery i op
-    if !(decide cfg.Valid && decide (md.Valid cfg) && decide q.Valid) then throw "outside PRE"
+    if !(decide (Spec.EnvPre.masterConfigOk (cfg, md)) && decide q.Valid) then throw "outside PRE"
     return specAnswerJson (Spec.MasterQuery.answer cfg md q))
 
 /-! ## SourceModel -/

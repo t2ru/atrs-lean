@@ -137,10 +137,32 @@ Lean では、モジュール（ファイル）と名前空間は別の仕組み
 | コード値 | 専用 `structure`（`String` を包む）または `inductive` |
 | 列挙 | `inductive` + `DecidableEq` + `Repr` + JSON 変換 |
 | 暦日・時刻 | `Spec.Prim.Date`, `Spec.Prim.Time.HourMinute`（妥当性を型で保証） |
-| 不変条件付きの値 | `Subtype` または証明フィールド付き `structure` |
+| 不変条件付きの値 | `Subtype` または証明フィールド付き `structure`（[不正な状態を表現できない型](#不正な状態を表現できない型)） |
+| 外部から来る値（入力・環境・DB の行） | 生の型（`@[raw_input "<理由>"]`）と、検証済みの型への検証の関数 |
 
-- 移植先に写しにくい高度な型機能（依存型による長さ付きベクタ等）は証明側（`Abstraction`・`Refinement`）に閉じ込め、`Spec` の公開関数のシグネチャは素朴な型にとどめる。
+- 移植先に写しにくい高度な型機能（添字付きの型族による長さ付きベクタ等）は証明側（`Abstraction`・`Refinement`）に閉じ込め、`Spec` の公開関数のシグネチャは素朴な型にとどめる。素朴な型とは、`structure`・`inductive`（和型）・証明フィールド付きの `structure` である。証明フィールドは移植先で消え、検査付きの構築子を持つ newtype に写る。
 - `SourceModel` / `TargetModel` の型は、それぞれの言語の型に対応させる（言語パックの `semantics.md`）。
+
+## 不正な状態を表現できない型
+
+すべての層（`Spec`・モデル・`Machine`・`Trace`・`LangSemantics`・`ConformanceKit`）のデータ型は、妥当でない値を表せないように作る（make illegal states unrepresentable。[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)）。
+条件を docstring・別の述語・付けた時点の検査に置いてはならない。棚卸しの手順は [guide/type-inventory.md](../../guide/type-inventory.md)。
+
+| 条件 | 型 |
+| --- | --- |
+| ある欄が、別の欄の値によって要る・要らない | 和型（構築子ごとに要る欄だけを持つ） |
+| 空でない、長さ・範囲・形式 | 証明フィールド付きの `structure`（既定 `by decide`）と検証の関数 `ofX? : Raw → Option X` |
+| 一緒に決まる `Bool`・`Option` | 1 つの和型 |
+| 位置で意味が決まる組 | 名前付きの `structure` |
+| 同じ値の 2 つの写し | 片方を消し、導く関数にする |
+| 有限の綴り（コード・層・種類） | 列挙と `toCode` |
+| 同じ長さの 2 つの列 | 組の列 |
+
+- **境界**: 外部から来る値（機械の入力、要求、設定・マスタの環境、DB の行）は、不正な値も表せる生の型のまま置き、`@[raw_input "<理由>"]` を付ける。検証の関数で検証済みの型に移し、内部の関数は検証済みの型だけを受ける。`Option` の `none` は PRE の外を、`Except` は仕様が定めるエラーを表す。
+- **述語のまま残すもの**: 機械の PRE・INV（B メソッドの意味論）、互いに独立な入力の間の関係（状態とマスタの外部キーなど）、環境の全体にわたる性質（宣言の書き方・名前の解決・docstring・登録簿の ID の重複。obligation-check・GK・`trace check` が検査する）、評価せずに式から読む値の字面の形。
+- **字面**: 証明フィールドは既定 `by decide` にし、字面用のマクロ（例: `gid!"D-001"`）を用意する。生成器はそれを出す。大きな表の検査は、真偽値の検査の正しさの定理（`validB_sound` の形）と `decide +kernel` で速くする。
+- **α**: 検証済みの型を作る α は、具体側の不変条件の下で証明を渡し、外では既定の値に写してよい（`dite`）。抽象側の型で表せない具体側の値は、前提型の差異（具体側の入力・状態）である。
+- **検査**: `scripts/ci/check_lean.py` の MISU-1 は、`Spec` で、証明フィールドの無い単一の `String` を包む `structure`（形式の決まった文字列の兆候。どの値も妥当な番号を包む `Nat` は対象外）と、型 `T` の外の `T.WellFormed`・`T.Valid` を誤りにする。`@[raw_input]` を付けた型（とその `Valid`）は除く。型を移す途中の名前は、適用先の `trace/project.json` の `lean.misu_pending`（`names` と、移す作業項目 `backlog`）に挙げて段階導入する。名前空間の中で `structure Valid` と書いた述語は見つけないので、型の棚卸しで補う。
 
 ## 命名
 

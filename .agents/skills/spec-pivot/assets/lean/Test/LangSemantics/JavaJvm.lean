@@ -216,42 +216,42 @@ open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 #guard (jSubstring "0945" 2 4).toOption == some "45"
 #guard (jSubstring "0945" 0 0).toOption == some ""
 #guard (jSubstring "0945" 1 3).toOption == some "94"
-#guard (jSubstring "0945" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "0945" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "0945" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "0945" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "2415" 0 2).toOption == some "24"
 #guard (jSubstring "2415" 2 4).toOption == some "15"
 #guard (jSubstring "2415" 0 0).toOption == some ""
 #guard (jSubstring "2415" 1 3).toOption == some "41"
-#guard (jSubstring "2415" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "2415" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "2415" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "2415" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "abc" 0 2).toOption == some "ab"
-#guard (jSubstring "abc" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "abc" 0 0).toOption == some ""
 #guard (jSubstring "abc" 1 3).toOption == some "bc"
-#guard (jSubstring "abc" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "abc" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "abc" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "abc" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "ab" 0 2).toOption == some "ab"
-#guard (jSubstring "ab" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "ab" 0 0).toOption == some ""
-#guard (jSubstring "ab" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "ab" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "ab" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 0 2) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 2 4) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "ab" 1 3) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "ab" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "ab" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 0 2) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 2 4) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "" 0 0).toOption == some ""
-#guard (jSubstring "" 1 3) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "" 1 3) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "山田太郎" 0 2).toOption == some "山田"
 #guard (jSubstring "山田太郎" 2 4).toOption == some "太郎"
 #guard (jSubstring "山田太郎" 0 0).toOption == some ""
 #guard (jSubstring "山田太郎" 1 3).toOption == some "田太"
-#guard (jSubstring "山田太郎" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "山田太郎" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "山田太郎" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "山田太郎" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 #guard (jSubstring "a𠮷b" 0 0).toOption == some ""
 #guard (jSubstring "a𠮷b" 1 3).toOption == some "𠮷"
-#guard (jSubstring "a𠮷b" 3 1) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
-#guard (jSubstring "a𠮷b" 0 5) matches .error (.other "java.lang.StringIndexOutOfBoundsException" _)
+#guard (jSubstring "a𠮷b" 3 1) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
+#guard (jSubstring "a𠮷b" 0 5) matches .error (.other ⟨"java.lang.StringIndexOutOfBoundsException", _⟩ _)
 -- String.substring(begin)
 #guard (jSubstringFrom "0945" 2).toOption == some "45"
 #guard (jSubstringFrom "2415" 2).toOption == some "15"
@@ -277,53 +277,53 @@ open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 #guard formatGrouped ',' (-1234) == "-1,234"
 #guard formatGrouped ',' (-2147483648) == "-2,147,483,648"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(ja-JP))
-#guard formatGroupedS ⟨',', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 1234 == "1,234"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 20600 == "20,600"
-#guard formatGroupedS ⟨',', '0', "-"⟩ 2147483647 == "2,147,483,647"
-#guard formatGroupedS ⟨',', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨',', '0', "-"⟩ (-1234) == "-1,234"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 1234 == "1,234"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 20600 == "20,600"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ 2147483647 == "2,147,483,647"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨',', '0', "-", by decide⟩ (-1234) == "-1,234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(de-DE))
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 1234 == "1.234"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 20600 == "20.600"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ 2147483647 == "2.147.483.647"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨'.', '0', "-"⟩ (-1234) == "-1.234"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 1234 == "1.234"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 20600 == "20.600"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ 2147483647 == "2.147.483.647"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨'.', '0', "-", by decide⟩ (-1234) == "-1.234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(fr-FR))
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 0 == "0"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 7 == "7"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 1234 == "1 234"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 20600 == "20 600"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ 2147483647 == "2 147 483 647"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ (-1) == "-1"
-#guard formatGroupedS ⟨' ', '0', "-"⟩ (-1234) == "-1 234"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 0 == "0"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 7 == "7"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 1234 == "1 234"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 20600 == "20 600"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ 2147483647 == "2 147 483 647"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ (-1) == "-1"
+#guard formatGroupedS ⟨' ', '0', "-", by decide⟩ (-1234) == "-1 234"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(th-TH-u-nu-thai))
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 0 == "๐"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 7 == "๗"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 1234 == "๑,๒๓๔"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 20600 == "๒๐,๖๐๐"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ 2147483647 == "๒,๑๔๗,๔๘๓,๖๔๗"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ (-1) == "-๑"
-#guard formatGroupedS ⟨',', '๐', "-"⟩ (-1234) == "-๑,๒๓๔"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 0 == "๐"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 7 == "๗"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 1234 == "๑,๒๓๔"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 20600 == "๒๐,๖๐๐"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ 2147483647 == "๒,๑๔๗,๔๘๓,๖๔๗"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ (-1) == "-๑"
+#guard formatGroupedS ⟨',', '๐', "-", by decide⟩ (-1234) == "-๑,๒๓๔"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(ar-EG))
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 0 == "٠"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 7 == "٧"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 1234 == "١٬٢٣٤"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 20600 == "٢٠٬٦٠٠"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ 2147483647 == "٢٬١٤٧٬٤٨٣٬٦٤٧"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ (-1) == "؜-١"
-#guard formatGroupedS ⟨'٬', '٠', "؜-"⟩ (-1234) == "؜-١٬٢٣٤"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 0 == "٠"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 7 == "٧"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 1234 == "١٬٢٣٤"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 20600 == "٢٠٬٦٠٠"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ 2147483647 == "٢٬١٤٧٬٤٨٣٬٦٤٧"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ (-1) == "؜-١"
+#guard formatGroupedS ⟨'٬', '٠', "؜-", by decide⟩ (-1234) == "؜-١٬٢٣٤"
 -- new DecimalFormat("###,###", DecimalFormatSymbols.getInstance(fa-IR))
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 0 == "۰"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 7 == "۷"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 1234 == "۱٬۲۳۴"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 20600 == "۲۰٬۶۰۰"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ 2147483647 == "۲٬۱۴۷٬۴۸۳٬۶۴۷"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ (-1) == "‎−۱"
-#guard formatGroupedS ⟨'٬', '۰', "‎−"⟩ (-1234) == "‎−۱٬۲۳۴"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 0 == "۰"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 7 == "۷"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 1234 == "۱٬۲۳۴"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 20600 == "۲۰٬۶۰۰"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ 2147483647 == "۲٬۱۴۷٬۴۸۳٬۶۴۷"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ (-1) == "‎−۱"
+#guard formatGroupedS ⟨'٬', '۰', "‎−", by decide⟩ (-1234) == "‎−۱٬۲۳۴"
 
 /-! ## LocalDate -/
 
@@ -897,156 +897,156 @@ open LangSemantics.Java.DoubleOps LangSemantics.Java.DecimalFormat
 #guard ((JLocalTime.parseHHmm "+100").toOption.map fun t => (t.hour, t.minute)) == none
 #guard ((JLocalTime.parseHHmm " 900").toOption.map fun t => (t.hour, t.minute)) == none
 -- atTime / plusMinutes / isBefore
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 0, 1)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 2, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 1, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 9, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 19, 10, 40)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 10, 1)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 12, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 11, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 9, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 9, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 19, 20, 40)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 1, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 1, 58)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 23, 58)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 23, 58)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 20, 10, 39)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 16)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 15)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 14)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 14)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 22, 14)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 20, 8, 55)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 0, 1)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 2, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 1, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 29, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 10, 10, 40)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 10, 1)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 12, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 11, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 9, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 9, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 10, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 10, 20, 40)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 0)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 1, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 1, 58)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 23, 58)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 23, 58)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 23, 59)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 11, 10, 39)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 16)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 15)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 14)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 14)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 22, 14)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 22, 15)
-#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 11, 8, 55)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 0, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 0, 1)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 2, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 1, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 23, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 26, 23, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 0, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 7, 10, 40)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 10, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 10, 1)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 12, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 11, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 10, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 9, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 9, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 10, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 7, 20, 40)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 23, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 0)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 1, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 1, 58)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 23, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 23, 58)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 23, 58)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 23, 59)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 8, 10, 39)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 15)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 16)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 15)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 14)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 22, 15)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 14)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 22, 14)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 22, 15)
-#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 8, 8, 55)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 0, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 0, 1)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 2, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 1, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 23, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 29, 23, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 0, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 10, 10, 40)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 10, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 10, 1)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 12, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 11, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 10, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 9, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 9, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 10, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 10, 20, 40)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 23, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 0)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 1, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 1, 58)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 23, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 23, 58)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 23, 58)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 23, 59)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 11, 10, 39)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 15)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 16)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 15)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 14)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 22, 15)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 14)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 22, 14)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 22, 15)
-#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 11, 8, 55)
-#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨11, 59⟩), (JLocalDateTime.atTime e ⟨11, 59⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some (false, true)
-#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨12, 0⟩), (JLocalDateTime.atTime e ⟨12, 0⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some (false, false)
-#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨12, 1⟩), (JLocalDateTime.atTime e ⟨12, 1⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some (true, false)
-#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 10); pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨23, 59⟩), (JLocalDateTime.atTime e ⟨23, 59⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some (false, true)
-#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 12); pure ((JLocalDateTime.atTime d ⟨12, 0⟩).isBefore (JLocalDateTime.atTime e ⟨0, 0⟩), (JLocalDateTime.atTime e ⟨0, 0⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0⟩))) == some (true, false)
-#guard (JLocalDate.ofYMD? 2026 4 12).map (fun d => JLocalDateTime.atStartOfDay d == JLocalDateTime.atTime d ⟨0, 0⟩) == some true
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 0, 1)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 2, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 1, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 9, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 19, 10, 40)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 10, 1)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 12, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 11, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 9, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 9, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 19, 20, 40)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 1, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 1, 58)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 23, 58)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 23, 58)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 20, 10, 39)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 16)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 15)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 0, 14)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 12, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 11, 22, 14)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 10, 22, 14)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 4, 13, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 4 11).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 6, 20, 8, 55)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 0, 1)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 2, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 1, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 29, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 10, 10, 40)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 10, 1)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 12, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 11, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 9, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 9, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 10, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 10, 20, 40)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 0)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 1, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 1, 58)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 23, 58)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 23, 58)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 23, 59)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 11, 10, 39)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 16)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 15)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 0, 14)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 1, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 31, 22, 14)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2026, 12, 30, 22, 14)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 1, 2, 22, 15)
+#guard (JLocalDate.ofYMD? 2026 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2027, 3, 11, 8, 55)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 0, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 0, 1)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 2, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 1, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 23, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 26, 23, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 0, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 7, 10, 40)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 10, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 10, 1)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 12, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 11, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 10, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 9, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 9, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 10, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 7, 20, 40)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 23, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 0)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 1, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 1, 58)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 23, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 23, 58)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 23, 58)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 23, 59)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 8, 10, 39)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 15)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 16)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 15)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 0, 14)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 29, 22, 15)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 28, 22, 14)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 2, 27, 22, 14)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 3, 1, 22, 15)
+#guard (JLocalDate.ofYMD? 2024 2 28).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (2024, 5, 8, 8, 55)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 0, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 0, 1)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 2, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 1, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 23, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 29, 23, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 0, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨0, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 10, 10, 40)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 10, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 10, 1)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 12, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 11, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 10, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 9, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 9, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 10, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨10, 0, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 10, 20, 40)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 23, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 0)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 1, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 1, 58)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 23, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 23, 58)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 23, 58)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 23, 59)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨23, 59, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 11, 10, 39)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 0; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 15)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 16)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 120; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 15)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 119; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 0, 14)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 1440; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 1, 22, 15)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 31, 22, 14)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes (-1441); (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1969, 12, 30, 22, 14)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 2880; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 1, 2, 22, 15)
+#guard (JLocalDate.ofYMD? 1969 12 31).map (fun d => let r := (JLocalDateTime.atTime d ⟨22, 15, by decide⟩).plusMinutes 100000; (r.date.year, r.date.month, r.date.day, r.hour, r.minute)) == some (1970, 3, 11, 8, 55)
+#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨11, 59, by decide⟩), (JLocalDateTime.atTime e ⟨11, 59, by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some (false, true)
+#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨12, 0, by decide⟩), (JLocalDateTime.atTime e ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some (false, false)
+#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 11); pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨12, 1, by decide⟩), (JLocalDateTime.atTime e ⟨12, 1, by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some (true, false)
+#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 10); pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨23, 59, by decide⟩), (JLocalDateTime.atTime e ⟨23, 59, by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some (false, true)
+#guard (do let d ← (JLocalDate.ofYMD? 2026 4 11); let e ← (JLocalDate.ofYMD? 2026 4 12); pure ((JLocalDateTime.atTime d ⟨12, 0, by decide⟩).isBefore (JLocalDateTime.atTime e ⟨0, 0, by decide⟩), (JLocalDateTime.atTime e ⟨0, 0, by decide⟩).isBefore (JLocalDateTime.atTime d ⟨12, 0, by decide⟩))) == some (true, false)
+#guard (JLocalDate.ofYMD? 2026 4 12).map (fun d => JLocalDateTime.atStartOfDay d == JLocalDateTime.atTime d ⟨0, 0, by decide⟩) == some true
 
 /-! ## double -/
 

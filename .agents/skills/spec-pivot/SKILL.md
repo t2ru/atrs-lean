@@ -122,7 +122,7 @@ S6 のうち、`Spec` が業務の意図どおりか、名前付きの成分が�
 ## 手順（要約）
 
 詳細と完了の定義は [process.md](references/docs/guide/process.md)。
-人と AI エージェントの作業の進め方の既定は [workflow.md](references/docs/guide/workflow.md) にある。評価、判断を記録する事項、検査ゲート、未着手の可視化、独立した敵対的レビュー、記録を扱う。プロジェクトは、自分の規約で置き換えてよい。差異の登録簿が実装と原典に合っているかを全範囲で確かめる点検は [gap-inventory.md](references/docs/guide/gap-inventory.md) にある。
+人と AI エージェントの作業の進め方の既定は [workflow.md](references/docs/guide/workflow.md) にある。評価、判断を記録する事項、検査ゲート、未着手の可視化、独立した敵対的レビュー、記録を扱う。プロジェクトは、自分の規約で置き換えてよい。差異の登録簿が実装と原典に合っているかを全範囲で確かめる点検は [gap-inventory.md](references/docs/guide/gap-inventory.md) に、データ型が不正な状態を表現できない型（MISU）になっているかの点検は [type-inventory.md](references/docs/guide/type-inventory.md) にある。
 
 0. **評価する**（任意）。対象ごとに適用の前提を確かめ、適用する範囲を決める（[workflow.md](references/docs/guide/workflow.md#評価)）。
 1. **原典を調べる**。観測可能な振る舞いを洗い出す。SQL・設定・フレームワークの暗黙の処理も対象にする（移植元の言語パックの `frameworks.md`・`layout.md`）。

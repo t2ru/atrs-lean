@@ -53,7 +53,7 @@ def outOfPeriod (cfg : Config) (today depDate : Date) : Bool :=
 /-- 搭乗日の検査。期間外なら `Business("e.ar.b1.2001")`。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#照会可能期間"]
 def validateDepartureDate (cfg : Config) (today depDate : Date) : Except AtrsError Unit :=
-  if outOfPeriod cfg today depDate then .error (.business "e.ar.b1.2001") else .ok ()
+  if outOfPeriod cfg today depDate then .error (.business .outOfSearchPeriod) else .ok ()
 
 /-!
 ## 運賃種別の予約可能判定
@@ -169,12 +169,12 @@ Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FL
 
 
 /-- 照会条件。 -/
-@[spec_doc "lean/Spec/FlightSearch.lean#シグネチャ"]
+@[spec_doc "lean/Spec/FlightSearch.lean#シグネチャ", raw_input "画面・REST の照会条件。空港コードは生の文字列で、区間はマスタで値で引く"]
 structure Criteria where
   depDate : Date
   boardingClassCd : BoardingClassCd
-  depAirportCd : AirportCd
-  arrAirportCd : AirportCd
+  depAirportCd : String
+  arrAirportCd : String
   flightType : FlightType
   deriving DecidableEq, Repr
 
@@ -210,7 +210,7 @@ structure Candidate where
 @[spec_doc "lean/Spec/FlightSearch.lean#定義評価順"]
 def candidateOf (md : MasterData) (c : Criteria) (route : Route) (beforeDayNum : Int) (f : Flight) :
     Option Candidate := do
-  let fm ← md.flightMasterOf f.key.flightName
+  let fm ← md.flightMasterOf f.key.flightName.val
   let ft ← md.fareTypeOf f.key.fareTypeCd
   if f.key.departureDate = c.depDate ∧ fm.routeNo = route.routeNo ∧ f.key.boardingClassCd = c.boardingClassCd ∧
       f.key.fareTypeCd ∈ fareTypesFor c.flightType ∧ availableOnDayNum ft beforeDayNum = true then
@@ -277,11 +277,11 @@ def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) 
   | .error e => some (.error e)
   | .ok () =>
     match md.routeOf c.depAirportCd c.arrAirportCd with
-    | none => some (.error (.business "e.ar.b1.2002"))
+    | none => some (.error (.business .routeNotFound))
     | some route =>
       let beforeDayNum := Date.daysBetween today c.depDate
       let cs := (flights.filterMap (candidateOf md c route beforeDayNum)).mergeSort candidateLe
-      if cs.isEmpty then some (.error (.notFound "e.ar.b1.2003"))
+      if cs.isEmpty then some (.error (.notFound .noFlight))
       else do
         let b ← Fare.basicFare md route.basicFare c.boardingClassCd c.depDate
         let depName ← airportName? md route.depAirportCd
@@ -306,6 +306,7 @@ def searchPeriod (cfg : Config) (today : Date) : Date × Option Date := (today, 
 /-! ## 抽象機械（SPEC 課題） -/
 
 /-- 空席照会の入力（状態のフライト以外）: 設定・マスタ・今日の日付・照会条件。 -/
+@[raw_input "機械の入力。妥当性 SearchInput.Pre は PRE"]
 structure SearchInput where
   cfg : Config
   md : MasterData
@@ -324,7 +325,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
   ∀ r, md.routeOf c.depAirportCd c.arrAirportCd = some r →
     ∀ fm ∈ md.flightMasters, fm.routeNo = r.routeNo → Text.hasText fm.flightName.val = true
 
-/-- PRE: 設定とマスタの不変条件（MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
+/-- PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
 照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件である（照会条件の条件は、
 入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
@@ -332,8 +333,8 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#事前条件", gap "D-033"]
 def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
-    Text.hasText i.criteria.depAirportCd.val = true ∧ Text.hasText i.criteria.arrAirportCd.val = true ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
+    Text.hasText i.criteria.depAirportCd = true ∧ Text.hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
@@ -352,7 +353,8 @@ def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
     (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
-  obtain ⟨_, hmd, hbsome, _, _, _⟩ := h
+  obtain ⟨hok, hbsome, _, _, _⟩ := h
+  obtain ⟨_, hmd⟩ := hok.valid
   unfold searchFlight
   split
   · rfl
@@ -382,11 +384,8 @@ theorem searchMachine_run_step :
 /-- SPEC-002・SPEC-003: 初期状態（シードを投入した後の `World`）は INV を満たし、1 歩は状態を変えないので INV を保つ。 -/
 @[obligation "SPEC-002", "SPEC-003"]
 theorem searchMachine_sound : searchMachine.Sound where
-  init_inv s h := h ▸ Seed.FlightProps.world_inv
-  step_inv s i s' o hi _ hs := by
-    obtain ⟨_, hc⟩ := hs
-    cases hc
-    exact hi
+  init_inv s _ := s.inv
+  step_inv _ _ s' _ _ _ _ := s'.inv
 
 /-- SPEC-007: 初期状態は、シードを投入した後の `World` の 1 点。 -/
 @[obligation "SPEC-007"]

@@ -21,14 +21,14 @@ open Spec.MasterData (Airport Route FlightMaster
 
 /-! ## マスタの不変条件 -/
 
-def hnd : Airport := ⟨⟨"HND"⟩, "東京（羽田）", 1⟩
-def itm : Airport := ⟨⟨"ITM"⟩, "大阪（伊丹）", 2⟩
-def route1 : Route := ⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 25000⟩
-def route2 : Route := ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 25000⟩
+def hnd : Airport := ⟨{ val := "HND" }, "東京（羽田）", 1⟩
+def itm : Airport := ⟨{ val := "ITM" }, "大阪（伊丹）", 2⟩
+def route1 : Route := ⟨1, { val := "HND" }, { val := "ITM" }, 25000⟩
+def route2 : Route := ⟨2, { val := "ITM" }, { val := "HND" }, 25000⟩
 def hm (h m : Nat) (hv : h ≤ 23 ∧ m ≤ 59 := by decide) : HourMinute := ⟨h, m, hv⟩
 def ah (h m : Nat) (hv : h ≤ 47 ∧ m ≤ 59 := by decide) : ArrivalTime := ⟨h, m, hv⟩
-def fm1 : FlightMaster := ⟨⟨"NTT001"⟩, 1, hm 7 0, ah 8 10, "B777"⟩
-def fm2 : FlightMaster := ⟨⟨"NTT002"⟩, 1, hm 9 0, ah 10 10, "B777"⟩
+def fm1 : FlightMaster := ⟨{ val := "NTT001" }, 1, hm 7 0, ah 8 10, "B777"⟩
+def fm2 : FlightMaster := ⟨{ val := "NTT002" }, 1, hm 9 0, ah 10 10, "B777"⟩
 def ow : FareType := ⟨.OW, "片道運賃", 0, 90, 0, 1, 1⟩
 def gd : FareType := ⟨.GD, "グループ割", 30, 60, 1, 3, 7⟩
 def bcN : BoardingClass := ⟨.N, "一般席", 0, 1⟩
@@ -45,11 +45,11 @@ def sample : MasterData where
   fareTypes := [ow, gd]
   peakTimes := [peak1, peak2]
   planes := [⟨"B777", 300, 20⟩]
-  creditTypes := [⟨⟨"VIS"⟩, "VISA", 1⟩]
+  creditTypes := [⟨{ val := "VIS" }, "VISA", 1⟩]
 
 #guard decide (sample.Valid Config.default)
 -- MD-2: 同じ区間
-#guard !decide ({ sample with routes := [route1, { route2 with depAirportCd := ⟨"HND"⟩, arrAirportCd := ⟨"ITM"⟩ }] }.MD2)
+#guard !decide ({ sample with routes := [route1, { route2 with depAirportCd := { val := "HND" }, arrAirportCd := { val := "ITM" } }] }.MD2)
 -- MD-3: 存在しない空港
 #guard !decide ({ sample with airports := [hnd] }.MD3)
 -- MD-4: 重なるピーク時期
@@ -64,16 +64,37 @@ def sample : MasterData where
 #guard !decide ({ sample with fareTypes := [{ ow with discountRate := 61 }] }.MD7 Config.default)
 -- MD-8: 基本運賃と加算料金の合計が値域を超える
 #guard !decide ({ sample with routes := [{ route1 with basicFare := 9995001 }] }.MD8)
--- MD-8: 空港コードが英大文字 3 文字でない
-#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"I-T"⟩ }] }.MD8)
+-- 空港コードの形式（英大文字 3 文字）に合わない値は、空港コードとして表せない（型が形式を持つ）
+#guard (Spec.Model.AirportCd.ofString? "I-T").isNone
+#guard (Spec.Model.AirportCd.ofString? "itm").isNone
+#guard (Spec.Model.AirportCd.ofString? "HNDX").isNone
+#guard (Spec.Model.AirportCd.ofString? "HND").map (·.val) == some "HND"
+#guard (Spec.Model.CreditTypeCd.ofString? "VISA").isNone
+#guard (Spec.Model.CreditTypeCd.ofString? "VIS").map (·.val) == some "VIS"
+-- 会員番号の形式（数字 10 文字）に合わない値は、会員番号として表せない
+#guard (Spec.Model.MembershipNumber.ofString? "000000001").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "00000000001").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "000000000a").isNone
+#guard (Spec.Model.MembershipNumber.ofString? "0000000001").map (·.val) == some "0000000001"
+-- 形式に合わない会員番号の入力は、会員が見つからない業務エラー（入力の会員番号は生の文字列のまま照合する）
+#guard (Spec.Seed.World.world.findMember "000000001").isNone
+#guard match Spec.UseCase.Reserve.checkRepMember Spec.Seed.World.world
+    { repFamilyName := "デンデン", repGivenName := "ハナコ", repAge := 30, repGender := .F, repTel := "", repMail := "",
+      repMembershipNumber := some "abc", passengers := [],
+      flights := .oneWay ⟨Spec.Prim.Date.ymd! 2026 1 1, ⟨"NTT001", by decide⟩, .N, .OW⟩ } with
+  | .error (.business .repMemberNotFound) => true
+  | _ => false
+-- 参照の問い合わせの値域: 形式に合わない空港コードの区間の問い合わせは Valid でない
+#guard !decide (Spec.MasterQuery.Query.routeOf "I-T" "HND").Valid
+#guard decide (Spec.MasterQuery.Query.routeOf "ITM" "HND").Valid
 -- MD-8: 空港コードが区切り行のコード NOP
-#guard !decide ({ sample with airports := [hnd, { itm with code := ⟨"NOP"⟩ }] }.MD8)
+#guard !decide ({ sample with airports := [hnd, { itm with code := { val := "NOP" } }] }.MD8)
 
 -- 参照の問い合わせの値域: 空白だけの便名は Valid でない（原典の Assert.hasText）
-#guard !decide (Spec.MasterQuery.Query.flightMasterOf ⟨" "⟩).Valid
-#guard !decide (Spec.MasterQuery.Query.flightMasterOf ⟨"\t\u3000"⟩).Valid
-#guard decide (Spec.MasterQuery.Query.flightMasterOf ⟨"NTT1"⟩).Valid
-#guard decide (Spec.MasterQuery.Query.flightMasterOf ⟨"\u00A0"⟩).Valid  -- 改行を禁止する空白は Blank でない
+#guard !decide (Spec.MasterQuery.Query.flightMasterOf " ").Valid
+#guard !decide (Spec.MasterQuery.Query.flightMasterOf "\t\u3000").Valid
+#guard decide (Spec.MasterQuery.Query.flightMasterOf "NTT1").Valid
+#guard decide (Spec.MasterQuery.Query.flightMasterOf "\u00A0").Valid  -- 改行を禁止する空白は Blank でない
 -- 文字クラス Blank の端
 #guard [0x09, 0x0D, 0x1C, 0x20, 0x1680, 0x2006, 0x2008, 0x200A, 0x2028, 0x2029, 0x205F, 0x3000].all
   fun n => isBlank (Char.ofNat n)
@@ -82,8 +103,8 @@ def sample : MasterData where
 #guard sample.multiplicationRatioOn (ymd 2026 12 26) == 140
 #guard sample.multiplicationRatioOn (ymd 2026 12 25) == 125
 #guard sample.multiplicationRatioOn (ymd 2027 1 1) == 100
-#guard (sample.routeOf ⟨"ITM"⟩ ⟨"HND"⟩).map (·.routeNo) == some 2
-#guard (sample.routeOf ⟨"HND"⟩ ⟨"HND"⟩).isNone
+#guard (sample.routeOf "ITM" "HND").map (·.routeNo) == some 2
+#guard (sample.routeOf "HND" "HND").isNone
 #guard CodeList.contains (CodeList.airport sample) "HND" && !CodeList.contains (CodeList.airport sample) "NOP"
 
 /-! ### 運賃計算の意図から書く例（`lean/Spec/Fare.lean` の例の表。ADR 9ac6 の採用 C）
@@ -113,7 +134,8 @@ def rt : FareType := ⟨.RT, "往復運賃", 5, 90, 0, 1, 2⟩
 def fareMd : MasterData :=
   { sample with routes := [{ route1 with basicFare := 20600 }, { route2 with basicFare := 20600 }],
                 fareTypes := [ow, rt] }
-def flight (name : String) (ft : FareTypeCd) : Flight := ⟨⟨ymd 2026 11 1, ⟨name⟩, .N, ft⟩, 10⟩
+def flight (name : String) (ft : FareTypeCd) (h : FlightName.valid name = true := by decide) : Flight :=
+  ⟨⟨ymd 2026 11 1, ⟨name, h⟩, .N, ft⟩, 10⟩
 def pax (age : Nat) : Passenger := ⟨"山田", "太郎", age, .M, none⟩
 
 #guard Fare.totalFare Config.default fareMd [flight "NTT001" .OW] [pax 30] == some 20600

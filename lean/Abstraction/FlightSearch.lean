@@ -104,11 +104,11 @@ theorem searchPreserves :
   sound := (Spec.FlightSearch.searchMachine_sound.restrictState _).restrictState _
   initIs := Spec.FlightSearch.searchMachine_initIs
   initSurj := searchRefines_initSurj
-  total _ _ _ h := ⟨⟨⟨h.1.1, h.1.2, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2⟩
+  total _ _ _ h := ⟨⟨⟨h.1, h.2.1, h.2.2.1, h.2.2.2.1, h.2.2.2.2.1⟩, h.2.2.2.2.2.1⟩, h.2.2.2.2.2.2⟩
   envWitness := ⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, iaFS, ⟨⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, rfl⟩, aiS_icFS_comma,
     envFS_iaFS⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaFSbad) wFS_inv
-    fun h => Spec.EnvPre.badMasterData_not_env ⟨h.1.1.1, h.1.1.2.1⟩
+    fun h => Spec.EnvPre.badMasterData_not_env h.1.1.1
   pinned c hc s t ic ia t' oc hi hJ ha hp hd hs := by
     cases hc
     obtain ⟨s', oa, ⟨x, hx⟩, hJ', ho⟩ := searchRefines.correct s t ic ia t' oc hi hJ ha hp hd hs
@@ -144,8 +144,8 @@ theorem searchRefines_commutes {t : SourceModel.Db.Schema.FlightDb} {w : Spec.Po
     (h32 : dev_D032 ic) :
     ∀ r, searchConcrete.step t ic r → ∃ oc, r = .ok (t, oc) ∧ aoS oc = some (Spec.FlightSearch.answer w ia) := by
   intro r ⟨mo, sr, hmo, hsr, hr⟩
-  obtain ⟨⟨hc, hm⟩, hb, hd, ha, hn, h1, h2⟩ := hv
-  obtain ⟨oc, hoc, hα'⟩ := Run.run_spec hw hinv hα ⟨hc, hm, hb, hd, ha, hn⟩ h1 h2 h14 h32 hmo hsr
+  obtain ⟨hok, hb, hd, ha, hn, h1, h2⟩ := hv
+  obtain ⟨oc, hoc, hα'⟩ := Run.run_spec hw hinv hα ⟨hok, hb, hd, ha, hn⟩ h1 h2 h14 h32 hmo hsr
   exact ⟨oc, by rw [hr, hoc]; rfl, hα'⟩
 
 end Abstraction.FlightSearch

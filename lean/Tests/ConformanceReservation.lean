@@ -35,7 +35,7 @@ open ConformanceKit.Runner LangSemantics.Java.Exception LangSemantics.Java.Int
 open Spec.Config Spec.Model Spec.Prim.Format
 
 namespace Tests.ConformanceReservation
-open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig)
+open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig decodeMembershipNumber)
 open Tests.ConformanceFlightSearch (specFlight flightRow jdate getObjVal)
 
 /-! ## 共通 -/
@@ -76,19 +76,23 @@ def strOrNull (o : Option String) : Json := optJson Json.str o
 /-! ## Spec -/
 
 def specMember (m : Json) : Except String Member := do
-  return { membershipNumber := ⟨← getStr m "membershipNumber"⟩, kanjiFamilyName := "", kanjiGivenName := "",
+  return { membershipNumber := ← decodeMembershipNumber (← getStr m "membershipNumber"), kanjiFamilyName := "", kanjiGivenName := "",
            kanaFamilyName := ← getStr m "kanaFamilyName", kanaGivenName := ← getStr m "kanaGivenName",
            birthday := Spec.Prim.Date.ymd! 1970 1 1, gender := ← gender (← getStr m "gender"), tel := "", zipCode := "", address := "",
-           mail := "", creditNo := "", creditTypeCd := ⟨"VIS"⟩, creditTerm := "",
+           mail := "", creditNo := "", creditTypeCd := { val := "VIS" }, creditTerm := "",
            login := { password := ⟨""⟩, lastPassword := none, loginDateTime := none, loginFlg := false } }
 
+/-- 入力の `World`。フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）。 -/
 def specWorld (i : Json) : Except String Spec.Port.World := do
-  return { flights := ← (← optArr i "flights").mapM specFlight, members := ← (← optArr i "members").mapM specMember,
-           sequences := { reserve := ← seqOf i "reserve", reserveFlight := ← seqOf i "reserveFlight",
-                          passenger := ← seqOf i "passenger" } }
+  let flights ← (← optArr i "flights").mapM specFlight
+  if h : (flights.map (·.key)).Nodup then
+    return { flights, flights_nodup := h, members := ← (← optArr i "members").mapM specMember,
+             sequences := { reserve := ← seqOf i "reserve", reserveFlight := ← seqOf i "reserveFlight",
+                            passenger := ← seqOf i "passenger" } }
+  else throw "outside INV (duplicate flight key)"
 
 def specSelect (s : Json) : Except String Spec.Ticket.SelectFlight := do
-  return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ⟨← getStr s "flightName"⟩,
+  return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ← getStr s "flightName",
            boardingClassCd := ← boardingClassCd (← getStr s "boardingClassCd"), fareTypeCd := ← fareTypeCd (← getStr s "fareTypeCd") }
 
 def specPassengerInput (p : Json) : Except String Spec.UseCase.Reserve.PassengerInput := do
@@ -105,10 +109,10 @@ def specRequest (i : Json) : Except String Spec.UseCase.Reserve.Request := do
   return { selects := ← (← getArr i "selectFlights").mapM specSelect, form := ← specForm (← getObjVal i "form") }
 
 def specErrorJson : Spec.Error.AtrsError → Json
-  | .business code args => businessJson code args
-  | .notFound code => errorJson "notFound" [("code", .str code)]
+  | .business e => businessJson e.code e.args
+  | .notFound e => errorJson "notFound" [("code", .str e.code)]
   | .invalidRequest _ => errorJson "invalidRequest" []
-  | .system code _ => errorJson "system" [("code", .str code)]
+  | .system e => errorJson "system" [("code", .str e.code)]
   | .conflict _ => errorJson "conflict" []
 
 def flightJson (k : FlightKey) (vacantNum : Nat) : Json :=
@@ -120,15 +124,15 @@ def specReservationJson (r : Reservation) : Json :=
     ("totalFare", toJson r.totalFare), ("repFamilyName", .str r.repFamilyName), ("repGivenName", .str r.repGivenName),
     ("repAge", toJson r.repAge), ("repGender", .str r.repGender.toCode), ("repTel", .str r.repTel), ("repMail", .str r.repMail),
     ("repMembershipNumber", strOrNull (r.repMembershipNumber.map (·.val))),
-    ("reserveFlights", .arr (r.reserveFlights.map fun rf => Json.mkObj [
+    ("reserveFlights", .arr (r.reserveFlights.legs.map fun (rf, ps) => Json.mkObj [
       ("reserveFlightNo", toJson rf.reserveFlightNo), ("departureDate", .str (fmtIsoDate rf.flight.departureDate)),
       ("flightName", .str rf.flight.flightName.val), ("boardingClassCd", .str rf.flight.boardingClassCd.toCode),
       ("fareTypeCd", .str rf.flight.fareTypeCd.toCode),
-      ("passengers", .arr (rf.passengers.map fun p => Json.mkObj [
-        ("passengerNo", toJson p.passengerNo), ("familyName", .str p.passenger.familyName),
-        ("givenName", .str p.passenger.givenName), ("age", toJson p.passenger.age),
-        ("gender", .str p.passenger.gender.toCode),
-        ("membershipNumber", strOrNull (p.passenger.membershipNumber.map (·.val)))]).toArray)]).toArray)]
+      ("passengers", .arr (ps.map fun (no, p) => Json.mkObj [
+        ("passengerNo", toJson no), ("familyName", .str p.familyName),
+        ("givenName", .str p.givenName), ("age", toJson p.age),
+        ("gender", .str p.gender.toCode),
+        ("membershipNumber", strOrNull (p.membershipNumber.map (·.val)))]).toArray)]).toArray)]
 
 def specWorldJson (w : Spec.Port.World) : Json :=
   Json.mkObj [("flights", .arr (w.flights.map fun f => flightJson f.key f.vacantNum).toArray),
@@ -141,7 +145,6 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let md ← decodeMaster fx.master
   let cfg ← decodeConfig fx.config
   let checkWorld (w : Spec.Port.World) : Except String Unit := do
-    if !decide w.Inv then throw "outside INV (duplicate flight key)"
     if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
   return [
     ("reservation.validateFlightList", fun i => do
@@ -149,12 +152,20 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
       checkWorld w
       let sels ← (← getArr i "selectFlights").mapM specSelect
       match ← need (Spec.Ticket.validateFlightList cfg md w (sels.map (Spec.Ticket.resolve md))) "outside PRE" with
-      | .ok () => return .null
+      | .ok _ => return .null
       | .error e => return specErrorJson e),
     ("reservation.validateReservation", fun i => do
       let w ← specWorld i
       let r ← specRequest i
-      let d ← need (Spec.UseCase.Reserve.buildDraft r.form (r.selects.map (·.key))) "outside PRE (passenger)"
+      -- 予約内容の検証は選択フライトの検証の後なので、選択フライトの主キーは便名を便名の型で読んだもの
+      let ks ← r.selects.mapM fun s => do
+        return ({ departureDate := s.depDate, flightName := ← Tests.ConformanceFare.decodeFlightName s.flightName,
+                  boardingClassCd := s.boardingClassCd, fareTypeCd := s.fareTypeCd } : FlightKey)
+      let it ← match ks with
+        | [k] => pure (Spec.Ticket.Itinerary.oneWay k)
+        | [o, h] => pure (Spec.Ticket.Itinerary.roundTrip o h)
+        | _ => throw "outside PRE (selectFlights must have 1 or 2 flights)"
+      let d ← need (Spec.UseCase.Reserve.buildDraft r.form it) "outside PRE (passenger)"
       match ← need (Spec.UseCase.Reserve.validateReservation cfg md w d) "outside PRE" with
       | .ok () => return .null
       | .error e => return specErrorJson e),
@@ -230,12 +241,12 @@ def srcForm (i : Json) : Except String TicketReserveForm := do
 /-- 業務例外・不正要求を JSON に。ほかの例外はテストの失敗。 -/
 def srcErrorJson (e : JThrow) : Except String Json :=
   match e with
-  | .other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" msg =>
+  | .other ⟨"jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException", _⟩ msg =>
     match msg.splitOn "\n" with
     | code :: args => .ok (businessJson code args)
     | [] => .ok (businessJson msg [])
-  | .other "jp.co.ntt.atrs.app.common.exception.BadRequestException" _ => .ok (errorJson "invalidRequest" [])
-  | .other "jp.co.ntt.atrs.domain.service.b0.InvalidFlightException" _ => .ok (errorJson "invalidRequest" [])
+  | .other ⟨"jp.co.ntt.atrs.app.common.exception.BadRequestException", _⟩ _ => .ok (errorJson "invalidRequest" [])
+  | .other ⟨"jp.co.ntt.atrs.domain.service.b0.InvalidFlightException", _⟩ _ => .ok (errorJson "invalidRequest" [])
   | e => .error s!"java exception: {repr e}"
 
 def srcWorldJson (fd : FlightDb) : Json :=

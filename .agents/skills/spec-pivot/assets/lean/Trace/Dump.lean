@@ -26,8 +26,37 @@ open Trace.Attr
 
 open Lean
 
-/-- 層の名前。`LangSemantics` は言語まで含める（`LangSemantics.Rust` など）。 -/
-abbrev Layer := String
+/-- 層。`LangSemantics` は言語まで含める（`LangSemantics.Rust` など）。`extra` は適用先が足すトップレベル名前空間。 -/
+inductive Layer where
+  | langSemantics (lang : Option String)
+  | machine
+  | spec
+  | sourceModel
+  | abstraction
+  | targetModel
+  | refinement
+  | extra (root : String)
+  deriving DecidableEq, BEq, Repr, Inhabited, Hashable
+
+/-- 層の名前（JSON の値）。 -/
+def Layer.toString : Layer → String
+  | .langSemantics none => "LangSemantics"
+  | .langSemantics (some l) => s!"LangSemantics.{l}"
+  | .machine => "Machine"
+  | .spec => "Spec"
+  | .sourceModel => "SourceModel"
+  | .abstraction => "Abstraction"
+  | .targetModel => "TargetModel"
+  | .refinement => "Refinement"
+  | .extra r => r
+
+instance : ToString Layer := ⟨Layer.toString⟩
+instance : Lean.ToJson Layer := ⟨fun l => Lean.toJson l.toString⟩
+
+/-- 言語意味論の層か。 -/
+def Layer.isLangSemantics : Layer → Bool
+  | .langSemantics _ => true
+  | _ => false
 
 /-- 対象とする層の決め方。 -/
 structure Config where
@@ -36,9 +65,10 @@ structure Config where
   /-- `fromL` の定義の `merkle` に、`toL` の参照先の `merkle` を合成するか。 -/
   merkleScope : Layer → Layer → Bool
 
-/-- 層とするトップレベル名前空間。 -/
-def modelRoots : List String :=
-  ["LangSemantics", "Machine", "Spec", "SourceModel", "Abstraction", "TargetModel", "Refinement"]
+/-- 層とするトップレベル名前空間（`LangSemantics` を除く）。 -/
+def modelRoots : List (String × Layer) :=
+  [("Machine", .machine), ("Spec", .spec), ("SourceModel", .sourceModel), ("Abstraction", .abstraction),
+   ("TargetModel", .targetModel), ("Refinement", .refinement)]
 
 /-- 名前の先頭から `n` 個の成分を取る。 -/
 def namePrefix (name : Name) (n : Nat) : Name :=
@@ -53,14 +83,15 @@ def defaultLayerOf (extraRoots : List String := []) (name : Name) : Option Layer
     let r := root.toString
     if r == "LangSemantics" then
       match rest with
-      | [] => some r
-      | l :: _ => some s!"{r}.{l}"
-    else if modelRoots.contains r || extraRoots.contains r then some r
-    else none
+      | [] => some (.langSemantics none)
+      | l :: _ => some (.langSemantics (some l.toString))
+    else match modelRoots.lookup r with
+      | some l => some l
+      | none => if extraRoots.contains r then some (.extra r) else none
 
 /-- 既定の合成範囲: 同じ層と、`LangSemantics.*`・`Machine`。 -/
 def defaultMerkleScope (fromL toL : Layer) : Bool :=
-  fromL == toL || toL.startsWith "LangSemantics" || toL == "Machine"
+  fromL == toL || toL.isLangSemantics || toL == .machine
 
 /-- 既定の設定。 -/
 def defaultConfig (extraRoots : List String := []) : Config :=

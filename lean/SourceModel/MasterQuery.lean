@@ -99,10 +99,10 @@ def Order.Allowed (db : MasterDb) (o : Order) : Prop :=
   o.route.Perm (RouteRepository.findAll db) ∧ o.flightMaster.Perm (FlightRepository.findAllFlightMaster db) ∧
   o.boardingClass.Perm (BoardingClassRepository.findAll db) ∧ o.fareType.Perm (FareTypeRepository.findAll db) ∧
   o.peakTime.Perm (PeakTimeRepository.findAll db) ∧
-  isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o.airportCl = true ∧
-  isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o.boardingClassCl = true ∧
-  isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o.fareTypeCl = true ∧
-  isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o.creditTypeCl = true
+  isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (airportCodeListRows db) o.airportCl = true ∧
+  isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (boardingClassCodeListRows db) o.boardingClassCl = true ∧
+  isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (fareTypeCodeListRows db) o.fareTypeCl = true ∧
+  isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (creditTypeCodeListRows db) o.creditTypeCl = true
 
 /-- 起動時に読み込んだ Provider のキャッシュ。 -/
 structure Providers where
@@ -153,10 +153,10 @@ def standardOrder (db : MasterDb) : Order where
   boardingClass := BoardingClassRepository.findAll db
   fareType := FareTypeRepository.findAll db
   peakTime := PeakTimeRepository.findAll db
-  airportCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db)
-  boardingClassCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db)
-  fareTypeCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db)
-  creditTypeCl := orderByStable sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db)
+  airportCl := orderByStable sortCfg (orderByDisplayOrder (·.displayOrder)) (airportCodeListRows db)
+  boardingClassCl := orderByStable sortCfg (orderByDisplayOrder (·.displayOrder)) (boardingClassCodeListRows db)
+  fareTypeCl := orderByStable sortCfg (orderByDisplayOrder (·.displayOrder)) (fareTypeCodeListRows db)
+  creditTypeCl := orderByStable sortCfg (orderByDisplayOrder (·.displayOrder)) (creditTypeCodeListRows db)
 
 /-- 参照の具体機械（状態を持たない）。1 歩は、許される並びのどれかで読み込んで答える。 -/
 def queryConcrete : Machine.Concrete Unit SrcInput SrcAnswer JThrow where

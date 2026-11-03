@@ -102,8 +102,11 @@ generated:
 | 量 | 型 |
 | --- | --- |
 | 金額・人数・日数・百分率・積算比率 | `Nat` |
-| 空港コード・便名・会員番号・予約番号 | 専用 `structure` |
+| 空港コード・便名・会員番号・予約番号・カード種別コード | 形式の証明フィールド付きの `structure`（外部から来るコードは生の型。[ADR 6d36](../decision/6d36-misu-spec-types.md)） |
 | `FlightType`, `BoardingClassCd`, `FareTypeCd`, `Gender`, `LineType` | `inductive`（綴りは原典の Java enum と同一） |
+| 機械の入力・要求・設定とマスタの環境 | 生の型（`@[raw_input]`）と、検証済みの型への検証の関数 |
+
+型は、不正な状態を表現できない型にする（スキルの [lang/lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#不正な状態を表現できない型)、[ADR 6d36](../decision/6d36-misu-spec-types.md)）。
 
 値域は [`Spec.Model`](../../lean/Spec/Model.lean#値域) に従う。
 

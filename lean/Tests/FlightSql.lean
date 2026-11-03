@@ -77,7 +77,7 @@ def checkStatement (db : MasterDb) (st : Json) : Except String (String × Bool �
     match rows.filter (fun x => resultRow x == r) with
     | [x] => pure x
     | xs => throw s!"{id}: {r} matches {xs.length} model rows"
-  let allowed := isAllowedOrder SourceModel.Db.Schema.sortCfg vacantSeatDirs vacantSeatKey rows o
+  let allowed := isAllowedOrder SourceModel.Db.Schema.sortCfg vacantSeatOrder rows o
   -- 結果の写像 `flight-map` が例外を投げず、写した値が PostgreSQL の列と一致する
   let mapped := match o.mapM fun r => SourceModel.Domain.Repository.Flight.FlightRepository.flightMap r.result with
     | .ok fs => fs.map mappedRow == pg

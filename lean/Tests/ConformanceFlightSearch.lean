@@ -38,21 +38,22 @@ def errorJson (kind code : String) : Json :=
 /-! ## Spec -/
 
 def specFlight (f : Json) : Except String Flight := do
-  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"), flightName := ⟨← getStr f "flightName"⟩,
+  return { key := { departureDate := ← decodeDate (← getStr f "departureDate"),
+                    flightName := ← Tests.ConformanceFare.decodeFlightName (← getStr f "flightName"),
                     boardingClassCd := ← boardingClassCd (← getStr f "boardingClassCd"),
                     fareTypeCd := ← fareTypeCd (← getStr f "fareTypeCd") },
            vacantNum := ← getNat f "vacantNum" }
 
 def specCriteria (c : Json) : Except String Spec.FlightSearch.Criteria := do
   return { depDate := ← decodeDate (← getStr c "depDate"), boardingClassCd := ← boardingClassCd (← getStr c "boardingClassCd"),
-           depAirportCd := ⟨← getStr c "depAirportCd"⟩, arrAirportCd := ⟨← getStr c "arrAirportCd"⟩,
+           depAirportCd := ← getStr c "depAirportCd", arrAirportCd := ← getStr c "arrAirportCd",
            flightType := ← flightType (← getStr c "flightType") }
 
 def specErrorJson : Spec.Error.AtrsError → Json
-  | .business code _ => errorJson "business" code
-  | .notFound code => errorJson "notFound" code
+  | .business e => errorJson "business" e.code
+  | .notFound e => errorJson "notFound" e.code
   | .invalidRequest _ => errorJson "invalidRequest" ""
-  | .system code _ => errorJson "system" code
+  | .system e => errorJson "system" e.code
   | .conflict _ => errorJson "conflict" ""
 
 def specInfoJson (v : Spec.FlightSearch.FlightVacantInfo) : Json :=
@@ -77,8 +78,9 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
         (← decodeDate (← getStr i "today")))),
     ("flightSearch.searchFlight", fun i => do
       let flights ← (← getArr i "flights").mapM specFlight
-      let w : Spec.Port.World := { flights }
-      if !decide w.Inv then throw "outside INV (duplicate flight key)"
+      -- フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）
+      let w : Spec.Port.World ← if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h }
+        else throw "outside INV (duplicate flight key)"
       if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
       let r ← need (Spec.FlightSearch.searchFlight cfg md (← decodeDate (← getStr i "today")) (← specCriteria (← getObjVal i "criteria"))
         w.findAll) "outside PRE"
@@ -108,8 +110,8 @@ def srcCriteria (c : Json) : Except String SourceModel.Domain.Service.B1.TicketS
 /-- 業務例外を `business`・`notFound` の JSON に。ほかの例外はテストの失敗。 -/
 def srcErrorJson (e : JThrow) : Except String Json :=
   match e with
-  | .other "jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException" code => .ok (errorJson "business" code)
-  | .other "jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException" code => .ok (errorJson "notFound" code)
+  | .other ⟨"jp.co.ntt.atrs.domain.common.exception.AtrsBusinessException", _⟩ code => .ok (errorJson "business" code)
+  | .other ⟨"jp.co.ntt.atrs.domain.service.b1.FlightNotFoundException", _⟩ code => .ok (errorJson "notFound" code)
   | e => .error s!"java exception: {repr e}"
 
 def jstr (r : JRef String) : Json := optJson Json.str r

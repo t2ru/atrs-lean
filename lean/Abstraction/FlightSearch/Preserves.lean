@@ -18,15 +18,15 @@ open Machine Spec Spec.EnvPre Spec.FlightSearch
 /-- ABS-011 の環境の前提。 -/
 def envFS (i : Spec.FlightSearch.SearchInput) : Prop :=
   masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
-    hasText i.criteria.depAirportCd.val = true ∧ hasText i.criteria.arrAirportCd.val = true ∧
+    hasText i.criteria.depAirportCd = true ∧ hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria ∧ dev_D001S i ∧ dev_D002S i
 
 theorem aiS_icFS_comma : aiS (icFS LangSemantics.Java.DecimalFormat.Symbols.ascii) = some iaFS := by decide
 
 theorem envFS_iaFS : envFS iaFS := by
-  obtain ⟨hc, hv, hb, hd, ha, hn⟩ := iaFS_pre
+  obtain ⟨hok, hb, hd, ha, hn⟩ := iaFS_pre
   obtain ⟨h1, h2⟩ := iaFS_devs
-  exact ⟨⟨hc, hv⟩, hb, hd, ha, hn, h1, h2⟩
+  exact ⟨hok, hb, hd, ha, hn, h1, h2⟩
 
 /-- 環境の前提を破る [Spec] の入力: MD-1 を破るマスタ。 -/
 def iaFSbad : Spec.FlightSearch.SearchInput :=

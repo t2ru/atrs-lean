@@ -25,7 +25,7 @@ def db : SourceModel.Db.Schema.MasterDb :=
       ⟨1, by decide⟩, ⟨1, by decide⟩⟩] }
 
 def form (name : JRef String) : SelectFlightForm :=
-  ⟨some ⟨2026, 11, 1⟩, name, some .OW, some .N⟩
+  ⟨some ⟨2026, 11, 1, by decide⟩, name, some .OW, some .N⟩
 
 def providers : Option Providers := (load (standardOrder db)).toOption
 

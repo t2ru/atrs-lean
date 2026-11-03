@@ -9,7 +9,8 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 
 - 入力 `aiMQ`: DB のマスタの各行・設定・問い合わせを、[Spec] の値に写す。行と問い合わせは葉（核の定理を持つ）で、
   マスタ全体・設定・入力は、葉を `Option.bind`・`Option.map`・`List.mapM`・構築子・射影だけで組んだ合成である（G7）。
-  行の葉は `RouteRow.flightTime` だけを捨てる（核 `routeRowKer`）。
+  行の葉は `RouteRow.flightTime` だけを捨てる（核 `routeRowKer`）。空港コード・カード種別コードは葉 `airportCdOf`・`creditTypeCdOf` で読み、
+  形式に合わない値の行・設定には定義しない（[Spec] の型は形式の証明を持つ。D-027）。
 - 出力 `answerOf?`（葉）: 答えのうち [Spec] が観測する成分（`answerObs`）だけを写す。
   区間の空港名・空港の表示順、便マスタの区間の運賃・空港・機材の座席数は捨てる。核は `answerKer`。
 - `dev_D027`: 入力全体が [Spec] の型で表せる（`aiMQ` が定義される）。
@@ -33,19 +34,21 @@ open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim
 /-- `AIRPORT` の行。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def airportOfRow (r : AirportRow) : Option Airport :=
-  (natOfInt4 r.displayOrder).map fun d => ⟨⟨r.airportCd.val⟩, r.airportName.val, d⟩
+  (airportCdOf r.airportCd.val).bind fun c => (natOfInt4 r.displayOrder).map fun d => ⟨c, r.airportName.val, d⟩
 
 /-- `ROUTE` の行（`FLIGHT_TIME` は捨てる。ADR c108）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def routeOfRow (r : RouteRow) : Option Route :=
-  (natOfInt4 r.routeNo).bind fun no => (natOfInt4 r.basicFare).map fun bf =>
-    ⟨no, ⟨r.depAirportCd.val⟩, ⟨r.arrAirportCd.val⟩, bf⟩
+  (natOfInt4 r.routeNo).bind fun no => (airportCdOf r.depAirportCd.val).bind fun dep =>
+    (airportCdOf r.arrAirportCd.val).bind fun arr => (natOfInt4 r.basicFare).map fun bf =>
+      ⟨no, dep, arr, bf⟩
 
 /-- `FLIGHT_MASTER` の行。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def flightMasterOfRow (f : FlightMasterRow) : Option FlightMaster :=
-  (natOfInt4 f.routeNo).bind fun no => (hmOfStr f.departureTime.val).bind fun dt =>
-    (arrOfStr f.arrivalTime.val).map fun ar => ⟨⟨f.flightName.val⟩, no, dt, ar, f.craftType.val⟩
+  (flightNameOf f.flightName.val).bind fun n => (natOfInt4 f.routeNo).bind fun no =>
+    (hmOfStr f.departureTime.val).bind fun dt => (arrOfStr f.arrivalTime.val).map fun ar =>
+      ⟨n, no, dt, ar, f.craftType.val⟩
 
 /-- `BOARDING_CLASS` の行（`BOARDING_CLASS_NAME` が `NULL` なら定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -75,7 +78,8 @@ def planeOfRow (p : PlaneRow) : Option Plane :=
 /-- `CREDIT_TYPE` の行。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def creditTypeOfRow (c : CreditTypeRow) : Option CreditType :=
-  (natOfInt4 c.displayOrder).map fun d => ⟨⟨c.creditTypeCd.val⟩, c.creditFirm.val, d⟩
+  (creditTypeCdOf c.creditTypeCd.val).bind fun cd => (natOfInt4 c.displayOrder).map fun d =>
+    ⟨cd, c.creditFirm.val, d⟩
 
 /-! ### 行の葉の核 -/
 
@@ -86,11 +90,12 @@ theorem natOfInt4_inj {x y : Int4} {n : Nat} (hx : natOfInt4 x = some n) (hy : n
 theorem airportOfRow_kernel : KernelIs airportOfRow (undefOrEq airportOfRow) := by
   apply kernelIs_undefOrEq
   intro r r' a h h'
-  simp only [airportOfRow, Option.map_eq_some_iff] at h h'
-  obtain ⟨d, hd, rfl⟩ := h
-  obtain ⟨d', hd', h⟩ := h'
-  simp only [Airport.mk.injEq, AirportCd.mk.injEq] at h
-  obtain ⟨h1, h2, rfl⟩ := h
+  simp only [airportOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
+  obtain ⟨c, hc, d, hd, rfl⟩ := h
+  obtain ⟨c', hc', d', hd', h⟩ := h'
+  simp only [Airport.mk.injEq] at h
+  obtain ⟨rfl, h2, rfl⟩ := h
+  have h1 := (AirportCd.val_of_ofString? hc').symm.trans (AirportCd.val_of_ofString? hc)
   cases r; cases r'
   simp only [AirportRow.mk.injEq] at *
   exact ⟨Subtype.ext h1.symm, Subtype.ext h2.symm, natOfInt4_inj hd' hd |>.symm⟩
@@ -111,10 +116,12 @@ theorem routeOfRow_kernel : KernelIs routeOfRow routeRowKer := by
       refine Or.inr ?_
       have h' : routeOfRow r' = some a := by rw [← e, h]
       simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
-      obtain ⟨no, hno, bf, hbf, rfl⟩ := h
-      obtain ⟨no', hno', bf', hbf', h⟩ := h'
-      simp only [Spec.MasterData.Route.mk.injEq, AirportCd.mk.injEq] at h
-      obtain ⟨rfl, h2, h3, rfl⟩ := h
+      obtain ⟨no, hno, dep, hdep, arr, harr, bf, hbf, rfl⟩ := h
+      obtain ⟨no', hno', dep', hdep', arr', harr', bf', hbf', h⟩ := h'
+      simp only [Spec.MasterData.Route.mk.injEq] at h
+      obtain ⟨rfl, rfl, rfl, rfl⟩ := h
+      have h2 := (AirportCd.val_of_ofString? hdep').symm.trans (AirportCd.val_of_ofString? hdep)
+      have h3 := (AirportCd.val_of_ofString? harr').symm.trans (AirportCd.val_of_ofString? harr)
       cases r; cases r'
       simp only [RouteRow.mk.injEq] at *
       exact ⟨natOfInt4_inj hno hno', Subtype.ext h2.symm, Subtype.ext h3.symm, trivial, natOfInt4_inj hbf hbf'⟩
@@ -127,10 +134,11 @@ theorem flightMasterOfRow_kernel : KernelIs flightMasterOfRow (undefOrEq flightM
   apply kernelIs_undefOrEq
   intro f f' a h h'
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
-  obtain ⟨no, hno, dt, hdt, ar, har, rfl⟩ := h
-  obtain ⟨no', hno', dt', hdt', ar', har', h⟩ := h'
-  simp only [FlightMaster.mk.injEq, FlightName.mk.injEq] at h
-  obtain ⟨h1, rfl, rfl, rfl, h5⟩ := h
+  obtain ⟨n, hn, no, hno, dt, hdt, ar, har, rfl⟩ := h
+  obtain ⟨n', hn', no', hno', dt', hdt', ar', har', h⟩ := h'
+  simp only [FlightMaster.mk.injEq] at h
+  obtain ⟨rfl, rfl, rfl, rfl, h5⟩ := h
+  have h1 := (flightNameOf_eq_some hn').symm.trans (flightNameOf_eq_some hn)
   cases f; cases f'
   simp only [FlightMasterRow.mk.injEq] at *
   exact ⟨Subtype.ext h1.symm, natOfInt4_inj hno hno', Subtype.ext (inj_of_kernel hmOfStr_kernel hdt hdt'),
@@ -196,11 +204,12 @@ theorem planeOfRow_kernel : KernelIs planeOfRow (undefOrEq planeOfRow) := by
 theorem creditTypeOfRow_kernel : KernelIs creditTypeOfRow (undefOrEq creditTypeOfRow) := by
   apply kernelIs_undefOrEq
   intro c c' a h h'
-  simp only [creditTypeOfRow, Option.map_eq_some_iff] at h h'
-  obtain ⟨d, hd, rfl⟩ := h
-  obtain ⟨d', hd', h⟩ := h'
-  simp only [CreditType.mk.injEq, CreditTypeCd.mk.injEq] at h
-  obtain ⟨h1, h2, rfl⟩ := h
+  simp only [creditTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
+  obtain ⟨k, hk, d, hd, rfl⟩ := h
+  obtain ⟨k', hk', d', hd', h⟩ := h'
+  simp only [CreditType.mk.injEq] at h
+  obtain ⟨rfl, h2, rfl⟩ := h
+  have h1 := (CreditTypeCd.val_of_ofString? hk').symm.trans (CreditTypeCd.val_of_ofString? hk)
   cases c; cases c'
   simp only [CreditTypeRow.mk.injEq] at *
   exact ⟨Subtype.ext h1.symm, Subtype.ext h2.symm, natOfInt4_inj hd' hd |>.symm⟩
@@ -221,17 +230,19 @@ def masterDataOf (db : MasterDb) : Option MasterData :=
 def configOf (c : AtrsConfig) : Option Config :=
   (natOfJ32 c.limitDay).bind fun ld => (natOfJ32 c.reserveIntervalTime).bind fun ri =>
     (natOfJ32 c.representativeMinAge).bind fun rm => (natOfJ32 c.adultPassengerMinAge).bind fun am =>
-      (natOfJ32 c.childFareRate).bind fun cr => (dateOfSlash c.dateOfBirthMinDate).map fun dob =>
-        ⟨ld, ri, rm, am, cr, dob, c.defaultFlightType, ⟨c.defaultDepAirportCd⟩, ⟨c.defaultArrAirportCd⟩,
-          c.defaultBoardingClassCd⟩
+      (natOfJ32 c.childFareRate).bind fun cr => (dateOfSlash c.dateOfBirthMinDate).bind fun dob =>
+        (airportCdOf c.defaultDepAirportCd).bind fun dep => (airportCdOf c.defaultArrAirportCd).map
+          fun arr => ⟨ld, ri, rm, am, cr, dob, c.defaultFlightType, dep, arr, c.defaultBoardingClassCd⟩
 
 theorem configOf_inj {c c' : AtrsConfig} {x : Config} (h : configOf c = some x) (h' : configOf c' = some x) :
     c = c' := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
-  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, rfl⟩ := h
-  obtain ⟨b1, f1, b2, f2, b3, f3, b4, f4, b5, f5, b6, f6, h'⟩ := h'
-  simp only [Config.mk.injEq, AirportCd.mk.injEq] at h'
-  obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl, g7, g8, g9, g10⟩ := h'
+  obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, a7, e7, a8, e8, rfl⟩ := h
+  obtain ⟨b1, f1, b2, f2, b3, f3, b4, f4, b5, f5, b6, f6, b7, f7, b8, f8, h'⟩ := h'
+  simp only [Config.mk.injEq] at h'
+  obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl, g7, rfl, rfl, g10⟩ := h'
+  have g8 := (AirportCd.val_of_ofString? f7).symm.trans (AirportCd.val_of_ofString? e7)
+  have g9 := (AirportCd.val_of_ofString? f8).symm.trans (AirportCd.val_of_ofString? e8)
   cases c; cases c'
   simp only at *
   rw [inj_of_kernel natOfJ32_kernel e1 f1, inj_of_kernel natOfJ32_kernel e2 f2,
@@ -243,8 +254,8 @@ theorem configOf_inj {c c' : AtrsConfig} {x : Config} (h : configOf c = some x) 
 /-- 問い合わせの引数。日付は `dateOfJ`、空港コード・便名はそのまま。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def queryOf? : SrcQuery → Option Spec.MasterQuery.Query
-  | .routeOf dep arr => some (.routeOf ⟨dep⟩ ⟨arr⟩)
-  | .flightMasterOf name => some (.flightMasterOf ⟨name⟩)
+  | .routeOf dep arr => some (.routeOf dep arr)
+  | .flightMasterOf name => some (.flightMasterOf name)
   | .fareTypeOf cd => some (.fareTypeOf cd)
   | .boardingClassOf cd => some (.boardingClassOf cd)
   | .peakTimeOn d => (dateOfJ d).map .peakTimeOn
@@ -254,8 +265,8 @@ def queryOf? : SrcQuery → Option Spec.MasterQuery.Query
 
 /-- `queryOf?` の逆（定義域の上）。 -/
 def queryBack : Spec.MasterQuery.Query → SrcQuery
-  | .routeOf dep arr => .routeOf dep.val arr.val
-  | .flightMasterOf name => .flightMasterOf name.val
+  | .routeOf dep arr => .routeOf dep arr
+  | .flightMasterOf name => .flightMasterOf name
   | .fareTypeOf cd => .fareTypeOf cd
   | .boardingClassOf cd => .boardingClassOf cd
   | .peakTimeOn d => .peakTimeOn (JLocalDate.ofEpochDay d.epochDay)
@@ -311,17 +322,17 @@ def opt {α β : Type} (f : α → Option β) : Option α → Option (Option β)
 def route (r : SourceModel.Domain.Model.Route) : Option Spec.MasterData.Route := do
   let no ← r.routeNo.bind natOfJ32
   let bf ← r.basicFare.bind natOfJ32
-  let dep ← r.departureAirport.bind (·.code)
-  let arr ← r.arrivalAirport.bind (·.code)
-  pure ⟨no, ⟨dep⟩, ⟨arr⟩, bf⟩
+  let dep ← (r.departureAirport.bind (·.code)).bind airportCdOf
+  let arr ← (r.arrivalAirport.bind (·.code)).bind airportCdOf
+  pure ⟨no, dep, arr, bf⟩
 
 def flightMaster (f : SourceModel.Domain.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
-  let name ← f.flightName
+  let name ← f.flightName.bind flightNameOf
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
   let ar ← f.arrivalTime.bind arrOfStr
   let ct ← f.plane.bind (·.craftType)
-  pure ⟨⟨name⟩, no, dt, ar, ct⟩
+  pure ⟨name, no, dt, ar, ct⟩
 
 def boardingClass (b : SourceModel.Domain.Model.BoardingClass) : Option MasterData.BoardingClassInfo := do
   let cd ← b.boardingClassCd
@@ -408,10 +419,13 @@ namespace AnswerOf
 theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.Route} (h : route r = some c)
     (h' : route r' = some c) : routeObs r = routeObs r' := by
   simp only [route, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨no, ⟨v, hv, e1⟩, bf, ⟨w, hw, e2⟩, dep, ⟨a, ha, e3⟩, arr, ⟨b, hb, e4⟩, rfl⟩ := h
-  obtain ⟨no', ⟨v', hv', f1⟩, bf', ⟨w', hw', f2⟩, dep', ⟨a', ha', f3⟩, arr', ⟨b', hb', f4⟩, h⟩ := h'
-  simp only [Spec.MasterData.Route.mk.injEq, AirportCd.mk.injEq] at h
+  obtain ⟨no, ⟨v, hv, e1⟩, bf, ⟨w, hw, e2⟩, dep, ⟨sd, ⟨a, ha, e3⟩, pd⟩, arr, ⟨sa, ⟨b, hb, e4⟩, pa⟩, rfl⟩ := h
+  obtain ⟨no', ⟨v', hv', f1⟩, bf', ⟨w', hw', f2⟩, dep', ⟨sd', ⟨a', ha', f3⟩, pd'⟩, arr', ⟨sa', ⟨b', hb', f4⟩, pa'⟩, h⟩ :=
+    h'
+  simp only [Spec.MasterData.Route.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl⟩ := h
+  obtain rfl := (AirportCd.val_of_ofString? pd').symm.trans (AirportCd.val_of_ofString? pd)
+  obtain rfl := (AirportCd.val_of_ofString? pa').symm.trans (AirportCd.val_of_ofString? pa)
   obtain ⟨ac, an, ad⟩ := a; obtain ⟨ac', an', ad'⟩ := a'; obtain ⟨bc, bn, bd⟩ := b; obtain ⟨bc', bn', bd'⟩ := b'
   simp only at e3 e4 f3 f4
   subst e3 e4 f3 f4
@@ -423,10 +437,12 @@ theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.R
 theorem flightMaster_inj {f f' : SourceModel.Domain.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
     (h : flightMaster f = some c) (h' : flightMaster f' = some c) : flightMasterObs f = flightMasterObs f' := by
   simp only [flightMaster, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨nm, hn, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
-  obtain ⟨nm', hn', no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩, h⟩ := h'
-  simp only [Spec.MasterData.FlightMaster.mk.injEq, FlightName.mk.injEq] at h
+  obtain ⟨nm, ⟨sn, hn, en⟩, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
+  obtain ⟨nm', ⟨sn', hn', en'⟩, no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩,
+    h⟩ := h'
+  simp only [Spec.MasterData.FlightMaster.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
+  obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
   obtain ⟨rn, rb, ra, rd⟩ := r; obtain ⟨rn', rb', ra', rd'⟩ := r'
   obtain ⟨pc, pn, ps⟩ := p; obtain ⟨pc', pn', ps'⟩ := p'
   simp only at hv hv' e4 f4
@@ -546,23 +562,25 @@ def ic_unknownBoardingClass : SrcInput :=
 theorem dev_D027_nontrivial : Nontrivial dev_D027 :=
   ⟨⟨ic_ok, by unfold dev_D027; decide⟩, ⟨ic_unknownBoardingClass, by unfold dev_D027; decide⟩⟩
 
+/-- D-036（前提型・具体側の入力）: DB のマスタの空港の行のコードが、どれも空港コードの形式（英大文字 3 文字。
+`AirportCd.valid`）に合う。D-027（[Spec] の型で表せる）に覆われる（`Abstraction.MasterData.covers_D036`）。 -/
+@[deviation "D-036"]
+def dev_D036 (ic : SrcInput) : Prop := ∀ r ∈ ic.db.airport, AirportCd.valid r.airportCd.val = true
+
+/-- 前提を満たさない入力: コードに `-` を含む空港の行を持つ DB（`RouteProvider.makeCacheKey` の区切りと重なる）。 -/
+def ic_dashAirport : SrcInput :=
+  { db := { airport := [⟨⟨"H-D", by decide⟩, ⟨"羽田", by decide⟩, ⟨1, by decide⟩⟩] },
+    config := upstreamConfig, query := .config }
+
+theorem dev_D036_nontrivial : Nontrivial dev_D036 :=
+  ⟨⟨ic_ok, by unfold dev_D036; decide⟩, ⟨ic_dashAirport, by unfold dev_D036; decide⟩⟩
+
 /-! ## 2b-1 の補題とのつなぎ -/
 
-theorem airportOfRow_eq_some {r : AirportRow} {a : Airport} (h : airportOfRow r = some a) : a = airportOf r := by
-  simp only [airportOfRow, Option.map_eq_some_iff] at h
-  obtain ⟨d, hd, rfl⟩ := h
+theorem airportOfRow_eq_some {r : AirportRow} {a : Airport} (h : airportOfRow r = some a) : AirportOf r a := by
+  simp only [airportOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+  obtain ⟨c, hc, d, hd, rfl⟩ := h
   rw [natOfInt4_eq_some] at hd
-  simp only [airportOf, hd, Int.toNat_natCast]
-
-/-- 空港の表の写しは、2b-1 の `airportOf` で各行を写した列。 -/
-theorem mapM_airportOfRow {rows : List AirportRow} {as : List Airport} (h : rows.mapM airportOfRow = some as) :
-    as = rows.map airportOf := by
-  induction rows generalizing as with
-  | nil => simp at h; simp [h]
-  | cons r rows ih =>
-    simp only [List.mapM_cons, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def,
-      Option.some.injEq] at h
-    obtain ⟨a, ha, as', has, rfl⟩ := h
-    simp only [List.map_cons, airportOfRow_eq_some ha, ih has]
+  exact ⟨AirportCd.val_of_ofString? hc, rfl, by simp only [hd, Int.toNat_natCast]⟩
 
 end Abstraction.MasterData.Alpha

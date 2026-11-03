@@ -254,7 +254,7 @@ def eqInt (a b : Int4) : Truth := SqlValue.eq collationC a.toSql b.toSql
 /-- 整列の設定（PostgreSQL の既定。照合順序 C）。 -/
 def sortCfg : SortConfig := sortConfig
 
-/-- `ORDER BY display_order ASC` の整列キー。 -/
-def orderKey {α : Type} (displayOrder : α → Int4) (r : α) : List SqlValue := [(displayOrder r).toSql]
+/-- `ORDER BY display_order ASC` の整列の指定。 -/
+def orderByDisplayOrder {α : Type} (displayOrder : α → Int4) : OrderBy α := ⟨[(.asc, fun r => (displayOrder r).toSql)]⟩
 
 end SourceModel.Db.Schema

@@ -32,7 +32,7 @@ structure Sequences where
 
 | 成分 | 型 |
 | --- | --- |
-| `flights` | フライトの集合（主キーで一意） |
+| `flights` | フライトの集合（主キーで一意。Lean の `Spec.Port.World` は一意性の証明 `flights_nodup` を持つ。[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)） |
 | `members` | 会員の集合（会員番号で一意） |
 | `reservations` | 予約の集合（予約番号で一意。予約フライト・搭乗者を含む） |
 | `sequences` | 採番の状態（会員・予約・予約フライト・搭乗者） |
@@ -47,6 +47,8 @@ structure Sequences where
 structure World where
   /-- フライトの集合（主キーで一意。列の順序は意味を持たない） -/
   flights : List Flight
+  /-- フライトは主キーで一意である（ADR 6d36 の L3） -/
+  flights_nodup : (flights.map (·.key)).Nodup := by decide
   /-- 会員の集合（会員番号で一意） -/
   members : List Member := []
   /-- 予約の集合（予約番号で一意。登録順） -/
@@ -58,11 +60,24 @@ structure World where
 namespace World
 
 /-- `World` の不変条件: フライトは主キーで一意である。会員・予約・採番の不変条件は、それを使う機械（backlog aedf の
-第 2 段）で足す。 -/
+第 2 段）で足す。主キーの一意性は `World` の証明フィールド `flights_nodup` が持つので、どの `World` も満たす（`inv`。
+ADR 6d36 の L3）。機械の INV の枠として述語のまま残す。 -/
 @[spec_doc "lean/Spec/Port.lean#world抽象状態"]
 def Inv (w : World) : Prop := (w.flights.map (·.key)).Nodup
 
 instance (w : World) : Decidable w.Inv := by unfold Inv; infer_instance
+
+/-- どの `World` も不変条件を満たす（証明フィールド `flights_nodup`）。 -/
+theorem inv (w : World) : w.Inv := w.flights_nodup
+
+/-- 空席数の更新（フライトの列の写像）は、主キーの列を変えない。 -/
+theorem map_key_setVacant (fs : List Flight) (k : FlightKey) (n : Nat) :
+    (fs.map fun f => if f.key == k then { f with vacantNum := n } else f).map (·.key) = fs.map (·.key) := by
+  simp only [List.map_map]
+  congr 1
+  funext f
+  simp only [Function.comp]
+  split <;> rfl
 
 /-- フライトの参照整合性（DDL の FK_FLIGHT_1〜3）: 各フライトの便名・搭乗クラス・運賃種別がマスタにある。
 マスタは `World` に含めない入力なので、`World.Inv` でなく、マスタとの組の述語とする（MD-3 の残り）。 -/
@@ -112,14 +127,16 @@ def findForUpdate (w : World) (k : FlightKey) : Option Flight := w.flights.find?
 /-- `FlightRepository.updateVacantNum(key, n)`。 -/
 @[spec_doc "lean/Spec/Port.lean#flightrepository"]
 def updateVacantNum (w : World) (k : FlightKey) (n : Nat) : World :=
-  { w with flights := w.flights.map fun f => if f.key == k then { f with vacantNum := n } else f }
+  { w with
+    flights := w.flights.map fun f => if f.key == k then { f with vacantNum := n } else f
+    flights_nodup := by rw [map_key_setVacant]; exact w.flights_nodup }
 
 /-!
 ## MemberRepository
 
 | 操作 | 契約 |
 | --- | --- |
-| `find(membershipNumber)` | 会員（ログイン情報を含む）または無し |
+| `find(membershipNumber)` | 会員（ログイン情報を含む）または無し。引数は入力の文字列で、会員番号の値と比べる |
 | `insert(member)` | 会員番号が未使用でなければならない |
 | `update(member)` | 基本情報（氏名・生年月日・性別・電話・郵便番号・住所・メール・カード情報）を置き換える |
 | `updatePassword(membershipNumber, newHash)` | `lastPassword := password`, `password := newHash` |
@@ -128,9 +145,20 @@ def updateVacantNum (w : World) (k : FlightKey) (n : Nat) : World :=
 -/
 
 
-/-- `MemberRepository.find(membershipNumber)`。 -/
+/-- `MemberRepository.find(membershipNumber)`。会員番号は入力の文字列で引く（形式に合わない文字列の会員は無い）。 -/
 @[spec_doc "lean/Spec/Port.lean#memberrepository"]
-def findMember (w : World) (n : MembershipNumber) : Option Member := w.members.find? (·.membershipNumber == n)
+def findMember (w : World) (n : String) : Option Member := w.members.find? (·.membershipNumber.val == n)
+
+/-- 見つかった会員の会員番号は、引いた文字列そのもの。 -/
+theorem findMember_val {w : World} {n : String} {m : Member} (h : w.findMember n = some m) :
+    m.membershipNumber.val = n := by
+  unfold findMember at h
+  simpa using List.find?_some h
+
+/-- 会員が見つかる文字列は、会員番号として読め、その会員の会員番号になる。 -/
+theorem findMember_ofString? {w : World} {n : String} {m : Member} (h : w.findMember n = some m) :
+    MembershipNumber.ofString? n = some m.membershipNumber := by
+  rw [← findMember_val h, MembershipNumber.ofString?_val]
 
 /-!
 ## ReservationRepository
@@ -166,7 +194,7 @@ def insertReservation (w : World) (r : Reservation) : World := { w with reservat
 
 /-- 予約番号の書式: 10 桁ゼロ埋めの十進文字列。 -/
 @[spec_doc "lean/Spec/Port.lean#idgenerator"]
-def reserveNoOf (n : Nat) : ReserveNo := ⟨padNat 10 n⟩
+def reserveNoOf (n : Nat) : ReserveNo := ⟨n⟩
 
 /-- `IdGenerator.nextReserveNo()`。 -/
 @[spec_doc "lean/Spec/Port.lean#idgenerator"]

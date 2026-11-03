@@ -13,7 +13,7 @@ import SourceModel.ReserveQuery
 
 - 状態: 空席照会と共有する `Abstraction.World.Alpha.worldOfDb` と、具体側の不変条件 `IcW`（貼り合わせの `J` が同じ）。
 - 入力: 設定・マスタは ABS-026 の `configOf`・`masterDataOf`、今日は Clock の最初の読み出し（`dateOfJ`。D-014 の前提で、
-  どの読み出しも同じ日付）、選択フライトは `keyOfForm`、予約フォームは各欄をそのまま（年齢は `natOfJ32`）。
+  どの読み出しも同じ日付）、選択フライトは各欄をそのまま（出発日は `dateOfJ`、便名は文字列のまま）、予約フォームは各欄をそのまま（年齢は `natOfJ32`）。
   実行環境の障害（I/O の失敗・排他の失敗の位置）は抽象側の入力に無い（[Spec] の環境の選択 N-001・N-002 に当たる）。
 - 出力: 合計金額・予約番号・支払期限と、業務例外（コードと引数）・不正要求（`InvalidRequest`。詳細は自由な選択 N-004 で
   置き換える）・I/O の失敗（`System("e.ar.fw.9999")`）・排他の失敗（`Conflict`）。
@@ -58,10 +58,11 @@ theorem opOf_kernel : KernelIs opOf (undefOrEq opOf) := by
   intro x y b hx hy
   cases x <;> cases y <;> simp only [opOf, Option.some.injEq] at hx hy <;> (try subst hx) <;> first | rfl | cases hy
 
-/-- 選択フライト情報（`null` には定義しない）。 -/
+/-- 選択フライト情報（`null` には定義しない。便名は文字列のまま）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def selectOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option Spec.Ticket.SelectFlight :=
-  (keyOfForm f).map fun k => ⟨k.departureDate, k.flightName, k.boardingClassCd, k.fareTypeCd⟩
+  (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
+    f.fareTypeCd.map fun ft => ⟨d, n, bc, ft⟩
 
 /-- 搭乗者情報フォーム（年齢は `optAgeOf`）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -96,12 +97,17 @@ def aiR (ic : SourceModel.ReserveQuery.MInput) : Option MInput :=
 def aoR : SourceModel.ReserveQuery.MOutput → Option MOutput
   | .ok (.confirmed o) => (natOfJ32 o.totalFare).map fun n => .ok (.confirmed n)
   | .ok (.reserved o) =>
-    o.reserveNo.bind fun no => (o.paymentDate.bind dateOfJ).bind fun d => (o.totalFare.bind natOfJ32).map fun tf =>
-      .ok (.reserved ⟨⟨no⟩, d, tf⟩)
-  | .error (.business c a) => some (.error (.business c a))
+    (o.reserveNo.bind Spec.Model.ReserveNo.ofString?).bind fun no => (o.paymentDate.bind dateOfJ).bind fun d =>
+      (o.totalFare.bind natOfJ32).map fun tf => .ok (.reserved ⟨no, d, tf⟩)
+  | .error (.business c a) => (Spec.Error.BusinessError.ofCode? c a).map fun e => .error (.business e)
   | .error .badRequest => some (.error (.invalidRequest ""))
-  | .error .ioFailure => some (.error (.system "e.ar.fw.9999"))
+  | .error .ioFailure => some (.error (.system .ioFailure))
   | .error .conflict => some (.error (.conflict "conflict"))
+
+/-- 業務例外の α: コードと引数から事由が戻る。 -/
+theorem aoR_business (be : Spec.Error.BusinessError) :
+    aoR (.error (.business be.code be.args)) = some (.error (.business be)) := by
+  simp only [aoR, Spec.Error.BusinessError.ofCode?_code_args, Option.map_some]
 
 theorem optDateOfJ_inj {x y : JRef JLocalDate} {d : Spec.Prim.Date} (hx : x.bind dateOfJ = some d)
     (hy : y.bind dateOfJ = some d) : x = y := by
@@ -128,16 +134,19 @@ theorem aoR_reserved {x : SourceModel.ReserveQuery.MOutput} {r : ReserveResult} 
   rcases x with (⟨c, a⟩ | _ | _ | _) | (⟨⟨t⟩⟩ | ⟨⟨no, d, tf⟩⟩) <;>
     simp only [aoR, Option.some.injEq, Option.map_eq_some_iff, Option.bind_eq_some_iff, reduceCtorEq,
       Except.ok.injEq, MOutputValue.reserved.injEq, and_false, exists_false] at h
-  obtain ⟨n, rfl, j, hj, k, hk, rfl⟩ := h
-  exact ⟨d, tf, rfl, Option.bind_eq_some_iff.mpr hj, Option.bind_eq_some_iff.mpr hk⟩
+  obtain ⟨rn, ⟨n, rfl, hrn⟩, j, hj, k, hk, rfl⟩ := h
+  refine ⟨d, tf, ?_, Option.bind_eq_some_iff.mpr hj, Option.bind_eq_some_iff.mpr hk⟩
+  simp only [Spec.Model.ReserveNo.val_of_ofString? hrn]
 
 theorem aoR_error {x : SourceModel.ReserveQuery.MOutput} {e : Spec.Error.AtrsError} (h : aoR x = some (.error e)) :
-    (∃ c a, e = .business c a ∧ x = .error (.business c a)) ∨ (e = .invalidRequest "" ∧ x = .error .badRequest) ∨
-      (e = .system "e.ar.fw.9999" ∧ x = .error .ioFailure) ∨ (e = .conflict "conflict" ∧ x = .error .conflict) := by
+    (∃ be, e = .business be ∧ x = .error (.business be.code be.args)) ∨ (e = .invalidRequest "" ∧ x = .error .badRequest) ∨
+      (e = .system .ioFailure ∧ x = .error .ioFailure) ∨ (e = .conflict "conflict" ∧ x = .error .conflict) := by
   rcases x with (⟨c, a⟩ | _ | _ | _) | (⟨⟨t⟩⟩ | ⟨⟨no, d, tf⟩⟩) <;>
     simp only [aoR, Option.some.injEq, Option.map_eq_some_iff, Option.bind_eq_some_iff, reduceCtorEq,
       Except.error.injEq, and_false, exists_false] at h
-  · exact .inl ⟨c, a, h.symm, rfl⟩
+  · obtain ⟨be, hbe, rfl⟩ := h
+    obtain ⟨rfl, rfl⟩ := Spec.Error.BusinessError.code_args_of_ofCode? hbe
+    exact .inl ⟨be, rfl, rfl⟩
   · exact .inr (.inl ⟨h.symm, rfl⟩)
   · exact .inr (.inr (.inl ⟨h.symm, rfl⟩))
   · exact .inr (.inr (.inr ⟨h.symm, rfl⟩))
@@ -147,8 +156,8 @@ theorem aoR_kernel : KernelIs aoR (undefOrEq aoR) := by
   apply kernelIs_undefOrEq
   intro x y b hx hy
   rcases b with e | (n | r)
-  · rcases aoR_error hx with ⟨c, a, rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
-      rcases aoR_error hy with ⟨c', a', he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ <;>
+  · rcases aoR_error hx with ⟨be, rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
+      rcases aoR_error hy with ⟨be', he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ | ⟨he, rfl⟩ <;>
       first | rfl | (cases he; rfl) | (cases he; done)
   · obtain ⟨t, rfl, ht⟩ := aoR_confirmed hx
     obtain ⟨t', rfl, ht'⟩ := aoR_confirmed hy
@@ -165,7 +174,7 @@ abbrev glueR := Machine.Glue.ofStd worldOfDb IcW aiR aoR
 /-- 具体側の入力の環境の記述（障害の位置。束の環境の固定 `pinned` の `ce`。ADR ab93 の 3d）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def ceR (ic : SourceModel.ReserveQuery.MInput) : Spec.Nondet.FaultSpec :=
-  (ic.input.env.ioFailAt, ic.input.env.conflictAt)
+  ⟨ic.input.env.ioFailAt, ic.input.env.conflictAt⟩
 
 /-- `ceR` の核: 障害の位置が同じ入力を同一視する。 -/
 @[kernel "docs/spec/abstraction.md#抽象化関数-α"]
@@ -201,9 +210,14 @@ def dev_D009 (w : Spec.Port.World) (i : MInput) : Prop :=
 def dev_D031 (i : MInput) : Prop :=
   ∀ o h, i.req.selects = [o, h] → ∀ m, i.md.flightMasterOf o.flightName = some m → m.arrivalTime.toMinutes < 1440
 
-/-- 予約の合計金額の入力: 選択フライトの主キーと、空でない搭乗者欄の年齢。 -/
+/-- 選択フライトを便マスタで解決した主キーの列（解決できない選択フライトは除く。選択フライトの検証が成功すれば、
+予約する便の主キーの列）。 -/
+def selectKeys (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : List FlightKey :=
+  ss.filterMap fun s => (Spec.Ticket.resolve md s).map (·.key)
+
+/-- 予約の合計金額の入力: 選択フライトを解決した主キーと、空でない搭乗者欄の年齢。 -/
 def tfOf (i : MInput) : Spec.Fare.TotalFareInput :=
-  ⟨i.cfg, i.md, i.req.selects.map (·.key), (i.req.form.passengers.filter (!·.isEmpty)).map fun p => p.age.getD 0⟩
+  ⟨i.cfg, i.md, selectKeys i.md i.req.selects, (i.req.form.passengers.filter (!·.isEmpty)).map fun p => p.age.getD 0⟩
 
 /-- D-001（予約）: 合計金額の入力 `tfOf` に `dev_D001T` が成り立つ。 -/
 @[deviation "D-001"]

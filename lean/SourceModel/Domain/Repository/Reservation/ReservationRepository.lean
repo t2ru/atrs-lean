@@ -41,7 +41,7 @@ open SourceModel.Domain.Model SourceModel.Db.MyBatis
 namespace ReservationRepository
 
 /-- MyBatis の `selectKey` の結果を `Integer` で読めないときの例外（JDBC の `getInt` の失敗を MyBatis が包む）。 -/
-def keyReadFailureClass : String := "org.mybatis.spring.MyBatisSystemException"
+def keyReadFailureClass : LangSemantics.Java.Exception.JClassName := cls!"org.mybatis.spring.MyBatisSystemException"
 
 /-- NOT NULL の `VARCHAR(n)` の列への格納。 -/
 def storeText (column : String) (n : Nat) : JRef String → SqlResult (Varchar n)

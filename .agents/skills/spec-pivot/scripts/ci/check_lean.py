@@ -173,12 +173,17 @@ def strip(src: str) -> str:
 IMPORT_RE = re.compile(r"^\s*(?:public\s+|private\s+)?(?:meta\s+)?import\s+(?:all\s+)?([\w.«»]+)", re.M)
 
 
+MISU_PENDING: set = set()
+
+
 def check_file(path: pathlib.Path, module: str):
     """1 ファイルを検査し、(規則, 行, 説明) の一覧を返す。"""
     layer = layer_of(module)
     raw = path.read_text(encoding="utf-8")
     code = strip(raw)
     found = []
+    if layer == "Spec":
+        found += misu_violations(raw, code, module, MISU_PENDING)
     if layer is None:
         found.append(("LEAN-IMPORT", 1, f"module {module} is not in a known top-level namespace"))
         return found
@@ -208,6 +213,42 @@ def check_file(path: pathlib.Path, module: str):
     return found
 
 
+STRUCT_RE = re.compile(r"^structure\s+([\w.]+)[^\n]*?\bwhere[ \t]*\n((?:[ \t]+[^\n]*\n|[ \t]*\n)*)", re.M)
+FIELD_RE = re.compile(r"^[ \t]+(?!deriving\b)([\w']+)\s*:(?!=)\s*((?:(?!:=)[^\n])+?)\s*(?::=.*)?$", re.M)
+PRED_RE = re.compile(r"^(?:@\[[^\]]*\]\s*)?(?:def|abbrev|structure)\s+([\w.]+)\.(WellFormed|Valid)\b", re.M)
+RAWDECL_RE = re.compile(r"@\[[^\]]*\braw_input\b[^\]]*\]\s*(?:structure|inductive)\s+([\w.]+)")
+RAW_RE = re.compile(r"@\[[^\]]*\braw_input\b[^\]]*\]\s*(?:/-[\s\S]*?-/\s*)?$")
+
+
+def misu_violations(raw: str, code: str, module: str, pending: set):
+    """MISU-1（spec-pivot の ADR bf1b）: `Spec` で、証明フィールドの無い単一の `String` を包む `structure` と、
+    型の外の `T.WellFormed`・`T.Valid`。`@[raw_input "<理由>"]` を付けた型と、適用先の段階導入の一覧 `pending`
+    （`trace/project.json` の `lean.misu_pending`。完全名）は除く。"""
+    found = []
+    ns = re.findall(r"^namespace\s+([\w.]+)", code, re.M)
+    prefix = ns[0] + "." if ns else ""
+    raw_types = set(RAWDECL_RE.findall(code))
+    for m in STRUCT_RE.finditer(code):
+        name = m.group(1)
+        fields = [f for f in FIELD_RE.findall(m.group(2)) if not f[0].startswith("--")]
+        if len(fields) != 1 or fields[0][1].strip() != "String":
+            continue
+        if name in raw_types or (prefix + name) in pending or name in pending:
+            continue
+        line = code.count("\n", 0, m.start()) + 1
+        found.append(("MISU-1", line, f"structure {name} only wraps {fields[0][1].strip()} without a proof field "
+                      "(add the invariant as a field, or mark a raw input with @[raw_input \"<reason>\"])"))
+    for m in PRED_RE.finditer(code):
+        name = m.group(1)
+        # 生の型の妥当性の述語は、機械の PRE（ADR bf1b の規則 2・3）
+        if name in raw_types or (prefix + name) in pending or name in pending:
+            continue
+        line = code.count("\n", 0, m.start()) + 1
+        found.append(("MISU-1", line, f"{name}.{m.group(2)} is a predicate outside the type {name} "
+                      "(make it a proof field, or list it in lean.misu_pending while it is staged)"))
+    return found
+
+
 def lean_files(root: pathlib.Path):
     for p in sorted(root.rglob("*.lean")):
         rel = p.relative_to(root)
@@ -229,6 +270,7 @@ def main_check() -> int:
     cfg = json.loads((repo / "trace" / "project.json").read_text(encoding="utf-8"))
     configure(cfg["languages"]["source"], cfg["languages"]["target"])
     roots = [repo / r for r in cfg["lean"]["roots"]]
+    MISU_PENDING.update(cfg["lean"].get("misu_pending", {}).get("names", []))
     bad = 0
     nfiles = 0
     for p, found in run(roots).items():

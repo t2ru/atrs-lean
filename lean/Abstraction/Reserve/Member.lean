@@ -30,8 +30,9 @@ theorem membersOf_numbers : ∀ {ms : List MemberRow} {ls : List MemberLoginRow}
     split at hx
     · rename_i hc
       simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hx
-      obtain ⟨_, _, _, _, _, _, rfl⟩ := hx
-      refine ⟨?_, ?_⟩ <;> simp [ih1, ih2, hc]
+      obtain ⟨_, _, _, _, _, _, _, _, _, hmn, rfl⟩ := hx
+      have := membershipNumberOf_eq_some hmn
+      refine ⟨?_, ?_⟩ <;> simp [ih1, ih2, hc, this]
     · cases hx
   | [], _ :: _, _, h => by simp [membersOf] at h
   | _ :: _, [], _, h => by simp [membersOf] at h
@@ -39,7 +40,7 @@ theorem membersOf_numbers : ∀ {ms : List MemberRow} {ls : List MemberLoginRow}
 /-- 会員番号で引いた会員の行と、同じ位置のログインの行と、`findMember` の会員。 -/
 theorem membersOf_find : ∀ {ms : List MemberRow} {ls : List MemberLoginRow} {xs : List Member},
     membersOf ms ls = some xs → ∀ s : String,
-      match xs.find? (·.membershipNumber == ⟨s⟩) with
+      match xs.find? (·.membershipNumber.val == s) with
       | none => ms.find? (·.customerNo.val == s) = none
       | some x => ∃ m l, ms.find? (·.customerNo.val == s) = some m ∧ ls.find? (·.customerNo.val == s) = some l ∧
           memberOfRow m l = some x
@@ -53,11 +54,12 @@ theorem membersOf_find : ∀ {ms : List MemberRow} {ls : List MemberLoginRow} {x
     split at hx'
     · rename_i hc
       simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hx'
-      obtain ⟨_, _, _, _, _, _, rfl⟩ := hx'
+      obtain ⟨_, _, _, _, _, _, _, _, mn, hmn, rfl⟩ := hx'
+      have hmn' := membershipNumberOf_eq_some hmn
       by_cases hs : m.customerNo.val = s
-      · simp [List.find?_cons, hs, ← hc, hx]
+      · simp [hs, ← hc, hx, hmn']
       · have hs' : ¬ l.customerNo.val = s := by rw [← hc]; exact hs
-        have e1 : ((⟨m.customerNo.val⟩ : MembershipNumber) == ⟨s⟩) = false := by simp [hs]
+        have e1 : (mn.val == s) = false := by simp [hmn', hs]
         have e2 : (m.customerNo.val == s) = false := by simp [hs]
         have e3 : (l.customerNo.val == s) = false := by simp [hs']
         simp only [List.find?_cons, e1, e2, e3]
@@ -146,7 +148,7 @@ theorem nodup_map_comp {α β γ : Type} {g : β → γ} (hg : ∀ a b, g a = g 
 
 theorem nodup_map_val {α : Type} {xs : List α} {f : α → MembershipNumber} (h : (xs.map f).Nodup) :
     (xs.map fun x => (f x).val).Nodup :=
-  nodup_map_comp (fun a b e => by cases a; cases b; simp_all) h
+  nodup_map_comp (fun _ _ e => MembershipNumber.ext e) h
 
 /-- `findOne` の文の結果と `World.findMember`: 会員が無ければ 0 行、あれば 1 行で、その会員とログインの行の α は
 `findMember` の会員。 -/
@@ -154,7 +156,7 @@ theorem nodup_map_val {α : Type} {xs : List α} {f : α → MembershipNumber} (
 theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World} {md : Spec.MasterData}
     (hw : worldOfDb fd = some w) (hk : KeysOk w) (hmd : masterDataOf mdb = some md) (h1 : md.MD1)
     (href : w.MemberRefMaster md) (s : String) :
-    match w.findMember ⟨s⟩ with
+    match w.findMember s with
     | none => findOneRows mdb fd (.text s) = []
     | some x => ∃ r, findOneRows mdb fd (.text s) = [r] ∧ memberOfRow r.member r.login = some x := by
   have hms := (worldOfDb_eq_some.mp hw).2.1
@@ -167,17 +169,17 @@ theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World}
     exact hc
   have hcode : ∀ a b, creditTypeOfRow a = some b → b.creditTypeCd.val = a.creditTypeCd.val := by
     intro a b h
-    simp only [creditTypeOfRow, Option.map_eq_some_iff] at h
-    obtain ⟨_, _, rfl⟩ := h
-    rfl
+    simp only [creditTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨_, hk, _, _, rfl⟩ := h
+    exact CreditTypeCd.val_of_ofString? hk
   have hc : (mdb.creditType.map (·.creditTypeCd.val)).Nodup := by
     rw [← mapM_map_eq (g := fun b => b.creditTypeCd.val) hcode hcts]
     have h8 := h1.2.2.2.2.2.2.2.1
-    exact nodup_map_comp (g := CreditTypeCd.val) (fun a b e => by cases a; cases b; simp_all) h8
+    exact nodup_map_comp (g := CreditTypeCd.val) (fun _ _ e => CreditTypeCd.ext e) h8
   rw [findOneRows_eq mdb fd s hm hl hc]
   have hf := membersOf_find hms s
   unfold Spec.Port.World.findMember
-  cases hx : w.members.find? (·.membershipNumber == ⟨s⟩) with
+  cases hx : w.members.find? (·.membershipNumber.val == s) with
   | none =>
     rw [hx] at hf
     simp only [hf, Option.bind_none, Option.toList_none]
@@ -189,12 +191,12 @@ theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World}
     have hxm : x ∈ w.members := List.mem_of_find?_eq_some hx
     obtain ⟨ct, hct, hctx⟩ := href x hxm
     obtain ⟨c, hcm, hcc⟩ := LangSemantics.Core.MapM.mapM_some_mem' hcts hct
-    have hxct : x.creditTypeCd = ⟨m.creditTypeCd.val⟩ := by
+    have hxct : x.creditTypeCd.val = m.creditTypeCd.val := by
       unfold memberOfRow at hml
       split at hml
       · simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at hml
-        obtain ⟨_, _, _, _, _, _, rfl⟩ := hml
-        rfl
+        obtain ⟨_, _, _, _, _, _, _, hk, _, _, rfl⟩ := hml
+        exact CreditTypeCd.val_of_ofString? hk
       · cases hml
     obtain ⟨c', e3⟩ : ∃ c', mdb.creditType.find? (·.creditTypeCd.val == m.creditTypeCd.val) = some c' := by
       apply Option.isSome_iff_exists.mp
@@ -216,7 +218,7 @@ theorem memberMap_ok {m : MemberRow} {l : MemberLoginRow} {x : Member} (h : memb
   unfold memberOfRow at h
   split at h
   · simp only [Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h
-    obtain ⟨b, hb, g, hg, dt, hdt, rfl⟩ := h
+    obtain ⟨b, hb, g, hg, dt, hdt, _, _, _, _, rfl⟩ := h
     have hv : SourceModel.Domain.Model.Gender.valueOf m.gender.val = .ok g := by
       unfold Gender.ofCode? at hg
       unfold SourceModel.Domain.Model.Gender.valueOf

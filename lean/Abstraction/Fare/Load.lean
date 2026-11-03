@@ -28,12 +28,12 @@ open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
 
 theorem routeOfRow_fare {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.basicFare : Int) = r.basicFare.val := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, -, bf, hbf, rfl⟩ := h
+  obtain ⟨no, -, -, -, -, -, bf, hbf, rfl⟩ := h
   exact (natOfInt4_eq_some.mp hbf).symm
 
 /-- 便マスタのキャッシュの答えが持つ区間の運賃は、[Spec] の便名の区間の運賃。 -/
 theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
+    (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
     ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
       ∀ rt, Spec.Fare.routeOfFlightName md name = some rt →
       ∃ fm r b, FlightMasterProvider.getFlightMaster fmp name.val = .ok (some fm) ∧ fm.route = some r ∧ r.basicFare = some b ∧
@@ -42,16 +42,11 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   have hapnd := airportCodes_nodup ha h1.1
   have hrnd := routeNos_nodup hrts h1.2.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
-  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
-    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-    have := h1.2.2.1
-    rw [e] at this
-    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := flightMasterNames_nodup hfm h1.2.2.1
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname rt hrt' => ?_⟩
@@ -64,11 +59,7 @@ theorem flightMaster_fare {db : MasterDb} {md : MasterData} (hm : masterDataOf d
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
       == name.val) = (fun f => f.flightName.val == name.val) from rfl] at hget
-  have hspec : md.flightMasterOf name =
-      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
-    unfold MasterData.flightMasterOf
-    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
-      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
+  have hspec := flightMasterOf_db hfm name.val
   unfold Spec.Fare.routeOfFlightName at hrt'
   rw [hspec] at hrt'
   cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with
@@ -150,8 +141,8 @@ theorem load_correct' {db : MasterDb} {cfg : Config} {md : MasterData} (hm : mas
   obtain ⟨hpr, hpf, hpb, hpft, -, -, -, -, -⟩ := ho
   obtain ⟨bcp, hbl, hbq⟩ := boardingClass_query hbcs hv.md1.2.2.2.1 hpb
   obtain ⟨ftp, hfl, hfq⟩ := fareType_query hfts hv.md1.2.2.2.2.1 hpft
-  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hv.md8 hpr
-  obtain ⟨fmp, hml, hmf⟩ := flightMaster_fare hm hv.md1 hv.md3 hv.md8 hpf
+  obtain ⟨rtp, hrl, -⟩ := route_query hm hv.md1 hv.md2 hv.md3 hpr
+  obtain ⟨fmp, hml, hmf⟩ := flightMaster_fare hm hv.md1 hv.md3 hpf
   exact ⟨_, by simp only [load, hbl, hfl, hrl, hml, ok_bind]; rfl, rfl, fun cd => hbq cd, fun cd => hfq cd, hmf⟩
 
 end Abstraction.Fare.Load

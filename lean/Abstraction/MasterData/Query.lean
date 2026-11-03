@@ -154,26 +154,26 @@ theorem apOf_at {db : MasterDb} {c : String} (h : ∃ a ∈ db.airport, a.airpor
       by simp only [apOf, hf, Option.getD_some, this]⟩
 
 theorem airportOfRow_code {r : AirportRow} {a : Airport} (h : airportOfRow r = some a) :
-    a.code = ⟨r.airportCd.val⟩ := by
-  simp only [airportOfRow, Option.map_eq_some_iff] at h
-  obtain ⟨_, _, rfl⟩ := h; rfl
+    a.code.val = r.airportCd.val := (airportOfRow_eq_some h).1
 
 theorem routeOfRow_codes {r : RouteRow} {x : Route} (h : routeOfRow r = some x) :
-    x.depAirportCd = ⟨r.depAirportCd.val⟩ ∧ x.arrAirportCd = ⟨r.arrAirportCd.val⟩ := by
+    x.depAirportCd.val = r.depAirportCd.val ∧ x.arrAirportCd.val = r.arrAirportCd.val := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨_, _, _, _, rfl⟩ := h; exact ⟨rfl, rfl⟩
+  obtain ⟨_, _, _, hd, _, ha, _, _, rfl⟩ := h
+  exact ⟨AirportCd.val_of_ofString? hd, AirportCd.val_of_ofString? ha⟩
 
 /-- MD-1: 空港コードは DB の表の中で重複しない。 -/
 theorem airportCodes_nodup {db : MasterDb} {as : List Airport} (ha : db.airport.mapM airportOfRow = some as)
     (hnd : (as.map (·.code)).Nodup) : (db.airport.map (·.airportCd.val)).Nodup := by
-  rw [mapM_some_map ha (g := fun r => (⟨r.airportCd.val⟩ : AirportCd)) fun _ _ h => airportOfRow_code h] at hnd
-  exact nodup_map_of_imp hnd fun _ _ _ _ e => by simp only [e]
+  have hnd' : (as.map (·.code.val)).Nodup := nodup_map_of_imp hnd fun _ _ _ _ e => AirportCd.ext e
+  rwa [mapM_some_map ha (g := fun r => r.airportCd.val) fun _ _ h => airportOfRow_code h] at hnd'
 
-/-- MD-3・MD-8: 区間の空港は DB の空港の表にあり、そのコードは `WellFormed`。 -/
+/-- MD-3: 区間の空港は DB の空港の表にあり、そのコードは空港コードの形式（`AirportCd.valid`）を満たす
+（α が定義されるので、行のコードは [Spec] の空港コードとして読めた）。 -/
 theorem route_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h3 : md.MD3)
-    (h8 : md.MD8) {r : RouteRow} (hr : r ∈ db.route) :
+    {r : RouteRow} (hr : r ∈ db.route) :
     (∃ a ∈ db.airport, a.airportCd.val = r.depAirportCd.val) ∧ (∃ a ∈ db.airport, a.airportCd.val = r.arrAirportCd.val) ∧
-      (⟨r.depAirportCd.val⟩ : AirportCd).WellFormed ∧ (⟨r.arrAirportCd.val⟩ : AirportCd).WellFormed := by
+      AirportCd.valid r.depAirportCd.val = true ∧ AirportCd.valid r.arrAirportCd.val = true := by
   obtain ⟨ha, hrt, -⟩ := masterDataOf_eq_some.mp hm
   obtain ⟨x, hx, hxr⟩ := mapM_some_mem hrt hr
   obtain ⟨hdep, harr⟩ := routeOfRow_codes hxr
@@ -183,10 +183,10 @@ theorem route_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = 
   have e1 := airportOfRow_code hae
   have e2 := airportOfRow_code hbe
   refine ⟨⟨ar, har, ?_⟩, ⟨br, hbr, ?_⟩, ?_, ?_⟩
-  · have := hac.trans hdep; rw [e1] at this; exact congrArg AirportCd.val this
-  · have := hbc.trans harr; rw [e2] at this; exact congrArg AirportCd.val this
-  · rw [← hdep, ← hac]; exact (h8.1 a ham).1
-  · rw [← harr, ← hbc]; exact (h8.1 b hbm).1
+  · rw [← e1, hac, hdep]
+  · rw [← e2, hbc, harr]
+  · rw [← hdep]; exact x.depAirportCd.wf
+  · rw [← harr]; exact x.arrAirportCd.wf
 
 /-! ## 区間 -/
 
@@ -195,24 +195,24 @@ theorem answer_route {db : MasterDb} {r : RouteRow} {x : Route} (h : routeOfRow 
     AnswerOf.route (SourceModel.Domain.Repository.Route.RouteRepository.routeMap
       (routeResultOf r (apOf db r.depAirportCd.val) (apOf db r.arrAirportCd.val))) = some x := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hno, bf, hbf, rfl⟩ := h
+  obtain ⟨no, hno, dep, hdep, arr, harr, bf, hbf, rfl⟩ := h
   simp only [AnswerOf.route, SourceModel.Domain.Repository.Route.RouteRepository.routeMap, routeResultOf, SourceModel.Db.MyBatis.str,
-    natOfJ32_int, hno, hbf, hd.2, ha.2, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+    natOfJ32_int, hno, hbf, hd.2, ha.2, Option.bind_eq_bind, Option.bind_some, Option.pure_def, hdep, harr]
 
 theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h2 : md.MD2) (h3 : md.MD3) (h8 : md.MD8) {o : List RouteResult} (hp : o.Perm (RouteRepository.findAll db)) :
-    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : AirportCd, hasText dep.val = true → hasText arr.val = true →
-      ∃ ans, RouteProvider.getRouteByAirportCd rtp dep.val arr.val = .ok ans ∧
+    (h2 : md.MD2) (h3 : md.MD3) {o : List RouteResult} (hp : o.Perm (RouteRepository.findAll db)) :
+    ∃ rtp, RouteProvider.load o = .ok rtp ∧ ∀ dep arr : String, hasText dep = true → hasText arr = true →
+      ∃ ans, RouteProvider.getRouteByAirportCd rtp dep arr = .ok ans ∧
       answerOf? (.route ans) = some (.route (md.routeOf dep arr)) := by
   obtain ⟨ha, hrt, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   rw [routeFindAll_eq hapnd hat] at hp
   refine ⟨_, routeLoad_eq o, fun dep arr hdep harr => ?_⟩
   refine ⟨(JHashMap.ofList (o.map fun r =>
     (RouteProvider.makeCacheKey r.depAirportCd.val r.aarAirportCd.val, SourceModel.Domain.Repository.Route.RouteRepository.routeMap r))).get
-      (RouteProvider.makeCacheKey dep.val arr.val), ?_, ?_⟩
+      (RouteProvider.makeCacheKey dep arr), ?_, ?_⟩
   · simp only [RouteProvider.getRouteByAirportCd, assertHasText_ok hdep, assertHasText_ok harr]
     rfl
   let key : RouteResult → String := fun res => RouteProvider.makeCacheKey res.depAirportCd.val res.aarAirportCd.val
@@ -221,40 +221,41 @@ theorem route_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = so
   have hkey : ∀ r ∈ db.route, key (projR r) = RouteProvider.makeCacheKey r.depAirportCd.val r.arrAirportCd.val := by
     intro r hr
     simp only [key, projR, routeResultOf, (hat r hr).1.2, (hat r hr).2.2]
-  have hpairs : (db.route.map fun r => ((⟨r.depAirportCd.val⟩ : AirportCd), (⟨r.arrAirportCd.val⟩ : AirportCd))).Nodup := by
-    rw [← mapM_some_map hrt (k := fun x : Route => (x.depAirportCd, x.arrAirportCd)) fun _ _ h => by
+  have hpairs : (db.route.map fun r => (r.depAirportCd.val, r.arrAirportCd.val)).Nodup := by
+    rw [← mapM_some_map hrt (k := fun x : Route => (x.depAirportCd.val, x.arrAirportCd.val)) fun _ _ h => by
       rw [(routeOfRow_codes h).1, (routeOfRow_codes h).2]]
-    exact h2.1
+    refine nodup_map_of_imp h2.1 fun a _ b _ e => ?_
+    simp only [Prod.mk.injEq] at e ⊢
+    exact ⟨AirportCd.ext e.1, AirportCd.ext e.2⟩
   have hnd : (db.route.map (key ∘ projR)).Nodup := by
     refine nodup_map_of_imp hpairs fun a ha b hb e => ?_
     simp only [Function.comp, hkey a ha, hkey b hb] at e
-    obtain ⟨e1, e2⟩ := makeCacheKey_inj (AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 ha).2.2.1)
-      (AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hb).2.2.1) e
+    obtain ⟨e1, e2⟩ := makeCacheKey_inj (AirportCd.no_dash_of_valid (route_airport hm h3 ha).2.2.1)
+      (AirportCd.no_dash_of_valid (route_airport hm h3 hb).2.2.1) e
     have e1' : a.depAirportCd.val = b.depAirportCd.val := e1
     simp only [e1', e2]
   show answerOf? (.route ((JHashMap.ofList (o.map fun b => (key b, SourceModel.Domain.Repository.Route.RouteRepository.routeMap b))).get
-    (RouteProvider.makeCacheKey dep.val arr.val))) = _
+    (RouteProvider.makeCacheKey dep arr))) = _
   rw [JHashMap.get_ofList_perm hp hnd]
   have hspec : md.routeOf dep arr =
-      (db.route.find? fun r => key (projR r) == RouteProvider.makeCacheKey dep.val arr.val).bind routeOfRow := by
+      (db.route.find? fun r => key (projR r) == RouteProvider.makeCacheKey dep arr).bind routeOfRow := by
     unfold MasterData.routeOf
-    rw [find?_mapM hrt (p := fun r => (⟨r.depAirportCd.val⟩ : AirportCd) == dep && (⟨r.arrAirportCd.val⟩ : AirportCd) == arr)
+    rw [find?_mapM hrt (p := fun r => r.depAirportCd.val == dep && r.arrAirportCd.val == arr)
       fun _ _ h => by rw [(routeOfRow_codes h).1, (routeOfRow_codes h).2]]
     congr 1
     refine find?_congr fun r hr => ?_
     rw [hkey r hr]
-    have nd := AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hr).2.2.1
-    have nda := AirportCd.no_dash_of_wellFormed (route_airport hm h3 h8 hr).2.2.2
+    have nd := AirportCd.no_dash_of_valid (route_airport hm h3 hr).2.2.1
+    have nda := AirportCd.no_dash_of_valid (route_airport hm h3 hr).2.2.2
     rw [Bool.eq_iff_iff]
     simp only [Bool.and_eq_true, beq_iff_eq]
     constructor
     · rintro ⟨rfl, rfl⟩; rfl
     · intro e
       obtain ⟨e1, e2⟩ := makeCacheKey_inj' nd nda e
-      exact ⟨by cases dep; simp only [AirportCd.mk.injEq] at *; exact e1,
-        by cases arr; simp only [AirportCd.mk.injEq] at *; exact e2⟩
+      exact ⟨e1, e2⟩
   rw [hspec]
-  cases hf : db.route.find? (fun r => key (projR r) == RouteProvider.makeCacheKey dep.val arr.val) with
+  cases hf : db.route.find? (fun r => key (projR r) == RouteProvider.makeCacheKey dep arr) with
   | none => rfl
   | some r =>
     have hr := List.mem_of_find?_eq_some hf
@@ -284,14 +285,30 @@ theorem rtOf_at {db : MasterDb} {n : Int} (h : ∃ r ∈ db.route, r.routeNo.val
 
 theorem routeOfRow_no {r : RouteRow} {x : Route} (h : routeOfRow r = some x) : (x.routeNo : Int) = r.routeNo.val := by
   simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hno, _, _, rfl⟩ := h
+  obtain ⟨no, hno, _, _, _, _, _, _, rfl⟩ := h
   exact (natOfInt4_eq_some.mp hno).symm
 
 theorem flightMasterOfRow_fields {f : FlightMasterRow} {x : FlightMaster} (h : flightMasterOfRow f = some x) :
-    (x.routeNo : Int) = f.routeNo.val ∧ x.flightName = ⟨f.flightName.val⟩ := by
+    (x.routeNo : Int) = f.routeNo.val ∧ x.flightName.val = f.flightName.val := by
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hno, _, _, _, _, rfl⟩ := h
-  exact ⟨(natOfInt4_eq_some.mp hno).symm, rfl⟩
+  obtain ⟨n, hn, no, hno, _, _, _, _, rfl⟩ := h
+  exact ⟨(natOfInt4_eq_some.mp hno).symm, flightNameOf_eq_some hn⟩
+
+/-- MD-1: 便名は DB の表の中で重複しない。 -/
+theorem flightMasterNames_nodup {db : MasterDb} {fms : List FlightMaster}
+    (hfm : db.flightMaster.mapM flightMasterOfRow = some fms) (hnd : (fms.map (·.flightName)).Nodup) :
+    (db.flightMaster.map (·.flightName.val)).Nodup := by
+  have e : fms.map (·.flightName.val) = db.flightMaster.map (·.flightName.val) :=
+    mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
+  rw [← e]
+  exact nodup_map_of_imp hnd fun _ _ _ _ e => FlightName.ext e
+
+/-- [Spec] の便マスタの参照は、DB の表を便名で探した行の α。 -/
+theorem flightMasterOf_db {db : MasterDb} {md : MasterData}
+    (hfm : db.flightMaster.mapM flightMasterOfRow = some md.flightMasters) (name : String) :
+    md.flightMasterOf name = (db.flightMaster.find? fun f => f.flightName.val == name).bind flightMasterOfRow := by
+  unfold MasterData.flightMasterOf
+  rw [find?_mapM hfm (p := fun f => f.flightName.val == name) fun _ _ h => by rw [(flightMasterOfRow_fields h).2]]
 
 /-- MD-1: 区間番号は DB の表の中で重複しない。 -/
 theorem routeNos_nodup {db : MasterDb} {rs : List Route} (hr : db.route.mapM routeOfRow = some rs)
@@ -317,48 +334,38 @@ theorem answer_flightMaster {db : MasterDb} {f : FlightMasterRow} {x : FlightMas
       some x := by
   have hno : (rtOf db f.routeNo.val).routeNo = f.routeNo := Subtype.ext hrt.2
   simp only [flightMasterOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
-  obtain ⟨no, hn, dt, hdt, ar, har, rfl⟩ := h
-  simp only [AnswerOf.flightMaster, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, SourceModel.Domain.Repository.Route.RouteRepository.routeMap,
+  obtain ⟨nm, hnm, no, hn, dt, hdt, ar, har, rfl⟩ := h
+  simp only [AnswerOf.flightMaster, hnm, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap, SourceModel.Domain.Repository.Route.RouteRepository.routeMap,
     flightMasterResultOf, routeResultOf, SourceModel.Db.MyBatis.str, hno, natOfJ32_int, hn, hdt, har,
     Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 theorem flightMaster_query {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
-    (h3 : md.MD3) (h8 : md.MD8) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
-    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : FlightName, hasText name.val = true →
-      ∃ ans, FlightMasterProvider.getFlightMaster fmp name.val = .ok ans ∧
+    (h3 : md.MD3) {o : List FlightMasterResult} (hp : o.Perm (FlightRepository.findAllFlightMaster db)) :
+    ∃ fmp, FlightMasterProvider.load o = .ok fmp ∧ ∀ name : String, hasText name = true →
+      ∃ ans, FlightMasterProvider.getFlightMaster fmp name = .ok ans ∧
       answerOf? (.flightMaster ans) = some (.flightMaster (md.flightMasterOf name)) := by
   obtain ⟨ha, hrts, hfm, -⟩ := masterDataOf_eq_some.mp hm
   have hapnd := airportCodes_nodup ha h1.1
   have hrnd := routeNos_nodup hrts h1.2.1
   have hat : ∀ r ∈ db.route, AirportAt db (apOf db) r.depAirportCd.val ∧ AirportAt db (apOf db) r.arrAirportCd.val :=
-    fun r hr => ⟨apOf_at (route_airport hm h3 h8 hr).1, apOf_at (route_airport hm h3 h8 hr).2.1⟩
+    fun r hr => ⟨apOf_at (route_airport hm h3 hr).1, apOf_at (route_airport hm h3 hr).2.1⟩
   have hrt : ∀ f ∈ db.flightMaster, RouteAt db (rtOf db) f.routeNo.val :=
     fun f hf => rtOf_at (flightMaster_route hm h3 hf)
   rw [flightMasterFindAll_eq hapnd hrnd hat hrt] at hp
   -- 便名は重複しない（MD-1）
-  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := by
-    have e : md.flightMasters.map (·.flightName) = db.flightMaster.map fun f => (⟨f.flightName.val⟩ : FlightName) :=
-      mapM_some_map hfm fun _ _ h => (flightMasterOfRow_fields h).2
-    have := h1.2.2.1
-    rw [e] at this
-    exact nodup_map_of_imp this fun _ _ _ _ e => by simp only [e]
+  have hnames : (db.flightMaster.map (·.flightName.val)).Nodup := flightMasterNames_nodup hfm h1.2.2.1
   have hnd : (o.map (·.flightName.val)).Nodup :=
     (hp.map _).nodup_iff.mpr (by rw [List.map_map]; exact hnames)
   refine ⟨_, flightMasterLoad_eq hnd, fun name hname => ?_⟩
   refine ⟨(JHashMap.ofList (o.map fun f =>
-    (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name.val, ?_, ?_⟩
+    (f.flightName.val, SourceModel.Domain.Repository.Flight.FlightRepository.flightMasterMap f))).get name, ?_, ?_⟩
   · simp only [FlightMasterProvider.getFlightMaster, assertHasText_ok hname]; rfl
   rw [JHashMap.get_ofList_perm hp (key := fun f : FlightMasterResult => f.flightName.val) hnames]
   rw [show (fun r : FlightMasterRow => (flightMasterResultOf r (rtOf db r.routeNo.val)
       (apOf db (rtOf db r.routeNo.val).depAirportCd.val) (apOf db (rtOf db r.routeNo.val).arrAirportCd.val)).flightName.val
-      == name.val) = (fun f => f.flightName.val == name.val) from rfl]
-  have hspec : md.flightMasterOf name =
-      (db.flightMaster.find? fun f => f.flightName.val == name.val).bind flightMasterOfRow := by
-    unfold MasterData.flightMasterOf
-    rw [find?_mapM hfm (p := fun f => f.flightName.val == name.val) fun _ _ h => by
-      rw [(flightMasterOfRow_fields h).2, Bool.eq_iff_iff]; cases name; simp [FlightName.mk.injEq]]
-  rw [hspec]
-  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name.val) with
+      == name) = (fun f => f.flightName.val == name) from rfl]
+  rw [flightMasterOf_db hfm name]
+  cases hf : db.flightMaster.find? (fun f => f.flightName.val == name) with
   | none => simp only [Option.map_none, Option.bind_none, answerOf?, AnswerOf.opt, Option.map_some]
   | some f =>
     have hfr := List.mem_of_find?_eq_some hf
@@ -488,7 +495,7 @@ def toEntry (e : String × String) : CodeEntry := ⟨e.1, e.2⟩
 theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f : ρ → LangSemantics.Sql.Postgresql.Int4}
     {a : ρ → Option ω} {ws : List ω} (hm : rows.mapM a = some ws) (dOrd : ω → Nat)
     (hd : ∀ r w, a r = some w → (dOrd w : Int) = (f r).val) (hnd : (ws.map dOrd).Nodup)
-    (h : isAllowedOrder sortCfg [.asc] (orderKey f) rows o = true) (dflt : ω) :
+    (h : isAllowedOrder sortCfg (orderByDisplayOrder f) rows o = true) (dflt : ω) :
     o.map (fun r => (a r).getD dflt) = ws.mergeSort fun x y => decide (dOrd x ≤ dOrd y) := by
   have e := mapM_some_getD hm dflt
   rw [← e]
@@ -497,27 +504,31 @@ theorem allowed_mergeSort {ρ ω : Type} [DecidableEq ρ] {rows o : List ρ} {f 
   simp only [hw, Option.getD_some]
   exact hd r w hw
 
+/-- 既定の [Spec] の空港（使われない）。 -/
+def dummyAirportSpec : Airport := ⟨{ val := "AAA" }, "", 0⟩
+
 theorem codeList_airport {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     (h8 : md.MD8) {o : List AirportRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (airportCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (airportCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_AIRPORT o).map toEntry = CodeList.airport md := by
   obtain ⟨ha, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.airport := allowed_perm ho
   have hnd := airportCodes_nodup ha h1.1
-  rw [airport_eq_insertNop o ((hp.map _).nodup_iff.mpr hnd) fun r hr => ?_]
+  have hf : ∀ r ∈ o, AirportOf r ((airportOfRow r).getD dummyAirportSpec) := fun r hr => by
+    obtain ⟨w, _, hw⟩ := mapM_some_mem ha (hp.mem_iff.mp hr)
+    simp only [hw, Option.getD_some]
+    exact airportOfRow_eq_some hw
+  rw [airport_eq_insertNop o _ hf ((hp.map _).nodup_iff.mpr hnd) fun r hr => ?_]
   · rw [List.map_map]
     have : toEntry ∘ CodeEntry.toPair = id := funext fun _ => rfl
     rw [this, List.map_id, CodeList.airport]
     congr 1
-    rw [← allowed_mergeSort ha (·.displayOrder) (fun r w h => ?_) h1.2.2.2.2.2.2.2.2.1 ho ⟨⟨""⟩, "", 0⟩]
-    · refine List.map_congr_left fun r hr => ?_
-      obtain ⟨w, _, hw⟩ := mapM_some_mem ha (hp.mem_iff.mp hr)
-      simp only [hw, Option.getD_some, airportOfRow_eq_some hw]
-    · simp only [airportOfRow, Option.map_eq_some_iff] at h
-      obtain ⟨d, hd, rfl⟩ := h
-      exact (natOfInt4_eq_some.mp hd).symm
+    rw [← allowed_mergeSort ha (·.displayOrder) (fun r w h => ?_) h1.2.2.2.2.2.2.2.2.1 ho dummyAirportSpec]
+    simp only [airportOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨_, _, d, hd, rfl⟩ := h
+    exact (natOfInt4_eq_some.mp hd).symm
   · obtain ⟨w, hw, hwr⟩ := mapM_some_mem ha (hp.mem_iff.mp hr)
-    have := (h8.1 w hw).2
+    have := h8.1 w hw
     rw [airportOfRow_code hwr] at this
     exact this
 
@@ -531,7 +542,7 @@ theorem boardingClassOfRow_parts {r : BoardingClassRow} {w : BoardingClass} (h :
 
 theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List BoardingClassRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (boardingClassCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_BOARDINGCLASS o).map toEntry = CodeList.boardingClass md := by
   obtain ⟨-, -, -, hb, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.boardingClass := allowed_perm ho
@@ -562,7 +573,7 @@ theorem codeList_boardingClass {db : MasterDb} {md : MasterData} (hm : masterDat
 
 theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List FareTypeRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (fareTypeCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_FARETYPE o).map toEntry = CodeList.fareType md := by
   obtain ⟨-, -, -, -, hf, -⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.fareType := allowed_perm ho
@@ -599,17 +610,17 @@ theorem codeList_fareType {db : MasterDb} {md : MasterData} (hm : masterDataOf d
 
 theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf db = some md) (h1 : md.MD1)
     {o : List CreditTypeRow}
-    (ho : isAllowedOrder sortCfg [.asc] (orderKey (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
+    (ho : isAllowedOrder sortCfg (orderByDisplayOrder (·.displayOrder)) (creditTypeCodeListRows db) o = true) :
     (SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE o).map toEntry = CodeList.creditType md := by
   obtain ⟨-, -, -, -, -, -, -, hc⟩ := masterDataOf_eq_some.mp hm
   have hp : o.Perm db.creditType := allowed_perm ho
-  let g : CreditTypeRow → CreditType := fun r => (creditTypeOfRow r).getD ⟨⟨""⟩, "", 0⟩
+  let g : CreditTypeRow → CreditType := fun r => (creditTypeOfRow r).getD ⟨{ val := "AAA" }, "", 0⟩
   have parts : ∀ r w, creditTypeOfRow r = some w → r.creditTypeCd.val = w.creditTypeCd.val ∧
       r.creditFirm.val = w.creditFirm ∧ (w.displayOrder : Int) = r.displayOrder.val := by
     intro r w h
-    simp only [creditTypeOfRow, Option.map_eq_some_iff] at h
-    obtain ⟨d, hd, rfl⟩ := h
-    exact ⟨rfl, rfl, (natOfInt4_eq_some.mp hd).symm⟩
+    simp only [creditTypeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
+    obtain ⟨k, hk, d, hd, rfl⟩ := h
+    exact ⟨(CreditTypeCd.val_of_ofString? hk).symm, rfl, (natOfInt4_eq_some.mp hd).symm⟩
   have hg : ∀ r ∈ o, creditTypeOfRow r = some (g r) := by
     intro r hr
     obtain ⟨w, _, hw⟩ := mapM_some_mem hc (hp.mem_iff.mp hr)
@@ -627,7 +638,7 @@ theorem codeList_creditType {db : MasterDb} {md : MasterData} (hm : masterDataOf
     have := (List.mergeSort_perm md.creditTypes fun x y => decide (x.displayOrder ≤ y.displayOrder)).map
       (·.creditTypeCd)
     refine nodup_map_of_imp (this.nodup_iff.mpr h1.2.2.2.2.2.2.2.1) fun a _ b _ e => ?_
-    exact congrArg CreditTypeCd.mk e
+    exact CreditTypeCd.ext e
   unfold SourceModel.Config.App.AtrsCodeListConfig.CL_CREDITTYPE
   rw [e1, jdbcCodeList_eq _ hnd, List.map_map, hsort, CodeList.creditType]
   rfl

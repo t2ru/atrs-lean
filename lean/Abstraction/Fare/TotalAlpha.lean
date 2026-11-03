@@ -27,8 +27,8 @@ open Machine LangSemantics.Java Spec Spec.Prim
 /-- 選択フライト情報: 出発日・便名・搭乗クラス・運賃種別（`null` には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def keyOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option FlightKey :=
-  (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
-    f.fareTypeCd.map fun ft => ⟨d, ⟨n⟩, bc, ft⟩
+  (f.depDate.bind dateOfJ).bind fun d => (f.flightName.bind flightNameOf).bind fun n =>
+    f.boardingClassCd.bind fun bc => f.fareTypeCd.map fun ft => ⟨d, n, bc, ft⟩
 
 /-- 搭乗者の年齢（`null` と負の値には定義しない）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
@@ -99,7 +99,7 @@ def dbTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) : SourceModel.Db.Sc
 /-- 1970-01-01 の NTT001・N・OW を 1 つ選び、搭乗者の年齢を `ages` とする入力。 -/
 def icTF (bf ratio disc : LangSemantics.Sql.Postgresql.Int4) (ages : List Int) : TotalFareInput :=
   { db := dbTF bf ratio disc, config := SourceModel.AtrsProperties.upstreamConfig,
-    flights := [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) (some "NTT001") (some FareTypeCd.OW)
+    flights := [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1, by decide⟩) (some "NTT001") (some FareTypeCd.OW)
       (some BoardingClassCd.N)],
     passengers := ages.map fun a => some ({ age := some (J32.ofInt a) } : SourceModel.Domain.Model.Passenger) }
 
@@ -111,27 +111,28 @@ def day0 : Spec.Prim.Date := ⟨1970, 1, 1, by decide⟩
 
 /-- `icTF012` の DB の [Spec] の写し。 -/
 def mdTF012 : MasterData :=
-  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
-    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 10000000⟩],
-    flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+  { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
+    routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000000⟩],
+    flightMasters := [⟨{ val := "NTT001" }, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.OW, "OW", 0, 355, 0, 1, 1⟩],
     peakTimes := [⟨"P", day0, day0, 1000⟩],
     planes := [], creditTypes := [] }
 
 /-- `icTF012` の [Spec] の入力。 -/
-def iaTF012 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF012, [⟨day0, ⟨"NTT001"⟩, .N, .OW⟩], [5]⟩
+def iaTF012 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF012, [⟨day0, { val := "NTT001" }, .N, .OW⟩], [5]⟩
 
 theorem aiTF_icTF012 : aiTF icTF012 = some iaTF012 := by
   rfl
 
 theorem iaTF012_pre : iaTF012.Pre := by
-  refine ⟨by decide, ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩,
+  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+      ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩,
     by decide, by decide, by decide, by decide, by decide, ?_, by decide⟩
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha
     simp only [iaTF012, mdTF012, List.mem_cons, List.not_mem_nil, or_false] at ha
-    rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+    rcases ha with rfl | rfl <;> decide
   · intro k hk
     simp only [iaTF012, List.mem_cons, List.not_mem_nil, or_false] at hk
     subst hk
@@ -144,7 +145,7 @@ theorem iaTF012_devs : dev_D001T iaTF012 ∧ dev_D002T iaTF012 ∧ ¬ dev_D012 i
 /-- 前提を満たさない入力: 便名が `null`。 -/
 def icTFnull : TotalFareInput :=
   ⟨dbTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩, SourceModel.AtrsProperties.upstreamConfig,
-    [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
+    [SourceModel.App.B0.SelectFlightForm.mk (some ⟨1970, 1, 1, by decide⟩) none (some FareTypeCd.OW) (some BoardingClassCd.N)],
     []⟩
 
 /-- フライトの無い入力（各フライトの述語は自明に成り立つ）。 -/
@@ -152,14 +153,14 @@ def iaTFempty : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF012, [], []�
 
 /-- D-001 の前提を破る入力: 区間の運賃 100 円・積算比率 29%。 -/
 def mdTF29 : MasterData :=
-  ⟨mdTF012.airports, [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
+  ⟨mdTF012.airports, [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
     [⟨"P", day0, day0, 29⟩], [], []⟩
 
 def iaTF29 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF29, iaTF012.flights, [5]⟩
 
 /-- D-002 の前提を破る入力: 基本運賃 1430 円・割引率 30%。 -/
 def mdTF1430 : MasterData :=
-  ⟨mdTF012.airports, [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 1430⟩], mdTF012.flightMasters, mdTF012.boardingClasses,
+  ⟨mdTF012.airports, [⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩], mdTF012.flightMasters, mdTF012.boardingClasses,
     [⟨.OW, "OW", 30, 355, 0, 1, 1⟩], [], [], []⟩
 
 def iaTF1430 : Spec.Fare.TotalFareInput := ⟨Config.default, mdTF1430, iaTF012.flights, [5]⟩

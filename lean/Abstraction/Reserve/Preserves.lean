@@ -24,15 +24,15 @@ def daySeed : Spec.Prim.Date := ⟨2026, 11, 1, by decide⟩
 
 /-- シードの最初のフライト（2026-11-01・NTT001・N・OW）を選ぶ予約フォーム。 -/
 def formSeed : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨2026, 11, 1⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨2026, 11, 1, by decide⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
 
 /-- 初期状態での環境の前提の証人（予約確認。マスタはシードのマスタの DB）。 -/
 def icSeed : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := SourceModel.Db.MasterSeed.masterDb, config := SourceModel.AtrsProperties.upstreamConfig, form := formSeed,
-     env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1, by decide⟩ }, .confirm⟩
 
 def iaSeed : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, ⟨"NTT001"⟩, .N, .OW⟩], inputR⟩, .confirm⟩
+  ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, "NTT001", .N, .OW⟩], inputR⟩, .confirm⟩
 
 theorem aiR_icSeed : aiR icSeed = some iaSeed := by
   have h1 : Abstraction.MasterData.Alpha.configOf icSeed.input.config = some Spec.Seed.config := by decide
@@ -44,7 +44,7 @@ theorem aiR_icSeed : aiR icSeed = some iaSeed := by
   rfl
 
 theorem refMaster_seed : Spec.Seed.World.world.RefMaster Spec.Seed.masterData :=
-  Spec.Seed.FlightProps.world_refMaster
+  Spec.Seed.World.world_refMaster
 
 theorem memberRefMaster_seed : Spec.Seed.World.world.MemberRefMaster Spec.Seed.masterData := by decide
 
@@ -147,7 +147,7 @@ theorem reserveStep_frame : Machine.Machine.FreeFrame reserveStep eraseDetailR :
 def chR : Machine.Preserves.Choice Spec.Port.World Spec.UseCase.Reserve.MInput Spec.UseCase.Reserve.MOutput
     SourceModel.ReserveQuery.MInput :=
   ⟨Spec.Nondet.ConflictChoice × Spec.Nondet.IoFailureChoice, Spec.Nondet.InvalidRequestDetail, Spec.Nondet.FaultSpec,
-    Spec.Port.World × Spec.UseCase.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, (none, none),
+    Spec.Port.World × Spec.UseCase.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, ⟨none, none⟩,
     (Spec.Nondet.ConflictChoice.std, Spec.Nondet.IoFailureChoice.std), eraseDetailR⟩
 
 /-- 障害の位置を消した具体側の入力（障害の無い環境での実現）。 -/

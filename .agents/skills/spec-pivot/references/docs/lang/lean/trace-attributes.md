@@ -16,7 +16,8 @@ generated:
 
 | モジュール | 内容 |
 | --- | --- |
-| `Trace.Attr` | 文字列引数の追跡属性 |
+| `Trace.Id` | 追跡の値の型（ID・空でない文字列と列・文書の節・ロケータ）と、その字面のマクロ |
+| `Trace.Attr` | 追跡属性（引数を、付けた時点で `Trace.Id` の型に解析する） |
 | `Trace.Gap` | ギャップの登録簿（`Trace.Gap`・`@[gap_entry]`） |
 | `Trace.Dump` | `trace-dump` の本体 |
 | `Trace.Obligation` | `obligation-check` の本体（TR-G の Lean 側と GK） |
@@ -29,21 +30,22 @@ generated:
 ## 属性
 
 `Trace` 名前空間（どのモデルにも依存しない基盤）に、次の属性を定義する。
-引数は文字列リテラルの並びとする。属性は環境拡張（`registerParametricAttribute` 等）に記録し、`trace-dump` が読み出せるようにする。
+引数は文字列リテラルの並びとする。付けた時点で、属性ごとの型（下の表の「引数」の形式。`Trace.Id`）に解析し、その型の値として環境拡張（`registerParametricAttribute`）に記録する。形式に合わない引数は、付けた時点で誤りになる（不正な状態を表現できない型。[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)）。`trace-dump` は文字列に戻して出す。
 
 | 属性 | 付ける対象 | 引数 |
 | --- | --- | --- |
-| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版） |
-| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ |
+| `@[source "<locator>@<hash>", …]` | `SourceModel`、移植元の `LangSemantics` の定義 | 移植元ロケータと検査済みの本文ハッシュ（`dep:`・`lang:` は版）。型 `Locator`（`<scheme>:<locator>@<pin>`） |
+| `@[target "<locator>@<hash>", …]` | `TargetModel`、移植先の `LangSemantics` の定義 | 移植先ロケータと検査済みの本文ハッシュ。型 `Locator` |
 | `@[obligation "<ID>"]` | `Abstraction`・`Refinement` の主定理と補題、`Spec` 自身の証明課題の定理 | `ABS-NNN` / `REF-NNN` / `SPEC-NNN` |
-| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。1 つの定数に 1 つだけ（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Preserves.anyOf` で並べる） |
+| `@[deviation "<ID>"]` | 既知差異の前提の述語（前提型）、または貼り合わせ関係・出力の対応の成分（観測型） | `D-NNN` / `T-NNN`。構文が 1 つだけを受ける（同じ出力に重なる観測型の差異は、定数を分けて `Machine.Preserves.anyOf` で並べる） |
 | `@[gap "<ID>", …]` | ギャップの生じる `Spec`・`SourceModel`・`TargetModel` の定義（箇所の印）。`D-NNN` は `Spec`・`SourceModel`、`T-NNN` は `Spec`・`TargetModel` に付ける | `D-NNN` / `T-NNN`。宣言（`@[gap_entry]`）のある ID |
 | `@[nondet "<ID>"]` | `Spec` の非決定性の選択の型（`Machine.ofChoice` の選択の型の葉） | `N-NNN` |
-| `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節 |
+| `@[std_abs "<path>#<anchor>"]` | 標準の抽象化 α/β の部分写像（`Glue.ofStd` の β・aᵢ・aₒ と、その部品）、環境の写像 `ce`、`FreeFrame` の射影 | α・β の表の節。型 `DocAnchor`（`<path>.md` か `<path>.md#<anchor>`。`kernel`・`spec_doc` も同じ） |
 | `@[kernel "<path>#<anchor>"]` | 標準の抽象化の核（同一視する関係。`KernelIs` の K） | α・β の表の節 |
-| `@[env_pre "<ID>"]` | 入口の機械の環境の前提（`TotalUnder` の Env） | `MD-N` など |
+| `@[env_pre "<ID>"]` | 入口の機械の環境の前提（`TotalUnder` の Env） | `MD-N`・`CFG` など（英大文字と、任意の `-` と数字） |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
+| `@[raw_input "<理由>"]` | 外部から来る値を、不正な値も表せる生の型のまま置く `Spec` の型（[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)。検査 MISU-1 の対象外。その `Valid` は機械の PRE） | 外部の出所 |
 | `@[ns_exception "<理由>"]` | モジュール名の下に置けない宣言（`layout-check` の例外 E3。[rules.md](rules.md#モジュールと名前空間)）。`trace-dump` の属性には出さない | 技術的な必要 |
 
 例:
@@ -69,30 +71,35 @@ def basicFare (routeFare extra : Int32) : JResult Int32 := ...
 /-- [Source] は税込み価格を `price * 1.1` の double で計算して切り捨てる。[Spec] は `floorDiv(price * 110, 100)` -/
 @[gap_entry]
 def D001 : Trace.Gap where
-  id := "D-001"
-  kind := .pre
-  sites := [⟨"税込み価格", "docs/spec/pricing.md#税込み価格", ""⟩]
-  premise := "`dev_D001`: `price` が 0〜100,000"
-  deviations := [``Abstraction.Pricing.dev_D001]
-  evidence := .refuted [``Abstraction.Pricing.need_D001]
-  rTasks := ["ABS-001"]
-  impact := some (.abort, "差のある価格が注文に保存される")
-  backlog := ["<Lean 側を完了させる作業項目の ID>"]
+  id := gid!"D-001"
+  sites := ne![⟨ne!"税込み価格", ne!"docs/spec/pricing.md#税込み価格", ""⟩]
+  body := .pre {
+    side := .abstract
+    premise := ne!"`dev_D001`: `price` が 0〜100,000"
+    evidence := .refuted ne![``Abstraction.Pricing.dev_D001] ne![``Abstraction.Pricing.need_D001]
+    rTasks := ne![oid!"ABS-001"]
+    impact := .abort
+    impactReason := ne!"差のある価格が注文に保存される"
+    backlog := ne![bid!"<Lean 側を完了させる作業項目の UUID>"] }
 ```
 
-| 種類（`kind`） | 意味 | 必須の欄 | 書かない欄 | 許す証明の状態 | 印・差異の定数 |
-| --- | --- | --- | --- | --- | --- |
-| `pre`・`preConcreteInput`・`preConcreteState`・`preConcreteEnv` | 前提型（抽象側／具体側の入力・状態・環境） | `premise`（前提）・`rTasks`・`impact`・`backlog` | — | `refuted`・`covered`・`pending` | `Spec` と具体側の `@[gap]`。`@[deviation]`（すべて `deviations` に挙げる） |
-| `observational` | 観測型 | `premise`（成分）・`rTasks` | `impact` | `refuted`・`covered`・`pending` | 同上 |
-| `outOfModel` | モデル外 | `premise`（モデル外とする理由） | `deviations`・`rTasks`・`impact` | `unformalized` | 主張のほかに持たない |
-| `outsidePre` | `Spec` の PRE・INV の外での具体側の振る舞い（差異ではない） | `premise`（それを除く `Spec` の前提） | `deviations`・`rTasks`・`impact` | `excludedBy` | `Spec` と具体側の `@[gap]`。`@[deviation]` は持たない |
-| `undetermined` | 種類が未確定 | — | `premise`・`deviations`・`rTasks`・`impact` | `unformalized`（確定させる作業を書く）・`pending` | `@[deviation]` は持たない |
+値の型は、種類ごとに要る欄と許す証明の状態だけを持つ和型である（不正な状態を表現できない型。[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)）。不正な組み合わせは、エラボレートの時点で型の誤りになる（例は `assets/lean/Test/Trace/GapErrors.lean`）。
 
+| 本体（`body`） | 種類（表の `kind`） | 欄 | 証明の状態（`evidence`） | 印・差異の定数 |
+| --- | --- | --- | --- | --- |
+| `.pre { side, … }` | `side` が `.abstract`・`.concreteInput`・`.concreteState`・`.concreteEnv` の前提型（抽象側／具体側の入力・状態・環境） | `premise`（前提）・`evidence`・`rTasks`（1 つ以上）・`impact`・`impactReason`・`backlog`（1 つ以上） | `TypedEvidence`: `refuted`・`covered`・`pending` | `Spec` と具体側の `@[gap]`。`@[deviation]`（すべて証明の状態の `deviations` に挙げる） |
+| `.observational { … }` | 観測型 | `component`（成分）・`evidence`・`rTasks`（1 つ以上）・`backlog` | `TypedEvidence` | 同上 |
+| `.outOfModel { … }` | モデル外 | `reason`（モデル外とする理由）・`claim`（主張）・`resolution`・`backlog` | 形式化していない（だけ） | 主張のほかに持たない |
+| `.outsidePre { … }` | `Spec` の PRE・INV の外での具体側の振る舞い（差異ではない） | `excludingPre`（それを除く `Spec` の前提）・`pre`（前提の述語）・`backlog` | PRE の外（だけ） | `Spec` と具体側の `@[gap]`。`@[deviation]` は持たない |
+| `.undetermined { … }` | 種類が未確定 | `evidence`・`backlog` | `UndeterminedEvidence`: `pending`・`unformalized`（確定させる作業を書く） | `@[deviation]` は持たない |
+
+- 字面は `Trace.Id` のマクロで書く。`gid!"D-001"`（`D-NNN`・`T-NNN`）、`oid!"ABS-001"`（`ABS-NNN`・`REF-NNN`・`SPEC-NNN`）、`bid!"<UUID>"`、空でない文字列 `ne!"…"`、空でない列 `ne![…]`。形式に合わない字面は型の誤りになる。
+- `TypedEvidence` の各構築子は、その ID の `@[deviation]` の定数 `deviations` を持つ。`refuted`・`covered` では 1 つ以上で、`pending` では空でもよい（Lean に述語がまだ無い）。
 - `sites`（1 つ以上）は、リポジトリのルートからの文書のパスとアンカーで書く。表では文書からの相対リンクになり、`note` はリンクの後に続く。
-- 名前（`deviations` と証明の状態の宣言）は ``` ``名前`` ``` で書く。存在しない名前は、エラボレートの時点で誤りになる。
-- 値は、定義の展開だけで構築子・文字列リテラル・名前リテラルの組み合わせになる式で書く（`Trace.Gap.ofConst?` が評価せずに式から読む）。
-- `@[gap_entry]` は付けた時点で値を読み、種類ごとの必須の欄・書かない欄と、種類と証明の状態の組み合わせ（`Trace.Gap.problems`）を検査する。
+- 名前（差異の定数と証明の状態の宣言）は ``` ``名前`` ``` で書く。存在しない名前は、エラボレートの時点で誤りになる。
+- 値は、定義の展開だけで構築子・文字列リテラル・名前リテラルの組み合わせになる式で書く（`Trace.Gap.ofConst?` が評価せずに式から読む）。`@[gap_entry]` は付けた時点で、値を読めることを確かめる。
 - `backlog` は、Lean 側（箇所の印・裏付けの宣言）を完了させる作業項目である。前提型の影響の表の列にもなる。TR-K の段階導入に使う。
+- 構造体の字面の欄を改行で続けるときは、`{` の直後で改行し、欄の桁をそろえる（後の欄の桁が最初の欄より左だと、構文の誤りになる）。
 
 ### 証明の状態（`evidence`）
 
@@ -103,18 +110,18 @@ def D001 : Trace.Gap where
 
 | 状態 | 意味 | 裏付けの宣言 | W 課題（表の列） |
 | --- | --- | --- | --- |
-| `.refuted [thm, …]` | 偽を証明済み。差異を外した R 課題の否定が定理である | 必要性の定理（G9 の形の `¬ Refines …`） | 定理の `@[obligation]` |
-| `.covered M [thm, …]` | 被覆。必要な差異の述語 `M` が、この差異を覆う | `Machine.Preserves.Covers M d`・`Covers₂ M d` の定理（`d` は `deviations` のどれか） | 定理の `@[obligation]` |
-| `.pending 理由 (some W)` | 未証明。前提で制限して R 課題を証明したが、必要性（偽）も一致（真）もまだ示していない | なし | 予定の `W` |
-| `.unformalized claim 作業` | 形式化していない。Lean の命題として書けない（モデル外、または未確定で命題をまだ書けない） | `opaque claim : Prop`（docstring に主張を書く） | — |
-| `.excludedBy [pre, …]` | 差異ではない。`Spec` の PRE・INV の外である | 前提の述語（`Spec` の箇所の印を兼ねる） | — |
+| `.refuted devs [thm, …]` | 偽を証明済み。差異を外した R 課題の否定が定理である | 必要性の定理（G9 の形の `¬ Refines …`） | 定理の `@[obligation]` |
+| `.covered devs M [thm, …]` | 被覆。必要な差異の述語 `M` が、この差異を覆う | `Machine.Preserves.Covers M d`・`Covers₂ M d` の定理（`d` は `deviations` のどれか） | 定理の `@[obligation]` |
+| `.pending devs 理由 (some W)` | 未証明。前提で制限して R 課題を証明したが、必要性（偽）も一致（真）もまだ示していない | なし | 予定の `W` |
+| `.unformalized claim 作業`（未確定）・`.outOfModel { claim, … }` | 形式化していない。Lean の命題として書けない（モデル外、または未確定で命題をまだ書けない） | `opaque claim : Prop`（docstring に主張を書く） | — |
+| `.outsidePre { pre := [pre, …], … }` | 差異ではない。`Spec` の PRE・INV の外である | 前提の述語（`Spec` の箇所の印を兼ねる） | — |
 
 - 制限（`restrict`）は仮定を強めるだけなので、差異が実在してもしなくても、`pending` の R 課題は公理なしに証明できる。
 - `opaque c : Prop` は公理を足さず（axiom-check を通る）、定義が見えないので、Lean の中で真とも偽とも証明できない。どの定数からも参照してはならない（仮定として推論に持ち込まない）。
 - 状態は確定に向けて移す。
   - `pending` は、必要性の定理ができたら `refuted` に移す。一致が証明できたら、差異を取り消す。
   - `unformalized`（未確定）は、モデルができたら命題に書き直して `pending` か `refuted` に移す。
-- 前提型・観測型で Lean に述語がまだ無いものは、`deviations := []` と `.pending "Lean に述語がまだ無い" (some W)` にする。
+- 前提型・観測型で Lean に述語がまだ無いものは、`.pending [] ne!"Lean に述語がまだ無い" (some oid!"W")` にする。
 
 ```lean
 /-- D-013 の主張: [Source] は照合と更新を別のトランザクションで行うので、並行実行の下では [Spec] と観測が異なりうる -/
@@ -123,11 +130,11 @@ def D001 : Trace.Gap where
 /-- …（説明） -/
 @[gap_entry]
 def D013 : Trace.Gap where
-  id := "D-013"
-  kind := .outOfModel
-  sites := [⟨"トランザクション", "lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
-  premise := "— モデル外（並行実行はモデルに現れない）"
-  evidence := .unformalized ``claim_D013 ""
+  id := gid!"D-013"
+  sites := ne![⟨ne!"トランザクション", ne!"lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
+  body := .outOfModel {
+    reason := ne!"— モデル外（並行実行はモデルに現れない）"
+    claim := ``claim_D013 }
 ```
 
 ### 検査

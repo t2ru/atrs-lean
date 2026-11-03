@@ -2,6 +2,7 @@ import Spec.Prim
 import Spec.Model
 import Spec.Config
 import Spec.MasterData
+import Spec.EnvPre
 
 /-!
 # 運賃計算（`Spec.Fare`）
@@ -195,7 +196,7 @@ totalFare       = bdCeilHundredUp( foldl j32add 0 [flightTotal(f) | f ← flight
 /-- 便名の区間（便マスタの区間番号で引く）。 -/
 @[spec_doc "lean/Spec/Fare.lean#合計金額"]
 def routeOfFlightName (md : MasterData) (name : FlightName) : Option Route := do
-  let fm ← md.flightMasterOf name
+  let fm ← md.flightMasterOf name.val
   md.routes.find? fun r => r.routeNo == fm.routeNo
 
 /-- 便の区間。 -/
@@ -247,6 +248,7 @@ theorem totalFare_eq (cfg : Config) (md : MasterData) (flights : List Flight) (p
 /-! ## 抽象機械（R 課題 ABS-001・ABS-002 の抽象側） -/
 
 /-- 基本運賃の入力。マスタ・設定は不変の入力である。 -/
+@[raw_input "機械の入力。妥当性 BasicFareInput.Pre は PRE"]
 structure BasicFareInput where
   cfg : Config
   md : MasterData
@@ -254,11 +256,11 @@ structure BasicFareInput where
   boardingClassCd : BoardingClassCd
   depDate : Date
 
-/-- 基本運賃の PRE: 設定とマスタの不変条件、搭乗クラスがマスタに在ること、
+/-- 基本運賃の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、搭乗クラスがマスタに在ること、
 `routeBasicFare + extraCharge` の値域（`lean/Spec/Model.lean#値域`）。 -/
 @[spec_doc "lean/Spec/Fare.lean#基本運賃", gap "D-035"]
 def BasicFareInput.Pre (i : BasicFareInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧
     (i.md.boardingClassOf i.boardingClassCd).any (fun bc => decide (i.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) = true
 
 instance (i : BasicFareInput) : Decidable i.Pre := by unfold BasicFareInput.Pre; infer_instance
@@ -269,6 +271,7 @@ def basicFareMachine : Machine.Machine Unit BasicFareInput Nat :=
   Machine.Machine.pure BasicFareInput.Pre fun i => (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).getD 0
 
 /-- 運賃の入力。 -/
+@[raw_input "機械の入力。妥当性 FareInput.Pre は PRE"]
 structure FareInput where
   basicFare : Nat
   discountRate : Nat
@@ -313,17 +316,18 @@ theorem fareMachine_sound : fareMachine.Sound := Machine.Machine.sound_pure _ _
 theorem fareMachine_initIs : fareMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
 /-- 合計金額の入力: 設定・マスタ・フライトのキーの列・搭乗者の年齢の列。 -/
+@[raw_input "機械の入力。妥当性 TotalFareInput.Pre は PRE"]
 structure TotalFareInput where
   cfg : Config
   md : MasterData
   flights : List FlightKey
   ages : List Nat
 
-/-- 合計金額の PRE: 設定とマスタの不変条件、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
+/-- 合計金額の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
 便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
 @[spec_doc "lean/Spec/Fare.lean#合計金額", gap "D-035"]
 def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
-  i.cfg.Valid ∧ i.md.Valid i.cfg ∧
+  EnvPre.masterConfigOk (i.cfg, i.md) ∧
     Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧
     Range.minPassengers ≤ i.ages.length ∧ i.ages.length ≤ Range.maxPassengers ∧
     (∀ a ∈ i.ages, a ≤ Range.maxAge) ∧
@@ -354,7 +358,7 @@ theorem totalFareMachine_initIs : totalFareMachine.InitIs () := fun _ => ⟨fun 
 /-- PRE の下で、基本運賃は値を持つ。 -/
 theorem basicFare_isSome {i : BasicFareInput} (h : i.Pre) :
     (basicFare i.md i.routeBasicFare i.boardingClassCd i.depDate).isSome = true := by
-  obtain ⟨-, -, h⟩ := h
+  obtain ⟨-, h⟩ := h
   unfold basicFare
   cases hb : i.md.boardingClassOf i.boardingClassCd <;> simp_all
 

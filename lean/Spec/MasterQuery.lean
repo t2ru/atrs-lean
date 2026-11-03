@@ -1,12 +1,13 @@
 import Spec.Config
 import Spec.MasterData
+import Spec.EnvPre
 import Spec.CodeList
 
 /-!
 # Spec.MasterQuery
 
 マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。[`Spec.MasterData`](MasterData.lean)）。
-状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの不変条件（MD-1〜MD-8）と、
+状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）と、
 問い合わせの引数の値域。
 -/
 
@@ -38,9 +39,10 @@ def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
 
 
 /-- 参照の問い合わせ。 -/
+@[raw_input "機械の入力（参照の問い合わせ）。妥当性 Query.Valid は PRE"]
 inductive Query where
-  | routeOf (dep arr : AirportCd)
-  | flightMasterOf (name : FlightName)
+  | routeOf (dep arr : String)
+  | flightMasterOf (name : String)
   | fareTypeOf (cd : FareTypeCd)
   | boardingClassOf (cd : BoardingClassCd)
   | peakTimeOn (d : Date)
@@ -51,11 +53,11 @@ inductive Query where
   | codeList (n : CodeListName)
 
 /-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`lean/Spec/Model.lean#コード値`）。
-便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
+便名は、形式（`FlightName.valid`）に合い、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
 @[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
-  | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
-  | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true
+  | .routeOf dep arr => AirportCd.valid dep = true ∧ AirportCd.valid arr = true
+  | .flightMasterOf name => FlightName.valid name = true ∧ hasText name = true
   | _ => True
 
 instance (q : Query) : Decidable q.Valid := by
@@ -83,11 +85,11 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
   | .config => .config cfg
   | .codeList n => .codeList (codeListOfName md n)
 
-/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件と、
+/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`）と、
 問い合わせの引数の値域。 -/
 @[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-027"]
 def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
-  Machine.Machine.pure (fun i => i.1.Valid ∧ i.2.1.Valid i.1 ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
+  Machine.Machine.pure (fun i => EnvPre.masterConfigOk (i.1, i.2.1) ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
 
 /-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
 @[obligation "SPEC-001"]

@@ -30,7 +30,7 @@ def formR : SourceModel.App.B2.TicketReserveForm :=
 /-- 1970-01-01 に予約確認を行う具体側の入力（マスタは空席照会の証人と同じ）。 -/
 def icR : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig, form := formR,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .confirm⟩
 
 theorem dev_D027R_nontrivial : Nontrivial dev_D027R :=
   ⟨⟨icR, by unfold dev_D027R; decide⟩,
@@ -39,7 +39,7 @@ theorem dev_D027R_nontrivial : Nontrivial dev_D027R :=
 /-- 2 回目の読み出しで日付をまたぐ実行環境。 -/
 def icR14 : SourceModel.ReserveQuery.MInput :=
   { icR with input := { icR.input with
-      env := { clock := fun n => if n = 0 then ⟨1970, 1, 1⟩ else ⟨1970, 1, 2⟩ } } }
+      env := { clock := fun n => if n = 0 then ⟨1970, 1, 1, by decide⟩ else ⟨1970, 1, 2, by decide⟩ } } }
 
 theorem dev_D014R_nontrivial : Nontrivial dev_D014R :=
   ⟨⟨icR, fun _ => rfl⟩, ⟨icR14, fun h => by have := h 1; simp [icR14] at this⟩⟩
@@ -55,7 +55,7 @@ def iaR (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : MInput :=
   ⟨Spec.Config.default, md, day0, ⟨ss, inputR⟩, .reserve⟩
 
 /-- NTT001・N・OW の選択フライト。 -/
-def selR : Spec.Ticket.SelectFlight := ⟨day0, ⟨"NTT001"⟩, .N, .OW⟩
+def selR : Spec.Ticket.SelectFlight := ⟨day0, "NTT001", .N, .OW⟩
 
 theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
   ⟨⟨(wFS, iaR mdFS []), fun _ => by decide⟩,
@@ -64,7 +64,7 @@ theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
 
 /-- 往路便の到着時刻が 24:15（翌日着）の便マスタ。 -/
 def md2415 : Spec.MasterData :=
-  { mdFS with flightMasters := [⟨⟨"NTT001"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩] }
+  { mdFS with flightMasters := [⟨{ val := "NTT001" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩] }
 
 theorem dev_D031_nontrivial : Nontrivial dev_D031 :=
   ⟨⟨iaR mdFS [], fun o h e => by simp [iaR] at e⟩,
@@ -105,14 +105,14 @@ def paxR : SourceModel.App.B2.PassengerForm :=
 
 /-- NTT523 を往路、NTT528 を復路とする予約フォーム（搭乗者 1 人）。 -/
 def form2415 : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT523", some .RT, some .N⟩,
-    ⟨some ⟨1970, 1, 2⟩, some "NTT528", some .RT, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT523", some .RT, some .N⟩,
+    ⟨some ⟨1970, 1, 2, by decide⟩, some "NTT528", some .RT, some .N⟩], passengerFormList := [paxR] }
 
 /-- NTT523 を往路、NTT528 を復路とする往復の予約確認（搭乗者 1 人）。 -/
 def ic2415 : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := db2415, config := SourceModel.AtrsProperties.upstreamConfig,
      form := form2415,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .confirm⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .confirm⟩
 
 /-! ## 評価の補題 -/
 
@@ -131,10 +131,10 @@ theorem suHasText_fun : LangSemantics.Java.Spring.StringUtils.hasText =
 
 /-- ABS-131 の証人の [Spec] のマスタ（`db2415` の写し）。 -/
 def mdW2415 : Spec.MasterData :=
-  { airports := [⟨⟨"HND"⟩, "Haneda", 1⟩, ⟨⟨"ITM"⟩, "Itami", 2⟩],
-    routes := [⟨1, ⟨"HND"⟩, ⟨"ITM"⟩, 10000⟩, ⟨2, ⟨"ITM"⟩, ⟨"HND"⟩, 10000⟩],
-    flightMasters := [⟨⟨"NTT523"⟩, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
-      ⟨⟨"NTT528"⟩, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
+  { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
+    routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000⟩, ⟨2, { val := "ITM" }, { val := "HND" }, 10000⟩],
+    flightMasters := [⟨{ val := "NTT523" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
+      ⟨{ val := "NTT528" }, 2, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
     boardingClasses := [⟨.N, "N", 0, 1⟩],
     fareTypes := [⟨.RT, "RT", 10, 355, 0, 1, 1⟩],
     peakTimes := [], planes := [], creditTypes := [] }
@@ -144,14 +144,14 @@ def day1R : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
 /-- ABS-131 の証人の [Spec] の入力（`ic2415` の像）。 -/
 def ia2415 : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, ⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩], inputR⟩, .confirm⟩
+  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, "NTT523", .N, .RT⟩, ⟨day1R, "NTT528", .N, .RT⟩], inputR⟩, .confirm⟩
 
 /-- ABS-131 の証人の [Spec] の状態（`fd2415` の像）。 -/
-def w2415 : Spec.Port.World := { flights := [⟨⟨day0, ⟨"NTT523"⟩, .N, .RT⟩, 10⟩, ⟨⟨day1R, ⟨"NTT528"⟩, .N, .RT⟩, 10⟩] }
+def w2415 : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT523" }, .N, .RT⟩, 10⟩, ⟨⟨day1R, { val := "NTT528" }, .N, .RT⟩, 10⟩] }
 
 theorem worldOfDb_fd2415 : worldOfDb fd2415 = some w2415 := by decide
 
-theorem w2415_inv : w2415.Inv := by decide
+theorem w2415_inv : w2415.Inv := w2415.inv
 
 theorem aiR_ic2415 : aiR ic2415 = some ia2415 := by
   have h1 : Abstraction.MasterData.Alpha.configOf ic2415.input.config = some Spec.Config.default := by decide
@@ -166,7 +166,7 @@ theorem md2415_valid : mdW2415.Valid Spec.Config.default := by
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
   simp only [mdW2415, List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+  rcases ha with rfl | rfl <;> decide
 
 theorem inputR_passengers : ∀ p ∈ inputR.passengers, (∀ s ∈ p.familyName, s.length ≤ 10) ∧
     (∀ s ∈ p.givenName, s.length ≤ 10) ∧ (∀ a ∈ p.age, a ≤ 999) := by
@@ -187,7 +187,7 @@ theorem confirm2415_some : (confirmOp ia2415.cfg ia2415.md w2415 ia2415.req).isS
   all_goals decide +kernel
 
 theorem ia2415_pre : ia2415.Pre w2415 :=
-  ⟨by decide, md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
+  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
 
 theorem ia2415_devs : dev_D009 w2415 ia2415 ∧ dev_D001R ia2415 ∧ dev_D002R ia2415 ∧ dev_D012R ia2415 := by
   refine ⟨?_, ?_, ?_, ?_⟩
@@ -217,20 +217,20 @@ def fd109 : FlightDb := { fdFS with sqPassenger := some 2147483647 }
 
 /-- NTT001・N・OW を選んだ予約フォーム（搭乗者 1 人）。 -/
 def form109 : SourceModel.App.B2.TicketReserveForm :=
-  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
+  { formR with selectFlightFormList := [⟨some ⟨1970, 1, 1, by decide⟩, some "NTT001", some .OW, some .N⟩], passengerFormList := [paxR] }
 
 /-- NTT001・N・OW を選んだ予約確定（搭乗者 1 人）。 -/
 def ic109 : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := dbFS, config := SourceModel.AtrsProperties.upstreamConfig,
      form := form109,
-     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1⟩ }, .reserve⟩
+     env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .reserve⟩
 
 /-- ABS-109 の証人の [Spec] の状態（`fd109` の像）。 -/
 def w109 : Spec.Port.World := { wFS with sequences := { wFS.sequences with passenger := 2147483648 } }
 
 theorem worldOfDb_fd109 : worldOfDb fd109 = some w109 := by decide
 
-theorem w109_inv : w109.Inv := by decide
+theorem w109_inv : w109.Inv := w109.inv
 
 theorem aiR_ic109 : aiR ic109 = some (iaR mdFS [selR]) := by
   have h1 : Abstraction.MasterData.Alpha.configOf ic109.input.config = some Spec.Config.default := by decide
@@ -245,7 +245,7 @@ theorem mdFS_valid : mdFS.Valid Spec.Config.default := by
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
   simp only [mdFS, List.mem_cons, List.not_mem_nil, or_false] at ha
-  rcases ha with rfl | rfl <;> exact ⟨⟨by decide, by rw [String.all_bool_eq]; decide⟩, by decide⟩
+  rcases ha with rfl | rfl <;> decide
 
 theorem req109_valid : (iaR mdFS [selR]).req.Valid := by
   refine ⟨?_, by decide, by decide, by decide, by decide, by decide, by decide, by decide, inputR_passengers⟩
@@ -261,7 +261,7 @@ theorem reserve109_some : (reserveOp (iaR mdFS [selR]).cfg (iaR mdFS [selR]).md 
   all_goals decide +kernel
 
 theorem ia109_pre : (iaR mdFS [selR]).Pre w109 :=
-  ⟨by decide, mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
+  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
 
 theorem ia109_devs : dev_D031 (iaR mdFS [selR]) ∧ dev_D001R (iaR mdFS [selR]) ∧ dev_D002R (iaR mdFS [selR]) ∧
     dev_D012R (iaR mdFS [selR]) := by

@@ -19,6 +19,7 @@ ABS-026 の標準の抽象化 α の、値の葉（`docs/spec/abstraction.md#抽
 | `arrOfStr` | `HHmm` の文字列（到着時刻。24 時以降を含む。ADR ce36） | 4 桁の数字でない・到着時刻の範囲外（例: `4815`） |
 | `dateOfSlash` | `yyyy/MM/dd` の文字列 | その形でない・妥当でない年月日 |
 | `bcCdOf`・`ftCdOf` | 列挙型のコードの文字列 | 未知のコード |
+| `airportCdOf`・`flightNameOf`・`creditTypeCdOf`・`membershipNumberOf` | 空港コード・便名・カード種別コード・会員番号の文字列 | 形式に合わない（`AirportCd.valid`・`FlightName.valid`・`CreditTypeCd.valid`・`MembershipNumber.valid`） |
 -/
 
 namespace Abstraction.MasterData.AlphaLeaf
@@ -259,5 +260,59 @@ theorem bcCdOf_kernel : KernelIs bcCdOf (undefOrEq bcCdOf) :=
 @[obligation "ABS-048"]
 theorem ftCdOf_kernel : KernelIs ftCdOf (undefOrEq ftCdOf) :=
   kernelIs_undefOrEq fun _ _ _ hx hy => (ftCdOf_eq_some hx).trans (ftCdOf_eq_some hy).symm
+
+/-! ## 形式の決まったコード値 -/
+
+/-- 空港コード（形式 `AirportCd.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def airportCdOf (s : String) : Option AirportCd := AirportCd.ofString? s
+
+/-- 便名（形式 `FlightName.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def flightNameOf (s : String) : Option FlightName := FlightName.ofString? s
+
+/-- カード種別コード（形式 `CreditTypeCd.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def creditTypeCdOf (s : String) : Option CreditTypeCd := CreditTypeCd.ofString? s
+
+/-- 会員番号（形式 `MembershipNumber.valid` に合わなければ定義しない）。 -/
+@[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
+def membershipNumberOf (s : String) : Option MembershipNumber := MembershipNumber.ofString? s
+
+theorem airportCdOf_eq_some {s : String} {c : AirportCd} (h : airportCdOf s = some c) : c.val = s :=
+  AirportCd.val_of_ofString? h
+
+theorem flightNameOf_eq_some {s : String} {n : FlightName} (h : flightNameOf s = some n) : n.val = s :=
+  FlightName.val_of_ofString? h
+
+/-- 便名の値を読むと、その便名。 -/
+@[simp] theorem flightNameOf_val (n : FlightName) : flightNameOf n.val = some n := FlightName.ofString?_val n
+
+theorem creditTypeCdOf_eq_some {s : String} {c : CreditTypeCd} (h : creditTypeCdOf s = some c) : c.val = s :=
+  CreditTypeCd.val_of_ofString? h
+
+theorem membershipNumberOf_eq_some {s : String} {n : MembershipNumber} (h : membershipNumberOf s = some n) :
+    n.val = s :=
+  MembershipNumber.val_of_ofString? h
+
+/-- 会員番号の値を読むと、その会員番号。 -/
+@[simp] theorem membershipNumberOf_val (n : MembershipNumber) : membershipNumberOf n.val = some n :=
+  MembershipNumber.ofString?_val n
+
+@[obligation "ABS-048"]
+theorem airportCdOf_kernel : KernelIs airportCdOf (undefOrEq airportCdOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (airportCdOf_eq_some hx).symm.trans (airportCdOf_eq_some hy)
+
+@[obligation "ABS-048"]
+theorem flightNameOf_kernel : KernelIs flightNameOf (undefOrEq flightNameOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (flightNameOf_eq_some hx).symm.trans (flightNameOf_eq_some hy)
+
+@[obligation "ABS-048"]
+theorem creditTypeCdOf_kernel : KernelIs creditTypeCdOf (undefOrEq creditTypeCdOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (creditTypeCdOf_eq_some hx).symm.trans (creditTypeCdOf_eq_some hy)
+
+@[obligation "ABS-048"]
+theorem membershipNumberOf_kernel : KernelIs membershipNumberOf (undefOrEq membershipNumberOf) :=
+  kernelIs_undefOrEq fun _ _ _ hx hy => (membershipNumberOf_eq_some hx).symm.trans (membershipNumberOf_eq_some hy)
 
 end Abstraction.MasterData.AlphaLeaf

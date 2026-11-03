@@ -212,7 +212,7 @@ Lean: `Spec.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定�
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime`（出発日 0:00 からの分数で比べる） | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
-| MD-8 | [`Spec.Model`](Model.lean#値域) の値域（空港コードは英大文字 3 文字で、区切り行のコード `NOP` でない） | int32 の折り返し（参考 [D-030](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。空港コードに `-` があると区間のキーが衝突しうる（参考 [D-036](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる（参考 [D-029](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
+| MD-8 | [`Spec.Model`](Model.lean#値域) の値域（空港コードは区切り行のコード `NOP` でない。英大文字 3 文字の形式は型 `AirportCd` が持つ） | int32 の折り返し（参考 [D-030](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。空港コードに `-` があると区間のキーが衝突しうるが、[Spec] の型はそのマスタを表せない（[D-036](../../docs/spec/abstraction.md#既知差異)。D-027 に覆われる）。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる（参考 [D-029](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
 
 マスタは不変の入力であり（[`Spec.Port`](Port.lean#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005、MD-8 は D-029・D-030・D-036）は差異ではなく、参考として [abstraction.md](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 -/
@@ -271,9 +271,9 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
 def airportNopCode : String := "NOP"
 
 /-- MD-8: 値域（`lean/Spec/Model.lean#値域` のうちマスタのもの）。 -/
-@[spec_doc "lean/Spec/MasterData.lean#不変条件spec", gap "D-029", "D-030", "D-036"]
+@[spec_doc "lean/Spec/MasterData.lean#不変条件spec", gap "D-029", "D-030"]
 def MD8 (md : MasterData) : Prop :=
-  (∀ a ∈ md.airports, a.code.WellFormed ∧ a.code.val ≠ airportNopCode) ∧
+  (∀ a ∈ md.airports, a.code.val ≠ airportNopCode) ∧
   (∀ r ∈ md.routes, ∀ b ∈ md.boardingClasses, r.basicFare + b.extraCharge ≤ Range.maxBasicFareWithCharge) ∧
   (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
   (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate)
@@ -309,7 +309,7 @@ instance (cfg : Config) (md : MasterData) : Decidable (md.Valid cfg) :=
 
 **[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。
 
-参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コードと便名が `WellFormed` で、便名は空白でない（[文字クラス](Prim/Text.lean#文字クラス) の `hasText`。原典の `Assert.hasText`））である。引数がこれを満たさないときの [Source] の振る舞い（`Assert.hasText` の例外、`-` を含む空港コードでのキャッシュのキーの衝突）は、参考 [D-034](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。
+参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コード（生の文字列）が空港コードの形式 `AirportCd.valid` に合い、便名が `WellFormed` で、便名は空白でない（[文字クラス](Prim/Text.lean#文字クラス) の `hasText`。原典の `Assert.hasText`））である。引数がこれを満たさないときの [Source] の振る舞い（`Assert.hasText` の例外、`-` を含む空港コードでのキャッシュのキーの衝突）は、参考 [D-034](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。
 
 機械の答えのうち、搭乗クラスと運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）である。表示順を観測するのはコードリストの問い合わせだけとする（原典の参照の結果にも表示順は無い。[ADR f353](../../docs/decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
 
@@ -330,13 +330,13 @@ instance (cfg : Config) (md : MasterData) : Decidable (md.Valid cfg) :=
 
 /-- `(dep, arr)` に一致する区間。 -/
 @[spec_doc "lean/Spec/MasterData.lean#参照関数"]
-def routeOf (md : MasterData) (dep arr : AirportCd) : Option Route :=
-  md.routes.find? fun r => r.depAirportCd == dep && r.arrAirportCd == arr
+def routeOf (md : MasterData) (dep arr : String) : Option Route :=
+  md.routes.find? fun r => r.depAirportCd.val == dep && r.arrAirportCd.val == arr
 
-/-- 便名に一致する便マスタ。 -/
+/-- 便名（文字列）に一致する便マスタ。 -/
 @[spec_doc "lean/Spec/MasterData.lean#参照関数"]
-def flightMasterOf (md : MasterData) (name : FlightName) : Option FlightMaster :=
-  md.flightMasters.find? fun f => f.flightName == name
+def flightMasterOf (md : MasterData) (name : String) : Option FlightMaster :=
+  md.flightMasters.find? fun f => f.flightName.val == name
 
 /-- 運賃種別。 -/
 @[spec_doc "lean/Spec/MasterData.lean#参照関数"]
@@ -396,8 +396,8 @@ theorem find?_key_eq_some_iff {α κ : Type} [DecidableEq κ] {f : α → κ} {l
     refine h.imp fun hne ⟨ha, hb⟩ => hne ?_
     simp at ha hb; rw [ha, hb]
 
-theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : AirportCd} {r : Route} :
-    md.routeOf dep arr = some r ↔ r ∈ md.routes ∧ r.depAirportCd = dep ∧ r.arrAirportCd = arr := by
+theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : String} {r : Route} :
+    md.routeOf dep arr = some r ↔ r ∈ md.routes ∧ r.depAirportCd.val = dep ∧ r.arrAirportCd.val = arr := by
   unfold routeOf
   rw [find?_eq_some_iff_of_pairwise]
   · simp
@@ -405,11 +405,18 @@ theorem routeOf_eq_some_iff {md : MasterData} (h : md.MD2) {dep arr : AirportCd}
     rw [List.Nodup, List.pairwise_map] at h₁
     refine h₁.imp fun hne ⟨ha, hb⟩ => hne ?_
     simp only [Bool.and_eq_true, beq_iff_eq] at ha hb
-    rw [ha.1, ha.2, hb.1, hb.2]
+    rw [AirportCd.ext (ha.1.trans hb.1.symm), AirportCd.ext (ha.2.trans hb.2.symm)]
 
-theorem flightMasterOf_eq_some_iff {md : MasterData} (h : md.MD1) {name : FlightName} {f : FlightMaster} :
-    md.flightMasterOf name = some f ↔ f ∈ md.flightMasters ∧ f.flightName = name :=
-  find?_key_eq_some_iff h.2.2.1
+theorem flightMasterOf_eq_some_iff {md : MasterData} (h : md.MD1) {name : String} {f : FlightMaster} :
+    md.flightMasterOf name = some f ↔ f ∈ md.flightMasters ∧ f.flightName.val = name := by
+  unfold flightMasterOf
+  rw [find?_eq_some_iff_of_pairwise]
+  · simp
+  · have h₁ := h.2.2.1
+    rw [List.Nodup, List.pairwise_map] at h₁
+    refine h₁.imp fun hne ⟨ha, hb⟩ => hne ?_
+    simp only [beq_iff_eq] at ha hb
+    exact FlightName.ext (ha.trans hb.symm)
 
 theorem fareTypeOf_eq_some_iff {md : MasterData} (h : md.MD1) {cd : FareTypeCd} {f : FareType} :
     md.fareTypeOf cd = some f ↔ f ∈ md.fareTypes ∧ f.fareTypeCd = cd :=
@@ -496,7 +503,7 @@ end Spec
 
 シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md)）。
 
-シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。[ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)）。
+シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.EnvPre.seed_env` で示した（入口の環境の前提 `Spec.EnvPre.masterConfigOk`。前提は、設定とマスタの検証 `Spec.EnvPre.validate` が、不変条件の証明を持つ検証済みの型 `ValidEnv` を返すことである。機械の入力の設定・マスタは生の型のまま持つ（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。[ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)）。
 
 翌日着の便（NTT523・NTT528）について、[Source] の空席照会は到着時刻を文字列として整形するだけで（`DateTimeUtil.toFormatTimeString`。`2415` → `24:15`）、[Spec] と一致する。
 [Source] の `DateTimeFormatter("HHmm")` が `DateTimeParseException` を投げるのは、予約の往復便の検査で往路便がこの便のとき（`TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight`）で、既知差異 [D-031](../../docs/spec/abstraction.md#既知差異) である（[ADR ce36](../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)。[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md) の暫定措置 `outsideSpec` は外した）。

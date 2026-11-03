@@ -27,13 +27,6 @@ theorem pow2_neg (k : Nat) : pow2 (-(k : Int)) = (1, 2 ^ k) := by
     subst this; rfl
   · simp
 
-/-- `pow2 z = (2^z⁺, 2^z⁻)`（符号によらない形）。 -/
-theorem pow2_eq (z : Int) : pow2 z = (2 ^ z.toNat, 2 ^ (-z).toNat) := by
-  unfold pow2
-  split
-  · rename_i h; simp only [Prod.mk.injEq, true_and]; rw [show (-z).toNat = 0 by omega]
-  · rename_i h; simp only [Prod.mk.injEq, and_true]; rw [show z.toNat = 0 by omega]
-
 theorem log2_mul_pow2 {n : Nat} (hn : n ≠ 0) (s : Nat) : Nat.log2 (n * 2 ^ s) = Nat.log2 n + s := by
   have h1 : n * 2 ^ s ≠ 0 := Nat.mul_ne_zero hn (Nat.pos_iff_ne_zero.mp (Nat.two_pow_pos _))
   apply Nat.le_antisymm
@@ -46,61 +39,6 @@ theorem log2_mul_pow2 {n : Nat} (hn : n ≠ 0) (s : Nat) : Nat.log2 (n * 2 ^ s) 
     omega
   · rw [Nat.le_log2 h1, Nat.pow_add]
     exact Nat.mul_le_mul_right _ (Nat.log2_self_le hn)
-
-theorem two_pow_mul_two_pow (i j : Nat) : 2 ^ i * 2 ^ j = 2 ^ (i + j) := (Nat.pow_add 2 i j).symm
-
-/-- `⌊log2 (N/D)⌋` の性質: `2^L ≤ N/D < 2^(L+1)`（分子・分母の積で書く）。 -/
-theorem floorLog2_spec {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) :
-    D * 2 ^ (floorLog2 N D).toNat ≤ N * 2 ^ (-(floorLog2 N D)).toNat ∧
-      N * 2 ^ (-(floorLog2 N D + 1)).toNat < D * 2 ^ (floorLog2 N D + 1).toNat := by
-  have ha1 := Nat.log2_self_le hN
-  have ha2 := Nat.lt_log2_self (n := N)
-  have hb1 := Nat.log2_self_le hD
-  have hb2 := Nat.lt_log2_self (n := D)
-  generalize ha : Nat.log2 N = a at *
-  generalize hb : Nat.log2 D = b at *
-  unfold floorLog2 geTwoPow
-  rw [ha, hb]
-  simp only [pow2_eq, ge_iff_le, decide_eq_true_eq]
-  split
-  · rename_i hg
-    refine ⟨hg, ?_⟩
-    -- N/D < 2^(a+1)/2^b
-    calc N * 2 ^ (-((a : Int) - b + 1)).toNat < 2 ^ (a + 1) * 2 ^ (-((a : Int) - b + 1)).toNat :=
-          Nat.mul_lt_mul_of_pos_right ha2 (Nat.two_pow_pos _)
-      _ = 2 ^ b * 2 ^ ((a : Int) - b + 1).toNat := by
-          rw [two_pow_mul_two_pow, two_pow_mul_two_pow]; congr 1; omega
-      _ ≤ D * 2 ^ ((a : Int) - b + 1).toNat := Nat.mul_le_mul_right _ hb1
-  · rename_i hg
-    constructor
-    · calc D * 2 ^ ((a : Int) - b - 1).toNat ≤ 2 ^ (b + 1) * 2 ^ ((a : Int) - b - 1).toNat :=
-            Nat.mul_le_mul_right _ (Nat.le_of_lt hb2)
-        _ = 2 ^ a * 2 ^ (-((a : Int) - b - 1)).toNat := by
-            rw [two_pow_mul_two_pow, two_pow_mul_two_pow]; congr 1; omega
-        _ ≤ N * 2 ^ (-((a : Int) - b - 1)).toNat := Nat.mul_le_mul_right _ ha1
-    · have : (a : Int) - b - 1 + 1 = (a : Int) - b := by omega
-      rw [this]
-      simpa using hg
-
-/-- 最近接への丸め: `m = roundAtExp N D e` は `n/d`（`n = N·2^e⁻`、`d = D·2^e⁺`）から高々 1/2 しか離れない。 -/
-theorem roundAtExp_spec (N D : Nat) (e : Int) (hD : D ≠ 0) :
-    2 * (roundAtExp N D e * (D * 2 ^ e.toNat)) ≤ 2 * (N * 2 ^ (-e).toNat) + D * 2 ^ e.toNat ∧
-      2 * (N * 2 ^ (-e).toNat) ≤ 2 * (roundAtExp N D e * (D * 2 ^ e.toNat)) + D * 2 ^ e.toNat := by
-  unfold roundAtExp
-  simp only [pow2_eq]
-  generalize hn : N * 2 ^ (-e).toNat = n
-  generalize hd : D * 2 ^ e.toNat = d
-  have hd0 : 0 < d := by rw [← hd]; exact Nat.mul_pos (Nat.pos_of_ne_zero hD) (Nat.two_pow_pos _)
-  have e1 := Nat.div_add_mod n d
-  have e2 := Nat.mod_lt n hd0
-  generalize n / d = m at *
-  generalize n % d = r at *
-  rw [Nat.mul_comm d m] at e1
-  split
-  · constructor <;> (rw [Nat.add_mul]; omega)
-  · split
-    · constructor <;> omega
-    · split <;> constructor <;> (try rw [Nat.add_mul]) <;> omega
 
 /-- 正の有理数 `N/D` を 53 ビットの格子で round-to-nearest-even し、0 方向に切り捨てた整数。 -/
 def rneTrunc (N D : Nat) : Nat :=
@@ -130,41 +68,38 @@ theorem floorLog2_range {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N
     · exact hc
 
 /-- 閉じた形: 値が `[2^-1000, 2^31)` の正の有理数を double に丸めて `(int)` にした値は、`rneTrunc`（int の上限で飽和）。 -/
-theorem toJ32_ofRat {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000) (hhi : N < D * 2 ^ 31) :
-    (toJ32 (ofRat ⟨false, N, D⟩)).val = min J32.maxValue (rneTrunc N D) := by
+theorem toJ32_ofRat {N D : Nat} {hDp : 0 < D} (hN : N ≠ 0) (hD : D ≠ 0) (hlo : D ≤ N * 2 ^ 1000)
+    (hhi : N < D * 2 ^ 31) : (toJ32 (ofRat ⟨false, N, D, hDp⟩)).val = min J32.maxValue (rneTrunc N D) := by
   obtain ⟨r1, r2⟩ := floorLog2_range hN hD hlo hhi
-  have key : truncInt (ofRat ⟨false, N, D⟩) = some ((rneTrunc N D : Nat) : Int) := by
-    unfold ofRat rneTrunc
-    simp only [hN, ite_false]
+  have hp : ∃ m e, roundParts N D = some (m, e) ∧ m * 2 ^ e.toNat / 2 ^ (-e).toNat = rneTrunc N D := by
+    unfold roundParts rneTrunc
     generalize floorLog2 N D = L at r1 r2
     have hmax : max (L - 52) minExp = L - 52 := by simp only [minExp]; omega
     simp only [hmax]
     generalize roundAtExp N D (L - 52) = m
     have t1 : (L - 52).toNat = 0 := by omega
-    split
-    · rename_i hm
-      subst hm
+    by_cases hm : m = 2 ^ precision
+    · subst hm
       have h1 : ¬ (L - 52 + 1 > maxExp) := by simp only [maxExp]; omega
-      simp only [h1, ite_false, show (2 : Nat) ^ (precision - 1) ≠ 0 from Nat.pos_iff_ne_zero.mp (Nat.two_pow_pos _),
-        truncInt, pow2_eq, t1, Nat.pow_zero, Nat.mul_one, Option.some.injEq, Bool.false_eq_true, ite_false]
+      refine ⟨2 ^ (precision - 1), L - 52 + 1, by simp [h1, precision], ?_⟩
       have t2 : (L - 52 + 1).toNat = 0 := by omega
-      rw [t2, Nat.pow_zero, Nat.mul_one]
+      rw [t2, t1, Nat.pow_zero, Nat.mul_one, Nat.mul_one]
       have : (-(L - 52)).toNat = (-(L - 52 + 1)).toNat + 1 := by omega
       rw [this, Nat.pow_succ, show precision = 53 by rfl, show (2 : Nat) ^ 53 = 2 ^ 52 * 2 by rfl]
       rw [Nat.mul_div_mul_right _ _ (by decide : 0 < 2)]
     · have h1 : ¬ (L - 52 > maxExp) := by simp only [maxExp]; omega
-      simp only [h1, ite_false]
-      split
-      · rename_i h0
-        subst h0
-        simp [truncInt, pow2_eq]
-      · simp only [truncInt, pow2_eq, t1, Nat.pow_zero, Nat.mul_one, Bool.false_eq_true, ite_false]
+      by_cases h0 : m = 0
+      · subst h0
+        exact ⟨0, 0, by simp [hm, h1], by simp⟩
+      · exact ⟨m, L - 52, by simp [hm, h1, h0], rfl⟩
+  obtain ⟨m, e, hp, ht⟩ := hp
+  obtain ⟨hc, he⟩ := ofRat_some (s := false) (hD := hDp) hN hp
+  rw [he]
+  have key : truncInt (.finite false m e hc) = some ((rneTrunc N D : Nat) : Int) := by
+    simp only [truncInt, pow2_eq, ht, Bool.false_eq_true, ite_false]
   unfold toJ32
-  split
-  · rename_i h; rw [h] at key; simp [truncInt] at key
-  · rename_i h; rw [h] at key; simp [truncInt] at key
-  · rw [key, Option.getD_some]
-    show (J32.ofInt (max J32.minValue (min J32.maxValue (rneTrunc N D : Int)))).val = _
+  simp only [key, Option.getD_some]
+  · show (J32.ofInt (max J32.minValue (min J32.maxValue (rneTrunc N D : Int)))).val = _
     have : max J32.minValue (min J32.maxValue (rneTrunc N D : Int)) = min J32.maxValue (rneTrunc N D : Int) := by
       simp only [J32.minValue, J32.maxValue]; omega
     rw [this]
@@ -255,7 +190,7 @@ theorem rneTrunc_mul_pow2 {N D : Nat} (hN : N ≠ 0) (hD : D ≠ 0) (s : Nat) :
 
 /-- `(double) X`（`0 < X < 2^53`）は正確: 仮数 `X·2^(52−l)`、指数 `l − 52`（`l = ⌊log2 X⌋`）。 -/
 theorem ofInt_nat {X : Nat} (h0 : X ≠ 0) (h : X < 2 ^ 53) :
-    ofInt (X : Int) = .finite false (X * 2 ^ (52 - Nat.log2 X)) ((Nat.log2 X : Int) - 52) := by
+    ∃ hc, ofInt (X : Int) = .finite false (X * 2 ^ (52 - Nat.log2 X)) ((Nat.log2 X : Int) - 52) hc := by
   have hl : Nat.log2 X < 53 := (Nat.log2_lt h0).mpr h
   have hl1 := Nat.log2_self_le h0
   have hl2 := Nat.lt_log2_self (n := X)
@@ -265,9 +200,6 @@ theorem ofInt_nat {X : Nat} (h0 : X ≠ 0) (h : X < 2 ^ 53) :
     rw [hlx, show Nat.log2 1 = 0 by decide]
     simp only [Int.natCast_zero, Int.sub_zero, pow2_ofNat, ge_iff_le, Nat.mul_one, Nat.one_mul, decide_eq_true_eq,
       hl1, ite_true]
-  unfold ofInt ofRat
-  simp only [show ¬ ((X : Int) < 0) by omega, decide_false, Int.natAbs_natCast]
-  simp only [h0, ite_false, hf]
   have hmax : max ((l : Int) - 52) minExp = (l : Int) - 52 := by simp only [minExp]; omega
   have hr : roundAtExp X 1 ((l : Int) - 52) = X * 2 ^ (52 - l) := by
     unfold roundAtExp
@@ -278,25 +210,35 @@ theorem ofInt_nat {X : Nat} (h0 : X ≠ 0) (h : X < 2 ^ 53) :
     calc X * 2 ^ (52 - l) < 2 ^ (l + 1) * 2 ^ (52 - l) := Nat.mul_lt_mul_of_pos_right hl2 (Nat.two_pow_pos _)
       _ = 2 ^ 53 := by rw [two_pow_mul_two_pow]; congr 1; omega
   have hne : X * 2 ^ (52 - l) ≠ 0 := Nat.mul_ne_zero h0 (Nat.pos_iff_ne_zero.mp (Nat.two_pow_pos _))
-  simp only [hmax, hr, show ¬ (X * 2 ^ (52 - l) = 2 ^ precision) by simp only [precision]; omega, ite_false,
-    show ¬ ((l : Int) - 52 > maxExp) by simp only [maxExp]; omega, hne]
+  have hp : roundParts X 1 = some (X * 2 ^ (52 - l), (l : Int) - 52) := by
+    unfold roundParts
+    simp only [hf, hmax, hr, show ¬ (X * 2 ^ (52 - l) = 2 ^ precision) by simp only [precision]; omega, ite_false,
+      show ¬ ((l : Int) - 52 > maxExp) by simp only [maxExp]; omega, hne]
+  unfold ofInt
+  simp only [show ¬ ((X : Int) < 0) by omega, decide_false, Int.natAbs_natCast]
+  exact ofRat_some h0 hp
 
 /-- `(int)(X * F)`（`X` は非負の整数、`F = fm·2^(−fs)` は正の double）は、`rneTrunc (X·fm) (2^fs)`（int の上限で飽和）。
 値が `[2^-1000, 2^31)` にあるとき。 -/
-theorem jd2i_mul_nat {X fm fs : Nat} (hX0 : X ≠ 0) (hX : X < 2 ^ 53) (hfm : fm ≠ 0)
-    (hlo : 2 ^ fs ≤ X * fm * 2 ^ 1000) (hhi : X * fm < 2 ^ fs * 2 ^ 31) :
-    (jd2i (jdmul (jd (X : Int)) (.finite false fm (-(fs : Int))))).val = min J32.maxValue (rneTrunc (X * fm) (2 ^ fs)) := by
+theorem jd2i_mul_nat {X fm fs : Nat} {hc : Canonical fm (-(fs : Int))} (hX0 : X ≠ 0) (hX : X < 2 ^ 53)
+    (hfm : fm ≠ 0) (hlo : 2 ^ fs ≤ X * fm * 2 ^ 1000) (hhi : X * fm < 2 ^ fs * 2 ^ 31) :
+    (jd2i (jdmul (jd (X : Int)) (.finite false fm (-(fs : Int)) hc))).val =
+      min J32.maxValue (rneTrunc (X * fm) (2 ^ fs)) := by
   have hl : Nat.log2 X < 53 := (Nat.log2_lt hX0).mpr hX
   unfold jd2i jdmul jd
-  rw [ofInt_nat hX0 hX]
+  obtain ⟨hcX, hX'⟩ := ofInt_nat hX0 hX
+  rw [hX']
+  clear hX'
+  revert hcX
   generalize hs : 52 - Nat.log2 X = s
   have hpe : ((Nat.log2 X : Int) - 52) = -(s : Int) := by omega
   rw [hpe]
+  intro hcX
   simp only [mul, toRat?, pow2_neg, Bool.false_bne]
   have e1 : X * 2 ^ s * 1 * (fm * 1) = (X * fm) * 2 ^ s := by
     simp only [Nat.mul_one]; rw [Nat.mul_right_comm]
   have e2 : 2 ^ s * 2 ^ fs = 2 ^ fs * 2 ^ s := Nat.mul_comm _ _
-  rw [e1, e2]
+  simp only [e1, e2]
   have hN : X * fm ≠ 0 := Nat.mul_ne_zero hX0 hfm
   have hD : (2 : Nat) ^ fs ≠ 0 := Nat.pos_iff_ne_zero.mp (Nat.two_pow_pos _)
   rw [toJ32_ofRat (Nat.mul_ne_zero hN (Nat.pos_iff_ne_zero.mp (Nat.two_pow_pos _)))

@@ -31,7 +31,7 @@ open LangSemantics.Sql.Postgresql SourceModel.Db.Schema Spec.Prim
 
 /-! ## 入力 -/
 
-/-- 照会条件（`null` には定義しない。空港コードはそのまま包む）。 -/
+/-- 照会条件（`null` には定義しない。空港コードは文字列のまま）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def criteriaOf (c : SourceModel.Domain.Service.B1.TicketSearchCriteriaDto) : Option Spec.FlightSearch.Criteria := do
   let d ← c.depDate.bind dateOfJ
@@ -39,7 +39,7 @@ def criteriaOf (c : SourceModel.Domain.Service.B1.TicketSearchCriteriaDto) : Opt
   let dep ← c.departureAirportCd
   let arr ← c.arrivalAirportCd
   let ft ← c.flightType
-  pure ⟨d, bc, ⟨dep⟩, ⟨arr⟩, ft⟩
+  pure ⟨d, bc, dep, arr, ft⟩
 
 @[obligation "ABS-048"]
 theorem criteriaOf_kernel : KernelIs criteriaOf (undefOrEq criteriaOf) := by
@@ -48,7 +48,7 @@ theorem criteriaOf_kernel : KernelIs criteriaOf (undefOrEq criteriaOf) := by
   simp only [criteriaOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨d, hd, bc, hbc, dep, hdep, arr, harr, ft, hft, rfl⟩ := h
   obtain ⟨d', hd', bc', hbc', dep', hdep', arr', harr', ft', hft', h⟩ := h'
-  simp only [Spec.FlightSearch.Criteria.mk.injEq, AirportCd.mk.injEq] at h
+  simp only [Spec.FlightSearch.Criteria.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
   obtain ⟨j, hj, hjd⟩ := hd
   obtain ⟨j', hj', hjd'⟩ := hd'
@@ -96,7 +96,7 @@ theorem fareTypeInfoOf_kernel : KernelIs fareTypeInfoOf (undefOrEq fareTypeInfoO
 /-- 便ごとの空席情報。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def vacantInfoOf (d : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Option Spec.FlightSearch.FlightVacantInfo := do
-  let n ← d.flightName
+  let n ← d.flightName.bind flightNameOf
   let dn ← d.depAirportName
   let an ← d.arrAirportName
   let dt ← d.depTime
@@ -104,29 +104,30 @@ def vacantInfoOf (d : SourceModel.Domain.Service.B1.FlightVacantInfoDto) : Optio
   let dd ← d.depDate
   let bc ← d.boardingClassCd
   let fts ← d.fareTypes.entries.mapM fareTypeInfoOf
-  pure ⟨⟨n⟩, dn, an, dt, art, dd, bc, fts⟩
+  pure ⟨n, dn, an, dt, art, dd, bc, fts⟩
 
 @[obligation "ABS-048"]
 theorem vacantInfoOf_kernel : KernelIs vacantInfoOf (undefOrEq vacantInfoOf) := by
   apply kernelIs_undefOrEq
   intro d d' a h h'
   simp only [vacantInfoOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
-  obtain ⟨n, hn, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
-  obtain ⟨n', hn', dn', hdn', an', han', dt', hdt', art', hat', dd', hdd', bc', hbc', fts', hfts', h⟩ := h'
-  simp only [Spec.FlightSearch.FlightVacantInfo.mk.injEq, FlightName.mk.injEq] at h
+  obtain ⟨n, ⟨sn, hn, en⟩, dn, hdn, an, han, dt, hdt, art, hat, dd, hdd, bc, hbc, fts, hfts, rfl⟩ := h
+  obtain ⟨n', ⟨sn', hn', en'⟩, dn', hdn', an', han', dt', hdt', art', hat', dd', hdd', bc', hbc', fts', hfts', h⟩ := h'
+  simp only [Spec.FlightSearch.FlightVacantInfo.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩ := h
-  obtain ⟨_, _, _, _, _, _, _, ⟨es⟩⟩ := d
-  obtain ⟨_, _, _, _, _, _, _, ⟨es'⟩⟩ := d'
+  obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
+  obtain ⟨_, _, _, _, _, _, _, ⟨es, _⟩⟩ := d
+  obtain ⟨_, _, _, _, _, _, _, ⟨es', _⟩⟩ := d'
   simp only at *
-  rw [hn, hn', hdn, hdn', han, han', hdt, hdt', hat, hat', hdd, hdd', hbc, hbc',
-    mapM_inj (fun _ _ _ hx hy => inj_of_kernel fareTypeInfoOf_kernel hx hy) hfts hfts']
+  obtain rfl := mapM_inj (fun _ _ _ hx hy => inj_of_kernel fareTypeInfoOf_kernel hx hy) hfts hfts'
+  rw [hn, hn', hdn, hdn', han, han', hdt, hdt', hat, hat', hdd, hdd', hbc, hbc']
 
 /-- 出力: 便ごとの空席情報の列、または業務例外（コードで写す）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
 def aoS : SourceModel.FlightSearchQuery.SearchOutput → Option Spec.FlightSearch.SearchOutput
   | .ok ds => (ds.mapM vacantInfoOf).map .ok
-  | .error (.business c) => some (.error (.business c))
-  | .error (.notFound c) => some (.error (.notFound c))
+  | .error (.business c) => (Spec.Error.BusinessError.ofCode? c []).map fun e => .error (.business e)
+  | .error (.notFound c) => (Spec.Error.NotFoundError.ofCode? c).map fun e => .error (.notFound e)
 
 @[obligation "ABS-048"]
 theorem aoS_kernel : KernelIs aoS (undefOrEq aoS) := by
@@ -134,13 +135,15 @@ theorem aoS_kernel : KernelIs aoS (undefOrEq aoS) := by
   intro o o' a h h'
   rcases o with (⟨c⟩ | ⟨c⟩) | ds <;> rcases o' with (⟨c'⟩ | ⟨c'⟩) | ds' <;>
     simp only [aoS, Option.some.injEq, Option.map_eq_some_iff] at h h'
-  all_goals first
-    | (obtain ⟨x, hx, rfl⟩ := h; obtain ⟨y, hy, hxy⟩ := h'; cases hxy; congr 1
-       exact mapM_inj (fun _ _ _ hx hy => inj_of_kernel vacantInfoOf_kernel hx hy) hx hy)
-    | (obtain ⟨x, _, hx⟩ := h; rw [← hx] at h'; cases h'; done)
-    | (obtain ⟨x, _, hx⟩ := h'; rw [← hx] at h; cases h; done)
-    | (rw [← h'] at h; cases h; rfl)
-    | (rw [← h'] at h; cases h; done)
+  all_goals
+    obtain ⟨x, hx, rfl⟩ := h
+    obtain ⟨y, hy, hxy⟩ := h'
+    first
+      | (cases hxy; done)
+      | (cases hxy; congr 1; exact mapM_inj (fun _ _ _ hx hy => inj_of_kernel vacantInfoOf_kernel hx hy) hx hy)
+      | (cases hxy
+         rw [← (Spec.Error.BusinessError.code_args_of_ofCode? hx).1, ← (Spec.Error.BusinessError.code_args_of_ofCode? hy).1])
+      | (cases hxy; rw [← Spec.Error.NotFoundError.code_of_ofCode? hx, ← Spec.Error.NotFoundError.code_of_ofCode? hy])
 
 /-- 具体側の入力の環境（[Spec] の選択の環境は `Unit` なので、どの入力も標準の環境 `()`）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]

@@ -19,49 +19,116 @@ theorem exists_forall₂ {α β : Type} {R : α → β → Prop} :
     obtain ⟨bs, hbs⟩ := exists_forall₂ (l := l) fun x hx => h x (List.mem_cons_of_mem _ hx)
     exact ⟨b :: bs, .cons hb hbs⟩
 
-theorem checkFlight_ok {w : Spec.Port.World} {f : ResolvedFlight} {m : Spec.MasterData.FlightMaster}
-    (h : checkFlight w f = .ok m) : w.existsFlight f.key = true ∧ f.master = some m := by
+/-- 要素ごとの関係の、左辺の写像を関係に移す。 -/
+theorem forall₂_of_map {α β γ : Type} {R : β → γ → Prop} {f : α → β} :
+    ∀ {as : List α} {cs : List γ}, LangSemantics.Core.List.Forall₂ R (as.map f) cs →
+      LangSemantics.Core.List.Forall₂ (fun a c => R (f a) c) as cs
+  | [], [], .nil => .nil
+  | _ :: _, _ :: _, .cons h hs => .cons h (forall₂_of_map hs)
+
+/-- 要素ごとの関係の、右辺の要素には、関係する左辺の要素がある。 -/
+theorem forall₂_right_mem {α β : Type} {R : α → β → Prop} :
+    ∀ {as : List α} {bs : List β}, LangSemantics.Core.List.Forall₂ R as bs → ∀ b ∈ bs, ∃ a ∈ as, R a b
+  | [], [], .nil, _, hb => absurd hb (List.not_mem_nil)
+  | a :: _, _ :: _, .cons h hs, b, hb => by
+    rcases List.mem_cons.mp hb with rfl | hb
+    · exact ⟨a, List.mem_cons_self .., h⟩
+    · obtain ⟨a', ha', h'⟩ := forall₂_right_mem hs b hb
+      exact ⟨a', List.mem_cons_of_mem _ ha', h'⟩
+
+/-- 要素ごとの関係の、左辺の要素には、関係する右辺の要素がある。 -/
+theorem forall₂_left_mem {α β : Type} {R : α → β → Prop} :
+    ∀ {as : List α} {bs : List β}, LangSemantics.Core.List.Forall₂ R as bs → ∀ a ∈ as, ∃ b ∈ bs, R a b
+  | [], [], .nil, _, ha => absurd ha (List.not_mem_nil)
+  | _ :: _, b :: _, .cons h hs, a, ha => by
+    rcases List.mem_cons.mp ha with rfl | ha
+    · exact ⟨b, List.mem_cons_self .., h⟩
+    · obtain ⟨b', hb', h'⟩ := forall₂_left_mem hs a ha
+      exact ⟨b', List.mem_cons_of_mem _ hb', h'⟩
+
+theorem forall₂_len {α β : Type} {R : α → β → Prop} :
+    ∀ {as : List α} {bs : List β}, LangSemantics.Core.List.Forall₂ R as bs → as.length = bs.length
+  | [], [], .nil => rfl
+  | _ :: _, _ :: _, .cons _ hs => by simp [forall₂_len hs]
+
+theorem checkFlight_ok {w : Spec.Port.World} {f : Option ResolvedFlight} {r : ResolvedFlight}
+    (h : checkFlight w f = .ok r) : w.existsFlight r.key = true ∧ f = some r := by
   unfold checkFlight at h
   split at h
   · cases h
-  · rename_i m' hm
-    split at h
-    · cases h; exact ⟨by assumption, hm⟩
+  · split at h
+    · cases h; exact ⟨by assumption, rfl⟩
     · cases h
 
-/-- 選択フライトの検証が成功すれば、各フライトは主キーで存在する。 -/
+/-- 選択フライトの検証が成功すれば、返す便の主キーは、解決した選択フライトの主キーで、主キーで存在する。 -/
 theorem validateFlightList_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
-    {fs : List ResolvedFlight} (h : validateFlightList cfg md w fs = some (.ok ())) :
-    ∀ f ∈ fs, w.existsFlight f.key = true := by
+    {fs : List (Option ResolvedFlight)} {it : Itinerary FlightKey} (h : validateFlightList cfg md w fs = some (.ok it)) :
+    LangSemantics.Core.List.Forall₂ (fun f k => ∃ r, f = some r ∧ r.key = k ∧ w.existsFlight k = true) fs it.toList := by
   unfold validateFlightList at h
   split at h
   · rename_i o
     simp only [Option.some.injEq] at h
     cases hc : checkFlight w o with
     | error e => simp [hc, bind, Except.bind] at h
-    | ok m =>
-      intro f hf
-      simp only [List.mem_singleton] at hf
-      subst hf
-      exact (checkFlight_ok hc).1
+    | ok r =>
+      cases hf : checkFareTypes [r.key] with
+      | error e => simp [hc, hf, bind, Except.bind] at h
+      | ok u =>
+        simp only [hc, hf, bind, Except.bind, pure, Except.pure, Except.ok.injEq] at h
+        subst h
+        obtain ⟨he, rfl⟩ := checkFlight_ok hc
+        exact .cons ⟨r, rfl, rfl, he⟩ .nil
   · rename_i o h0
     cases hc : checkFlight w o with
     | error e => simp [hc] at h
-    | ok om =>
+    | ok ro =>
       cases hc' : checkFlight w h0 with
       | error e => simp [hc, hc'] at h
-      | ok hm =>
-        intro f hf
-        simp only [List.mem_cons, List.not_mem_nil, or_false] at hf
-        rcases hf with rfl | rfl
-        · exact (checkFlight_ok hc).1
-        · exact (checkFlight_ok hc').1
+      | ok rh =>
+        cases hi : checkInterval cfg ro.key ro.master rh.key rh.master with
+        | error e => simp [hc, hc', hi] at h
+        | ok u =>
+          cases u
+          cases hr : checkReverse md ro.master rh.master with
+          | none => simp [hc, hc', hi, hr] at h
+          | some rv =>
+            cases rv with
+            | error e => simp [hc, hc', hi, hr, Except.bind] at h
+            | ok u' =>
+              cases hf : checkFareTypes [ro.key, rh.key] with
+              | error e => simp [hc, hc', hi, hr, hf, Except.bind, Except.map] at h
+              | ok u'' =>
+                simp only [hc, hc', hi, hr, hf, Except.bind, Except.map, Option.bind_eq_bind, Option.bind_some,
+                  Option.pure_def, Option.some.injEq, Except.ok.injEq] at h
+                subst h
+                obtain ⟨he, rfl⟩ := checkFlight_ok hc
+                obtain ⟨he', rfl⟩ := checkFlight_ok hc'
+                exact .cons ⟨_, rfl, rfl, he⟩ (.cons ⟨_, rfl, rfl, he'⟩ .nil)
   · cases h
+
+/-- 選択フライトの検証が成功すれば、選択フライトはどれも便マスタで解決でき、返す便の主キーは、解決した選択フライトの
+主キーで、主キーで存在する。 -/
+theorem selects_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {ss : List SelectFlight}
+    {it : Itinerary FlightKey} (h : validateFlightList cfg md w (ss.map (resolve md)) = some (.ok it)) :
+    LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, resolve md s = some r ∧ r.key = k ∧ w.existsFlight k = true)
+      ss it.toList :=
+  forall₂_of_map (validateFlightList_ok h)
+
+/-- 解決した選択フライトの主キー: 出発日・搭乗クラス・運賃種別は選択フライトのもの、便名は便マスタの便名で、その値は
+選択フライトの便名。 -/
+theorem resolve_key {md : Spec.MasterData} {s : SelectFlight} {r : ResolvedFlight} (h : resolve md s = some r) :
+    md.flightMasterOf s.flightName = some r.master ∧ r.key = ⟨s.depDate, r.master.flightName, s.boardingClassCd, s.fareTypeCd⟩ ∧
+      r.master.flightName.val = s.flightName := by
+  simp only [resolve, Option.map_eq_some_iff] at h
+  obtain ⟨m, hm, rfl⟩ := h
+  refine ⟨hm, rfl, ?_⟩
+  have := List.find?_some hm
+  simpa using this
 
 /-- 選択フライトの検証の値があれば、選択フライトは 1〜2 件。 -/
 theorem validateFlightList_len {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
-    {fs : List ResolvedFlight} {x : Except AtrsError Unit} (h : validateFlightList cfg md w fs = some x) :
-    1 ≤ fs.length ∧ fs.length ≤ 2 := by
+    {fs : List (Option ResolvedFlight)} {x : Except AtrsError (Itinerary FlightKey)}
+    (h : validateFlightList cfg md w fs = some x) : 1 ≤ fs.length ∧ fs.length ≤ 2 := by
   unfold validateFlightList at h
   split at h
   · simp
@@ -85,10 +152,10 @@ theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Por
     {x : Except AtrsError Nat} (h : confirmOp cfg md w r = some x) :
     ∃ v, validateFlightList cfg md w (r.selects.map (resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ x = .error (asInvalidRequest e)) ∨
-        (v = .ok () ∧ ∃ d vr, buildDraft { r.form with passengers := compactPassengers r.form.passengers }
-            (r.selects.map (·.key)) = some d ∧ validateReservation cfg md w d = some vr ∧
+        (∃ it, v = .ok it ∧ ∃ d vr, buildDraft { r.form with passengers := compactPassengers r.form.passengers }
+            it = some d ∧ validateReservation cfg md w d = some vr ∧
           ((∃ e, vr = .error e ∧ x = .error e) ∨
-            (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md (r.selects.map (·.key)) (d.passengers.map (·.age)) =
+            (vr = .ok () ∧ ∃ n, Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) =
               some n ∧ x = .ok n)))) := by
   unfold confirmOp checkSelects at h
   cases hv : validateFlightList cfg md w (r.selects.map (resolve md)) with
@@ -101,12 +168,11 @@ theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Por
       left
       simp only [Except.mapError, Option.pure_def, Option.some.injEq] at h
       exact ⟨e, rfl, h.symm⟩
-    | ok u =>
-      cases u
+    | ok it =>
       right
-      refine ⟨rfl, ?_⟩
+      refine ⟨it, rfl, ?_⟩
       simp only [Except.mapError, reserveConfirm, Option.bind_eq_bind] at h
-      cases hd : buildDraft { r.form with passengers := compactPassengers r.form.passengers } (r.selects.map (·.key)) with
+      cases hd : buildDraft { r.form with passengers := compactPassengers r.form.passengers } it with
       | none => simp [hd] at h
       | some d =>
         cases hvr : validateReservation cfg md w d with
@@ -123,7 +189,7 @@ theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Por
             cases u
             right
             refine ⟨rfl, ?_⟩
-            cases ht : Spec.Fare.totalFareOfKeys cfg md (r.selects.map (·.key)) (d.passengers.map (·.age)) with
+            cases ht : Spec.Fare.totalFareOfKeys cfg md it.toList (d.passengers.map (·.age)) with
             | none => simp [ht] at h
             | some n =>
               simp only [ht, Option.bind_some, Option.pure_def, Option.some.injEq] at h
