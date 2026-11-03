@@ -38,6 +38,7 @@ def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
 
 
 /-- 参照の問い合わせ。 -/
+@[raw_input "機械の入力（参照の問い合わせ）。妥当性 Query.Valid は PRE"]
 inductive Query where
   | routeOf (dep arr : AirportCd)
   | flightMasterOf (name : FlightName)

@@ -156,7 +156,7 @@ structure CreditTypeCd where
 def CreditTypeCd.WellFormed (c : CreditTypeCd) : Prop := c.val.length = 3
 
 /-- パスワードのハッシュ（不透明。ADR 2d1f）。 -/
-@[spec_doc "docs/spec/domain-model.md#コード値"]
+@[spec_doc "docs/spec/domain-model.md#コード値", raw_input "パスワードエンコーダのポートが返す不透明な値（ADR 2d1f）"]
 structure PasswordHash where
   val : String
   deriving DecidableEq, Repr

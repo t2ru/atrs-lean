@@ -2,6 +2,7 @@
 
 ## 2026-11-03
 
+* **Update**: スキルの `JDouble` の正規形・`SequenceDef` の範囲（スキルの backlog d3fd の S4）に合わせ、`Abstraction.Fare.Factors` を直した（定理の主張は不変）。照合の記録を `trace rehash` で更新した。スキルの検査 MISU-1 の段階導入の一覧を `trace/project.json` の `lean.misu_pending` に置き、`PasswordHash`・`MasterQuery.Query`・`UseCase.Reserve.Request` に `@[raw_input]` を付けた。[ADR 6d36](decision/6d36-misu-spec-types.md) の段の記録を足した。
 * **Update**: スキルの `JLocalDate`・`JLocalTime`・`JLocalDateTime` の妥当性の型（スキルの backlog d3fd の S4）に合わせ、`Abstraction` の字面・補題（[Spec] の暦日から `LocalDate` への `Abstraction.Prim.Date.jOfDate`、閏年と月の日数の対応を `Abstraction.Prim.Date` に移した）を直した。変わった `SourceModel` の定義の照合の記録を `trace rehash`（`lake test` と Java の原典実行）で更新した（`trace/manifest.json`・[spec/traceability.md](spec/traceability.md) の生成区画）。
 * **Update**: [backlog 8d24](backlog/8d24-misu-spec-types.md) の前段として、ギャップの登録簿 `lean/Abstraction/Gap.lean` の 41 件を、スキルの和型の `Trace.Gap`（スキルの backlog d3fd の S1）に書き換えた。[spec/abstraction.md](spec/abstraction.md) の生成表は変わらない。
 * **Creation**: [ADR 6d36](decision/6d36-misu-spec-types.md) で、ATRS の `Spec` の型を、不正な状態を表現できない型（MISU）にすることにした（L1 値・L2 境界・L3 関係。プロジェクトオーナーの指示と選択）。作業を [backlog 8d24](backlog/8d24-misu-spec-types.md) にした。スキル spec-pivot の版 0.28（スキルの ADR bf1b・backlog d3fd）に合わせ、[rules/atrs-porting.md](rules/atrs-porting.md) の版の記載と §Spec の型を改めた。[index.md](index.md)・[backlog/README.md](backlog/README.md) を更新した。

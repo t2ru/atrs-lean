@@ -21,6 +21,7 @@ import Trace.Id
 | `@[env_pre "<ID>"]` | 入口の機械の環境の前提（マスタ・設定の妥当性と入力の値域） | `MD-N` など |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
+| `@[raw_input "<理由>"]` | 外部から来る値を生の型のまま置く `Spec` の型（MISU-1 の対象外） | 外部の出所 |
 | `@[ns_exception "<理由>"]` | モジュール名の下に置けない宣言（`layout-check` の例外 E3。`Trace.Layout`） | 技術的な必要性 |
 
 ギャップの登録の宣言 `@[gap_entry]`（引数なし。値は型 `Trace.Gap`）は `Trace.Gap` にある。
@@ -52,6 +53,8 @@ syntax (name := env_pre) "env_pre" ppSpace str (atomic(", " str))* : attr
 syntax (name := spec_doc) "spec_doc" ppSpace str (atomic(", " str))* : attr
 /-- `@[no_source "<理由>"]` -/
 syntax (name := no_source) "no_source" ppSpace str (atomic(", " str))* : attr
+/-- `@[raw_input "<理由>"]` -/
+syntax (name := raw_input) "raw_input" ppSpace str (atomic(", " str))* : attr
 /-- `@[ns_exception "<理由>"]` -/
 syntax (name := ns_exception) "ns_exception" ppSpace str (atomic(", " str))* : attr
 
@@ -141,6 +144,9 @@ initialize specDocAttr : ParametricAttribute (Array DocAnchor) ←
   registerTraceAttr DocAnchor `spec_doc "仕様文書の節（<path>#<anchor>）" `Trace.Attr.specDocAttr
 initialize noSourceAttr : ParametricAttribute (Array NEString) ←
   registerTraceAttr NEString `no_source "移植元に対応が無い理由" `Trace.Attr.noSourceAttr
+/-- 外部から来る値を生の型のまま置く `Spec` の型（ADR bf1b の規則 2。検査 MISU-1 の対象外）。`trace-dump` の属性には含めない。 -/
+initialize rawInputAttr : ParametricAttribute (Array NEString) ←
+  registerTraceAttr NEString `raw_input "外部から来る値の出所（生の型）" `Trace.Attr.rawInputAttr
 /-- `layout-check` の例外（E3）。`trace-dump` の属性には含めない（追跡の対象ではないため）。 -/
 initialize nsExceptionAttr : ParametricAttribute (Array NEString) ←
   registerTraceAttr NEString `ns_exception "モジュール名の下に置けない理由" `Trace.Attr.nsExceptionAttr

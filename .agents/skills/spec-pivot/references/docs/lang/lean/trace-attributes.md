@@ -45,6 +45,7 @@ generated:
 | `@[env_pre "<ID>"]` | 入口の機械の環境の前提（`TotalUnder` の Env） | `MD-N`・`CFG` など（英大文字と、任意の `-` と数字） |
 | `@[spec_doc "<path>#<anchor>"]` | `Spec` の公開定義 | 仕様文書の節 |
 | `@[no_source "<理由>"]` | 移植元に対応の無い `Spec` の定義 | 理由 |
+| `@[raw_input "<理由>"]` | 外部から来る値を、不正な値も表せる生の型のまま置く `Spec` の型（[ADR bf1b](../../decision/bf1b-make-illegal-states-unrepresentable.md)。検査 MISU-1 の対象外。その `Valid` は機械の PRE） | 外部の出所 |
 | `@[ns_exception "<理由>"]` | モジュール名の下に置けない宣言（`layout-check` の例外 E3。[rules.md](rules.md#モジュールと名前空間)）。`trace-dump` の属性には出さない | 技術的な必要 |
 
 例:

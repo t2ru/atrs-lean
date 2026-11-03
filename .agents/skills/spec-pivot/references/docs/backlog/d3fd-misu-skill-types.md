@@ -37,6 +37,11 @@ generated:
   - 型の棚卸しの手順 [guide/type-inventory.md](../guide/type-inventory.md) を置く。
   - 検査 MISU-1（`scripts/ci/check_lean.py`）と属性 `@[raw_input]` を置く。
 
+### 進み具合
+
+- 済み: S1（`Trace.Gap`）、S2（属性・`Trace` の内部の型）、S3（判断のみ。下）、S4 の `JLocalDate`・`JLocalTime`・`JLocalDateTime`・`JDouble`・`Rat'`・`SequenceDef`、S5 の検査 MISU-1 と型の棚卸しの手順。
+- 残り（S4）: `JHashMap` のキーの一意性、`Sql.Query.compareKeys` の向きとキーの組、`DecimalFormat.Symbols`、`Java.Expr` の内部の値、`JThrow.other` のクラス名、`ConformanceKit.SqlTable` の行の幅。
+
 ### S3 の判断
 
 型の棚卸し（[guide/type-inventory.md](../guide/type-inventory.md)）の観点 T1・T6 で見直した。

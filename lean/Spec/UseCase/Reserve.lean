@@ -250,7 +250,7 @@ def reserve (cfg : Config) (md : MasterData) (today : Date) (w : World) (i : Res
 /-! ## 予約の操作（選択フライトの検証を含む） -/
 
 /-- 予約の要求: 選択フライトと予約入力。 -/
-@[spec_doc "docs/spec/http-contract.md#b2-予約"]
+@[spec_doc "docs/spec/http-contract.md#b2-予約", raw_input "機械の入力（画面・REST の要求）。妥当性 Request.Valid は PRE"]
 structure Request where
   selects : List SelectFlight
   form : ReserveInput
