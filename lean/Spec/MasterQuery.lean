@@ -5,7 +5,7 @@ import Spec.CodeList
 /-!
 # Spec.MasterQuery
 
-マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。`docs/spec/master-data.md`）。
+マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。[`Spec.MasterData`](MasterData.lean)）。
 状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの不変条件（MD-1〜MD-8）と、
 問い合わせの引数の値域。
 -/
@@ -16,15 +16,15 @@ open Spec.CodeList Spec.Model Spec.Prim.Text
 
 open Spec.Prim
 
-/-- コードリストの名前（`docs/spec/master-data.md#空港コードリスト画面用`）。 -/
-@[spec_doc "docs/spec/master-data.md#空港コードリスト画面用"]
+/-- コードリストの名前（`lean/Spec/CodeList.lean#空港コードリスト画面用`）。 -/
+@[spec_doc "lean/Spec/CodeList.lean#空港コードリスト画面用"]
 inductive CodeListName where
   | airport | boardingClass | fareType | creditType | creditMonth | creditYear | gender | flightType
   deriving DecidableEq, Repr
 
 
 /-- 名前で引いたコードリスト。 -/
-@[spec_doc "docs/spec/master-data.md#空港コードリスト画面用"]
+@[spec_doc "lean/Spec/CodeList.lean#空港コードリスト画面用"]
 def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
   | .airport => airport md
   | .boardingClass => boardingClass md
@@ -50,9 +50,9 @@ inductive Query where
   /-- コードリスト。 -/
   | codeList (n : CodeListName)
 
-/-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`docs/spec/domain-model.md#コード値`）。
+/-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`lean/Spec/Model.lean#コード値`）。
 便名は、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数", gap "D-034"]
+@[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => dep.WellFormed ∧ arr.WellFormed
   | .flightMasterOf name => name.WellFormed ∧ hasText name.val = true
@@ -85,7 +85,7 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
 
 /-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの不変条件と、
 問い合わせの引数の値域。 -/
-@[spec_doc "docs/spec/master-data.md#参照関数", gap "D-027"]
+@[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-027"]
 def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
   Machine.Machine.pure (fun i => i.1.Valid ∧ i.2.1.Valid i.1 ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
 

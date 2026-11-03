@@ -55,20 +55,20 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 
 | 文書 | 内容 | 原典の機能 ID | 区分 |
 | --- | --- | --- | --- |
-| [glossary.md](glossary.md) | 用語集（日英対応） | — | meta |
-| [configuration.md](configuration.md) | 設定パラメータ | — | informative＋draft |
-| [domain-model.md](domain-model.md) | 型・列挙・値域・不変条件・基本演算 | — | informative＋draft |
-| [master-data.md](master-data.md) | マスタデータの構造と不変条件、シードデータ | — | informative＋draft |
-| [fare-calculation.md](fare-calculation.md) | 基本運賃・運賃・合計運賃 | B0 | draft |
-| [flight-search.md](flight-search.md) | 空席照会 | B1 | draft |
-| [reservation.md](reservation.md) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
-| [member.md](member.md) | 会員登録・会員情報変更 | C0, C1, C2 | draft |
-| [authentication.md](authentication.md) | ログイン・ログアウト | A0, A1, A2 | draft |
-| [reservation-history-report.md](reservation-history-report.md) | 予約履歴レポート | D1 | draft |
-| [input-validation.md](input-validation.md) | 入力検証・文字クラス | 全画面 | draft |
-| [errors-and-messages.md](errors-and-messages.md) | エラー分類・コード・メッセージ | 全体 | draft |
-| [ports.md](ports.md) | ポート（副作用）の契約 | 全体 | draft＋normative |
-| [http-contract.md](http-contract.md) | 画面遷移・REST API の契約 | 全画面 | draft＋normative |
+| [`Spec.Glossary`](../../lean/Spec/Glossary.lean) | 用語集（日英対応） | — | meta |
+| [`Spec.Config`](../../lean/Spec/Config.lean) | 設定パラメータ | — | informative＋draft |
+| [`Spec.Model`](../../lean/Spec/Model.lean) | 型・列挙・値域・不変条件・基本演算 | — | informative＋draft |
+| [`Spec.MasterData`](../../lean/Spec/MasterData.lean) | マスタデータの構造と不変条件、シードデータ | — | informative＋draft |
+| [`Spec.Fare`](../../lean/Spec/Fare.lean) | 基本運賃・運賃・合計運賃 | B0 | draft |
+| [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) | 空席照会 | B1 | draft |
+| [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
+| [`Spec.Member`](../../lean/Spec/Member.lean) | 会員登録・会員情報変更 | C0, C1, C2 | draft |
+| [`Spec.Authentication`](../../lean/Spec/Authentication.lean) | ログイン・ログアウト | A0, A1, A2 | draft |
+| [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) | 予約履歴レポート | D1 | draft |
+| [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) | 入力検証・文字クラス | 全画面 | draft |
+| [`Spec.Error`](../../lean/Spec/Error.lean) | エラー分類・コード・メッセージ | 全体 | draft |
+| [`Spec.Port`](../../lean/Spec/Port.lean) | ポート（副作用）の契約 | 全体 | draft＋normative |
+| [`Spec.Http`](../../lean/Spec/Http.lean) | 画面遷移・REST API の契約 | 全画面 | draft＋normative |
 | [abstraction.md](abstraction.md) | 抽象化証明課題・既知差異 | — | meta |
 | [refinement.md](refinement.md) | 具体化証明課題・移植先の既知差異・移植先ソースの確認課題 | — | meta |
 | [assurance.md](assurance.md) | 保証の限界（ソース ⇔ モデルの決定論的な手段と、その届かない部分） | — | meta |

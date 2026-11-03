@@ -18,7 +18,7 @@ generated:
 
 ## Context and Problem Statement
 
-[spec/ports.md](../spec/ports.md#トランザクション) は、状態を変更するユースケースが原子的かつ直列化可能であることを要求し、実装として RDB のトランザクションや楽観ロックを認めている。
+[spec/ports.md](../../lean/Spec/Port.lean#トランザクション) は、状態を変更するユースケースが原子的かつ直列化可能であることを要求し、実装として RDB のトランザクションや楽観ロックを認めている。
 しかし実際の実装では、デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突が起こりうる。
 原典の REST API は排他制御の例外を 409 に写すが、[ADR a4fa](a4fa-errors-as-values-with-stable-codes.md) のエラー分類 `AtrsError` にはこれに当たる分類が無く、画面での扱いも決まっていない。
 
@@ -38,8 +38,8 @@ generated:
 Chosen option: "新しい分類 `Conflict` を追加する", because 原典の REST 応答（409）と互換になり、「再試行すれば成功しうる失敗」を `System`（整合性違反・I/O 失敗）と区別できるため。
 
 * `AtrsError.Conflict(reason)` を追加する。`reason` はログ用で、利用者には示さない。
-* [Spec] では、ユースケースは直列化可能に実行されるので `Conflict` は発生しない。`Conflict` は `TargetModel` と実行環境が、再試行などで吸収できなかったときだけ返してよい。返す場合、そのユースケースは状態を一切変えてはならない（採番の前進は除く。[spec/ports.md](../spec/ports.md#idgenerator)）。
-* 画面: 500 のシステムエラー画面（`e.ar.fw.9999`）。REST: 409、`code = "e.ar.fw.9999"`（[spec/http-contract.md](../spec/http-contract.md#apierror)）。
+* [Spec] では、ユースケースは直列化可能に実行されるので `Conflict` は発生しない。`Conflict` は `TargetModel` と実行環境が、再試行などで吸収できなかったときだけ返してよい。返す場合、そのユースケースは状態を一切変えてはならない（採番の前進は除く。[spec/ports.md](../../lean/Spec/Port.lean#idgenerator)）。
+* 画面: 500 のシステムエラー画面（`e.ar.fw.9999`）。REST: 409、`code = "e.ar.fw.9999"`（[spec/http-contract.md](../../lean/Spec/Http.lean#apierror)）。
 
 ### Consequences
 
@@ -66,6 +66,6 @@ Chosen option: "新しい分類 `Conflict` を追加する", because 原典の R
 ## More Information
 
 * [ADR a4fa](a4fa-errors-as-values-with-stable-codes.md) の補足である（既存の分類は変えない）
-* [ADR 97f9](97f9-persistence-and-transaction-semantics.md), [spec/errors-and-messages.md](../spec/errors-and-messages.md#分類atrserror), [spec/ports.md](../spec/ports.md#トランザクション)
+* [ADR 97f9](97f9-persistence-and-transaction-semantics.md), [spec/errors-and-messages.md](../../lean/Spec/Error.lean#分類atrserror), [spec/ports.md](../../lean/Spec/Port.lean#トランザクション)
 
 * （補足 2026-10-30）本 ADR は [ADR e56e](e56e-conflict-as-spec-nondeterminism.md) で置き換えられた（[ADR c336](c336-foundational-principles.md) の基本原則に合わせるため）。

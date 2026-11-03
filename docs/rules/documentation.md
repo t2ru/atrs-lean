@@ -15,7 +15,7 @@ generated:
 
 - 本文は **日本語** で書く（[ADR d845](../decision/d845-record-architecture-decisions-with-madr.md)）。
 - 型名・関数名・フィールド名・列挙値・エラーコード・ファイル名・URL は **英語（原典の綴り）** のまま書き、コード書式（`` ` ``）で囲む。
-- ATRS の業務用語は原典の日本語を使い、初出時に英語識別子を併記する。対応は [spec/glossary.md](../spec/glossary.md) に集約する。
+- ATRS の業務用語は原典の日本語を使い、初出時に英語識別子を併記する。対応は [spec/glossary.md](../../lean/Spec/Glossary.lean) に集約する。
   - 例: 運賃種別（`FareType`）、搭乗クラス（`BoardingClass`）
 
 ## 規範的な語

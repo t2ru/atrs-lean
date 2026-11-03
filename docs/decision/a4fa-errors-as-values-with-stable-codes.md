@@ -38,7 +38,7 @@ Bean Validation のエラー（フィールドエラー・グローバルエラ�
 
 Chosen option: "直和型のエラー値 + 原典のメッセージキー", because 例外機構に依存せず、原典の画面・API が出すメッセージと 1 対 1 に対応付けられるため。
 
-`AtrsError` は次の分類を持つ（詳細は [spec/errors-and-messages.md](../spec/errors-and-messages.md)）。
+`AtrsError` は次の分類を持つ（詳細は [spec/errors-and-messages.md](../../lean/Spec/Error.lean)）。
 
 | 分類 | 原典 | 例 |
 | --- | --- | --- |
@@ -50,7 +50,7 @@ Chosen option: "直和型のエラー値 + 原典のメッセージキー", beca
 | `System(code, args)` | `SystemException` | `e.ar.a0.L9002`（更新件数不一致） |
 
 * コード文字列は原典のキーをそのまま使う（`e.ar.<機能>.<番号>`、ログ用は `e.ar.<機能>.L<番号>`）。
-* メッセージ文言（日本語）はデータとして [spec/errors-and-messages.md](../spec/errors-and-messages.md) に持ち、引数 `{0}`, `{1}` の置換規則を定義する。
+* メッセージ文言（日本語）はデータとして [spec/errors-and-messages.md](../../lean/Spec/Error.lean) に持ち、引数 `{0}`, `{1}` の置換規則を定義する。
 * Lean では `Except AtrsError α` を使う。
 
 ### Consequences
@@ -61,7 +61,7 @@ Chosen option: "直和型のエラー値 + 原典のメッセージキー", beca
 
 ### Confirmation
 
-* 全エラーコードが [spec/errors-and-messages.md](../spec/errors-and-messages.md) に掲載され、各ユースケースのエラー表から参照されていることをレビューで確認する。
+* 全エラーコードが [spec/errors-and-messages.md](../../lean/Spec/Error.lean) に掲載され、各ユースケースのエラー表から参照されていることをレビューで確認する。
 
 ## Pros and Cons of the Options
 
@@ -82,5 +82,5 @@ Chosen option: "直和型のエラー値 + 原典のメッセージキー", beca
 
 ## More Information
 
-* [spec/errors-and-messages.md](../spec/errors-and-messages.md)
+* [spec/errors-and-messages.md](../../lean/Spec/Error.lean)
 * 後続: [ADR 41f7](41f7-concurrency-failure-as-conflict-error.md)（排他制御の失敗を分類 `Conflict` として追加）

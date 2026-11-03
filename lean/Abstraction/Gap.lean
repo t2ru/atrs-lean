@@ -27,7 +27,7 @@ open Trace Trace.Gap
 def D001 : Gap where
   id := "D-001"
   kind := .pre
-  sites := [⟨"基本運賃", "docs/spec/fare-calculation.md#基本運賃", ""⟩]
+  sites := [⟨"基本運賃", "lean/Spec/Fare.lean#基本運賃", ""⟩]
   premise := "`dev_D001`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `x = routeBasicFare + extraCharge`・`ratio` = 出発日の積算比率について、`x·ratio` が 100 で割り切れないか、`ratio` が安全でない積算比率の一覧 `unsafeBasicRatios` に無い（`basicFare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D001T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の区間・搭乗クラス・搭乗日に課す（`dev_D001S`）。予約では、合計金額の入力 `tfOf` に `dev_D001T` を課す（`dev_D001R`）"
   deviations := [``Abstraction.Fare.Alpha.dev_D001, ``Abstraction.Fare.TotalAlpha.dev_D001T,
     ``Abstraction.FlightSearch.Alpha.dev_D001S, ``Abstraction.Reserve.Alpha.dev_D001R]
@@ -41,7 +41,7 @@ def D001 : Gap where
 def D002 : Gap where
   id := "D-002"
   kind := .pre
-  sites := [⟨"運賃", "docs/spec/fare-calculation.md#運賃", ""⟩]
+  sites := [⟨"運賃", "lean/Spec/Fare.lean#運賃", ""⟩]
   premise := "`dev_D002`（`Abstraction.Fare.Alpha`。抽象側の入力の述語）: `b·(100−r) mod 10000 ≠ 100` か、`r` が安全でない割引率の一覧 `unsafeDiscountRates` に無い（`fare_src_eq'`）。合計金額では、各フライトに同じ条件を課す（`dev_D002T`）。空席照会では、搭乗日が照会可能期間の内で区間があるとき、照会の基本運賃と、照会の片道・往復の運賃種別のすべての割引率に課す（`dev_D002S`。候補に現れない運賃種別にも課す十分条件）。予約では、合計金額の入力 `tfOf` に `dev_D002T` を課す（`dev_D002R`）"
   deviations := [``Abstraction.Fare.Alpha.dev_D002, ``Abstraction.Fare.TotalAlpha.dev_D002T,
     ``Abstraction.FlightSearch.Alpha.dev_D002S, ``Abstraction.Reserve.Alpha.dev_D002R]
@@ -55,7 +55,7 @@ def D002 : Gap where
 def D003 : Gap where
   id := "D-003"
   kind := .outsidePre
-  sites := [⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
+  sites := [⟨"合計金額", "lean/Spec/Fare.lean#合計金額", ""⟩]
   premise := "PRE MD-7"
   evidence := .excludedBy [``Spec.MasterData.MD7]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -65,7 +65,7 @@ def D003 : Gap where
 def D004 : Gap where
   id := "D-004"
   kind := .outsidePre
-  sites := [⟨"ピーク時期", "docs/spec/master-data.md#参照関数", ""⟩]
+  sites := [⟨"ピーク時期", "lean/Spec/MasterData.lean#参照関数", ""⟩]
   premise := "PRE MD-4"
   evidence := .excludedBy [``Spec.MasterData.MD4]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -75,7 +75,7 @@ def D004 : Gap where
 def D005 : Gap where
   id := "D-005"
   kind := .outsidePre
-  sites := [⟨"空席照会の集約", "docs/spec/flight-search.md#searchflight", ""⟩]
+  sites := [⟨"空席照会の集約", "lean/Spec/FlightSearch.lean#searchflight", ""⟩]
   premise := "PRE MD-5"
   evidence := .excludedBy [``Spec.MasterData.MD5]
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
@@ -85,20 +85,20 @@ def D005 : Gap where
 def D006 : Gap where
   id := "D-006"
   kind := .pre
-  sites := [⟨"文字列長", "docs/spec/input-validation.md#文字クラス", ""⟩, ⟨"ログインの事前検査", "docs/spec/authentication.md#ログインlogin", ""⟩, ⟨"レポート要求の長さ", "docs/spec/reservation-history-report.md#要求の受信onreportrequested", ""⟩,
-    ⟨"レポートの一覧の並び", "docs/spec/reservation-history-report.md#一覧listreports", ""⟩]
+  sites := [⟨"文字列長", "lean/Spec/Prim/Text.lean#文字クラス", ""⟩, ⟨"ログインの事前検査", "lean/Spec/Authentication.lean#ログインlogin", ""⟩, ⟨"レポート要求の長さ", "lean/Spec/ReservationHistoryReport.lean#要求の受信onreportrequested", ""⟩,
+    ⟨"レポートの一覧の並び", "lean/Spec/ReservationHistoryReport.lean#一覧listreports", ""⟩]
   premise := "`dev_D006`: 入力が補助文字（U+10000 以上）を含まない。予約履歴レポートでは、会員の領域のファイル名も補助文字を含まない"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-106")
   rTasks := ["ABS-031", "ABS-034", "ABS-042", "ABS-043", "ABS-044", "ABS-045", "ABS-046"]
   impact := some (.abort, "入力検証・ログインの事前検査の合否が変わり、会員登録・会員情報変更・予約・ログイン・レポート要求の成否が変わる")
   backlog := ["4e0e3dd1-d282-46e2-aa98-719853bc9fd2", "ac713033-9b94-4e5a-bfc4-d27bdee7ee2e"]
 
-/-- [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[input-validation.md](input-validation.md#予約入力b2)） -/
+/-- [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[`Spec.InputValidation`](../../lean/Spec/InputValidation.lean#予約入力b2)） -/
 @[gap_entry]
 def D007 : Gap where
   id := "D-007"
   kind := .pre
-  sites := [⟨"REST 予約 API", "docs/spec/http-contract.md#post-apiv1ticket", ""⟩]
+  sites := [⟨"REST 予約 API", "lean/Spec/Http.lean#post-apiv1ticket", ""⟩]
   premise := "`dev_D007`: 入力が相関検証を満たし、搭乗者が 1〜6 名"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-107")
   rTasks := ["ABS-031"]
@@ -110,7 +110,7 @@ def D007 : Gap where
 def D008 : Gap where
   id := "D-008"
   kind := .observational
-  sites := [⟨"表示名", "docs/spec/errors-and-messages.md#項目の表示名", ""⟩]
+  sites := [⟨"表示名", "lean/Spec/Error.lean#項目の表示名", ""⟩]
   premise := "`obs_D008`: エラーメッセージの表示名の対応で、[Source] の「登場クラスコード」を [Spec] の「搭乗クラスコード」に対応させる"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-108")
   rTasks := ["ABS-031", "ABS-045", "ABS-046"]
@@ -124,8 +124,8 @@ def D008 : Gap where
 def D009 : Gap where
   id := "D-009"
   kind := .preConcreteState
-  sites := [⟨"採番", "docs/spec/ports.md#idgenerator", ""⟩,
-    ⟨"予約の登録", "docs/spec/reservation.md#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
+  sites := [⟨"採番", "lean/Spec/Port.lean#idgenerator", ""⟩,
+    ⟨"予約の登録", "lean/Spec/UseCase/Reserve.lean#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
   premise := "`dev_D009`（`Abstraction.Reserve.Alpha`。抽象側の状態と入力の述語）: 予約確定では、採番の次の値から 1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号 12 まで）が、予約番号ではシーケンスの最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下。会員番号（会員登録）は backlog 4e0e で課す"
   deviations := [``Abstraction.Reserve.Alpha.dev_D009]
   evidence := .refuted [``Abstraction.Reserve.need_D009]
@@ -138,9 +138,9 @@ def D009 : Gap where
 def D010 : Gap where
   id := "D-010"
   kind := .outsidePre
-  sites := [⟨"更新件数", "docs/spec/reservation.md#予約確定reserve", ""⟩, ⟨"ログイン", "docs/spec/authentication.md#ログインlogin", ""⟩,
-    ⟨"ログアウト", "docs/spec/authentication.md#ログアウトlogout", ""⟩, ⟨"会員登録", "docs/spec/member.md#会員登録register", ""⟩,
-    ⟨"会員情報変更", "docs/spec/member.md#会員情報変更update", ""⟩]
+  sites := [⟨"更新件数", "lean/Spec/UseCase/Reserve.lean#予約確定reserve", ""⟩, ⟨"ログイン", "lean/Spec/Authentication.lean#ログインlogin", ""⟩,
+    ⟨"ログアウト", "lean/Spec/Authentication.lean#ログアウトlogout", ""⟩, ⟨"会員登録", "lean/Spec/Member.lean#会員登録register", ""⟩,
+    ⟨"会員情報変更", "lean/Spec/Member.lean#会員情報変更update", ""⟩]
   premise := "`J` と INV（キーが存在する）。到達しないことは ABS-022 で示す"
   evidence := .excludedBy []
   backlog := ["aedfeffc-3e82-46b1-b497-3d8b7808d068", "44f89eb1-e59a-4573-8129-7b0c1d4699bb", "4e0e3dd1-d282-46e2-aa98-719853bc9fd2"]
@@ -150,7 +150,7 @@ def D010 : Gap where
 def D011 : Gap where
   id := "D-011"
   kind := .pre
-  sites := [⟨"Email", "docs/spec/input-validation.md#email", ""⟩]
+  sites := [⟨"Email", "lean/Spec/Prim/Text.lean#email", ""⟩]
   premise := "`dev_D011`: ドメイン部が ASCII だけからなる"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-111")
   rTasks := ["ABS-031", "ABS-034", "ABS-042", "ABS-045", "ABS-046"]
@@ -162,7 +162,7 @@ def D011 : Gap where
 def D012 : Gap where
   id := "D-012"
   kind := .pre
-  sites := [⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
+  sites := [⟨"合計金額", "lean/Spec/Fare.lean#合計金額", ""⟩]
   premise := "`dev_D012`（`Abstraction.Fare.TotalAlpha`。抽象側の入力の述語）: 各フライトで、基本運賃 `b`・割引率 `r` について `b × (childFareRate − r) ≤ 2,147,483,647`（小児がいなくても課す十分条件）。予約では、合計金額の入力 `tfOf` に課す（`dev_D012R`）"
   deviations := [``Abstraction.Fare.TotalAlpha.dev_D012, ``Abstraction.Reserve.Alpha.dev_D012R]
   evidence := .refuted [``Abstraction.Fare.need_D012]
@@ -178,7 +178,7 @@ def D012 : Gap where
 def D013 : Gap where
   id := "D-013"
   kind := .outOfModel
-  sites := [⟨"会員情報変更", "docs/spec/member.md#会員情報変更update", ""⟩, ⟨"トランザクション", "docs/spec/ports.md#トランザクション", "（規範節）"⟩]
+  sites := [⟨"会員情報変更", "lean/Spec/Member.lean#会員情報変更update", ""⟩, ⟨"トランザクション", "lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
   premise := "— モデル外（並行実行はモデルに現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D013 ""
 
@@ -187,7 +187,7 @@ def D013 : Gap where
 def D014 : Gap where
   id := "D-014"
   kind := .preConcreteEnv
-  sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩]
+  sites := [⟨"Clock", "lean/Spec/Port.lean#clock", ""⟩]
   premise := "1 つのユースケースの中で、[Source] の Clock の各呼び出しが同じ日付を返す（機能ごとの具体側の環境の述語）。空席照会では `dev_D014S`（`Abstraction.FlightSearch.Alpha`）: `TicketSharedServiceImpl` の `validateDepatureDate`・`getSearchLimitDate` が読む今日の日付が、`searchFlight` の今日の日付と同じ。予約では `dev_D014R`（`Abstraction.Reserve.Alpha`）: 1 回の操作の中で、Clock のどの読み出しも最初の読み出しと同じ日付（予約確定の予約日と、予約フライトごとの `isAvailableFareType` の今日が同じ）"
   deviations := [``Abstraction.FlightSearch.Alpha.dev_D014S, ``Abstraction.Reserve.Alpha.dev_D014R]
   evidence := .refuted [``Abstraction.FlightSearch.need_D014]
@@ -200,7 +200,7 @@ def D014 : Gap where
 def D015 : Gap where
   id := "D-015"
   kind := .outsidePre
-  sites := [⟨"マスタの不変条件", "docs/spec/master-data.md#不変条件spec", ""⟩]
+  sites := [⟨"マスタの不変条件", "lean/Spec/MasterData.lean#不変条件spec", ""⟩]
   premise := "PRE MD-1〜MD-3"
   evidence := .excludedBy [``Spec.MasterData.MD1, ``Spec.MasterData.MD2, ``Spec.MasterData.MD3]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -213,7 +213,7 @@ def D015 : Gap where
 def D016 : Gap where
   id := "D-016"
   kind := .outOfModel
-  sites := [⟨"セッション", "docs/spec/http-contract.md#セッション", "（規範節）"⟩]
+  sites := [⟨"セッション", "lean/Spec/Http.lean#セッション", "（規範節）"⟩]
   premise := "— モデル外（セッション ID は [Spec] の外の規範節で定め、どのモデルにも現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D016 ""
 
@@ -222,7 +222,7 @@ def D016 : Gap where
 def D017 : Gap where
   id := "D-017"
   kind := .pre
-  sites := [⟨"ログイン成功時の遷移先", "docs/spec/http-contract.md#認証と権限", ""⟩]
+  sites := [⟨"ログイン成功時の遷移先", "lean/Spec/Http.lean#認証と権限", ""⟩]
   premise := "`dev_D017`: `redirectTo` が無いか、`/` で始まり `//` で始まらない"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-117")
   rTasks := ["ABS-045"]
@@ -234,7 +234,7 @@ def D017 : Gap where
 def D018 : Gap where
   id := "D-018"
   kind := .pre
-  sites := [⟨"Min/Max", "docs/spec/input-validation.md#文字クラス", ""⟩, ⟨"creditTerm", "docs/spec/domain-model.md#member", ""⟩]
+  sites := [⟨"Min/Max", "lean/Spec/Prim/Text.lean#文字クラス", ""⟩, ⟨"creditTerm", "lean/Spec/Model.lean#member", ""⟩]
   premise := "`dev_D018`: `creditMonth`・`creditYear` が `[0-9]+` で、`creditTerm` が 5 文字以下"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-118")
   rTasks := ["ABS-031", "ABS-034", "ABS-042", "ABS-045", "ABS-046"]
@@ -246,7 +246,7 @@ def D018 : Gap where
 def D019 : Gap where
   id := "D-019"
   kind := .preConcreteInput
-  sites := [⟨"支払期限・搭乗日の表示", "docs/spec/domain-model.md#書式", ""⟩]
+  sites := [⟨"支払期限・搭乗日の表示", "lean/Spec/Prim/Format.lean#書式", ""⟩]
   premise := "`dev_D019`: `Accept-Language` が日本語"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-119")
   rTasks := ["ABS-045"]
@@ -258,7 +258,7 @@ def D019 : Gap where
 def D020 : Gap where
   id := "D-020"
   kind := .pre
-  sites := [⟨"予約入力画面の表示・照会へ戻る", "docs/spec/http-contract.md#b2-予約", ""⟩]
+  sites := [⟨"予約入力画面の表示・照会へ戻る", "lean/Spec/Http.lean#b2-予約", ""⟩]
   premise := "`dev_D020`: 選択フライトの全項目（便名・搭乗日・搭乗クラス・運賃種別）が与えられ、それぞれマスタで解決できる。`?backToSearch` では、送られた `flightType` が選択数から決まる値に等しい"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-120")
   rTasks := ["ABS-045"]
@@ -270,7 +270,7 @@ def D020 : Gap where
 def D021 : Gap where
   id := "D-021"
   kind := .pre
-  sites := [⟨"日付の解析", "docs/spec/input-validation.md#日付の解析", ""⟩]
+  sites := [⟨"日付の解析", "lean/Spec/InputValidation.lean#日付の解析", ""⟩]
   premise := "`dev_D021`: 年が符号無しの 4 桁で 1 以上"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-121")
   rTasks := ["ABS-031", "ABS-045", "ABS-046"]
@@ -282,7 +282,7 @@ def D021 : Gap where
 def D022 : Gap where
   id := "D-022"
   kind := .observational
-  sites := [⟨"入力検証エラーの並び", "docs/spec/input-validation.md#検証の順序とエラーの並び", ""⟩, ⟨"ADR e24e", "docs/decision/e24e-validation-error-ordering.md", ""⟩]
+  sites := [⟨"入力検証エラーの並び", "lean/Spec/InputValidation.lean#検証の順序とエラーの並び", ""⟩, ⟨"ADR e24e", "docs/decision/e24e-validation-error-ordering.md", ""⟩]
   premise := "`obs_D022`: 検証エラーの列を多重集合として対応させる"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-122")
   rTasks := ["ABS-031", "ABS-045", "ABS-046"]
@@ -296,7 +296,7 @@ def D022 : Gap where
 def D023 : Gap where
   id := "D-023"
   kind := .outOfModel
-  sites := [⟨"Clock", "docs/spec/ports.md#clock", ""⟩, ⟨"ADR 9ee4", "docs/decision/9ee4-clock-timezone-and-fixture-base-date.md", ""⟩]
+  sites := [⟨"Clock", "lean/Spec/Port.lean#clock", ""⟩, ⟨"ADR 9ee4", "docs/decision/9ee4-clock-timezone-and-fixture-base-date.md", ""⟩]
   premise := "— モデル外（各モデルは「今日」を入力として受け取る。原典実行は JST で実行する。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D023 ""
 
@@ -308,7 +308,7 @@ def D023 : Gap where
 def D024 : Gap where
   id := "D-024"
   kind := .outOfModel
-  sites := [⟨"セッションの Cookie 属性", "docs/spec/http-contract.md#セッション", "（規範節）"⟩]
+  sites := [⟨"セッションの Cookie 属性", "lean/Spec/Http.lean#セッション", "（規範節）"⟩]
   premise := "— モデル外（[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D024 ""
 
@@ -320,7 +320,7 @@ def D024 : Gap where
 def D025 : Gap where
   id := "D-025"
   kind := .outOfModel
-  sites := [⟨"トランザクション", "docs/spec/ports.md#トランザクション", "（規範節）"⟩, ⟨"ADR 97f9", "docs/decision/97f9-persistence-and-transaction-semantics.md", ""⟩]
+  sites := [⟨"トランザクション", "lean/Spec/Port.lean#トランザクション", "（規範節）"⟩, ⟨"ADR 97f9", "docs/decision/97f9-persistence-and-transaction-semantics.md", ""⟩]
   premise := "— モデル外（モデルでは操作は原子的である。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D025 ""
 
@@ -329,7 +329,7 @@ def D025 : Gap where
 def D026 : Gap where
   id := "D-026"
   kind := .preConcreteInput
-  sites := [⟨"REST API", "docs/spec/http-contract.md#rest-apiapiv1", ""⟩]
+  sites := [⟨"REST API", "lean/Spec/Http.lean#rest-apiapiv1", ""⟩]
   premise := "`dev_D026`: 要求の JSON の文字列に、不対サロゲートのエスケープを含まない"
   evidence := .pending "Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some "ABS-126")
   rTasks := ["ABS-031", "ABS-045"]
@@ -341,8 +341,8 @@ def D026 : Gap where
 def D027 : Gap where
   id := "D-027"
   kind := .preConcreteInput
-  sites := [⟨"マスタ", "docs/spec/master-data.md", ""⟩, ⟨"設定", "docs/spec/configuration.md", ""⟩,
-    ⟨"空席照会の状態（FLIGHT 表）", "docs/spec/ports.md#world抽象状態", ""⟩]
+  sites := [⟨"マスタ", "lean/Spec/MasterData.lean", ""⟩, ⟨"設定", "lean/Spec/Config.lean", ""⟩,
+    ⟨"空席照会の状態（FLIGHT 表）", "lean/Spec/Port.lean#world抽象状態", ""⟩]
   premise := "`dev_D027`（`Abstraction.MasterData.Alpha`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会・予約では、状態の表とシーケンスも [Spec] の型で表せる（`Abstraction.World.Alpha.worldOfDb` が定義される。負の数・未知のコード・暦日の外の日付・0:00 でないログイン日時・親の順に並ばない子の行を含まない）。初期状態（シードを投入した後の表）が前提を満たすこと（`Abstraction.World.Init.worldOfDb_seed`）は backlog aedf の第 3 段で示した。到達する状態が満たすことは、各 R 課題の正しさ（`J` を保つ）で示す。空席照会の入力の述語は `dev_D027S`（`aiS` が定義される）。予約の入力の述語は `dev_D027R`（`aiR` が定義され、業務例外の引数に使う運賃種別名が改行を含まない。`Abstraction.Reserve.Alpha`）。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）"
   deviations := [``Abstraction.MasterData.Alpha.dev_D027, ``Abstraction.Fare.Alpha.dev_D027BF, ``Abstraction.Fare.Alpha.dev_D027F, ``Abstraction.Fare.TotalAlpha.dev_D027TF,
     ``Abstraction.FlightSearch.Alpha.dev_D027S, ``Abstraction.Reserve.Alpha.dev_D027R]
@@ -356,8 +356,8 @@ def D027 : Gap where
 def D028 : Gap where
   id := "D-028"
   kind := .observational
-  sites := [⟨"ログイン時の状態更新", "docs/spec/authentication.md#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩,
-    ⟨"REST の認証", "docs/spec/http-contract.md#rest-apiapiv1", ""⟩]
+  sites := [⟨"ログイン時の状態更新", "lean/Spec/Authentication.lean#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩,
+    ⟨"REST の認証", "lean/Spec/Http.lean#rest-apiapiv1", ""⟩]
   premise := "`obs_D028`（予定）: 貼り合わせで、会員のログイン状態（`loginDateTime`・`loginFlg`）を対応させない"
   evidence := .pending "Lean に成分がまだ無い。認証の `SourceModel` と R 課題が未着手" (some "ABS-128")
   rTasks := ["ABS-043", "ABS-045"]
@@ -368,7 +368,7 @@ def D028 : Gap where
 def D029 : Gap where
   id := "D-029"
   kind := .outsidePre
-  sites := [⟨"空港コードリスト", "docs/spec/master-data.md#空港コードリスト画面用", ""⟩]
+  sites := [⟨"空港コードリスト", "lean/Spec/CodeList.lean#空港コードリスト画面用", ""⟩]
   premise := "PRE（MD-8 の第 1 連言のうち、空港のコードが `NOP` でないこと。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）"
   evidence := .excludedBy [``Spec.MasterData.MD8]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -378,7 +378,7 @@ def D029 : Gap where
 def D030 : Gap where
   id := "D-030"
   kind := .outsidePre
-  sites := [⟨"値域", "docs/spec/domain-model.md#値域", ""⟩]
+  sites := [⟨"値域", "lean/Spec/Model.lean#値域", ""⟩]
   premise := "PRE（MD-8 の値域の連言、運賃の入力の値域 `FareInput.Pre`、設定の不変条件 `Config.Valid`（`childFareRate ≤ 100`））"
   evidence := .excludedBy [``Spec.MasterData.MD8, ``Spec.Fare.FareInput.Pre, ``Spec.Config.Valid]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -393,7 +393,7 @@ def D030 : Gap where
 def D031 : Gap where
   id := "D-031"
   kind := .pre
-  sites := [⟨"往復の便の検査", "docs/spec/reservation.md#validateflightlist", ""⟩, ⟨"便マスタの到着時刻", "docs/spec/master-data.md", ""⟩]
+  sites := [⟨"往復の便の検査", "lean/Spec/Ticket.lean#validateflightlist", ""⟩, ⟨"便マスタの到着時刻", "lean/Spec/MasterData.lean", ""⟩]
   premise := "`dev_D031`（`Abstraction.Reserve.Alpha`。抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
   deviations := [``Abstraction.Reserve.Alpha.dev_D031]
   evidence := .refuted [``Abstraction.Reserve.need_D031]
@@ -409,7 +409,7 @@ JVM の既定の書式ロケール（`Locale.getDefault(Locale.Category.FORMAT)`
 def D032 : Gap where
   id := "D-032"
   kind := .preConcreteEnv
-  sites := [⟨"空席照会の運賃の書式", "docs/spec/flight-search.md#出力-flightvacantinfo", ""⟩]
+  sites := [⟨"空席照会の運賃の書式", "lean/Spec/FlightSearch.lean#出力-flightvacantinfo", ""⟩]
   premise := "`dev_D032`（`Abstraction.FlightSearch.Alpha`。具体側の環境の述語）: [Source] の JVM の既定の書式ロケールの記号（`SearchInput.formatSymbols`）が `Symbols.ascii`（3 桁区切りの文字 `,`・零の数字 `0`・負号 `-`。日本語・英語のロケール）である"
   deviations := [``Abstraction.FlightSearch.Alpha.dev_D032]
   evidence := .refuted [``Abstraction.FlightSearch.need_D032]
@@ -424,7 +424,7 @@ def D032 : Gap where
 def D033 : Gap where
   id := "D-033"
   kind := .outsidePre
-  sites := [⟨"空席照会の便マスタの参照", "docs/spec/flight-search.md#事前条件", ""⟩]
+  sites := [⟨"空席照会の便マスタの参照", "lean/Spec/FlightSearch.lean#事前条件", ""⟩]
   premise := "PRE `FlightNamesHaveText`（照会の区間の便マスタの便名が空白でない）と `SearchInput.Pre` の連言（照会の搭乗クラスがマスタにあり、照会の空港コードが空白でない）"
   evidence := .excludedBy [``Spec.FlightSearch.FlightNamesHaveText, ``Spec.FlightSearch.SearchInput.Pre]
   backlog := ["0be7c5d4-01d9-43f4-a50d-227f174830f0"]
@@ -437,7 +437,7 @@ def D033 : Gap where
 def D034 : Gap where
   id := "D-034"
   kind := .outsidePre
-  sites := [⟨"マスタの参照関数の引数", "docs/spec/master-data.md#参照関数", ""⟩]
+  sites := [⟨"マスタの参照関数の引数", "lean/Spec/MasterData.lean#参照関数", ""⟩]
   premise := "PRE `Query.Valid`（空港コードが英大文字 3 文字、便名が形を満たし空白でない）"
   evidence := .excludedBy [``Spec.MasterQuery.Query.Valid]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -451,7 +451,7 @@ def D034 : Gap where
 def D035 : Gap where
   id := "D-035"
   kind := .outsidePre
-  sites := [⟨"基本運賃の事前条件", "docs/spec/fare-calculation.md#基本運賃", ""⟩, ⟨"合計金額", "docs/spec/fare-calculation.md#合計金額", ""⟩]
+  sites := [⟨"基本運賃の事前条件", "lean/Spec/Fare.lean#基本運賃", ""⟩, ⟨"合計金額", "lean/Spec/Fare.lean#合計金額", ""⟩]
   premise := "PRE `BasicFareInput.Pre`（搭乗クラスがマスタに在る）・`TotalFareInput.Pre`（便名が空白でなく、便マスタ・区間・搭乗クラス・運賃種別がマスタに在り、フライト数・搭乗者数・年齢が値域の内）"
   evidence := .excludedBy [``Spec.Fare.BasicFareInput.Pre, ``Spec.Fare.TotalFareInput.Pre]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227", "bbcce088-c475-4378-9cc6-e3d821acc0f5"]
@@ -462,7 +462,7 @@ def D035 : Gap where
 def D036 : Gap where
   id := "D-036"
   kind := .outsidePre
-  sites := [⟨"マスタの不変条件", "docs/spec/master-data.md#不変条件spec", "（MD-8 の空港コードの形）"⟩]
+  sites := [⟨"マスタの不変条件", "lean/Spec/MasterData.lean#不変条件spec", "（MD-8 の空港コードの形）"⟩]
   premise := "PRE（MD-8 の第 1 連言のうち、空港のコードが `WellFormed` であること）"
   evidence := .excludedBy [``Spec.MasterData.MD8]
   backlog := ["25f7ef96-f77d-4ed8-973d-8cecc2a0f227"]
@@ -475,7 +475,7 @@ def D036 : Gap where
 def D037 : Gap where
   id := "D-037"
   kind := .outOfModel
-  sites := [⟨"予約確定", "docs/spec/reservation.md#予約確定reserve", ""⟩, ⟨"トランザクション", "docs/spec/ports.md#トランザクション", "（規範節）"⟩]
+  sites := [⟨"予約確定", "lean/Spec/UseCase/Reserve.lean#予約確定reserve", ""⟩, ⟨"トランザクション", "lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
   premise := "— モデル外（並行実行はモデルに現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
   evidence := .unformalized ``claim_D037 ""
 
@@ -486,7 +486,7 @@ def D037 : Gap where
 def D038 : Gap where
   id := "D-038"
   kind := .preConcreteInput
-  sites := [⟨"予約入力", "docs/spec/input-validation.md#ticketreserveinput", ""⟩, ⟨"値域", "docs/spec/domain-model.md#値域", ""⟩]
+  sites := [⟨"予約入力", "lean/Spec/InputValidation.lean#ticketreserveinput", ""⟩, ⟨"値域", "lean/Spec/Model.lean#値域", ""⟩]
   premise := "`dev_D038`: 画面の予約の要求が、`passengerFormList[6]` 以降の欄を含まない"
   evidence := .pending "Lean に述語がまだ無い。HTTP の `SourceModel` と R 課題が未着手" (some "ABS-138")
   rTasks := ["ABS-045"]
@@ -500,7 +500,7 @@ def D038 : Gap where
 def D039 : Gap where
   id := "D-039"
   kind := .pre
-  sites := [⟨"選択フライト", "docs/spec/reservation.md#選択フライト", ""⟩]
+  sites := [⟨"選択フライト", "lean/Spec/Ticket.lean#選択フライト", ""⟩]
   premise := "`dev_D039`: 選択フライトの便名が、Unicode の空白（`Character.isWhitespace`）だけからなる文字列でない"
   evidence := .pending "Lean に述語がまだ無い。予約・HTTP の `SourceModel` と R 課題が未着手" (some "ABS-139")
   rTasks := ["ABS-031", "ABS-045"]
@@ -513,7 +513,7 @@ def D039 : Gap where
 def D040 : Gap where
   id := "D-040"
   kind := .pre
-  sites := [⟨"会員番号の存在確認", "docs/spec/http-contract.md#a0a1-トップログイン", ""⟩]
+  sites := [⟨"会員番号の存在確認", "lean/Spec/Http.lean#a0a1-トップログイン", ""⟩]
   premise := "`dev_D040`: 会員番号の値が、前後の空白（U+0000〜U+0020）を除いた後に、Unicode の空白（`Character.isWhitespace`）だけからなる空でない文字列でない"
   evidence := .pending "Lean に述語がまだ無い。HTTP の `SourceModel` と R 課題が未着手" (some "ABS-140")
   rTasks := ["ABS-045"]
@@ -527,7 +527,7 @@ def D040 : Gap where
 def D041 : Gap where
   id := "D-041"
   kind := .preConcreteInput
-  sites := [⟨"REST API", "docs/spec/http-contract.md#rest-apiapiv1", ""⟩]
+  sites := [⟨"REST API", "lean/Spec/Http.lean#rest-apiapiv1", ""⟩]
   premise := "`dev_D041`: 要求の JSON の `Integer` の欄が、JSON の数値である"
   evidence := .pending "Lean に述語がまだ無い。HTTP の `SourceModel` と R 課題が未着手" (some "ABS-141")
   rTasks := ["ABS-031", "ABS-045"]

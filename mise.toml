@@ -19,6 +19,8 @@ min_version = "2025.1.0"
 
 [tools]
 uv = "0.11.32"
+# 仕様の本（Spec のモジュール文書の HTML。book:build。ADR 68a6）
+mdbook = "0.5.4"
 
 [vars]
 skill = ".agents/skills/spec-pivot"
@@ -39,6 +41,7 @@ depends = [
   "assets:trace-test", "assets:layout-check",
   "trace:self-test",
   "ci:pg-table", "ci:master-sql", "ci:java-origin-run",
+  "book:build",
 ]
 run = "echo OK"
 
@@ -46,7 +49,7 @@ run = "echo OK"
 description = "常時の段（どの変更でも実行する、短い段）"
 depends = [
   "check:upstream",
-  "docs:ids", "docs:self-test", "docs:okf",
+  "docs:ids", "docs:self-test", "docs:okf", "book:check",
   "conformance:check",
   "static:self-test", "static:lean", "static:check-scopes",
   "ci:jvm-table",
@@ -292,6 +295,20 @@ run = "{{vars.skill}}/scripts/trace/target/release/trace check --dump {{vars.ci_
 description = "trace: 原典とモデルの対照表（build/review/。生成物。CI の artifact）"
 depends = ["trace:build", "lean:trace-dump"]
 run = "{{vars.skill}}/scripts/trace/target/release/trace review --dump {{vars.ci_out}}/trace-dump.json"
+
+# ---------------------------------------------------------------------------
+# 仕様の本（Spec のモジュール文書を mdgen と mdbook で HTML にする。ADR 68a6）
+
+[tasks."book:check"]
+description = "book: 本の道具の自己テストと、仕様への参照（@[spec_doc] の行き先・ベクタの specRef）がモジュール文書の見出しにあること"
+run = [
+  "{{vars.py}} {{vars.skill}}/scripts/book/build.py --self-test",
+  "{{vars.py}} {{vars.skill}}/scripts/book/build.py --check",
+]
+
+[tasks."book:build"]
+description = "book: Spec のモジュール文書から仕様の本を作る（build/book/html/。生成物。CI の artifact。mdgen は spec-pivot の assets/mdgen）"
+run = "{{vars.py}} {{vars.skill}}/scripts/book/build.py"
 
 # ---------------------------------------------------------------------------
 # ルートの Lake ワークスペース

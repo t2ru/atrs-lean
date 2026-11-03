@@ -1,25 +1,13 @@
----
-type: Specification
-title: "用語集"
-description: "ATRS の業務用語と識別子の日英対応表。"
-tags: [spec, glossary]
-status: draft
-spec_role: meta
-models: [spec, source]
-generated:
-  by: claude-code/claude-opus-5-5
-  at: 2026-10-29T22:07:40+09:00
----
+/-!
+# 用語集（`Spec.Glossary`）
 
-# 用語集
-
-> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../decision/61bc-lean-spec-as-normative-source.md)）。
+> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
 
 | 用語 | 識別子 | 説明 |
 | --- | --- | --- |
 | 空港 | `Airport` | 3 文字の空港コード（`HND` 等）と空港名、表示順を持つ |
 | 区間（路線） | `Route` | 出発空港と到着空港の組。区間ごとに路線基本運賃を持つ |
-| 路線基本運賃 | `Route.basicFare` | 区間に設定された運賃（円）。[fare-calculation.md](fare-calculation.md) の入力 |
+| 路線基本運賃 | `Route.basicFare` | 区間に設定された運賃（円）。[`Spec.Fare`](Fare.lean) の入力 |
 | 便 / 便マスタ | `FlightMaster` | 便名（`NTT001` 等）・区間・出発時刻・到着時刻・機材 |
 | フライト | `Flight` | 搭乗日 × 便名 × 搭乗クラス × 運賃種別 ごとの空席数 |
 | 搭乗日 | `departureDate`, `depDate` | フライトの出発日 |
@@ -51,3 +39,4 @@ generated:
 | 支払期限 | `paymentDate` | 往路搭乗日 |
 | 業務エラー | `Business` | 利用者の入力や状況により業務規則を満たさないエラー |
 | 改竄検知 | `InvalidRequest` | 画面から通常は送られない値（パラメータ改竄）の検知 |
+-/

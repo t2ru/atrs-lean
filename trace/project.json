@@ -25,7 +25,12 @@
       "note": "SourceModel を原典の Java のソースツリーと同じ形に並べる（ADR e41c。TR-M）。shared は、どの定義から引いてもよい横断的な設定のクラス",
       "lean_root": "SourceModel",
       "package_prefix": "jp.co.ntt.atrs",
-      "roots": ["Domain", "App", "Config", "Api"],
+      "roots": [
+        "Domain",
+        "App",
+        "Config",
+        "Api"
+      ],
       "case": "upper-camel",
       "shared": [
         "jp.co.ntt.atrs.config.app.mybatis.MybatisConfig",
@@ -42,11 +47,32 @@
   },
   "docs": {
     "spec": "docs/spec",
+    "spec_lean": [
+      "lean/Spec.lean",
+      "lean/Spec"
+    ],
     "abstraction": "docs/spec/abstraction.md",
     "refinement": "docs/spec/refinement.md",
     "traceability": "docs/spec/traceability.md",
     "decision": "docs/decision",
     "backlog": "docs/backlog"
   },
-  "conformance": "conformance"
+  "conformance": "conformance",
+  "book": {
+    "note": "spec-pivot の scripts/book/build.py が読む、仕様の本（Spec のモジュール文書を mdgen と mdbook で HTML にしたもの。ADR 68a6）の設定",
+    "title": "ATRS 仕様（Spec）",
+    "language": "ja",
+    "roots": [
+      "lean/Spec.lean",
+      "lean/Spec"
+    ],
+    "entry": "lean/Spec.lean",
+    "out": "build/book",
+    "repo_url": "https://github.com/t2ru/atrs-lean/blob/main",
+    "refs": {
+      "manifest": "trace/manifest.json",
+      "vectors": "conformance"
+    },
+    "okf_check": ".agents/skills/okf-bundle/scripts/okf_check.py"
+  }
 }

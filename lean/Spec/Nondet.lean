@@ -18,7 +18,7 @@ import Trace
 namespace Spec.Nondet
 
 /-- 失敗したユースケースの中で進んだ採番の数（会員・予約・予約フライト・搭乗者）。採番は失敗したトランザクションでも
-巻き戻らない（`docs/spec/ports.md#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
+巻き戻らない（`lean/Spec/Port.lean#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
 structure SeqAdvance where
   member : Nat := 0
   reserve : Nat := 0
@@ -28,7 +28,7 @@ structure SeqAdvance where
 
 /-- N-001: 排他制御の失敗 `Conflict` が起きるか（環境）。起きると、採番以外の状態は変わらない（SPEC-004）。
 採番は、失敗するまでに進んだ数（`adv`）だけ進む。 -/
-@[nondet "N-001", spec_doc "docs/spec/ports.md#トランザクション"]
+@[nondet "N-001", spec_doc "lean/Spec/Port.lean#トランザクション"]
 inductive ConflictChoice where
   | none
   | conflict (adv : SeqAdvance := {})
@@ -38,7 +38,7 @@ inductive ConflictChoice where
 def ConflictChoice.std : ConflictChoice := .none
 
 /-- N-002: ポートの I/O の失敗 `System("e.ar.fw.9999")` が起きるか（環境）。I/O 失敗のコードはこの 1 つだけである。 -/
-@[nondet "N-002", spec_doc "docs/spec/ports.md#トランザクション"]
+@[nondet "N-002", spec_doc "lean/Spec/Port.lean#トランザクション"]
 inductive IoFailureChoice where
   | none
   | failure (adv : SeqAdvance := {})
@@ -54,7 +54,7 @@ abbrev FaultSpec := Option Nat × Option Nat
 
 /-- 障害の位置の記述 `d` が許す環境の選択: I/O の失敗の位置が無ければ I/O の失敗を選ばず、排他の失敗の位置が無ければ
 衝突を選ばない。 -/
-@[spec_doc "docs/spec/ports.md#トランザクション"]
+@[spec_doc "lean/Spec/Port.lean#トランザクション"]
 def admits (d : FaultSpec) (e : ConflictChoice × IoFailureChoice) : Prop :=
   (d.1 = none → e.2 = .none) ∧ (d.2 = none → e.1 = .none)
 
@@ -71,7 +71,7 @@ theorem admits_none {e : ConflictChoice × IoFailureChoice} (h : admits (none, n
 
 /-- N-003: レポート要求の配信（環境）。再配信の上限（1 以上。配備の設定）、次に配信する待ち行列の位置（配信の順序は
 保証しない）、その要求を待ち行列に残したまま配信するか（重複配信）。 -/
-@[nondet "N-003", spec_doc "docs/spec/ports.md#reportqueue"]
+@[nondet "N-003", spec_doc "lean/Spec/Port.lean#reportqueue"]
 structure ReportDeliveryChoice where
   retryLimit : Nat
   retryLimit_pos : 1 ≤ retryLimit
@@ -88,7 +88,7 @@ def ReportDeliveryChoice.std : ReportDeliveryChoice := ⟨10, by decide, 0, fals
 
 /-- N-004: `InvalidRequest` のメッセージの詳細（自由）。`none` なら [Spec] の各操作が定める詳細、`some s` なら任意の文字列 `s`。
 変えうるのは詳細の文字列だけである。 -/
-@[nondet "N-004", spec_doc "docs/spec/http-contract.md"]
+@[nondet "N-004", spec_doc "lean/Spec/Http.lean"]
 structure InvalidRequestDetail where
   override : Option String
   deriving DecidableEq, Repr
@@ -98,7 +98,7 @@ def InvalidRequestDetail.std : InvalidRequestDetail := ⟨none⟩
 
 /-- N-005: `PasswordHasher.hash` の値（自由）。`matches(raw, hash(raw)) = true` で、異なる `raw` では偽という契約は、
 `hash` が単射であることで表す（`matches raw h := hash raw = h`）。変えうるのは保存するハッシュ値だけである。 -/
-@[nondet "N-005", spec_doc "docs/spec/ports.md#passwordhasher"]
+@[nondet "N-005", spec_doc "lean/Spec/Port.lean#passwordhasher"]
 structure PasswordHashChoice where
   hash : String → String
   injective : ∀ a b, hash a = hash b → a = b

@@ -97,6 +97,6 @@ Chosen option: "二層モデル", because 原典互換と言語中立性を両�
 * 層とトップレベル名前空間の名前は [ADR 3e1d](3e1d-language-neutral-top-level-namespaces.md) で確定した（`SourceModel` / `Spec` / `Abstraction` / `TargetModel` / `Refinement`）。
 
 * 浮動小数差異の調査スクリプトの結果: シード範囲（路線運賃 100〜100000 の 100 円単位 × 加算料金 {0, 5000} × 比率 {100, 125, 140} × 割引率 {0, 5, 10, 20, 30}）で最終運賃の差異 0 件。基本運賃を任意の整数 0〜1000000 とし割引率をシードの 5 種に限ると、100 円切上げ後の差異は 188 件（最小例: 1430 円・30%）。
-* [spec/abstraction.md](../spec/abstraction.md), [spec/fare-calculation.md](../spec/fare-calculation.md)
+* [spec/abstraction.md](../spec/abstraction.md), [spec/fare-calculation.md](../../lean/Spec/Fare.lean)
 
 * （補足 2026-10-30）本 ADR は [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md) で置き換えられた（[ADR c336](c336-foundational-principles.md) の基本原則に合わせるため）。

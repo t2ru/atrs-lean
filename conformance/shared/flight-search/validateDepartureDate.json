@@ -4,7 +4,7 @@
     "Spec.FlightSearch.validateDepartureDate",
     "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate"
   ],
-  "specRef": "docs/spec/flight-search.md#照会可能期間",
+  "specRef": "lean/Spec/FlightSearch.lean#照会可能期間",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

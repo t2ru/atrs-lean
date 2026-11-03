@@ -1,7 +1,7 @@
 {
   "operation": "fare.fare",
   "modelDef": "Spec.Fare.fare",
-  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "specRef": "lean/Spec/Fare.lean#運賃",
   "differences": [
     "D-002"
   ],

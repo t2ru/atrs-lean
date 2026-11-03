@@ -40,6 +40,6 @@ generated:
 
 ## 参照
 
-- [fare-calculation.md](../spec/fare-calculation.md)
+- [`Spec.Fare`](../../lean/Spec/Fare.lean)
 - [refinement.md](../spec/refinement.md)
 - [spec-pivot/rust/layout.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/layout.md)

@@ -4,7 +4,7 @@
     "Spec.UseCase.Reserve.confirmOp",
     "SourceModel.ReserveQuery.runConfirm"
   ],
-  "specRef": "docs/spec/reservation.md#予約確認reserveconfirm",
+  "specRef": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

@@ -4,7 +4,7 @@
     "Spec.FlightSearch.searchFlight",
     "SourceModel.FlightSearchQuery.runSearchFlight"
   ],
-  "specRef": "docs/spec/flight-search.md#searchflight",
+  "specRef": "lean/Spec/FlightSearch.lean#searchflight",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
@@ -16,7 +16,7 @@
   "cases": [
     {
       "id": "searchFlight-example",
-      "description": "仕様の例（flight-search.md）: 2026-04-01 に、2026-04-11 の HND→ITM・N・片道を照会。NTT001・NTT031 の 2 グループで、運賃種別は OW・RD1・RD7・LD・GD の順（ED は 30 日前まで、RT・S は対象外、空席 0 も含む）",
+      "description": "仕様の例（Spec.FlightSearch）: 2026-04-01 に、2026-04-11 の HND→ITM・N・片道を照会。NTT001・NTT031 の 2 グループで、運賃種別は OW・RD1・RD7・LD・GD の順（ED は 30 日前まで、RT・S は対象外、空席 0 も含む）",
       "input": {
         "today": "2026-04-01",
         "flights": [

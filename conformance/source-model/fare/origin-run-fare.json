@@ -1,7 +1,7 @@
 {
   "operation": "fare.fare",
   "modelDef": "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateFare",
-  "specRef": "docs/spec/fare-calculation.md#運賃",
+  "specRef": "lean/Spec/Fare.lean#運賃",
   "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力は origin-run-basicFare.json の基本運賃のすべて × シードの運賃種別の割引率のすべて",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

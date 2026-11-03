@@ -3,13 +3,20 @@ import Spec.Prim.Date
 /-!
 # Spec.Prim.Time
 
-時刻と日時（`docs/spec/domain-model.md#hourminute`・`#datetime`、ADR 6eb2）。
+時刻と日時（`lean/Spec/Prim/Time.lean#hourminute`・`#datetime`、ADR 6eb2）。
 -/
 
 namespace Spec.Prim.Time
 
+/-!
+## HourMinute
+
+- `HourMinute`: 時（0〜23）と分（0〜59）。分換算 `toMinutes`。
+- 原典の便マスタは時刻を 4 桁文字列 `HHmm`（例 `"0945"`）で持つ。`parseHHmm` は、4 文字の数字列で時分の範囲内のものだけを受け付ける。
+-/
+
 /-- 時分（0:00〜23:59）。 -/
-@[spec_doc "docs/spec/domain-model.md#hourminute"]
+@[spec_doc "lean/Spec/Prim/Time.lean#hourminute"]
 structure HourMinute where
   hour : Nat
   minute : Nat
@@ -22,11 +29,11 @@ instance : Repr HourMinute where
   reprPrec t _ := s!"{t.hour}:{t.minute}"
 
 /-- 時分を作る。範囲外なら無し。 -/
-@[spec_doc "docs/spec/domain-model.md#hourminute"]
+@[spec_doc "lean/Spec/Prim/Time.lean#hourminute"]
 def ofHm? (h m : Nat) : Option HourMinute := if hv : h ≤ 23 ∧ m ≤ 59 then some ⟨h, m, hv⟩ else none
 
 /-- 0:00 からの分数。 -/
-@[spec_doc "docs/spec/domain-model.md#hourminute"]
+@[spec_doc "lean/Spec/Prim/Time.lean#hourminute"]
 def toMinutes (t : HourMinute) : Nat := t.hour * 60 + t.minute
 
 instance : LT HourMinute := ⟨fun a b => a.toMinutes < b.toMinutes⟩
@@ -38,7 +45,7 @@ instance (a b : HourMinute) : Decidable (a ≤ b) := inferInstanceAs (Decidable 
 def digitVal? (c : Char) : Option Nat := if '0' ≤ c ∧ c ≤ '9' then some (c.toNat - '0'.toNat) else none
 
 /-- 4 桁の数字列 `HHmm` を時分に変換する。4 文字の数字列で、時分の範囲内のものだけを受け付ける。 -/
-@[spec_doc "docs/spec/domain-model.md#hourminute"]
+@[spec_doc "lean/Spec/Prim/Time.lean#hourminute"]
 def parseHHmm (s : String) : Option HourMinute :=
   match s.toList with
   | [a, b, c, d] => do
@@ -60,9 +67,16 @@ theorem toMinutes_inj {a b : HourMinute} (h : a.toMinutes = b.toMinutes) : a = b
 
 end HourMinute
 
+/-!
+## ArrivalTime
+
+- `ArrivalTime`: 便マスタの到着時刻。出発日 0:00 からの時（0〜47）と分（0〜59）で、24 時以降は翌日着を表す（例 `24:15` は翌日 0:15。[ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。分換算 `toMinutes`。
+- `ArrivalTime.parseHHmm` は、4 文字の数字列で到着時刻の範囲内のものだけを受け付ける（上流のシードの `2415` を含む）。
+-/
+
 /-- 到着時刻（出発日 0:00 からの時分。0:00〜47:59。`24:15` は翌日の 0:15）。
 便マスタの到着時刻だけに使う（ADR ce36）。 -/
-@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#arrivaltime"]
 structure ArrivalTime where
   hour : Nat
   minute : Nat
@@ -75,15 +89,15 @@ instance : Repr ArrivalTime where
   reprPrec t _ := s!"{t.hour}:{t.minute}"
 
 /-- 到着時刻を作る。範囲外なら無し。 -/
-@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#arrivaltime"]
 def ofHm? (h m : Nat) : Option ArrivalTime := if hv : h ≤ 47 ∧ m ≤ 59 then some ⟨h, m, hv⟩ else none
 
 /-- 出発日 0:00 からの分数。 -/
-@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#arrivaltime"]
 def toMinutes (t : ArrivalTime) : Nat := t.hour * 60 + t.minute
 
 /-- 4 桁の数字列 `HHmm` を到着時刻に変換する。4 文字の数字列で、到着時刻の範囲内のものだけを受け付ける。 -/
-@[spec_doc "docs/spec/domain-model.md#arrivaltime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#arrivaltime"]
 def parseHHmm (s : String) : Option ArrivalTime :=
   match s.toList with
   | [a, b, c, d] => do
@@ -110,8 +124,15 @@ theorem toMinutes_inj {a b : ArrivalTime} (h : a.toMinutes = b.toMinutes) : a = 
 
 end ArrivalTime
 
+/-!
+## DateTime
+
+- `DateTime`: `Date` と時・分・秒。`toEpochMinutes` は 1970-01-01 0:00 からの分数。
+- 「日付 d と時刻 t の日時」`at(d, t)` は Lean の `DateTime.atTime`。
+-/
+
 /-- 日時（暦日と時・分・秒）。 -/
-@[spec_doc "docs/spec/domain-model.md#datetime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#datetime"]
 structure DateTime where
   date : Date
   hour : Nat
@@ -123,11 +144,11 @@ structure DateTime where
 namespace DateTime
 
 /-- 日付 `d` と時刻 `t` の日時 `at(d, t)`（秒は 0）。 -/
-@[spec_doc "docs/spec/domain-model.md#datetime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#datetime"]
 def atTime (d : Date) (t : HourMinute) : DateTime := ⟨d, t.hour, t.minute, 0, ⟨t.valid.1, t.valid.2, by decide⟩⟩
 
 /-- 1970-01-01 0:00 からの分数（秒は切り捨てる）。 -/
-@[spec_doc "docs/spec/domain-model.md#datetime"]
+@[spec_doc "lean/Spec/Prim/Time.lean#datetime"]
 def toEpochMinutes (dt : DateTime) : Int := dt.date.epochDay * 1440 + dt.hour * 60 + dt.minute
 
 theorem toEpochMinutes_at (d : Date) (t : HourMinute) :

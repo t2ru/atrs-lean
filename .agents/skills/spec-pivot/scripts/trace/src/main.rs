@@ -165,10 +165,18 @@ fn files_with_ext(dir: &Path, ext: &str, out: &mut Vec<PathBuf>) {
     }
 }
 
-/// 仕様文書（設定の `docs.spec`）の「出典:」のロケータ。
+/// 仕様文書（設定の `docs.spec`）と、仕様の散文を書いた Lean のファイル（`docs.spec_lean`）の「出典:」のロケータ。
 fn citations(repo: &Path) -> Vec<(String, String)> {
     let mut mds = vec![];
     files_with_ext(&repo.join(&project::get().docs.spec), "md", &mut mds);
+    for r in &project::get().docs.spec_lean {
+        let p = repo.join(r);
+        if p.is_file() {
+            mds.push(p);
+        } else {
+            files_with_ext(&p, "lean", &mut mds);
+        }
+    }
     let mut out = vec![];
     for p in mds {
         let rel = p.strip_prefix(repo).unwrap_or(&p).to_string_lossy().to_string();

@@ -7,7 +7,7 @@ import Spec.Prim.Text
 /-!
 # Spec.Prim
 
-[Spec] の基本演算（`docs/spec/domain-model.md#基本演算specprim`）。
+[Spec] の基本演算（[`Spec.Prim.Int`](Prim/Int.lean#基本演算specprim)）。
 
 | モジュール | 内容 |
 | --- | --- |

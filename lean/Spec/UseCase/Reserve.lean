@@ -13,17 +13,23 @@ import Spec.Seed.FlightProps
 import Machine
 
 /-!
-# Spec.UseCase.Reserve
+# 予約（B0/B2）（`Spec.UseCase.Reserve`）
 
-予約（B2。`docs/spec/reservation.md`。backlog aedf）。予約入力とフライト列から予約内容を組み立て、
+予約（B2。backlog aedf）。予約入力とフライト列から予約内容を組み立て、
 `validateReservation` で検証し、予約確認（合計金額）と予約確定（空席の確保と予約の登録）を行う。
 
-- 予約入力は、入力検証（`docs/spec/input-validation.md#予約入力b2`。backlog 4e0e）を通った後の値である。
+- 予約入力は、入力検証（[`Spec.InputValidation`](../InputValidation.lean#予約入力b2)。backlog 4e0e）を通った後の値である。
   空でない搭乗者欄は姓・名・年齢・性別をすべて持つ（PRE）。
 - 予約確定は `World` に対する関数で、1 つのトランザクションとして原子的に実行する。失敗したとき状態は変わらない
   （採番の前進を除く。標準の選択では、失敗する前に採番しない）。`Conflict`・I/O 失敗の結果は、抽象機械の選択
   （N-001・N-002）で与える（第 2 段）。
 - 今日の日付は入力の成分で、1 回だけ読んだ値である（[Source] は複数回読む。既知差異 D-014）。
+
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただし「予約確定」の原子性・排他の要件は [`Spec.Port`](../Port.lean#トランザクション) の規範節に従う。
+
+> Lean の定義（backlog aedf の第 1 段）: `Spec.Ticket`（選択フライト・`validateFlightList`）、`Spec.UseCase.Reserve`（予約内容の組み立て・`validateReservation`・`reserveConfirm`・`reserve`・`confirmOp`・`reserveOp`）。抽象機械と SPEC 課題は第 2 段、抽象化の証明は第 3 段で置き、そのときに本書の該当節を informative に置き換える。
+
+予約は「フライト選択（B1 画面）→ 予約入力（B2）→ 確認 → 確定」の順に進む。画面遷移は [`Spec.Http`](../Http.lean)、入力検証は [`Spec.InputValidation`](../InputValidation.lean#予約入力b2) を参照。
 -/
 
 namespace Spec.UseCase.Reserve
@@ -32,7 +38,7 @@ open Spec.Config Spec.Model Spec.Prim Spec.Prim.Text Spec.Error Spec.MasterData 
 /-! ## 予約入力 -/
 
 /-- 搭乗者欄（入力検証の後。空白のみの文字列は前処理で未入力になっている）。 -/
-@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+@[spec_doc "lean/Spec/InputValidation.lean#予約入力b2"]
 structure PassengerInput where
   familyName : Option String := none
   givenName : Option String := none
@@ -42,13 +48,13 @@ structure PassengerInput where
   deriving DecidableEq
 
 /-- 搭乗者欄が空: 姓・名・会員番号がいずれも空白のみか未入力で、年齢と性別が未入力。 -/
-@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"]
 def PassengerInput.isEmpty (p : PassengerInput) : Bool :=
   !(p.familyName.any hasText) && !(p.givenName.any hasText) && p.age.isNone && p.gender.isNone &&
     !(p.membershipNumber.any hasText)
 
 /-- 予約入力（`TicketReserveInput`）。搭乗者欄は 6 欄。 -/
-@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+@[spec_doc "lean/Spec/InputValidation.lean#予約入力b2"]
 structure ReserveInput where
   repFamilyName : String
   repGivenName : String
@@ -63,26 +69,38 @@ structure ReserveInput where
   deriving DecidableEq
 
 /-- 会員番号の入力: 空でない文字列なら会員番号とする（空文字は未入力と同じ）。 -/
-@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"]
 def memberNoOf (s : Option String) : Option MembershipNumber :=
   s.bind fun v => if v.isEmpty then none else some ⟨v⟩
 
 /-- 空でない搭乗者欄を搭乗者にする。姓・名・年齢・性別のどれかが無ければ無し（PRE）。 -/
-@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"]
 def PassengerInput.toPassenger (p : PassengerInput) : Option Passenger := do
   return { familyName := ← p.familyName, givenName := ← p.givenName, age := ← p.age, gender := ← p.gender,
            membershipNumber := memberNoOf p.membershipNumber }
 
 /-- 搭乗者欄を詰める（空でない欄を前に詰め、6 欄に戻す）。 -/
-@[spec_doc "docs/spec/reservation.md#予約確認reserveconfirm"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"]
 def compactPassengers (ps : List PassengerInput) : List PassengerInput :=
   let ne := ps.filter (!·.isEmpty)
   ne ++ List.replicate (Config.maxPassengersNumber - ne.length) ({} : PassengerInput)
 
-/-! ## 予約内容の組み立て -/
+/-!
+## 予約内容の組み立て
+
+**[Spec=Source]** 予約入力（`TicketReserveInput`、[`Spec.InputValidation`](../InputValidation.lean#予約入力b2)）とフライト列から `Reservation`（採番前）を作る。
+
+- `passengers` = 入力の搭乗者欄のうち **空でないもの** を入力順に並べたもの。搭乗者欄が空とは、姓・名・会員番号がいずれも空白のみ（または未入力）で、年齢と性別が未入力であること。
+- `reserveFlights` = 各フライトに 1 つずつ。**すべての予約フライトが同じ `passengers` を持つ**。
+- `repTel = tel1 ++ "-" ++ tel2 ++ "-" ++ tel3`。
+- `repMembershipNumber` は入力が空なら無し。各搭乗者の `membershipNumber` も同様。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)`・`java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)`（private の `createReservation` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveForm#resetPassengersIndex()`, `java:jp.co.ntt.atrs.app.b2.PassengerForm#isEmpty()`
+-/
+
 
 /-- 採番前の予約内容。すべての予約フライトが同じ搭乗者列を持つ。 -/
-@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"]
 structure Draft where
   repFamilyName : String
   repGivenName : String
@@ -97,7 +115,7 @@ structure Draft where
 
 /-- 予約内容を組み立てる。搭乗者は空でない欄を入力順に並べたもの。空でない欄が無ければ無し（PRE。入力検証の相関
 `e.ar.b2.5002` が除く）。 -/
-@[spec_doc "docs/spec/reservation.md#予約内容の組み立て"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"]
 def buildDraft (i : ReserveInput) (flights : List FlightKey) : Option Draft := do
   let ps ← (i.passengers.filter (!·.isEmpty)).mapM PassengerInput.toPassenger
   if ps.isEmpty then none
@@ -106,16 +124,41 @@ def buildDraft (i : ReserveInput) (flights : List FlightKey) : Option Draft := d
            repMail := i.repMail, repMembershipNumber := memberNoOf i.repMembershipNumber,
            passengers := ps, flights }
 
-/-! ## validateReservation -/
+/-!
+## validateReservation
+
+### シグネチャ
+
+`validateReservation(r: Reservation, members: MemberRepository; master, config) : Except AtrsError Unit`
+
+### 定義（評価順。最初に失敗した検査のエラーを返す）
+
+1. **代表者年齢**: `r.repAge < representativeMinAge` なら `Business("e.ar.b2.2004", [representativeMinAge])`。
+2. **運賃種別の利用条件**: 予約フライトを順に、
+   - `fareTypeCd = LD`（レディース割）: 搭乗者に `gender = M` がいれば `Business("e.ar.b2.2007")`。
+   - `fareTypeCd = GD`（グループ割）: `len(passengers) < fareType.passengerMinNum` なら `Business("e.ar.b2.2010", [fareTypeName, passengerMinNum])`。
+   - その他の運賃種別では `passengerMinNum` を検査しない（原典どおり）。
+3. **代表者の会員照合**（`repMembershipNumber` がある場合のみ）:
+   - 会員が存在しなければ `Business("e.ar.b2.2002")`。
+   - `repFamilyName = member.kanaFamilyName ∧ repGivenName = member.kanaGivenName ∧ repGender = member.gender` でなければ `Business("e.ar.b2.2003")`。
+4. **搭乗者の会員照合**: 予約フライトを順に、その搭乗者を 1 から数えた位置 `pos`（空の搭乗者欄を詰めた後の位置。入力欄の添字 + 1 とは一致しないことがある）で、`membershipNumber` がある搭乗者について、
+   - 会員が存在しなければ `Business("e.ar.b2.2005", [pos])`。
+   - `familyName = member.kanaFamilyName ∧ givenName = member.kanaGivenName ∧ gender = member.gender` でなければ `Business("e.ar.b2.2006", [pos])`。
+
+文字列比較はスカラ値の完全一致（[spec-pivot/portability.md](../../../.agents/skills/spec-pivot/references/docs/spec/portability.md#文字列)）。
+
+出典: `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#validateReservation(Reservation)` ほか
+-/
+
 
 /-- 1. 代表者年齢。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def checkRepAge (cfg : Config) (d : Draft) : Except AtrsError Unit :=
   if d.repAge < cfg.representativeMinAge then .error (.business "e.ar.b2.2004" [toString cfg.representativeMinAge])
   else .ok ()
 
 /-- 2. 運賃種別の利用条件（1 便）。運賃種別がマスタに無ければ無し（PRE: MD-3）。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def checkFareTypeOf (md : MasterData) (ps : List Passenger) (k : FlightKey) : Option (Except AtrsError Unit) := do
   let ft ← md.fareTypeOf k.fareTypeCd
   return match ft.fareTypeCd with
@@ -125,7 +168,7 @@ def checkFareTypeOf (md : MasterData) (ps : List Passenger) (k : FlightKey) : Op
   | _ => .ok ()
 
 /-- 2. 運賃種別の利用条件（予約フライトを順に）。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def checkFareTypes (md : MasterData) (d : Draft) : Option (Except AtrsError Unit) :=
   d.flights.foldlM (init := .ok ()) fun acc k => do
     match acc with
@@ -137,7 +180,7 @@ def matchesMember (familyName givenName : String) (gender : Gender) (m : Member)
   familyName == m.kanaFamilyName && givenName == m.kanaGivenName && gender == m.gender
 
 /-- 3. 代表者の会員照合（会員番号がある場合のみ）。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def checkRepMember (w : World) (d : Draft) : Except AtrsError Unit :=
   match d.repMembershipNumber with
   | none => .ok ()
@@ -148,7 +191,7 @@ def checkRepMember (w : World) (d : Draft) : Except AtrsError Unit :=
       else .error (.business "e.ar.b2.2003")
 
 /-- 4. 搭乗者の会員照合（1 から数えた位置 `pos`。空の欄を詰めた後の位置）。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def checkPassengerMembers (w : World) (ps : List Passenger) : Except AtrsError Unit :=
   ps.zipIdx.foldlM (init := ()) fun _ (p, i) =>
     match p.membershipNumber with
@@ -161,7 +204,7 @@ def checkPassengerMembers (w : World) (ps : List Passenger) : Except AtrsError U
 
 /-- `validateReservation`（評価順。最初に失敗した検査のエラーを返す）。搭乗者の会員照合は、原典では予約フライトごとに
 繰り返すが、すべての予約フライトが同じ搭乗者列を持つので、1 回と同じ結果になる。 -/
-@[spec_doc "docs/spec/reservation.md#validatereservation"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#validatereservation"]
 def validateReservation (cfg : Config) (md : MasterData) (w : World) (d : Draft) : Option (Except AtrsError Unit) := do
   let ft ← checkFareTypes md d
   return do
@@ -170,11 +213,60 @@ def validateReservation (cfg : Config) (md : MasterData) (w : World) (d : Draft)
     checkRepMember w d
     checkPassengerMembers w d.passengers
 
+/-!
+## 予約確認（reserveConfirm）
+
+**[Spec=Source]**
+
+1. 搭乗者欄を詰める（空でない欄を前に詰め、6 欄に戻す）。
+2. 予約内容を組み立てる。
+3. `validateReservation`。
+4. `totalFare = totalFare(flights, reserveFlights[0].passengers)`（[`Spec.Fare`](../Fare.lean#合計金額)）を返す。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserveConfirm(TicketReserveForm,List)`
+-/
+
+/-!
+## 予約確定（reserve）
+
+**[Spec]** 1 つのトランザクションとして実行する（[ADR 97f9](../../../docs/decision/97f9-persistence-and-transaction-semantics.md)）。[Source] は手順 2（`validateReservation`）と手順 3 以降（`registerReservation`）を別のトランザクションで行う（モデル外の既知差異 [D-037](../../../docs/spec/abstraction.md#既知差異)）。いずれかの段階で失敗した場合、状態は一切変化しない（採番の前進 `World.sequences` を除く。[`Spec.Port`](../Port.lean#idgenerator)）。
+
+1. 予約内容を組み立てる。
+2. `validateReservation`。
+3. `reserveDate = today`、`totalFare = totalFare(flights, reserveFlights[0].passengers)`。`today` は、ユースケースの初めに 1 回だけ読んだ値である（[Source] は呼ぶたびに読む。既知差異 [D-014](../../../docs/spec/abstraction.md#既知差異)）。
+4. 予約フライトを順に、
+   1. `isAvailableFareType(fareType, departureDate, today)`（[`Spec.FlightSearch`](../FlightSearch.lean#運賃種別の予約可能判定)）でなければ `Business("e.ar.b2.2008")`。
+   2. 主キーでフライトを **排他的に** 取得し（同時実行の予約と直列化される）、`vacantNum < len(passengers)` なら `Business("e.ar.b2.2009")`。
+   3. `vacantNum := vacantNum − len(passengers)` に更新する。
+5. `reserveNo = IdGenerator.nextReserveNo()` で予約を登録する。
+6. 予約フライトを順に `reserveFlightNo = IdGenerator.nextReserveFlightNo()` で登録し、その搭乗者を順に `passengerNo = IdGenerator.nextPassengerNo()` で登録する。
+7. `paymentDate = reserveFlights[0].flight.departureDate`（往路搭乗日を支払期限とする）。
+8. `{ reserveNo, paymentDate, totalFare }` を返す。
+
+**[Source]** の追加の振る舞い:
+
+- 各登録・更新の件数が 1 でなければ `System("e.ar.a0.L9002", [件数, 1])`（[Spec] ではリポジトリ契約により到達不能。[Spec] の前提の外の振る舞い [D-010](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。
+- 手順 4.2 で主キーのフライトが存在しなければ `NullPointerException`（前提違反）。`validateFlightList` 済みなら到達しない。
+- 採番が循環して既存番号と衝突した場合は主キー違反によるシステムエラー（既知差異 [D-009](../../../docs/spec/abstraction.md#既知差異)）。
+
+### 不変条件
+
+- 予約確定の前後で、すべてのフライトの `vacantNum ≥ 0`（課題 [ABS-020](../../../docs/spec/abstraction.md#証明課題), [REF-002](../../../docs/spec/refinement.md)）。
+- 成功時、各予約フライトのフライトの `vacantNum` は搭乗者数だけ減る。失敗時は `sequences` 以外の状態が不変。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#reserve(TicketReserveForm,List)`, `java:jp.co.ntt.atrs.domain.service.b2.TicketReserveServiceImpl#registerReservation(Reservation)`（private の `validateAndUpdateVacancy` を含む）
+
+### 例
+
+フライト残席 2 に搭乗者 3 名で予約 → `e.ar.b2.2009`、残席 2 のまま。
+往復予約で往路は残席十分・復路が残席不足 → `e.ar.b2.2009`、往路の残席も変化しない。
+-/
+
 /-! ## 予約確認・予約確定 -/
 
 /-- 予約確認（`reserveConfirm`）: 予約内容を組み立てて検証し、合計金額を返す。搭乗者欄を詰める処理は、組み立てに
 影響しない（空の欄は組み立てで除かれる）。 -/
-@[spec_doc "docs/spec/reservation.md#予約確認reserveconfirm"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"]
 def reserveConfirm (cfg : Config) (md : MasterData) (w : World) (i : ReserveInput) (flights : List FlightKey) :
     Option (Except AtrsError Nat) := do
   let d ← buildDraft { i with passengers := compactPassengers i.passengers } flights
@@ -183,7 +275,7 @@ def reserveConfirm (cfg : Config) (md : MasterData) (w : World) (i : ReserveInpu
   | .ok () => return .ok (← Spec.Fare.totalFareOfKeys cfg md flights (d.passengers.map (·.age)))
 
 /-- 予約確定の結果。 -/
-@[spec_doc "docs/spec/reservation.md#予約確定reserve"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確定reserve"]
 structure ReserveResult where
   reserveNo : ReserveNo
   paymentDate : Date
@@ -192,7 +284,7 @@ structure ReserveResult where
 
 /-- 4. 空席の確保（1 便）: 運賃種別の予約可能判定、主キーでの取得、空席数の検査と更新。
 フライトが無ければ `InvalidRequest`（`validateFlightList` の後なので到達しない）。 -/
-@[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確定reserve", gap "D-014"]
 def secureSeats (md : MasterData) (today : Date) (n : Nat) (w : World) (k : FlightKey) :
     Option (Except AtrsError World) := do
   let ft ← md.fareTypeOf k.fareTypeCd
@@ -215,7 +307,7 @@ def addReserveFlight (ps : List Passenger) (reserveNo : ReserveNo) (acc : List R
   (acc.1 ++ [⟨acc.2.nextReserveFlightNo.1, reserveNo, k, recs.1⟩], recs.2)
 
 /-- 5〜6. 予約の登録: 予約番号、予約フライトごとに予約フライト番号と搭乗者番号を採番して登録する。 -/
-@[spec_doc "docs/spec/reservation.md#予約確定reserve"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確定reserve"]
 def register (d : Draft) (today : Date) (totalFare : Nat) (w : World) : ReserveNo × World :=
   let reserveNo := w.nextReserveNo.1
   let rfs := d.flights.foldl (addReserveFlight d.passengers reserveNo) ([], w.nextReserveNo.2)
@@ -228,7 +320,7 @@ def register (d : Draft) (today : Date) (totalFare : Nat) (w : World) : ReserveN
 /-- 予約確定（`reserve`）の標準の結果。1 つのトランザクションとして実行し、失敗したときは元の状態を返す。
 予約内容の組み立て・`validateReservation`・合計金額のあと、予約フライトを順に空席を確保し、予約を登録する。
 支払期限は往路の搭乗日。 -/
-@[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確定reserve", gap "D-014"]
 def reserve (cfg : Config) (md : MasterData) (today : Date) (w : World) (i : ReserveInput)
     (flights : List FlightKey) : Option (World × Except AtrsError ReserveResult) := do
   let d ← buildDraft i flights
@@ -250,16 +342,16 @@ def reserve (cfg : Config) (md : MasterData) (today : Date) (w : World) (i : Res
 /-! ## 予約の操作（選択フライトの検証を含む） -/
 
 /-- 予約の要求: 選択フライトと予約入力。 -/
-@[spec_doc "docs/spec/http-contract.md#b2-予約"]
+@[spec_doc "lean/Spec/Http.lean#b2-予約"]
 structure Request where
   selects : List SelectFlight
   form : ReserveInput
   deriving DecidableEq
 
-/-- 要求が、入力検証の単項目制約のうち長さと桁を満たし（`docs/spec/input-validation.md#予約入力b2`）、選択フライトの
+/-- 要求が、入力検証の単項目制約のうち長さと桁を満たし（`lean/Spec/InputValidation.lean#予約入力b2`）、選択フライトの
 便名が空白でない（原典の `Assert.hasText`）。代表者の電話番号は相関 1（`repTel1`・`repTel2` の長さの和が 6〜7）の上限を
 課す。PRE に含める（[Source] の列の長さ `VARCHAR(n)` と `int` に収まることに使う。backlog aedf の第 3 段）。 -/
-@[spec_doc "docs/spec/input-validation.md#予約入力b2"]
+@[spec_doc "lean/Spec/InputValidation.lean#予約入力b2"]
 def Request.Valid (r : Request) : Prop :=
   (∀ s ∈ r.selects, hasText s.flightName.val = true) ∧
     r.form.repFamilyName.length ≤ 10 ∧ r.form.repGivenName.length ≤ 10 ∧ r.form.repAge ≤ 999 ∧
@@ -271,26 +363,26 @@ def Request.Valid (r : Request) : Prop :=
 instance (r : Request) : Decidable r.Valid := by unfold Request.Valid; infer_instance
 
 /-- 選択フライトの検証の失敗は、予約確認・予約確定ではすべて改竄（`InvalidRequest`）とする（`Business` の
-`e.ar.b2.2001` も含む。`docs/spec/http-contract.md#b2-予約`）。 -/
-@[spec_doc "docs/spec/http-contract.md#b2-予約"]
+`e.ar.b2.2001` も含む。`lean/Spec/Http.lean#b2-予約`）。 -/
+@[spec_doc "lean/Spec/Http.lean#b2-予約"]
 def asInvalidRequest : AtrsError → AtrsError
   | .business code _ => .invalidRequest code
   | e => e
 
 /-- 選択フライトの検証（予約確認・予約確定の前段）。 -/
-@[spec_doc "docs/spec/http-contract.md#b2-予約"]
+@[spec_doc "lean/Spec/Http.lean#b2-予約"]
 def checkSelects (cfg : Config) (md : MasterData) (w : World) (r : Request) : Option (Except AtrsError Unit) :=
   (validateFlightList cfg md w (r.selects.map (resolve md))).map fun x => x.mapError asInvalidRequest
 
 /-- 予約確認の操作: 選択フライトの検証、予約確認。 -/
-@[spec_doc "docs/spec/reservation.md#予約確認reserveconfirm"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"]
 def confirmOp (cfg : Config) (md : MasterData) (w : World) (r : Request) : Option (Except AtrsError Nat) := do
   match ← checkSelects cfg md w r with
   | .error e => return .error e
   | .ok () => reserveConfirm cfg md w r.form (r.selects.map (·.key))
 
 /-- 予約確定の操作の標準の結果: 選択フライトの検証、予約確定。 -/
-@[spec_doc "docs/spec/reservation.md#予約確定reserve", gap "D-014"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean#予約確定reserve", gap "D-014"]
 def reserveOp (cfg : Config) (md : MasterData) (today : Date) (w : World) (r : Request) :
     Option (World × Except AtrsError ReserveResult) := do
   match ← checkSelects cfg md w r with
@@ -300,14 +392,14 @@ def reserveOp (cfg : Config) (md : MasterData) (today : Date) (w : World) (r : R
 /-! ## 抽象機械（backlog aedf の第 2 段） -/
 
 /-- 予約の操作の種類: 予約確認・予約確定。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean"]
 inductive Op where
   | confirm
   | reserve
   deriving DecidableEq, Repr
 
 /-- 予約の機械の入力: 設定・マスタ・今日の日付（1 回だけ読んだ値。D-014）・要求・操作の種類。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean"]
 structure MInput where
   cfg : Config
   md : MasterData
@@ -316,7 +408,7 @@ structure MInput where
   op : Op
 
 /-- 予約の機械の出力の値: 予約確認は合計金額、予約確定は予約番号・支払期限・合計金額。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean"]
 inductive MOutputValue where
   | confirmed (totalFare : Nat)
   | reserved (r : ReserveResult)
@@ -328,7 +420,7 @@ abbrev MOutput := Except AtrsError MOutputValue
 /-- PRE: 設定・マスタが妥当で、要求が入力検証の長さと桁を満たし（`Request.Valid`）、フライトの便名・搭乗クラス・運賃種別と
 会員のカード種別がマスタにあり（`World.RefMaster`・`World.MemberRefMaster`）、操作の標準の結果が定まる（選択フライトが 1〜2 件、空でない搭乗者欄が姓・名・年齢・性別を
 持ち、少なくとも 1 欄あり、マスタに便・区間・運賃種別がある）。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean"]
 def MInput.Pre (w : World) (i : MInput) : Prop :=
   i.cfg.Valid ∧ i.md.Valid i.cfg ∧ i.req.Valid ∧ w.RefMaster i.md ∧ w.MemberRefMaster i.md ∧
     match i.op with
@@ -363,7 +455,7 @@ def withDetail (d : Spec.Nondet.InvalidRequestDetail) : MOutput → MOutput
 - `Conflict`（予約確定だけ。予約確認は状態を変えないので `Conflict` を返さない）: 出力は `Conflict`。状態は採番の前進だけ
   変わる。
 - それ以外は、標準の結果の `InvalidRequest` の詳細を自由な選択で置き換えたもの。 -/
-@[spec_doc "docs/spec/ports.md#トランザクション"]
+@[spec_doc "lean/Spec/Port.lean#トランザクション"]
 def reserveStep (w : World) (i : MInput)
     (c : (Spec.Nondet.ConflictChoice × Spec.Nondet.IoFailureChoice) × Spec.Nondet.InvalidRequestDetail) :
     World × MOutput :=
@@ -373,7 +465,7 @@ def reserveStep (w : World) (i : MInput)
   | _, _, _ => let r := baseStep w i; (r.1, withDetail c.2 r.2)
 
 /-- 予約の抽象機械。状態は `World`、初期状態はシードを投入した後の `World` の 1 点。 -/
-@[spec_doc "docs/spec/reservation.md"]
+@[spec_doc "lean/Spec/UseCase/Reserve.lean"]
 def reserveMachine : Machine.Machine World MInput MOutput :=
   Machine.Machine.ofChoice World.Inv (· = Spec.Seed.World.world) MInput.Pre reserveStep
     (Spec.Nondet.ConflictChoice.std, Spec.Nondet.IoFailureChoice.std) Spec.Nondet.InvalidRequestDetail.std
@@ -919,3 +1011,26 @@ theorem reserveStep_std (w : World) (i : MInput) (d : Spec.Nondet.InvalidRequest
   exact withDetail_allNE d (baseStep_allNE w i)
 
 end Spec.UseCase.Reserve
+
+/-!
+## 会員情報による入力補完
+
+**[Spec=Source]** ログイン中の会員が予約入力画面を開いたとき、入力の初期値を会員情報から作る。
+
+- `repFamilyName ← kanaFamilyName`, `repGivenName ← kanaGivenName`, `repGender ← gender`, `repMail ← mail`, `repMembershipNumber ← membershipNumber`
+- `tel` を `-` で分割し、ちょうど 3 要素なら `repTel1, repTel2, repTel3` に設定（それ以外は未設定）。
+- `repAge = fullYearsBetween(birthday, today)`（[`Spec.Prim.Date`](../Prim/Date.lean#date)）。
+- 1 番目の搭乗者欄に代表者と同じ姓・名・年齢・性別・会員番号を設定する。
+
+未ログイン時は 6 欄すべて空の入力を初期値とする。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createTicketReserveForm(AtrsUserDetails)`
+-/
+
+/-!
+## 予約画面のフライト表示
+
+**[Spec=Source]** 選択フライトの各 `i` について、`lineType = (i = 0 ? OUTWARD : HOMEWARD)`、便名・出発時刻・到着時刻・出発/到着空港コード・搭乗クラス・運賃種別・`fare = fare(basicFare(route.basicFare, boardingClassCd, depDate), discountRate)` を表示する。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`
+-/

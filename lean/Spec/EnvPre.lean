@@ -19,7 +19,7 @@ open Spec.Model
 
 /-- 入口の環境の前提: 設定の不変条件と、マスタの不変条件 MD-1〜MD-8。 -/
 @[env_pre "MD-1", "MD-2", "MD-3", "MD-4", "MD-5", "MD-6", "MD-7", "MD-8", "CFG",
-  spec_doc "docs/spec/master-data.md#不変条件spec"]
+  spec_doc "lean/Spec/MasterData.lean#不変条件spec"]
 def masterConfigOk (x : Config × MasterData) : Prop := x.1.Valid ∧ x.2.Valid x.1
 
 instance (x : Config × MasterData) : Decidable (masterConfigOk x) := by unfold masterConfigOk; infer_instance

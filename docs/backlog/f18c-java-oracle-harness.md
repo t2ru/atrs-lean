@@ -24,8 +24,8 @@ generated:
 - 原典のドメイン層（Spring 不要な部分）を呼ぶ小さな Java プログラム
 - HTTP レベルの原典実行: Spring を起動した原典（組み込み Tomcat に原典の web.xml のままの webapp を載せる。[ADR 81da](../decision/81da-java-origin-run-domain-and-http.md)）に要求を送り、応答を照合する。対象はフレームワークの暗黙の処理（入力の変換・Bean Validation・Spring Security・Jackson）と、テンプレートの書式（D-019）
 - ベクタの `input` から呼び出し、`expected` を出力（`source: java-origin-run`）
-- REST の日付 JSON 表現の確認（[http-contract.md](../spec/http-contract.md#rest-apiapiv1) の TODO。ソースの読解では `"yyyy-MM-dd"` の見込み）
-- 画面ログインで `loginDateTime`・`loginFlg` が更新されるかの確認（[authentication.md](../spec/authentication.md#ログインlogin) の TODO）
+- REST の日付 JSON 表現の確認（[`Spec.Http`](../../lean/Spec/Http.lean#rest-apiapiv1) の TODO。ソースの読解では `"yyyy-MM-dd"` の見込み）
+- 画面ログインで `loginDateTime`・`loginFlg` が更新されるかの確認（[`Spec.Authentication`](../../lean/Spec/Authentication.lean#ログインlogin) の TODO）
 
 ## 対象外
 

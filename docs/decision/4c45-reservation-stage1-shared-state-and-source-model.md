@@ -37,7 +37,7 @@ f18c（Java の原典実行）は、別のセッションで完了していた�
 ## Decision Drivers
 
 * 基本原則 1〜3（[ADR c336](c336-foundational-principles.md)）
-* [ports.md](../spec/ports.md) は、フライト・会員・予約・採番を `World` の成分とする。状態を変えるユースケースは、原子的な 1 つの操作とする（[ADR 97f9](97f9-persistence-and-transaction-semantics.md)、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)）。
+* [`Spec.Port`](../../lean/Spec/Port.lean) は、フライト・会員・予約・採番を `World` の成分とする。状態を変えるユースケースは、原子的な 1 つの操作とする（[ADR 97f9](97f9-persistence-and-transaction-semantics.md)、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)）。
 * 空席照会の R 課題 ABS-011 の証明を、できるだけ作り直さない。
 * 段ごとに検査ゲート（`mise run ci`）を通す。
 
@@ -58,7 +58,7 @@ f18c（Java の原典実行）は、別のセッションで完了していた�
 Chosen option: "状態の共有 (a)・操作の境界 (a)・差異の登録 (a)"。理由は次のとおりである。
 
 * (a) なら、ABS-011 は状態の型の変更に合わせて直すだけで済み、予約の R 課題とは別に証明できる。
-* 原典の Controller が観測できる単位と、[http-contract.md](../spec/http-contract.md#b2-予約) の単位が一致する。
+* 原典の Controller が観測できる単位と、[`Spec.Http`](../../lean/Spec/Http.lean#b2-予約) の単位が一致する。
 * 差異の登録は、[ADR 0b0c](0b0c-flight-search-stage3-abs011.md) の D-033 と同じ扱いである。
 
 状態の共有・差異の登録・段の分け方は、プロジェクトオーナーが決めた。
@@ -127,6 +127,6 @@ Chosen option: "状態の共有 (a)・操作の境界 (a)・差異の登録 (a)"
     * `PgTimestamp` の範囲
     * ベクタの期待値（独立に再計算した）
 * Java の原典実行: 共有ベクタ 47 件が原典と一致した。シードの範囲から予約確認の 76 件を採取した（`conformance/source-model/reservation/origin-run-confirm.json`。結果は成功 56 件、`e.ar.b2.2004` 11 件、`e.ar.b2.2010` 5 件、`e.ar.b2.2007` 4 件）。原典の取消が働くことは、トランザクションの包みを外すと `rs-rt-homeward-short` が失敗することで確かめた。
-* [backlog aedf](../backlog/aedf-reservation-usecase.md)、[reservation.md](../spec/reservation.md)、[ports.md](../spec/ports.md)、[http-contract.md](../spec/http-contract.md#b2-予約)
+* [backlog aedf](../backlog/aedf-reservation-usecase.md)、[`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean)、[`Spec.Port`](../../lean/Spec/Port.lean)、[`Spec.Http`](../../lean/Spec/Http.lean#b2-予約)
 * [ADR ce36](ce36-flight-search-stage1-world-and-arrival-time.md)（`World` の導入）、[ADR cdb6](cdb6-flight-search-stage2-machines-seed-sql.md)（状態の表と D-027）、[ADR 0b0c](0b0c-flight-search-stage3-abs011.md)（確認待ちの登録の前例）、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)、[ADR 97f9](97f9-persistence-and-transaction-semantics.md)
 * 補足: 上の表の D-009 の拡大と D-031 の R 課題の修正（確認待ち）は、[ADR f786](f786-gap-inventory-and-registry-fixes.md) でプロジェクトオーナーが承認した。

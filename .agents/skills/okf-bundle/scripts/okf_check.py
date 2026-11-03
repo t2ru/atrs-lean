@@ -331,6 +331,49 @@ def headings(lines):
     return out
 
 
+def lean_doc_lines(raw_lines):
+    """Lean のファイルの行のうち、mdgen が Markdown の地の文にする行（列 0 から始まる `/-!`・`/-` のブロックコメント。
+    `/--` の文書コメントは除く）だけを残し、他の行を空にした列（行番号を保つ）。区切りの `/-!`・`/-`・`-/` は除く。
+    行末の `--#` と、`--#--` で囲んだ行は、mdgen と同じく無視する。"""
+    out, level, doc, in_doc_block, ignore = [], 0, False, False, False
+    for line in raw_lines:
+        if line.endswith("--#--"):
+            ignore = not ignore
+            out.append("")
+            continue
+        if ignore or line.endswith("--#"):
+            out.append("")
+            continue
+        opened = False
+        if line.startswith("/--"):
+            doc = True
+        if line.startswith("/-") and not line.startswith("/--"):
+            if not doc:
+                level += 1
+                opened = level == 1
+            else:
+                in_doc_block = True
+        text = line if level > 0 else None
+        if line.endswith("-/"):
+            if not doc:
+                if level == 1 and text is not None:
+                    text = text[:-2]
+                level = max(level - 1, 0)
+            if not in_doc_block:
+                doc = False
+            in_doc_block = False
+        if text is not None and opened:
+            text = text[3:] if text.startswith("/-!") else text[2:]
+        out.append("" if text is None else text.strip() if opened else text)
+    return out
+
+
+def doc_lines(rel, text):
+    """文書の本文の行: Markdown はそのまま、Lean は mdgen が地の文にする行（lean_doc_lines）。"""
+    lines = text.split("\n")
+    return lean_doc_lines(lines) if rel.endswith(".lean") else lines
+
+
 def anchors(raw_lines):
     lines = mask_code(raw_lines)
     seen, out = {}, set()
@@ -426,15 +469,15 @@ class Checker:
                 self._cache[rel] = None
         return self._cache[rel]
 
-    def walk(self, root, skip=()):
+    def walk(self, root, skip=(), ext=".md"):
         base = self.repo / root
         if base.is_file():
-            return [root] if root.endswith(".md") else []
+            return [root] if root.endswith(ext) else []
         out = []
         for dp, dns, fns in os.walk(base):
             dns[:] = sorted(d for d in dns if not d.startswith(".") or d == ".agents")
             for f in sorted(fns):
-                if f.endswith(".md"):
+                if f.endswith(ext):
                     rel = os.path.relpath(os.path.join(dp, f), self.repo).replace(os.sep, "/")
                     if not rel.startswith(tuple(skip)):
                         out.append(rel)
@@ -640,8 +683,11 @@ class Checker:
         files = []
         for r in lc.get("roots", []):
             files += self.walk(r.rstrip("/"), skip)
+        # Lean のモジュール文書（mdgen が Markdown にする部分）も文書として検査する
+        for r in lc.get("lean_roots", []):
+            files += self.walk(r.rstrip("/"), skip, ".lean")
         for rel in sorted(set(files)):
-            raw = self.read(rel).split("\n")
+            raw = doc_lines(rel, self.read(rel))
             for n, line in enumerate(mask_code(raw), 1):
                 for m in LINK_RE.finditer(line):
                     target = m.group(3)
@@ -659,12 +705,12 @@ class Checker:
                     if dest.startswith("..") or not (self.repo / dest).exists():
                         self.err("L1", rel, n, f"link target {target} does not exist")
                         continue
-                    if frag and dest.endswith(".md") and (self.repo / dest).is_file():
+                    if frag and dest.endswith((".md", ".lean")) and (self.repo / dest).is_file():
                         frag = urllib.parse.unquote(frag)
                         text = self.read(dest)
                         if text is not None:
-                            _, body, _ = split_frontmatter(text)
-                            if frag not in anchors(body.split("\n")):
+                            _, body, _ = split_frontmatter(text) if dest.endswith(".md") else (None, text, 1)
+                            if frag not in anchors(doc_lines(dest, body)):
                                 self.err("L2", rel, n, f"anchor #{frag} is not a heading of {dest}")
 
     def run(self):
