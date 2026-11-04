@@ -7,18 +7,20 @@ import Spec.Error
 import Spec.World
 
 /-!
-# Spec.Reserve.FlightSelection
+# 選択フライトとその検証（`Spec.Reserve.FlightSelection`）
 
-選択フライトとその検証（[選択フライト](#選択フライト)・[validateFlightList](#validateflightlist)。backlog aedf）。
+> **区分: 要約（informative）。** 本文は本章の Lean の定義の非規範の要約で、食い違ったら Lean が正である。
+
+予約確認・予約確定の前段で、利用者が空席照会の結果から選んだフライト（選択フライト）をマスタで解決し、その整合性を
+検証する（画面 B0 の共通処理）。
 
 - 選択フライト `SelectFlight` の便名は外部の入力なので文字列のまま持ち、便マスタで引く。解決したもの
   `ResolvedFlight` の主キーの便名は便マスタの便名である。便マスタが無ければ解決できず（`none`）、次の検証で
   `InvalidRequest` にする。
-- `validateFlightList` は、成功すれば予約する便（片道・往復。`Itinerary`）の主キーを返す。
-- `validateFlightList` は、改竄（通常の画面操作では起きない値）を `InvalidRequest`、利用者の選択ミスを
-  `Business` とする。`InvalidRequest` の詳細の文字列は、変えうる部分（自由な選択 N-004）である。
-- 往路便の到着日時は、出発日 0:00 からの分数（翌日着を含む。ADR ce36）で数える。[Source] は到着時刻が 24:00 より
-  後の便を往路とする往復の予約で例外を投げる（既知差異 D-031）。
+- `validateFlightList` は、成功すれば予約する便（片道・往復。`Itinerary`）の主キーを返す。改竄（通常の画面操作では
+  起きない値）は `InvalidRequest`、利用者の選択ミスは `Business` とする。`InvalidRequest` の詳細の文字列は、
+  実装が変えてよい部分（自由な選択 N-004）である。
+- 往路便の到着日時は、出発日 0:00 からの分数（翌日着を含む）で数える。
 -/
 
 namespace Spec.Reserve.FlightSelection
@@ -29,9 +31,9 @@ open Spec.Env.Config Spec.Model Spec.Prim Spec.Prim.Time Spec.Error Spec.Env.Mas
 ## 選択フライト
 
 画面から送られる選択フライトは `SelectFlight = { depDate, flightName, boardingClassCd, fareTypeCd }` の列（往路、復路の順）である。
-これをマスタで解決したものを `Flight`（便マスタ・運賃種別・搭乗クラスの実体を伴う）として扱う。
+これをマスタで解決したものが `ResolvedFlight`（フライトの主キーと便マスタ）である。
 
-**[Spec=Source]** `resolve(sel)`: `flightMasterOf(sel.flightName)`, `fareTypeOf(sel.fareTypeCd)`, `boardingClassOf(sel.boardingClassCd)` を引く。選択フライトの便名は生の文字列で、便マスタを値で引き、主キーの便名は便マスタの便名とする（Lean では便マスタが無ければ解決の結果が無い。[ADR 6d36](../../../docs/decision/6d36-misu-spec-types.md)）。便マスタが無い場合は「便マスタ無し」として次の検証で `InvalidRequest` にする。便名が空白だけ（U+3000 など）の場合も同じである。[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で例外（500）になる（既知差異 [D-039](../../../docs/spec/abstraction.md#既知差異)）。
+**[Spec=Source]** `resolve(md, sel) : Option ResolvedFlight`: 便マスタを便名（生の文字列）の値で引き、主キーの便名は便マスタの便名とする。搭乗クラス・運賃種別は主キーのコードのまま持ち、検証・登録の段でマスタを引く。便マスタが無ければ解決の結果は無く（`none`）、次の検証で `InvalidRequest` にする。便名が空白だけ（U+3000 など）の場合も同じである。[Source] は `FlightMasterProvider.getFlightMaster` の `Assert.hasText` で例外（500）になる（既知差異 [D-039](../../../docs/spec/abstraction.md#既知差異)）。
 
 出典: `java:jp.co.ntt.atrs.app.b0.TicketHelper#toFlightList(List)`
 -/
@@ -88,17 +90,19 @@ def routeOfMaster (md : MasterData) (m : FlightMaster) : Option Route := md.rout
 
 ### シグネチャ
 
-`validateFlightList(flights: [Flight], allFlights; master, config) : Except AtrsError Itinerary`
+`validateFlightList(cfg: Config, md: MasterData, w: World, flights: [Option ResolvedFlight]) : Option (Except AtrsError (Itinerary FlightKey))`
 
-成功したときは、検証した便の主キーを、片道（1 便）か往復（往路・復路）の `Itinerary` で返す。予約確認・予約確定は、この主キーを使う（Lean: `Spec.Reserve.FlightSelection.Itinerary`）。
+`flights` は選択フライトを `resolve` したもの（往路、復路の順）。フライトの有無は抽象状態 `w` のフライト（`FlightRepository.exists`）で見る。
+成功したときは、検証した便の主キーを、片道（1 便）か往復（往路・復路）の `Itinerary` で返す。予約確認・予約確定は、この主キーを使う。
 
 ### 事前条件
 
-- `1 ≤ len(flights) ≤ 2`（[Source]: `Assert`）。
+- `1 ≤ len(flights) ≤ 2`（[Source]: `Assert`）。外れれば `none`。
+- 往復のとき、往路・復路の区間がマスタにある（MD-2）。無ければ `none`。
 
 ### 定義（評価順）
 
-1. 往路 `o = flights[0]`: 便マスタが無ければ `InvalidRequest("flightMaster is null")`。`o` の主キーに一致するフライトが `allFlights` に無ければ `InvalidRequest("flight not found")`。
+1. 往路 `o = flights[0]`: 便マスタが無ければ `InvalidRequest("flightMaster is null")`。`o` の主キーに一致するフライトが `w` に無ければ `InvalidRequest("flight not found")`。
 2. `len(flights) = 2` のとき、復路 `h = flights[1]` に同じ検査を行い、さらに:
    1. 搭乗間隔: `at(o.departureDate, o.arrivalTime) + reserveIntervalTime 分 > at(h.departureDate, h.departureTime)` なら `Business("e.ar.b2.2001")`。ちょうど間隔分なら可。到着時刻は出発日 0:00 からの時分で、24:00 より後（翌日着）でもよい（[Source] は `HHmm` で読むので、翌日着の便で例外になる。既知差異 [D-031](../../../docs/spec/abstraction.md#既知差異)）。
    2. 逆区間: `o` の区間の出発空港 ≠ `h` の区間の到着空港、または `o` の到着空港 ≠ `h` の出発空港なら `InvalidRequest("homeward route is not outward route reverse")`。
@@ -185,3 +189,13 @@ def validateFlightList (cfg : Config) (md : MasterData) (w : World) (flights : L
   | _ => none
 
 end Spec.Reserve.FlightSelection
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6d36](../../../docs/decision/6d36-misu-spec-types.md)（選択フライトの便名を生の文字列で受け、便マスタで解決する）、[ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)（到着時刻を出発日 0:00 からの分数で表す）。
+- 既知差異: D-031（翌日着の往路便で [Source] が例外を投げる）、D-039（空白だけの便名）（[一覧](../../../docs/spec/abstraction.md#既知差異)）。
+- 移植元モデル: [`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../../SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)、[`SourceModel.App.B0.TicketHelper`](../../SourceModel/App/B0/TicketHelper.lean)。
+- 抽象化の証明: [`Abstraction.Reserve`](../../Abstraction/Reserve.lean)（予約の R 課題 ABS-041 の一部）。
+- 適合テストベクタ: [`conformance/shared/reservation/`](../../../conformance/shared/reservation/)。
+-/

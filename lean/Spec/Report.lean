@@ -1,9 +1,10 @@
 /-!
-# 予約履歴レポート（D1）（`Spec.Report`）
+# 予約履歴レポート（`Spec.Report`）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [`Spec.Port`](World.lean) の規範節に従う。
+> **区分: 草案（draft）。** まだ Lean に形式化していない。形式化するときは、この章に定義を足し、本文を要約に書き換える。キューの配信保証・ファイルの原子的な公開など実行環境の要件は [`Spec.Port`](Port.lean) の規範節に従う。
 
-非同期処理の構成は [ADR ff4d](../../docs/decision/ff4d-asynchronous-report-generation.md)、ポートは [`Spec.Port`](Port.lean#reportqueue) を参照。
+会員が自分の予約の履歴を CSV のレポートとして作成・一覧・取得する機能（画面 D1）を定める。作成は非同期で、要求を
+キュー（[`ReportQueue`](Port.lean#reportqueue)）に送り、受信側がレポートを生成して保存する（[`ReportStore`](Port.lean#reportstore)）。
 すべての操作は権限 `MEMBER` を要し、対象はログイン中の会員自身のレポートに限る。
 -/
 
@@ -22,7 +23,7 @@
 
 1. `msg` が文字列でなければ無視する（ログ `w.ar.d1.L0002`）。
 2. 文字列 `n` が無い、または長さが 10 でなければ無視する（ログ `w.ar.d1.L0003`）。
-3. `createReport(n)` を行う。失敗した場合は、要求を再配信する（[`Spec.Port`](Port.lean#reportqueue) の配信保証。[ADR 90f5](../../docs/decision/90f5-report-queue-at-least-once-delivery.md)）。原典はトランザクション付きの JMS セッションで受信し、例外時はロールバックしてブローカーが再配信する。
+3. `createReport(n)` を行う。失敗した場合は、要求を再配信する（[`Spec.Port`](Port.lean#reportqueue) の配信保証）。原典はトランザクション付きの JMS セッションで受信し、例外時はロールバックしてブローカーが再配信する。
 
 長さ 10 の判定は、[Spec] ではスカラ値、[Source] では UTF-16 単位で数える（既知差異 [D-006](../../docs/spec/abstraction.md#既知差異)）。
 
@@ -36,11 +37,13 @@
 
 ### 定義
 
-1. `rows = ReservationRepository.findHistoryByRepresentative(n)`: 予約代表者の会員番号が `n` である予約と、その予約フライトの組の列。並び順は `(reserveNo 昇順, reserveFlightNo 昇順)`（文字列 `reserveNo` は 10 桁固定なので辞書順＝数値順）。
+1. `rows = ReservationRepository.findHistoryByRepresentative(n)`: 予約代表者の会員番号が `n` である予約と、その予約フライトの組の列。並び順は `(reserveNo の値の昇順, reserveFlightNo 昇順)`（予約番号の値は採番の自然数。表記が 10 桁の範囲では、表記の辞書順と一致する。10 桁を超える予約番号は [Source] では採番されない。既知差異 [D-009](../../docs/spec/abstraction.md#既知差異)）。
 2. `name = reportFileName(n, now)`（`now` は `Clock` の現在日時）。
 3. `bytes = renderCsv(rows)`。
 4. `ReportStore.writeTemp("tmp_" ++ name, bytes)` の後、`ReportStore.publish(n, name)` で会員 `n` の領域へ原子的に移す。
 5. 同名のレポートが既に存在する場合は `System("e.ar.d1.L0002")`（同一秒の再生成）。I/O 失敗も `System("e.ar.d1.L0002")`。
+
+> **TODO(spec):** I/O 失敗のコード `e.ar.d1.L0002` は、[`Spec.Port`](Port.lean#トランザクション) の規範（ポートの I/O 失敗の出力は `System("e.ar.fw.9999")` の 1 つだけ）と食い違う。同名のレポートがあるときのコードとあわせて、どちらに合わせるかを決める。
 
 出典: atrs-domain/.../service/d1/ReservationHistoryReportServiceImpl.java `createReport`, `generateReport`
 
@@ -103,4 +106,11 @@
 存在確認は、会員 `n` の領域を列挙して得た各ファイル名と `reportName` の完全一致で行い、一致したときだけ領域内のそのファイルを読む。そのため `../` やパス区切りを含む名前は一致せず、他会員の領域は参照できない（[Spec=Source]。会員番号はログイン中の会員から取る）。
 
 出典: atrs-domain/.../service/d1/ReservationHistoryReportServiceImpl.java `getReportFilePath`, `checkReportExistence`
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR ff4d](../../docs/decision/ff4d-asynchronous-report-generation.md)（非同期のレポート生成）、[ADR 90f5](../../docs/decision/90f5-report-queue-at-least-once-delivery.md)（要求のキューの配信保証）。
+- 既知差異: D-006・D-009（[一覧](../../docs/spec/abstraction.md#既知差異)）。
 -/
