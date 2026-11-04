@@ -4,12 +4,28 @@ import Spec.Seed.Master
 /-!
 # シードデータ（`Spec.Seed`）
 
+> **区分: 要約（informative）。** 値は生成した Lean の定義（下の表のモジュール）が正で、本文はその要約である。
+
+シードデータは、原典の初期データ投入 SQL[^seed-fixed] が DB に入れる初期データである。[Spec] では、シードの設定とマスタを
+環境の値として、シードを投入した後の状態を抽象状態 `World` の初期状態として持つ。適合テストの共有入力
+（`conformance/fixtures/`）も同じシードから作る。
+
+| モジュール | 内容 | 作り方 |
+| --- | --- | --- |
+| [`Spec.Seed.Master`](Seed/Master.lean) | シードのマスタ `masterData` と設定 `config` | 生成（`tools/conformance/seed_lean.py`） |
+| [`Spec.Seed.Flight`](Seed/Flight.lean) | シードのフライト（約 15 万行）を、日付の列・便名の列・枠の列から作る式 | 生成（`tools/conformance/flight_seed.py`） |
+| [`Spec.Seed.FlightProps`](Seed/FlightProps.lean) | シードのフライトの性質（主キーの一意性・マスタの参照） | 手書き（証明） |
+| [`Spec.Seed.Member`](Seed/Member.lean) | シードの会員と、採番の初期値 | 生成（`tools/conformance/member_seed.py`） |
+| [`Spec.Seed.World`](Seed/World.lean) | シードを投入した後の `World`（各機能の機械の初期状態） | 手書き |
+
+生成したファイルは手で編集しない。本章（`Spec.Seed`）は、シードの設定とマスタが入口の環境の前提
+（[`Spec.Env`](Env.lean) の `masterConfigOk`）を満たすこと（`seed_env`）と、前提が自明でないこと（前提を破る例）を示す。
 -/
 
 /-!
 ## シードデータ
 
-原典の初期データ[^seed-fixed]。適合テストの共有入力 `conformance/fixtures/master-data.json` の元になる（[backlog 4b0e](../../docs/backlog/4b0e-in-memory-adapters-and-seed-data.md)）。
+**[Spec=Source]** 原典の初期データの内容。適合テストの共有入力 `conformance/fixtures/master-data.json` の元になる。
 
 ### 搭乗クラス
 
@@ -51,7 +67,7 @@ import Spec.Seed.Master
 - 空港 51 件（主要空港 9 件は表示順 1〜9、その他 42 件は表示順 100〜141）。
 - 区間 20 件。路線基本運賃はすべて 100 円単位（20,100〜52,400 円）。
 - 便マスタ 126 件。
-- フライト: 投入日から 120 日後まで（両端を含む）の各日について、便ごとに搭乗クラス×運賃種別の行を作る。空席数は日ごとに 3 パターン（`i mod 3`）で変わる。fixture では投入日を 2026-11-01 とする（[ADR 9ee4](../../docs/decision/9ee4-clock-timezone-and-fixture-base-date.md)）。
+- フライト: 投入日から 120 日後まで（両端を含む）の各日について、便ごとに搭乗クラス×運賃種別の行を作る。空席数は日ごとに 3 パターン（`i mod 3`）で変わる。fixture では投入日を 2026-11-01 とする。
 
 ### 会員
 
@@ -61,12 +77,14 @@ import Spec.Seed.Master
 
 `VIS`（VISA）, `MTR`（MASTER）, `JCB`（JCB）, `DNS`（DNS）, `AMX`（American Express）
 
-シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器 `tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出す（投入日 2026-11-01。[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md)）。
+シードの全件（空港・区間・便マスタ・搭乗クラス・運賃種別・ピーク時期・機材・カード種別）は、生成器
+`tools/conformance/master_fixture.py` が上流の SQL から `conformance/fixtures/master-data.json` に書き出し（投入日 2026-11-01）、
+`tools/conformance/seed_lean.py` がそこから [`Spec.Seed.Master`](Seed/Master.lean) を作る。
 
-シードのマスタ・設定の [Spec] の値は `Spec.Seed`（生成器 `tools/conformance/seed_lean.py`。`outsideSpec` の行を除くが、上流のシードには無い）で、MD-1〜MD-8 と設定の不変条件を満たすことを定理 `Spec.Seed.seed_env` で示した（入口の環境の前提 `Spec.Env.masterConfigOk`。前提は、設定とマスタの検証 `Spec.Env.validate` が、不変条件の証明を持つ検証済みの型 `ValidEnv` を返すことである。機械の入力の設定・マスタは生の型のまま持つ（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。[ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)）。
-
-翌日着の便（NTT523・NTT528）について、[Source] の空席照会は到着時刻を文字列として整形するだけで（`DateTimeUtil.toFormatTimeString`。`2415` → `24:15`）、[Spec] と一致する。
-[Source] の `DateTimeFormatter("HHmm")` が `DateTimeParseException` を投げるのは、予約の往復便の検査で往路便がこの便のとき（`TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight`）で、既知差異 [D-031](../../docs/spec/abstraction.md#既知差異) である（[ADR ce36](../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)。[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md) の暫定措置 `outsideSpec` は外した）。
+翌日着の便（NTT523・NTT528。到着時刻 `2415`）について、[Source] の空席照会は到着時刻を文字列として整形するだけで
+（`DateTimeUtil.toFormatTimeString`。`2415` → `24:15`）、[Spec] と一致する。[Source] が `DateTimeParseException` を投げるのは、
+予約の往復便の検査で往路便がこの便のとき（`TicketSharedServiceImpl.validateFlightDepartureDateForRoundTripFlight`）で、
+既知差異 [D-031](../../docs/spec/abstraction.md#既知差異) である。
 
 [^seed-fixed]: atrs-initdb/src/sqls/integration-test-postgres/00200〜00250_*.sql
 -/
@@ -74,7 +92,13 @@ import Spec.Seed.Master
 namespace Spec.Seed
 open Spec.Env Spec.Env.MasterData
 
-/-! ## シードは環境の前提を満たす -/
+/-!
+## シードは環境の前提を満たす
+
+シードの設定とマスタは、設定の不変条件とマスタの不変条件 MD-1〜MD-8 を満たす（`seed_env`。検査 `validB` をカーネルで
+評価して示す）。空港コードを重複させたマスタは前提を破る（`badMasterData_not_env`）ので、前提は自明でない
+（`masterConfigOk_nontrivial`）。
+-/
 
 set_option maxRecDepth 100000 in
 /-- シードの設定とマスタは、入口の環境の前提を満たす。 -/
@@ -85,6 +109,7 @@ theorem seed_env : masterConfigOk (Master.config, Master.masterData) :=
 def badMasterData : MasterData :=
   { Master.masterData with airports := ⟨{ val := "HND" }, "x", 1000⟩ :: Master.masterData.airports }
 
+/-- 空港コードを重複させたマスタは、環境の前提を満たさない。 -/
 theorem badMasterData_not_env : ¬ masterConfigOk (Master.config, badMasterData) := by
   intro h
   obtain ⟨-, hv⟩ := h.valid
@@ -92,8 +117,21 @@ theorem badMasterData_not_env : ¬ masterConfigOk (Master.config, badMasterData)
   simp only [badMasterData, List.map_cons, List.nodup_cons] at h
   exact h.1 (by decide)
 
-/-- G8: 環境の前提は自明でない。 -/
+/-- 環境の前提は自明でない（満たす例と破る例がある。空虚化を防ぐ義務の G8）。 -/
 theorem masterConfigOk_nontrivial : Machine.Preserves.Nontrivial masterConfigOk :=
   ⟨⟨_, seed_env⟩, ⟨_, badMasterData_not_env⟩⟩
 
 end Spec.Seed
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md)（シードから共有入力を作る）、
+  [ADR 9ee4](../../docs/decision/9ee4-clock-timezone-and-fixture-base-date.md)（投入日 2026-11-01）、
+  [ADR ce36](../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)（翌日着の便）、
+  [ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)・[ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)
+  （境界の検証と入口の環境の前提）
+- 既知差異: D-031（[abstraction.md](../../docs/spec/abstraction.md#既知差異)）
+- 移植元モデルのシード: [`SourceModel.Db`](../SourceModel/Db/)（`MasterSeed`・`FlightSeed`・`MemberSeed`）
+- 共有入力: `conformance/fixtures/`（[conformance.md](../../docs/spec/conformance.md#共有入力fixtures)）
+-/
