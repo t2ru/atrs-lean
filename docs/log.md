@@ -1,5 +1,9 @@
 # Directory Update Log
 
+## 2026-11-04
+
+* **Creation**: [ADR b385](decision/b385-spec-module-layout-and-book-shaped-docs.md) と [backlog d74f](backlog/d74f-spec-module-layout-and-docs.md) で、`lean/Spec` を層と機能名で並べ直した（`Spec.EnvPre`→`Spec.Env`、`Spec.{Config,MasterData,CodeList}`→`Spec.Env.*`、`Spec.Port` の状態→`Spec.World`（`Spec.Port` は文書だけ）、`Spec.UseCase.Reserve`→`Spec.Reserve`、`Spec.Ticket`→`Spec.Reserve.FlightSelection`、`Spec.Authentication`→`Spec.Auth`、`Spec.ReservationHistoryReport`→`Spec.Report`、`Spec.InputValidation`→`Spec.Validation`、生成物の `Spec.Seed`→`Spec.Seed.Master`）。本の目次をこの順にした。対応表 `tools/docs/lean-renames-spec.json` と手順 `tools/docs/spec_layout.py` を置き、`Abstraction`・`Tests`・ベクタ・manifest・文書を追随させた（過去の対応表と本書の過去の行は書き換えていない）。全モジュールの文書を、作業の経緯を除いた仕様書の形（題・区分・前文・本文・根拠と対応）に書き直した。[spec/README.md](spec/README.md)・[rules/atrs-porting.md](rules/atrs-porting.md)（spec-pivot 0.30・okf-bundle 0.3）・`AGENTS.md` を改めた。
+
 ## 2026-11-03
 
 * **Update**: 本の目次を折りたためるようにした（`trace/project.json` の `book.fold`。最初は各部の最上位の章だけを見せ、❯ で開く）。

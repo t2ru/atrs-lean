@@ -1,5 +1,8 @@
 # Directory Update Log
 
+## 2026-11-04
+* **Creation**: [ADR f3c5](decision/f3c5-spec-module-docs-without-history.md) で、`Spec` のモジュール文書に作業の経緯を書かず、根拠と他の層への対応を章の末尾の「根拠と対応」節にまとめ、序に区分と記号の凡例を置くことにした。[rules/spec-documents.md](rules/spec-documents.md#モジュール文書に書く) を改めた。スキルの版を 0.30 にした。来歴: 適用先 ATRS の ADR b385。
+
 ## 2026-11-03
 * **Update**: `scripts/book/build.py` に、目次の折りたたみの設定 `book.fold`（`{enable, level}`。mdbook の `output.html.fold`）を足した（[spec/traceability.md](spec/traceability.md#プロジェクトの設定)）。
 * **Update**: `scripts/book/build.py` が Windows で失敗していた（ページのパスが `\` 区切りになり、目次を作るときにモジュール名を引けず `KeyError`。`.lean` へのリンクも本のページへ替わらなかった）のを直した。リポジトリ相対のパスと本のページのパスを、OS によらず `posixpath`（`/` 区切り）で扱う。

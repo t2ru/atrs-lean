@@ -85,6 +85,7 @@ okf_version: "0.2"
 * [SourceModel と Spec の差異の棚卸し: 登録簿の修正、D-034〜D-041 の登録、既存の差異の拡大](decision/f786-gap-inventory-and-registry-fixes.md) - 実装済み（マスタ・運賃・空席照会）と未着手（予約・会員・認証・レポート・HTTP）の全範囲で、上流の Java と Lean のモデル・仕様文書を登録簿 Abstraction.Gap と突き合わせた。誤記・古い記述・印の不足を直し、PRE の外の振る舞い D-034〜D-036、モデル外 D-037、前提型 D-038〜D-041 を登録し、D-006・D-009・D-020・D-030・D-033 と rTasks を広げた。REST の予約の応答の empty の欄は Spec を原典に合わせた。ADR 0b0c の保留 2 件を承認した。
 * [業務仕様を Spec のモジュール文書に書き、mdgen と mdbook で HTML の本にする](decision/68a6-business-spec-in-lean-module-docs-and-book.md) - docs/spec の業務仕様（要約・草案・Spec で表せない規範）を、lean/Spec の各モジュールのモジュール文書（/-! -/）として定義のすぐ前に置く。形式化していない領域は文書だけのモジュールにする。mdgen で Markdown に、mdbook で HTML にして CI の artifact にする。docs/spec にはメタ情報だけを残す。mise が管理する道具に mdbook を足す。
 * [Lean のソース全体を 1 冊の本にし、層ごとの部に分ける](decision/f779-whole-lean-source-book.md) - mdgen と mdbook で作る本の範囲を、Spec だけから Lean のソース全体（lean/ の Spec・SourceModel・Abstraction・TargetModel・Refinement・Tests・Tools と、スキル spec-pivot の assets/lean）に広げる。1 冊にし、目次を層ごとの部に分ける。部をまたぐリンクも本の中で辿れる。
+* [Spec のモジュールを層と機能名で並べ、モジュール文書を仕様書の形にそろえる](decision/b385-spec-module-layout-and-book-shaped-docs.md) - lean/Spec を、序・基礎・ドメイン・環境（Spec.Env）・状態とポート（Spec.World・Spec.Port）・機能（機能名にそろえた Spec.Reserve・Auth・Report など）・外部契約（Spec.Validation・Spec.Http）・シード（手書きの入口 Spec.Seed と生成物 Spec.Seed.Master）の順と階層に並べ直す。本の目次はこの順になる。モジュール文書から作業の経緯（backlog・段）を除き、根拠の ADR・既知差異・対応するモデル・ベクタは各章の末尾の「根拠と対応」節にまとめる。
 
 # Specification
 
@@ -142,6 +143,7 @@ okf_version: "0.2"
 * [差異の候補を HTTP レベルの原典実行で確かめる](backlog/ceb8-origin-run-checks-for-gap-candidates.md) - 差異の棚卸し（ADR f786）で保留にした、ライブラリの内部の挙動に拠る差異の候補を、HTTP レベルの Java の原典実行で採取して確かめ、差異・Spec の修正・見送りを判断する。
 * [業務仕様を Spec のモジュール文書へ移し、HTML の本を作る](backlog/c89a-business-spec-in-lean-module-docs.md) - docs/spec の業務仕様を lean/Spec のモジュール文書（/-! -/）へ移し、mdgen と mdbook で HTML の本を作る。参照の書き換えと、移した後の検査（リンク・アンカー・出典・参照の行き先）を整える。
 * [Lean のソース全体を本にする](backlog/63a3-whole-lean-source-book.md) - mdgen と mdbook の本の範囲を、Spec だけから Lean のソース全体（lean/ とスキルの assets/lean）に広げ、目次を層ごとの部に分ける。
+* [Spec のモジュール構成を整理し、モジュール文書を仕様書の形にする](backlog/d74f-spec-module-layout-and-docs.md) - lean/Spec を層と機能名で並べ直し（Spec.Env・Spec.World・Spec.Port・Spec.Reserve・Spec.Auth・Spec.Report・Spec.Validation・Spec.Seed.Master など）、全モジュールの文書を、経緯を除いた仕様書の形（題・区分・前文・本文・根拠と対応）にそろえる。
 
 # Skill
 

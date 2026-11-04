@@ -23,7 +23,7 @@ generated:
 | 移植先 | Rust | `references/docs/lang/rust/` | Verus、Kani |
 | 形式化 | Lean 4 | `references/docs/lang/lean/` | core + Batteries（Mathlib 不使用。[ADR 659f](../decision/659f-lean-toolchain-and-dependencies.md)） |
 
-使うスキルの版: `metadata.version` = `0.29`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle・work-records（いずれも版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
+使うスキルの版: `metadata.version` = `0.30`。スキルの `assets/lean`（`LangSemantics`（`Core`, `Java`, `Sql`, `Sql.Postgresql`, `Rust`）・`Machine`・`Trace`・`ConformanceKit`）は、`lean/` に写さず Lake の依存として取り込む。ATRS に固有の定義を assets に足してはならない（不足はスキルの assets 側に、アプリに依存しない形で足す）。スキルの道具（`scripts/`）は、ATRS の設定 `trace/project.json` を読む。スキルを更新したら、本書の版の記載と影響する ADR を見直す。スキルの文書は OKF のバンドル `references/docs/`（[索引](../../.agents/skills/spec-pivot/references/docs/index.md)）で、スキル自身の意思決定記録・作業項目もそこにある（[ADR 50f9](../decision/50f9-move-skill-records-to-skill-bundle.md)）。文書と記録の検査には、スキル okf-bundle（版 `0.3`）・work-records（版 `0.1`）を使う（[ADR 625d](../decision/625d-adopt-okf-bundle-and-work-records-skills.md)）。
 
 スキルの一般的な名前と、ATRS での置き場所は次のとおり。
 
@@ -82,16 +82,17 @@ generated:
 | --- | --- | --- | --- |
 | `Fare` | `fare` | `fare` | [`Spec.Fare`](../../lean/Spec/Fare.lean) |
 | `FlightSearch` | `flight_search` | `flight-search` | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) |
-| `Ticket`, `UseCase.Reserve` | `reservation` | `reservation` | [`Spec.Reserve`](../../lean/Spec/Reserve.lean) |
-| `UseCase.Member` | `member` | `member` | [`Spec.Member`](../../lean/Spec/Member.lean) |
-| `UseCase.Auth` | `auth` | `authentication` | [`Spec.Auth`](../../lean/Spec/Auth.lean) |
-| `UseCase.Report` | `report` | `report` | [`Spec.Report`](../../lean/Spec/Report.lean) |
+| `Ticket`, `UseCase.Reserve`（`Spec`・`Abstraction` では `Reserve`） | `reservation` | `reservation` | [`Spec.Reserve`](../../lean/Spec/Reserve.lean)、[`Spec.Reserve.FlightSelection`](../../lean/Spec/Reserve/FlightSelection.lean) |
+| `UseCase.Member`（`Spec` では `Member`） | `member` | `member` | [`Spec.Member`](../../lean/Spec/Member.lean) |
+| `UseCase.Auth`（`Spec` では `Auth`） | `auth` | `authentication` | [`Spec.Auth`](../../lean/Spec/Auth.lean) |
+| `UseCase.Report`（`Spec` では `Report`） | `report` | `report` | [`Spec.Report`](../../lean/Spec/Report.lean) |
 | `Validation` | `validation` | `validation` | [`Spec.Validation`](../../lean/Spec/Validation.lean) |
-| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format` | `model_types`, `master_data` | `format` | [`Spec.Model`](../../lean/Spec/Model.lean), [`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean) |
+| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format`（`Spec` では `Model`・`Env.*`・`MasterQuery`） | `model_types`, `master_data` | `format` | [`Spec.Model`](../../lean/Spec/Model.lean), [`Spec.Env`](../../lean/Spec/Env.lean), [`Spec.MasterQuery`](../../lean/Spec/MasterQuery.lean) |
 | `Error`, `Message` | `error` | — | [`Spec.Error`](../../lean/Spec/Error.lean) |
-| `Repository.*` | `adapter` | — | [`Spec.Port`](../../lean/Spec/World.lean) |
+| `Repository.*` | `adapter` | — | [`Spec.World`](../../lean/Spec/World.lean)、[`Spec.Port`](../../lean/Spec/Port.lean) |
 | `Http` | `adapter::http` | `http` | [`Spec.Http`](../../lean/Spec/Http.lean) |
 
+- `Spec` のモジュールは、層（序・基礎・ドメイン・環境・状態とポート・機能・外部契約・シード）と機能名で並べる。機能のモジュールの名前は上表の機能名にそろえる（`Spec.Reserve`・`Spec.Auth`・`Spec.Report`・`Spec.Validation`。[ADR b385](../decision/b385-spec-module-layout-and-book-shaped-docs.md)）。章の順は `lean/Spec.lean` の import の順である。
 - `SourceModel` は機能名ではなく、原典の Java のソースツリーの形に並べる（`jp.co.ntt.atrs.<pkg>.<Class>` → `SourceModel.<Pkg>.<Class>`。[ADR e41c](../decision/e41c-source-model-mirrors-java-tree.md)）。機能の具体機械は `SourceModel.<機能>Query`（`FareQuery`・`MasterQuery`・`FlightSearchQuery`）に置く。`trace/features.json` の `lean` には、原典のクラス・メソッドの名前空間を機能ごとに書く（1 つのクラスのメソッドが複数の機能に分かれてよい）。式は `java!`、検査は `Assert.*` で原典と同じ字面に書く。原典と並べた対照表は `trace review`（CI の artifact `source-model-review`）。
 - Lean の宣言はモジュール名の下に置く（スキルの [lean/rules.md](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#モジュールと名前空間)）。`Abstraction`・`Refinement` の機能の名前空間は、`trace/features.json` の `lean` に層を付けたもの（`Abstraction.Fare`・`Abstraction.MasterData` など）で、そのモジュール（`lean/Abstraction/Fare.lean`）には R・W・C 課題と付帯の義務だけを置く（[証明課題の配置](../../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md#証明課題の配置)）。検査は `lake exe layout-check`（`lean/Tools/LayoutCheck.lean`）と `trace check` の TR-L。
 - エラー型の名前は `AtrsError`（[ADR a4fa](../decision/a4fa-errors-as-values-with-stable-codes.md)）。
