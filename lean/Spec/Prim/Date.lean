@@ -1,15 +1,13 @@
 import Trace
 
 /-!
-# Spec.Prim.Date
+# 暦日（`Spec.Prim.Date`）
 
-先発グレゴリオ暦の暦日（`lean/Spec/Prim/Date.lean#date`、ADR 6eb2）。タイムゾーンを持たない。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-- 年は 1〜9999。通算日数 `ordinal`（0001-01-01 を 0 とする）と `epochDay`（1970-01-01 を 0 とする）で
-  比較・加減算する。
-- `ofOrdinal?` は、年と月を見積もって候補を調べ、結果を検算して返す。構成上、返した暦日の `ordinal` は
-  引数と一致する（`ordinal_ofOrdinal?`）。範囲内の全日で値を返すこと（取りこぼしが無いこと）は、
-  `lake test`（`Tests.DateExhaustive`）で 0001-01-01〜9999-12-31 の全日について確かめる。
+搭乗日・予約日・生年月日などに使う暦日を定める。暦は先発グレゴリオ暦で、タイムゾーンを持たない。年は 1〜9999 に
+限り、範囲を外れる計算の結果は「無し」とする。時刻は [`Spec.Prim.Time`](Time.lean)、表示の書式は
+[`Spec.Prim.Format`](Format.lean) にある。
 -/
 
 namespace Spec.Prim
@@ -17,9 +15,9 @@ namespace Spec.Prim
 namespace Date
 
 /-!
-## 暦日と時刻
+## 暦日
 
-**[Spec=Source]**（[ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)）[Spec] の Lean: [`Spec.Prim.Date`](Date.lean)、[`Spec.Prim.Time`](Time.lean)。
+**[Spec=Source]**
 
 ### Date
 
@@ -27,7 +25,8 @@ namespace Date
 - 通算日数 `ordinal`（0001-01-01 を 0）と `epochDay`（1970-01-01 を 0）で比較・加減算する。順序は年月日の辞書順と一致する（`lt_iff_lex`）。
 - `addDays(d, n)` は `epochDay` 上の加算で、範囲外なら無し。`daysBetween(a, b)` は `b − a` の日数。
 - `fullYearsBetween(b, d)` は満年齢。誕生日の到来を `(month, day)` の辞書順で判定するので、閏日生まれは平年の 2 月 28 日には加齢せず 3 月 1 日に加齢する。`d < b` のときの値は使わない。
-- 閏年・月末・年越しの境界は、Lean の例と、0001-01-01〜9999-12-31 の全日の検査（`lake test`。`lean/Tests/DateExhaustive.lean`）で確かめている。
+- `dayOfWeek(d)` は曜日で、0 が日曜、6 が土曜。
+- 例: `addDays(2026-12-31, 1) = 2027-01-01`、`addDays(9999-12-31, 1)` は無し、`daysBetween(2026-11-01, 2027-03-01) = 120`、`fullYearsBetween(2000-02-29, 2001-02-28) = 0`、`fullYearsBetween(2000-02-29, 2001-03-01) = 1`。閏年・月末・年越しの境界の例は、本章の末尾にある。
 -/
 
 /-- 閏年。 -/
@@ -159,7 +158,7 @@ def fullYearsBetween (b d : Date) : Nat :=
 @[spec_doc "lean/Spec/Prim/Format.lean#書式"]
 def dayOfWeek (d : Date) : Nat := (d.ordinal + 1) % 7
 
-/-! ## 性質 -/
+/-! ## 性質（通算日数との往復） -/
 
 theorem ordinal_ofOrdinal? {n : Nat} {d : Date} (h : ofOrdinal? n = some d) : d.ordinal = n := by
   unfold ofOrdinal? at h
@@ -200,7 +199,7 @@ theorem lt_iff_epochDay_lt (a b : Date) : a < b ↔ a.epochDay < b.epochDay := b
   simp only [epochDay]; omega
 
 
-/-! ## 通算日数と年月日の辞書順 -/
+/-! ## 性質（通算日数と年月日の辞書順） -/
 
 theorem daysBeforeYear_succ {y : Nat} (hy : 1 ≤ y) :
     daysBeforeYear (y + 1) = daysBeforeYear y + daysInYear y := by
@@ -302,7 +301,7 @@ theorem ofEpochDay?_epochDay_of_isSome {d : Date} {d' : Date} (h : ofEpochDay? d
   epochDay_inj (epochDay_ofEpochDay? h)
 
 
-/-! ## 境界の例（閏年・月末・年越し） -/
+/-! ## 例（閏年・月末・年越し） -/
 
 
 /-- 例を書くための補助。 -/
@@ -330,3 +329,11 @@ example : (ymd! 1970 1 1).dayOfWeek = 4 ∧ (ymd! 2026 11 10).dayOfWeek = 2 := b
 end Date
 
 end Spec.Prim
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)（暦日と時刻のモデル）
+- 検査: `ofOrdinal?` が範囲内の全日で値を返すこと（取りこぼしが無いこと）は、`lake test` の `Tests.DateExhaustive` が
+  0001-01-01〜9999-12-31 の全日について確かめる。構成上、返した暦日の `ordinal` は引数と一致する（`ordinal_ofOrdinal?`）。
+-/

@@ -2,26 +2,40 @@ import Spec.Env.Config
 import Spec.Env.MasterData
 
 /-!
-# Spec.Env
+# 環境（設定とマスタ）（`Spec.Env`）
 
-入口の環境の前提（`@[env_pre]`。ADR 70eb の SPEC-006）。入口の機械（画面・REST・レポート要求の受信）の
-`TotalUnder` の `Env` は、入力から設定とマスタを射影して `masterConfigOk` を課し、各機能の入力の値域の述語と組み合わせて作る
-（入力の値域の述語は、入口の機械を作る各機能の backlog で置く）。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-- `ValidEnv`・`validate`: 検証済みの設定とマスタと、境界の検証（`validate_sound`・`validate_complete`・`validate_isSome_iff`）。
-- `masterConfigOk`: 検証が成功すること（設定の不変条件と、マスタの不変条件 MD-1〜MD-8）。
-- `validB`: カーネルの評価で進む真偽値の検査（文字列は `toList` で見る。一意性は、鍵が真に増加していれば線形時間で
-  確かめる）と、その正しさ `validB_sound`。
+ATRS の各機能は、抽象状態 [`World`](World.lean)（フライト・会員・予約・採番）のほかに、**環境** を読む。
+環境は次の 2 つの組 `Config × MasterData` で、どのユースケースも変更しない不変の入力である（`World` には含めない）。
+
+- 設定 [`Config`](Env/Config.lean): 照会可能日数・小児運賃の割合・年齢の下限など、配備で決まる値。
+- マスタ [`MasterData`](Env/MasterData.lean): 空港・区間・便・搭乗クラス・運賃種別・ピーク時期・機材・カード種別。
+  画面用のコードリストは [`Spec.Env.CodeList`](Env/CodeList.lean) がマスタから作る。
+
+各機能の機械の入力は、環境を生の型（`Config`・`MasterData`）のまま受け取り、境界で検証する。
+
+- `validate`: 設定の不変条件とマスタの不変条件 MD-1〜MD-8 を満たせば、その証明を添えた検証済みの値 `ValidEnv` を返し、
+  満たさなければ無し（`none`）を返す。
+- `masterConfigOk`: 入口の環境の前提。環境の検証が成功することである。各機能の事前条件（PRE）はこれを含み、
+  前提を満たさない環境での振る舞いは仕様の外になる（[Source] の振る舞いは参考として記録する。
+  [`Spec.Env.MasterData`](Env/MasterData.lean#不変条件spec)）。
+- `validB`: 同じ検査を真偽値で計算する関数と、その正しさ `validB_sound`（大きなマスタでも、カーネルの評価で前提を
+  確かめられるようにするための道具）。
+
+シードの設定とマスタが前提を満たすこと（`seed_env`）と、前提を破る例は [`Spec.Seed`](Seed.lean) にある。
 -/
 
 namespace Spec.Env
 open Spec.Model
 
 
-/-! ## 検証済みの設定とマスタ
+/-!
+## 検証済みの設定とマスタ
 
-設定とマスタは、機械の入力では生の型（`Config`・`MasterData`）のままにし、境界で検証する（ADR 6d36 の L3）。
-環境の前提は「検証が成功すること」である。 -/
+設定とマスタは、機械の入力では生の型（`Config`・`MasterData`）のままにし、境界で検証する。
+環境の前提は「検証が成功すること」である。
+-/
 
 /-- 検証済みの設定とマスタ: 設定の不変条件と MD-1〜MD-8 の証明を持つ。 -/
 structure ValidEnv where
@@ -78,7 +92,12 @@ theorem masterConfigOk_iff {x : Config × MasterData} : masterConfigOk x ↔ x.1
   validate_isSome_iff
 
 
-/-! ## 真偽値の検査 -/
+/-!
+## 真偽値の検査
+
+`validB` は、`MasterData.Valid` と同じ条件を真偽値で計算する。一意性は、鍵（空港コード・便名・機材の型式は文字列の鍵
+`strKey`）が真に増加していれば隣どうしの比較だけで確かめ（線形時間）、そうでなければ定義どおりに確かめる。
+-/
 
 /-- 列が真に増加する（隣どうしを比べる）。 -/
 def increasing : List Nat → Bool
@@ -110,7 +129,7 @@ def validB (cfg : Config) (md : MasterData) : Bool :=
     (∀ p ∈ md.peakTimes, p.multiplicationRatio ≤ Range.maxMultiplicationRatio) ∧
     (∀ ft ∈ md.fareTypes, ft.discountRate ≤ Range.maxDiscountRate))
 
-/-! ## 正しさ -/
+/-! ## 性質（検査の正しさ） -/
 
 theorem increasing_cons {a : Nat} {l : List Nat} (h : increasing (a :: l) = true) :
     increasing l = true ∧ ∀ x ∈ l, a < x := by
@@ -153,3 +172,14 @@ theorem validB_sound {cfg : Config} {md : MasterData} (h : validB cfg md = true)
   exact this
 
 end Spec.Env
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)（境界で検証する型 `ValidEnv`）、
+  [ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)（入口の環境の前提）、
+  [ADR 70eb](../../docs/decision/70eb-refinement-non-vacuity-obligations.md)（環境の前提の付帯の義務。SPEC-006）
+- 既知差異: 前提を満たさない環境での [Source] の振る舞いは
+  [abstraction.md](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)
+- シードが前提を満たすこと: [`Spec.Seed`](Seed.lean)
+-/

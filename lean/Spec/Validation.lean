@@ -1,10 +1,16 @@
 /-!
 # 入力検証（`Spec.Validation`）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
+> **区分: 草案（draft）。** 一部（予約入力の値域 `Spec.Reserve.Request.Valid` と、空の搭乗者欄の判定
+> `Spec.Reserve.PassengerInput.isEmpty`、単項目検証の制約のうち文字クラスによるもの）は Lean に形式化した。
+> それ以外は形式化前の草案である。
 
-原典の Bean Validation と相関検証（`*Validator`）の **効果** を、検証関数 `validate(input) : [FieldError | GlobalError]` として定義する。
-結果が空なら合格。エラーは [`Spec.Error`](Error.lean#入力検証エラー) の形式で表す。
+画面と REST API から受け取る入力の検査を定める。原典の Bean Validation と相関検証（`*Validator`）の **効果** を、
+検証関数 `validate(input) : [FieldError | GlobalError]` として書く。結果が空なら合格で、エラーは
+[`Spec.Error`](Error.lean#入力検証エラー) の形式で表す。各機能の操作は、この検証を通った入力だけを受け取る。
+
+章の構成: 前処理（文字列の前後の空白と未入力）、単項目検証の制約の語彙、検証の順序とエラーの並び、項目名の対応、
+画面・API ごとの入力項目と相関検証。
 -/
 
 /-!
@@ -34,6 +40,68 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 -/
 
 /-!
+## 単項目検証の制約
+
+**[Spec=Source]** 入力項目の表に書く制約の語彙と、合格条件・エラーコード。文字クラス（`Half`・`HalfKana`・`Katakana`・
+`Digit`）は [`Spec.Prim.Text`](Prim/Text.lean#文字クラス) で定める。
+
+| 制約 | 合格条件（未入力は合格） | コード |
+| --- | --- | --- |
+| `FullWidth` | すべての文字が `Half` にも `HalfKana` にも属さない（空文字も合格） | `FullWidth` |
+| `FullWidthKatakana` | 1 文字以上で、すべての文字が `Katakana` | `FullWidthKatakana` |
+| `HalfWidth` | 1 文字以上で、すべての文字が `Half` | `HalfWidth` |
+| `HalfWidthNumber` | 1 文字以上で、すべての文字が `Digit` | `HalfWidthNumber` |
+| `Size(min, max)` | `min ≤ len ≤ max` | `Size` |
+| `FixedLength(n)` | `len = n` | `FixedLength` |
+| `Email` | 電子メールアドレスの形式 | `Email` |
+| `Min(n)` / `Max(n)` | 数値として `≥ n` / `≤ n`。文字列項目の場合は十進整数（`[0-9]+`）として解釈し、解釈できなければ不合格。[Source] は文字列を `BigDecimal` として解釈するので `"1.5"`・`"+1"`・`"1e1"` も数として比較される（既知差異 [D-018](../../docs/spec/abstraction.md#既知差異)） | `Min` / `Max` |
+| `Digits(i, f)` | 整数部 `i` 桁以下・小数部 `f` 桁以下 | `Digits` |
+| `Required` | 入力がある | `NotNull`（文字列で空文字も不可の場合 `NotEmpty`） |
+| `InCodeList(id)` | 値がコードリスト `id`（[`Spec.Env.CodeList`](Env/CodeList.lean#空港コードリスト画面用)）に存在 | `ExistInCodeList` |
+
+`len` は文字列の長さで、[Spec] ではスカラ値の個数、[Source] では UTF-16 の符号単位の個数（既知差異 [D-006](../../docs/spec/abstraction.md#既知差異)）。
+
+### Email
+
+**[Spec]** 原典の Hibernate Validator 9.1.0.Final `AbstractEmailValidator`・`DomainNameUtil` の規則から、IDN 変換（`IDN.toASCII`）を除いたもの。文字列 `s` について:
+
+1. `s` が空文字なら合格（REST で空文字が送られた場合も合格）。
+2. `s` に `@` が無ければ不合格。**最後の** `@` で、前をローカル部 `l`、後をドメイン部 `d` に分ける。
+3. ローカル部: `len(l) ≤ 64` で、`l` が下記の `LOCAL` に一致する。
+4. ドメイン部: `d` が `.` で終わらず、`d` を `.` で区切った各部分の長さが 63 以下、`len(d) ≤ 255` で、`d` が下記の `DOMAIN` に一致する。
+
+照合は ASCII の英字の大小を区別しない（`a-z` は `A-Z` も含む）。`len` はスカラ値の数。
+
+```
+LATOM   = [a-z0-9!#$%&'*+/=?^_`{|}~-] | U+0080–U+FFFF
+QATOM   = [a-z0-9!#$%&'*.(),<>\[\]:; @+/=?^_`{|}~-] | U+0080–U+FFFF | "\\" | "\""
+LWORD   = LATOM+ | '"' QATOM+ '"'
+LOCAL   = LWORD ("." LWORD)*
+
+DCHAR   = [a-z0-9!#$%&'*+/=?^_`{|}~] | U+0080–U+FFFF
+LABEL   = DCHAR+ ("-"+ DCHAR+)*
+DOMAIN  = LABEL ("." LABEL)*
+        | "[" IPV4 "]"
+        | "[IPv6:" IPV6 "]"
+IPV4    = [0-9]{1,3} "." [0-9]{1,3} "." [0-9]{1,3} "." [0-9]{1,3}   （各部の値の範囲は検査しない）
+IPV6    = 下記の正規表現（原典 DomainNameUtil.IP_V6_DOMAIN と同一）
+```
+
+```
+(?:(?:[0-9a-f]{1,4}:){7,7}[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,7}:|(?:[0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}|(?:[0-9a-f]{1,4}:){1,5}(?::[0-9a-f]{1,4}){1,2}|(?:[0-9a-f]{1,4}:){1,4}(?::[0-9a-f]{1,4}){1,3}|(?:[0-9a-f]{1,4}:){1,3}(?::[0-9a-f]{1,4}){1,4}|(?:[0-9a-f]{1,4}:){1,2}(?::[0-9a-f]{1,4}){1,5}|[0-9a-f]{1,4}:(?:(?::[0-9a-f]{1,4}){1,6})|:(?:(?::[0-9a-f]{1,4}){1,7}|:)|fe80:(?::[0-9a-f]{0,4}){0,4}%[0-9a-z]{1,}|::(?:ffff(:0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-f]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9]))
+```
+
+（原典の `a-fA-F`・`a-zA-Z` は、大小を区別しない照合なので `a-f`・`a-z` と書いた。）
+
+`QATOM` の `"\\"`・`"\""` は、それぞれ 2 文字の列 `\\`・`\"` である。U+10000 以上の文字はどの集合にも属さない。
+各部分の長さ 63 以下という条件は、原典では `IDN.toASCII` の検査として課される（ASCII のドメインでも課される）。
+
+**[Source]** ドメイン部に `IDN.toASCII` を適用し、失敗すれば不合格、変換後の長さ（UTF-16 単位）が 255 を超えれば不合格とする。正規表現の照合は変換前の文字列に対して行う。ドメイン部が ASCII だけからなる場合は [Spec] と一致する（既知差異 [D-011](../../docs/spec/abstraction.md#既知差異)）。
+
+出典: hibernate-validator 9.1.0.Final `AbstractEmailValidator.isValid`, `DomainNameUtil.isValidEmailDomainAddress`
+-/
+
+/-!
 ## 検証の順序とエラーの並び
 
 **[Spec=Source]**
@@ -41,9 +109,9 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 1. 単項目検証を全項目について行う。1 項目に複数の違反があればすべて報告する。
 2. 相関検証を下記の順で行う。相関検証は、参照する項目に単項目エラーが無い場合にだけ行う。
 
-**[Spec]** 結果は次の順に並べる（[ADR e24e](../../docs/decision/e24e-validation-error-ordering.md)）。
+**[Spec]** 結果は次の順に並べる。
 
-1. 単項目検証のフィールドエラー: 項目の宣言順（各表の行の順。配列の要素は添字の昇順で、要素の中は表の順）。同じ項目のエラーは制約表（[文字クラス](Prim/Text.lean#文字クラス)）の列挙順。
+1. 単項目検証のフィールドエラー: 項目の宣言順（各表の行の順。配列の要素は添字の昇順で、要素の中は表の順）。同じ項目のエラーは制約の表（[単項目検証の制約](#単項目検証の制約)）の行の順。
 2. 相関検証で生じるフィールドエラー（例 `homewardDate` の `NotNull`、`selectFlights` の `Invalid`、`passengers[i].*` の `NotNull`）: 発生順。
 3. グローバルエラー: 発生順。
 
@@ -219,4 +287,12 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 ## ログイン
 
 ログインの入力検査は検証関数ではなく [`Spec.Auth`](Auth.lean#ログインlogin) の事前検査として定義する。
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR e24e](../../docs/decision/e24e-validation-error-ordering.md)（エラーの並び）、[ADR ac33](../../docs/decision/ac33-email-validation-rule.md)（Email の規則）、[ADR 10a5](../../docs/decision/10a5-text-length-and-character-classes.md)（文字列の長さと文字クラス）
+- 既知差異: D-006（文字列の長さ）・D-007（REST の相関検証）・D-011（Email の IDN）・D-018（`Min`・`Max` の数の解釈）・D-021（日付の解析）・D-022（エラーの並び）・D-038（搭乗者欄の数）。[一覧](../../docs/spec/abstraction.md#既知差異)
+- Lean の定義: 予約入力の値域 [`Spec.Reserve`](Reserve.lean)（`Request.Valid`・`PassengerInput.isEmpty`）、文字クラスの制約 [`Spec.Prim.Text`](Prim/Text.lean)（`fullWidth`・`fullWidthKatakana`・`halfWidth`・`halfWidthNumber`）
 -/

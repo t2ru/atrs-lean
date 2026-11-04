@@ -1,9 +1,12 @@
 import Spec.Prim.Date
 
 /-!
-# Spec.Prim.Time
+# 時刻と日時（`Spec.Prim.Time`）
 
-時刻と日時（`lean/Spec/Prim/Time.lean#hourminute`・`#datetime`、ADR 6eb2）。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
+
+便の出発・到着の時刻と、予約日時などの日時を定める。時刻は時と分、日時は暦日と時・分・秒で、タイムゾーンを持たない。
+到着時刻は翌日着を表すため、24 時以降の値を許す別の型にする。
 -/
 
 namespace Spec.Prim.Time
@@ -70,12 +73,12 @@ end HourMinute
 /-!
 ## ArrivalTime
 
-- `ArrivalTime`: 便マスタの到着時刻。出発日 0:00 からの時（0〜47）と分（0〜59）で、24 時以降は翌日着を表す（例 `24:15` は翌日 0:15。[ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。分換算 `toMinutes`。
+- `ArrivalTime`: 便マスタの到着時刻。出発日 0:00 からの時（0〜47）と分（0〜59）で、24 時以降は翌日着を表す（例 `24:15` は翌日 0:15）。分換算 `toMinutes`。
 - `ArrivalTime.parseHHmm` は、4 文字の数字列で到着時刻の範囲内のものだけを受け付ける（上流のシードの `2415` を含む）。
 -/
 
 /-- 到着時刻（出発日 0:00 からの時分。0:00〜47:59。`24:15` は翌日の 0:15）。
-便マスタの到着時刻だけに使う（ADR ce36）。 -/
+便マスタの到着時刻だけに使う。 -/
 @[spec_doc "lean/Spec/Prim/Time.lean#arrivaltime"]
 structure ArrivalTime where
   hour : Nat
@@ -158,3 +161,9 @@ theorem toEpochMinutes_at (d : Date) (t : HourMinute) :
 end DateTime
 
 end Spec.Prim.Time
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)（暦日と時刻のモデル）、[ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)（翌日着の到着時刻）
+-/

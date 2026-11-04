@@ -1,15 +1,15 @@
 import Spec.Model
 
 /-!
-# 設定パラメータ（`Spec.Env.Config`）
+# 設定（`Spec.Env.Config`）
 
-業務規則に影響する設定値。純粋関数・ユースケースに明示的に渡す。
-既定値 `Config.default` は原典の設定ファイル（`atrs.properties`）の値である。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Env.Config`](Config.lean)。[backlog 591d](../../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../../docs/decision/61bc-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
+業務規則に影響する設定値を、レコード `Config` にまとめる。設定は環境（[`Spec.Env`](../Env.lean)）の一部で、純粋関数と
+ユースケースに明示的な引数として渡す（大域的な設定を読む関数は無い）。既定値 `Config.default` は原典の設定ファイル
+（`atrs.properties`）の値である。あわせて、画面と入力検証が使う固定の定数を置く。
 
-**[Spec=Source]** 業務規則に影響する設定値は `Config` レコードにまとめ、純粋関数・ユースケースに明示的に渡す。
-既定値は原典の設定ファイルの値である。
+**[Spec=Source]** 設定の項目と既定値は原典と同じである。
 
 出典: atrs-domain/src/main/resources/META-INF/spring/atrs.properties, atrs-env/src/main/resources/META-INF/spring/atrs-infra.properties
 -/
@@ -22,7 +22,7 @@ open Spec.Prim
 /-!
 ## Config
 
-Lean: `Spec.Env.Config`（既定値は `Spec.Env.Config.default`）。
+設定の項目と、原典の設定キー・既定値（`Config.default`）。
 
 | フィールド | 原典キー | 型 | 既定値 | 意味 |
 | --- | --- | --- | --- | --- |
@@ -78,14 +78,15 @@ def default : Config where
 /-!
 ## 不変条件
 
-[Spec] は次を前提とする（[Source] では検査しない）。Lean: `Spec.Env.Config.Valid`。運賃種別の条件は `Spec.Env.MasterData.MD7` で課す。
+[Spec] は設定が次を満たすことを前提とする（`Config.Valid`。入口の環境の前提 [`masterConfigOk`](../Env.lean) に含まれる。
+[Source] は検査しない）。運賃種別との関係の条件は、マスタの不変条件 MD-7（[`Spec.Env.MasterData`](MasterData.lean#不変条件spec)）で課す。
 
 - `childFareRate ≤ 100`（破れた場合、[Source] の合計金額の途中計算は int32 で折り返しうる。参考 [D-030](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
 - すべての運賃種別について `discountRate ≤ childFareRate`（[`Spec.Fare`](../Fare.lean#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）
 - `adultPassengerMinAge ≤ representativeMinAge`
 -/
 
-/-- 設定の不変条件。運賃種別の `discountRate ≤ childFareRate` は `MasterData.Valid`（MD-7）で課す。 -/
+/-- 設定の不変条件。運賃種別の `discountRate ≤ childFareRate` はマスタの不変条件 MD-7（`MasterData.Valid`）で課す。 -/
 @[spec_doc "lean/Spec/Env/Config.lean#不変条件", gap "D-030"]
 structure Valid (c : Config) : Prop where
   childFareRate_le : c.childFareRate ≤ 100
@@ -95,12 +96,13 @@ instance (c : Config) : Decidable c.Valid :=
   decidable_of_iff (c.childFareRate ≤ 100 ∧ c.adultPassengerMinAge ≤ c.representativeMinAge)
     ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩⟩
 
+/-- 原典の既定値は、設定の不変条件を満たす。 -/
 theorem default_valid : default.Valid := by decide
 
 /-!
 ## 画面・入力に関する定数
 
-Lean: `Spec.Env.Config.initialPassengersNumber` ほか。
+画面と入力検証が使う、設定ファイルに無い固定の値。
 
 | 名前 | 値 | 意味 | 出典 |
 | --- | --- | --- | --- |
@@ -108,7 +110,7 @@ Lean: `Spec.Env.Config.initialPassengersNumber` ほか。
 | `maxPassengersNumber` | `6` | 1 予約の最大搭乗者数 | 同上 |
 | `telAreaAndLocalMinLength` | `6` | 電話番号[1]+[2] の合計桁数の下限 | atrs-domain/.../common/validate/ValidationUtil.java |
 | `telAreaAndLocalMaxLength` | `7` | 同上限 | 同上 |
-| `transactionTokenSizePerNamespace` | `20` | トランザクショントークンの保持数（契約外。参考） | atrs-web/.../config/web/SpringMvcConfig.java |
+| `transactionTokenSizePerNamespace` | `20` | トランザクショントークンの保持数（契約外。参考。Lean の定義は置かない） | atrs-web/.../config/web/SpringMvcConfig.java |
 -/
 
 
@@ -131,3 +133,13 @@ def telAreaAndLocalMaxLength : Nat := 7
 end Config
 
 end Spec.Env
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 61bc](../../../docs/decision/61bc-lean-spec-as-normative-source.md)（Lean の `Spec` を正規仕様とする）
+- 既知差異（前提の外での [Source] の振る舞い）: D-003・D-030
+  （[abstraction.md](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
+- 移植元モデル: [`SourceModel.AtrsProperties`](../../SourceModel/AtrsProperties.lean)（注入される設定値）
+- シードの設定（原典の設定ファイルの値）: [`Spec.Seed.Master`](../Seed/Master.lean) の `config`
+-/
