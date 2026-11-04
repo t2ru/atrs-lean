@@ -1,9 +1,11 @@
 /-!
-# 会員（C0/C1/C2）（`Spec.Member`）
+# 会員（`Spec.Member`）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
+> **区分: 草案（draft）。** まだ Lean に形式化していない。形式化するときは、この章に定義を足し、本文を要約に書き換える。
 
-入力検証は [`Spec.Validation`](Validation.lean#会員入力c1c2)、画面遷移は [`Spec.Http`](Http.lean#c1-会員登録) を参照。
+会員登録（画面 C1）、会員情報変更（画面 C2）と、その共通処理（C0）・会員の存在確認を定める。会員の型は
+[`Spec.Model`](Model.lean#member)、会員の保存は抽象状態 [`Spec.World`](World.lean#memberrepository) の会員にある。
+入力検証は [`Spec.Validation`](Validation.lean#会員入力c1c2)、画面遷移は [`Spec.Http`](Http.lean#c1-会員登録) にある。
 -/
 
 /-!
@@ -85,7 +87,7 @@
 
 ### 定義
 
-**[Spec]**（[ADR 578b](../../docs/decision/578b-member-update-in-single-transaction.md)）
+**[Spec]**
 
 1. 1 つのトランザクションとして:
    1. `checkMemberPassword(input.currentPassword, membershipNumber)`。失敗したら何も更新せずに終える。
@@ -106,4 +108,11 @@
 **[Spec=Source]** `isMember(membershipNumber) = 会員が存在する`。予約入力画面の会員番号欄の即時確認（REST）に使う。
 
 出典: atrs-domain/.../service/a0/MembershipSharedServiceImpl.java `isMember`
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 578b](../../docs/decision/578b-member-update-in-single-transaction.md)（会員情報変更を 1 つのトランザクションにする）、[ADR 2d1f](../../docs/decision/2d1f-password-hashing-port.md)（パスワードのハッシュのポート）。
+- 既知差異: D-013、[Spec] の前提の外の D-010（[一覧](../../docs/spec/abstraction.md#既知差異)）。
 -/

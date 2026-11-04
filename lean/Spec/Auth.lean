@@ -1,9 +1,10 @@
 /-!
-# 認証（A0/A1/A2）（`Spec.Auth`）
+# 認証（`Spec.Auth`）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただしセッションの保持方式・ログイン処理の伝送（フォーム投稿、Cookie、ログイン時のセッション ID の更新）は [`Spec.Http`](Http.lean#セッション) の規範節に従う。
+> **区分: 草案（draft）。** まだ Lean に形式化していない。形式化するときは、この章に定義を足し、本文を要約に書き換える。セッションの保持方式・ログイン処理の伝送（フォーム投稿、Cookie、ログイン時のセッション ID の更新）は [`Spec.Http`](Http.lean#セッション) の規範節に従う。
 
-原典は Spring Security のフォームログインを使う。ここではその **効果** を定義する（[ADR 84bf](../../docs/decision/84bf-porting-scope.md)）。
+ログイン（画面 A1）・ログアウト（A2）と、ログイン中の会員を保持するセッション（A0）を定める。原典は Spring Security の
+フォームログインを使うが、ここではその **効果** だけを定義する。
 -/
 
 /-!
@@ -28,7 +29,7 @@
 
 [Source] の追加の振る舞い: 手順 4 の更新件数が 1 でなければ `System("e.ar.a0.L9002")`。リポジトリの契約（[Spec] の前提）の下では到達しないため、差異ではない（[abstraction.md](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) の D-010、補題 ABS-022）。
 
-[Source] は手順 4 を行わない（既知差異 [D-028](../../docs/spec/abstraction.md#既知差異)。観測型）。原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行うが、フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない（`w/config/web/SpringSecurityConfig.java`）。Java の原典実行で、画面ログインの成功の前後で `MEMBER_LOGIN` の `LOGIN_DATE_TIME`・`LOGIN_FLG` が変わらないことを確かめた。一方、REST の HTTP Basic 認証では、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使うので、成功のたびに更新される（`tools/origin-run/http/login.json`。[backlog f18c](../../docs/backlog/f18c-java-oracle-harness.md)）。R 課題 ABS-043・ABS-045 の成分 `obs_D028` と W 課題 ABS-128 は [backlog 44f8](../../docs/backlog/44f8-authentication-usecases.md) で置く。
+[Source] は、画面のログインでは手順 4 を行わない（ログイン状態が変わらない）。一方、REST の HTTP Basic 認証では、成功のたびに手順 4 と同じ更新を行う（既知差異 [D-028](../../docs/spec/abstraction.md#既知差異)。観測型。[`Spec.Http`](Http.lean#rest-apiapiv1)）。
 
 出典: atrs-web/.../app/common/security/AtrsUsernamePasswordAuthenticationFilter.java, atrs-domain/.../service/a1/AtrsUserDetailsService.java, AuthLoginServiceImpl.java, atrs-domain/.../common/security/AtrsAuthenticationSuccessListener.java
 -/
@@ -52,4 +53,12 @@
 - ログイン状態の確認: ログイン中かどうかを返す（REST `GET /api/auth/status`）。
 
 画面上の挨拶表示は「ようこそ {kanjiFamilyName} {kanjiGivenName} さま」。
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 84bf](../../docs/decision/84bf-porting-scope.md)（移植の範囲。認証は効果だけを定める）、[ADR 10a5](../../docs/decision/10a5-text-length-and-character-classes.md)（文字列の長さ）、[ADR 2d1f](../../docs/decision/2d1f-password-hashing-port.md)（パスワードのハッシュのポート）。
+- 既知差異: D-006・D-028、[Spec] の前提の外の D-010（[一覧](../../docs/spec/abstraction.md#既知差異)）。
+- D-028 の原因（[Source]）: 原典の手順 4 は `AuthenticationSuccessEvent` を受ける `AtrsAuthenticationSuccessListener` で行う。フォームログインが使う `authenticationManager` は `new ProviderManager(authProvider)` で作られ、イベント発行者が設定されていないため、イベントが出ない（`w/config/web/SpringSecurityConfig.java`）。REST の HTTP Basic 認証は、Spring Security が組み立てる認証マネージャ（イベント発行者付き）を使う。Java の原典実行（[ADR 81da](../../docs/decision/81da-java-origin-run-domain-and-http.md)、[`login.json`](../../tools/origin-run/http/login.json)）で、画面ログインの前後で `MEMBER_LOGIN` の `LOGIN_DATE_TIME`・`LOGIN_FLG` が変わらず、Basic 認証では変わることを確かめた。
 -/

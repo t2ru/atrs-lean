@@ -1,10 +1,12 @@
 /-!
 # HTTP 契約（`Spec.Http`）
 
-> **区分: 草案と規範の混在。** 各画面・API の「リクエスト → 処理 → 結果」の表は **形式化前の草案（draft）** であり、Lean `Spec.Http` に形式化する。「共通」節（状態の受け渡し、二重送信防止トークン、CSRF、エラー画面の伝送、認証の伝送方式）と REST の伝送の約束事（HTTP Basic、セッション無し、日付の JSON 表現）は **規範（normative）** としてここで定義する（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
+> **区分: 草案（draft）と規範（normative）の混在。** 各画面・API の「リクエスト → 処理 → 結果」の表は草案で、まだ Lean に形式化していない。「共通」節（状態の受け渡し、セッション、二重送信防止トークン、CSRF、エラー画面、認証の伝送方式）と、REST の伝送の約束事（HTTP Basic、セッション無し、日付の JSON 表現）は、`Spec` の関数として表せない規範である。
 
-記述方針は [ADR 1b00](../../docs/decision/1b00-http-contract-specification.md)。HTML の構造は定義しない。画面は「画面 ID ＋ 表示データ」として定義する。
-リクエストは `(メソッド, パス, 判別パラメータ)` で識別する。判別パラメータは **名前の有無だけ** を見る（値は問わない。例 `?confirm`）。
+利用者の画面（A0〜D1）と REST API（`/api/v1`）が、どの要求に対して、どのユースケース（[`Spec.FlightSearch`](FlightSearch.lean)・[`Spec.Reserve`](Reserve.lean)・[`Spec.Member`](Member.lean)・[`Spec.Auth`](Auth.lean)・[`Spec.Report`](Report.lean)）と入力検証（[`Spec.Validation`](Validation.lean)）を呼び、何を返すかを定める。
+
+- HTML の構造は定義しない。画面は「画面 ID ＋ 表示データ」として定義する。
+- リクエストは `(メソッド, パス, 判別パラメータ)` で識別する。判別パラメータは **名前の有無だけ** を見る（値は問わない。例 `?confirm`）。
 -/
 
 /-!
@@ -113,7 +115,7 @@
 
 | リクエスト | トークン | 入力 | 処理 | 結果 |
 | --- | --- | --- | --- | --- |
-| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[`Spec.Reserve`](Reserve.lean#会員情報による入力補完)）、フライト表示。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
+| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[会員情報による入力補完](#会員情報による入力補完)）、フライト表示（[予約画面のフライト表示](#予約画面のフライト表示)）。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?redo` | — | TicketReserveInput | フライト表示（`GET ?form` と同じ。[Source] の 500 も同じ。[D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?confirm` | BEGIN | TicketReserveInput | 1. 入力検証: `selectFlights*`・`flightType` のフィールドエラーは 400、その他は `B2/reserveForm` にエラー表示。2. `validateFlightList`: 失敗はすべて 400（`Business` も改竄扱い）。3. `reserveConfirm`: `Business` は `B2/reserveForm` にメッセージ表示 | 画面 `B2/reserveConfirm`（合計金額、フライト表示、入力値を hidden で保持） |
 | `POST`（判別無し） | IN | TicketReserveInput | 1. 入力検証: エラーはすべて 400。2. `validateFlightList`: 失敗は 400。3. `reserve`（[`Spec.Reserve`](Reserve.lean#予約確定reserve)） | 成功: フラッシュ `{reserveNo, paymentDate, totalFare}` で 302 `?complete`。`Business`: フラッシュ（メッセージ・フライト表示）で 302 `?fail` |
@@ -122,6 +124,25 @@
 | `POST ?backToSearch` | — | ReservationFlightInput | 照会条件を復元（下記） | 302 `/ticket/search?redo` ＋ 照会条件と選択フライトのクエリ |
 
 「照会へ戻る」の照会条件: 選択が空または往路の便マスタが無ければ 400。`flightType = (選択数 = 2 ? RT : OW)`（入力の `flightType` ではなく選択数から決める。[Source] は入力の `flightType` を使い、無ければ 400。選択フライトの項目の欠落は 500。既知差異 [D-020](../../docs/spec/abstraction.md#既知差異)）、出発/到着空港は往路の区間、`outwardDate` は往路の搭乗日、`homewardDate` は復路の搭乗日（片道なら空文字）、搭乗クラスは往路のもの。
+
+### 会員情報による入力補完
+
+**[Spec=Source]** ログイン中の会員が予約入力画面を開いたとき、入力の初期値を会員情報から作る。
+
+- `repFamilyName ← kanaFamilyName`, `repGivenName ← kanaGivenName`, `repGender ← gender`, `repMail ← mail`, `repMembershipNumber ← membershipNumber`
+- `tel` を `-` で分割し、ちょうど 3 要素なら `repTel1, repTel2, repTel3` に設定（それ以外は未設定）。
+- `repAge = fullYearsBetween(birthday, today)`（[`Spec.Prim.Date`](Prim/Date.lean#date)）。
+- 1 番目の搭乗者欄に代表者と同じ姓・名・年齢・性別・会員番号を設定する。
+
+未ログイン時は 6 欄すべて空の入力を初期値とする。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createTicketReserveForm(AtrsUserDetails)`
+
+### 予約画面のフライト表示
+
+**[Spec=Source]** 選択フライトの各 `i` について、`lineType = (i = 0 ? OUTWARD : HOMEWARD)`、便名・出発時刻・到着時刻・出発/到着空港コード・搭乗クラス・運賃種別・`fare = fare(basicFare(route.basicFare, boardingClassCd, depDate), discountRate)`（[`Spec.Fare`](Fare.lean)）を表示する。
+
+出典: `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`
 -/
 
 /-!
@@ -171,13 +192,9 @@
 要求の JSON の文字列に不対サロゲートのエスケープ（例 `"\ud800"`）があれば、**[Spec]** は `InvalidRequest` とする（文字列はスカラ値の列であるため）。[Source] は受け付けて処理を続ける（既知差異 [D-026](../../docs/spec/abstraction.md#既知差異)）。
 
 - 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。ただし `Authorization` ヘッダの資格情報が誤っていれば 401（`WWW-Authenticate: Basic realm="Realm"`。本文は定めない。`X-Requested-With: XMLHttpRequest` 付きならヘッダも本文も無い 401）。
-  [Source] は、Basic 認証が成功するたびに会員のログイン状態を更新する（`loginDateTime := today`・`loginFlg := true`）。[Spec] は REST の要求でログイン状態を変えない（既知差異 [D-028](../../docs/spec/abstraction.md#既知差異)。Java の原典実行で確かめた。`tools/origin-run/http/login.json`）。
+  [Source] は、Basic 認証が成功するたびに会員のログイン状態を更新する（`loginDateTime := today`・`loginFlg := true`）。[Spec] は REST の要求でログイン状態を変えない（既知差異 [D-028](../../docs/spec/abstraction.md#既知差異)）。
 - 前処理（空白除去）無し（[`Spec.Validation`](Validation.lean#前処理)）。
-- 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[`Spec.FlightSearch`](FlightSearch.lean#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。
-
-根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して JSON 変換に使う。原典は Jackson 3 と Jackson 2 の両方を依存に持ち、`ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印（配列・数値）として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
-
-原典での確認（[Source]）: Java の原典実行で、`POST /api/v1/ticket` の要求の `depDate` を `"yyyy-MM-dd"` で送ると予約され、応答の `paymentDate`・`selectFlightResourceList[].depDate` も `"yyyy-MM-dd"` になることを確かめた。`"yyyy/MM/dd"` の `depDate` は Jackson 3 の `LocalDate` の読み取りで失敗し、400（`ApiError` の `e.ar.fw.9999`）になる（`tools/origin-run/http/postTicket.json`。[backlog f18c](../../docs/backlog/f18c-java-oracle-harness.md)）。
+- 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[`Spec.FlightSearch`](FlightSearch.lean#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。[Source] も同じ（`"yyyy/MM/dd"` の日付型の項目は読み取りに失敗し、400（`ApiError` の `e.ar.fw.9999`）になる）。
 
 ### GET /api/v1/flight
 
@@ -207,7 +224,7 @@
 - `validateFlightList` の失敗は、`InvalidRequest` も `Business`（`e.ar.b2.2001`）もすべて改竄とみなし、`InvalidRequest` として 500 を返す（原典 `w/api/ticket/TicketHelper.validateFlightList` が `BadRequestException` に包む）。
 - **[Spec]** 入力検証の結果にコード `Invalid` のフィールドエラー（選択フライト数・搭乗者数の改竄）があれば、他のエラーにかかわらず `InvalidRequest` として 500 を返す。[Source] では相関検証が無く、同じ入力は後段の `Assert` で 500（`e.ar.fw.9999`）になる。
 
-応答 201: 要求と同じオブジェクトに `reserveNo`, `paymentDate`, `totalFare` を加えたもの。`passengerResourceList` の各要素には、さらに `"empty": false` を加える（原典の `PassengerResource.isEmpty()` が JSON の欄として出る。Java の原典実行 `tools/origin-run/http/postTicket.json` で確かめた。差異にせず、[Spec] を原典に合わせる）。要求の `Integer` の欄（`repAge`・`age`）は JSON の数値とする（[Source] は数字の文字列も受け付ける。既知差異 [D-041](../../docs/spec/abstraction.md#既知差異)）。
+応答 201: 要求と同じオブジェクトに `reserveNo`, `paymentDate`, `totalFare` を加えたもの。`passengerResourceList` の各要素には、さらに `"empty": false` を加える（原典の `PassengerResource.isEmpty()` が JSON の欄として出る。差異にせず、[Spec] を原典に合わせる）。要求の `Integer` の欄（`repAge`・`age`）は JSON の数値とする（[Source] は数字の文字列も受け付ける。既知差異 [D-041](../../docs/spec/abstraction.md#既知差異)）。
 
 ### GET /api/v1/ticket/check?reserveNo=x
 
@@ -232,9 +249,20 @@
 | `System(code, args)` | 500 | `code` は `System` のコード（例 `e.ar.a0.L9002`） |
 | `PreconditionViolation`・その他 | 500 | `code = "e.ar.fw.9999"` |
 
+> **TODO(spec):** `System` の例のコード `e.ar.a0.L9002` は、[Spec] の `SystemError`（[`Spec.Error`](Error.lean#分類atrserror)）に無い。[`Spec.Port`](Port.lean#トランザクション) は I/O 失敗のコードを `e.ar.fw.9999` の 1 つだけとし、`e.ar.a0.L9002`（登録・更新の件数の不一致）は [Spec] では到達しない [Source] の振る舞い（[D-010](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）である。[Spec] の `System` が返しうるコードと、この行の例を合わせる。
+
 業務メッセージの変換: メッセージが 1 件ならそのコードと文言を最上位に置く。複数なら最上位を `e.ar.fw.8001` とし、各メッセージを `details` に置く（`Business`・`NotFound` は常に 1 件のメッセージを持つので、複数の場合は原典でも到達しない）。
 
 出典（ApiError）: `w/api/common/error/ApiGlobalExceptionHandler.java`, `ApiErrorCreator.java`
 
 出典: atrs-web/.../app/**/\*Controller.java, atrs-web/.../api/**/\*.java, atrs-web/.../config/web/SpringSecurityConfig.java, SpringMvcConfig.java, atrs-web/src/main/webapp/WEB-INF/web.xml
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 1b00](../../docs/decision/1b00-http-contract-specification.md)（HTTP 契約の書き方）、[ADR e56e](../../docs/decision/e56e-conflict-as-spec-nondeterminism.md)（`Conflict` の扱い）、[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)（規範の節を散文に置く理由）。
+- 既知差異: D-007・D-016・D-017・D-020・D-022・D-024・D-026・D-028・D-040・D-041（[一覧](../../docs/spec/abstraction.md#既知差異)）。
+- REST の日付の JSON 表現の根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して使い、原典は `ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
+- Java の原典実行（[ADR 81da](../../docs/decision/81da-java-origin-run-domain-and-http.md)）で確かめた振る舞い: REST の日付の表現と `"empty": false`（[`postTicket.json`](../../tools/origin-run/http/postTicket.json)）、Basic 認証によるログイン状態の更新（[`login.json`](../../tools/origin-run/http/login.json)）。
 -/
