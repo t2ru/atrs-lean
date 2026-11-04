@@ -3,7 +3,7 @@ import Spec.Env.Config
 import Trace
 
 /-!
-# Spec.Seed.Master
+# シードのマスタと設定（`Spec.Seed.Master`）
 
 シードのマスタ・設定（`conformance/fixtures/master-data.json`・`config.json`）の [Spec] の値。
 `tools/conformance/seed_lean.py` が生成する。手で編集しない。

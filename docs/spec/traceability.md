@@ -651,9 +651,6 @@ pub fn basic_fare(...) -> (r: u64)
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant0` | `ebc1effd92f8d4a3` | seed-lean |
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant1` | `ebc1effd92f8d4a3` | seed-lean |
 | `seed:00250_insert_flight.sql#FLIGHT` | `Spec.Seed.Flight.vacant2` | `ebc1effd92f8d4a3` | seed-lean |
-| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.members` | `0fa5d725ee1debb7` | seed-lean |
-| `seed:00230_insert_member.sql#MEMBER_LOGIN` | `Spec.Seed.Member.members` | `d692d2c1627b0945` | seed-lean |
-| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.sequences` | `0fa5d725ee1debb7` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#AIRPORT` | `Spec.Seed.Master.airports` | `e5f2a74a341d1ab1` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#BOARDING_CLASS` | `Spec.Seed.Master.boardingClasses` | `0c0030e40bed7655` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#CREDIT_TYPE` | `Spec.Seed.Master.creditTypes` | `5cac07149240715c` | seed-lean |
@@ -662,6 +659,9 @@ pub fn basic_fare(...) -> (r: u64)
 | `seed:00240_insert_peak_time.sql#PEAK_TIME` | `Spec.Seed.Master.peakTimes` | `3eead422572ddcea` | seed-lean |
 | `seed:00200_insert_fixed_value.sql#PLANE` | `Spec.Seed.Master.planes` | `4dd53d69f0fe3e83` | seed-lean |
 | `seed:00210_insert_route.sql#ROUTE` | `Spec.Seed.Master.routes` | `376e285ef8a7ec0a` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.members` | `0fa5d725ee1debb7` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER_LOGIN` | `Spec.Seed.Member.members` | `d692d2c1627b0945` | seed-lean |
+| `seed:00230_insert_member.sql#MEMBER` | `Spec.Seed.Member.sequences` | `0fa5d725ee1debb7` | seed-lean |
 <!-- END GENERATED: source-trace -->
 
 ### ② TargetModel ⇔ 移植先ソース

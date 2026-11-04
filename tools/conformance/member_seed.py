@@ -112,7 +112,7 @@ def render_spec(members: list[dict], logins: list[dict], load: tuple[int, int, i
         "import Trace",
         "",
         "/-!",
-        "# Spec.Seed.Member",
+        "# シードの会員と採番の初期値（`Spec.Seed.Member`）",
         "",
         "シードの会員（上流の `00230_insert_member.sql`）の [Spec] の値と、採番の初期値。",
         "`tools/conformance/member_seed.py` が生成する。手で編集しない。",
