@@ -2,7 +2,7 @@
   "operation": "http.login",
   "modelDef": null,
   "specRef": "lean/Spec/Auth.lean#ログインlogin",
-  "note": "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（Spec.Auth の TODO、D-028）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
+  "note": "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（Spec.Auth の D-028）。 SourceModel.Http はまだ無いので modelDef は null（backlog a89e・4e0e で conformance/source-model/http/ へ移す）。Java の原典実行で採取した（tools/origin-run の HttpOriginRun。手で編集しない）。",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"
