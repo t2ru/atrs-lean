@@ -119,8 +119,8 @@ def header(module, desc):
 
 def spec_lean(days, slots, names, tables, h):
     L = ["import Spec.Model", ""]
-    L += header("Spec.Seed.Flight", [
-        "シードのフライト（`World` の初期状態。backlog 0be7 の第 2 段）。投入日 2026-11-01 から 121 日の各日に、",
+    L += header("シードのフライト（`Spec.Seed.Flight`）", [
+        "シードのフライト（`World` の初期状態）。投入日 2026-11-01 から 121 日の各日に、",
         "空席数のパターン `i % 3`（`i` は投入日を 0 とする日の番号）を、便名 × 10 枠（搭乗クラス・運賃種別）で並べる。",
         "全件には展開せず、日付の列・枠の列・便名の列・パターンの表から `flights` を作る。主キーの一意性の証明は",
         "`Spec.Seed.FlightProps.flights_nodup` が生成の形から示す（`World` は `Spec.Seed.World.world` が組み立てる）。"])
