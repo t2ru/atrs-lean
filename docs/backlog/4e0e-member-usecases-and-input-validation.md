@@ -21,7 +21,7 @@ generated:
 
 - `Spec.Validation`, `SourceModel.Validation`
 - `Spec.UseCase.Member`, `SourceModel.UseCase.Member`
-- `Email` 判定規則の形式化（[`Spec.Prim.Text`](../../lean/Spec/Prim/Text.lean#email)、[ADR ac33](../decision/ac33-email-validation-rule.md)）
+- `Email` 判定規則の形式化（[`Spec.Validation`](../../lean/Spec/Validation.lean#email)、[ADR ac33](../decision/ac33-email-validation-rule.md)）
 - エラーの並び（[Spec] は列、[Source] は多重集合。[ADR e24e](../decision/e24e-validation-error-ordering.md)）の形式化
 - 会員情報変更を 1 トランザクションにする（[ADR 578b](../decision/578b-member-update-in-single-transaction.md)）
 - R 課題: ABS-024（会員のリポジトリと PasswordHasher）、ABS-034（会員情報変更）、ABS-042（会員のユースケース）、ABS-046（入力検証とエラーメッセージ）

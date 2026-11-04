@@ -13,12 +13,12 @@
 * **Update**: スキルの SQL の並びのキー `OrderBy`・`SqlTable` の行の幅の証明（スキルの backlog d3fd の S4）に、`SourceModel` の並びの定義（`orderByDisplayOrder`・`vacantSeatOrder`）・`Abstraction` の補題・SQL のテストを合わせた。
 * **Update**: スキルの `JHashMap`・`DecimalFormat.Symbols`・`JThrow.other`（クラス名 `JClassName`）の型の変更（スキルの backlog d3fd の S4）に、`SourceModel` の例外のクラス名の定数・`Abstraction.FlightSearch` の補題・テストの字面を合わせた。照合の記録を `trace rehash` で更新した（`trace/manifest.json`・[spec/traceability.md](spec/traceability.md) の生成区画）。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、`Spec.Port.World` にフライトの主キーの一意性の証明を持たせ、状態の α を主キーが重複する行に定義しないようにした。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/ports.md](../lean/Spec/Port.lean) を改めた。
-* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、検証済みの設定・マスタの型 `Spec.EnvPre.ValidEnv` と検証 `validate` を置き、環境の前提 `masterConfigOk` と各機械の PRE をそれで書き直した。[spec/master-data.md](../lean/Spec/MasterData.lean) を改めた。
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L3 として、検証済みの設定・マスタの型 `Spec.EnvPre.ValidEnv` と検証 `validate` を置き、環境の前提 `masterConfigOk` と各機械の PRE をそれで書き直した。[spec/master-data.md](../lean/Spec/Env/MasterData.lean) を改めた。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L2 として、機械の入力・画面の入力の型に `@[raw_input]` を付け、段の記録を足した。
-* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 の最後として、予約内容の便を `Itinerary`、登録した予約の便と搭乗者を和型 `ReserveFlights` にし、予約フライトの予約番号の写しと `PassengerRecord` を除いた。登録簿の D-027 の前提の文、[spec/domain-model.md](../lean/Spec/Model.lean)・[spec/reservation.md](../lean/Spec/UseCase/Reserve.lean) を改めた。
-* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.MembershipNumber` を形式の証明を持つ型にし、予約内容の会員番号を入力の文字列のまま持つようにした（登録で読む）。検査 MISU-1 の段階導入の一覧が空になった。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/domain-model.md](../lean/Spec/Model.lean)・[spec/reservation.md](../lean/Spec/UseCase/Reserve.lean)・[spec/ports.md](../lean/Spec/Port.lean) を改めた。照合の記録を `trace rehash` で更新した。
-* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.FlightName` を形式の証明を持つ型にし、選択フライトの便名を生の文字列にした。`validateFlightList` が検証した便の主キーを `Itinerary` で返すようにした。登録簿の D-027 の前提の文を改め、[spec/abstraction.md](spec/abstraction.md)（生成表）・[spec/reservation.md](../lean/Spec/UseCase/Reserve.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。照合の記録を `trace rehash` で更新した。
-* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.AirportCd`・`CreditTypeCd` を形式の証明を持つ型にし、空席照会の条件・マスタの問い合わせの空港コードを生の文字列にした。D-036 を前提型（具体側の入力。D-027 に覆われる。W 課題 ABS-142）に付け替え、[spec/abstraction.md](spec/abstraction.md)（生成表と課題の表）・[spec/master-data.md](../lean/Spec/MasterData.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。照合の記録を `trace rehash` で更新した。
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 の最後として、予約内容の便を `Itinerary`、登録した予約の便と搭乗者を和型 `ReserveFlights` にし、予約フライトの予約番号の写しと `PassengerRecord` を除いた。登録簿の D-027 の前提の文、[spec/domain-model.md](../lean/Spec/Model.lean)・[spec/reservation.md](../lean/Spec/Reserve.lean) を改めた。
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.MembershipNumber` を形式の証明を持つ型にし、予約内容の会員番号を入力の文字列のまま持つようにした（登録で読む）。検査 MISU-1 の段階導入の一覧が空になった。登録簿の D-027 の前提の文、[spec/abstraction.md](spec/abstraction.md)・[spec/domain-model.md](../lean/Spec/Model.lean)・[spec/reservation.md](../lean/Spec/Reserve.lean)・[spec/ports.md](../lean/Spec/Port.lean) を改めた。照合の記録を `trace rehash` で更新した。
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.FlightName` を形式の証明を持つ型にし、選択フライトの便名を生の文字列にした。`validateFlightList` が検証した便の主キーを `Itinerary` で返すようにした。登録簿の D-027 の前提の文を改め、[spec/abstraction.md](spec/abstraction.md)（生成表）・[spec/reservation.md](../lean/Spec/Reserve.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。照合の記録を `trace rehash` で更新した。
+* **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Model.AirportCd`・`CreditTypeCd` を形式の証明を持つ型にし、空席照会の条件・マスタの問い合わせの空港コードを生の文字列にした。D-036 を前提型（具体側の入力。D-027 に覆われる。W 課題 ABS-142）に付け替え、[spec/abstraction.md](spec/abstraction.md)（生成表と課題の表）・[spec/master-data.md](../lean/Spec/Env/MasterData.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。照合の記録を `trace rehash` で更新した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) の L1 として、`Spec.Error.AtrsError` のコードを事由の列挙（`BusinessError`・`NotFoundError`・`SystemError`）にし、α と予約・空席照会の証明を直した。適合テストベクタの JSON の綴りは変わらない。段の記録と [spec/errors-and-messages.md](../lean/Spec/Error.lean) の分類の注記を足した。
 * **Update**: [ADR 6d36](decision/6d36-misu-spec-types.md) に、`ReserveNo` を採番の値で持つ決定（プロジェクトオーナー、案 A）を記録し、`Spec.Model.ReserveNo` を `num : Nat` と表記 `val`・表記の読み取り `ofString?` にした。α と予約の登録の補題を直した。
 * **Update**: スキルの `JDouble` の正規形・`SequenceDef` の範囲（スキルの backlog d3fd の S4）に合わせ、`Abstraction.Fare.Factors` を直した（定理の主張は不変）。照合の記録を `trace rehash` で更新した。スキルの検査 MISU-1 の段階導入の一覧を `trace/project.json` の `lean.misu_pending` に置き、`PasswordHash`・`MasterQuery.Query`・`UseCase.Reserve.Request` に `@[raw_input]` を付けた。[ADR 6d36](decision/6d36-misu-spec-types.md) の段の記録を足した。
@@ -57,7 +57,7 @@
 * **Creation**: [ADR f786](decision/f786-gap-inventory-and-registry-fixes.md) で、[Spec] と [Source] の差異の登録簿（`lean/Abstraction/Gap.lean`）を、実装済みと未着手の全範囲で上流の原典と突き合わせて棚卸しした。
   * 誤りを直した: D-031 の R 課題（ABS-021 → ABS-031・ABS-041・ABS-045）、D-032 の前提の文（`formatSymbols`）、D-030 の証拠（PRE の述語）、「PRE: MD-3」の誤った注記（`Spec.Fare`・[spec/fare-calculation.md](../lean/Spec/Fare.lean)）、欠けた `@[gap]` の印、仕様文書の D 番号の引用、[spec/assurance.md](spec/assurance.md) の被覆の例、[spec/errors-and-messages.md](../lean/Spec/Error.lean) の表。
   * オーナーの判断で、D-034〜D-036（PRE の外）・D-037（モデル外）・D-038〜D-041（前提型。W 課題 ABS-138〜141）を登録し、D-006・D-009・D-020・D-030・D-033 と R 課題を広げた。REST の予約の応答の `"empty": false` は [Spec] を原典に合わせた（[spec/http-contract.md](../lean/Spec/Http.lean#post-apiv1ticket)）。[ADR 0b0c](decision/0b0c-flight-search-stage3-abs011.md) の保留 2 件を承認した。
-  * [spec/abstraction.md](spec/abstraction.md) の生成表と課題表、[spec/reservation.md](../lean/Spec/UseCase/Reserve.lean)・[spec/ports.md](../lean/Spec/Port.lean)・[spec/input-validation.md](../lean/Spec/InputValidation.lean)・[spec/master-data.md](../lean/Spec/MasterData.lean)・[spec/flight-search.md](../lean/Spec/FlightSearch.lean)・[spec/configuration.md](../lean/Spec/Config.lean)・[spec/reservation-history-report.md](../lean/Spec/ReservationHistoryReport.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。
+  * [spec/abstraction.md](spec/abstraction.md) の生成表と課題表、[spec/reservation.md](../lean/Spec/Reserve.lean)・[spec/ports.md](../lean/Spec/Port.lean)・[spec/input-validation.md](../lean/Spec/Validation.lean)・[spec/master-data.md](../lean/Spec/Env/MasterData.lean)・[spec/flight-search.md](../lean/Spec/FlightSearch.lean)・[spec/configuration.md](../lean/Spec/Env/Config.lean)・[spec/reservation-history-report.md](../lean/Spec/Report.lean)・[spec/domain-model.md](../lean/Spec/Model.lean) を改めた。
   * 原典実行で確かめてから判断する候補を [backlog ceb8](backlog/ceb8-origin-run-checks-for-gap-candidates.md) にした。棚卸しの手順をスキルの [guide/gap-inventory.md](../.agents/skills/spec-pivot/references/docs/guide/gap-inventory.md) に置き（[スキルの ADR cb1f](../.agents/skills/spec-pivot/references/docs/decision/cb1f-gap-inventory-procedure.md)）、spec-pivot の版を 0.26 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。
 * **Creation**: [ADR 4c45](decision/4c45-reservation-stage1-shared-state-and-source-model.md) で、[backlog aedf](backlog/aedf-reservation-usecase.md)（予約）を 3 段に分け、第 1 段を行った（`doing`）。
   * [Spec]: `Spec.Ticket`（選択フライトの解決と `validateFlightList`）、`Spec.UseCase.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）。`Spec.Port.World` に会員・予約・採番（`Sequences`）とポートの操作を、`Spec.Error.AtrsError` に `invalidRequest`・`system`・`conflict` を、`Spec.Model` に `PassengerRecord` を足した。
@@ -93,7 +93,7 @@
 * **Creation**: [ADR 81da](decision/81da-java-origin-run-domain-and-http.md) で、[backlog f18c](backlog/f18c-java-oracle-harness.md)（Java の原典実行）の構成を決め、f18c を完了した（`done`）。`depends_on` から a8ef を外した。
   * ドメイン層: 原典を複写してビルドし（`tools/origin-run/build-upstream.sh`）、DI を起動せずに原典の MyBatis とサービスを組み立てる（`tools/origin-run/`）。運賃計算・空席照会の既存のベクタ 35 件が原典と一致した。シードの範囲の 1,867 件を原典から採取した（`conformance/source-model/{fare,flight-search}/origin-run-*.json`）。`source-model/fare/fare.json` の期待値の出所を `java-origin-run` にした。`lean/Tests/Main.lean` に `source-model/flight-search` を足した。
   * HTTP レベル: 原典の web.xml のままの webapp を組み込み Tomcat で起動し、時計・DB・`report.dir` だけを差し替える。採取結果は `tools/origin-run/http/`。
-  * [spec/http-contract.md](../lean/Spec/Http.lean#rest-apiapiv1) の TODO を解消した（`LocalDate` は `"yyyy-MM-dd"`）。[spec/authentication.md](../lean/Spec/Authentication.lean#ログインlogin) の TODO を解消し、D-028 を観測型の既知差異にした（画面ログインは状態を更新せず、REST の Basic 認証は更新する。[spec/abstraction.md](spec/abstraction.md#既知差異) は生成。W 課題 ABS-128 を足し、ABS-043・ABS-045 の差異に D-028 を足した）。[backlog 44f8](backlog/44f8-authentication-usecases.md) の範囲と完了条件を合わせた。
+  * [spec/http-contract.md](../lean/Spec/Http.lean#rest-apiapiv1) の TODO を解消した（`LocalDate` は `"yyyy-MM-dd"`）。[spec/authentication.md](../lean/Spec/Auth.lean#ログインlogin) の TODO を解消し、D-028 を観測型の既知差異にした（画面ログインは状態を更新せず、REST の Basic 認証は更新する。[spec/abstraction.md](spec/abstraction.md#既知差異) は生成。W 課題 ABS-128 を足し、ABS-043・ABS-045 の差異に D-028 を足した）。[backlog 44f8](backlog/44f8-authentication-usecases.md) の範囲と完了条件を合わせた。
   * [spec/assurance.md](spec/assurance.md) の移植元側の行と付録（原典実行の対象外と範囲）、[spec/conformance.md](spec/conformance.md) を改めた。
   * 道具: mise の `origin-run:domain`・`origin-run:http`・`origin-run:gen`・`ci:java-origin-run`、`tools/ci/java_origin_run.sh`、`trace/checks.json` の `java-origin-run`。CI は `~/.m2` をキャッシュする。
   * スキルの側は [スキルの ADR 7d3a](../.agents/skills/spec-pivot/references/docs/decision/7d3a-java-conformance-kit-and-http-origin-run-method.md)（`assets/java/conformance-kit`、HTTP レベルの原典実行の方法、`with_postgres.sh` の `WITH_POSTGRES_TCP`）。スキルの版を 0.21 にした（[rules/atrs-porting.md](rules/atrs-porting.md)）。[backlog/README.md](backlog/README.md)、[index.md](index.md)、`AGENTS.md` の「現在の状態」を改めた。
@@ -131,8 +131,8 @@
 * **Creation**: [ADR ce36](decision/ce36-flight-search-stage1-world-and-arrival-time.md) で、[backlog 0be7](backlog/0be7-flight-search-usecase.md)（空席照会）を 3 段に分け、第 1 段の設計を決めた。0be7 に着手した（`doing`）。
   * Java の原典実行との一致の完了条件を [backlog f18c](backlog/f18c-java-oracle-harness.md) に移し、0be7 の `depends_on` から f18c を外した。
   * 便マスタの到着時刻を `Spec.Prim.Time.ArrivalTime`（出発日 0:00 からの時分。24 時以降を許す）にした。fixture の `outsideSpec` を外し、`Spec.Seed` に NTT523・NTT528 を含めた。[ADR 8f18](decision/8f18-fare-source-model-and-shared-vectors.md) に補足を書いた。`flightMasterOf` の 2415 の例を `shared/master-data` に移した。
-  * `DateTimeParseException` は空席照会でなく予約の往復便の検査で起きることを確かめ、既知差異 D-031（W 課題 ABS-131）を登録した。[spec/master-data.md](../lean/Spec/MasterData.lean) の誤りを直した。
-  * [spec/domain-model.md](../lean/Spec/Prim/Time.lean#arrivaltime)、[spec/master-data.md](../lean/Spec/MasterData.lean)、[spec/abstraction.md](spec/abstraction.md#証明課題)（ABS-011・ABS-127・ABS-131、D-027 の範囲）、[spec/conformance.md](spec/conformance.md)、[spec/assurance.md](spec/assurance.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
+  * `DateTimeParseException` は空席照会でなく予約の往復便の検査で起きることを確かめ、既知差異 D-031（W 課題 ABS-131）を登録した。[spec/master-data.md](../lean/Spec/Env/MasterData.lean) の誤りを直した。
+  * [spec/domain-model.md](../lean/Spec/Prim/Time.lean#arrivaltime)、[spec/master-data.md](../lean/Spec/Env/MasterData.lean)、[spec/abstraction.md](spec/abstraction.md#証明課題)（ABS-011・ABS-127・ABS-131、D-027 の範囲）、[spec/conformance.md](spec/conformance.md)、[spec/assurance.md](spec/assurance.md)、[backlog/README.md](backlog/README.md)、[index.md](index.md)
   * Lean: `Spec.Error`（`Business`・`NotFound`）、`Spec.Port`（`World` とその不変条件）、`Spec.FlightSearch`（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。`SourceModel.FlightSearch`（`searchFlight` と、起動時の読み込みと合わせて実行する `runSearchFlight`）、`SourceModel.Repository.Flight`（`findByVacantSeatSearchCriteria` の `Bag` 式と許される並べ方）、FLIGHT の行 `FlightRow`・状態の表 `FlightDb`、`flight-map`。
   * 適合テストベクタ `conformance/shared/flight-search/`（`flightSearch.searchFlight`・`validateDepartureDate`・`isAvailableFareType`）を足し、`Spec` と `SourceModel` の両方で通した。[spec/flight-search.md](../lean/Spec/FlightSearch.lean) に Lean への参照を書き、[spec/conformance.md](spec/conformance.md#操作名) にエラーの表し方を書いた。
   * スキル port-lang の `LangSemantics.Java` に `String.substring` と `DecimalFormat` の 3 桁区切りを足した（スキルの版 0.15。[rules/atrs-porting.md](rules/atrs-porting.md)）。
@@ -191,7 +191,7 @@
 * **Update**: [backlog 0fdf](backlog/0fdf-spec-nondet-and-entry-env.md) を完了した（`done`）。`Spec.Nondet`（N-001〜N-005 の `@[nondet]`）、`Spec.EnvPre`（`masterConfigOk` の `@[env_pre]`・検査関数 `validB`）、生成した `Spec.Seed` とシードの妥当性 `seed_env` を置いた。入力の値域の前提は [backlog a89e](backlog/a89e-http-contract-adapter.md)・[ac71](backlog/ac71-reservation-history-report.md) の範囲に移した。
 * **Update**: 次の文書を改めた。
   * [spec/abstraction.md](spec/abstraction.md)（Spec の非決定性の表の Lean 名）
-  * [spec/master-data.md](../lean/Spec/MasterData.lean)（シードの妥当性）、[spec/assurance.md](spec/assurance.md)（シードの検査の限界）
+  * [spec/master-data.md](../lean/Spec/Env/MasterData.lean)（シードの妥当性）、[spec/assurance.md](spec/assurance.md)（シードの検査の限界）
   * [backlog/README.md](backlog/README.md)、[index.md](index.md)、[AGENTS.md](../AGENTS.md)
 
 * **Creation**: [backlog 38fb](backlog/38fb-move-generic-elements-to-skill.md) を作り、完了した（`done`）。
@@ -255,9 +255,9 @@
   * 部分写像の汎用の核 `undefOrEq`（obligation-check の G7 を広げた）
 * **Update**: 次の文書を改めた。
   * [spec/abstraction.md](spec/abstraction.md)（α の表に 3 行、D-027 の成分の名前）
-  * [spec/master-data.md](../lean/Spec/MasterData.lean)（参照関数）
+  * [spec/master-data.md](../lean/Spec/Env/MasterData.lean)（参照関数）
   * [spec/domain-model.md](../lean/Spec/Model.lean)（便名）
-  * [spec/input-validation.md](../lean/Spec/InputValidation.lean)（文字クラス `Blank`）
+  * [spec/input-validation.md](../lean/Spec/Validation.lean)（文字クラス `Blank`）
   * スキル port-lang の `architecture.md`（部分写像の汎用の核）
   * [AGENTS.md](../AGENTS.md)
 
@@ -269,7 +269,7 @@
   * 補題の置き場所と、`decide +kernel` の使い方
 * **Update**: 次の文書を改めた。
   * [spec/abstraction.md](spec/abstraction.md)（D-027 の範囲、[Spec] の前提の外の `NOP`）
-  * [spec/master-data.md](../lean/Spec/MasterData.lean)（MD-8）
+  * [spec/master-data.md](../lean/Spec/Env/MasterData.lean)（MD-8）
   * [spec/domain-model.md](../lean/Spec/Model.lean)（値域）
   * [spec/assurance.md](spec/assurance.md)（JVM の突き合わせ表の件数と `LocalDate` の範囲）
   * [ADR c108](decision/c108-master-data-source-model-and-spec-fixes.md) の More Information（補足の追記）
@@ -293,7 +293,7 @@
   * 差分実行
 * **Update**: [spec/abstraction.md](spec/abstraction.md) に、既知差異 D-027（前提型・具体側の入力）、影響（中断）、W 課題 ABS-127 を登録した。ABS-026 の行も改めた。
 * **Update**: 次の文書を改めた。
-  * [spec/master-data.md](../lean/Spec/MasterData.lean)
+  * [spec/master-data.md](../lean/Spec/Env/MasterData.lean)
   * [spec/domain-model.md](../lean/Spec/Model.lean)（値域）
   * [spec/assurance.md](spec/assurance.md)（SQL の差分実行の付録）
   * [spec/conformance.md](spec/conformance.md)（`master.*`）
@@ -331,7 +331,7 @@
   * [spec/fare-calculation.md](../lean/Spec/Fare.lean): 要約（informative）に改め、Lean へのリンクを付けた
   * [spec/conformance.md](spec/conformance.md)
   * [spec/assurance.md](spec/assurance.md)
-  * [spec/master-data.md](../lean/Spec/MasterData.lean): 到着時刻 `2415` の TODO
+  * [spec/master-data.md](../lean/Spec/Env/MasterData.lean): 到着時刻 `2415` の TODO
   * [backlog 0be7](backlog/0be7-flight-search-usecase.md): 翌日着の便
   * [ADR dc3a](decision/dc3a-conformance-test-vectors.md)
   * スキル port-lang の conformance・lean/trace-attributes
@@ -357,7 +357,7 @@
   * 改名の扱い
   * `diff` の分類と `impact` の伝播
   * 「出典:」の検査
-* **Update**: [spec/fare-calculation.md](../lean/Spec/Fare.lean)・[spec/flight-search.md](../lean/Spec/FlightSearch.lean)・[spec/reservation.md](../lean/Spec/UseCase/Reserve.lean) の「出典:」をロケータ表記に書き換えた。
+* **Update**: [spec/fare-calculation.md](../lean/Spec/Fare.lean)・[spec/flight-search.md](../lean/Spec/FlightSearch.lean)・[spec/reservation.md](../lean/Spec/Reserve.lean) の「出典:」をロケータ表記に書き換えた。
 * **Update**: [spec/traceability.md](spec/traceability.md) を改めた。
   * 初期の予定対応の表を削除し、`trace/features.json` を参照するようにした。
   * 運賃の例から、private の `getMultiplicationRatio` を外した。
@@ -392,7 +392,7 @@
 * **Update**: [ADR 6edf](../.agents/skills/spec-pivot/references/docs/decision/6edf-lean-package-under-skill-assets-lean.md) で、スキル port-lang の Lake パッケージ `langSemantics` を `assets/` 直下から `assets/lean/` に移した。ルートと `lean/` の `require`・manifest、CI（`tools/ci/lean.sh`・`check_lean.py`・`.github/workflows/lean.yml`）、スキルの文書、[rules/atrs-porting.md](rules/atrs-porting.md)、[AGENTS.md](../AGENTS.md)、関係する backlog と ADR のパスを改めた。
 * **Update**: [backlog a8be](backlog/a8be-lang-semantics-java.md) を完了した。`LangSemantics.Java` に、`jdLit "0.01"` のビット表現と 1430 円・30% の例の定理、`minusDays` を足した。JVM で生成した突き合わせ表（581 件）と、運賃計算の double 式のネイティブ `Float` との突き合わせ（4,006,212 件）を CI に加え、範囲を [spec/assurance.md](spec/assurance.md) に記載した。
 * **Update**: [rules/version-control.md](rules/version-control.md) の push の禁止を改め、自分で作ったブランチへの push と、そこからの PR の作成を認めた（既定ブランチと他人のブランチへの push は引き続き禁止、マージはオーナーが行う）。あわせて [AGENTS.md](../AGENTS.md)・[rules/README.md](rules/README.md)・[rules/backlog.md](rules/backlog.md) の要約を改めた。
-* **Update**: [backlog 591d](backlog/591d-abstract-domain-types-and-master-data.md) を完了した。`lean/Spec/` に、基本演算・暦日・時刻・書式・文字クラス（`Spec.Prim`）、列挙・コード値・エンティティ・値域（`Spec.Model`）、設定（`Spec.Config`）、マスタデータと MD-1〜MD-8・参照関数（`Spec.MasterData`）、コードリスト（`Spec.CodeList`）を実装し、SPEC-001〜003 を証明した。`conformance/shared/format/` にベクタを作り、`lake test` で `Spec` に対して実行するようにした。あわせて [spec/domain-model.md](../lean/Spec/Model.lean)・[spec/master-data.md](../lean/Spec/MasterData.lean)・[spec/configuration.md](../lean/Spec/Config.lean) の形式化した節を要約（informative）に改め、[spec/conformance.md](spec/conformance.md) の操作名を足した。
+* **Update**: [backlog 591d](backlog/591d-abstract-domain-types-and-master-data.md) を完了した。`lean/Spec/` に、基本演算・暦日・時刻・書式・文字クラス（`Spec.Prim`）、列挙・コード値・エンティティ・値域（`Spec.Model`）、設定（`Spec.Config`）、マスタデータと MD-1〜MD-8・参照関数（`Spec.MasterData`）、コードリスト（`Spec.CodeList`）を実装し、SPEC-001〜003 を証明した。`conformance/shared/format/` にベクタを作り、`lake test` で `Spec` に対して実行するようにした。あわせて [spec/domain-model.md](../lean/Spec/Model.lean)・[spec/master-data.md](../lean/Spec/Env/MasterData.lean)・[spec/configuration.md](../lean/Spec/Env/Config.lean) の形式化した節を要約（informative）に改め、[spec/conformance.md](spec/conformance.md) の操作名を足した。
 * **Update**: [backlog 1ae4](../.agents/skills/spec-pivot/references/docs/backlog/1ae4-machine-refinement-framework.md) を完了した。スキル port-lang の `assets/Machine/` に、抽象機械・具体機械・貼り合わせ・`Machine.Refines`（INIT・入力の全域性・適用可能性・正しさ）・差異による制限・推移性を実装し、`assets/MachineTest/` で例と反例を証明した。CI（`tools/ci/lean.sh`）で `assets/` をビルドし、`axiom-check`・`trace-dump` の対象に `Machine` を加えた。あわせて [ADR 01d4](decision/01d4-b-method-refinement-and-explicit-deviations.md)（制限の関数の名前）と [spec/refinement.md](spec/refinement.md)（証明義務を 4 つに揃えた）を直した。
 * **Update**: [backlog be49](backlog/be49-lean-project-scaffold.md) を完了した。`lean/`（Lake パッケージ `atrs`、Lean v4.35.0、Batteries v4.35.0）に全名前空間の骨格・追跡属性（`Trace.Attr`）・`trace-dump`・`axiom-check`・テストを置き、CI（`tools/ci/lean.sh`、`.github/workflows/lean.yml`）を整えた。あわせて [ADR 659f](decision/659f-lean-toolchain-and-dependencies.md)（採った版）、[rules/atrs-porting.md](rules/atrs-porting.md)（配置）、[rules/version-control.md](rules/version-control.md)（コミット前の確認）を改めた。
 * **Update**: [backlog 455f](backlog/455f-upstream-submodule-and-inventory.md) を完了した。上流 ATRS を `upstream/atrs` に submodule として commit 固定で取り込み、`trace/upstream.json`（版の宣言）と `trace/out-of-scope.json`（追跡の対象外）を作った。あわせて [rules/atrs-porting.md](rules/atrs-porting.md)（版の正、Windows の `core.longpaths`、TODO(spec) の解消）と [spec/traceability.md](spec/traceability.md#対象外) を改めた。
@@ -417,7 +417,7 @@
 * **Update**: 次の仕様文書を、原則に合わせて改めた。
   * [`Spec.Port`](../lean/Spec/Port.lean): `Conflict`、パスワードの契約、分離レベル、キューの上限
   * [`Spec.Model`](../lean/Spec/Model.lean): 値域を PRE とする
-  * [`Spec.MasterData`](../lean/Spec/MasterData.lean)、[`Spec.Fare`](../lean/Spec/Fare.lean)、[`Spec.Http`](../lean/Spec/Http.lean)、[`Spec.Authentication`](../lean/Spec/Authentication.lean)、[`Spec.Member`](../lean/Spec/Member.lean)、[`Spec.Error`](../lean/Spec/Error.lean)、[traceability.md](spec/traceability.md)、[spec/README.md](spec/README.md)
+  * [`Spec.MasterData`](../lean/Spec/Env/MasterData.lean)、[`Spec.Fare`](../lean/Spec/Fare.lean)、[`Spec.Http`](../lean/Spec/Http.lean)、[`Spec.Authentication`](../lean/Spec/Auth.lean)、[`Spec.Member`](../lean/Spec/Member.lean)、[`Spec.Error`](../lean/Spec/Error.lean)、[traceability.md](spec/traceability.md)、[spec/README.md](spec/README.md)
 * **Update**: スキル port-lang（0.2）を改めた。
   * SKILL.md: 3 原則を最上位に置いた。
   * architecture.md: B メソッドのリファインメント。
@@ -449,7 +449,7 @@
 ## 2026-10-29
 
 * **Creation**: 未決だった仕様を確定する ADR 7 件を作成した。[ac33](decision/ac33-email-validation-rule.md)（Email 規則）、[e24e](decision/e24e-validation-error-ordering.md)（検証エラーの並び）、[9ee4](decision/9ee4-clock-timezone-and-fixture-base-date.md)（Clock の Asia/Tokyo と fixture の投入日 2026-11-01）、[41f7](decision/41f7-concurrency-failure-as-conflict-error.md)（`Conflict` 分類）、[578b](decision/578b-member-update-in-single-transaction.md)（会員情報変更の 1 トランザクション化）、[90f5](decision/90f5-report-queue-at-least-once-delivery.md)（レポートキューの配信保証）、[e10f](decision/e10f-spec-corrects-unsafe-source-behavior.md)（原典の安全でない振る舞いを Spec で正す）。ADR a4fa・6eb2・97f9・ff4d の More Information に後続へのリンクを足した。
-* **Update**: 上流 `f4bfbf06` と依存ライブラリ（Spring Framework 7.0.3、Spring Security 7.0.x、Hibernate Validator 9.1.0.Final、ActiveMQ Artemis）のソースを読んで、仕様の未決事項と文書間の矛盾を解消した。[spec/input-validation.md](../lean/Spec/InputValidation.lean)（Email、エラーの並び、日付の解析、項目名の対応、REST の搭乗者数）、[spec/http-contract.md](../lean/Spec/Http.lean)（セッションの規範節、ログインの遷移先、日付の JSON、ApiError のコード、Basic 認証の失敗）、[spec/errors-and-messages.md](../lean/Spec/Error.lean)、[spec/ports.md](../lean/Spec/Port.lean)（規範節の範囲、Clock、採番、キュー、トランザクション）、[spec/abstraction.md](spec/abstraction.md)（既知差異 D-011〜D-021、課題 ABS-032〜034）など。
+* **Update**: 上流 `f4bfbf06` と依存ライブラリ（Spring Framework 7.0.3、Spring Security 7.0.x、Hibernate Validator 9.1.0.Final、ActiveMQ Artemis）のソースを読んで、仕様の未決事項と文書間の矛盾を解消した。[spec/input-validation.md](../lean/Spec/Validation.lean)（Email、エラーの並び、日付の解析、項目名の対応、REST の搭乗者数）、[spec/http-contract.md](../lean/Spec/Http.lean)（セッションの規範節、ログインの遷移先、日付の JSON、ApiError のコード、Basic 認証の失敗）、[spec/errors-and-messages.md](../lean/Spec/Error.lean)、[spec/ports.md](../lean/Spec/Port.lean)（規範節の範囲、Clock、採番、キュー、トランザクション）、[spec/abstraction.md](spec/abstraction.md)（既知差異 D-011〜D-021、課題 ABS-032〜034）など。
 * **Update**: [rules/atrs-porting.md](rules/atrs-porting.md) に上流の依存の版を記録した。backlog [4e0e](backlog/4e0e-member-usecases-and-input-validation.md)・[f18c](backlog/f18c-java-oracle-harness.md) の範囲を改めた。
 
 * **Update**: リポジトリのルートを Lake ワークスペースにした（`lakefile.lean` が `.agents/skills/spec-pivot/assets` を `require`）。ルートで起動した Lean LSP から `LangSemantics` の import が解決されないのを直した。手順は [atrs-porting.md](rules/atrs-porting.md) とスキルの [lean/rules.md](../.agents/skills/spec-pivot/references/docs/lang/lean/rules.md)。
