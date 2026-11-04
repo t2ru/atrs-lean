@@ -1,7 +1,10 @@
 /-!
 # 用語集（`Spec.Glossary`）
 
-> **区分: メタ情報（meta）。** 仕様と検証を運用するための情報であり、Lean `Spec` には形式化しない（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
+> **区分: メタ情報（meta）。** 本書の用語と、Lean の識別子の対応を示す。定義は各章にある。
+
+業務の用語は原典の日本語に合わせ、初めて使うところで英語の識別子を添える。識別子は Lean の型・関数・欄の名前で、
+原典の Java の名前と同じ綴りのものが多い。
 
 | 用語 | 識別子 | 説明 |
 | --- | --- | --- |
@@ -26,17 +29,19 @@
 | フライト種別 | `FlightType` | 往復 `RT`、片道 `OW` |
 | 往路 / 復路 | `OUTWARD` / `HOMEWARD`（`LineType`） | 往復予約の 1 便目 / 2 便目 |
 | 照会可能限界日 | `searchLimitDate` | 今日 + 照会可能限界日数（`limitDay`） |
-| 予約 | `Reservation` | 予約番号・予約日・合計金額・予約代表者情報・予約フライトの列 |
-| 予約番号 | `reserveNo` | 10 桁の数字文字列 |
-| 予約フライト | `ReserveFlight` | 予約に含まれる 1 便分。搭乗者の列を持つ |
+| 予約 | `Reservation` | 予約番号・予約日・合計金額・予約代表者情報と、予約の便と搭乗者（`ReserveFlights`。片道は 1 便、往復は往路・復路の 2 便で、搭乗者の列は便に共通） |
+| 予約番号 | `ReserveNo`, `reserveNo` | 採番した自然数。表記は 10 桁にゼロ埋めした十進文字列（10^10 以上なら 11 桁以上。[Source] との違いは D-009） |
+| 予約フライト | `ReserveFlight` | 予約に含まれる 1 便分。予約フライト番号とフライトの主キー。搭乗者番号は便ごとに搭乗者へ振る |
 | 搭乗者 | `Passenger` | 姓名（カナ）・年齢・性別・会員番号（任意） |
 | 予約代表者 | `rep*` | 予約の代表者。18 歳以上 |
-| 会員 | `Member` | 会員番号（10 桁）・氏名（漢字/カナ）・生年月日・性別・連絡先・カード情報 |
-| 会員番号 | `membershipNumber`（DB 列 `customer_no`） | 10 桁の数字文字列。ログイン ID |
+| 会員 | `Member` | 会員番号・氏名（漢字/カナ）・生年月日・性別・連絡先・カード情報 |
+| 会員番号 | `MembershipNumber`, `membershipNumber`（DB 列 `customer_no`） | 10 桁の数字文字列。ログイン ID |
 | 会員ログイン情報 | `MemberLogin` | パスワードハッシュ・前回パスワード・ログイン日時・ログインフラグ |
 | クレジットカード種別 | `CreditType` | `VIS`, `MTR`, `JCB`, `DNS`, `AMX` |
-| 予約履歴レポート | `ReservationHistoryReport` | 会員の予約履歴の CSV |
+| 予約履歴レポート | — | 会員の予約履歴の CSV（[`Spec.Report`](Report.lean)） |
 | 支払期限 | `paymentDate` | 往路搭乗日 |
-| 業務エラー | `Business` | 利用者の入力や状況により業務規則を満たさないエラー |
-| 改竄検知 | `InvalidRequest` | 画面から通常は送られない値（パラメータ改竄）の検知 |
+| 業務エラー | `AtrsError.business` | 利用者の入力や状況により業務規則を満たさないエラー（[`Spec.Error`](Error.lean)） |
+| 改竄検知 | `AtrsError.invalidRequest` | 画面から通常は送られない値（パラメータ改竄）の検知 |
+| 抽象状態 | `World` | フライト・会員・予約・採番の状態（[`Spec.World`](World.lean)） |
+| 環境 | `Config`, `MasterData` | 設定とマスタ。操作の間で変わらない入力（[`Spec.Env`](Env.lean)） |
 -/

@@ -1,24 +1,39 @@
 import Trace
 
 /-!
-# Spec.Nondet
+# 非決定性（`Spec.Nondet`）
 
-[Spec] が許す非決定性（`docs/spec/abstraction.md#spec-の非決定性n-nnn`）の選択の型と、標準の値。
-各型に `@[nondet "N-NNN"]` を 1 つ付ける（SPEC-005。登録簿との 1 対 1 は TR-N で検査する）。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-- **環境の選択**（N-001〜N-003）: 実行環境が決める。[Source]・[Target] では入力の環境の成分として表し、`Pinned` で
-  固定する。標準の値は、障害の無い環境・参照の配備の設定の値である。
-- **自由な選択**（N-004・N-005）: 実装が決めてよい。標準の選択 `run` は標準の値を選ぶ。自由な選択が変えうる部分は、
-  各機能の機械で `FreeFrame` の射影の核として示す。
+[Spec] は、いくつかの点で結果を 1 つに決めず、許される結果の範囲だけを定める（非決定性）。本章は、その選択を表す型
+（`N-NNN`。一覧は [abstraction.md](../../docs/spec/abstraction.md#spec-の非決定性n-nnn)）と、各型の **標準の値** を定める。
+各ユースケースの抽象機械は、使う選択の型を組み合わせて入力に持ち、許される結果の全体を選択の像として与える。
 
-`Machine.ofChoice` の選択の型 `E × F` は、各機能の機械が、使う葉の型だけを積（`×`）で組み合わせて作る
-（例: 予約確定は `ConflictChoice × IoFailureChoice` と `Unit`）。標準の値は、各葉の `std` の組である。
+| ID | 種類 | 選ぶもの | 型 | 標準の値 |
+| --- | --- | --- | --- | --- |
+| N-001 | 環境 | 排他制御の失敗 `Conflict` が起きるか | `ConflictChoice` | 起きない |
+| N-002 | 環境 | ポートの I/O の失敗が起きるか | `IoFailureChoice` | 起きない |
+| N-003 | 環境 | レポート要求の配信（再配信の上限・順序・重複） | `ReportDeliveryChoice` | 上限 10、送信順、重複なし |
+| N-004 | 自由 | `InvalidRequest` の詳細の文字列 | `InvalidRequestDetail` | 各操作が定める詳細 |
+| N-005 | 自由 | パスワードのハッシュ値 | `PasswordHashChoice` | `"{test}" ++ raw` |
+
+- **環境の選択**（N-001〜N-003）は、実行環境が決める。障害の無い環境・参照の配備の設定の値を標準の値とする。
+  [Source]・[Target] では、入力の環境の成分として表して固定する。
+- **自由な選択**（N-004・N-005）は、実装が決めてよい。変えうるのは、型が示す部分（詳細の文字列・保存するハッシュ値）
+  だけである。
+
+標準の値をすべて選んだ実行が、[Spec] の「実行可能な標準の選択」である。各機能の機械は、使う選択の型だけを積（`×`）で
+組み合わせる（例: 予約確定は `ConflictChoice × IoFailureChoice`）。排他と I/O の失敗の意味は
+[`Spec.Port`](Port.lean#トランザクション) にある。
+
+> **TODO(spec):** 失敗したユースケースの中で進む採番の数（N-001・N-002 の成分 `SeqAdvance`）を選択に含めるかは、
+> プロジェクトオーナーの確認待ちである（[backlog aedf](../../docs/backlog/aedf-reservation-usecase.md)）。
 -/
 
 namespace Spec.Nondet
 
 /-- 失敗したユースケースの中で進んだ採番の数（会員・予約・予約フライト・搭乗者）。採番は失敗したトランザクションでも
-巻き戻らない（`lean/Spec/World.lean#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
+巻き戻らない（[`Spec.World`](World.lean#idgenerator)）。N-001・N-002 の選択の成分。 -/
 structure SeqAdvance where
   member : Nat := 0
   reserve : Nat := 0
@@ -26,7 +41,7 @@ structure SeqAdvance where
   passenger : Nat := 0
   deriving DecidableEq, Repr
 
-/-- N-001: 排他制御の失敗 `Conflict` が起きるか（環境）。起きると、採番以外の状態は変わらない（SPEC-004）。
+/-- N-001: 排他制御の失敗 `Conflict` が起きるか（環境）。起きると、採番以外の状態は変わらない（証明課題 SPEC-004）。
 採番は、失敗するまでに進んだ数（`adv`）だけ進む。 -/
 @[nondet "N-001", spec_doc "lean/Spec/Port.lean#トランザクション"]
 inductive ConflictChoice where
@@ -49,7 +64,7 @@ def IoFailureChoice.std : IoFailureChoice := .none
 
 /-- 障害の位置の記述（環境の選択 N-001・N-002 のうち、実行環境が前もって決める部分）: I/O の失敗の位置と、排他の失敗の
 位置。位置が無ければ、その障害は起きない。位置があっても、障害が実際に起きるかと、起きるまでに進んだ採番は、実行で
-決まる（ADR ab93 の 3d・スキル spec-pivot の ADR 61e6）。 -/
+決まる。 -/
 structure FaultSpec where
   /-- I/O の失敗の位置 -/
   ioFailAt : Option Nat
@@ -93,7 +108,7 @@ def ReportDeliveryChoice.std : ReportDeliveryChoice := ⟨10, by decide, 0, fals
 
 /-- N-004: `InvalidRequest` のメッセージの詳細（自由）。`none` なら [Spec] の各操作が定める詳細、`some s` なら任意の文字列 `s`。
 変えうるのは詳細の文字列だけである。 -/
-@[nondet "N-004", spec_doc "lean/Spec/Http.lean"]
+@[nondet "N-004", spec_doc "lean/Spec/Error.lean#分類atrserror"]
 structure InvalidRequestDetail where
   override : Option String
   deriving DecidableEq, Repr
@@ -108,7 +123,7 @@ structure PasswordHashChoice where
   hash : String → String
   injective : ∀ a b, hash a = hash b → a = b
 
-/-- 標準の値: 参照の符号化 `"{test}" ++ raw`（ADR 2d1f の参照アダプタの例）。 -/
+/-- 標準の値: 参照の符号化 `"{test}" ++ raw`（参照アダプタの例）。 -/
 def PasswordHashChoice.std : PasswordHashChoice where
   hash raw := "{test}" ++ raw
   injective a b h := by
@@ -117,3 +132,14 @@ def PasswordHashChoice.std : PasswordHashChoice where
     exact String.ext (List.append_cancel_left this)
 
 end Spec.Nondet
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR cd33](../../docs/decision/cd33-spec-nondet-types-and-env-pre.md)（非決定性の選択の型）、
+  [ADR e56e](../../docs/decision/e56e-conflict-as-spec-nondeterminism.md)（排他と I/O の失敗）、
+  [ADR ca17](../../docs/decision/ca17-reservation-stage2-machines-seed-nondet-advance.md)（採番の前進）、
+  [ADR 90f5](../../docs/decision/90f5-report-queue-at-least-once-delivery.md)（配信保証）、
+  [ADR 2d1f](../../docs/decision/2d1f-password-hashing-port.md)（パスワードのハッシュ）
+- 非決定性の一覧: [abstraction.md](../../docs/spec/abstraction.md#spec-の非決定性n-nnn)（各型の `@[nondet]` と 1 対 1）
+-/

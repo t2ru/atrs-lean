@@ -3,15 +3,13 @@ import Trace
 /-!
 # エラーとメッセージ（`Spec.Error`）
 
-エラーの分類 `AtrsError`（[分類](#分類atrserror)、ADR a4fa）。
-空席照会・予約が使う `Business`・`NotFound`・`InvalidRequest`・`System`・`Conflict` を置く。`Validation` は、
-それを使う機能の backlog（4e0e）で足す。`PreconditionViolation` は [Source] だけの分類なので置かない。
+> **区分: 要約（informative）と草案（draft）の混在。** エラーの分類のうち `Business`・`NotFound`・`InvalidRequest`・
+> `System`・`Conflict` は Lean に形式化した（要約。食い違ったら Lean が正）。入力検証のエラー `Validation` と、
+> メッセージの文言・表示名の表は形式化前の草案である。
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。メッセージ文言は Lean `Spec` のデータとして形式化する。
-
-方針は [ADR a4fa](../../docs/decision/a4fa-errors-as-values-with-stable-codes.md)。
-
-資料: [atrs-messages_ja.properties](https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-web/src/main/resources/i18n/atrs-messages_ja.properties)
+操作が失敗したときに返すエラーの分類と、利用者に示すメッセージを定める。エラーは例外ではなく値として返し、
+分類ごとに安定したコードを持つ。画面・REST API での扱い（表示する画面・HTTP の状態コード）は分類で決まる。
+前提違反 `PreconditionViolation` は [Source] だけの分類で、[Spec] には無い（[Spec] は前提違反を PRE の外とする）。
 -/
 
 namespace Spec.Error
@@ -27,15 +25,21 @@ namespace Spec.Error
 | `InvalidRequest(reason)` | 改竄検知 | 400 エラー画面（`e.ar.fw.0003`） | 500、`code = "e.ar.a0.L9001"`（原典どおり。[`Spec.Http`](Http.lean#apierror)） |
 | `PreconditionViolation(reason)` | 前提違反（[Source] のみ） | 500 システムエラー画面 | 500 |
 | `System(code, args)` | 整合性違反・I/O 失敗 | 500 システムエラー画面 | 500 |
-| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（[ADR e56e](../../docs/decision/e56e-conflict-as-spec-nondeterminism.md)） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
+| `Conflict(reason)` | 排他制御の失敗（デッドロック、ロック待ちのタイムアウト、直列化失敗、楽観ロックの衝突）で、実行環境が吸収できなかったもの。[Spec] では、状態を変更する操作の非決定的な結果である。このとき採番以外の状態は変わらない。実行可能な [Spec] の標準の選択は、この結果を選ばない（N-001） | 500 システムエラー画面（`e.ar.fw.9999`） | 409（`e.ar.fw.9999`） |
 
-Lean `Spec` では、`Business`・`NotFound`・`System` のコードは事由の列挙（`Spec.Error.BusinessError`・`NotFoundError`・`SystemError`）で、引数の数は事由ごとに決まる。コードと引数の綴りは関数 `code`・`args` が与える（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。
+`Business`・`NotFound`・`System` のコードは事由の列挙（`BusinessError`・`NotFoundError`・`SystemError`）で、引数の数は
+事由ごとに決まる。コードと引数の綴りは関数 `code`・`args` が与える。`System` の事由は、いまはポートの I/O の失敗
+`e.ar.fw.9999`（非決定性 N-002）だけである。
 
 `InvalidRequest` のログ用コードは `e.ar.a0.L9001`（「不正リクエスト(パラメータ改竄) {0}」）。
+
+> **TODO(spec):** `System` のコードが食い違う。[`Spec.Port`](Port.lean#トランザクション) の規範は、I/O 失敗のコードを
+> `e.ar.fw.9999` の 1 つだけとし、Lean の `SystemError` も `ioFailure` だけを持つ。一方、[`Spec.Http`](Http.lean#apierror) の
+> ApiError の例は `System("e.ar.a0.L9002")`（更新件数の不一致）、[`Spec.Report`](Report.lean) はレポートの I/O 失敗を
+> `System("e.ar.d1.L0002")` とする。整合性違反の `System` の事由を足すか、I/O 失敗を `e.ar.fw.9999` にそろえるかを決める。
 -/
 
-/-- 業務規則違反の事由（`lean/Spec/Error.lean`）。メッセージのコード `code` と引数 `args` は事由で決まり、
-引数の数は構築子の欄で決まる（不正な状態を表現できない型。ADR 6d36）。 -/
+/-- 業務規則違反の事由。メッセージのコード `code` と引数 `args` は事由で決まり、引数の数は構築子の欄で決まる。 -/
 @[spec_doc "lean/Spec/Error.lean#分類atrserror"]
 inductive BusinessError where
   /-- `e.ar.b1.2001`: 搭乗日が照会可能期間の外 -/
@@ -165,6 +169,8 @@ end Spec.Error
 /-!
 ## 入力検証エラー
 
+> **区分: 草案（draft）。**
+
 - `FieldError(field, code, args)`: 項目に紐づくエラー。`field` は項目パス（例 `passengers[2].age`、`selectFlights[0].depDate`）。
 - `GlobalError(code, args)`: 画面全体のエラー。
 - 単項目検証のコードは制約名（`NotNull`, `NotEmpty`, `Size`, `FixedLength`, `FullWidth`, `FullWidthKatakana`, `HalfWidth`, `HalfWidthNumber`, `Email`, `Min`, `Max`, `Digits`, `ExistInCodeList`, `typeMismatch`）。
@@ -174,6 +180,8 @@ end Spec.Error
 
 /-!
 ## メッセージの置換
+
+> **区分: 草案（draft）。**
 
 `{n}` を n 番目（0 始まり）の引数で置き換える。単項目検証の `{0}` は項目の表示名（下記）。数値引数は区切り無しの十進表記。
 
@@ -205,6 +213,8 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 
 /-!
 ## 業務・画面メッセージ
+
+> **区分: 草案（draft）。**
 
 | コード | 分類 | 文言 |
 | --- | --- | --- |
@@ -247,7 +257,7 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 /-!
 ## ログ・システムコード
 
-ログの文言・形式は対象外（[ADR 84bf](../../docs/decision/84bf-porting-scope.md)）。コードのみ参考として示す。
+ログの文言・形式は移植の対象外である。コードだけを参考として示す。
 
 | コード | 意味 |
 | --- | --- |
@@ -269,6 +279,8 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 
 /-!
 ## 項目の表示名
+
+> **区分: 草案（draft）。**
 
 | 項目 | 表示名 |
 | --- | --- |
@@ -292,4 +304,13 @@ REST API の `NotNull`（`flightSearchQuery.boardingClassCd`, `flightSearchQuery
 「登場クラスコード」は原典の誤記であり、[Source] では再現する。[Spec] では「搭乗クラスコード」とする（既知差異 [D-008](../../docs/spec/abstraction.md#既知差異)）。
 
 出典: atrs-web/src/main/resources/i18n/atrs-messages_ja.properties, atrs-fields_ja.properties, ValidationMessages.properties, atrs-domain/.../common/logging/LogMessages.java
+-/
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR a4fa](../../docs/decision/a4fa-errors-as-values-with-stable-codes.md)（エラーを値として返し、安定したコードを持つ）、[ADR e56e](../../docs/decision/e56e-conflict-as-spec-nondeterminism.md)（排他の失敗を仕様の非決定性にする）、[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)（事由の列挙）、[ADR 84bf](../../docs/decision/84bf-porting-scope.md)（移植の範囲。ログは対象外）
+- 既知差異: D-008（表示名の誤記）。[一覧](../../docs/spec/abstraction.md#既知差異)
+- 資料: [atrs-messages_ja.properties](https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-web/src/main/resources/i18n/atrs-messages_ja.properties)
+- 移植元モデル: 原典の例外のクラスは `SourceModel.Domain.Common.Exception`（[`lean/SourceModel/Domain/Common/Exception/`](../SourceModel/Domain/Common/Exception/)）
 -/

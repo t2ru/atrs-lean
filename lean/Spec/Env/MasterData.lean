@@ -4,17 +4,19 @@ import Spec.Env.Config
 /-!
 # マスタデータ（`Spec.Env.MasterData`）
 
-マスタデータ。起動時に読み込まれ、実行中は変化しない不変の入力であり、
-`World` には含めない。不変条件 MD-1〜MD-8（`MasterData.Valid`）は、[Spec] の各操作の PRE に含める。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
+> 「[Source] で破れた場合」の列は、前提の外での原典の振る舞いの参考である。
 
-- 参照関数は、各マスタを先頭から調べて最初に一致したものを返す。MD-1〜MD-4 の下では一致するものは
-  高々 1 つなので、結果は順序に依存しない（`routeOf_eq_some_iff` など）。
-- SPEC 課題（SPEC-001〜003）: 参照関数をまとめた状態を持たない抽象機械 `queryMachine` について示す。
+マスタデータ `MasterData` は、空港・区間・便・搭乗クラス・運賃種別・ピーク時期・機材・カード種別の表の組である。
+起動時に読み込まれ、実行中は変化しない不変の入力として純粋関数に渡す（環境の一部。[`Spec.Env`](../Env.lean)）。
+抽象状態 `World` には含めない。
 
-> **区分: 要約（informative）と草案（draft）の混在。** 構造・不変条件・参照関数・コードリストは Lean に形式化した（[`Spec.Env.MasterData`](MasterData.lean)、[`Spec.Env.CodeList`](CodeList.lean)。[backlog 591d](../../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。これらの節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../../docs/decision/61bc-lean-spec-as-normative-source.md)）。「[Source] で破れた場合」と「シードデータ」は草案（draft）である。シードデータの内容は fixture（`conformance/fixtures/`）として管理し、Lean `Spec` には含めない。
+- 不変条件 MD-1〜MD-8（`MasterData.Valid`）は、[Spec] の各操作の事前条件（PRE）に含まれる。
+- 参照関数は、各表を先頭から調べて最初に一致したものを返す。MD-1〜MD-4 の下では一致するものは高々 1 つなので、
+  結果は表の並びに依存しない（`routeOf_eq_some_iff` など）。
+- 原典は `*Provider` クラスが起動時にマスタをキャッシュする（出典: atrs-domain/.../common/masterdata/*Provider.java）。
 
-マスタは起動時に読み込まれ、実行中は変化しない不変の値 `MasterData` として純粋関数に渡す（[ADR f0e4](../../../docs/decision/f0e4-functional-core-with-ports.md)）。
-原典では `*Provider` クラスがキャッシュしている（出典: atrs-domain/.../common/masterdata/*Provider.java）。
+シードのマスタ（原典の初期データ）は [`Spec.Seed`](../Seed.lean) にある。
 
 資料: [00200_insert_fixed_value.sql](https://github.com/terasolunaorg/atrs/blob/f4bfbf0615eb91805546c9c780d4761be92ce17e/JavaConfig-Thymeleaf/atrs/atrs-initdb/src/sqls/integration-test-postgres/00200_insert_fixed_value.sql)
 -/
@@ -46,13 +48,13 @@ namespace MasterData
 
 ### Route
 
-`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない（[ADR c108](../../../docs/decision/c108-master-data-source-model-and-spec-fixes.md)）
+`routeNo: Nat`, `depAirportCd`, `arrAirportCd`, `basicFare: Nat`（路線基本運賃）。DB の `FLIGHT_TIME`（所要時間）は、原典のどの処理も読まないので [Spec] には持たない
 
 ### FlightMaster
 
 `flightName`, `routeNo`, `departureTime: HourMinute`, `arrivalTime: ArrivalTime`, `craftType`
 
-到着時刻は **出発日 0:00 からの時分** で表し、24 時以降は翌日着である（[`Spec.Prim.Time`](../Prim/Time.lean#arrivaltime)、[ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。シードの NTT523（HND→OKA）・NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`arrivalTime < departureTime` の便は [Spec] の不変条件 MD-6 で禁止する。
+到着時刻は **出発日 0:00 からの時分** で表し、24 時以降は翌日着である（[`Spec.Prim.Time`](../Prim/Time.lean#arrivaltime)）。シードの NTT523（HND→OKA）・NTT528（OKA→HND）の到着時刻は `2415`（翌日 0:15）である。`arrivalTime < departureTime` の便は [Spec] の不変条件 MD-6 で禁止する。
 
 ### BoardingClass
 
@@ -88,11 +90,11 @@ structure Route where
   routeNo : Nat
   depAirportCd : AirportCd
   arrAirportCd : AirportCd
-  /-- 路線基本運賃。所要時間（DB の `FLIGHT_TIME`）は、原典のどの処理も読まないので持たない（ADR c108）。 -/
+  /-- 路線基本運賃。所要時間（DB の `FLIGHT_TIME`）は、原典のどの処理も読まないので持たない。 -/
   basicFare : Nat
   deriving DecidableEq, Repr
 
-/-- 便マスタ。到着時刻は出発日 0:00 からの時分で表す（翌日着は 24 時以降。ADR ce36）。 -/
+/-- 便マスタ。到着時刻は出発日 0:00 からの時分で表す（翌日着は 24 時以降）。 -/
 @[spec_doc "lean/Spec/Env/MasterData.lean#flightmaster"]
 structure FlightMaster where
   flightName : FlightName
@@ -199,7 +201,7 @@ namespace MasterData
 /-!
 ## 不変条件（[Spec]）
 
-Lean: `Spec.Env.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定可能）。MD-3 のうちフライトの参照整合性は、フライトを持つ `World` の不変条件で課す。
+`MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判定可能）。
 
 [Spec] の全定義は `MasterData` が次を満たすことを前提とする。[Source] はこれらを検査せず、満たさない場合の振る舞いは原典どおり（多くは「最初に見つかったもの」または上書き）である。
 
@@ -207,14 +209,14 @@ Lean: `Spec.Env.MasterData.Valid`（成分 `md1`〜`md8` が `MD1`〜`MD8`。判
 | --- | --- | --- |
 | MD-1 | 各キーは一意。各マスタの `displayOrder` も一意（原典の DB 制約 `DISPLAY_ORDER INT NOT NULL UNIQUE` と同じ） | `HashMap` への後勝ち上書き。`displayOrder` の重複は DB が拒む |
 | MD-2 | `(depAirportCd, arrAirportCd)` は区間間で一意。`depAirportCd ≠ arrAirportCd` | 後勝ち上書き |
-| MD-3 | 参照整合性（区間の空港・便マスタの区間。フライトの便名/搭乗クラス/運賃種別の存在は `World` の不変条件、運賃計算の入力が指すマスタの存在は各操作の PRE で課す） | `null` による前提違反（運賃計算の入力の場合は参考 [D-035](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
+| MD-3 | 参照整合性（区間の空港・便マスタの区間）。フライトの便名・搭乗クラス・運賃種別がマスタにあること（`World.RefMaster`）と、会員のカード種別がマスタにあること（`World.MemberRefMaster`）は、マスタと状態の組の述語で、`World` の不変条件には含めない（予約は PRE に課し、空席照会は課さない。[`Spec.World`](../World.lean#world抽象状態)）。運賃計算の入力が指すマスタの存在は各操作の PRE で課す | `null` による前提違反（運賃計算の入力の場合は参考 [D-035](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
 | MD-4 | ピーク時期の期間は互いに重ならない（`peakStartDate ≤ peakEndDate`） | 取得順（未規定）で最初に一致したもの（参考 [D-004](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-5 | 同一区間の便マスタは出発時刻が互いに異なる | 空席照会で同一出発時刻の便が 1 件に統合される（参考 [D-005](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない） |
 | MD-6 | 各便マスタで `departureTime ≤ arrivalTime`（出発日 0:00 からの分数で比べる） | — |
 | MD-7 | 各運賃種別で `rsrvAvailableEndDayNum ≤ rsrvAvailableStartDayNum`、`discountRate ≤ childFareRate`、`passengerMinNum ≥ 1` | — |
 | MD-8 | [`Spec.Model`](../Model.lean#値域) の値域（空港コードは区切り行のコード `NOP` でない。英大文字 3 文字の形式は型 `AirportCd` が持つ） | int32 の折り返し（参考 [D-030](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）。空港コードに `-` があると区間のキーが衝突しうるが、[Spec] の型はそのマスタを表せない（[D-036](../../../docs/spec/abstraction.md#既知差異)。D-027 に覆われる）。`NOP` の空港があると、コードリストの区切り行がその空港で置き換わる（参考 [D-029](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)） |
 
-マスタは不変の入力であり（[`Spec.Port`](../World.lean#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005、MD-8 は D-029・D-030・D-036）は差異ではなく、参考として [abstraction.md](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
+マスタは不変の入力であり（[`Spec.World`](../World.lean#world抽象状態)）、MD-1〜MD-8 は [Spec] の各操作の事前条件 PRE に含まれる。リファインメントの証明義務は PRE の内についてだけ課される。破れた場合の [Source] の振る舞い（MD-1〜MD-3 は D-015、MD-4・MD-5 は D-004・D-005、MD-8 は D-029・D-030・D-036）は差異ではなく、参考として [abstraction.md](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない) に記録する。
 -/
 
 /-! ### 不変条件 MD-1〜MD-8 -/
@@ -237,7 +239,7 @@ def MD2 (md : MasterData) : Prop :=
   ∀ r ∈ md.routes, r.depAirportCd ≠ r.arrAirportCd
 
 /-- MD-3: 参照整合性（区間の空港、便マスタの区間）。フライトの便名・搭乗クラス・運賃種別の存在は、
-フライトを持つ `World` の不変条件で課す。 -/
+マスタと `World` の組の述語 `World.RefMaster` で表す。 -/
 @[spec_doc "lean/Spec/Env/MasterData.lean#不変条件spec", gap "D-015"]
 def MD3 (md : MasterData) : Prop :=
   (∀ r ∈ md.routes, (∃ a ∈ md.airports, a.code = r.depAirportCd) ∧ (∃ a ∈ md.airports, a.code = r.arrAirportCd)) ∧
@@ -270,7 +272,7 @@ def MD7 (cfg : Config) (md : MasterData) : Prop :=
 @[gap "D-029"]
 def airportNopCode : String := "NOP"
 
-/-- MD-8: 値域（`lean/Spec/Model.lean#値域` のうちマスタのもの）。 -/
+/-- MD-8: 値域（[`Spec.Model`](../Model.lean#値域) の値域のうちマスタのもの）と、空港コードが区切り行のコードでないこと。 -/
 @[spec_doc "lean/Spec/Env/MasterData.lean#不変条件spec", gap "D-029", "D-030"]
 def MD8 (md : MasterData) : Prop :=
   (∀ a ∈ md.airports, a.code.val ≠ airportNopCode) ∧
@@ -307,22 +309,16 @@ instance (cfg : Config) (md : MasterData) : Decidable (md.Valid cfg) :=
 /-!
 ## 参照関数
 
-**[Spec=Source]**（MD-1〜MD-4 の下で）Lean: `Spec.Env.MasterData.routeOf` ほか。どれも先頭から調べて最初に一致したものを返し、不変条件の下では一致するものが高々 1 つなので、結果は並びに依存しない（`routeOf_eq_some_iff` など）。
-
-参照関数・設定・コードリストをまとめた抽象機械は [`Spec.MasterQuery`](../MasterQuery.lean) の `queryMachine` である。PRE は、設定とマスタの不変条件と、問い合わせの引数の値域（`Query.Valid`。区間の空港コード（生の文字列）が空港コードの形式 `AirportCd.valid` に合い、便名が `WellFormed` で、便名は空白でない（[文字クラス](../Prim/Text.lean#文字クラス) の `hasText`。原典の `Assert.hasText`））である。引数がこれを満たさないときの [Source] の振る舞い（`Assert.hasText` の例外、`-` を含む空港コードでのキャッシュのキーの衝突）は、参考 [D-034](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。
-
-機械の答えのうち、搭乗クラスと運賃種別は表示順を除いた射影（`BoardingClassInfo`・`FareTypeInfo`）である。表示順を観測するのはコードリストの問い合わせだけとする（原典の参照の結果にも表示順は無い。[ADR f353](../../../docs/decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。SPEC 課題（SPEC-001〜003・SPEC-007）はこの機械について証明した。
-
-[Source] の具体機械は [`SourceModel.MasterQuery`](../../SourceModel/MasterQuery.lean) の `queryConcrete` である（[ADR c108](../../../docs/decision/c108-master-data-source-model-and-spec-fixes.md)）。
-- 起動時に、各 Provider の `load()` とコードリストの読み込みを行う。
-- Mapper の文の結果は順序が未規定なので、許される並びのどれでも答えが同じことを ABS-026 で示す（[backlog 25f7](../../../docs/backlog/25f7-fare-calculation-both-models.md) の第 2 段 b）。
-- Mapper の SQL の写しは、PostgreSQL で差分実行して照合する（`conformance/sql/master-data.json`）。
-- DB の値が [Spec] の型で表せない場合は、既知差異 [D-027](../../../docs/spec/abstraction.md#既知差異) である。
+**[Spec=Source]**（MD-1〜MD-4 の下で）どの参照関数も表を先頭から調べて最初に一致したものを返す。不変条件の下では一致するものが
+高々 1 つなので、結果は表の並びに依存しない（`routeOf_eq_some_iff` など）。
 
 - `routeOf(dep, arr) : Route?` — `(dep, arr)` に一致する区間。無ければ無し。
 - `flightMasterOf(name) : FlightMaster?`、`fareTypeOf(cd) : FareType?`、`boardingClassOf(cd) : BoardingClass?`
 - `peakTimeOn(d) : PeakTime?` — `peakStartDate ≤ d ≤ peakEndDate` を満たすピーク時期。[Source] では `peakTimes` を取得順に走査し最初に一致したもの。
 - `multiplicationRatioOn(d)` = `peakTimeOn(d)` があればその `multiplicationRatio`、無ければ `100`。
+
+参照関数・設定・コードリストへの問い合わせをまとめた抽象機械と、その事前条件（問い合わせの引数の値域）は
+[`Spec.MasterQuery`](../MasterQuery.lean) にある。
 
 出典: `java:jp.co.ntt.atrs.domain.common.masterdata.PeakTimeProvider#getPeakTime(LocalDate)`, `java:jp.co.ntt.atrs.domain.common.masterdata.RouteProvider#getRouteByAirportCd(String,String)`, `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#calculateBasicFare(int,BoardingClassCd,LocalDate)`（private の `getMultiplicationRatio` を含む）
 -/
@@ -360,7 +356,7 @@ def multiplicationRatioOn (md : MasterData) (d : Date) : Nat :=
   | some p => p.multiplicationRatio
   | none => 100
 
-/-! ## 参照関数の性質（MD-1〜MD-4 の下で、結果は順序に依存しない） -/
+/-! ## 性質（MD-1〜MD-4 の下で、参照関数の結果は表の並びに依存しない） -/
 
 /-- 述語を満たす要素が高々 1 つなら、`find?` の結果は、述語を満たす唯一の要素である。 -/
 theorem find?_eq_some_iff_of_pairwise {α : Type} {p : α → Bool} {l : List α} {x : α}
@@ -445,3 +441,20 @@ theorem peakTimeOn_eq_some_iff {md : MasterData} (h : md.MD4) {d : Date} {p : Pe
 end MasterData
 
 end Spec.Env
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR f0e4](../../../docs/decision/f0e4-functional-core-with-ports.md)（マスタは不変の入力として純粋関数に渡す）、
+  [ADR c108](../../../docs/decision/c108-master-data-source-model-and-spec-fixes.md)（マスタの移植元モデルと、所要時間を持たないこと）、
+  [ADR ce36](../../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)（翌日着の到着時刻）、
+  [ADR f353](../../../docs/decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)（区切り行のコード `NOP`）
+- 既知差異: DB の値が [Spec] の型で表せない場合は D-027、`-` を含む空港コードは D-036（いずれも
+  [abstraction.md](../../../docs/spec/abstraction.md#既知差異)）。不変条件が破れた場合の [Source] の振る舞い
+  （D-003・D-004・D-005・D-015・D-029・D-030・D-035）は差異ではなく参考
+  （[abstraction.md](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
+- 移植元モデル: [`SourceModel.Domain.Common.Masterdata`](../../SourceModel/Domain/Common/Masterdata/)（各 Provider）と
+  [`SourceModel.Domain.Repository`](../../SourceModel/Domain/Repository/)（Mapper の SQL の写し）
+- 抽象化の証明: [`Abstraction.MasterData`](../../Abstraction/MasterData.lean)
+- 適合テストベクタ: `conformance/shared/master-data/`、SQL の差分実行の結果 `conformance/sql/master-data.json`
+-/

@@ -1,9 +1,11 @@
 import Spec.Prim.Time
 
 /-!
-# Spec.Prim.Format
+# 表示の書式（`Spec.Prim.Format`）
 
-書式（`lean/Spec/Prim/Format.lean#書式`）。いずれもゼロ埋めの固定桁である（年は 1〜9999 なので 4 桁）。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
+
+画面・CSV・JSON に出す日付・時刻・金額の文字列の形を定める。表示はロケールに依存せず、曜日は常に日本語で書く。
 -/
 
 namespace Spec.Prim.Format
@@ -17,7 +19,7 @@ def padNat (w n : Nat) : String :=
 /-!
 ## 書式
 
-**[Spec]** Lean: [`Spec.Prim.Format`](Format.lean)。いずれもゼロ埋めの固定桁である。
+**[Spec]** 日付と時刻の各部分は、ゼロ埋めの固定桁で書く（年は 1〜9999 なので 4 桁）。
 
 | 名前 | 形式 | 例 |
 | --- | --- | --- |
@@ -29,9 +31,7 @@ def padNat (w n : Nat) : String :=
 | `fmtYen` | 3 桁区切り（`###,###`） | `28,800` |
 | `fmtPaymentDate` | `MM月dd日(E)`。曜日は日本語の 1 文字、括弧は半角 | `11月10日(火)` |
 
-適合テストベクタは `conformance/shared/format/`（[conformance.md](../../../docs/spec/conformance.md#操作名)）。
-
-**[Source]**（draft）原典 `DateTimeUtil.toFormatTimeString` は、長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする。`fmtPaymentDate` に当たる `#temporals.format(paymentDate,'MM月dd日(E)')` は要求の `Accept-Language` に従い、英語なら `Wed` などになる。予約入力・予約確認・予約失敗の画面の搭乗日（`#temporals.format(departureDate,'MM月dd日(E)')`）も同じ（既知差異 [D-019](../../../docs/spec/abstraction.md#既知差異)）。
+**[Source]** 原典 `DateTimeUtil.toFormatTimeString` は、長さ 3 以上の文字列 s を `s[0..2] ++ ":" ++ s[2..]` とする。`fmtPaymentDate` に当たる `#temporals.format(paymentDate,'MM月dd日(E)')` は要求の `Accept-Language` に従い、英語なら `Wed` などになる。予約入力・予約確認・予約失敗の画面の搭乗日（`#temporals.format(departureDate,'MM月dd日(E)')`）も同じ（既知差異 [D-019](../../../docs/spec/abstraction.md#既知差異)）。
 -/
 
 /-- `yyyy/MM/dd` -/
@@ -82,3 +82,11 @@ def fmtPaymentDate (d : Date) : String :=
 #guard fmtYen 1200000000 == "1,200,000,000"
 
 end Spec.Prim.Format
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6eb2](../../../docs/decision/6eb2-date-and-time-model.md)（暦日と時刻のモデル）
+- 既知差異: D-019（曜日の言語）。[一覧](../../../docs/spec/abstraction.md#既知差異)
+- 適合テストベクタ: `conformance/shared/format/`（[conformance.md](../../../docs/spec/conformance.md#操作名)）
+-/

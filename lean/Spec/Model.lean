@@ -3,15 +3,18 @@ import Spec.Prim
 /-!
 # ドメインモデル（`Spec.Model`）
 
-列挙・コード値・エンティティ・値域。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-- 列挙の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
-- コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・便名・カード種別コード・会員番号）は、
-  形式の証明を欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。マスタに存在する
-  ことは `Spec.Env.MasterData` の参照関数と不変条件で表す。
-- エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
+業務で扱う値と実体の型を定める。列挙（往復・片道、搭乗クラス、運賃種別、性別、往路・復路）、コード値（空港コード・
+便名・会員番号・予約番号・カード種別コード・パスワードのハッシュ）、エンティティ（フライト・搭乗者・予約・予約フライト・
+会員）と、計算が扱う量の値域である。
 
-> **区分: 要約（informative）と草案（draft）の混在。** [Spec] の定義は Lean `Spec` に形式化した（[backlog 591d](../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。各節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。**[Source]** と書いた記述は、`SourceModel` に形式化するまでの草案（draft）である。
+- 列挙の綴りは原典の Java の `enum` 名と同じで、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
+- 形式の決まったコード値（空港コード・便名・カード種別コード・会員番号）は形式の証明を値に持ち、形式に合わない値を
+  表せない。文字列からは `ofString?` で読む。マスタに存在することは、マスタの参照関数と不変条件
+  （[`Spec.Env.MasterData`](Env/MasterData.lean)）で表す。
+- エンティティの表の `?` は省略可能（`Option`）である。採番される番号（予約番号・予約フライト番号・搭乗者番号・
+  会員番号）は、登録の操作で決まる。
 -/
 
 namespace Spec.Model
@@ -22,21 +25,24 @@ open Spec.Prim
 /-!
 ## 列挙
 
-**[Spec=Source]** Lean: [`Spec.Model`](Model.lean)。列挙値の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（Lean の `toCode`・`ofCode?`）。
+**[Spec=Source]** 列挙値の綴りは原典の Java の `enum` 名と同じで、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
 
 | 型 | 値 | 意味 |
 | --- | --- | --- |
 | `FlightType` | `RT`, `OW` | 往復, 片道 |
 | `BoardingClassCd` | `N`, `S` | 一般席, 特別席 |
-| `FareTypeCd` | `OW`, `RT`, `RD1`, `RD7`, `ED`, `LD`, `GD`, `SOW`, `SRT`, `SRD` | [`Spec.Env.MasterData`](Env/MasterData.lean#運賃種別) |
+| `FareTypeCd` | `OW`, `RT`, `RD1`, `RD7`, `ED`, `LD`, `GD`, `SOW`, `SRT`, `SRD` | 名前・割引率などはマスタ（[`FareType`](Env/MasterData.lean#faretype)） |
 | `Gender` | `F`, `M` | 女性, 男性 |
 | `LineType` | `OUTWARD`, `HOMEWARD` | 往路, 復路（表示用ラベル「往路」「復路」） |
 
-運賃種別の分類（出典: atrs-domain/.../common/util/FareTypeUtil.java）:
+運賃種別は、片道の予約に使うものと往復の予約に使うものに分かれる。どの運賃種別もどちらか一方だけに属する
+（`fareType_partition`）。
 
 - `oneWayFareTypes = [OW, RD1, RD7, ED, LD, GD, SOW, SRD]`（この順序）
 - `roundTripFareTypes = [RT, SRT]`（この順序）
 - `fareTypesFor(OW) = oneWayFareTypes`、`fareTypesFor(RT) = roundTripFareTypes`
+
+出典: atrs-domain/.../common/util/FareTypeUtil.java
 -/
 
 
@@ -129,16 +135,16 @@ theorem fareType_partition (c : FareTypeCd) : (c ∈ oneWayFareTypes) ≠ (c ∈
 /-!
 ## コード値
 
-**[Spec]** Lean: [`Spec.Model`](Model.lean)。`String` を包む structure で、`AirportCd`・`FlightName`・`MembershipNumber`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない。[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.Env.MasterData`](Env/MasterData.lean)）。
+**[Spec]** コード値は文字列を包む型で、`AirportCd`・`FlightName`・`MembershipNumber`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.Env.MasterData`](Env/MasterData.lean)）。
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
 | `AirportCd` | 英大文字 3 文字（マスタに存在するもの。形式は型が持つ。マスタのコードが形式に合わない場合は既知差異 D-036）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` ではない（生の文字列）。区間の検索で見つからなければ業務エラーになる（[`Spec.Env.CodeList`](Env/CodeList.lean#空港コードリスト画面用)） | `HND` |
 | `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（形式 `FlightName.valid` は型が持つ。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無く、形式に合わない DB の便名は既知差異 D-027）。選択フライトの便名は生の文字列で、便マスタを値で引く。マスタの参照の問い合わせでは、空白でない（`hasText`）ことも課す | `NTT001` |
 | `MembershipNumber` | 数字 10 文字（形式は型が持つ。予約入力の会員番号は生の文字列で照合し、照合に成功した番号を登録で読む） | `0000000001` |
-| `ReserveNo` | 採番の値（自然数。上限なし）で持ち、表記は 10 桁にゼロ埋めした十進文字列（採番が 10^10 以上なら 11 桁以上。[Source] との違いは既知差異 D-009）。表記を読むときは、この形でない文字列を拒む（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)） | `0000000123` |
+| `ReserveNo` | 採番の値（自然数。上限なし）で持ち、表記は 10 桁にゼロ埋めした十進文字列（採番が 10^10 以上なら 11 桁以上。[Source] との違いは既知差異 D-009）。表記を読むときは、この形でない文字列を拒む | `0000000123` |
 | `CreditTypeCd` | 3 文字（マスタに存在するもの。形式は型が持つ） | `VIS` |
-| `PasswordHash` | 不透明な文字列（[ADR 2d1f](../../docs/decision/2d1f-password-hashing-port.md)） | — |
+| `PasswordHash` | 不透明な文字列（パスワードのハッシュのポートが作る。[`Spec.Port`](Port.lean#passwordhasher)） | — |
 -/
 
 
@@ -180,7 +186,7 @@ theorem AirportCd.ofString?_isSome_iff {s : String} : (AirportCd.ofString? s).is
   unfold AirportCd.ofString?
   split <;> simp_all
 
-/-- 便名の形式: 1〜6 文字で、`"`・`,`・改行を含まない（[Spec] の前提。ADR f353。`toList` で見る）。 -/
+/-- 便名の形式: 1〜6 文字で、`"`・`,`・改行を含まない（[Spec] の前提。`toList` で見る）。 -/
 @[spec_doc "lean/Spec/Model.lean#コード値"]
 def FlightName.valid (s : String) : Bool :=
   1 ≤ s.toList.length && s.toList.length ≤ 6 &&
@@ -255,7 +261,7 @@ theorem MembershipNumber.ofString?_isSome_iff {s : String} :
   unfold MembershipNumber.ofString?
   split <;> simp_all
 
-/-- 予約番号。採番の値で持つ（上限を持たない。ADR 6d36）。表記 `val` は 10 桁にゼロ埋めした十進文字列で、採番が
+/-- 予約番号。採番の値で持つ（上限を持たない）。表記 `val` は 10 桁にゼロ埋めした十進文字列で、採番が
 10^10 以上なら 11 桁以上になる（[Source] のシーケンスは上限で循環する。既知差異 D-009）。どの採番の値も予約番号として
 妥当なので、型は不正な値を持たない。 -/
 @[spec_doc "lean/Spec/Model.lean#コード値", gap "D-009"]
@@ -319,17 +325,18 @@ theorem CreditTypeCd.ofString?_isSome_iff {s : String} :
   unfold CreditTypeCd.ofString?
   split <;> simp_all
 
-/-- パスワードのハッシュ（不透明。ADR 2d1f）。 -/
+/-- パスワードのハッシュ（不透明）。 -/
 @[spec_doc "lean/Spec/Model.lean#コード値", raw_input "パスワードエンコーダのポートが返す不透明な値（ADR 2d1f）"]
 structure PasswordHash where
   val : String
   deriving DecidableEq, Repr
 
-/-! ## エンティティ -/
 /-!
 ## エンティティ
 
-**[Spec]** Lean: [`Spec.Model`](Model.lean)。型は [Spec] の形で示す。`?` は省略可能（`Option`）。[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
+**[Spec]** 型は [Spec] の形で示す。`?` は省略可能（`Option`）。表の「説明」の文字種・長さ（全角カタカナ 1〜10 文字など）は、
+入力検証（[`Spec.Validation`](Validation.lean)）が入力に課す条件で、型の不変条件ではない。
+[Source] では原典の Java クラスの同名フィールドに対応し、参照型はすべて `null` になりうる。
 
 ### Flight
 
@@ -379,7 +386,7 @@ structure PasswordHash where
 
 ### ReserveFlights
 
-予約の便と搭乗者。形が型で決まる（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。
+予約の便と搭乗者。片道か往復かで形が決まり、便の数と搭乗者番号の数の食い違いを表せない。
 
 | 構築子 | 内容 |
 | --- | --- |
@@ -575,8 +582,8 @@ structure Member where
 /-!
 ## 値域
 
-[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](Model.lean)）にある。マスタの値域は `MasterData.MD8`（[`Spec.Env.MasterData`](Env/MasterData.lean#不変条件spec)）である。
-マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 70eb](../../docs/decision/70eb-refinement-non-vacuity-obligations.md)、[abstraction.md](../../docs/spec/abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 01d4](../../docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
+[Spec] は任意精度の整数で定義するが、固定長の整数で実装する移植先のために値域を定める。上限の値は `Spec.Model.Range` にある。マスタの値域は MD-8（[`Spec.Env.MasterData`](Env/MasterData.lean#不変条件spec)）である。
+マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（[`Spec.Env`](Env.lean)）に含め、その下で PRE が成り立つことを示す。リファインメントの証明義務は PRE の内についてだけ課されるので、値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |
 | --- | --- |
@@ -592,7 +599,7 @@ structure Member where
 このとき基本運賃は `100,000,000` 以下、合計金額は `1,200,000,000` 以下であり、[Spec] の **結果** は符号付き 32 ビット整数に収まる。
 ただし小児運賃の **途中計算** `b × (childFareRate − r)`（[`Spec.Fare`](Fare.lean#合計金額)）は最大 `10,000,000,000` になり、32 ビットに収まらない。
 
-- [Source] は、この途中計算が `2,147,483,647` を超えると int32 で折り返す（既知差異 [D-012](../../docs/spec/abstraction.md#既知差異)、課題 [ABS-005](../../docs/spec/abstraction.md#証明課題)）。値域は狭めず、差異として扱う。
+- [Source] は、この途中計算が `2,147,483,647` を超えると int32 で折り返す（既知差異 [D-012](../../docs/spec/abstraction.md#既知差異)）。値域は狭めず、差異として扱う。
 - 移植先（`TargetModel`）は、途中計算に 64 ビット以上の整数を使わなければならない。
 -/
 
@@ -638,3 +645,11 @@ def maxAge : Nat := 999
 end Range
 
 end Spec.Model
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)（不正な状態を表現できない型）、[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)（厳密な整数と値域）、[ADR 2d1f](../../docs/decision/2d1f-password-hashing-port.md)（パスワードのハッシュ）、[ADR 70eb](../../docs/decision/70eb-refinement-non-vacuity-obligations.md)（入口の環境の前提）、[ADR 01d4](../../docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)（PRE の内のリファインメント）
+- 既知差異: D-009（採番の上限）・D-012（小児運賃の途中計算）・D-018（`creditTerm` の長さ）・D-027（表せない DB の値）・D-030（マスタの値域）・D-036（形式に合わない空港コード）。[一覧](../../docs/spec/abstraction.md#既知差異)
+- 移植元モデル: 原典のドメインモデルのクラスは `SourceModel.Domain.Model`（[`lean/SourceModel/Domain/Model/`](../SourceModel/Domain/Model/)）
+-/

@@ -150,7 +150,7 @@ def D010 : Gap where
 @[gap_entry]
 def D011 : Gap where
   id := gid!"D-011"
-  sites := ne![⟨ne!"Email", ne!"lean/Spec/Prim/Text.lean#email", ""⟩]
+  sites := ne![⟨ne!"Email", ne!"lean/Spec/Validation.lean#email", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D011`: ドメイン部が ASCII だけからなる"
@@ -244,7 +244,7 @@ def D017 : Gap where
 @[gap_entry]
 def D018 : Gap where
   id := gid!"D-018"
-  sites := ne![⟨ne!"Min/Max", ne!"lean/Spec/Prim/Text.lean#文字クラス", ""⟩, ⟨ne!"creditTerm", ne!"lean/Spec/Model.lean#member", ""⟩]
+  sites := ne![⟨ne!"Min/Max", ne!"lean/Spec/Validation.lean#単項目検証の制約", ""⟩, ⟨ne!"creditTerm", ne!"lean/Spec/Model.lean#member", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D018`: `creditMonth`・`creditYear` が `[0-9]+` で、`creditTerm` が 5 文字以下"
