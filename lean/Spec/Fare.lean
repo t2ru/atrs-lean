@@ -7,11 +7,17 @@ import Spec.Env
 /-!
 # 運賃計算（`Spec.Fare`）
 
-運賃計算。厳密整数で計算する（ADR e41d）。
-[Source] との差異は D-001・D-002・D-012（[既知差異](../../docs/spec/abstraction.md#既知差異)）で、
-リファインメントの証明は backlog bbcc で行う。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-> **区分: 要約（informative）。** [Spec] は Lean [`Spec.Fare`](Fare.lean)、[Source] は Lean [`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)・[`SourceModel.Domain.Common.Util.FareUtil`](../SourceModel/Domain/Common/Util/FareUtil.lean)・[`SourceModel.Domain.Service.B2.TicketReserveServiceImpl`](../SourceModel/Domain/Service/B2/TicketReserveServiceImpl.lean)（Provider のキャッシュは `SourceModel.Domain.Common.Masterdata.*Provider`。原典のクラスと 1 対 1。[ADR e41c](../../docs/decision/e41c-source-model-mirrors-java-tree.md)）に形式化した（[backlog 25f7](../../docs/backlog/25f7-fare-calculation-both-models.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。例は適合テストベクタ `conformance/{spec,source-model,shared}/fare/` として両モデルで実行する（[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md)）。
+予約の支払額を求める 3 つの計算を定める。
+
+- [基本運賃](#基本運賃): 区間の路線基本運賃に搭乗クラスの加算料金を足し、搭乗日のピーク時期の積算比率を掛ける。
+- [運賃](#運賃): 大人 1 名・1 区間の運賃。基本運賃から運賃種別の割引率を引き、100 円単位に切り上げる。
+- [合計金額](#合計金額): 予約全体の支払額。大人の運賃と小児の運賃を便ごとに足し、合計を 100 円単位に切り上げる。
+
+計算はすべて厳密な整数で行う（浮動小数点数を使わない）。入力のマスタ・設定は [`Spec.Env`](Env.lean) の不変の入力である。
+[Source] は double と 32 ビット整数で計算するので、境界で値が異なる（既知差異 D-001・D-002・D-012。各節の「差異」）。
+各計算は、状態を持たない抽象機械としても与える（[抽象機械](#抽象機械)）。
 -/
 
 namespace Spec.Fare
@@ -25,7 +31,7 @@ open Spec.Prim Spec.Env.MasterData
 
 ### シグネチャ
 
-`basicFare(routeBasicFare: Nat, boardingClassCd, depDate: Date; master) : Nat`
+`basicFare(master; routeBasicFare: Nat, boardingClassCd, depDate: Date) : Nat?`（搭乗クラスがマスタに無ければ無し）
 
 Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、[Source] `SourceModel.Domain.Service.B0.TicketSharedServiceImpl.calculateBasicFare`（`getMultiplicationRatio` を含む）。
 
@@ -53,7 +59,7 @@ basicFare = jd2i( jdmul( jd(j32add(routeBasicFare, extra)),
 
 （原典: `(int) ((basicFareOfRoute + boardingClassFare) * (multiplicationRatio * 0.01))`）
 
-差異: [D-001](../../docs/spec/abstraction.md#既知差異)。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`(routeBasicFare + extra) × ratio` が 100 で割り切れ、積算比率の因子 `ratio × 0.01`（double）が安全でない（`ratio/100` を `2^-54` 以上下回る）ときに限る。例えば `routeBasicFare + extra = 100, ratio = 29` で [Spec] は 29、[Source] は `100 × (29 × 0.01)` が `28.999999999999996` になり、切り捨てて 28 となる。`dev_D001` の下でのリファインメントは課題 [ABS-001](../../docs/spec/abstraction.md#証明課題)、差の条件は ABS-007（[ADR e9bc](../../docs/decision/e9bc-fare-double-analysis.md)）。
+差異: [D-001](../../docs/spec/abstraction.md#既知差異)。[Source] は [Spec] に等しいか 1 小さい。1 小さいのは、`(routeBasicFare + extra) × ratio` が 100 で割り切れ、積算比率の因子 `ratio × 0.01`（double）が安全でない（`ratio/100` を `2^-54` 以上下回る）ときに限る。例えば `routeBasicFare + extra = 100, ratio = 29` で [Spec] は 29、[Source] は `100 × (29 × 0.01)` が `28.999999999999996` になり、切り捨てて 28 となる。差が生じる条件の解析は [ADR e9bc](../../docs/decision/e9bc-fare-double-analysis.md)。
 
 抽象機械は `Spec.Fare.basicFareMachine`（`Machine.pure`）である。PRE は、設定とマスタの不変条件、搭乗クラスがマスタに在ること、`routeBasicFare + extraCharge ≤ 10,000,000`（[値域](Model.lean#値域)）である。
 
@@ -139,7 +145,7 @@ def fare (basicFare discountRate : Nat) : Nat :=
 
 ### シグネチャ
 
-`totalFare(flights: [Flight], passengers: [Passenger]; master, config) : Nat`
+`totalFare(config, master; flights: [Flight], passengers: [Passenger]) : Nat?`（便・区間・搭乗クラス・運賃種別のどれかがマスタに無ければ無し）
 
 Lean: [Spec] `Spec.Fare.totalFare`（便・区間・搭乗クラス・運賃種別のどれかが無ければ `none`）、[Source] `SourceModel.Domain.Service.B2.TicketReserveServiceImpl.calculateTotalFare`。
 
@@ -246,7 +252,22 @@ def totalFare (cfg : Config) (md : MasterData) (flights : List Flight) (passenge
 theorem totalFare_eq (cfg : Config) (md : MasterData) (flights : List Flight) (passengers : List Passenger) :
     totalFare cfg md flights passengers = totalFareOfKeys cfg md (flights.map (·.key)) (passengers.map (·.age)) := rfl
 
-/-! ## 抽象機械（R 課題 ABS-001・ABS-002 の抽象側） -/
+/-!
+## 画面表示用の運賃
+
+空席照会結果・予約確認画面では `fmtYen(fare)`（[`Spec.Prim.Format`](Prim/Format.lean#書式)）で表示する。予約画面のフライト一覧の運賃（`SelectFlightDto.fare`）は `fare(basicFare(...), discountRate)` の整数値である。
+
+出典: `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)`（private の `createFlightVacantInfoList` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`
+-/
+
+/-!
+## 抽象機械
+
+基本運賃・運賃・合計金額のそれぞれを、状態を持たない抽象機械（`Machine.Machine.pure`）として与える。1 歩は入力に対する
+計算の結果を出力し、PRE（各節の「抽象機械は…」の段落）の外の入力は受け付けない。マスタ・設定は機械の入力の成分で、
+PRE は、それらの検証が通ること（[`Spec.Env`](Env.lean) の `masterConfigOk`）と入力の値域（[値域](Model.lean#値域)）を含む。
+-/
+
 
 /-- 基本運賃の入力。マスタ・設定は不変の入力である。 -/
 @[raw_input "機械の入力。妥当性 BasicFareInput.Pre は PRE"]
@@ -288,6 +309,37 @@ instance (i : FareInput) : Decidable i.Pre := by unfold FareInput.Pre; infer_ins
 def fareMachine : Machine.Machine Unit FareInput Nat :=
   Machine.Machine.pure FareInput.Pre fun i => fare i.basicFare i.discountRate
 
+/-- 合計金額の入力: 設定・マスタ・フライトのキーの列・搭乗者の年齢の列。 -/
+@[raw_input "機械の入力。妥当性 TotalFareInput.Pre は PRE"]
+structure TotalFareInput where
+  cfg : Config
+  md : MasterData
+  flights : List FlightKey
+  ages : List Nat
+
+/-- 合計金額の PRE: 設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
+便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
+@[spec_doc "lean/Spec/Fare.lean#合計金額", gap "D-035"]
+def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
+  Env.masterConfigOk (i.cfg, i.md) ∧
+    Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧
+    Range.minPassengers ≤ i.ages.length ∧ i.ages.length ≤ Range.maxPassengers ∧
+    (∀ a ∈ i.ages, a ≤ Range.maxAge) ∧
+    (∀ k ∈ i.flights, hasText k.flightName.val = true) ∧
+    (totalFareOfKeys i.cfg i.md i.flights i.ages).isSome = true
+
+instance (i : TotalFareInput) : Decidable i.Pre := by unfold TotalFareInput.Pre; infer_instance
+
+/-- 合計金額の抽象機械（状態を持たない）。 -/
+@[spec_doc "lean/Spec/Fare.lean#合計金額"]
+def totalFareMachine : Machine.Machine Unit TotalFareInput Nat :=
+  Machine.Machine.pure TotalFareInput.Pre fun i => (totalFareOfKeys i.cfg i.md i.flights i.ages).getD 0
+
+/-! ## 性質（SPEC 課題）
+
+各機械について、PRE の下で標準の選択が関係に含まれること（SPEC-001）、初期化が INV を満たし操作が INV を保つこと
+（SPEC-002・SPEC-003）、初期状態が 1 点であること（SPEC-007）を示す。 -/
+
 /-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
 @[obligation "SPEC-001"]
 theorem basicFareMachine_run_step :
@@ -316,32 +368,6 @@ theorem fareMachine_sound : fareMachine.Sound := Machine.Machine.sound_pure _ _
 @[obligation "SPEC-007"]
 theorem fareMachine_initIs : fareMachine.InitIs () := fun _ => ⟨fun _ => rfl, fun _ => trivial⟩
 
-/-- 合計金額の入力: 設定・マスタ・フライトのキーの列・搭乗者の年齢の列。 -/
-@[raw_input "機械の入力。妥当性 TotalFareInput.Pre は PRE"]
-structure TotalFareInput where
-  cfg : Config
-  md : MasterData
-  flights : List FlightKey
-  ages : List Nat
-
-/-- 合計金額の PRE: 設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
-便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
-@[spec_doc "lean/Spec/Fare.lean#合計金額", gap "D-035"]
-def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
-  Env.masterConfigOk (i.cfg, i.md) ∧
-    Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧
-    Range.minPassengers ≤ i.ages.length ∧ i.ages.length ≤ Range.maxPassengers ∧
-    (∀ a ∈ i.ages, a ≤ Range.maxAge) ∧
-    (∀ k ∈ i.flights, hasText k.flightName.val = true) ∧
-    (totalFareOfKeys i.cfg i.md i.flights i.ages).isSome = true
-
-instance (i : TotalFareInput) : Decidable i.Pre := by unfold TotalFareInput.Pre; infer_instance
-
-/-- 合計金額の抽象機械（状態を持たない）。 -/
-@[spec_doc "lean/Spec/Fare.lean#合計金額"]
-def totalFareMachine : Machine.Machine Unit TotalFareInput Nat :=
-  Machine.Machine.pure TotalFareInput.Pre fun i => (totalFareOfKeys i.cfg i.md i.flights i.ages).getD 0
-
 /-- SPEC-001。 -/
 @[obligation "SPEC-001"]
 theorem totalFareMachine_run_step :
@@ -369,9 +395,11 @@ theorem fare_1430_30 : fare 1430 30 = 1100 := by decide
 end Spec.Fare
 
 /-!
-## 画面表示用の運賃
+## 根拠と対応
 
-空席照会結果・予約確認画面では `fmtYen(fare)`（[`Spec.Prim.Format`](Prim/Format.lean#書式)）で表示する。予約画面のフライト一覧の運賃（`SelectFlightDto.fare`）は `fare(basicFare(...), discountRate)` の整数値である。
-
-出典: `java:jp.co.ntt.atrs.domain.service.b1.TicketSearchServiceImpl#searchFlight(TicketSearchCriteriaDto)`（private の `createFlightVacantInfoList` を含む）, `java:jp.co.ntt.atrs.app.b2.TicketReserveHelper#createSelectFlightDtoList(List)`
+- 根拠: [ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)（抽象モデルは厳密な整数で計算する）、[ADR e9bc](../../docs/decision/e9bc-fare-double-analysis.md)（double の誤差の解析。D-001・D-002 の条件）、[ADR 8f18](../../docs/decision/8f18-fare-source-model-and-shared-vectors.md)（両モデルの共有ベクタ）、[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)（Lean の `Spec` が正規仕様）
+- 既知差異: D-001・D-002・D-012（[既知差異](../../docs/spec/abstraction.md#既知差異)）、PRE の外の D-003・D-035（[前提の外の振る舞い](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
+- 移植元モデル: [`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)・[`SourceModel.Domain.Common.Util.FareUtil`](../SourceModel/Domain/Common/Util/FareUtil.lean)・[`SourceModel.Domain.Service.B2.TicketReserveServiceImpl`](../SourceModel/Domain/Service/B2/TicketReserveServiceImpl.lean)（原典のクラスと 1 対 1。[ADR e41c](../../docs/decision/e41c-source-model-mirrors-java-tree.md)）、具体機械は [`SourceModel.FareQuery`](../SourceModel/FareQuery.lean)
+- 抽象化の証明: [`Abstraction.Fare`](../Abstraction/Fare.lean)（ABS-001〜ABS-004、差異の必要性 ABS-101・ABS-102・ABS-112）
+- 適合テストベクタ: `conformance/spec/fare/`・`conformance/source-model/fare/`・`conformance/shared/fare/`
 -/

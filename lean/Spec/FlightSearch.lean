@@ -11,16 +11,20 @@ import Spec.Seed.World
 import Machine
 
 /-!
-# 空席照会（B1）（`Spec.FlightSearch`）
+# 空席照会（`Spec.FlightSearch`）
 
-空席照会（B1）。照会可能期間・運賃種別の予約可能判定・`searchFlight` を、
-設定・マスタ・今日の日付・照会条件・フライトの全件の関数として与える（ADR ce36）。
-フライトは抽象状態 `World` の成分で、空席照会は状態を変えない。抽象機械 `searchMachine` は、選択を持たない
-`Machine.ofChoice`（選択の型は `Unit`）で、1 歩は状態を変えずに `searchFlight` の結果を出力する（backlog 0be7 の第 2 段）。
+> **区分: 要約（informative）。** 本文は Lean の定義の非規範の要約で、食い違ったら Lean が正である。
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
->
-> 照会可能期間・運賃種別の予約可能判定・`searchFlight` は Lean [`Spec.FlightSearch`](FlightSearch.lean) に形式化した（正。[ADR ce36](../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。以下のそれらの定義は、Lean の非規範の要約である。[Source] の写しは [`SourceModel.Domain.Service.B1.TicketSearchServiceImpl`](../SourceModel/Domain/Service/B1/TicketSearchServiceImpl.lean)・[`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)・[`SourceModel.Domain.Repository.Flight.FlightRepository`](../SourceModel/Domain/Repository/Flight/FlightRepository.lean) など（原典のクラスと 1 対 1。[ADR e41c](../../docs/decision/e41c-source-model-mirrors-java-tree.md)）。適合テストベクタは `conformance/shared/flight-search/`。抽象機械 `searchMachine`・具体機械 `SourceModel.FlightSearchQuery.searchConcrete` と、シードの初期状態は第 2 段で置いた（[ADR cdb6](../../docs/decision/cdb6-flight-search-stage2-machines-seed-sql.md)）。リファインメント（ABS-010・ABS-011）は [backlog 0be7](../../docs/backlog/0be7-flight-search-usecase.md) の第 3 段で置く。
+空席照会画面（B1）と REST の照会が使う、空席のあるフライトの照会を定める。搭乗日・区間・搭乗クラス・片道/往復の
+照会条件から、便ごとに運賃種別ごとの運賃と空席数を並べた一覧を返す。
+
+- [照会可能期間](#照会可能期間): 今日から `limitDay` 日後までの搭乗日だけを照会できる。
+- [運賃種別の予約可能判定](#運賃種別の予約可能判定): 運賃種別ごとに、搭乗日の何日前から何日前まで予約できるかが決まる。
+- [searchFlight](#searchflight): 照会の本体。設定・マスタ・今日の日付・照会条件・フライトの全件の関数である。
+- [照会画面の初期値](#照会画面の初期値): 照会画面を開いたときの条件と、表示する照会可能期間。
+
+フライトは抽象状態 [`World`](World.lean) の成分で、空席照会は状態を変えない。今日の日付は照会の初めに 1 回だけ読んだ値である。
+空席照会は、状態を変えない抽象機械としても与える（[抽象機械](#抽象機械)）。
 -/
 
 namespace Spec.FlightSearch
@@ -69,14 +73,14 @@ end   = addDays(depDate, −fareType.rsrvAvailableEndDayNum)
 result = start ≤ today ≤ end
 ```
 
-Lean の `Spec.FlightSearch.isAvailableFareType` は、次の日数の形で定義する（下の日付の形との同値は L 課題 ABS-010。backlog 0be7 の第 3 段）。これは `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum` と同値である（課題 [ABS-010](../../docs/spec/abstraction.md#証明課題)）。
+Lean の `Spec.FlightSearch.isAvailableFareType` は、日数の形で定義する: `beforeDayNum = daysBetween(today, depDate)` について `rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum`。上の日付の形と同値である（証明課題 ABS-010）。
 
 出典: `java:jp.co.ntt.atrs.domain.service.b0.TicketSharedServiceImpl#isAvailableFareType(FareType,LocalDate)`
 -/
 
 
 /-- 運賃種別の予約可能判定（日数で表した形。`rsrvAvailableEndDayNum ≤ beforeDayNum ≤ rsrvAvailableStartDayNum`）。
-日付の形（`addDays(depDate, −n) ≤ today`）との同値は L 課題 ABS-010（第 3 段）。 -/
+日付の形（`addDays(depDate, −n) ≤ today`）との同値は L 課題 ABS-010。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#運賃種別の予約可能判定"]
 def availableOnDayNum (ft : FareType) (beforeDayNum : Int) : Bool :=
   decide ((ft.rsrvAvailableEndDayNum : Int) ≤ beforeDayNum) && decide (beforeDayNum ≤ ft.rsrvAvailableStartDayNum)
@@ -92,17 +96,18 @@ def isAvailableFareType (ft : FareType) (depDate today : Date) : Bool :=
 ### シグネチャ
 
 ```
-searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, flightType },
-             flights: [Flight]; master, config, today) : Except AtrsError [FlightVacantInfo]
+searchFlight(config, master, today;
+             criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, flightType },
+             flights: [Flight]) : (Except AtrsError [FlightVacantInfo])?
 ```
 
-`flights` はフライトの全件（[`Spec.Port`](World.lean) の `FlightRepository.findAll` 相当。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
-Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FLIGHT_1〜3）が破れて区間の空港名か搭乗クラスがマスタに無いとき（PRE の外）、結果を `none` とする。
+`flights` はフライトの全件（[`Spec.World`](World.lean) の `FlightRepository.findAll`。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
+結果が無し（Lean の `none`）になるのは PRE の外だけである: MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FLIGHT_1〜3）が破れて、照会の区間の空港名か搭乗クラスがマスタに無いとき。PRE の下では必ず結果がある（`searchFlight_isSome`）。
 
 ### 事前条件
 
 - [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[`Spec.Validation`](Validation.lean)）を通過していれば満たされる。
-- [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 次の連言。どれも入力だけの条件である（[ADR 0b0c](../../docs/decision/0b0c-flight-search-stage3-abs011.md)）。
+- [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 次の連言。どれも入力だけの条件である。
   - 設定とマスタの不変条件（MD-1〜MD-8）
   - 照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList` に当たる。無ければ [Source] は `calculateBasicFare` で `NullPointerException`。D-033。PRE の外）
   - 照会の空港コードが空白でないこと（空白なら [Source] は `Assert.hasText` で例外。D-033。PRE の外）。空港コードの形（英大文字 3 文字）は課さない（形の違うコードは区間が無いので `e.ar.b1.2002`。[Source] も同じ）
@@ -304,7 +309,13 @@ def searchFlight (cfg : Config) (md : MasterData) (today : Date) (c : Criteria) 
 @[spec_doc "lean/Spec/FlightSearch.lean#照会画面の初期値"]
 def searchPeriod (cfg : Config) (today : Date) : Date × Option Date := (today, searchLimitDate cfg today)
 
-/-! ## 抽象機械（SPEC 課題） -/
+/-!
+## 抽象機械
+
+空席照会の抽象機械 `searchMachine` は、状態を抽象状態 `World`、INV を主キーの一意性、初期状態をシードを投入した後の
+`World`（[`Spec.Seed.World`](Seed/World.lean)。予約の機械と共有する）とする。選択を持たず（選択の型は `Unit`）、1 歩は
+状態を変えずに `searchFlight` の結果を出力する。PRE は [事前条件](#事前条件) の [Spec] の連言（`SearchInput.Pre`）である。
+-/
 
 /-- 空席照会の入力（状態のフライト以外）: 設定・マスタ・今日の日付・照会条件。 -/
 @[raw_input "機械の入力。妥当性 SearchInput.Pre は PRE"]
@@ -330,7 +341,7 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
 照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件である（照会条件の条件は、
 入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
-（搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 0b0c）。
+（搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない。
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#事前条件", gap "D-033"]
 def SearchInput.Pre (_w : World) (i : SearchInput) : Prop :=
@@ -346,10 +357,15 @@ def answer (w : World) (i : SearchInput) : SearchOutput :=
 def searchStep (w : World) (i : SearchInput) (_ : Unit × Unit) : World × SearchOutput := (w, answer w i)
 
 /-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードを投入した後の `World`
-（予約と共有する。backlog aedf の第 3 段）。1 歩は状態を変えない。 -/
+（予約と共有する）。1 歩は状態を変えない。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#searchflight"]
 def searchMachine : Machine.Machine World SearchInput SearchOutput :=
   Machine.Machine.ofChoice World.Inv (· = Seed.World.world) SearchInput.Pre searchStep () ()
+
+/-! ## 性質（SPEC 課題）
+
+PRE の下で `searchFlight` が結果を持つこと、標準の選択が関係に含まれること（SPEC-001）、INV の成立と保存（SPEC-002・SPEC-003）、
+初期状態が 1 点であること（SPEC-007）を示す。 -/
 
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
 theorem searchFlight_isSome {w : World} {i : SearchInput} (h : SearchInput.Pre w i) :
@@ -393,3 +409,13 @@ theorem searchMachine_sound : searchMachine.Sound where
 theorem searchMachine_initIs : searchMachine.InitIs Seed.World.world := fun _ => Iff.rfl
 
 end Spec.FlightSearch
+
+/-!
+## 根拠と対応
+
+- 根拠: [ADR ce36](../../docs/decision/ce36-flight-search-stage1-world-and-arrival-time.md)（`World` のフライトと、翌日着の到着時刻）、[ADR cdb6](../../docs/decision/cdb6-flight-search-stage2-machines-seed-sql.md)（抽象機械・シードの初期状態・SQL の差分実行）、[ADR 0b0c](../../docs/decision/0b0c-flight-search-stage3-abs011.md)（PRE を入力だけの条件にし、フライトの参照整合性を課さない）
+- 既知差異: D-001・D-002（運賃の計算）、D-014（今日の日付の読み方）、D-032（運賃の 3 桁区切り）（[既知差異](../../docs/spec/abstraction.md#既知差異)）、PRE の外の D-033（[前提の外の振る舞い](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
+- 移植元モデル: [`SourceModel.Domain.Service.B1.TicketSearchServiceImpl`](../SourceModel/Domain/Service/B1/TicketSearchServiceImpl.lean)・[`SourceModel.Domain.Service.B0.TicketSharedServiceImpl`](../SourceModel/Domain/Service/B0/TicketSharedServiceImpl.lean)・[`SourceModel.Domain.Repository.Flight.FlightRepository`](../SourceModel/Domain/Repository/Flight/FlightRepository.lean)（原典のクラスと 1 対 1。[ADR e41c](../../docs/decision/e41c-source-model-mirrors-java-tree.md)）、具体機械は [`SourceModel.FlightSearchQuery`](../SourceModel/FlightSearchQuery.lean) の `searchConcrete`
+- 抽象化の証明: [`Abstraction.FlightSearch`](../Abstraction/FlightSearch.lean)（ABS-011、L 課題 ABS-010、差異の必要性 ABS-114・ABS-132）
+- 適合テストベクタ: `conformance/shared/flight-search/`・`conformance/source-model/flight-search/`、SQL の差分実行 `conformance/sql/flight-search.json`
+-/
