@@ -2,15 +2,17 @@ import Spec.Seed.Master
 import Spec.Seed.Flight
 
 /-!
-# Spec.Seed.FlightProps
+# シードのフライトの性質（`Spec.Seed.FlightProps`）
 
-シードのフライト `Spec.Seed.Flight.flights` の性質（backlog 0be7 の第 2 段）。全件（15 万行）には展開せず、
-生成の形（日付の列 × 便名の列 × 枠の列）から示す。
+> **区分: 要約（informative）。** 証明だけのモジュールである。
 
-- `flights_nodup`: 主キーで一意（`World` の証明フィールド `flights_nodup`。ADR 6d36 の L3）。日付・便名・枠の列が
-  それぞれ重複しないことから従う。`Spec.Seed.World.world` が、これで `World` を組み立てる。
-- `flights_refMaster`: 参照整合性（`World.RefMaster` の中身。シードのマスタに対して）。便名・枠の列がマスタにあることから
-  従う。`World` についての主張は `Spec.Seed.World.world_refMaster`。
+シードのフライト `Spec.Seed.Flight.flights`（約 15 万行）の性質を、全件には展開せず、生成の形（日付の列 × 便名の列 ×
+枠の列）から示す。
+
+- `flights_nodup`: シードのフライトは主キーで一意である。日付・便名・枠の列がそれぞれ重複しないことから従う。
+  `World` の証明フィールド `flights_nodup` に使い、[`Spec.Seed.World`](World.lean) が初期状態を組み立てる。
+- `flights_refMaster`: シードのフライトは、シードのマスタにある便名・搭乗クラス・運賃種別だけを指す（`World.RefMaster` の
+  中身。DDL の FK_FLIGHT_1〜3）。便名・枠の列がマスタにあることから従う。
 -/
 
 namespace Spec.Seed.FlightProps
