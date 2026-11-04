@@ -60,6 +60,7 @@ generated:
 | ceb8 | [差異の候補を HTTP レベルの原典実行で確かめる](ceb8-origin-run-checks-for-gap-candidates.md) | todo | [f18c](f18c-java-oracle-harness.md) |
 | c89a | [業務仕様を Spec のモジュール文書へ移し、HTML の本を作る](c89a-business-spec-in-lean-module-docs.md) | done | — |
 | 63a3 | [Lean のソース全体を本にする](63a3-whole-lean-source-book.md) | done | [c89a](c89a-business-spec-in-lean-module-docs.md) |
+| d74f | [Spec のモジュール構成を整理し、モジュール文書を仕様書の形にする](d74f-spec-module-layout-and-docs.md) | done | [63a3](63a3-whole-lean-source-book.md) |
 
 ## 推奨する着手順
 

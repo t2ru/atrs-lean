@@ -122,7 +122,7 @@ run = "{{vars.py}} {{vars.okf}}/scripts/okf_check.py"
 # 適合テストの共有入力・シード
 
 [tasks."conformance:check"]
-description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed・Spec.Seed.Flight・SourceModel.Db.FlightSeed・Spec.Seed.Member・SourceModel.Db.MemberSeed・SourceModel.Db.MasterSeed）が上流のシード・設定からの生成と一致する"
+description = "conformance: 共有入力（fixtures/）と Lean のシード（Spec.Seed.Master・Spec.Seed.Flight・SourceModel.Db.FlightSeed・Spec.Seed.Member・SourceModel.Db.MemberSeed・SourceModel.Db.MasterSeed）が上流のシード・設定からの生成と一致する"
 run = [
   "{{vars.py}} tools/conformance/master_fixture.py --check",
   "{{vars.py}} tools/conformance/seed_lean.py --check",
