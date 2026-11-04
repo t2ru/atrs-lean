@@ -15,7 +15,7 @@ namespace Abstraction.Reserve.Select
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.MasterData.Pre Abstraction.World.Alpha
   Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Abstraction.Fare.Load Abstraction.Reserve.Port
   Abstraction.Reserve.Flights
-open Spec.Model Spec.Prim Spec.Prim.Text Spec.MasterData
+open Spec.Model Spec.Prim Spec.Prim.Text Spec.Env.MasterData
 open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Sql.Core LangSemantics.Sql.Query
 open SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.App.B0 SourceModel.Domain.Common.Masterdata
 open SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
@@ -58,7 +58,7 @@ theorem existsRows_null {fd : FlightDb} {p : KeyParams} (h : p.boardingClass = .
   rcases h with h | h <;> simp only [keyCond, h, Truth.holds_and, e, hu, Bool.and_false, Bool.false_and] <;> decide
 
 section
-variable {db : MasterDb} {md : Spec.MasterData} {p : Providers} {fd : FlightDb} {w : Spec.Port.World}
+variable {db : MasterDb} {md : Spec.Env.MasterData} {p : Providers} {fd : FlightDb} {w : Spec.World}
   (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
     some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
   (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
@@ -82,11 +82,11 @@ theorem exists_mkFlight {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f
     symm
     rw [Bool.eq_false_iff]
     intro he
-    simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
+    simp only [Spec.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
     obtain ⟨g, hg, rfl⟩ := he
     obtain ⟨-, ⟨b, hbm, hbe⟩, -⟩ := href g hg
     have : md.boardingClassOf g.key.boardingClassCd ≠ none := by
-      unfold Spec.MasterData.boardingClassOf
+      unfold Spec.Env.MasterData.boardingClassOf
       rw [ne_eq, List.find?_eq_none]
       intro hall
       exact hall b hbm (by simp [hbe])
@@ -100,11 +100,11 @@ theorem exists_mkFlight {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f
       symm
       rw [Bool.eq_false_iff]
       intro he
-      simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
+      simp only [Spec.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
       obtain ⟨g, hg, rfl⟩ := he
       obtain ⟨-, -, ⟨t, htm, hte⟩⟩ := href g hg
       have : md.fareTypeOf g.key.fareTypeCd ≠ none := by
-        unfold Spec.MasterData.fareTypeOf
+        unfold Spec.Env.MasterData.fareTypeOf
         rw [ne_eq, List.find?_eq_none]
         intro hall
         exact hall t htm (by simp [hte])
@@ -130,7 +130,7 @@ theorem exists_mkFlight {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f
 end
 
 section
-variable {md : Spec.MasterData} {p : Providers}
+variable {md : Spec.Env.MasterData} {p : Providers}
   (hmn : ∀ name : String, hasText name = true → md.flightMasterOf name = none →
     FlightMasterProvider.getFlightMaster p.flightMaster name = .ok none)
   (hmc : ∀ name : String, hasText name = true →
@@ -155,7 +155,7 @@ include hmc in
 /-- 便マスタがあれば、フライト情報の便マスタは、便名・時刻・区間の空港コードを持つ。 -/
 theorem mkFlight_master_some {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
     (ht : hasText k.flightName.val = true) {X : FlightMaster} (h : md.flightMasterOf k.flightName.val = some X)
-    {rt : Route} (hrt : Spec.Ticket.routeOfMaster md X = some rt) :
+    {rt : Route} (hrt : Spec.Reserve.FlightSelection.routeOfMaster md X = some rt) :
     ∃ fm dt art, (mkFlight p f).flightMaster = some fm ∧ fm.flightName = some k.flightName.val ∧
       fm.departureTime = some dt ∧ hmOfStr dt = some X.departureTime ∧ fm.arrivalTime = some art ∧
       arrOfStr art = some X.arrivalTime ∧ HasRoute fm rt := by
@@ -169,18 +169,18 @@ theorem mkFlight_master_some {f : SelectFlightForm} {k : FlightKey} (hk : keyOfF
 end
 
 /-- 主キーのフライトがあれば、フライト情報の運賃種別のコードは主キーのもの。 -/
-theorem mkFlight_fareType {md : Spec.MasterData} {p : Providers} {w : Spec.Port.World}
+theorem mkFlight_fareType {md : Spec.Env.MasterData} {p : Providers} {w : Spec.World}
     (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
     (href : w.RefMaster md) {f : SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
     (he : w.existsFlight k = true) : HasFareType (some (mkFlight p f)) k.fareTypeCd := by
   obtain ⟨dj, hdj, hd, hn, hbc, hft⟩ := keyOfForm_eq hk
-  simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
+  simp only [Spec.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
   obtain ⟨g, hg, rfl⟩ := he
   obtain ⟨-, -, ⟨t, htm, hte⟩⟩ := href g hg
   obtain ⟨FT, hF⟩ : ∃ FT, md.fareTypeOf g.key.fareTypeCd = some FT := by
     apply Option.isSome_iff_exists.mp
-    unfold Spec.MasterData.fareTypeOf
+    unfold Spec.Env.MasterData.fareTypeOf
     rw [List.find?_isSome]
     exact ⟨t, htm, by simp [hte]⟩
   have hFT : FT.fareTypeCd = g.key.fareTypeCd := by have := List.find?_some hF; simpa using this

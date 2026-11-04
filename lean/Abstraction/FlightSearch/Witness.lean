@@ -36,7 +36,7 @@ def icFS (sym : LangSemantics.Java.DecimalFormat.Symbols) : SearchInput :=
     formatSymbols := sym }
 
 /-- マスタの [Spec] の写し。 -/
-def mdFS : Spec.MasterData :=
+def mdFS : Spec.Env.MasterData :=
   { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
     routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100000⟩],
     flightMasters := [⟨{ val := "NTT001" }, 1, ⟨8, 0, by decide⟩, ⟨9, 0, by decide⟩, "B777"⟩],
@@ -46,10 +46,10 @@ def mdFS : Spec.MasterData :=
     planes := [], creditTypes := [] }
 
 /-- [Spec] の入力。 -/
-def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Config.default, mdFS, day0, ⟨day0, .N, "HND", "ITM", .OW⟩⟩
+def iaFS : Spec.FlightSearch.SearchInput := ⟨Spec.Env.Config.default, mdFS, day0, ⟨day0, .N, "HND", "ITM", .OW⟩⟩
 
 /-- [Spec] の状態。 -/
-def wFS : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT001" }, .N, .OW⟩, 10⟩] }
+def wFS : Spec.World := { flights := [⟨⟨day0, { val := "NTT001" }, .N, .OW⟩, 10⟩] }
 
 theorem aiS_icFS : aiS (icFS symDot) = some iaFS := by decide
 
@@ -64,7 +64,7 @@ theorem iaFS_pre : Spec.FlightSearch.SearchInput.Pre wFS iaFS := by
   have hN : hasText "NTT001" = true := by rw [hasText, string_any_toList]; decide
   have hH : hasText "HND" = true := by rw [hasText, string_any_toList]; decide
   have hI : hasText "ITM" = true := by rw [hasText, string_any_toList]; decide
-  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+  refine ⟨Spec.Env.masterConfigOk.of_valid (by decide)
     ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩, rfl, hH, hI, ?_⟩
   · refine ⟨?_, by decide, by decide, by decide⟩
     intro a ha
@@ -195,10 +195,10 @@ theorem dev_D027S_nontrivial : Nontrivial dev_D027S :=
   ⟨⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, by unfold dev_D027S; decide⟩, ⟨{ icFS LangSemantics.Java.DecimalFormat.Symbols.ascii with criteria := none }, by unfold dev_D027S; decide⟩⟩
 
 /-- D-001 の前提を破るマスタ: 区間の運賃 100 円・積算比率 29%（`100·29` は 100 で割り切れ、29 は安全でない）。 -/
-def mdFS29 : Spec.MasterData := { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
+def mdFS29 : Spec.Env.MasterData := { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], peakTimes := [⟨"P", day0, day0, 29⟩] }
 
 /-- D-002 の前提を破るマスタ: 基本運賃 1430 円・割引率 30%。 -/
-def mdFS1430 : Spec.MasterData :=
+def mdFS1430 : Spec.Env.MasterData :=
   { mdFS with routes := [⟨1, { val := "HND" }, { val := "ITM" }, 1430⟩], fareTypes := [⟨.OW, "OW", 30, 355, 0, 1, 1⟩] }
 
 open Machine.Preserves (Nontrivial) in

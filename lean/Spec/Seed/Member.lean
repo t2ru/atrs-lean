@@ -1,5 +1,5 @@
 import Spec.Model
-import Spec.Port
+import Spec.World
 import Trace
 
 /-!
@@ -28,6 +28,6 @@ def members : List Member := [
 
 /-- 採番の初期値: 会員はシードが 7 回採番した次、ほかは 1。 -/
 @[source "seed:00230_insert_member.sql#MEMBER@0fa5d725ee1debb7"]
-def sequences : Spec.Port.Sequences := { member := 8 }
+def sequences : Spec.World.Sequences := { member := 8 }
 
 end Spec.Seed.Member

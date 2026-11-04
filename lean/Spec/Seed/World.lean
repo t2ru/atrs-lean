@@ -1,4 +1,4 @@
-import Spec.Port
+import Spec.World
 import Spec.Seed.FlightProps
 import Spec.Seed.Member
 
@@ -13,12 +13,12 @@ import Spec.Seed.Member
 namespace Spec.Seed.World
 
 /-- シードを投入した後の `World`。 -/
-@[spec_doc "lean/Spec/Port.lean#world抽象状態"]
-def world : Spec.Port.World :=
+@[spec_doc "lean/Spec/World.lean#world抽象状態"]
+def world : Spec.World :=
   { flights := Spec.Seed.Flight.flights, flights_nodup := Spec.Seed.FlightProps.flights_nodup,
     members := Spec.Seed.Member.members, reservations := [], sequences := Spec.Seed.Member.sequences }
 
 /-- シードを投入した後の `World` は、シードのマスタを参照する（`World.RefMaster`。FK_FLIGHT_1〜3）。 -/
-theorem world_refMaster : world.RefMaster Spec.Seed.masterData := Spec.Seed.FlightProps.flights_refMaster
+theorem world_refMaster : world.RefMaster Spec.Seed.Master.masterData := Spec.Seed.FlightProps.flights_refMaster
 
 end Spec.Seed.World

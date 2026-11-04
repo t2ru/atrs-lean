@@ -143,7 +143,7 @@ final class HttpOriginRun {
     // ---------------------------------------------------------------- 画面ログイン
 
     static ObjectNode login(Path repo) {
-        ObjectNode d = doc(repo, "login.json", "http.login", "lean/Spec/Authentication.lean#ログインlogin",
+        ObjectNode d = doc(repo, "login.json", "http.login", "lean/Spec/Auth.lean#ログインlogin",
                 "画面ログインで MEMBER_LOGIN の LOGIN_DATE_TIME・LOGIN_FLG が更新されるかの確認（Spec.Authentication の TODO、D-028）。");
         ArrayNode cases = d.withArray("cases");
         for (String[] k : new String[][] {{"login-success", "aaaaa11111", "正しいパスワードでの画面ログイン"},

@@ -28,11 +28,11 @@ import Tests.ConformanceFlightSearch
 （フライト・予約・採番の次の値）を返す。
 -/
 
-open Lean Spec ConformanceKit Tests.Conformance
+open Lean Spec Spec.Env ConformanceKit Tests.Conformance
 
 open ConformanceKit.Runner LangSemantics.Java.Exception LangSemantics.Java.Int
 
-open Spec.Config Spec.Model Spec.Prim.Format
+open Spec.Env.Config Spec.Model Spec.Prim.Format
 
 namespace Tests.ConformanceReservation
 open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster decodeConfig decodeMembershipNumber)
@@ -83,7 +83,7 @@ def specMember (m : Json) : Except String Member := do
            login := { password := ⟨""⟩, lastPassword := none, loginDateTime := none, loginFlg := false } }
 
 /-- 入力の `World`。フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）。 -/
-def specWorld (i : Json) : Except String Spec.Port.World := do
+def specWorld (i : Json) : Except String Spec.World := do
   let flights ← (← optArr i "flights").mapM specFlight
   if h : (flights.map (·.key)).Nodup then
     return { flights, flights_nodup := h, members := ← (← optArr i "members").mapM specMember,
@@ -91,21 +91,21 @@ def specWorld (i : Json) : Except String Spec.Port.World := do
                             passenger := ← seqOf i "passenger" } }
   else throw "outside INV (duplicate flight key)"
 
-def specSelect (s : Json) : Except String Spec.Ticket.SelectFlight := do
+def specSelect (s : Json) : Except String Spec.Reserve.FlightSelection.SelectFlight := do
   return { depDate := ← decodeDate (← getStr s "depDate"), flightName := ← getStr s "flightName",
            boardingClassCd := ← boardingClassCd (← getStr s "boardingClassCd"), fareTypeCd := ← fareTypeCd (← getStr s "fareTypeCd") }
 
-def specPassengerInput (p : Json) : Except String Spec.UseCase.Reserve.PassengerInput := do
+def specPassengerInput (p : Json) : Except String Spec.Reserve.PassengerInput := do
   return { familyName := ← optStr p "familyName", givenName := ← optStr p "givenName", age := ← optNat p "age",
            gender := ← (← optStr p "gender").mapM gender, membershipNumber := ← optStr p "membershipNumber" }
 
-def specForm (f : Json) : Except String Spec.UseCase.Reserve.ReserveInput := do
+def specForm (f : Json) : Except String Spec.Reserve.ReserveInput := do
   return { repFamilyName := ← getStr f "repFamilyName", repGivenName := ← getStr f "repGivenName", repAge := ← getNat f "repAge",
            repGender := ← gender (← getStr f "repGender"), repTel1 := ← getStr f "repTel1", repTel2 := ← getStr f "repTel2",
            repTel3 := ← getStr f "repTel3", repMail := ← getStr f "repMail", repMembershipNumber := ← optStr f "repMembershipNumber",
            passengers := ← (← getArr f "passengers").mapM specPassengerInput }
 
-def specRequest (i : Json) : Except String Spec.UseCase.Reserve.Request := do
+def specRequest (i : Json) : Except String Spec.Reserve.Request := do
   return { selects := ← (← getArr i "selectFlights").mapM specSelect, form := ← specForm (← getObjVal i "form") }
 
 def specErrorJson : Spec.Error.AtrsError → Json
@@ -134,7 +134,7 @@ def specReservationJson (r : Reservation) : Json :=
         ("gender", .str p.gender.toCode),
         ("membershipNumber", strOrNull (p.membershipNumber.map (·.val)))]).toArray)]).toArray)]
 
-def specWorldJson (w : Spec.Port.World) : Json :=
+def specWorldJson (w : Spec.World) : Json :=
   Json.mkObj [("flights", .arr (w.flights.map fun f => flightJson f.key f.vacantNum).toArray),
     ("reservations", .arr (w.reservations.map specReservationJson).toArray),
     ("sequences", Json.mkObj [("reserve", toJson w.sequences.reserve), ("reserveFlight", toJson w.sequences.reserveFlight),
@@ -144,14 +144,14 @@ def specWorldJson (w : Spec.Port.World) : Json :=
 def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let md ← decodeMaster fx.master
   let cfg ← decodeConfig fx.config
-  let checkWorld (w : Spec.Port.World) : Except String Unit := do
+  let checkWorld (w : Spec.World) : Except String Unit := do
     if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
   return [
     ("reservation.validateFlightList", fun i => do
       let w ← specWorld i
       checkWorld w
       let sels ← (← getArr i "selectFlights").mapM specSelect
-      match ← need (Spec.Ticket.validateFlightList cfg md w (sels.map (Spec.Ticket.resolve md))) "outside PRE" with
+      match ← need (Spec.Reserve.FlightSelection.validateFlightList cfg md w (sels.map (Spec.Reserve.FlightSelection.resolve md))) "outside PRE" with
       | .ok _ => return .null
       | .error e => return specErrorJson e),
     ("reservation.validateReservation", fun i => do
@@ -162,24 +162,24 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
         return ({ departureDate := s.depDate, flightName := ← Tests.ConformanceFare.decodeFlightName s.flightName,
                   boardingClassCd := s.boardingClassCd, fareTypeCd := s.fareTypeCd } : FlightKey)
       let it ← match ks with
-        | [k] => pure (Spec.Ticket.Itinerary.oneWay k)
-        | [o, h] => pure (Spec.Ticket.Itinerary.roundTrip o h)
+        | [k] => pure (Spec.Reserve.FlightSelection.Itinerary.oneWay k)
+        | [o, h] => pure (Spec.Reserve.FlightSelection.Itinerary.roundTrip o h)
         | _ => throw "outside PRE (selectFlights must have 1 or 2 flights)"
-      let d ← need (Spec.UseCase.Reserve.buildDraft r.form it) "outside PRE (passenger)"
-      match ← need (Spec.UseCase.Reserve.validateReservation cfg md w d) "outside PRE" with
+      let d ← need (Spec.Reserve.buildDraft r.form it) "outside PRE (passenger)"
+      match ← need (Spec.Reserve.validateReservation cfg md w d) "outside PRE" with
       | .ok () => return .null
       | .error e => return specErrorJson e),
     ("reservation.confirm", fun i => do
       let w ← specWorld i
       checkWorld w
-      match ← need (Spec.UseCase.Reserve.confirmOp cfg md w (← specRequest i)) "outside PRE" with
+      match ← need (Spec.Reserve.confirmOp cfg md w (← specRequest i)) "outside PRE" with
       | .ok n => return Json.mkObj [("totalFare", toJson n)]
       | .error e => return specErrorJson e),
     ("reservation.reserve", fun i => do
       let w ← specWorld i
       checkWorld w
       let today ← decodeDate (← getStr i "today")
-      let (w', r) ← need (Spec.UseCase.Reserve.reserveOp cfg md today w (← specRequest i)) "outside PRE"
+      let (w', r) ← need (Spec.Reserve.reserveOp cfg md today w (← specRequest i)) "outside PRE"
       let result := match r with
         | .ok v => Json.mkObj [("reserveNo", .str v.reserveNo.val), ("paymentDate", .str (fmtIsoDate v.paymentDate)),
             ("totalFare", toJson v.totalFare)]

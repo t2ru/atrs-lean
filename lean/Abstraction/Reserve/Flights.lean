@@ -1,12 +1,12 @@
 import Abstraction.MasterData.AlphaLeaf
 import SourceModel.Domain.Service.B0.TicketSharedServiceImpl
-import Spec.Ticket
+import Spec.Reserve.FlightSelection
 
 /-!
 # Abstraction.Reserve.Flights
 
 ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.validateFlightList`）の純粋な部分と、[Spec] の
-`Spec.Ticket.validateFlightList` の対応（backlog aedf の第 3 段）。
+`Spec.Reserve.FlightSelection.validateFlightList` の対応（backlog aedf の第 3 段）。
 
 - 時刻: 便マスタの到着時刻（24:00 より前。既知差異 D-031 の前提）・出発時刻の `HHmm` の解釈
 - 搭乗間隔: `validateFlightDepartureDateForRoundTripFlight` と `checkInterval`
@@ -147,9 +147,9 @@ theorem isRoundTrip_eq (c : FareTypeCd) : FareTypeUtil.isRoundTrip (some c) = ro
 
 /-- 運賃種別の検査（片道）。 -/
 theorem flightFareType_one {f : JRef SourceModel.Domain.Model.Flight} {k : FlightKey} (h : HasFareType f k.fareTypeCd) :
-    AgreeV (TicketSharedServiceImpl.validateFlightFareType [f]) (Spec.Ticket.checkFareTypes [k]) := by
+    AgreeV (TicketSharedServiceImpl.validateFlightFareType [f]) (Spec.Reserve.FlightSelection.checkFareTypes [k]) := by
   obtain ⟨fl, ft, rfl, h1, h2⟩ := h
-  unfold TicketSharedServiceImpl.validateFlightFareType Spec.Ticket.checkFareTypes
+  unfold TicketSharedServiceImpl.validateFlightFareType Spec.Reserve.FlightSelection.checkFareTypes
   simp only [JRef.deref, h1, h2, isOneWay_eq, bind, Except.bind, pure, Except.pure]
   by_cases hc : oneWayFareTypes.contains k.fareTypeCd = true
   · simp only [hc, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
@@ -161,10 +161,10 @@ theorem flightFareType_one {f : JRef SourceModel.Domain.Model.Flight} {k : Fligh
 /-- 運賃種別の検査（往復）。 -/
 theorem flightFareType_two {f g : JRef SourceModel.Domain.Model.Flight} {k l : FlightKey}
     (hf : HasFareType f k.fareTypeCd) (hg : HasFareType g l.fareTypeCd) :
-    AgreeV (TicketSharedServiceImpl.validateFlightFareType [f, g]) (Spec.Ticket.checkFareTypes [k, l]) := by
+    AgreeV (TicketSharedServiceImpl.validateFlightFareType [f, g]) (Spec.Reserve.FlightSelection.checkFareTypes [k, l]) := by
   obtain ⟨fl, ft, rfl, h1, h2⟩ := hf
   obtain ⟨gl, gt, rfl, h3, h4⟩ := hg
-  unfold TicketSharedServiceImpl.validateFlightFareType Spec.Ticket.checkFareTypes
+  unfold TicketSharedServiceImpl.validateFlightFareType Spec.Reserve.FlightSelection.checkFareTypes
   simp only [JRef.deref, h1, h2, h3, h4, isRoundTrip_eq, bind, Except.bind, pure, Except.pure]
   by_cases a : roundTripFareTypes.contains k.fareTypeCd = true
   · by_cases b : roundTripFareTypes.contains l.fareTypeCd = true
@@ -180,13 +180,13 @@ theorem flightFareType_two {f g : JRef SourceModel.Domain.Model.Flight} {k l : F
 /-! ## 逆区間 -/
 
 /-- 便マスタの区間の空港コード。 -/
-def HasRoute (fm : SourceModel.Domain.Model.FlightMaster) (rt : Spec.MasterData.Route) : Prop :=
+def HasRoute (fm : SourceModel.Domain.Model.FlightMaster) (rt : Spec.Env.MasterData.Route) : Prop :=
   ∃ r da aa, fm.route = some r ∧ r.departureAirport = some da ∧ da.code = some rt.depAirportCd.val ∧
     r.arrivalAirport = some aa ∧ aa.code = some rt.arrAirportCd.val
 
 /-- 逆区間の検査。 -/
 theorem flightRoute {ofl hfl : SourceModel.Domain.Model.Flight} {ofm hfm : SourceModel.Domain.Model.FlightMaster}
-    {orr hr : Spec.MasterData.Route} (hom : ofl.flightMaster = some ofm) (hhm : hfl.flightMaster = some hfm)
+    {orr hr : Spec.Env.MasterData.Route} (hom : ofl.flightMaster = some ofm) (hhm : hfl.flightMaster = some hfm)
     (ho : HasRoute ofm orr) (hh : HasRoute hfm hr) :
     AgreeV (TicketSharedServiceImpl.validateFlightRouteForRoundTripFlight ofl hfl)
       (if orr.depAirportCd == hr.arrAirportCd && orr.arrAirportCd == hr.depAirportCd then .ok ()

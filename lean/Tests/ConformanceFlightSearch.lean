@@ -18,11 +18,11 @@ import Tests.ConformanceMaster
   [Source] の `AtrsBusinessException` は `business`、`FlightNotFoundException` は `notFound` に対応させる。
 -/
 
-open Lean Spec ConformanceKit Tests.Conformance
+open Lean Spec Spec.Env ConformanceKit Tests.Conformance
 
 open ConformanceKit.Runner LangSemantics.Java.Exception LangSemantics.Java.HashMap LangSemantics.Java.Int
 
-open Spec.Config Spec.Model Spec.Prim.Time Spec.Prim.Format
+open Spec.Env.Config Spec.Model Spec.Prim.Time Spec.Prim.Format
 
 namespace Tests.ConformanceFlightSearch
 open Tests.ConformanceFare (boardingClassCd fareTypeCd decodeMaster
@@ -79,7 +79,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
     ("flightSearch.searchFlight", fun i => do
       let flights ← (← getArr i "flights").mapM specFlight
       -- フライトが主キーで一意でなければ、`World` を作れない（INV の外。ADR 6d36 の L3）
-      let w : Spec.Port.World ← if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h }
+      let w : Spec.World ← if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h }
         else throw "outside INV (duplicate flight key)"
       if !decide (w.RefMaster md) then throw "outside PRE (flight refers to a missing master row)"
       let r ← need (Spec.FlightSearch.searchFlight cfg md (← decodeDate (← getStr i "today")) (← specCriteria (← getObjVal i "criteria"))

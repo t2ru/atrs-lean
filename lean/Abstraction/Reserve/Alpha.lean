@@ -2,7 +2,7 @@ import Abstraction.MasterData.AlphaLeaf
 import Abstraction.MasterData.Alpha
 import Abstraction.Fare.TotalAlpha
 import Abstraction.World.Alpha
-import Spec.UseCase.Reserve
+import Spec.Reserve
 import SourceModel.ReserveQuery
 
 /-!
@@ -23,7 +23,7 @@ namespace Abstraction.Reserve.Alpha
 open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Alpha Abstraction.Fare.TotalAlpha Abstraction.World.Alpha
   Spec.Model Machine.Kernel
 open Machine.Preserves (KernelIs)
-open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Java.Int Spec.UseCase.Reserve
+open LangSemantics.Java LangSemantics.Java.Exception LangSemantics.Java.Int Spec.Reserve
 
 /-! ## 入力 -/
 
@@ -60,7 +60,7 @@ theorem opOf_kernel : KernelIs opOf (undefOrEq opOf) := by
 
 /-- 選択フライト情報（`null` には定義しない。便名は文字列のまま）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def selectOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option Spec.Ticket.SelectFlight :=
+def selectOfForm (f : SourceModel.App.B0.SelectFlightForm) : Option Spec.Reserve.FlightSelection.SelectFlight :=
   (f.depDate.bind dateOfJ).bind fun d => f.flightName.bind fun n => f.boardingClassCd.bind fun bc =>
     f.fareTypeCd.map fun ft => ⟨d, n, bc, ft⟩
 
@@ -201,7 +201,7 @@ def dev_D014R (ic : SourceModel.ReserveQuery.MInput) : Prop := ∀ n, ic.input.e
 /-- D-009: 予約確定では、採番の次の値から、1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号
 12 まで）が、シーケンスの最大値と `int` の上限（予約フライト番号・搭乗者番号の列と `selectKey` の `Integer`）を超えない。 -/
 @[deviation "D-009"]
-def dev_D009 (w : Spec.Port.World) (i : MInput) : Prop :=
+def dev_D009 (w : Spec.World) (i : MInput) : Prop :=
   i.op = .reserve → w.sequences.reserve ≤ 9999999999 ∧ w.sequences.reserveFlight + 1 ≤ 2147483647 ∧
     w.sequences.passenger + 11 ≤ 2147483647
 
@@ -212,8 +212,8 @@ def dev_D031 (i : MInput) : Prop :=
 
 /-- 選択フライトを便マスタで解決した主キーの列（解決できない選択フライトは除く。選択フライトの検証が成功すれば、
 予約する便の主キーの列）。 -/
-def selectKeys (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : List FlightKey :=
-  ss.filterMap fun s => (Spec.Ticket.resolve md s).map (·.key)
+def selectKeys (md : Spec.Env.MasterData) (ss : List Spec.Reserve.FlightSelection.SelectFlight) : List FlightKey :=
+  ss.filterMap fun s => (Spec.Reserve.FlightSelection.resolve md s).map (·.key)
 
 /-- 予約の合計金額の入力: 選択フライトを解決した主キーと、空でない搭乗者欄の年齢。 -/
 def tfOf (i : MInput) : Spec.Fare.TotalFareInput :=

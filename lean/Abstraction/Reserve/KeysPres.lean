@@ -10,15 +10,15 @@ ABS-041 の補題: 予約確定の後も、具体側の不変条件（主キー�
 namespace Abstraction.Reserve.KeysPres
 open Abstraction.World.Alpha Abstraction.Reserve.Registration Abstraction.Reserve.RegisterRun
 
-theorem keysOk_advance {w : Spec.Port.World} (h : KeysOk w) (a : Spec.Nondet.SeqAdvance) :
-    KeysOk (Spec.UseCase.Reserve.advance w a) := by
+theorem keysOk_advance {w : Spec.World} (h : KeysOk w) (a : Spec.Nondet.SeqAdvance) :
+    KeysOk (Spec.Reserve.advance w a) := by
   obtain ⟨h1, h2⟩ := h
   refine ⟨h1, fun r hr => ?_⟩
   obtain ⟨⟨n, hn, hrn⟩, hf⟩ := h2 r hr
-  refine ⟨⟨n, by simp only [Spec.UseCase.Reserve.advance]; omega, hrn⟩, fun f hf' => ?_⟩
+  refine ⟨⟨n, by simp only [Spec.Reserve.advance]; omega, hrn⟩, fun f hf' => ?_⟩
   obtain ⟨a1, a2⟩ := hf f hf'
-  exact ⟨by simp only [Spec.UseCase.Reserve.advance]; omega,
-    fun p hp => by have := a2 p hp; simp only [Spec.UseCase.Reserve.advance]; omega⟩
+  exact ⟨by simp only [Spec.Reserve.advance]; omega,
+    fun p hp => by have := a2 p hp; simp only [Spec.Reserve.advance]; omega⟩
 
 theorem mem_rfsFrom_no {ps : List Spec.Model.Passenger} :
     ∀ {rfn pn : Nat} {ks : List Spec.Model.FlightKey} {rf : Spec.Model.ReserveFlight × List (Nat × Spec.Model.Passenger)},
@@ -33,10 +33,10 @@ theorem mem_rfsFrom_no {ps : List Spec.Model.Passenger} :
       omega
 
 /-- 登録の後も、主キーの性質が保たれる。 -/
-theorem keysOk_regWorld {w w1 : Spec.Port.World} (h : KeysOk w) (hr1 : w1.reservations = w.reservations)
+theorem keysOk_regWorld {w w1 : Spec.World} (h : KeysOk w) (hr1 : w1.reservations = w.reservations)
     (hm1 : w1.members = w.members) (RD : Spec.Prim.Date) (tfn : Nat) (fn gn : String) (an : Nat)
     (g : Spec.Model.Gender) (tel mail : String) (mn : Option Spec.Model.MembershipNumber)
-    (qs : List Spec.Model.Passenger) (it : Spec.Ticket.Itinerary Spec.Model.FlightKey) :
+    (qs : List Spec.Model.Passenger) (it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey) :
     KeysOk (regWorld w w1 (regRes w RD tfn fn gn an g tel mail mn qs it) it.toList.length
       (it.toList.length * qs.length)) := by
   obtain ⟨h1, h2⟩ := h

@@ -1,31 +1,32 @@
-import Spec.Config
-import Spec.MasterData
-import Spec.EnvPre
-import Spec.CodeList
+import Spec.Env.Config
+import Spec.Env.MasterData
+import Spec.Env
+import Spec.Env.CodeList
 
 /-!
 # Spec.MasterQuery
 
-マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。[`Spec.MasterData`](MasterData.lean)）。
-状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）と、
+マスタ・設定・コードリストの参照の抽象機械（R 課題 ABS-026 の抽象側。[`Spec.Env.MasterData`](Env/MasterData.lean)）。
+状態を持たず、設定とマスタは不変の入力である。PRE は設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）と、
 問い合わせの引数の値域。
 -/
 
 namespace Spec.MasterQuery
-open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
-open Spec.CodeList Spec.Model Spec.Prim.Text
+open Spec.Env
+open Spec.Env.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType BoardingClassInfo FareTypeInfo)
+open Spec.Env.CodeList Spec.Model Spec.Prim.Text
 
 open Spec.Prim
 
-/-- コードリストの名前（`lean/Spec/CodeList.lean#空港コードリスト画面用`）。 -/
-@[spec_doc "lean/Spec/CodeList.lean#空港コードリスト画面用"]
+/-- コードリストの名前（`lean/Spec/Env/CodeList.lean#空港コードリスト画面用`）。 -/
+@[spec_doc "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"]
 inductive CodeListName where
   | airport | boardingClass | fareType | creditType | creditMonth | creditYear | gender | flightType
   deriving DecidableEq, Repr
 
 
 /-- 名前で引いたコードリスト。 -/
-@[spec_doc "lean/Spec/CodeList.lean#空港コードリスト画面用"]
+@[spec_doc "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"]
 def codeListOfName (md : MasterData) : CodeListName → List CodeEntry
   | .airport => airport md
   | .boardingClass => boardingClass md
@@ -54,7 +55,7 @@ inductive Query where
 
 /-- 問い合わせの引数の値域（原典の `Assert.hasText` に当たる。`lean/Spec/Model.lean#コード値`）。
 便名は、形式（`FlightName.valid`）に合い、空白でない（`Spec.Prim.Text.hasText`）ことも課す。空港コードは英大文字なので、空白でない。 -/
-@[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-034"]
+@[spec_doc "lean/Spec/Env/MasterData.lean#参照関数", gap "D-034"]
 def Query.Valid : Query → Prop
   | .routeOf dep arr => AirportCd.valid dep = true ∧ AirportCd.valid arr = true
   | .flightMasterOf name => FlightName.valid name = true ∧ hasText name = true
@@ -85,11 +86,11 @@ def answer (cfg : Config) (md : MasterData) : Query → Answer
   | .config => .config cfg
   | .codeList n => .codeList (codeListOfName md n)
 
-/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの検証が通ること（`EnvPre.masterConfigOk`）と、
+/-- マスタ・設定・コードリストの参照の抽象機械（状態を持たない）。PRE は設定とマスタの検証が通ること（`Env.masterConfigOk`）と、
 問い合わせの引数の値域。 -/
-@[spec_doc "lean/Spec/MasterData.lean#参照関数", gap "D-027"]
+@[spec_doc "lean/Spec/Env/MasterData.lean#参照関数", gap "D-027"]
 def queryMachine : Machine.Machine Unit (Config × MasterData × Query) Answer :=
-  Machine.Machine.pure (fun i => EnvPre.masterConfigOk (i.1, i.2.1) ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
+  Machine.Machine.pure (fun i => Env.masterConfigOk (i.1, i.2.1) ∧ i.2.2.Valid) (fun i => answer i.1 i.2.1 i.2.2)
 
 /-- SPEC-001: PRE の下で、標準の選択は関係に含まれる。 -/
 @[obligation "SPEC-001"]

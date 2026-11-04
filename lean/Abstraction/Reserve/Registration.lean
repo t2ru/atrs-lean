@@ -25,21 +25,21 @@ theorem lift_pure {α : Type} (a : α) : (lift (pure a) : DbM α) = pure a := rf
 
 theorem lift_ok {α : Type} (a : α) : (lift (.ok a) : DbM α) = pure a := rfl
 
-theorem advance_zero (w : Spec.Port.World) : Spec.UseCase.Reserve.advance w {} = w := by
-  simp [Spec.UseCase.Reserve.advance]
+theorem advance_zero (w : Spec.World) : Spec.Reserve.advance w {} = w := by
+  simp [Spec.Reserve.advance]
 
 theorem forall₂_get' {α β : Type} {R : α → β → Prop} {xs : List α} {ys : List β}
     (h : LangSemantics.Core.List.Forall₂ R xs ys) {j : Nat} {x : α} {y : β} (hx : xs[j]? = some x)
     (hy : ys[j]? = some y) : R x y := forall₂_get h hx hy
 
-theorem secureAll_world {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} :
-    ∀ {ks : List Spec.Model.FlightKey} {w w1 : Spec.Port.World}, secureAll md T n ks w = some (.ok w1) →
+theorem secureAll_world {md : Spec.Env.MasterData} {T : Spec.Prim.Date} {n : Nat} :
+    ∀ {ks : List Spec.Model.FlightKey} {w w1 : Spec.World}, secureAll md T n ks w = some (.ok w1) →
       w1.reservations = w.reservations ∧ w1.members = w.members ∧ w1.sequences = w.sequences ∧
       w1.flights.map (·.key) = w.flights.map (·.key)
   | [], w, w1, h => by simp only [secureAll, Option.some.injEq, Except.ok.injEq] at h; subst h; exact ⟨rfl, rfl, rfl, rfl⟩
   | k :: ks, w, w1, h => by
     simp only [secureAll] at h
-    cases hs : Spec.UseCase.Reserve.secureSeats md T n w k with
+    cases hs : Spec.Reserve.secureSeats md T n w k with
     | none => simp [hs] at h
     | some x =>
       rw [hs, Option.bind_some] at h
@@ -47,10 +47,10 @@ theorem secureAll_world {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} :
       | error e => simp at h
       | ok w' =>
         obtain ⟨h1, h2, h3, h4⟩ := secureAll_world h
-        have hk := Spec.UseCase.Reserve.secureSeats_keys hs
+        have hk := Spec.Reserve.secureSeats_keys hs
         have hq := secureSeats_seq hs
         have hr : w'.reservations = w.reservations ∧ w'.members = w.members := by
-          unfold Spec.UseCase.Reserve.secureSeats at hs
+          unfold Spec.Reserve.secureSeats at hs
           simp only [Option.bind_eq_bind] at hs
           cases hft : md.fareTypeOf k.fareTypeCd with
           | none => simp [hft] at hs
@@ -82,32 +82,32 @@ def rfList (p : SourceModel.MasterQuery.Providers) (fs : List SourceModel.App.B0
   fs.map (rfOfForm p pfs)
 
 /-- 登録する予約の記録（予約番号は採番の次の値、予約フライトは採番の順）。 -/
-def regRes (w : Spec.Port.World) (RD : Spec.Prim.Date) (tfn : Nat) (fn gn : String) (an : Nat)
+def regRes (w : Spec.World) (RD : Spec.Prim.Date) (tfn : Nat) (fn gn : String) (an : Nat)
     (g : Spec.Model.Gender) (tel mail : String) (mn : Option Spec.Model.MembershipNumber)
-    (qs : List Spec.Model.Passenger) (it : Spec.Ticket.Itinerary Spec.Model.FlightKey) : Spec.Model.Reservation :=
-  { reserveNo := Spec.Port.World.reserveNoOf w.sequences.reserve, reserveDate := RD, totalFare := tfn,
+    (qs : List Spec.Model.Passenger) (it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey) : Spec.Model.Reservation :=
+  { reserveNo := Spec.World.reserveNoOf w.sequences.reserve, reserveDate := RD, totalFare := tfn,
     repFamilyName := fn, repGivenName := gn, repAge := an, repGender := g, repTel := tel, repMail := mail,
     repMembershipNumber := mn,
     reserveFlights := RegSpec.rfsIt qs w.sequences.reserveFlight w.sequences.passenger it }
 
 /-- 予約を登録した後の `World`（空席の確保の後の `w1` に予約 `R` を足し、`w` の採番を進めたもの）。 -/
-def regWorld (w w1 : Spec.Port.World) (R : Spec.Model.Reservation) (nf np : Nat) : Spec.Port.World :=
+def regWorld (w w1 : Spec.World) (R : Spec.Model.Reservation) (nf np : Nat) : Spec.World :=
   { w1 with reservations := w1.reservations ++ [R],
             sequences := { w.sequences with reserve := w.sequences.reserve + 1,
                                              reserveFlight := w.sequences.reserveFlight + nf,
                                              passenger := w.sequences.passenger + np } }
 
 /-- 予約の登録（骨組み）。 -/
-theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Providers}
+theorem registerReservation_hoare {md : Spec.Env.MasterData} {p : SourceModel.MasterQuery.Providers}
     (hbq : ∀ cd : Spec.Model.BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hfq : ∀ cd : Spec.Model.FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
-    {env : Env} {w : Spec.Port.World} {D0 : FlightDb} (hw0 : worldOfDb D0 = some w) (hinv : w.Inv)
+    {env : Env} {w : Spec.World} {D0 : FlightDb} (hw0 : worldOfDb D0 = some w) (hinv : w.Inv)
     (svc : TicketReserveServiceImpl) {tJ : JLocalDate} {T : Spec.Prim.Date} (hclock : ∀ n, env.clock n = tJ)
     (hT : Abstraction.MasterData.AlphaLeaf.dateOfJ tJ = some T)
     {f0 : SourceModel.App.B0.SelectFlightForm} {fs : List SourceModel.App.B0.SelectFlightForm}
-    {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {ks : List Spec.Model.FlightKey} (hit : it.toList = ks)
+    {it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey} {ks : List Spec.Model.FlightKey} (hit : it.toList = ks)
     (hvc : LangSemantics.Core.List.Forall₂ (VacCond md p) (f0 :: fs) ks)
     (hex : ∀ k ∈ ks, (w.findForUpdate k).isSome)
     {pfs : List SourceModel.App.B2.PassengerForm} {qs : List Spec.Model.Passenger}
@@ -129,11 +129,11 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
     Hoare (fun s => s.db = D0 ∧ s.env = env) (TicketReserveServiceImpl.registerReservation svc (some r))
       (fun dto s => s.env = env ∧ ∃ w1, secureAll md T qs.length ks w = some (.ok w1) ∧
         worldOfDb s.db = some (regWorld w w1 (regRes w RD tfn fn gn an g tel mail
-          ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it)
+          ((Spec.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it)
           ks.length (ks.length * qs.length)) ∧
-        dto.reserveNo = some (Spec.Port.World.reserveNoOf w.sequences.reserve).val ∧
+        dto.reserveNo = some (Spec.World.reserveNoOf w.sequences.reserve).val ∧
         dto.paymentDate = (mkFlight p f0).departureDate)
-      (fun e s => s.env = env ∧ ((IsFault env e ∧ ∃ a, worldOfDb s.db = some (Spec.UseCase.Reserve.advance w a)) ∨
+      (fun e s => s.env = env ∧ ((IsFault env e ∧ ∃ a, worldOfDb s.db = some (Spec.Reserve.advance w a)) ∨
         (∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
           secureAll md T qs.length ks w = some (.error (.business be)) ∧ worldOfDb s.db = some w))) := by
   have hlenp : (pfs.map SourceModel.App.B2.B2Mapper.mapPassenger).length = qs.length := by
@@ -171,11 +171,11 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
       rw [hq1] at hsm hsr hsf hsp
       obtain ⟨hres, hrfo, hpo⟩ := Abstraction.Reserve.Keys.rows_lt hdb1 hk1'
       rw [hq1] at hrfo hpo
-      have hpk0 : ∀ x ∈ s.db.reservation, x.reserveNo.val ≠ (Spec.Port.World.reserveNoOf w.sequences.reserve).val := by
+      have hpk0 : ∀ x ∈ s.db.reservation, x.reserveNo.val ≠ (Spec.World.reserveNoOf w.sequences.reserve).val := by
         intro x hx e
         obtain ⟨m, hm', hxm⟩ := hres x hx
         rw [hq1] at hm'
-        have : (Spec.Port.World.reserveNoOf m).val = (Spec.Port.World.reserveNoOf w.sequences.reserve).val := by
+        have : (Spec.World.reserveNoOf m).val = (Spec.World.reserveNoOf w.sequences.reserve).val := by
           rw [← hxm]; exact e
         have := Abstraction.Reserve.Keys.reserveNoOf_inj this
         omega
@@ -184,7 +184,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
             Spec.Model.MembershipNumber.valid str = true := by
         intro str h1 h2
         obtain ⟨x, hx⟩ := hrm str h1 h2
-        exact Abstraction.Reserve.FlightFacts.member_row hdb1 (by rw [Spec.Port.World.findMember, hm1]; exact hx)
+        exact Abstraction.Reserve.FlightFacts.member_row hdb1 (by rw [Spec.World.findMember, hm1]; exact hx)
       have hins := insert_hoare (D := s.db) (env := env) hsr hd9.1 hrd hRD htf htfv htfm hfn hfnl hgn hgnl hage hagev
         hanm hg htel htell hmail hmaill hm hmem0 hpk0
       have hsg1 : SeqGe w s.db := ⟨{}, by rw [advance_zero, ← hq1]; exact hsq1⟩
@@ -202,7 +202,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         rw [List.length_map]; exact Abstraction.Reserve.Validate.forall₂_length hvc
       refine Hoare.bind' (P := fun s => s = s2)
         (Hoare.conseq (flights_hoare (D := s2.db) (rfn := w.sequences.reserveFlight) (pn := w.sequences.passenger)
-          (ps := qs) (rn := Spec.Port.World.reserveNoOf w.sequences.reserve) hlenL ?_ ?_ ?_)
+          (ps := qs) (rn := Spec.World.reserveNoOf w.sequences.reserve) hlenL ?_ ?_ ?_)
           (fun s' h => ?_) (fun _ _ h => h) (fun e s' h => ⟨h.1, .inl h.2⟩)) (fun _ => ?_) s2 rfl
       · intro j x k hx hk D' hsfD hspD hsgD hrfD hpD hflD hresD hmemD
         rw [List.getElem?_map] at hx
@@ -217,11 +217,11 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have hm : w.sequences.reserveFlight + j ≤ 2147483647 := by omega
         have hfk2 : ∃ r ∈ D'.flight, ∃ fx', flightOfRow r = some fx' ∧ fx'.key = k := by
           rw [hflD, hdb2]; exact hrowf
-        have hfk1 : D'.reservation.any (·.reserveNo.val == (Spec.Port.World.reserveNoOf w.sequences.reserve).val)
+        have hfk1 : D'.reservation.any (·.reserveNo.val == (Spec.World.reserveNoOf w.sequences.reserve).val)
             = true := by
           rw [hresD, hdb2]
           simp [hrno0]
-        have hnol : (Spec.Port.World.reserveNoOf w.sequences.reserve).val.length ≤ 10 := by
+        have hnol : (Spec.World.reserveNoOf w.sequences.reserve).val.length ≤ 10 := by
           rw [← hrno0]; exact row0.reserveNo.property
         have hpkr : ∀ g ∈ D'.reserveFlight, g.reserveFlightNo.val ≠ ((w.sequences.reserveFlight + j : Nat) : Int) :=
           fun g hg => by have := hrfD g hg; omega
@@ -266,7 +266,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
             intro str h1' h2'
             obtain ⟨x, hx⟩ := hpm f' hf' str h1' h2'
             rw [hmem4]
-            exact Abstraction.Reserve.FlightFacts.member_row hdb1 (by rw [Spec.Port.World.findMember, hm1]; exact hx)
+            exact Abstraction.Reserve.FlightFacts.member_row hdb1 (by rw [Spec.World.findMember, hm1]; exact hx)
           have hfk : D''.reserveFlight.any (·.reserveFlightNo.val == ((w.sequences.reserveFlight + j : Nat) : Int))
               = true := by
             rw [hrf'', hdb4]
@@ -334,7 +334,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
         have htk : ks.take ks.length = ks := List.take_length
         rw [htk] at hnfs
         have hR0 : resOf nfs nps row0 = some (regRes w RD tfn fn gn an g tel mail
-            ((Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it) := by
+            ((Spec.Reserve.memberNoOf M0.membershipNumber).bind Spec.Model.MembershipNumber.ofString?) qs it) := by
           simp only [resOf, hfo, hnfs, Option.bind_eq_bind, Option.bind_some, ← hit, ← RegSpec.legs_rfsIt,
             reserveFlightsOf_of_legs]
           rw [hro0]
@@ -359,7 +359,7 @@ theorem registerReservation_hoare {md : Spec.MasterData} {p : SourceModel.Master
   · rcases h.2 with ⟨hf, a, ha⟩ | ⟨be, hba, hc, hsa, w', hw', hseq⟩
     · exact .inl ⟨hf, a, by rw [hdb', hd0]; exact worldOfDb_rollback hw0 ha⟩
     · refine .inr ⟨be, hba, hc, hsa, ?_⟩
-      have hsq : sequencesOf s.db = some (Spec.UseCase.Reserve.advance w {}).sequences := by
+      have hsq : sequencesOf s.db = some (Spec.Reserve.advance w {}).sequences := by
         rw [advance_zero, ← hseq]; exact (worldOfDb_eq_some.mp hw').2.2.2
       rw [hdb', hd0, worldOfDb_rollback hw0 hsq, advance_zero]
 

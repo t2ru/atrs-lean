@@ -53,7 +53,7 @@ Chosen option: "下表のとおり決める", because 理由は次の 2 つで�
 | --- | --- |
 | 選択の型（`Spec.Nondet`） | 葉の型を 5 つ置き、それぞれに `@[nondet]` を付ける。標準の値は `std` とする。<br>- N-001 `ConflictChoice`: `none`／`conflict`<br>- N-002 `IoFailureChoice`: `none`／`failure`<br>- N-003 `ReportDeliveryChoice`: 再配信の上限 `retryLimit`（1 以上）、次に配信する待ち行列の位置 `next`、重複配信 `duplicate`。標準は 10・先頭・なし<br>- N-004 `InvalidRequestDetail`: `override : Option String`。`none` は [Spec] の定義の詳細<br>- N-005 `PasswordHashChoice`: 単射なハッシュ関数。`matches` の契約を単射性で表す。標準は参照の符号化 `"{test}" ++ raw`（[ADR 2d1f](2d1f-password-hashing-port.md)） |
 | 選択の組 | 各機能の機械が、使う葉だけを積で組む（例: 予約確定は `ConflictChoice × IoFailureChoice` と `Unit`）。標準の値は各葉の `std` の組とする |
-| 環境の前提（`Spec.EnvPre`） | `masterConfigOk : Config × MasterData → Prop`（設定の不変条件と MD-1〜MD-8）だけを置き、`@[env_pre]` と `Nontrivial` を付ける。入力の値域の述語は、入口の機械を作る各機能の backlog で、その入力の型に合わせて置く（プロジェクトオーナーの決定） |
+| 環境の前提（`Spec.Env`） | `masterConfigOk : Config × MasterData → Prop`（設定の不変条件と MD-1〜MD-8）だけを置き、`@[env_pre]` と `Nontrivial` を付ける。入力の値域の述語は、入口の機械を作る各機能の backlog で、その入力の型に合わせて置く（プロジェクトオーナーの決定） |
 | シードの値（`Spec.Seed`） | `tools/conformance/seed_lean.py` が `conformance/fixtures` から生成し、CI が `--check` で最新であることを確かめる。`outsideSpec` の行（到着時刻 2415 の便マスタ 2 行）は、`Tests.ConformanceFare` と同じく除く（[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)。[Spec] の改訂は backlog 0be7） |
 | シードの検査 | 真偽値の検査関数 `EnvPre.validB` と、その正しさ `validB_sound` を書き、カーネルの評価（`decide +kernel`）で `seed_env` を示す。<br>- 文字列は `toList` で見る。<br>- 一意性は、鍵（文字の符号の位取り）が真に増加していれば線形時間で確かめ、そうでなければ定義どおりに確かめる。正しさは、写した列の一意性から元の列の一意性が従うことによる。<br>- ビルドは約 30 秒長くなる |
 
@@ -67,10 +67,10 @@ Chosen option: "下表のとおり決める", because 理由は次の 2 つで�
 ### Confirmation
 
 * `obligation-check` と `check_obligations.py` で、OB-N1・N2・N3 と G8 に誤りが無い。
-* `Spec.EnvPre.seed_env`・`masterConfigOk_nontrivial` が、`sorry`・公理なしでビルドされる。
+* `Spec.Seed.seed_env`・`masterConfigOk_nontrivial` が、`sorry`・公理なしでビルドされる。
 * `Tests.SpecChecks` で、選択の型の標準の値と、環境の前提の両向きの例を確かめる。
 
 ## More Information
 
 * [ADR 70eb](70eb-refinement-non-vacuity-obligations.md)、[ADR e56e](e56e-conflict-as-spec-nondeterminism.md)、[ADR 90f5](90f5-report-queue-at-least-once-delivery.md)、[ADR 2d1f](2d1f-password-hashing-port.md)
-* [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)、[`Spec.Port`](../../lean/Spec/Port.lean)
+* [abstraction.md](../spec/abstraction.md#spec-の非決定性n-nnn)、[`Spec.Port`](../../lean/Spec/World.lean)

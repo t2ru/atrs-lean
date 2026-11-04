@@ -18,7 +18,7 @@ import Trace
 namespace Spec.Nondet
 
 /-- 失敗したユースケースの中で進んだ採番の数（会員・予約・予約フライト・搭乗者）。採番は失敗したトランザクションでも
-巻き戻らない（`lean/Spec/Port.lean#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
+巻き戻らない（`lean/Spec/World.lean#idgenerator`）。N-001・N-002 の選択の成分（backlog aedf。プロジェクトオーナーの確認待ち）。 -/
 structure SeqAdvance where
   member : Nat := 0
   reserve : Nat := 0

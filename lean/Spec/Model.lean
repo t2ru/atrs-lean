@@ -8,7 +8,7 @@ import Spec.Prim
 - 列挙の綴りは原典の Java `enum` 名と同一で、JSON・HTTP でもこの綴りを使う（`toCode`・`ofCode?`）。
 - コード値は `String` を包む structure とする。形式の決まったコード値（空港コード・便名・カード種別コード・会員番号）は、
   形式の証明を欄（`wf`、既定 `by decide`）に持ち、形式に合わない値を表現できない（`ofString?` で読む）。マスタに存在する
-  ことは `Spec.MasterData` の参照関数と不変条件で表す。
+  ことは `Spec.Env.MasterData` の参照関数と不変条件で表す。
 - エンティティの `?` は `Option` である。採番される番号（予約番号・会員番号など）は、登録の操作で決まる。
 
 > **区分: 要約（informative）と草案（draft）の混在。** [Spec] の定義は Lean `Spec` に形式化した（[backlog 591d](../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。各節の本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。**[Source]** と書いた記述は、`SourceModel` に形式化するまでの草案（draft）である。
@@ -28,7 +28,7 @@ open Spec.Prim
 | --- | --- | --- |
 | `FlightType` | `RT`, `OW` | 往復, 片道 |
 | `BoardingClassCd` | `N`, `S` | 一般席, 特別席 |
-| `FareTypeCd` | `OW`, `RT`, `RD1`, `RD7`, `ED`, `LD`, `GD`, `SOW`, `SRT`, `SRD` | [`Spec.MasterData`](MasterData.lean#運賃種別) |
+| `FareTypeCd` | `OW`, `RT`, `RD1`, `RD7`, `ED`, `LD`, `GD`, `SOW`, `SRT`, `SRD` | [`Spec.Env.MasterData`](Env/MasterData.lean#運賃種別) |
 | `Gender` | `F`, `M` | 女性, 男性 |
 | `LineType` | `OUTWARD`, `HOMEWARD` | 往路, 復路（表示用ラベル「往路」「復路」） |
 
@@ -129,11 +129,11 @@ theorem fareType_partition (c : FareTypeCd) : (c ∈ oneWayFareTypes) ≠ (c ∈
 /-!
 ## コード値
 
-**[Spec]** Lean: [`Spec.Model`](Model.lean)。`String` を包む structure で、`AirportCd`・`FlightName`・`MembershipNumber`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない。[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.MasterData`](MasterData.lean)）。
+**[Spec]** Lean: [`Spec.Model`](Model.lean)。`String` を包む structure で、`AirportCd`・`FlightName`・`MembershipNumber`・`CreditTypeCd` は形式の証明を値に持つ（不正な値を表せない。[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)）。`ReserveNo` は採番の値で持つ。外部から来るコード（空席照会の条件・選択フライトの便名・マスタの問い合わせの引数）は生の文字列のまま受け、照合では値を比べる。形式に合わない DB の値は [Spec] の型で表せない（既知差異 D-027）。マスタに存在することは、マスタの参照関数と不変条件で表す（[`Spec.Env.MasterData`](Env/MasterData.lean)）。
 
 | 型 | 形式 | 例 |
 | --- | --- | --- |
-| `AirportCd` | 英大文字 3 文字（マスタに存在するもの。形式は型が持つ。マスタのコードが形式に合わない場合は既知差異 D-036）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` ではない（生の文字列）。区間の検索で見つからなければ業務エラーになる（[`Spec.CodeList`](CodeList.lean#空港コードリスト画面用)） | `HND` |
+| `AirportCd` | 英大文字 3 文字（マスタに存在するもの。形式は型が持つ。マスタのコードが形式に合わない場合は既知差異 D-036）。空席照会の条件の空港コードは、入力検証を通った文字列（区切り行の `NOP` を含みうる）であり `AirportCd` ではない（生の文字列）。区間の検索で見つからなければ業務エラーになる（[`Spec.Env.CodeList`](Env/CodeList.lean#空港コードリスト画面用)） | `HND` |
 | `FlightName` | 1〜6 文字（マスタに存在するもの）。`"`・`,`・改行を含まない（形式 `FlightName.valid` は型が持つ。原典の列 `FLIGHT_NAME VARCHAR(6)` に文字種の制約は無く、形式に合わない DB の便名は既知差異 D-027）。選択フライトの便名は生の文字列で、便マスタを値で引く。マスタの参照の問い合わせでは、空白でない（`hasText`）ことも課す | `NTT001` |
 | `MembershipNumber` | 数字 10 文字（形式は型が持つ。予約入力の会員番号は生の文字列で照合し、照合に成功した番号を登録で読む） | `0000000001` |
 | `ReserveNo` | 採番の値（自然数。上限なし）で持ち、表記は 10 桁にゼロ埋めした十進文字列（採番が 10^10 以上なら 11 桁以上。[Source] との違いは既知差異 D-009）。表記を読むときは、この形でない文字列を拒む（[ADR 6d36](../../docs/decision/6d36-misu-spec-types.md)） | `0000000123` |
@@ -403,7 +403,7 @@ structure PasswordHash where
 | `mail` | String | |
 | `creditNo` | String | 数字 16 文字 |
 | `creditTypeCd` | CreditTypeCd | |
-| `creditTerm` | String | `creditMonth ++ "/" ++ creditYear`（ゼロ埋めしない）。画面の選択肢から選べば `MM/YY` になるが、サーバでは保証されない（[`Spec.InputValidation`](InputValidation.lean#会員入力c1c2)）。[Source] の列は `VARCHAR(5)` で、6 文字以上はシステムエラー（既知差異 [D-018](../../docs/spec/abstraction.md#既知差異)） |
+| `creditTerm` | String | `creditMonth ++ "/" ++ creditYear`（ゼロ埋めしない）。画面の選択肢から選べば `MM/YY` になるが、サーバでは保証されない（[`Spec.Validation`](Validation.lean#会員入力c1c2)）。[Source] の列は `VARCHAR(5)` で、6 文字以上はシステムエラー（既知差異 [D-018](../../docs/spec/abstraction.md#既知差異)） |
 | `login` | MemberLogin | |
 
 ### MemberLogin
@@ -575,7 +575,7 @@ structure Member where
 /-!
 ## 値域
 
-[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](Model.lean)）にある。マスタの値域は `MasterData.MD8`（[`Spec.MasterData`](MasterData.lean#不変条件spec)）である。
+[Spec] は任意精度整数で定義するが、固定長整数で実装する移植先のために値域を定める（[ADR e41d](../../docs/decision/e41d-exact-integer-arithmetic-in-abstract-model.md)）。上限の値は Lean の `Spec.Range`（[`Spec.Model`](Model.lean)）にある。マスタの値域は `MasterData.MD8`（[`Spec.Env.MasterData`](Env/MasterData.lean#不変条件spec)）である。
 マスタデータと入力は次を満たすことを前提とする。入力の値域とマスタの値域（MD-8）は、[Spec] の各操作の事前条件 PRE に含める。入口の機械（画面・REST・レポート要求の受信）では、入力の値域とマスタの値域を環境の前提（`@[env_pre]`）に含め、その下で PRE が成り立つことを示す（[ADR 70eb](../../docs/decision/70eb-refinement-non-vacuity-obligations.md)、[abstraction.md](../../docs/spec/abstraction.md#入口の-r-課題)）。リファインメントの証明義務は、PRE の内についてだけ課される（[ADR 01d4](../../docs/decision/01d4-b-method-refinement-and-explicit-deviations.md)）。値域の外での移植元・移植先の振る舞いは差異ではない。
 
 | 量 | 範囲 |

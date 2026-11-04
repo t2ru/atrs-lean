@@ -9,18 +9,18 @@ R 課題 ABS-004（合計金額。`Abstraction.Fare.totalFareRefines`）と W �
 -/
 
 namespace Abstraction.Fare.TotalFareRun
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.Fare.Load Abstraction.Fare.Loop
   Abstraction.Fare.TotalAlpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
-  Abstraction.MasterData.Pre Abstraction.MasterData.QueryRun Spec.CodeList Spec.Model
+  Abstraction.MasterData.Pre Abstraction.MasterData.QueryRun Spec.Env.CodeList Spec.Model
   Spec.Prim.Int Spec.Prim.Text
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.BigDecimal LangSemantics.Java.Exception
   LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
+open LangSemantics.Java Spec Spec.Env Spec.Prim LangSemantics.Core
   SourceModel.Domain.Common.Masterdata SourceModel.MasterQuery SourceModel.FareQuery SourceModel.App.B0
   SourceModel.App.B0.TicketHelper
 
@@ -61,12 +61,12 @@ theorem routeOfFlightName_mem {md : MasterData} {n : FlightName} {rt : Route}
 
 theorem boardingClassOf_mem {md : MasterData} {cd : BoardingClassCd} {bc : BoardingClass}
     (h : md.boardingClassOf cd = some bc) : bc ∈ md.boardingClasses ∧ bc.boardingClassCd = cd := by
-  unfold Spec.MasterData.boardingClassOf at h
+  unfold Spec.Env.MasterData.boardingClassOf at h
   exact ⟨List.mem_of_find?_eq_some h, by simpa using List.find?_some h⟩
 
 theorem fareTypeOf_mem {md : MasterData} {cd : FareTypeCd} {ft : FareType}
     (h : md.fareTypeOf cd = some ft) : ft ∈ md.fareTypes := by
-  unfold Spec.MasterData.fareTypeOf at h
+  unfold Spec.Env.MasterData.fareTypeOf at h
   exact List.mem_of_find?_eq_some h
 
 /-- 1 便の合計（[Spec]）の分解。 -/

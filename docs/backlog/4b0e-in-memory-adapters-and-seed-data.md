@@ -41,7 +41,7 @@ Rust の移植先ソースを動かせる状態にし、ポート契約（SRC-00
 
 ## 参照
 
-- [`Spec.Port`](../../lean/Spec/Port.lean)
-- [`Spec.MasterData`](../../lean/Spec/MasterData.lean)
+- [`Spec.Port`](../../lean/Spec/World.lean)
+- [`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)
 - [refinement.md](../spec/refinement.md)
 - [spec-pivot/rust/layout.md](../../.agents/skills/spec-pivot/references/docs/lang/rust/layout.md)

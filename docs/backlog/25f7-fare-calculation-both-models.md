@@ -73,7 +73,7 @@ generated:
 ## 第 2 段 a の結果
 
 - [Spec] の修正（プロジェクトオーナーの決定を含む）
-  - `Spec.MasterData.Route.flightTime` を削除した（原典のどの処理も読まない）。
+  - `Spec.Env.MasterData.Route.flightTime` を削除した（原典のどの処理も読まない）。
   - MD-8 に「空港コードは英大文字 3 文字」を足した。
   - 参照の機械を `Spec.MasterQuery` に移し、次の変更を加えた。
     - 設定・コードリストの問い合わせを足した。
@@ -112,7 +112,7 @@ generated:
 ## 第 2 段 b-1 の結果
 
 - [Spec] の修正
-  - MD-8 に「空港のコードは `NOP` でない」を加えた（`Spec.MasterData.airportNopCode`）。`Tests.SpecChecks` に違反例を加えた。
+  - MD-8 に「空港のコードは `NOP` でない」を加えた（`Spec.Env.MasterData.airportNopCode`）。`Tests.SpecChecks` に違反例を加えた。
   - D-027 の対象を、具体側の入力全体（DB・設定・問い合わせの引数）に広げた（[abstraction.md](../spec/abstraction.md#既知差異)）。
 - `LangSemantics.Java` の誤りの修正: `LocalDate` の `toEpochDay`・`ofEpochDay` が、負の年で JVM と食い違っていた（0 方向の除算のつもりで床除算に写していた）。床除算で書き直し、JVM の突き合わせ表に負の年と範囲の端を加えた。
 - 補題（どれも `sorry`・公理・`native_decide` なし。`@[obligation]` は付けない）

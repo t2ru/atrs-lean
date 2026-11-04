@@ -78,7 +78,7 @@ Chosen option: "HV の規則を書き下し、IDN 変換だけを除外する", 
 
 ## More Information
 
-* [spec/input-validation.md](../../lean/Spec/InputValidation.lean), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/input-validation.md](../../lean/Spec/Validation.lean), [spec/abstraction.md](../spec/abstraction.md)
 * [ADR 10a5](10a5-text-length-and-character-classes.md)（文字列長と文字クラス）
 
 [^hv-email]: hibernate-validator 9.1.0.Final `AbstractEmailValidator`

@@ -10,7 +10,7 @@ import Abstraction.Fare.BasicFareRun
 -/
 
 namespace Abstraction.Fare.Loop
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
@@ -19,12 +19,12 @@ open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
   LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec Spec.Prim
+open LangSemantics.Java Spec Spec.Env Spec.Prim
 
 end Abstraction.Fare.Loop
 
 namespace Abstraction.Fare.Loop
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.BasicFareRun Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
@@ -33,7 +33,7 @@ open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.BigDecimal LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
   LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec Spec.Prim SourceModel.Domain.Common.Masterdata
+open LangSemantics.Java Spec Spec.Env Spec.Prim SourceModel.Domain.Common.Masterdata
 open LangSemantics.Java.Spring SourceModel.MasterQuery
 
 /-- 読み込んだ Provider での `calculateBasicFare`: D-001 の前提の下で、[Spec] の基本運賃 `X·C/100` を返す。 -/

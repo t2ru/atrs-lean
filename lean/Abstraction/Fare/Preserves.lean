@@ -6,13 +6,13 @@ import Abstraction.Fare.TotalFareRun
 # Abstraction.Fare.Preserves
 
 ABS-001・ABS-002・ABS-004（運賃計算）の束 `Machine.Preserves`（`Abstraction.Fare` の `*Preserves`）の部品: 環境の前提 `env*` と、その証人（前提を満たす [Source] の入力、前提を破る [Spec] の入力）。
-環境の前提は、マスタ・設定の妥当性（`Spec.EnvPre.masterConfigOk`）と、入力の値域、差異の前提の述語を、[Spec] の入力の成分だけで書いたものである。
+環境の前提は、マスタ・設定の妥当性（`Spec.Env.masterConfigOk`）と、入力の値域、差異の前提の述語を、[Spec] の入力の成分だけで書いたものである。
 入口の R 課題ではないので `@[env_pre]` は付けない。
 -/
 
 namespace Abstraction.Fare.Preserves
 
-open Machine Spec LangSemantics.Core Spec.EnvPre
+open Machine Spec LangSemantics.Core Spec.Env
   Spec.Model Spec.Prim.Text LangSemantics.Core.List LangSemantics.Java.IntLemmas
   LangSemantics.Java.Int Abstraction.Fare.Alpha Abstraction.Fare.TotalAlpha
 open SourceModel.FareQuery
@@ -31,20 +31,20 @@ theorem envBF_icBF101 : ∃ ia, aiBF icBF101 = some ia ∧ envBF ia := by
   cases he : aiBF icBF101 with
   | none => exact absurd he (by decide)
   | some ia =>
-    have h : decide ia.cfg.Valid && EnvPre.validB ia.cfg ia.md &&
+    have h : decide ia.cfg.Valid && Env.validB ia.cfg ia.md &&
         (ia.md.boardingClassOf ia.boardingClassCd).any
           (fun bc => decide (ia.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) &&
         decide (dev_D001 ia) = true := by
-      have : (aiBF icBF101).any (fun ia => decide ia.cfg.Valid && EnvPre.validB ia.cfg ia.md &&
+      have : (aiBF icBF101).any (fun ia => decide ia.cfg.Valid && Env.validB ia.cfg ia.md &&
           (ia.md.boardingClassOf ia.boardingClassCd).any
             (fun bc => decide (ia.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) &&
           decide (dev_D001 ia)) = true := by decide +kernel
       rw [he] at this; simpa using this
     simp only [Bool.and_eq_true, decide_eq_true_eq] at h
-    exact ⟨ia, rfl, masterConfigOk.of_valid h.1.1.1 (EnvPre.validB_sound h.1.1.2), h.1.2, h.2⟩
+    exact ⟨ia, rfl, masterConfigOk.of_valid h.1.1.1 (Env.validB_sound h.1.1.2), h.1.2, h.2⟩
 
 /-- 環境の前提を破る [Spec] の入力: MD-1 を破るマスタ。 -/
-def iaBFbad : Spec.Fare.BasicFareInput := ⟨Seed.config, badMasterData, 0, .N, day0⟩
+def iaBFbad : Spec.Fare.BasicFareInput := ⟨Seed.Master.config, Seed.badMasterData, 0, .N, day0⟩
 
 /-- ABS-002 の環境の前提: 基本運賃と割引率の値域、D-002 の前提（マスタ・設定を含まない）。 -/
 def envF (i : Spec.Fare.FareInput) : Prop := i.Pre ∧ dev_D002 i
@@ -78,7 +78,7 @@ def envTF (i : Spec.Fare.TotalFareInput) : Prop :=
 def icTF100 : TotalFareInput := icTF ⟨100, by decide⟩ ⟨100, by decide⟩ ⟨0, by decide⟩ [20]
 
 /-- `icTF100` の DB の [Spec] の写し。 -/
-def mdTF100 : Spec.MasterData :=
+def mdTF100 : Spec.Env.MasterData :=
   ⟨mdTF012.airports, [⟨1, { val := "HND" }, { val := "ITM" }, 100⟩], mdTF012.flightMasters, mdTF012.boardingClasses, mdTF012.fareTypes,
     [⟨"P", day0, day0, 100⟩], [], []⟩
 
@@ -89,7 +89,7 @@ theorem aiTF_icTF100 : aiTF icTF100 = some iaTF100 := by
   rfl
 
 theorem envTF_iaTF100 : envTF iaTF100 := by
-  refine ⟨masterConfigOk.of_valid (by decide) (EnvPre.validB_sound (by decide +kernel)),
+  refine ⟨masterConfigOk.of_valid (by decide) (Env.validB_sound (by decide +kernel)),
     ⟨by decide, by decide, by decide, by decide, by decide, ?_, by decide⟩, by decide, by decide, by decide⟩
   intro k hk
   simp only [iaTF100, iaTF012, List.mem_cons, List.not_mem_nil, or_false] at hk
@@ -98,6 +98,6 @@ theorem envTF_iaTF100 : envTF iaTF100 := by
   decide
 
 /-- 環境の前提を破る [Spec] の入力: MD-1 を破るマスタ。 -/
-def iaTFbad : Spec.Fare.TotalFareInput := ⟨Seed.config, badMasterData, [], []⟩
+def iaTFbad : Spec.Fare.TotalFareInput := ⟨Seed.Master.config, Seed.badMasterData, [], []⟩
 
 end Abstraction.Fare.Preserves

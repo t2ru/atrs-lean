@@ -15,11 +15,11 @@ import SourceModel.FareQuery
 -/
 
 namespace Abstraction.Fare.Alpha
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
-  Spec.CodeList
+  Spec.Env.CodeList
 open LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 open Machine.Preserves (never always anyOf
   Covers Covers₂ Nontrivial Nontrivial₂
@@ -115,7 +115,7 @@ theorem dev_D001_nontrivial : Nontrivial dev_D001 := by
   obtain ⟨ia, -, -, hn⟩ := aiBF_icBF29
   refine ⟨⟨{ ia with md := ⟨[], [], [], [], [], [], [], []⟩ }, ?_⟩, ⟨ia, hn⟩⟩
   unfold dev_D001
-  simp only [Spec.MasterData.boardingClassOf, List.find?_nil]
+  simp only [Spec.Env.MasterData.boardingClassOf, List.find?_nil]
 
 theorem dev_D002_nontrivial : Nontrivial dev_D002 :=
   ⟨⟨⟨0, 0⟩, by unfold dev_D002; decide⟩, ⟨⟨1430, 30⟩, by unfold dev_D002; decide⟩⟩

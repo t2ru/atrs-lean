@@ -17,7 +17,7 @@
 
 ### セッション
 
-**規範**（[`Spec.Authentication`](Authentication.lean#セッション) が参照する伝送方式）
+**規範**（[`Spec.Auth`](Auth.lean#セッション) が参照する伝送方式）
 
 | 項目 | [Spec] | [Source] |
 | --- | --- | --- |
@@ -100,9 +100,9 @@
 | 項目 | 値 |
 | --- | --- |
 | クエリ | `flightType`, `depAirportCd`, `arrAirportCd`, `depDate`（yyyy/MM/dd）, `boardingClassCd` |
-| 検証 | FlightSearchInput（[`Spec.InputValidation`](InputValidation.lean#空席照会b1)） |
+| 検証 | FlightSearchInput（[`Spec.Validation`](Validation.lean#空席照会b1)） |
 | 200 | `[FlightVacantInfo]`（[`Spec.FlightSearch`](FlightSearch.lean#出力-flightvacantinfo)）。`fareTypes` は JSON オブジェクトでキー順を保つ |
-| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（解決済みの文言。並びは [`Spec.InputValidation`](InputValidation.lean#検証の順序とエラーの並び) の [Spec] の順。[Source] では順序不定（既知差異 [D-022](../../docs/spec/abstraction.md#既知差異)）） |
+| 400 | 入力検証エラー・`Business`。本文 `{"messages": [String]}`（解決済みの文言。並びは [`Spec.Validation`](Validation.lean#検証の順序とエラーの並び) の [Spec] の順。[Source] では順序不定（既知差異 [D-022](../../docs/spec/abstraction.md#既知差異)）） |
 | 404 | `NotFound`（`e.ar.b1.2003`）。本文同上 |
 -/
 
@@ -113,10 +113,10 @@
 
 | リクエスト | トークン | 入力 | 処理 | 結果 |
 | --- | --- | --- | --- | --- |
-| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[`Spec.UseCase.Reserve`](UseCase/Reserve.lean#会員情報による入力補完)）、フライト表示。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
+| `GET ?form` | — | ReservationFlightInput（検証しない） | 予約入力の初期値（[`Spec.Reserve`](Reserve.lean#会員情報による入力補完)）、フライト表示。選択が空ならフライト表示も空。**[Spec]** 便マスタに無い便名・空の便名・搭乗日や搭乗クラスの欠落は `InvalidRequest`（400）。[Source] は `NullPointerException` または `Assert` で 500（既知差異 [D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?redo` | — | TicketReserveInput | フライト表示（`GET ?form` と同じ。[Source] の 500 も同じ。[D-020](../../docs/spec/abstraction.md#既知差異)） | 画面 `B2/reserveForm` |
 | `POST ?confirm` | BEGIN | TicketReserveInput | 1. 入力検証: `selectFlights*`・`flightType` のフィールドエラーは 400、その他は `B2/reserveForm` にエラー表示。2. `validateFlightList`: 失敗はすべて 400（`Business` も改竄扱い）。3. `reserveConfirm`: `Business` は `B2/reserveForm` にメッセージ表示 | 画面 `B2/reserveConfirm`（合計金額、フライト表示、入力値を hidden で保持） |
-| `POST`（判別無し） | IN | TicketReserveInput | 1. 入力検証: エラーはすべて 400。2. `validateFlightList`: 失敗は 400。3. `reserve`（[`Spec.UseCase.Reserve`](UseCase/Reserve.lean#予約確定reserve)） | 成功: フラッシュ `{reserveNo, paymentDate, totalFare}` で 302 `?complete`。`Business`: フラッシュ（メッセージ・フライト表示）で 302 `?fail` |
+| `POST`（判別無し） | IN | TicketReserveInput | 1. 入力検証: エラーはすべて 400。2. `validateFlightList`: 失敗は 400。3. `reserve`（[`Spec.Reserve`](Reserve.lean#予約確定reserve)） | 成功: フラッシュ `{reserveNo, paymentDate, totalFare}` で 302 `?complete`。`Business`: フラッシュ（メッセージ・フライト表示）で 302 `?fail` |
 | `GET ?complete` | — | — | — | 画面 `B2/reserveComplete`（予約番号、`fmtYen(totalFare)` 円、支払期限 `fmtPaymentDate(paymentDate)`。[`Spec.Prim.Format`](Prim/Format.lean#書式)） |
 | `GET ?fail` | — | — | — | 画面 `B2/reserveFail`（メッセージを HTML として表示、選択した **全** フライト（往路・復路）の表示） |
 | `POST ?backToSearch` | — | ReservationFlightInput | 照会条件を復元（下記） | 302 `/ticket/search?redo` ＋ 照会条件と選択フライトのクエリ |
@@ -172,7 +172,7 @@
 
 - 認証: HTTP Basic（任意）。セッションを作らない。CSRF 検査無し。すべて `permitAll`。ただし `Authorization` ヘッダの資格情報が誤っていれば 401（`WWW-Authenticate: Basic realm="Realm"`。本文は定めない。`X-Requested-With: XMLHttpRequest` 付きならヘッダも本文も無い 401）。
   [Source] は、Basic 認証が成功するたびに会員のログイン状態を更新する（`loginDateTime := today`・`loginFlg := true`）。[Spec] は REST の要求でログイン状態を変えない（既知差異 [D-028](../../docs/spec/abstraction.md#既知差異)。Java の原典実行で確かめた。`tools/origin-run/http/login.json`）。
-- 前処理（空白除去）無し（[`Spec.InputValidation`](InputValidation.lean#前処理)）。
+- 前処理（空白除去）無し（[`Spec.Validation`](Validation.lean#前処理)）。
 - 日付の JSON 表現: **日付型**（原典の `LocalDate`）の項目は `"yyyy-MM-dd"`（要求・応答とも）。原典が文字列として整形して返す項目（`GET /api/v1/flight` の応答の `depDate` など、[`Spec.FlightSearch`](FlightSearch.lean#出力-flightvacantinfo)）と、クエリパラメータの日付（`yyyy/MM/dd`）は、この規則の対象外とする。
 
 根拠（[Source]）: 原典の Spring Framework 7.0.3 は、クラスパスに Jackson 3（`tools.jackson.core:jackson-databind` 3.0.4）があれば Jackson 2 より優先して JSON 変換に使う。原典は Jackson 3 と Jackson 2 の両方を依存に持ち、`ObjectMapper` を独自に設定していない（`w/config/web/SpringMvcConfig.java`, `SpringMvcRestConfig.java`）。Jackson 3 は既定で日付を時刻印（配列・数値）として書かないため、`LocalDate` は `"yyyy-MM-dd"` になる。`SelectFlightResource.depDate` の `@DateTimeFormat(pattern = "yyyy/MM/dd")` は Jackson の変換には効かない。
@@ -223,7 +223,7 @@
 
 | 原因 | ステータス | 本文 |
 | --- | --- | --- |
-| 入力検証エラー | 400 | `code = "e.ar.fw.9999"`、`details` に各エラー（フィールドエラーは `target = 項目名`、グローバルエラーは `target = オブジェクト名`、`code` は制約名）。`details` の並びは [`Spec.InputValidation`](InputValidation.lean#検証の順序とエラーの並び) の [Spec] の順 |
+| 入力検証エラー | 400 | `code = "e.ar.fw.9999"`、`details` に各エラー（フィールドエラーは `target = 項目名`、グローバルエラーは `target = オブジェクト名`、`code` は制約名）。`details` の並びは [`Spec.Validation`](Validation.lean#検証の順序とエラーの並び) の [Spec] の順 |
 | JSON 解析不能 | 400 | 原因に応じた `ApiError` |
 | `NotFound` | 404 | 下記「業務メッセージの変換」 |
 | `Business` | 409 | 同上（`validateFlightList` の `Business` を除く。上記） |

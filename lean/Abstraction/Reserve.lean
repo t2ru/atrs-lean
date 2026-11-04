@@ -14,7 +14,7 @@ namespace Abstraction.Reserve
 open Abstraction.World.Alpha Abstraction.World.Init Abstraction.Reserve.Alpha Abstraction.Reserve.ReserveRun
   Abstraction.Reserve.Preserves Abstraction.Reserve.Witness Abstraction.MasterData.QueryRun Machine
 open Abstraction.FlightSearch.Witness
-open SourceModel.ReserveQuery Spec.UseCase.Reserve
+open SourceModel.ReserveQuery Spec.Reserve
 
 /-- R 課題 ABS-041: 予約。[Spec] の `reserveMachine`（D-009 の前提で状態と入力の PRE を強め、D-031・D-001・D-002・
 D-012 の前提で PRE を強める）は、具体機械 `reserveConcrete`（D-027・D-014 の前提で入力を制限する）に、標準の貼り合わせ
@@ -73,7 +73,7 @@ theorem reservePreserves :
     h.2.2.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.2.2.1⟩, h.2.2.2.2.2.2.2.2.2⟩
   envWitness := ⟨icSeed, iaSeed, ⟨⟨trivial, dev_D027R_icSeed⟩, fun _ => rfl⟩, aiR_icSeed, envR_seed⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaBad) wFS_inv
-    fun h => Spec.EnvPre.badMasterData_not_env h.1.1.1.1.1.1
+    fun h => Spec.Seed.badMasterData_not_env h.1.1.1.1.1.1
   pinned c hc s t ic ia t' oc hi hJ hα hpre hd hs := by
     cases hc
     obtain ⟨⟨⟨⟨⟨hp, h9⟩, h31⟩, h1⟩, h2⟩, h12⟩ := hpre

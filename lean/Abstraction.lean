@@ -129,7 +129,7 @@ import Abstraction.Reserve
 | `Abstraction.MasterData.Preserves` | ABS-026 の束 `Machine.Preserves` の部品: 環境の前提 `envMQ` と証人 |
 | `Abstraction.MasterData` | 機能の証明課題: 束 `queryPreserves` と 1 歩の可換式 `queryRefines_commutes`、R 課題 ABS-026 `queryRefines` と `InitSurj`、W 課題 ABS-127 `need_D027`・ABS-142 `covers_D036` |
 | `Abstraction.MasterData.CodeList` | 空港コードリストと `insertNop` の一致、`JdbcCodeList` の値 |
-| `Abstraction.MasterData.SeedAlpha` | シードのマスタの具体側の DB（`SourceModel.Db.MasterSeed.masterDb`）の α が、[Spec] のシードのマスタ `Spec.Seed.masterData` であること（ABS-041 の束の環境の前提の証人） |
+| `Abstraction.MasterData.SeedAlpha` | シードのマスタの具体側の DB（`SourceModel.Db.MasterSeed.masterDb`）の α が、[Spec] のシードのマスタ `Spec.Seed.Master.masterData` であること（ABS-041 の束の環境の前提の証人） |
 | `Abstraction.Fare.Factors` | 運賃計算の因子の表、基本運賃（D-001）・運賃（D-002）の差異の条件と証拠、安全でない因子の一覧 |
 | `Abstraction.Fare.Alpha` | 運賃計算の α（`aiBF`・`aiF`）と差異の述語 `dev_D001`・`dev_D002`・`dev_D027BF`・`dev_D027F` |
 | `Abstraction.Fare.FareRun` | ABS-002・ABS-003・ABS-102 の補題: `calculateFare` の値、[Spec] の運賃の値域 |
@@ -158,13 +158,13 @@ import Abstraction.Reserve
 | `Abstraction.Reserve.Port` | L 課題 ABS-023 の補題: 予約が使うリポジトリの文（`LangSemantics.Sql` で写した SQL）の結果を、α `worldOfDb` の像の `World` のポートの操作で表す |
 | `Abstraction.Reserve.Member` | L 課題 ABS-023 の補題: `MemberRepository.findOne` の文の結果を、α `worldOfDb` の像の `World.findMember` で表す |
 | `Abstraction.Reserve.Providers` | 予約が使う便マスタの Provider の答え |
-| `Abstraction.Reserve.Flights` | ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.validateFlightList`）の純粋な部分と、[Spec] の `Spec.Ticket.validateFlightList` の対応 |
+| `Abstraction.Reserve.Flights` | ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.validateFlightList`）の純粋な部分と、[Spec] の `Spec.Reserve.FlightSelection.validateFlightList` の対応 |
 | `Abstraction.Reserve.Select` | ABS-041 の補題: 選択フライト情報から `TicketHelper.toFlightList` が作るフライト情報（`mkFlight`）の性質 |
 | `Abstraction.Reserve.Tx` | 状態の表に対する計算（`SourceModel.Db.Tx`）の基本の操作の Hoare 三つ組 |
-| `Abstraction.Reserve.ValidateFlights` | ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.validateFlightList`）の Hoare 三つ組と、[Spec] の `Spec.Ticket.validateFlightList` の対応 |
-| `Abstraction.Reserve.Validate` | ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の各検査と、[Spec] の `Spec.UseCase.Reserve.validateReservation` の各検査の対応 |
+| `Abstraction.Reserve.ValidateFlights` | ABS-041 の補題: 選択フライトの検証（`TicketSharedServiceImpl.validateFlightList`）の Hoare 三つ組と、[Spec] の `Spec.Reserve.FlightSelection.validateFlightList` の対応 |
+| `Abstraction.Reserve.Validate` | ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の各検査と、[Spec] の `Spec.Reserve.validateReservation` の各検査の対応 |
 | `Abstraction.Reserve.MemberCheck` | ABS-041 の補題: 予約内容の検証の会員照合（`validateRepresentativeMemberInfo`・`validatePassengerMemberInfo`）の Hoare 三つ組と、[Spec] の `checkRepMember`・`checkPassengerMembers` の対応 |
-| `Abstraction.Reserve.ValidateReservation` | ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の Hoare 三つ組と、[Spec] の `Spec.UseCase.Reserve.validateReservation` の対応 |
+| `Abstraction.Reserve.ValidateReservation` | ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の Hoare 三つ組と、[Spec] の `Spec.Reserve.validateReservation` の対応 |
 | `Abstraction.Reserve.TotalFare` | ABS-041 の補題: 予約の合計金額（`TicketReserveServiceImpl.calculateTotalFare`）は、合計金額の L 課題 ABS-005（`Abstraction.Fare.TotalFareRun.runTotalFare_eq`）から、[Spec] の `totalFareOfKeys` の値になる |
 | `Abstraction.Reserve.Selects` | ABS-041 の補題: 予約の前段の選択フライトの検証（`TicketReserveHelper.validateFlightList`）と、[Spec] の `checkSelects` の対応 |
 | `Abstraction.Reserve.Catch` | ABS-041 の補題: 具体機械の出力の値とする例外（`SourceModel.ReserveQuery.catchReserve`）の像 |

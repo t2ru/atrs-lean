@@ -19,7 +19,7 @@ generated:
 
 ## 範囲
 
-- `Spec.Ticket`, `Spec.UseCase.Reserve`, `Spec.Port`
+- `Spec.Reserve.FlightSelection`, `Spec.Reserve`, `Spec.Port`
 - `SourceModel.UseCase.Reserve`, `SourceModel.Repository.Reservation`（`@[source]` 付き）
 - R 課題: ABS-021（採番）、ABS-023（予約・空席照会のリポジトリ）、ABS-041（予約のユースケース。`Conflict` と I/O 失敗の非決定性を含む。[ADR e56e](../decision/e56e-conflict-as-spec-nondeterminism.md)）
 - W 課題: ABS-109（D-009）、ABS-114（D-014）
@@ -38,13 +38,13 @@ generated:
 
 | 段 | 内容 |
 | --- | --- |
-| 第 1 段 | 予約の `Spec`（`Spec.Ticket`・`Spec.UseCase.Reserve`）と `SourceModel`（原典のソースツリーの形）の関数、`World` と状態の表の拡張、共有ベクタ、Java の原典実行 |
+| 第 1 段 | 予約の `Spec`（`Spec.Reserve.FlightSelection`・`Spec.Reserve`）と `SourceModel`（原典のソースツリーの形）の関数、`World` と状態の表の拡張、共有ベクタ、Java の原典実行 |
 | 第 2 段 | 合成子 `Machine.alt`（スキル）、初期状態（会員のシードと採番の初期値）、抽象機械 `reserveMachine` と SPEC 課題、具体機械 `reserveConcrete`、予約の SQL の PostgreSQL での差分実行 |
 | 第 3 段 | α を全表に広げ、ABS-020・ABS-021・ABS-022・ABS-023・ABS-041・ABS-109・ABS-131 を証明し、トップレベルの主定理に統合する |
 
 ## 完了条件
 
-- [x] [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) の例がベクタで通る
+- [x] [`Spec.Reserve`](../../lean/Spec/Reserve.lean) の例がベクタで通る
 - [x] ABS-020・ABS-021・ABS-022・ABS-023・ABS-041・ABS-109・ABS-114 と、予約の SPEC-001〜SPEC-004 を証明した
 - [x] 予約の `source-model/` ベクタが Java の原典実行と一致する
 - [x] リポジトリの SQL の写しを PostgreSQL での差分実行で照合した
@@ -53,7 +53,7 @@ generated:
 
 2026-11-01 に完了した（[ADR 4c45](../decision/4c45-reservation-stage1-shared-state-and-source-model.md)）。
 
-- [Spec]: `Spec.Ticket`（選択フライトの解決・`validateFlightList`）と `Spec.UseCase.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）を置いた。`World` に会員・予約・採番とポートの操作を、`AtrsError` に `invalidRequest`・`system`・`conflict` を足した。
+- [Spec]: `Spec.Reserve.FlightSelection`（選択フライトの解決・`validateFlightList`）と `Spec.Reserve`（予約入力、搭乗者欄を詰める処理、予約内容の組み立て、`validateReservation`、`reserveConfirm`、`reserve`、選択フライトの検証を含む操作 `confirmOp`・`reserveOp`）を置いた。`World` に会員・予約・採番とポートの操作を、`AtrsError` に `invalidRequest`・`system`・`conflict` を足した。
 - [Source]: 原典のソースツリーの形で、予約の Web 層（`App.B2`）・サービス・リポジトリ・モデルのクラスを写した。状態の表に会員・予約の表とシーケンスを足した。状態の表に対する計算 `SourceModel.Db.Tx` で、Mapper の文・`@Transactional` の取消（シーケンスは戻さない）・Clock・実行環境の障害を写した。入口の計算は `SourceModel.ReserveQuery`。
 - 共有ベクタ `conformance/shared/reservation/` の 47 件が、`Spec` と `SourceModel` の両方で通る。期待値は仕様の例と手計算から取り、敵対的レビューで独立に再計算した。
 - Java の原典実行（`tools/origin-run`）が、47 件を原典で照合した。シードの範囲から予約確認の 76 件を原典から採取し（`conformance/source-model/reservation/origin-run-confirm.json`）、`SourceModel` と一致した。
@@ -70,7 +70,7 @@ generated:
 2026-11-02 に完了した（[ADR ca17](../decision/ca17-reservation-stage2-machines-seed-nondet-advance.md)）。
 
 - スキルに、同じ状態の上の並置 `Machine.alt` 一式（`Refines.alt`・`Preserves.alt`）と、例・反例のテストを足した（版 0.25）。
-- 抽象機械 `Spec.UseCase.Reserve.reserveMachine`（選択の像。N-001・N-002・N-004）を置き、予約の SPEC-001・002・003・004・007・008 を証明した。
+- 抽象機械 `Spec.Reserve.reserveMachine`（選択の像。N-001・N-002・N-004）を置き、予約の SPEC-001・002・003・004・007・008 を証明した。
 - N-001・N-002 の選択の型に、失敗するまでに進んだ採番の数 `SeqAdvance` を持たせた（確認待ち）。
 - 具体機械 `SourceModel.ReserveQuery.reserveConcrete` を置いた。業務例外・不正要求・I/O 失敗・排他の失敗を出力の値とする。
 - 会員のシードの生成器 `tools/conformance/member_seed.py` と、初期状態 `Spec.Seed.World.world`・`SourceModel.Db.Seed.seedDb` を置いた。
@@ -92,5 +92,5 @@ generated:
 
 ## 参照
 
-- [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean)
-- [`Spec.Port`](../../lean/Spec/Port.lean)
+- [`Spec.Reserve`](../../lean/Spec/Reserve.lean)
+- [`Spec.Port`](../../lean/Spec/World.lean)

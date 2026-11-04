@@ -1,14 +1,14 @@
 import LangSemantics.Java.IntLemmas
 import Abstraction.Reserve.Member
 import Abstraction.Reserve.Tx
-import Spec.UseCase.Reserve
+import Spec.Reserve
 import Abstraction.FlightSearch.Providers
 
 /-!
 # Abstraction.Reserve.Validate
 
 ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の各検査と、[Spec] の
-`Spec.UseCase.Reserve.validateReservation` の各検査の対応（backlog aedf の第 3 段）。
+`Spec.Reserve.validateReservation` の各検査の対応（backlog aedf の第 3 段）。
 
 業務例外は、コードと引数が [Spec] の `Business` と同じであることを示す（`AgreeB`）。
 -/
@@ -27,10 +27,10 @@ def AgreeB (r : JResult Unit) (x : Except Spec.Error.AtrsError Unit) : Prop :=
 theorem toString_int_ofNat (n : Nat) : toString (n : Int) = toString n := rfl
 
 /-- 代表者の年齢の検査。 -/
-theorem repAge {svc : TicketReserveServiceImpl} {cfg : Spec.Config} {age : J32} {d : Spec.UseCase.Reserve.Draft}
+theorem repAge {svc : TicketReserveServiceImpl} {cfg : Spec.Env.Config} {age : J32} {d : Spec.Reserve.Draft}
     (hmin : svc.representativeMinAge.val = (cfg.representativeMinAge : Int)) (hage : age.val = (d.repAge : Int)) :
-    AgreeB (TicketReserveServiceImpl.validateRepresentativeAge svc age) (Spec.UseCase.Reserve.checkRepAge cfg d) := by
-  unfold TicketReserveServiceImpl.validateRepresentativeAge Spec.UseCase.Reserve.checkRepAge
+    AgreeB (TicketReserveServiceImpl.validateRepresentativeAge svc age) (Spec.Reserve.checkRepAge cfg d) := by
+  unfold TicketReserveServiceImpl.validateRepresentativeAge Spec.Reserve.checkRepAge
   by_cases h : d.repAge < cfg.representativeMinAge
   · have h' : age.val < (cfg.representativeMinAge : Int) := by omega
     refine .inr ⟨.repTooYoung (toString cfg.representativeMinAge), ?_, by simp [h]⟩
@@ -45,7 +45,7 @@ theorem repAge {svc : TicketReserveServiceImpl} {cfg : Spec.Config} {age : J32} 
 
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf in
 /-- 運賃種別のキャッシュの答えから、コード・名前・最少人数を取り出す。 -/
-theorem fareType_full {r : JRef SourceModel.Domain.Model.FareType} {ft : Spec.MasterData.FareType}
+theorem fareType_full {r : JRef SourceModel.Domain.Model.FareType} {ft : Spec.Env.MasterData.FareType}
     (h : answerOf? (.fareType r) = some (.fareType (some ft.info))) :
     ∃ f m, r = some f ∧ f.fareTypeCd = some ft.fareTypeCd ∧ f.fareTypeName = some ft.fareTypeName ∧
       f.passengerMinNum = some m ∧ m.val = (ft.passengerMinNum : Int) := by
@@ -61,7 +61,7 @@ theorem fareType_full {r : JRef SourceModel.Domain.Model.FareType} {ft : Spec.Ma
     obtain ⟨cd, hc0, nm, hn0, dr, -, s0, -, e0, -, pm0, hp0, he⟩ := hx
     obtain ⟨m, hm1, hm2⟩ := hp0
     rw [natOfJ32_eq_some] at hm2
-    simp only [Spec.MasterData.FareType.info, Spec.MasterData.FareTypeInfo.mk.injEq] at he
+    simp only [Spec.Env.MasterData.FareType.info, Spec.Env.MasterData.FareTypeInfo.mk.injEq] at he
     obtain ⟨rfl, rfl, -, -, -, rfl⟩ := he
     exact ⟨f, m, rfl, hc0, hn0, hm1, hm2⟩
 
@@ -91,26 +91,26 @@ theorem ladies_body (x : SourceModel.Domain.Model.Passenger) :
 
 /-- 予約フライトの検査の材料: フライト情報の運賃種別のオブジェクトが、マスタの運賃種別 `FT` のコード・名前・最少人数を
 持つ。 -/
-def FareTypeFacts (fl : SourceModel.Domain.Model.Flight) (FT : Spec.MasterData.FareType) : Prop :=
+def FareTypeFacts (fl : SourceModel.Domain.Model.Flight) (FT : Spec.Env.MasterData.FareType) : Prop :=
   ∃ ft m, fl.fareType = some ft ∧ ft.fareTypeCd = some FT.fareTypeCd ∧ ft.fareTypeName = some FT.fareTypeName ∧
     ft.passengerMinNum = some m ∧ m.val = (FT.passengerMinNum : Int)
 
 /-- 予約フライトごとの [Spec] の検査の値。 -/
-def specFareTypeOf (FT : Spec.MasterData.FareType) (qs : List Spec.UseCase.Reserve.DraftPassenger) : Except Spec.Error.AtrsError Unit :=
+def specFareTypeOf (FT : Spec.Env.MasterData.FareType) (qs : List Spec.Reserve.DraftPassenger) : Except Spec.Error.AtrsError Unit :=
   match FT.fareTypeCd with
   | .LD => if qs.any (·.gender == .M) then .error (.business .ladiesOnly) else .ok ()
   | .GD => if qs.length < FT.passengerMinNum then
       .error (.business (.tooFewPassengers (FT.fareTypeName) (toString FT.passengerMinNum))) else .ok ()
   | _ => .ok ()
 
-theorem checkFareTypeOf_eq {md : Spec.MasterData} {qs : List Spec.UseCase.Reserve.DraftPassenger} {k : Spec.Model.FlightKey}
-    {FT : Spec.MasterData.FareType} (h : md.fareTypeOf k.fareTypeCd = some FT) :
-    Spec.UseCase.Reserve.checkFareTypeOf md qs k = some (specFareTypeOf FT qs) := by
-  simp only [Spec.UseCase.Reserve.checkFareTypeOf, h, Option.bind_eq_bind, Option.bind_some, Option.pure_def,
+theorem checkFareTypeOf_eq {md : Spec.Env.MasterData} {qs : List Spec.Reserve.DraftPassenger} {k : Spec.Model.FlightKey}
+    {FT : Spec.Env.MasterData.FareType} (h : md.fareTypeOf k.fareTypeCd = some FT) :
+    Spec.Reserve.checkFareTypeOf md qs k = some (specFareTypeOf FT qs) := by
+  simp only [Spec.Reserve.checkFareTypeOf, h, Option.bind_eq_bind, Option.bind_some, Option.pure_def,
     specFareTypeOf]
   cases FT.fareTypeCd <;> rfl
 
-theorem any_gender_eq {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.UseCase.Reserve.DraftPassenger}
+theorem any_gender_eq {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.Reserve.DraftPassenger}
     (h : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs qs) :
     xs.any (fun x => x.gender == some .M) = qs.any (·.gender == .M) := by
   induction h with
@@ -152,9 +152,9 @@ theorem forIn_agree {α : Type} (f : α → PUnit → JResult (ForInStep PUnit))
     · exact .inr ⟨be, by simp only [hf, bind, Except.bind], rfl⟩
 
 /-- 運賃種別の利用条件の検査（予約フライトを順に）。すべての予約フライトが同じ搭乗者の列 `xs`（[Spec] の `qs`）を持つ。 -/
-theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.UseCase.Reserve.DraftPassenger}
+theorem fareTypes {xs : List SourceModel.Domain.Model.Passenger} {qs : List Spec.Reserve.DraftPassenger}
     (hg : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs qs) (hne : xs ≠ [])
-    (hlen : xs.length ≤ 6) {fls : List SourceModel.Domain.Model.Flight} {FTs : List Spec.MasterData.FareType}
+    (hlen : xs.length ≤ 6) {fls : List SourceModel.Domain.Model.Flight} {FTs : List Spec.Env.MasterData.FareType}
     (h : LangSemantics.Core.List.Forall₂ FareTypeFacts fls FTs) :
     AgreeB (TicketReserveServiceImpl.validateFareType
         (fls.map fun fl => some { flight := some fl, passengerList := some (xs.map some) }))

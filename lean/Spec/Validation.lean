@@ -1,5 +1,5 @@
 /-!
-# 入力検証（`Spec.InputValidation`）
+# 入力検証（`Spec.Validation`）
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
 
@@ -148,7 +148,7 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 相関（この順）:
 
 1. `repTel1`, `repTel2` に単項目エラーが無く、`len(repTel1) + len(repTel2)` が 6〜7 の範囲外 → `GlobalError("e.ar.b2.5003", [repTel1 の表示名, repTel2 の表示名, 6, 7])`
-2. 空でない搭乗者欄（[`Spec.UseCase.Reserve`](UseCase/Reserve.lean#予約内容の組み立て)）それぞれについて、未入力の `familyName`, `givenName`, `age`, `gender` に `FieldError(passengers[i].<項目>, "NotNull")`
+2. 空でない搭乗者欄（[`Spec.Reserve`](Reserve.lean#予約内容の組み立て)）それぞれについて、未入力の `familyName`, `givenName`, `age`, `gender` に `FieldError(passengers[i].<項目>, "NotNull")`
 3. 空でない搭乗者欄が 0 → `GlobalError("e.ar.b2.5002")` を加えて **終了**（4 を行わない）
 4. フライト選択の相関検証
 
@@ -218,5 +218,5 @@ REST の JSON 本文の日付型の項目は `yyyy-MM-dd`（同じく桁数固�
 /-!
 ## ログイン
 
-ログインの入力検査は検証関数ではなく [`Spec.Authentication`](Authentication.lean#ログインlogin) の事前検査として定義する。
+ログインの入力検査は検証関数ではなく [`Spec.Auth`](Auth.lean#ログインlogin) の事前検査として定義する。
 -/

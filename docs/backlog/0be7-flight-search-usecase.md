@@ -23,9 +23,9 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 - `SourceModel.Repository.Flight`（`findByVacantSeatSearchCriteria` を SQL 式で）と `SourceModel.FlightSearch`
 - ABS-010（L）, ABS-011（R。INV MD-5 の下で、SQL の許されるすべての結果について）
 - 翌日着の便（到着時刻 `2415`。シードの NTT523・NTT528）
-  - `Spec.MasterData.FlightMaster.arrivalTime` を、翌日着を表せる形に改める。
+  - `Spec.Env.MasterData.FlightMaster.arrivalTime` を、翌日着を表せる形に改める。
   - [Source] の `DateTimeParseException` を既知差異 D-031 として登録する。例外は空席照会でなく、予約（B2）の往復便の検査で起きる（W 課題 ABS-131 は [backlog aedf](aedf-reservation-usecase.md) で証明する）。
-  - fixture の `outsideSpec` を外す（[`Spec.MasterData`](../../lean/Spec/MasterData.lean)、[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
+  - fixture の `outsideSpec` を外す（[`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)、[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。
 - ベクタ
 
 ## 対象外
@@ -39,7 +39,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 | 段 | 内容 |
 | --- | --- |
-| 第 1 段 | `Spec.FlightSearch`・`SourceModel.FlightSearch`（SQL の `Bag` 式を含む）の関数、`Spec.Port.World`、到着時刻 `ArrivalTime`、D-031 の登録、共有ベクタ |
+| 第 1 段 | `Spec.FlightSearch`・`SourceModel.FlightSearch`（SQL の `Bag` 式を含む）の関数、`Spec.World`、到着時刻 `ArrivalTime`、D-031 の登録、共有ベクタ |
 | 第 2 段 | 初期状態（シード 00250 の展開）、FLIGHT 表を含む PostgreSQL での差分実行、`Spec`・`SourceModel` の機械と SPEC 課題。FLIGHT の α（`FlightDb` → `World`）と D-027 の範囲の拡大（状態の表の値・導出した日付）、PRE への `World.RefMaster`、具体機械の 1 歩の `mo.Allowed`・`SortAllowed`（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md) の敵対的レビュー） |
 | 第 3 段 | ABS-010・ABS-011 の証明と、トップレベルの主定理（`Abstraction.refines`・`preserves`・`abstracts`）への統合 |
 
@@ -55,7 +55,7 @@ SQL に業務ロジックを含む最初の機能を、LangSemantics.Sql を使�
 
 2026-11-01 に完了した（[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
 
-- [Spec]: `ArrivalTime`（翌日着）、`Spec.Error`、`Spec.Port.World`（`Inv`・`RefMaster`）、`Spec.FlightSearch`（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。
+- [Spec]: `ArrivalTime`（翌日着）、`Spec.Error`、`Spec.World`（`Inv`・`RefMaster`）、`Spec.FlightSearch`（照会可能期間・運賃種別の予約可能判定・`searchFlight`）。
 - [Source]: `SourceModel.Repository.Flight`（SQL の `Bag` 式と許される並べ方）、FLIGHT の行と `flight-map`、`SourceModel.FlightSearch`（`searchFlight`・`runSearchFlight`）。スキルの `LangSemantics.Java` に `String.substring` と `DecimalFormat` を足した（スキルの版 0.15）。
 - 翌日着の便を [Spec] で表し、fixture の `outsideSpec` を外した。ABS-026 の証明は、到着時刻の葉 `arrOfStr` で通る。
 - 既知差異: D-031（往復便の検査の `DateTimeParseException`）、D-032（運賃の書式の既定ロケール）を登録した。D-014・D-027 に ABS-011 を加えた。

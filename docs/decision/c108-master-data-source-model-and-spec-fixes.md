@@ -1,7 +1,7 @@
 ---
 type: Architecture Decision Record
 title: "マスタ・設定・コードリストの読み込みの SourceModel と、[Spec] の修正（所要時間・空港コードの値域・問い合わせ）を決める"
-description: "マスタの読み込みの SourceModel の写し方を決める（列の型は処理系の範囲で写す、Mapper の結果の順列を選ぶ具体機械、MyBatis の対応、コードリスト、設定）。あわせて、Spec.MasterData.Route の所要時間の削除、MD-8 の空港コードの値域、問い合わせの機械の拡張、表せない値の差異 D-027、PostgreSQL での差分実行の形を決める。"
+description: "マスタの読み込みの SourceModel の写し方を決める（列の型は処理系の範囲で写す、Mapper の結果の順列を選ぶ具体機械、MyBatis の対応、コードリスト、設定）。あわせて、Spec.Env.MasterData.Route の所要時間の削除、MD-8 の空港コードの値域、問い合わせの機械の拡張、表せない値の差異 D-027、PostgreSQL での差分実行の形を決める。"
 tags: [adr, source-model, master-data, sql]
 id: "c10895a2-8187-428d-8c87-f925e9c55a4e"
 status: stable
@@ -26,7 +26,7 @@ generated:
 
 作り始めて、次の問題が見つかった。
 
-* `Spec.MasterData.Route.flightTime`（所要時間）は、原典のどの SQL も Java も読まない。[Source] では観測できない。
+* `Spec.Env.MasterData.Route.flightTime`（所要時間）は、原典のどの SQL も Java も読まない。[Source] では観測できない。
 * 区間の Provider は、キー `"[出発空港コード]-[到着空港コード]"` で引く。空港コードに `-` が入ると、キーが衝突しうる。
   * [Spec] の MD-8 には、空港コードの形式（英大文字 3 文字）が無かった。
   * domain-model.md の値域の表にも無かった。
@@ -53,7 +53,7 @@ Chosen option: "下表のとおり決める", because 不一致を Lean と文�
 
 | 項目 | 決定 |
 | --- | --- |
-| 所要時間 | `Spec.MasterData.Route.flightTime` を削除する。fixture には上流どおり残し、[Spec] の読み込みは無視する（プロジェクトオーナーの決定） |
+| 所要時間 | `Spec.Env.MasterData.Route.flightTime` を削除する。fixture には上流どおり残し、[Spec] の読み込みは無視する（プロジェクトオーナーの決定） |
 | 空港コードの値域 | MD-8 に「空港のコードは `AirportCd.WellFormed`（英大文字 3 文字）」を足す。domain-model.md の値域の表にも足す |
 | 問い合わせの機械 | `Spec.MasterQuery` に移し、次のように広げる。<br>- 問い合わせに、設定（`config`）とコードリスト（`codeList`。8 種）を加える<br>- PRE に、問い合わせの引数の値域（`Query.Valid`: 区間の空港コードと便名が `WellFormed`）を加える<br>- `queryMachine_initIs`（SPEC-007）を加える |
 | 表せない値 | 前提型の差異 D-027（具体側の入力。`Concrete.restrict dev_D027`）とする。<br>- 述語は「DB のマスタの各行と設定の値が [Spec] の型で表せる（α が定義される）」<br>- W 課題は ABS-127<br>- 影響は「中断」（プロジェクトオーナーの決定） |
@@ -87,5 +87,5 @@ Chosen option: "下表のとおり決める", because 不一致を Lean と文�
 ## More Information
 
 * [ADR c336](c336-foundational-principles.md)、[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)、[ADR 70eb](70eb-refinement-non-vacuity-obligations.md)、[ADR 8f18](8f18-fare-source-model-and-shared-vectors.md)
-* [abstraction.md](../spec/abstraction.md#既知差異)（D-027・ABS-026・ABS-127）、[`Spec.MasterData`](../../lean/Spec/MasterData.lean)
+* [abstraction.md](../spec/abstraction.md#既知差異)（D-027・ABS-026・ABS-127）、[`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)
 * D-027 の対象を具体側の入力全体（問い合わせの引数を含む）に広げ、MD-8 に空港コード `NOP` の禁止を加えたことは、[ADR f353](f353-abs-026-proof-structure-nop-and-d027-scope.md) で補った

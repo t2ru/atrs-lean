@@ -21,7 +21,7 @@ open LangSemantics.Sql.Core LangSemantics.Sql.Query LangSemantics.Sql.QueryLemma
 open LangSemantics.Sql.Postgresql SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Db.Schema
   SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository
   SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository
-  SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig Spec.MasterData Spec.Model
+  SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig Spec.Env.MasterData Spec.Model
 
 /-! ## 4 桁の数字列の順序 -/
 
@@ -166,7 +166,7 @@ def NoTie (cs : List Candidate) : Prop :=
     X.master.departureTime = Y.master.departureTime → X = Y
 
 /-- 許される並びの写しは、候補の `mergeSort candidateLe`。 -/
-theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : List Candidate}
+theorem sorted_cands {md : Spec.Env.MasterData} {rows : List VacantSeatRow} {cs : List Candidate}
     (hmap : rows.mapM (candOfRow md) = some cs) (hok : ∀ row ∈ rows, ∃ X ∈ cs, RowOk md row X)
     (htie : NoTie cs) {o : List VacantSeatRow}
     (ho : isAllowedOrder sortCfg vacantSeatOrder rows o = true) :
@@ -222,7 +222,7 @@ theorem sorted_cands {md : Spec.MasterData} {rows : List VacantSeatRow} {cs : Li
 
 /-! ## 同順位の無さ -/
 
-theorem candidateOf_cond {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight}
+theorem candidateOf_cond {md : Spec.Env.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight}
     {X : Candidate} (h : candidateOf md c route bdn F = some X) :
     X.flight = F ∧ md.flightMasterOf F.key.flightName.val = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType ∧
       F.key.departureDate = c.depDate ∧ X.master.routeNo = route.routeNo ∧ F.key.boardingClassCd = c.boardingClassCd ∧
@@ -238,7 +238,7 @@ theorem candidateOf_cond {md : Spec.MasterData} {c : Criteria} {route : Route} {
 
 /-- MD-1（運賃種別の表示順の一意性）・MD-5（同じ区間の便マスタの出発時刻の一意性）・`World.Inv`（フライトの主キーの
 一意性）の下で、照会の候補には同順位が無い。 -/
-theorem noTie_cands {cfg : Spec.Config} {md : Spec.MasterData} (hv : md.Valid cfg) {w : Spec.Port.World}
+theorem noTie_cands {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} (hv : md.Valid cfg) {w : Spec.World}
     (hw : w.Inv) (c : Criteria) (route : Route) (bdn : Int) :
     NoTie (w.flights.filterMap (candidateOf md c route bdn)) := by
   intro X hX Y hY hdo hdt
@@ -251,7 +251,7 @@ theorem noTie_cands {cfg : Spec.Config} {md : Spec.MasterData} (hv : md.Valid cf
     LangSemantics.Core.List.inj_of_nodup_map hv.md1.2.2.2.2.2.2.2.2.2.2.1 (List.mem_of_find?_eq_some ftX)
       (List.mem_of_find?_eq_some ftY) hdo
   -- 便マスタ
-  have hsym : ∀ f g : Spec.MasterData.FlightMaster, (f.routeNo = g.routeNo → f.departureTime ≠ g.departureTime) →
+  have hsym : ∀ f g : Spec.Env.MasterData.FlightMaster, (f.routeNo = g.routeNo → f.departureTime ≠ g.departureTime) →
       (g.routeNo = f.routeNo → g.departureTime ≠ f.departureTime) := fun _ _ h e e' => h e.symm e'.symm
   have hfm : X.master = Y.master := by
     refine Classical.byContradiction fun hne => ?_

@@ -14,16 +14,16 @@ ABS-026 の問い合わせごとの一致。DB の表の写し（`mapM` の行�
 -/
 
 namespace Abstraction.MasterData.Query
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Abstraction.MasterData.Join
   Abstraction.MasterData.Key Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre
-  Spec.CodeList Spec.Model Spec.Prim.Text
+  Spec.Env.CodeList Spec.Model Spec.Prim.Text
 open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exception LangSemantics.Java.HashMap
   LangSemantics.Java.ResultLemmas LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas Machine.Kernel
 
-open LangSemantics.Java Spec Spec.Prim LangSemantics.Core
+open LangSemantics.Java Spec Spec.Env Spec.Prim LangSemantics.Core
   SourceModel.Db.Schema SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight
   SourceModel.Domain.Repository.Flight.FlightRepository SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype
   SourceModel.Domain.Repository.Faretype.FareTypeRepository SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App

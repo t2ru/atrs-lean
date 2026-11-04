@@ -1,12 +1,12 @@
 import Spec.Model
 
 /-!
-# 設定パラメータ（`Spec.Config`）
+# 設定パラメータ（`Spec.Env.Config`）
 
 業務規則に影響する設定値。純粋関数・ユースケースに明示的に渡す。
 既定値 `Config.default` は原典の設定ファイル（`atrs.properties`）の値である。
 
-> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Config`](Config.lean)。[backlog 591d](../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
+> **区分: 要約（informative）と草案（draft）の混在。** [Spec] は Lean に形式化した（[`Spec.Env.Config`](Config.lean)。[backlog 591d](../../../docs/backlog/591d-abstract-domain-types-and-master-data.md)）。本文は非規範の要約であり、食い違ったら Lean が正である（[ADR 61bc](../../../docs/decision/61bc-lean-spec-as-normative-source.md)）。原典キーと出典は、`SourceModel` に形式化するまでの草案（draft）である。
 
 **[Spec=Source]** 業務規則に影響する設定値は `Config` レコードにまとめ、純粋関数・ユースケースに明示的に渡す。
 既定値は原典の設定ファイルの値である。
@@ -14,7 +14,7 @@ import Spec.Model
 出典: atrs-domain/src/main/resources/META-INF/spring/atrs.properties, atrs-env/src/main/resources/META-INF/spring/atrs-infra.properties
 -/
 
-namespace Spec
+namespace Spec.Env
 open Spec.Model
 
 open Spec.Prim
@@ -22,11 +22,11 @@ open Spec.Prim
 /-!
 ## Config
 
-Lean: `Spec.Config`（既定値は `Spec.Config.default`）。
+Lean: `Spec.Env.Config`（既定値は `Spec.Env.Config.default`）。
 
 | フィールド | 原典キー | 型 | 既定値 | 意味 |
 | --- | --- | --- | --- | --- |
-| `limitDay` | `atrs.limitDay` | Nat | `90` | 照会可能限界日数。今日から何日後の搭乗日まで空席照会できるか。予約（`validateFlightList`・`reserve`）では検査しない（予約で見るのは運賃種別の予約可能期間だけ。[`Spec.Ticket`](Ticket.lean#validateflightlist)）。出典: d/service/b0/TicketSharedServiceImpl.java `getSearchLimitDate` |
+| `limitDay` | `atrs.limitDay` | Nat | `90` | 照会可能限界日数。今日から何日後の搭乗日まで空席照会できるか。予約（`validateFlightList`・`reserve`）では検査しない（予約で見るのは運賃種別の予約可能期間だけ。[`Spec.Reserve.FlightSelection`](../Reserve/FlightSelection.lean#validateflightlist)）。出典: d/service/b0/TicketSharedServiceImpl.java `getSearchLimitDate` |
 | `reserveIntervalTime` | `atrs.reserveIntervalTime` | Nat（分） | `120` | 往路の到着時刻から、復路として予約可能になる出発時刻までの最小間隔 |
 | `representativeMinAge` | `atrs.representativeMinAge` | Nat | `18` | 予約代表者の最小年齢 |
 | `adultPassengerMinAge` | `atrs.adultPassengerMinAge` | Nat | `12` | 大人運賃が適用される最小年齢（未満は小児） |
@@ -39,7 +39,7 @@ Lean: `Spec.Config`（既定値は `Spec.Config.default`）。
 -/
 
 /-- 設定値。 -/
-@[spec_doc "lean/Spec/Config.lean#config"]
+@[spec_doc "lean/Spec/Env/Config.lean#config"]
 structure Config where
   /-- 照会可能限界日数。 -/
   limitDay : Nat
@@ -62,7 +62,7 @@ structure Config where
 namespace Config
 
 /-- 原典の既定値。 -/
-@[spec_doc "lean/Spec/Config.lean#config"]
+@[spec_doc "lean/Spec/Env/Config.lean#config"]
 def default : Config where
   limitDay := 90
   reserveIntervalTime := 120
@@ -78,15 +78,15 @@ def default : Config where
 /-!
 ## 不変条件
 
-[Spec] は次を前提とする（[Source] では検査しない）。Lean: `Spec.Config.Valid`。運賃種別の条件は `Spec.MasterData.MD7` で課す。
+[Spec] は次を前提とする（[Source] では検査しない）。Lean: `Spec.Env.Config.Valid`。運賃種別の条件は `Spec.Env.MasterData.MD7` で課す。
 
-- `childFareRate ≤ 100`（破れた場合、[Source] の合計金額の途中計算は int32 で折り返しうる。参考 [D-030](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
-- すべての運賃種別について `discountRate ≤ childFareRate`（[`Spec.Fare`](Fare.lean#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）
+- `childFareRate ≤ 100`（破れた場合、[Source] の合計金額の途中計算は int32 で折り返しうる。参考 [D-030](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)）
+- すべての運賃種別について `discountRate ≤ childFareRate`（[`Spec.Fare`](../Fare.lean#合計金額) の小児運賃が負にならないため。破れた場合の [Source] の振る舞いは、参考 [D-003](../../../docs/spec/abstraction.md#spec-の前提の外での-source-の振る舞い差異ではない)。差異ではない）
 - `adultPassengerMinAge ≤ representativeMinAge`
 -/
 
 /-- 設定の不変条件。運賃種別の `discountRate ≤ childFareRate` は `MasterData.Valid`（MD-7）で課す。 -/
-@[spec_doc "lean/Spec/Config.lean#不変条件", gap "D-030"]
+@[spec_doc "lean/Spec/Env/Config.lean#不変条件", gap "D-030"]
 structure Valid (c : Config) : Prop where
   childFareRate_le : c.childFareRate ≤ 100
   adultMinAge_le : c.adultPassengerMinAge ≤ c.representativeMinAge
@@ -100,7 +100,7 @@ theorem default_valid : default.Valid := by decide
 /-!
 ## 画面・入力に関する定数
 
-Lean: `Spec.Config.initialPassengersNumber` ほか。
+Lean: `Spec.Env.Config.initialPassengersNumber` ほか。
 
 | 名前 | 値 | 意味 | 出典 |
 | --- | --- | --- | --- |
@@ -113,21 +113,21 @@ Lean: `Spec.Config.initialPassengersNumber` ほか。
 
 
 /-- 予約画面で最初に表示する搭乗者欄の数。 -/
-@[spec_doc "lean/Spec/Config.lean#画面入力に関する定数"]
+@[spec_doc "lean/Spec/Env/Config.lean#画面入力に関する定数"]
 def initialPassengersNumber : Nat := 3
 
 /-- 1 予約の最大搭乗者数。 -/
-@[spec_doc "lean/Spec/Config.lean#画面入力に関する定数"]
+@[spec_doc "lean/Spec/Env/Config.lean#画面入力に関する定数"]
 def maxPassengersNumber : Nat := 6
 
 /-- 電話番号[1]+[2] の合計桁数の下限。 -/
-@[spec_doc "lean/Spec/Config.lean#画面入力に関する定数"]
+@[spec_doc "lean/Spec/Env/Config.lean#画面入力に関する定数"]
 def telAreaAndLocalMinLength : Nat := 6
 
 /-- 電話番号[1]+[2] の合計桁数の上限。 -/
-@[spec_doc "lean/Spec/Config.lean#画面入力に関する定数"]
+@[spec_doc "lean/Spec/Env/Config.lean#画面入力に関する定数"]
 def telAreaAndLocalMaxLength : Nat := 7
 
 end Config
 
-end Spec
+end Spec.Env

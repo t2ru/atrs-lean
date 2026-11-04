@@ -10,11 +10,11 @@ import Abstraction.MasterData.QueryRun
 
 namespace Abstraction.MasterData
 open Abstraction.MasterData.Preserves
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.Lookup Machine Abstraction.MasterData.QueryRun
-  SourceModel.MasterQuery Spec Spec.EnvPre
+  SourceModel.MasterQuery Spec Spec.Env
 
 /-- R 課題 ABS-026。 -/
 @[obligation "ABS-026"]
@@ -81,11 +81,11 @@ theorem queryPreserves :
     obtain ⟨ia, hα, he⟩ := envMQ_icMQ
     have h27 : dev_D027 icMQ := by unfold dev_D027; rw [hα]; rfl
     exact ⟨icMQ, ia, ⟨⟨trivial, h27⟩, covers_D036 _ h27⟩, hα, he⟩
-  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := (Seed.config, badMasterData, .config)) trivial
-    fun h => badMasterData_not_env h.1
+  envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := (Seed.Master.config, Seed.badMasterData, .config)) trivial
+    fun h => Seed.badMasterData_not_env h.1
 
 /-- ABS-026 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、答えの像は [Spec] の答え。 -/
-theorem queryRefines_commutes {ic : SrcInput} {cfg : Config} {md : Spec.MasterData} {q : Spec.MasterQuery.Query}
+theorem queryRefines_commutes {ic : SrcInput} {cfg : Config} {md : Spec.Env.MasterData} {q : Spec.MasterQuery.Query}
     (hα : aiMQ ic = some (cfg, md, q)) (hv : envMQ (cfg, md, q)) :
     ∀ r, queryConcrete.step () ic r → ∃ a, r = .ok ((), a) ∧ answerOf? a = some (Spec.MasterQuery.answer cfg md q) := by
   intro r hr

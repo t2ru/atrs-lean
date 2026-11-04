@@ -14,9 +14,9 @@ ABS-041 の補題: 予約確定の前提の事実（backlog aedf の第 3 段）
 namespace Abstraction.Reserve.ReserveFacts
 open Abstraction.Reserve.Alpha Abstraction.Reserve.Draft Abstraction.Reserve.MemberCheck
   Abstraction.Reserve.RegisterRun
-open Spec.Ticket Spec.Error Spec.Model
+open Spec.Reserve.FlightSelection Spec.Error Spec.Model
 open SourceModel.App.B2
-open Spec.UseCase.Reserve
+open Spec.Reserve
 
 theorem forall₂_mem_left {α β : Type} {R : α → β → Prop} :
     ∀ {xs : List α} {ys : List β}, LangSemantics.Core.List.Forall₂ R xs ys → ∀ {x}, x ∈ xs → ∃ y ∈ ys, R x y
@@ -28,7 +28,7 @@ theorem forall₂_mem_left {α β : Type} {R : α → β → Prop} :
       exact ⟨y, List.mem_cons_of_mem _ hy, hr'⟩
 
 /-- 予約内容の検証が成功すれば、代表者と搭乗者の会員番号の会員がある（[Spec] の `validateReservation_memberNos`）。 -/
-theorem validate_members {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {d : Draft}
+theorem validate_members {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World} {d : Draft}
     (h : validateReservation cfg md w d = some (.ok ())) :
     (∀ n, d.repMembershipNumber = some n → (w.findMember n).isSome) ∧
       ∀ q ∈ d.passengers, ∀ n, q.membershipNumber = some n → (w.findMember n).isSome := by
@@ -79,20 +79,20 @@ theorem passConds : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {p
     exact ⟨⟨i, _, hi, hp, rfl⟩, b1 fn hfn, b2 gn hgn, b3 ag hag⟩
 
 /-- [Spec] の `register` は、`Registration.regWorld`（採番の次の値から順に番号を振った予約を足し、採番を進めたもの）。 -/
-theorem register_eq (d : Draft) (T : Spec.Prim.Date) (tfn : Nat) {w w1 : Spec.Port.World}
+theorem register_eq (d : Draft) (T : Spec.Prim.Date) (tfn : Nat) {w w1 : Spec.World}
     (hseq : w1.sequences = w.sequences) :
-    register d T tfn w1 = (Spec.Port.World.reserveNoOf w.sequences.reserve,
+    register d T tfn w1 = (Spec.World.reserveNoOf w.sequences.reserve,
       Registration.regWorld w w1 (Registration.regRes w T tfn d.repFamilyName d.repGivenName d.repAge d.repGender d.repTel d.repMail
         (d.repMembershipNumber.bind MembershipNumber.ofString?) (d.passengers.map DraftPassenger.toPassenger) d.flights)
         d.flights.toList.length (d.flights.toList.length * d.passengers.length)) := by
-  simp only [register, Spec.Port.World.nextReserveNo, RegSpec.numberFlights_eq,
-    RegSpec.advRF, Spec.Port.World.insertReservation, Registration.regWorld, Registration.regRes, hseq, List.length_map]
+  simp only [register, Spec.World.nextReserveNo, RegSpec.numberFlights_eq,
+    RegSpec.advRF, Spec.World.insertReservation, Registration.regWorld, Registration.regRes, hseq, List.length_map]
 
 /-- 予約確定の操作の値の分解。 -/
-theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec.Prim.Date} {w : Spec.Port.World}
-    {r : Request} {w' : Spec.Port.World} {x : Except AtrsError ReserveResult}
+theorem reserveOp_cases {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {today : Spec.Prim.Date} {w : Spec.World}
+    {r : Request} {w' : Spec.World} {x : Except AtrsError ReserveResult}
     (h : reserveOp cfg md today w r = some (w', x)) :
-    ∃ v, Spec.Ticket.validateFlightList cfg md w (r.selects.map (Spec.Ticket.resolve md)) = some v ∧
+    ∃ v, Spec.Reserve.FlightSelection.validateFlightList cfg md w (r.selects.map (Spec.Reserve.FlightSelection.resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ w' = w ∧ x = .error (asInvalidRequest e)) ∨
         (∃ it, v = .ok it ∧ ∃ d vr, buildDraft r.form it = some d ∧
           validateReservation cfg md w d = some vr ∧
@@ -103,7 +103,7 @@ theorem reserveOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {today : Spec
                 (∃ w1, sec = .ok w1 ∧ ∃ pd, it.toList.head?.map (·.departureDate) = some pd ∧
                   w' = (register d today n w1).2 ∧ x = .ok ⟨(register d today n w1).1, pd, n⟩)))))) := by
   unfold reserveOp checkSelects at h
-  cases hv : Spec.Ticket.validateFlightList cfg md w (r.selects.map (Spec.Ticket.resolve md)) with
+  cases hv : Spec.Reserve.FlightSelection.validateFlightList cfg md w (r.selects.map (Spec.Reserve.FlightSelection.resolve md)) with
   | none => simp [hv] at h
   | some v =>
     refine ⟨v, rfl, ?_⟩

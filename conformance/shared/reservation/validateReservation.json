@@ -1,10 +1,10 @@
 {
   "operation": "reservation.validateReservation",
   "modelDef": [
-    "Spec.UseCase.Reserve.validateReservation",
+    "Spec.Reserve.validateReservation",
     "SourceModel.Domain.Service.B2.TicketReserveServiceImpl.validateReservation"
   ],
-  "specRef": "lean/Spec/UseCase/Reserve.lean#validatereservation",
+  "specRef": "lean/Spec/Reserve.lean#validatereservation",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

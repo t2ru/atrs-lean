@@ -9,7 +9,7 @@ ABS-041 の補題: 予約の入力の α `aiR` の像の分解（backlog aedf �
 
 namespace Abstraction.Reserve.Input
 open Abstraction.Reserve.Alpha Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.Fare.TotalAlpha
-open Spec.UseCase.Reserve
+open Spec.Reserve
 
 theorem aiR_eq {ic : SourceModel.ReserveQuery.MInput} {ia : MInput} (h : aiR ic = some ia) :
     configOf ic.input.config = some ia.cfg ∧ masterDataOf ic.input.db = some ia.md ∧
@@ -25,7 +25,7 @@ theorem requestOf_eq {f : SourceModel.App.B2.TicketReserveForm} {req : Request} 
   obtain ⟨ss, h1, r, h2, rfl⟩ := h
   exact ⟨h1, h2⟩
 
-theorem selectOfForm_eq {f : SourceModel.App.B0.SelectFlightForm} {s : Spec.Ticket.SelectFlight}
+theorem selectOfForm_eq {f : SourceModel.App.B0.SelectFlightForm} {s : Spec.Reserve.FlightSelection.SelectFlight}
     (h : selectOfForm f = some s) :
     ∃ dj, f.depDate = some dj ∧ dateOfJ dj = some s.depDate ∧ f.flightName = some s.flightName ∧
       f.boardingClassCd = some s.boardingClassCd ∧ f.fareTypeCd = some s.fareTypeCd := by
@@ -34,9 +34,9 @@ theorem selectOfForm_eq {f : SourceModel.App.B0.SelectFlightForm} {s : Spec.Tick
   exact ⟨dj, hdj, hd, hn, hbc, hft⟩
 
 /-- 便マスタで解決できる選択フライト情報の主キーの α は、解決した選択フライトの主キー。 -/
-theorem keyOfForm_of_resolve {md : Spec.MasterData} {f : SourceModel.App.B0.SelectFlightForm}
-    {s : Spec.Ticket.SelectFlight} {r : Spec.Ticket.ResolvedFlight} (hs : selectOfForm f = some s)
-    (hr : Spec.Ticket.resolve md s = some r) : keyOfForm f = some r.key := by
+theorem keyOfForm_of_resolve {md : Spec.Env.MasterData} {f : SourceModel.App.B0.SelectFlightForm}
+    {s : Spec.Reserve.FlightSelection.SelectFlight} {r : Spec.Reserve.FlightSelection.ResolvedFlight} (hs : selectOfForm f = some s)
+    (hr : Spec.Reserve.FlightSelection.resolve md s = some r) : keyOfForm f = some r.key := by
   obtain ⟨dj, hdj, hd, hn, hbc, hft⟩ := selectOfForm_eq hs
   obtain ⟨-, hk, hv⟩ := Abstraction.Reserve.SpecFacts.resolve_key hr
   rw [hk]
@@ -44,10 +44,10 @@ theorem keyOfForm_of_resolve {md : Spec.MasterData} {f : SourceModel.App.B0.Sele
 
 /-- 選択フライト情報の列の α が選択フライトの列で、選択フライトがそれぞれ主キーに解決されれば、選択フライト情報の
 主キーの α は、その主キー。 -/
-theorem forms_keys {md : Spec.MasterData} {Q : Spec.Model.FlightKey → Prop} :
-    ∀ {fs : List SourceModel.App.B0.SelectFlightForm} {ss : List Spec.Ticket.SelectFlight}
+theorem forms_keys {md : Spec.Env.MasterData} {Q : Spec.Model.FlightKey → Prop} :
+    ∀ {fs : List SourceModel.App.B0.SelectFlightForm} {ss : List Spec.Reserve.FlightSelection.SelectFlight}
       {ks : List Spec.Model.FlightKey}, fs.mapM selectOfForm = some ss →
-      LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, Spec.Ticket.resolve md s = some r ∧ r.key = k ∧ Q k) ss ks →
+      LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, Spec.Reserve.FlightSelection.resolve md s = some r ∧ r.key = k ∧ Q k) ss ks →
       LangSemantics.Core.List.Forall₂ (fun f k => keyOfForm f = some k) fs ks
   | [], ss, ks, h, hks => by
     simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at h; subst h; cases hks; exact .nil
@@ -76,9 +76,9 @@ theorem mapM_of_forall₂ {α β : Type} {g : α → Option β} :
     simp only [List.mapM_cons, h, mapM_of_forall₂ hs, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
 
 /-- 選択フライトがそれぞれ主キーに解決されれば、解決した主キーの列（`selectKeys`）は、その主キーの列。 -/
-theorem selectKeys_eq {md : Spec.MasterData} {Q : Spec.Model.FlightKey → Prop} :
-    ∀ {ss : List Spec.Ticket.SelectFlight} {ks : List Spec.Model.FlightKey},
-      LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, Spec.Ticket.resolve md s = some r ∧ r.key = k ∧ Q k) ss ks →
+theorem selectKeys_eq {md : Spec.Env.MasterData} {Q : Spec.Model.FlightKey → Prop} :
+    ∀ {ss : List Spec.Reserve.FlightSelection.SelectFlight} {ks : List Spec.Model.FlightKey},
+      LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, Spec.Reserve.FlightSelection.resolve md s = some r ∧ r.key = k ∧ Q k) ss ks →
       selectKeys md ss = ks
   | [], [], .nil => rfl
   | _ :: _, _ :: _, .cons h hs => by

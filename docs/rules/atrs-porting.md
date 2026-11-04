@@ -82,14 +82,14 @@ generated:
 | --- | --- | --- | --- |
 | `Fare` | `fare` | `fare` | [`Spec.Fare`](../../lean/Spec/Fare.lean) |
 | `FlightSearch` | `flight_search` | `flight-search` | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) |
-| `Ticket`, `UseCase.Reserve` | `reservation` | `reservation` | [`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) |
+| `Ticket`, `UseCase.Reserve` | `reservation` | `reservation` | [`Spec.Reserve`](../../lean/Spec/Reserve.lean) |
 | `UseCase.Member` | `member` | `member` | [`Spec.Member`](../../lean/Spec/Member.lean) |
-| `UseCase.Auth` | `auth` | `authentication` | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
-| `UseCase.Report` | `report` | `report` | [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) |
-| `Validation` | `validation` | `validation` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
-| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format` | `model_types`, `master_data` | `format` | [`Spec.Model`](../../lean/Spec/Model.lean), [`Spec.MasterData`](../../lean/Spec/MasterData.lean) |
+| `UseCase.Auth` | `auth` | `authentication` | [`Spec.Auth`](../../lean/Spec/Auth.lean) |
+| `UseCase.Report` | `report` | `report` | [`Spec.Report`](../../lean/Spec/Report.lean) |
+| `Validation` | `validation` | `validation` | [`Spec.Validation`](../../lean/Spec/Validation.lean) |
+| `Model`, `MasterData`, `CodeList`, `Config`, `Prim.Format` | `model_types`, `master_data` | `format` | [`Spec.Model`](../../lean/Spec/Model.lean), [`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean) |
 | `Error`, `Message` | `error` | — | [`Spec.Error`](../../lean/Spec/Error.lean) |
-| `Repository.*` | `adapter` | — | [`Spec.Port`](../../lean/Spec/Port.lean) |
+| `Repository.*` | `adapter` | — | [`Spec.Port`](../../lean/Spec/World.lean) |
 | `Http` | `adapter::http` | `http` | [`Spec.Http`](../../lean/Spec/Http.lean) |
 
 - `SourceModel` は機能名ではなく、原典の Java のソースツリーの形に並べる（`jp.co.ntt.atrs.<pkg>.<Class>` → `SourceModel.<Pkg>.<Class>`。[ADR e41c](../decision/e41c-source-model-mirrors-java-tree.md)）。機能の具体機械は `SourceModel.<機能>Query`（`FareQuery`・`MasterQuery`・`FlightSearchQuery`）に置く。`trace/features.json` の `lean` には、原典のクラス・メソッドの名前空間を機能ごとに書く（1 つのクラスのメソッドが複数の機能に分かれてよい）。式は `java!`、検査は `Assert.*` で原典と同じ字面に書く。原典と並べた対照表は `trace review`（CI の artifact `source-model-review`）。
@@ -116,13 +116,13 @@ generated:
 
 | 効果 | ロケータ | ATRS で影響する仕様 |
 | --- | --- | --- |
-| 画面入力の前後空白の除去と空文字の null 化 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean#前処理) |
-| Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) |
+| 画面入力の前後空白の除去と空文字の null 化 | `dep:org.springframework:spring-beans#StringTrimmerEditor.setAsText` | [`Spec.Validation`](../../lean/Spec/Validation.lean#前処理) |
+| Bean Validation の制約（UTF-16 長、null 合格、違反の並びが順序不定、`@Email` の判定） | `dep:org.hibernate.validator:hibernate-validator#…` | [`Spec.Validation`](../../lean/Spec/Validation.lean) |
 | `@InitBinder` の名前一致（REST 予約 API の相関検証の抜け、既知差異 D-007） | `dep:org.springframework:spring-web#InitBinder` | [`Spec.Http`](../../lean/Spec/Http.lean) |
-| ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [`Spec.Authentication`](../../lean/Spec/Authentication.lean) |
+| ログイン時のユーザー名の `trim` | `dep:org.springframework.security:spring-security-web#UsernamePasswordAuthenticationFilter` | [`Spec.Auth`](../../lean/Spec/Auth.lean) |
 | パスワードエンコーダ `{pbkdf2}` | `dep:org.springframework.security:spring-security-crypto#DelegatingPasswordEncoder` | [ADR 2d1f](../decision/2d1f-password-hashing-port.md) |
 | REST の日付の JSON 表現（Spring 7 は Jackson 3 を優先して使う） | `dep:tools.jackson.core:jackson-databind#ObjectMapper` | [`Spec.Http`](../../lean/Spec/Http.lean#rest-apiapiv1) |
-| `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [`Spec.Port`](../../lean/Spec/Port.lean#idgenerator) |
+| `selectKey` による採番 | `dep:org.mybatis:mybatis#SelectKeyGenerator` | [`Spec.Port`](../../lean/Spec/World.lean#idgenerator) |
 | `@Transactional` | `dep:org.springframework:spring-tx#Transactional` | [`Spec.Port`](../../lean/Spec/Port.lean#トランザクション) |
 
 ## 進め方の適用（ATRS）

@@ -24,7 +24,7 @@ open SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Doma
 open Spec.Model
 
 /-- 状態の表 FLIGHT だけを替えたときの α（写したフライトが主キーで一意なとき）。 -/
-theorem worldOfDb_setFlights {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w)
+theorem worldOfDb_setFlights {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w)
     {rows : List FlightRow} {fs : List Flight} (hr : rows.mapM flightOfRow = some fs) (hn : (fs.map (·.key)).Nodup) :
     worldOfDb { fd with flight := rows } = some { w with flights := fs, flights_nodup := hn } := by
   obtain ⟨-, hm, hrs, hsq⟩ := worldOfDb_eq_some.mp hw
@@ -55,7 +55,7 @@ theorem flightMap_ok {r : FlightRow} {f : Flight} (hf : flightOfRow r = some f) 
 
 /-- 空席数の更新の文: 主キーのフライト `f` があり、空席数 `v` が `int` の値域の自然数 `n` なら、更新件数は 1 で、更新後の
 状態の表の α は `World.updateVacantNum`。 -/
-theorem updateRows_alpha {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
+theorem updateRows_alpha {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     {k : FlightKey} {f : Flight} (hf : w.findForUpdate k = some f) {v : Int.J32} {n : Nat}
     (hv : v.val = (n : Int)) (hn : n ≤ 2147483647) :
     ∃ fd', updateRows fd (keyParams k) (some v) = .ok (1, fd') ∧
@@ -70,7 +70,7 @@ theorem updateRows_alpha {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb f
   obtain ⟨h1, h2⟩ := updateWhere_alpha (k := k) (v := ⟨v.val, hr⟩) (n := n) hv (worldOfDb_flights hw)
   have hcount : (w.flights.filter (·.key == k)).length = 1 := by
     rw [filter_key_eq hinv k]
-    unfold Spec.Port.World.findForUpdate at hf
+    unfold Spec.World.findForUpdate at hf
     rw [hf]
     rfl
   refine ⟨_, ?_, worldOfDb_setFlights hw h1 (w.updateVacantNum k n).flights_nodup⟩
@@ -82,7 +82,7 @@ theorem updateRows_alpha {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb f
 
 open Abstraction.MasterData.Alpha in
 /-- 運賃種別のキャッシュの答えから、コードと予約可能期間の日数を取り出す。 -/
-theorem fareType_days {r : JRef SourceModel.Domain.Model.FareType} {FT : Spec.MasterData.FareType}
+theorem fareType_days {r : JRef SourceModel.Domain.Model.FareType} {FT : Spec.Env.MasterData.FareType}
     (h : answerOf? (.fareType r) = some (.fareType (some FT.info))) :
     ∃ t s e, r = some t ∧ t.fareTypeCd = some FT.fareTypeCd ∧ t.rsrvAvailableStartDayNum = some s ∧
       s.val = (FT.rsrvAvailableStartDayNum : Int) ∧ t.rsrvAvailableEndDayNum = some e ∧
@@ -100,12 +100,12 @@ theorem fareType_days {r : JRef SourceModel.Domain.Model.FareType} {FT : Spec.Ma
     obtain ⟨s, hs1, hs2⟩ := hs0
     obtain ⟨e, he1, he2⟩ := he0
     rw [natOfJ32_eq_some] at hs2 he2
-    simp only [Spec.MasterData.FareType.info, Spec.MasterData.FareTypeInfo.mk.injEq] at he
+    simp only [Spec.Env.MasterData.FareType.info, Spec.Env.MasterData.FareTypeInfo.mk.injEq] at he
     obtain ⟨rfl, -, -, rfl, rfl, -⟩ := he
     exact ⟨f, s, e, rfl, hc0, hs1, hs2, he1, he2⟩
 
 /-- 運賃種別の予約可能判定: [Source] の `isAvailableFareType`（日付の形）は、[Spec] の `isAvailableFareType`。 -/
-theorem isAvailable_eq {t : SourceModel.Domain.Model.FareType} {FT : Spec.MasterData.FareType} {s e : Int.J32}
+theorem isAvailable_eq {t : SourceModel.Domain.Model.FareType} {FT : Spec.Env.MasterData.FareType} {s e : Int.J32}
     (hs : t.rsrvAvailableStartDayNum = some s) (hsv : s.val = (FT.rsrvAvailableStartDayNum : Int))
     (he : t.rsrvAvailableEndDayNum = some e) (hev : e.val = (FT.rsrvAvailableEndDayNum : Int))
     {dJ tJ : JLocalDate} {D T : Spec.Prim.Date} (hD : dateOfJ dJ = some D) (hT : dateOfJ tJ = some T) :
@@ -121,7 +121,7 @@ theorem isAvailable_eq {t : SourceModel.Domain.Model.FareType} {FT : Spec.Master
 
 section
 open Abstraction.MasterData.Alpha Abstraction.Fare.TotalFareRun Abstraction.Fare.TotalAlpha
-variable {md : Spec.MasterData} {p : SourceModel.MasterQuery.Providers}
+variable {md : Spec.Env.MasterData} {p : SourceModel.MasterQuery.Providers}
   (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
     some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
   (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
@@ -131,7 +131,7 @@ include hbq hfq
 /-- 選択フライト情報から作ったフライト情報の主キーの束縛変数は、主キー `k` の束縛変数（搭乗クラス・運賃種別がマスタに
 ある場合）。 -/
 theorem mkFlight_key {f : SourceModel.App.B0.SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    {BC : Spec.MasterData.BoardingClass} {FT : Spec.MasterData.FareType}
+    {BC : Spec.Env.MasterData.BoardingClass} {FT : Spec.Env.MasterData.FareType}
     (hb : md.boardingClassOf k.boardingClassCd = some BC) (hf : md.fareTypeOf k.fareTypeCd = some FT)
     {fm : SourceModel.Domain.Model.FlightMaster} (hfn : fm.flightName = some k.flightName.val) :
     bindKey (mkFlight p f).departureDate fm.flightName (mkFlight p f).boardingClass (mkFlight p f).fareType =
@@ -155,7 +155,7 @@ theorem mkFlight_key {f : SourceModel.App.B0.SelectFlightForm} {k : FlightKey} (
 omit hbq in
 /-- 選択フライト情報から作ったフライト情報の運賃種別は、マスタの運賃種別 `FT` のコードと予約可能期間を持つ。 -/
 theorem mkFlight_days {f : SourceModel.App.B0.SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    {FT : Spec.MasterData.FareType} (hf : md.fareTypeOf k.fareTypeCd = some FT) :
+    {FT : Spec.Env.MasterData.FareType} (hf : md.fareTypeOf k.fareTypeCd = some FT) :
     ∃ t s e, (mkFlight p f).fareType = some t ∧ t.rsrvAvailableStartDayNum = some s ∧
       s.val = (FT.rsrvAvailableStartDayNum : Int) ∧ t.rsrvAvailableEndDayNum = some e ∧
       e.val = (FT.rsrvAvailableEndDayNum : Int) := by
@@ -188,18 +188,18 @@ theorem mapM_singleton {α β : Type} {g : α → Option β} {b : β} :
     cases e
 
 /-- 状態の表の α が `w` で、実行環境が `env`。 -/
-def AtW (env : Env) (w : Spec.Port.World) (s : St) : Prop := worldOfDb s.db = some w ∧ s.env = env
+def AtW (env : Env) (w : Spec.World) (s : St) : Prop := worldOfDb s.db = some w ∧ s.env = env
 
 /-- 空席の確保（1 便）。予約フライトは、選択フライト情報から作ったフライト情報と、搭乗者の列 `xs` を持つ。Clock の
 読み出しはいつも `tJ`（D-014 の前提）。 -/
-theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Providers}
+theorem vacancy_hoare {md : Spec.Env.MasterData} {p : SourceModel.MasterQuery.Providers}
     (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
-    {env : Env} {w : Spec.Port.World} (hinv : w.Inv) (svc : TicketReserveServiceImpl)
+    {env : Env} {w : Spec.World} (hinv : w.Inv) (svc : TicketReserveServiceImpl)
     {f : SourceModel.App.B0.SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    {BC : Spec.MasterData.BoardingClass} {FT : Spec.MasterData.FareType}
+    {BC : Spec.Env.MasterData.BoardingClass} {FT : Spec.Env.MasterData.FareType}
     (hb : md.boardingClassOf k.boardingClassCd = some BC) (hft : md.fareTypeOf k.fareTypeCd = some FT)
     {fm : SourceModel.Domain.Model.FlightMaster} (hfm : (mkFlight p f).flightMaster = some fm)
     (hfn : fm.flightName = some k.flightName.val) {fX : Flight} (hfX : w.findForUpdate k = some fX)
@@ -208,9 +208,9 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
     Hoare (AtW env w)
       (TicketReserveServiceImpl.validateAndUpdateVacancy svc
         (some { flight := some (mkFlight p f), passengerList := some (xs.map some) }))
-      (fun _ s => ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
+      (fun _ s => ∃ w', Spec.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
       (fun e s => AtW env w s ∧ (IsFault env e ∨ ∃ be : Spec.Error.BusinessError, be.args = [] ∧ e = AtrsBusinessException.newArgs be.code [] ∧
-        Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.error (.business be)))) := by
+        Spec.Reserve.secureSeats md T xs.length w k = some (.error (.business be)))) := by
   intro s ⟨hdb, hse⟩
   obtain ⟨t, sd, ed, hte, hs1, hs2, he1, he2⟩ := mkFlight_days hfq hk hft
   obtain ⟨dj, hdj, hd, -⟩ := keyOfForm_eq hk
@@ -223,7 +223,7 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   rw [hfX, Option.toList_some] at hsel
   obtain ⟨r, hsr, hr⟩ := mapM_singleton hsel
   have hfXk : fX.key = k := by
-    unfold Spec.Port.World.findForUpdate at hfX
+    unfold Spec.World.findForUpdate at hfX
     simpa using List.find?_some hfX
   obtain ⟨L, hL, hLkey, v0, hv0, hv0v⟩ := flightMap_ok hr
   rw [hfXk] at hLkey
@@ -234,12 +234,12 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
     findOneForUpdate, lockQuery, sql, hkey, FlightRepository.update]
   have hn : (Int.J32.ofInt ((List.map some xs).length : Int)).val = (xs.length : Int) := by
     rw [List.length_map]; exact LangSemantics.Java.IntLemmas.ofInt_nat (by omega)
-  have hss : Spec.UseCase.Reserve.secureSeats md T xs.length w k =
+  have hss : Spec.Reserve.secureSeats md T xs.length w k =
       if (!Spec.FlightSearch.isAvailableFareType FT k.departureDate T) = true then
         some (.error (.business .fareTypeUnavailable))
       else if fX.vacantNum < xs.length then some (.error (.business .noVacancy))
       else some (.ok (w.updateVacantNum k (fX.vacantNum - xs.length))) := by
-    simp only [Spec.UseCase.Reserve.secureSeats, hft, hfX, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
+    simp only [Spec.Reserve.secureSeats, hft, hfX, Option.bind_eq_bind, Option.bind_some, Option.pure_def]
   rw [hss]
   have hat : ∀ (cr sc : Nat), AtW env w { db := s.db, env := s.env, clockReads := cr, sqlCalls := sc } :=
     fun _ _ => ⟨hdb, hse⟩
@@ -285,20 +285,20 @@ theorem vacancy_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Provid
   exact ⟨_, rfl, hw', hse⟩
 
 /-- 予約フライトを順に空席を確保する（[Spec] の `foldlM secureSeats`）。 -/
-def secureAll (md : Spec.MasterData) (T : Spec.Prim.Date) (n : Nat) :
-    List FlightKey → Spec.Port.World → Option (Except Spec.Error.AtrsError Spec.Port.World)
+def secureAll (md : Spec.Env.MasterData) (T : Spec.Prim.Date) (n : Nat) :
+    List FlightKey → Spec.World → Option (Except Spec.Error.AtrsError Spec.World)
   | [], w => some (.ok w)
-  | k :: ks, w => (Spec.UseCase.Reserve.secureSeats md T n w k).bind fun r =>
+  | k :: ks, w => (Spec.Reserve.secureSeats md T n w k).bind fun r =>
     match r with
     | .error e => some (.error e)
     | .ok w' => secureAll md T n ks w'
 
-theorem foldlM_secure (md : Spec.MasterData) (T : Spec.Prim.Date) (n : Nat) :
-    ∀ (ks : List FlightKey) (acc : Except Spec.Error.AtrsError Spec.Port.World),
+theorem foldlM_secure (md : Spec.Env.MasterData) (T : Spec.Prim.Date) (n : Nat) :
+    ∀ (ks : List FlightKey) (acc : Except Spec.Error.AtrsError Spec.World),
       ks.foldlM (init := acc) (fun acc k => do
           match acc with
           | .error e => return .error e
-          | .ok w' => Spec.UseCase.Reserve.secureSeats md T n w' k) =
+          | .ok w' => Spec.Reserve.secureSeats md T n w' k) =
         match acc with
         | .error e => some (.error e)
         | .ok w => secureAll md T n ks w
@@ -314,25 +314,25 @@ theorem foldlM_secure (md : Spec.MasterData) (T : Spec.Prim.Date) (n : Nat) :
       exact foldlM_secure md T n ks r
 
 /-- 空席の確保の材料（予約フライトごと）: 主キー、搭乗クラス・運賃種別がマスタにあり、便マスタが便名を持つ。 -/
-structure VacCond (md : Spec.MasterData) (p : SourceModel.MasterQuery.Providers)
+structure VacCond (md : Spec.Env.MasterData) (p : SourceModel.MasterQuery.Providers)
     (f : SourceModel.App.B0.SelectFlightForm) (k : FlightKey) : Prop where
   key : keyOfForm f = some k
   bc : ∃ BC, md.boardingClassOf k.boardingClassCd = some BC
   ft : ∃ FT, md.fareTypeOf k.fareTypeCd = some FT
   fm : ∃ fm, (mkFlight p f).flightMaster = some fm ∧ fm.flightName = some k.flightName.val
 
-theorem findForUpdate_isSome_of_keys {w w' : Spec.Port.World} (h : w'.flights.map (·.key) = w.flights.map (·.key))
+theorem findForUpdate_isSome_of_keys {w w' : Spec.World} (h : w'.flights.map (·.key) = w.flights.map (·.key))
     {k : FlightKey} (hk : (w.findForUpdate k).isSome) : (w'.findForUpdate k).isSome := by
-  unfold Spec.Port.World.findForUpdate at hk ⊢
+  unfold Spec.World.findForUpdate at hk ⊢
   rw [List.find?_isSome] at hk ⊢
   obtain ⟨g, hg, hgk⟩ := hk
   have : g.key ∈ w'.flights.map (·.key) := h ▸ List.mem_map_of_mem hg
   obtain ⟨g', hg', e⟩ := List.mem_map.mp this
   exact ⟨g', hg', by rw [e]; exact hgk⟩
 
-theorem secureSeats_seq {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} {w w' : Spec.Port.World}
-    {k : FlightKey} (h : Spec.UseCase.Reserve.secureSeats md T n w k = some (.ok w')) : w'.sequences = w.sequences := by
-  unfold Spec.UseCase.Reserve.secureSeats at h
+theorem secureSeats_seq {md : Spec.Env.MasterData} {T : Spec.Prim.Date} {n : Nat} {w w' : Spec.World}
+    {k : FlightKey} (h : Spec.Reserve.secureSeats md T n w k = some (.ok w')) : w'.sequences = w.sequences := by
+  unfold Spec.Reserve.secureSeats at h
   simp only [Option.bind_eq_bind] at h
   cases hft : md.fareTypeOf k.fareTypeCd with
   | none => simp [hft] at h
@@ -349,7 +349,7 @@ theorem secureSeats_seq {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} {w
           rfl
 
 /-- 予約フライトの列の空席の確保。例外で終われば、状態の表の採番は変わっていない（取り消しで元に戻る）。 -/
-theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Providers}
+theorem vacancies_hoare {md : Spec.Env.MasterData} {p : SourceModel.MasterQuery.Providers}
     (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
@@ -359,7 +359,7 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
     (hT : dateOfJ tJ = some T) :
     ∀ {fs : List SourceModel.App.B0.SelectFlightForm} {ks : List FlightKey},
       LangSemantics.Core.List.Forall₂ (VacCond md p) fs ks →
-      ∀ {w : Spec.Port.World}, w.Inv → (∀ k ∈ ks, (w.findForUpdate k).isSome) →
+      ∀ {w : Spec.World}, w.Inv → (∀ k ∈ ks, (w.findForUpdate k).isSome) →
       Hoare (AtW env w)
         (forIn (fs.map fun f => some { flight := some (mkFlight p f), passengerList := some (xs.map some) }) ()
           fun rf _ => do
@@ -376,7 +376,7 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
     have hv := vacancy_hoare hbq hfq hinv svc hk hb hft hfm hfn hfX hlen hclock hT
     rw [List.map_cons, List.forIn_cons]
     refine Hoare.bind' (R := fun r s => r = .yield () ∧
-        ∃ w', Spec.UseCase.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
+        ∃ w', Spec.Reserve.secureSeats md T xs.length w k = some (.ok w') ∧ AtW env w' s)
       (Hoare.bind' (Hoare.conseq hv (fun _ h => h) (fun _ _ h => h) fun e s ⟨hat, he⟩ => ⟨w, hat, rfl, ?_⟩)
         fun _ => Hoare.pure' fun s h => ⟨rfl, h⟩) fun r => ?_
     · rcases he with he | ⟨be, hba, rfl, hc⟩
@@ -384,7 +384,7 @@ theorem vacancies_hoare {md : Spec.MasterData} {p : SourceModel.MasterQuery.Prov
       · exact .inr ⟨be, hba, rfl, by simp only [secureAll, hc, Option.bind_some]⟩
     · intro s ⟨hr0, w', hw', hat⟩
       subst hr0
-      have hkeys := Spec.UseCase.Reserve.secureSeats_keys hw'
+      have hkeys := Spec.Reserve.secureSeats_keys hw'
       have hinv' : w'.Inv := w'.inv
       have hex' : ∀ k ∈ ks, (w'.findForUpdate k).isSome := fun k' hk' =>
         findForUpdate_isSome_of_keys hkeys (hex k' (List.mem_cons_of_mem _ hk'))

@@ -14,7 +14,7 @@ import Abstraction.MasterData.QueryRun
 
 namespace Abstraction.Reserve.Witness
 open Abstraction.Reserve.Alpha Abstraction.Fare.TotalAlpha Abstraction.FlightSearch.Witness Spec.Model
-  Spec.UseCase.Reserve
+  Spec.Reserve
 open Machine Abstraction.World.Alpha Abstraction.MasterData.QueryRun
 open Machine.Preserves (Nontrivial Nontrivial₂)
 open LangSemantics.Java LangSemantics.Java.Int SourceModel.Db.Schema
@@ -51,11 +51,11 @@ def inputR : ReserveInput :=
   ⟨"デンデン", "タロウ", 30, .M, "03", "1234", "5678", "a@example.com", none, [⟨some "デンデン", some "タロウ", some 5, some .M, none⟩]⟩
 
 /-- 抽象側の入力（予約確定。マスタ `md`、選択フライト `ss`）。 -/
-def iaR (md : Spec.MasterData) (ss : List Spec.Ticket.SelectFlight) : MInput :=
-  ⟨Spec.Config.default, md, day0, ⟨ss, inputR⟩, .reserve⟩
+def iaR (md : Spec.Env.MasterData) (ss : List Spec.Reserve.FlightSelection.SelectFlight) : MInput :=
+  ⟨Spec.Env.Config.default, md, day0, ⟨ss, inputR⟩, .reserve⟩
 
 /-- NTT001・N・OW の選択フライト。 -/
-def selR : Spec.Ticket.SelectFlight := ⟨day0, "NTT001", .N, .OW⟩
+def selR : Spec.Reserve.FlightSelection.SelectFlight := ⟨day0, "NTT001", .N, .OW⟩
 
 theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
   ⟨⟨(wFS, iaR mdFS []), fun _ => by decide⟩,
@@ -63,7 +63,7 @@ theorem dev_D009_nontrivial : Nontrivial₂ dev_D009 :=
       have := (h rfl).2.2; simp at this⟩⟩
 
 /-- 往路便の到着時刻が 24:15（翌日着）の便マスタ。 -/
-def md2415 : Spec.MasterData :=
+def md2415 : Spec.Env.MasterData :=
   { mdFS with flightMasters := [⟨{ val := "NTT001" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩] }
 
 theorem dev_D031_nontrivial : Nontrivial dev_D031 :=
@@ -130,7 +130,7 @@ theorem suHasText_fun : LangSemantics.Java.Spring.StringUtils.hasText =
 /-! ## W 課題 ABS-131（D-031） -/
 
 /-- ABS-131 の証人の [Spec] のマスタ（`db2415` の写し）。 -/
-def mdW2415 : Spec.MasterData :=
+def mdW2415 : Spec.Env.MasterData :=
   { airports := [⟨{ val := "HND" }, "Haneda", 1⟩, ⟨{ val := "ITM" }, "Itami", 2⟩],
     routes := [⟨1, { val := "HND" }, { val := "ITM" }, 10000⟩, ⟨2, { val := "ITM" }, { val := "HND" }, 10000⟩],
     flightMasters := [⟨{ val := "NTT523" }, 1, ⟨22, 0, by decide⟩, ⟨24, 15, by decide⟩, "B777"⟩,
@@ -143,25 +143,25 @@ def mdW2415 : Spec.MasterData :=
 def day1R : Spec.Prim.Date := ⟨1970, 1, 2, by decide⟩
 
 /-- ABS-131 の証人の [Spec] の入力（`ic2415` の像）。 -/
-def ia2415 : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Config.default, mdW2415, day0, ⟨[⟨day0, "NTT523", .N, .RT⟩, ⟨day1R, "NTT528", .N, .RT⟩], inputR⟩, .confirm⟩
+def ia2415 : Spec.Reserve.MInput :=
+  ⟨Spec.Env.Config.default, mdW2415, day0, ⟨[⟨day0, "NTT523", .N, .RT⟩, ⟨day1R, "NTT528", .N, .RT⟩], inputR⟩, .confirm⟩
 
 /-- ABS-131 の証人の [Spec] の状態（`fd2415` の像）。 -/
-def w2415 : Spec.Port.World := { flights := [⟨⟨day0, { val := "NTT523" }, .N, .RT⟩, 10⟩, ⟨⟨day1R, { val := "NTT528" }, .N, .RT⟩, 10⟩] }
+def w2415 : Spec.World := { flights := [⟨⟨day0, { val := "NTT523" }, .N, .RT⟩, 10⟩, ⟨⟨day1R, { val := "NTT528" }, .N, .RT⟩, 10⟩] }
 
 theorem worldOfDb_fd2415 : worldOfDb fd2415 = some w2415 := by decide
 
 theorem w2415_inv : w2415.Inv := w2415.inv
 
 theorem aiR_ic2415 : aiR ic2415 = some ia2415 := by
-  have h1 : Abstraction.MasterData.Alpha.configOf ic2415.input.config = some Spec.Config.default := by decide
+  have h1 : Abstraction.MasterData.Alpha.configOf ic2415.input.config = some Spec.Env.Config.default := by decide
   have h2 : Abstraction.MasterData.Alpha.masterDataOf ic2415.input.db = some mdW2415 := by decide
   have h3 : Abstraction.MasterData.AlphaLeaf.dateOfJ (ic2415.input.env.clock 0) = some day0 := by decide
   have h4 : requestOf ic2415.input.form = some ia2415.req := by decide
   simp only [aiR, h1, h2, h3, h4, Option.bind_some]
   rfl
 
-theorem md2415_valid : mdW2415.Valid Spec.Config.default := by
+theorem md2415_valid : mdW2415.Valid Spec.Env.Config.default := by
   refine ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
@@ -187,7 +187,7 @@ theorem confirm2415_some : (confirmOp ia2415.cfg ia2415.md w2415 ia2415.req).isS
   all_goals decide +kernel
 
 theorem ia2415_pre : ia2415.Pre w2415 :=
-  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
+  ⟨Spec.Env.masterConfigOk.of_valid (by decide) md2415_valid, req2415_valid, by decide, by decide, confirm2415_some⟩
 
 theorem ia2415_devs : dev_D009 w2415 ia2415 ∧ dev_D001R ia2415 ∧ dev_D002R ia2415 ∧ dev_D012R ia2415 := by
   refine ⟨?_, ?_, ?_, ?_⟩
@@ -226,21 +226,21 @@ def ic109 : SourceModel.ReserveQuery.MInput :=
      env := SourceModel.Db.Tx.Env.fixed ⟨1970, 1, 1, by decide⟩ }, .reserve⟩
 
 /-- ABS-109 の証人の [Spec] の状態（`fd109` の像）。 -/
-def w109 : Spec.Port.World := { wFS with sequences := { wFS.sequences with passenger := 2147483648 } }
+def w109 : Spec.World := { wFS with sequences := { wFS.sequences with passenger := 2147483648 } }
 
 theorem worldOfDb_fd109 : worldOfDb fd109 = some w109 := by decide
 
 theorem w109_inv : w109.Inv := w109.inv
 
 theorem aiR_ic109 : aiR ic109 = some (iaR mdFS [selR]) := by
-  have h1 : Abstraction.MasterData.Alpha.configOf ic109.input.config = some Spec.Config.default := by decide
+  have h1 : Abstraction.MasterData.Alpha.configOf ic109.input.config = some Spec.Env.Config.default := by decide
   have h2 : Abstraction.MasterData.Alpha.masterDataOf ic109.input.db = some mdFS := by decide
   have h3 : Abstraction.MasterData.AlphaLeaf.dateOfJ (ic109.input.env.clock 0) = some day0 := by decide
   have h4 : requestOf ic109.input.form = some (iaR mdFS [selR]).req := by decide
   simp only [aiR, h1, h2, h3, h4, Option.bind_some]
   rfl
 
-theorem mdFS_valid : mdFS.Valid Spec.Config.default := by
+theorem mdFS_valid : mdFS.Valid Spec.Env.Config.default := by
   refine ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩
   refine ⟨?_, by decide, by decide, by decide⟩
   intro a ha
@@ -261,7 +261,7 @@ theorem reserve109_some : (reserveOp (iaR mdFS [selR]).cfg (iaR mdFS [selR]).md 
   all_goals decide +kernel
 
 theorem ia109_pre : (iaR mdFS [selR]).Pre w109 :=
-  ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide) mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
+  ⟨Spec.Env.masterConfigOk.of_valid (by decide) mdFS_valid, req109_valid, by decide, by decide, reserve109_some⟩
 
 theorem ia109_devs : dev_D031 (iaR mdFS [selR]) ∧ dev_D001R (iaR mdFS [selR]) ∧ dev_D002R (iaR mdFS [selR]) ∧
     dev_D012R (iaR mdFS [selR]) := by

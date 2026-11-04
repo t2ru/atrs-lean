@@ -105,7 +105,7 @@ Chosen option: "NS-1 を規則にする。複数の型はモジュール名の�
 * Good, because 宣言の名前からファイルが分かり、`check_lean.py` と `trace-dump` の層の判定がそろう
 * Good, because 機能ごとに、証明課題が 1 つのモジュールにまとまる
 * Good, because 例外が 4 つに限られ、E3 は理由とともに一覧に出る
-* Bad, because 名前が長くなり、利用側の `open` が増える。名前空間を開くと、同じ短い名前を持つ別の名前空間とぶつかることがある（例: `Spec.MasterData.boardingClassOf` と `Abstraction.MasterData.Load.boardingClassOf`）。型だけを開く選択の `open X (A B)` か、修飾した名前で避ける
+* Bad, because 名前が長くなり、利用側の `open` が増える。名前空間を開くと、同じ短い名前を持つ別の名前空間とぶつかることがある（例: `Spec.Env.MasterData.boardingClassOf` と `Abstraction.MasterData.Load.boardingClassOf`）。型だけを開く選択の `open X (A B)` か、修飾した名前で避ける
 * Bad, because 改名で Merkle ハッシュが変わり、合格の記録を取り直す（`trace rehash`）必要がある
 
 ### Confirmation

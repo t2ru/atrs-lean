@@ -62,17 +62,17 @@ ATRS（航空券予約システム）の **正規仕様は Lean の `Spec`** で
 | [`Spec.Glossary`](../../lean/Spec/Glossary.lean) | 用語集（日英対応） | — | meta |
 | [`Spec.Prim`](../../lean/Spec/Prim.lean) とその下 | 基本演算・暦日と時刻・書式・文字クラス | — | informative＋draft |
 | [`Spec.Model`](../../lean/Spec/Model.lean) | 列挙・コード値・エンティティ・値域 | — | informative＋draft |
-| [`Spec.Config`](../../lean/Spec/Config.lean) | 設定パラメータ | — | informative＋draft |
-| [`Spec.MasterData`](../../lean/Spec/MasterData.lean)・[`Spec.CodeList`](../../lean/Spec/CodeList.lean) | マスタデータの構造と不変条件・参照関数・コードリスト・シードデータ | — | informative＋draft |
+| [`Spec.Env.Config`](../../lean/Spec/Env/Config.lean) | 設定パラメータ | — | informative＋draft |
+| [`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)・[`Spec.Env.CodeList`](../../lean/Spec/Env/CodeList.lean) | マスタデータの構造と不変条件・参照関数・コードリスト・シードデータ | — | informative＋draft |
 | [`Spec.Fare`](../../lean/Spec/Fare.lean) | 基本運賃・運賃・合計運賃 | B0 | informative |
 | [`Spec.Error`](../../lean/Spec/Error.lean) | エラー分類・コード・メッセージ | 全体 | draft |
-| [`Spec.Port`](../../lean/Spec/Port.lean) | ポート（副作用）の契約 | 全体 | draft＋normative |
+| [`Spec.Port`](../../lean/Spec/World.lean) | ポート（副作用）の契約 | 全体 | draft＋normative |
 | [`Spec.FlightSearch`](../../lean/Spec/FlightSearch.lean) | 空席照会 | B1 | draft |
-| [`Spec.Ticket`](../../lean/Spec/Ticket.lean)・[`Spec.UseCase.Reserve`](../../lean/Spec/UseCase/Reserve.lean) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
+| [`Spec.Reserve.FlightSelection`](../../lean/Spec/Reserve/FlightSelection.lean)・[`Spec.Reserve`](../../lean/Spec/Reserve.lean) | フライト検証・予約検証・予約登録 | B0, B2 | draft |
 | [`Spec.Member`](../../lean/Spec/Member.lean) | 会員登録・会員情報変更（文書だけのモジュール） | C0, C1, C2 | draft |
-| [`Spec.Authentication`](../../lean/Spec/Authentication.lean) | ログイン・ログアウト（文書だけのモジュール） | A0, A1, A2 | draft |
-| [`Spec.ReservationHistoryReport`](../../lean/Spec/ReservationHistoryReport.lean) | 予約履歴レポート（文書だけのモジュール） | D1 | draft |
-| [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) | 入力検証（文書だけのモジュール） | 全画面 | draft |
+| [`Spec.Auth`](../../lean/Spec/Auth.lean) | ログイン・ログアウト（文書だけのモジュール） | A0, A1, A2 | draft |
+| [`Spec.Report`](../../lean/Spec/Report.lean) | 予約履歴レポート（文書だけのモジュール） | D1 | draft |
+| [`Spec.Validation`](../../lean/Spec/Validation.lean) | 入力検証（文書だけのモジュール） | 全画面 | draft |
 | [`Spec.Http`](../../lean/Spec/Http.lean) | 画面遷移・REST API の契約（文書だけのモジュール） | 全画面 | draft＋normative |
 
 旧 `docs/spec/<文書>.md#<見出し>` から新しい場所への対応は `tools/docs/spec-anchors.json` にある（[backlog c89a](../backlog/c89a-business-spec-in-lean-module-docs.md)）。

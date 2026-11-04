@@ -108,7 +108,7 @@ def hashes() -> dict:
 def render_spec(members: list[dict], logins: list[dict], load: tuple[int, int, int], h: dict) -> str:
     lines = [
         "import Spec.Model",
-        "import Spec.Port",
+        "import Spec.World",
         "import Trace",
         "",
         "/-!",
@@ -144,7 +144,7 @@ def render_spec(members: list[dict], logins: list[dict], load: tuple[int, int, i
         "",
         f"/-- 採番の初期値: 会員はシードが {len(members)} 回採番した次、ほかは 1。 -/",
         f"@[source {s(LOC_MEMBER + '@' + h[LOC_MEMBER])}]",
-        f"def sequences : Spec.Port.Sequences := {{ member := {len(members) + 1} }}",
+        f"def sequences : Spec.World.Sequences := {{ member := {len(members) + 1} }}",
         "",
         "end Spec.Seed.Member",
         "",

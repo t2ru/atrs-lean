@@ -12,13 +12,13 @@ import Abstraction.Fare.TotalFareRun
 
 namespace Abstraction.Fare
 open Abstraction.Fare.Preserves
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Lookup
   Abstraction.MasterData.QueryRun LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine
   Abstraction.Fare.BasicFareRun SourceModel.FareQuery Abstraction.Fare.FareRun Abstraction.Fare.TotalAlpha
-  Abstraction.Fare.TotalFareRun Spec Spec.EnvPre Spec.Model
+  Abstraction.Fare.TotalFareRun Spec Spec.Env Spec.Model
 
 /-- R 課題 ABS-001。 -/
 @[obligation "ABS-001"]
@@ -198,7 +198,7 @@ theorem basicFarePreserves :
     obtain ⟨ia, hα, he⟩ := envBF_icBF101
     exact ⟨icBF101, ia, ⟨trivial, by unfold dev_D027BF; rw [hα]; rfl⟩, hα, he⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaBFbad) trivial
-    fun h => badMasterData_not_env h.1.1
+    fun h => Seed.badMasterData_not_env h.1.1
 
 /-- ABS-001 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、出力の像は [Spec] の基本運賃。 -/
 theorem basicFareRefines_commutes {ic : BasicFareInput} {ia : Spec.Fare.BasicFareInput} (hα : aiBF ic = some ia)
@@ -260,7 +260,7 @@ theorem totalFarePreserves :
   envWitness :=
     ⟨icTF100, iaTF100, ⟨trivial, by unfold dev_D027TF; rw [aiTF_icTF100]; rfl⟩, aiTF_icTF100, envTF_iaTF100⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := ()) (i := iaTFbad) trivial
-    fun h => badMasterData_not_env h.1.1.1.1
+    fun h => Seed.badMasterData_not_env h.1.1.1.1
 
 /-- ABS-004 の 1 歩の可換式。 -/
 theorem totalFareRefines_commutes {ic : TotalFareInput} {ia : Spec.Fare.TotalFareInput} (hα : aiTF ic = some ia)

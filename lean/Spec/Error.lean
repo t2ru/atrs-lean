@@ -168,8 +168,8 @@ end Spec.Error
 - `FieldError(field, code, args)`: 項目に紐づくエラー。`field` は項目パス（例 `passengers[2].age`、`selectFlights[0].depDate`）。
 - `GlobalError(code, args)`: 画面全体のエラー。
 - 単項目検証のコードは制約名（`NotNull`, `NotEmpty`, `Size`, `FixedLength`, `FullWidth`, `FullWidthKatakana`, `HalfWidth`, `HalfWidthNumber`, `Email`, `Min`, `Max`, `Digits`, `ExistInCodeList`, `typeMismatch`）。
-- 相関検証のコード `Invalid`（選択フライト数・搭乗者数の改竄。[`Spec.InputValidation`](InputValidation.lean)）には文言が無い。画面でも REST でも改竄として扱われ、文言を表示する経路が無いため。
-- `field` の項目パスは、本書と [`Spec.InputValidation`](InputValidation.lean) では抽象名（`selectFlights[i]`, `passengers[i]`）で書く。HTTP の項目名との対応は [`Spec.InputValidation`](InputValidation.lean#項目名の対応) に示す。
+- 相関検証のコード `Invalid`（選択フライト数・搭乗者数の改竄。[`Spec.Validation`](Validation.lean)）には文言が無い。画面でも REST でも改竄として扱われ、文言を表示する経路が無いため。
+- `field` の項目パスは、本書と [`Spec.Validation`](Validation.lean) では抽象名（`selectFlights[i]`, `passengers[i]`）で書く。HTTP の項目名との対応は [`Spec.Validation`](Validation.lean#項目名の対応) に示す。
 -/
 
 /-!

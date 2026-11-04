@@ -38,7 +38,7 @@ generated:
 Chosen option: "新しい分類 `Conflict` を追加する", because 原典の REST 応答（409）と互換になり、「再試行すれば成功しうる失敗」を `System`（整合性違反・I/O 失敗）と区別できるため。
 
 * `AtrsError.Conflict(reason)` を追加する。`reason` はログ用で、利用者には示さない。
-* [Spec] では、ユースケースは直列化可能に実行されるので `Conflict` は発生しない。`Conflict` は `TargetModel` と実行環境が、再試行などで吸収できなかったときだけ返してよい。返す場合、そのユースケースは状態を一切変えてはならない（採番の前進は除く。[spec/ports.md](../../lean/Spec/Port.lean#idgenerator)）。
+* [Spec] では、ユースケースは直列化可能に実行されるので `Conflict` は発生しない。`Conflict` は `TargetModel` と実行環境が、再試行などで吸収できなかったときだけ返してよい。返す場合、そのユースケースは状態を一切変えてはならない（採番の前進は除く。[spec/ports.md](../../lean/Spec/World.lean#idgenerator)）。
 * 画面: 500 のシステムエラー画面（`e.ar.fw.9999`）。REST: 409、`code = "e.ar.fw.9999"`（[spec/http-contract.md](../../lean/Spec/Http.lean#apierror)）。
 
 ### Consequences

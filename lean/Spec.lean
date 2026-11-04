@@ -3,28 +3,30 @@ import Machine
 import Spec.Glossary
 import Spec.Prim
 import Spec.Model
-import Spec.Config
-import Spec.MasterData
-import Spec.CodeList
+import Spec.Error
+import Spec.Env
+import Spec.Env.Config
+import Spec.Env.MasterData
+import Spec.Env.CodeList
+import Spec.World
+import Spec.Port
+import Spec.Nondet
 import Spec.MasterQuery
 import Spec.Fare
-import Spec.Error
-import Spec.Port
 import Spec.FlightSearch
-import Spec.Ticket
-import Spec.UseCase.Reserve
+import Spec.Reserve
+import Spec.Reserve.FlightSelection
 import Spec.Member
-import Spec.Authentication
-import Spec.ReservationHistoryReport
-import Spec.InputValidation
+import Spec.Auth
+import Spec.Report
+import Spec.Validation
 import Spec.Http
-import Spec.Nondet
 import Spec.Seed
+import Spec.Seed.Master
 import Spec.Seed.Flight
 import Spec.Seed.FlightProps
 import Spec.Seed.Member
 import Spec.Seed.World
-import Spec.EnvPre
 
 /-!
 # Spec
@@ -41,19 +43,19 @@ mdgen と mdbook で HTML の本にする（`mise run book:build`。ADR 68a6）�
 | `Spec.Model` | 列挙・コード値・エンティティ・値域 |
 | `Spec.Seed` | シードのマスタ・設定（`tools/conformance/seed_lean.py` が生成） |
 | `Spec.Seed.Flight`・`Spec.Seed.FlightProps` | シードのフライト（`World` の初期状態。`tools/conformance/flight_seed.py` が生成）と、その主キーの一意性・参照整合性 |
-| `Spec.EnvPre` | 検証済みの設定とマスタ `ValidEnv` と境界の検証 `validate`、入口の環境の前提 `masterConfigOk`（検証が成功すること。`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
+| `Spec.Env` | 検証済みの設定とマスタ `ValidEnv` と境界の検証 `validate`、入口の環境の前提 `masterConfigOk`（検証が成功すること。`@[env_pre]`）、検査関数 `validB` と正しさ、シードが前提を満たすこと |
 | `Spec.Nondet` | 非決定性 N-001〜N-005 の選択の型（`@[nondet]`）と標準の値 |
-| `Spec.Config` | 設定値と不変条件 |
-| `Spec.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |
-| `Spec.CodeList` | コードリスト |
+| `Spec.Env.Config` | 設定値と不変条件 |
+| `Spec.Env.MasterData` | マスタデータ、不変条件 MD-1〜MD-8、参照関数 |
+| `Spec.Env.CodeList` | コードリスト |
 | `Spec.MasterQuery` | マスタ・設定・コードリストの参照の抽象機械（SPEC 課題、ABS-026 の抽象側） |
 | `Spec.Fare` | 運賃計算（基本運賃・運賃・合計金額） |
 | `Spec.Error` | エラーの分類 `AtrsError`（いまは `Business`・`NotFound`） |
 | `Spec.Port` | 抽象状態 `World`（いまはフライト）と不変条件、ポートの操作 |
 | `Spec.FlightSearch` | 空席照会（照会可能期間・運賃種別の予約可能判定・`searchFlight`）と抽象機械 `searchMachine`（SPEC 課題） |
-| `Spec.Ticket`・`Spec.UseCase.Reserve` | 予約（選択フライトの検証・予約内容の組み立て・予約確認・予約確定）と抽象機械 `reserveMachine` |
-| `Spec.Member`・`Spec.Authentication`・`Spec.ReservationHistoryReport` | 会員・認証・予約履歴レポート（形式化前の草案だけを書いた、文書だけのモジュール） |
-| `Spec.InputValidation`・`Spec.Http` | 入力検証と HTTP 契約（草案と、`Spec` で表せない規範。文書だけのモジュール） |
+| `Spec.Reserve.FlightSelection`・`Spec.Reserve` | 予約（選択フライトの検証・予約内容の組み立て・予約確認・予約確定）と抽象機械 `reserveMachine` |
+| `Spec.Member`・`Spec.Auth`・`Spec.Report` | 会員・認証・予約履歴レポート（形式化前の草案だけを書いた、文書だけのモジュール） |
+| `Spec.Validation`・`Spec.Http` | 入力検証と HTTP 契約（草案と、`Spec` で表せない規範。文書だけのモジュール） |
 
 トップレベルの抽象機械 `Spec.machine` は、実装済みの範囲の機能の機械を並置したもの（`Machine.sum`。状態を共有する
 空席照会と予約は `Machine.alt`）である。
@@ -62,22 +64,23 @@ mdgen と mdbook で HTML の本にする（`mise run book:build`。ADR 68a6）�
 -/
 
 namespace Spec
+open Spec.Env (Config MasterData)
 
 /-- トップレベルの抽象機械の状態（各機能の状態の積。空席照会と予約が状態 `World` を共有する）。 -/
-abbrev State := Unit × Unit × Unit × Unit × Port.World
+abbrev State := Unit × Unit × Unit × Unit × World
 
 /-- トップレベルの抽象機械の入力: マスタ・設定・コードリストの参照、基本運賃、運賃、合計金額、空席照会と予約（同じ状態
 `World` の上の並置）。 -/
 abbrev Input := (Config × MasterData × MasterQuery.Query) ⊕ Fare.BasicFareInput ⊕ Fare.FareInput ⊕ Fare.TotalFareInput ⊕
-  (FlightSearch.SearchInput ⊕ UseCase.Reserve.MInput)
+  (FlightSearch.SearchInput ⊕ Reserve.MInput)
 
 /-- トップレベルの抽象機械の出力。 -/
-abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat ⊕ (FlightSearch.SearchOutput ⊕ UseCase.Reserve.MOutput)
+abbrev Output := MasterQuery.Answer ⊕ Nat ⊕ Nat ⊕ Nat ⊕ (FlightSearch.SearchOutput ⊕ Reserve.MOutput)
 
 /-- トップレベルの抽象機械: 実装済みの範囲の機能の機械を並置したもの。 -/
 def machine : Machine.Machine State Input Output :=
   MasterQuery.queryMachine.sum (Fare.basicFareMachine.sum (Fare.fareMachine.sum
-    (Fare.totalFareMachine.sum (FlightSearch.searchMachine.alt UseCase.Reserve.reserveMachine))))
+    (Fare.totalFareMachine.sum (FlightSearch.searchMachine.alt Reserve.reserveMachine))))
 
 /-- 初期状態（fixture の 1 点。空席照会の状態は、シードを投入した後の `World`）。 -/
 def init : State := ((), (), (), (), Seed.World.world)

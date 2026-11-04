@@ -32,7 +32,7 @@ generated:
   - 画面の補助: `TicketHelper#createParameterMapForSelectFlight`、`TicketReserveHelper#createParameterMapForFlightSearch`・`createSelectFlightDtoList`・`createTicketReserveForm`（会員の情報での form の初期値。`TicketReserveService#findMember`・`DateTimeUtil#toLocalDateTime(LocalDate)` を使う）、`B2Mapper` の残りの `map`、`TicketReserveForm#hasAdditionalPassenger`・`INITIAL_PASSENGERS_NUMBER`
   - REST（`api.ticket`）と、その確認用の `JdbcClient`（`AtrsInfraConfig#jdbcClient`）、トランザクションマネージャの設定（`AtrsDomainConfig#annotationDrivenTransactionManager`）
   - 原典で呼ばれていないメンバ（`InvalidFlightException#<init>(Exception)`・`DateTimeUtil#toLocalDate(LocalDateTime)`）の扱い。R 課題に現れない定義は TR-P に掛かるので、モデルに置けない。移植の範囲外とするなら [ADR 84bf](../decision/84bf-porting-scope.md) の改訂が要る
-- 入口の環境の前提: 入力の値域（[`Spec.Model`](../../lean/Spec/Model.lean#値域)。搭乗者数・予約フライト数・年齢など）の述語を入口の機械の入力の型で書き、`Spec.EnvPre.masterConfigOk` と組み合わせて `@[env_pre]` を付ける（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
+- 入口の環境の前提: 入力の値域（[`Spec.Model`](../../lean/Spec/Model.lean#値域)。搭乗者数・予約フライト数・年齢など）の述語を入口の機械の入力の型で書き、`Spec.Env.masterConfigOk` と組み合わせて `@[env_pre]` を付ける（[ADR cd33](../decision/cd33-spec-nondet-types-and-env-pre.md)）
 
 ## 対象外
 

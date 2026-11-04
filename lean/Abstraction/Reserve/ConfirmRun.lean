@@ -22,19 +22,19 @@ open Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Abstraction.Maste
   Abstraction.MasterData.AlphaLeaf Abstraction.World.Alpha
 open LangSemantics.Java LangSemantics.Java.Exception
 open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.App.B2 SourceModel.MasterQuery SourceModel.ReserveQuery
-open Spec.UseCase.Reserve
+open Spec.Reserve
 
-theorem configOf_more {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Spec.Config} (h : configOf c = some cfg) :
+theorem configOf_more {c : SourceModel.AtrsProperties.AtrsConfig} {cfg : Spec.Env.Config} (h : configOf c = some cfg) :
     c.reserveIntervalTime.val = (cfg.reserveIntervalTime : Int) ∧
       c.representativeMinAge.val = (cfg.representativeMinAge : Int) := by
   simp only [configOf, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h
   obtain ⟨a1, e1, a2, e2, a3, e3, a4, e4, a5, e5, a6, e6, a7, e7, a8, e8, rfl⟩ := h
   exact ⟨natOfJ32_eq_some.mp e2, natOfJ32_eq_some.mp e3⟩
 
-theorem ftFacts {md : Spec.MasterData} {p : Providers}
+theorem ftFacts {md : Spec.Env.MasterData} {p : Providers}
     (hfq : ∀ cd : Spec.Model.FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
-    {f : SourceModel.App.B0.SelectFlightForm} {k : Spec.Model.FlightKey} {FT : Spec.MasterData.FareType}
+    {f : SourceModel.App.B0.SelectFlightForm} {k : Spec.Model.FlightKey} {FT : Spec.Env.MasterData.FareType}
     (hk : keyOfForm f = some k) (hF : md.fareTypeOf k.fareTypeCd = some FT) : FareTypeFacts (mkFlight p f) FT := by
   obtain ⟨-, -, -, -, -, hft⟩ := keyOfForm_eq hk
   have h := hfq k.fareTypeCd
@@ -42,27 +42,27 @@ theorem ftFacts {md : Spec.MasterData} {p : Providers}
   obtain ⟨f', m, e1, e2, e3, e4, e5⟩ := fareType_full (ft := FT) (by simpa using h)
   exact ⟨f', m, by simp [mkFlight, hft, e1], e2, e3, e4, e5⟩
 
-theorem advance_zero (w : Spec.Port.World) : advance w {} = w := by
+theorem advance_zero (w : Spec.World) : advance w {} = w := by
   simp [advance]
 
-theorem step_confirm {w : Spec.Port.World} {ia : Spec.UseCase.Reserve.MInput} (hop : ia.op = .confirm) {x : Except Spec.Error.AtrsError Nat}
+theorem step_confirm {w : Spec.World} {ia : Spec.Reserve.MInput} (hop : ia.op = .confirm) {x : Except Spec.Error.AtrsError Nat}
     (hx : confirmOp ia.cfg ia.md w ia.req = some x) (d : Spec.Nondet.InvalidRequestDetail) :
     reserveStep w ia ((.none, .none), d) = (w, withDetail d (x.map .confirmed)) := by
   simp [reserveStep, baseStep, hop, hx]
 
-theorem step_io (w : Spec.Port.World) (ia : Spec.UseCase.Reserve.MInput) (d : Spec.Nondet.InvalidRequestDetail) :
+theorem step_io (w : Spec.World) (ia : Spec.Reserve.MInput) (d : Spec.Nondet.InvalidRequestDetail) :
     reserveStep w ia ((.none, .failure {}), d) = (w, .error (.system .ioFailure)) := by
   simp [reserveStep, advance_zero]
 
 /-- 予約確認の合計金額の入力: 合計金額の具体側の入力の α は `tfOf`、その PRE が成り立ち、年齢の列は予約内容の搭乗者の
 年齢。選択フライトは、それぞれ主キーの列 `ks` に解決される。 -/
-theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase.Reserve.MInput} (hcfg : configOf ic.config = some ia.cfg)
+theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.Reserve.MInput} (hcfg : configOf ic.config = some ia.cfg)
     (hmd : masterDataOf ic.db = some ia.md)
     (hsel : ic.form.selectFlightFormList.mapM selectOfForm = some ia.req.selects)
     (hri : reserveInputOf ic.form = some ia.req.form) (hcv : ia.cfg.Valid) (hmv : ia.md.Valid ia.cfg)
-    (hrv : ia.req.Valid) {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {Q : Spec.Model.FlightKey → Prop}
+    (hrv : ia.req.Valid) {it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey} {Q : Spec.Model.FlightKey → Prop}
     (hks : LangSemantics.Core.List.Forall₂
-      (fun s k => ∃ r, Spec.Ticket.resolve ia.md s = some r ∧ r.key = k ∧ Q k) ia.req.selects it.toList)
+      (fun s k => ∃ r, Spec.Reserve.FlightSelection.resolve ia.md s = some r ∧ r.key = k ∧ Q k) ia.req.selects it.toList)
     (hl1 : 1 ≤ it.toList.length) (hl2 : it.toList.length ≤ 2)
     {d : Draft} (hd : buildDraft { ia.req.form with passengers := compactPassengers ia.req.form.passengers } it = some d)
     {n : Nat} (hn : Spec.Fare.totalFareOfKeys ia.cfg ia.md it.toList (d.passengers.map (·.age)) = some n) :
@@ -90,7 +90,7 @@ theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase
     have hpsl : ps.length = (ia.req.form.passengers.filter (!·.isEmpty)).length :=
       LangSemantics.Core.MapM.mapM_some_length hps |>.symm |>.symm
     have hfl := List.length_filter_le (fun x : PassengerInput => !x.isEmpty) ia.req.form.passengers
-    refine ⟨Spec.EnvPre.masterConfigOk.of_valid hcv hmv, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    refine ⟨Spec.Env.masterConfigOk.of_valid hcv hmv, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
     · rw [hkeys]; simpa [Spec.Model.Range.minReserveFlights] using hl1
     · rw [hkeys]; simpa [Spec.Model.Range.maxReserveFlights] using hl2
     · rw [hages, List.length_map]
@@ -100,7 +100,7 @@ theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase
       | cons _ _ => simp
     · rw [hages, List.length_map, hpsl]
       simp only [Spec.Model.Range.maxPassengers]
-      simp only [Spec.Config.maxPassengersNumber] at hplen
+      simp only [Spec.Env.Config.maxPassengersNumber] at hplen
       omega
     · intro a ha
       simp only [tfOf, List.mem_map, List.mem_filter] at ha
@@ -122,11 +122,11 @@ theorem tf_facts {ic : SourceModel.ReserveQuery.ReserveInput} {ia : Spec.UseCase
       rw [hn]
       rfl
 
-theorem ft_forall {md : Spec.MasterData} {p : Providers}
+theorem ft_forall {md : Spec.Env.MasterData} {p : Providers}
     (hfq : ∀ cd : Spec.Model.FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info)))) :
     ∀ {fs : List SourceModel.App.B0.SelectFlightForm} {ks : List Spec.Model.FlightKey}
-      {FTs : List Spec.MasterData.FareType},
+      {FTs : List Spec.Env.MasterData.FareType},
       LangSemantics.Core.List.Forall₂ (fun f k => keyOfForm f = some k) fs ks →
       LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs →
       LangSemantics.Core.List.Forall₂ FareTypeFacts (fs.map (mkFlight p)) FTs
@@ -135,7 +135,7 @@ theorem ft_forall {md : Spec.MasterData} {p : Providers}
 
 /-- `toFlightList` は、選択フライト情報ごとのフライト情報を作る。 -/
 theorem toFlightList_ok (p : Providers) {fs : List SourceModel.App.B0.SelectFlightForm}
-    {ss : List Spec.Ticket.SelectFlight} (hsel : fs.mapM selectOfForm = some ss)
+    {ss : List Spec.Reserve.FlightSelection.SelectFlight} (hsel : fs.mapM selectOfForm = some ss)
     (hnames : ∀ s ∈ ss, Spec.Prim.Text.hasText s.flightName = true) :
     SourceModel.App.B0.TicketHelper.toFlightList (SourceModel.FareQuery.ticketHelper p) fs =
       .ok (fs.map fun f => some (mkFlight p f)) := by
@@ -147,8 +147,8 @@ theorem toFlightList_ok (p : Providers) {fs : List SourceModel.App.B0.SelectFlig
 
 section
 open Spec.Model Spec.Prim Spec.Prim.Text SourceModel.Domain.Common.Masterdata
-variable {P : St → Prop} {fd : FlightDb} {cfg : Spec.Config} {md : Spec.MasterData} {p : Providers}
-  {w : Spec.Port.World}
+variable {P : St → Prop} {fd : FlightDb} {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {p : Providers}
+  {w : Spec.World}
   (hP : Stable P fd) (h3 : md.MD3)
   (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
     some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
@@ -168,17 +168,17 @@ include hP h3 hbq hfq hmn hmc hw href
 
 /-- 選択フライトの検証（1 便・往復）。往復は D-031 の前提。 -/
 theorem vf_all {ri : Int.J32} (hri : ri.val = (cfg.reserveIntervalTime : Int))
-    {fs : List SourceModel.App.B0.SelectFlightForm} {ss : List Spec.Ticket.SelectFlight}
+    {fs : List SourceModel.App.B0.SelectFlightForm} {ss : List Spec.Reserve.FlightSelection.SelectFlight}
     (hsel : fs.mapM selectOfForm = some ss) (hnames : ∀ s ∈ ss, hasText s.flightName = true)
     (h31 : ∀ o h, ss = [o, h] → ∀ m, md.flightMasterOf o.flightName = some m → m.arrivalTime.toMinutes < 1440)
-    {v : Except Spec.Error.AtrsError (Spec.Ticket.Itinerary FlightKey)}
-    (hv : Spec.Ticket.validateFlightList cfg md w (ss.map (Spec.Ticket.resolve md)) = some v) :
+    {v : Except Spec.Error.AtrsError (Spec.Reserve.FlightSelection.Itinerary FlightKey)}
+    (hv : Spec.Reserve.FlightSelection.validateFlightList cfg md w (ss.map (Spec.Reserve.FlightSelection.resolve md)) = some v) :
     ∃ fl0 fls, fs.map (mkFlight p) = fl0 :: fls ∧
       Hoare P (SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList ri
         (some ((fl0 :: fls).map some))) (Post P v) (PostE P v) := by
   have hfs := forall₂_of_mapM hsel
   rcases ss with _ | ⟨s0, _ | ⟨s1, _ | ⟨s2, ss⟩⟩⟩
-  · simp [Spec.Ticket.validateFlightList] at hv
+  · simp [Spec.Reserve.FlightSelection.validateFlightList] at hv
   · rcases hfs with _ | ⟨hs0, hr⟩
     rcases hr with _ | _
     refine ⟨_, [], rfl, ?_⟩
@@ -188,15 +188,15 @@ theorem vf_all {ri : Int.J32} (hri : ri.val = (cfg.reserveIntervalTime : Int))
     refine ⟨_, [_], rfl, ?_⟩
     exact vf_two hP h3 hbq hfq hmn hmc hw href hri hs0 hs1 (hnames s0 (by simp)) (hnames s1 (by simp))
       (h31 s0 s1 rfl) hv
-  · simp [Spec.Ticket.validateFlightList] at hv
+  · simp [Spec.Reserve.FlightSelection.validateFlightList] at hv
 
 end
 
 /-- 予約確認の 1 歩: 具体機械の予約確認の 1 歩（どの許される並びでも）は、状態を変えずに出力の値で終わり、その像は、
 [Spec] の予約確認の 1 歩（環境の選択と自由な選択を適当に選んだもの）の出力である。 -/
 @[obligation "ABS-022"]
-theorem confirm_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t)
-    {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
+theorem confirm_run {t : FlightDb} {w : Spec.World} (hw : worldOfDb t = some w) (hic : IcW t)
+    {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.Reserve.MInput} (hα : aiR ic = some ia)
     (hk : ic.kind = .confirm) (hpre : ia.Pre w) (h31 : dev_D031 ia) (h1 : dev_D001R ia) (h2 : dev_D002R ia)
     (h12 : dev_D012R ia) (h27 : dev_D027R ic) {mo : Order}
     (hmo : mo.Allowed ic.input.db) :

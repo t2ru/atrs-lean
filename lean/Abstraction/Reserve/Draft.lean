@@ -17,7 +17,7 @@ ABS-041 の補題: 予約情報の組み立て（`TicketReserveHelper.createRese
 
 namespace Abstraction.Reserve.Draft
 open Abstraction.Reserve.Alpha Abstraction.Reserve.MemberCheck Abstraction.MasterData.AlphaLeaf
-open LangSemantics.Java LangSemantics.Java.Exception SourceModel.App.B2 Spec.UseCase.Reserve
+open LangSemantics.Java LangSemantics.Java.Exception SourceModel.App.B2 Spec.Reserve
 
 theorem hasText_eq (s : JRef String) : Spring.StringUtils.hasText s = s.any Spec.Prim.Text.hasText := by
   cases s with
@@ -70,7 +70,7 @@ theorem reset_filter (form : TicketReserveForm) :
 theorem compact_filter (ps : List PassengerInput) :
     (compactPassengers ps).filter (!·.isEmpty) = ps.filter (!·.isEmpty) := by
   simp only [compactPassengers, List.filter_append, List.filter_filter, Bool.and_self]
-  have : (List.replicate (Spec.Config.maxPassengersNumber - (ps.filter (!·.isEmpty)).length)
+  have : (List.replicate (Spec.Env.Config.maxPassengersNumber - (ps.filter (!·.isEmpty)).length)
       ({} : PassengerInput)).filter (!·.isEmpty) = [] := by
     rw [List.filter_eq_nil_iff]
     intro x hx
@@ -79,7 +79,7 @@ theorem compact_filter (ps : List PassengerInput) :
   rw [this, List.append_nil]
 
 /-- 空でない欄の搭乗者は、[Spec] の搭乗者の会員番号・氏名・性別を持つ。 -/
-theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
+theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     LangSemantics.Core.List.Forall₂ PassengerFacts (fs.map B2Mapper.mapPassenger) ps
   | [], ins, ps, h1, h2 => by
@@ -104,7 +104,7 @@ theorem passengerFacts : ∀ {fs : List PassengerForm} {ins : List PassengerInpu
     exact ⟨_, rfl, rfl, hfn, hgn, hg⟩
 
 /-- 空でない欄の搭乗者の年齢（`ageOfPassenger`）は、[Spec] の搭乗者の年齢。 -/
-theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.UseCase.Reserve.DraftPassenger},
+theorem ages_eq : ∀ {fs : List PassengerForm} {ins : List PassengerInput} {ps : List Spec.Reserve.DraftPassenger},
     fs.mapM passengerInputOf = some ins → ins.mapM PassengerInput.toPassenger = some ps →
     (fs.map fun f => some (B2Mapper.mapPassenger f)).mapM Abstraction.Fare.TotalAlpha.ageOfPassenger =
         some (ps.map (·.age)) ∧ ins.map (·.age.getD 0) = ps.map (·.age)
@@ -153,7 +153,7 @@ theorem reserveInputOf_eq {form : TicketReserveForm} {ri : ReserveInput} (h : re
 /-- 予約内容の組み立て: [Spec] の予約内容 `d` が組み立てられれば、原典の予約情報は、代表者の欄と、すべての予約フライトに
 同じ空でない搭乗者の列を持ち、その搭乗者は `d` の搭乗者に当たる。 -/
 theorem reservation_facts {form : TicketReserveForm} {ri : ReserveInput} (hri : reserveInputOf form = some ri)
-    {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Draft}
+    {it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey} {d : Draft}
     (hd : buildDraft { ri with passengers := compactPassengers ri.passengers } it = some d)
     (fl : List (JRef SourceModel.Domain.Model.Flight)) :
     let r := TicketReserveHelper.createReservation form.resetPassengersIndex fl

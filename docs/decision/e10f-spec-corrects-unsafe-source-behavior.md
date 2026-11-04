@@ -75,7 +75,7 @@ Chosen option: "[Spec] では正し、既知差異として記録する", becaus
 
 ## More Information
 
-* [spec/http-contract.md](../../lean/Spec/Http.lean), [spec/input-validation.md](../../lean/Spec/InputValidation.lean), [spec/domain-model.md](../../lean/Spec/Model.lean), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/http-contract.md](../../lean/Spec/Http.lean), [spec/input-validation.md](../../lean/Spec/Validation.lean), [spec/domain-model.md](../../lean/Spec/Model.lean), [spec/abstraction.md](../spec/abstraction.md)
 * [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md)（移植元モデルと抽象モデルを分ける方針）
 * （補足 2026-10-30）[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md) により、D-016〜D-021 は次の 2 つで確認する。上の Confirmation のベクタは、その補助である。
   * リファインメントの主定理（R 課題）の名前付きの仮定または観測成分

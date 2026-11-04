@@ -12,16 +12,16 @@ ABS-041 の補題: 予約の前段の選択フライトの検証（`TicketReserv
 -/
 
 namespace Abstraction.Reserve.Selects
-open Spec.Ticket Spec.Error
+open Spec.Reserve.FlightSelection Spec.Error
 
 /-- 改竄に写るエラー（`InvalidRequest` か `Business`）。 -/
-def IsReq (e : AtrsError) : Prop := ∃ s, Spec.UseCase.Reserve.asInvalidRequest e = .invalidRequest s
+def IsReq (e : AtrsError) : Prop := ∃ s, Spec.Reserve.asInvalidRequest e = .invalidRequest s
 
 theorem isReq_invalid (s : String) : IsReq (.invalidRequest s) := ⟨s, rfl⟩
 
 theorem isReq_business (be : BusinessError) : IsReq (.business be) := ⟨be.code, rfl⟩
 
-theorem checkFlight_req {w : Spec.Port.World} {f : Option ResolvedFlight} {m : Except AtrsError ResolvedFlight}
+theorem checkFlight_req {w : Spec.World} {f : Option ResolvedFlight} {m : Except AtrsError ResolvedFlight}
     (h : checkFlight w f = m) : ∀ e, m = .error e → IsReq e := by
   intro e he
   subst h
@@ -30,7 +30,7 @@ theorem checkFlight_req {w : Spec.Port.World} {f : Option ResolvedFlight} {m : E
   · cases he; exact isReq_invalid _
   · split at he <;> cases he; exact isReq_invalid _
 
-theorem checkInterval_req {cfg : Spec.Config} {o h' : Spec.Model.FlightKey} {om hm : Spec.MasterData.FlightMaster}
+theorem checkInterval_req {cfg : Spec.Env.Config} {o h' : Spec.Model.FlightKey} {om hm : Spec.Env.MasterData.FlightMaster}
     {e : AtrsError} (h : checkInterval cfg o om h' hm = .error e) : IsReq e := by
   unfold checkInterval at h; split at h <;> cases h; exact isReq_business _
 
@@ -44,7 +44,7 @@ theorem checkFareTypes_req {ks : List Spec.Model.FlightKey} {e : AtrsError} (h :
     · split at h <;> cases h; exact isReq_invalid _
   · cases h; exact isReq_invalid _
 
-theorem checkReverse_req {md : Spec.MasterData} {om hm : Spec.MasterData.FlightMaster} {r : Except AtrsError Unit}
+theorem checkReverse_req {md : Spec.Env.MasterData} {om hm : Spec.Env.MasterData.FlightMaster} {r : Except AtrsError Unit}
     (h : checkReverse md om hm = some r) : ∀ e, r = .error e → IsReq e := by
   intro e he
   unfold checkReverse at h
@@ -56,7 +56,7 @@ theorem checkReverse_req {md : Spec.MasterData} {om hm : Spec.MasterData.FlightM
   exact isReq_invalid _
 
 /-- 選択フライトの検証の失敗は、改竄に写る。 -/
-theorem validateFlightList_req {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
+theorem validateFlightList_req {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World}
     {fs : List (Option ResolvedFlight)} {x : Except AtrsError (Itinerary Spec.Model.FlightKey)}
     (h : validateFlightList cfg md w fs = some x) : ∀ e, x = .error e → IsReq e := by
   intro e he
@@ -99,8 +99,8 @@ theorem validateFlightList_req {cfg : Spec.Config} {md : Spec.MasterData} {w : S
 
 /-! ## 選択フライトの検証の三つ組 -/
 
-theorem routeOfMaster_some {md : Spec.MasterData} (h3 : md.MD3) {n : String}
-    {X : Spec.MasterData.FlightMaster} (h : md.flightMasterOf n = some X) : ∃ rt, routeOfMaster md X = some rt := by
+theorem routeOfMaster_some {md : Spec.Env.MasterData} (h3 : md.MD3) {n : String}
+    {X : Spec.Env.MasterData.FlightMaster} (h : md.flightMasterOf n = some X) : ∃ rt, routeOfMaster md X = some rt := by
   obtain ⟨r, hr, hrn⟩ := h3.2 X (List.mem_of_find?_eq_some h)
   apply Option.isSome_iff_exists.mp
   unfold routeOfMaster
@@ -115,8 +115,8 @@ open Abstraction.Fare.TotalFareRun Abstraction.Fare.TotalAlpha Abstraction.Maste
 open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.MasterQuery SourceModel.App.B0 SourceModel.Domain.Service.B0
 open SourceModel.Domain.Common.Masterdata Spec.Model Spec.Prim Spec.Prim.Text
 
-variable {P : St → Prop} {fd : FlightDb} {cfg : Spec.Config} {md : Spec.MasterData} {p : Providers}
-  {w : Spec.Port.World}
+variable {P : St → Prop} {fd : FlightDb} {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {p : Providers}
+  {w : Spec.World}
   (hP : Stable P fd) (h3 : md.MD3)
   (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
     some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
@@ -228,7 +228,7 @@ open SourceModel.Db.Tx SourceModel.App.B2
 def PostS {α : Type} (P : St → Prop) (v : Except AtrsError α) : JThrow → St → Prop :=
   fun e s => P s ∧ (IsIoFault s.env e ∨
     (∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
-      ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str))
+      ∃ str, v.mapError Spec.Reserve.asInvalidRequest = .error (.invalidRequest str))
 
 theorem fault_cls {env : SourceModel.Db.Tx.Env} {e : JThrow} (h : IsIoFault env e) : ∃ cls msg, e = .other cls msg ∧
     ¬ (cls = SourceModel.Domain.Service.B0.InvalidFlightException.className ∨

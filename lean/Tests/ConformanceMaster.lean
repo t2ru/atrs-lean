@@ -9,7 +9,7 @@ import Tests.ConformanceFare
 
 `master.*` の操作（マスタ・設定・コードリストの参照。R 課題 ABS-026 の両側）の割当。
 
-- `Spec`: 共有入力を `Spec.MasterData`・`Spec.Config` に読み、`Spec.MasterQuery.answer` で答える。
+- `Spec`: 共有入力を `Spec.Env.MasterData`・`Spec.Env.Config` に読み、`Spec.MasterQuery.answer` で答える。
 - `SourceModel`: 共有入力の行を DB の表（`MasterDb`。列の型の範囲を検査する）とみなし、
   `SourceModel.MasterQuery.run` を標準の並び（`standardOrder`）で実行する。
 
@@ -21,11 +21,11 @@ open Lean ConformanceKit Tests.Conformance Tests.ConformanceFare
 open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.Int
   LangSemantics.Java.IntLemmas
 
-open Spec.CodeList Spec.Config Spec.MasterQuery Spec.Model
+open Spec.Env.CodeList Spec.Env.Config Spec.MasterQuery Spec.Model
   Spec.Prim.Format Spec.Prim.Time
 
 namespace Tests.ConformanceMaster
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 
@@ -88,7 +88,7 @@ def specOps (fx : Fixtures) : Except String (List (String × Op)) := do
   let cfg ← decodeConfig fx.config
   return opNames.map fun op => (op, fun i => do
     let q ← specQuery i op
-    if !(decide (Spec.EnvPre.masterConfigOk (cfg, md)) && decide q.Valid) then throw "outside PRE"
+    if !(decide (Spec.Env.masterConfigOk (cfg, md)) && decide q.Valid) then throw "outside PRE"
     return specAnswerJson (Spec.MasterQuery.answer cfg md q))
 
 /-! ## SourceModel -/

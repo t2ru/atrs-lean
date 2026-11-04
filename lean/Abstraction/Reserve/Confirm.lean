@@ -21,20 +21,20 @@ open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.App.B2 SourceModel.Doma
 
 /-- 予約確認（前段の後）。合計金額の計算の値 `T` は、検証が成功したときの値。 -/
 theorem helperConfirm_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {p : SourceModel.MasterQuery.Providers}
-    {ic : ReserveInput} {w : Spec.Port.World} (he : MemberEnv fd ic.db w) {cfg : Spec.Config} {md : Spec.MasterData}
+    {ic : ReserveInput} {w : Spec.World} (he : MemberEnv fd ic.db w) {cfg : Spec.Env.Config} {md : Spec.Env.MasterData}
     (hmin : (helperOf p ic).ticketReserveService.representativeMinAge.val = (cfg.representativeMinAge : Int))
-    {ri : Spec.UseCase.Reserve.ReserveInput} (hri : reserveInputOf ic.form = some ri)
-    (hlen : ri.passengers.length ≤ 6) {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
-    (hd : Spec.UseCase.Reserve.buildDraft { ri with passengers := Spec.UseCase.Reserve.compactPassengers ri.passengers }
+    {ri : Spec.Reserve.ReserveInput} (hri : reserveInputOf ic.form = some ri)
+    (hlen : ri.passengers.length ≤ 6) {it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey} {d : Spec.Reserve.Draft}
+    (hd : Spec.Reserve.buildDraft { ri with passengers := Spec.Reserve.compactPassengers ri.passengers }
       it = some d)
     {f0 : SourceModel.Domain.Model.Flight} {fs : List SourceModel.Domain.Model.Flight}
-    {FTs : List Spec.MasterData.FareType} (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (f0 :: fs) FTs)
+    {FTs : List Spec.Env.MasterData.FareType} (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (f0 :: fs) FTs)
     (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) it.toList FTs) {T : Int.J32}
-    (hcalc : ∀ vr, Spec.UseCase.Reserve.validateReservation cfg md w d = some vr → vr = .ok () →
+    (hcalc : ∀ vr, Spec.Reserve.validateReservation cfg md w d = some vr → vr = .ok () →
       TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
         (some ((f0 :: fs).map some))
         (some (((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).map some)) = .ok T) :
-    ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
+    ∃ v, Spec.Reserve.validateReservation cfg md w d = some v ∧
       Hoare P (TicketReserveHelper.reserveConfirm (helperOf p ic) ic.form ((f0 :: fs).map some))
         (fun r s => P s ∧ v = .ok () ∧ r.2.totalFare = T) (PostBE P v) := by
   obtain ⟨hrfl, ⟨age, hage, hagev⟩, ⟨M0, hm, hn⟩, hf, hg, hgd, hR, hne, hks⟩ :=
@@ -67,7 +67,7 @@ def ConfirmE {α : Type} (P : St → Prop) (v : Except Spec.Error.AtrsError α) 
     JThrow → St → Prop :=
   fun e s => P s ∧ (IsIoFault s.env e ∨
     ((∃ msg, e = .other TicketReserveHelper.badRequestClass msg) ∧
-      ∃ str, v.mapError Spec.UseCase.Reserve.asInvalidRequest = .error (.invalidRequest str)) ∨
+      ∃ str, v.mapError Spec.Reserve.asInvalidRequest = .error (.invalidRequest str)) ∨
     ((∃ a, v = .ok a) ∧ ∃ be : Spec.Error.BusinessError,
       e = SourceModel.Domain.Common.Exception.AtrsBusinessException.newArgs be.code be.args ∧
       vr = .error (.business be)))
