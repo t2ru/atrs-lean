@@ -41,7 +41,7 @@ generated:
 
 | ファイル | 内容 |
 | --- | --- |
-| `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean#シードデータ) |
+| `fixtures/master-data.json` | 原典のシードデータ（空港 51・区間 20・便マスタ 126、搭乗クラス、運賃種別、ピーク時期、機材、カード種別）。投入日を固定して展開したもの（下記）。[`Spec.Env.MasterData`](../../lean/Spec/Seed.lean#シードデータ) |
 | `fixtures/config.json` | 設定の既定値（原典の `atrs.properties`）。[`Spec.Env.Config`](../../lean/Spec/Env/Config.lean) |
 
 `master-data.json`・`config.json` は、生成器 `tools/conformance/master_fixture.py` が上流のシードの SQL と `atrs.properties` から書き出す（手で編集しない。CI が `--check` で確かめる。[ADR 8f18](../decision/8f18-fare-source-model-and-shared-vectors.md)）。行の順はシードの順で、[Source] の Provider のキャッシュはこの順に作る。[Spec] の値域の外の時刻の便マスタには `outsideSpec` が付く（上流のシードには無い。到着時刻 `2415` は [Spec] の値域の内である。[ADR ce36](../decision/ce36-flight-search-stage1-world-and-arrival-time.md)）。
