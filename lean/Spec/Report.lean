@@ -1,7 +1,7 @@
 /-!
-# 予約履歴レポート（D1）（`Spec.ReservationHistoryReport`）
+# 予約履歴レポート（D1）（`Spec.Report`）
 
-> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [`Spec.Port`](Port.lean) の規範節に従う。
+> **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただしキューの配信保証・ファイルの原子的な公開など実行環境の要件は [`Spec.Port`](World.lean) の規範節に従う。
 
 非同期処理の構成は [ADR ff4d](../../docs/decision/ff4d-asynchronous-report-generation.md)、ポートは [`Spec.Port`](Port.lean#reportqueue) を参照。
 すべての操作は権限 `MEMBER` を要し、対象はログイン中の会員自身のレポートに限る。

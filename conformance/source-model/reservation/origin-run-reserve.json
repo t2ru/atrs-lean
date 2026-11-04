@@ -1,7 +1,7 @@
 {
   "operation": "reservation.reserve",
   "modelDef": "SourceModel.ReserveQuery.runReserve",
-  "specRef": "lean/Spec/UseCase/Reserve.lean#予約確定reserve",
+  "specRef": "lean/Spec/Reserve.lean#予約確定reserve",
   "note": "Java の原典実行で採取した期待値（tools/origin-run の Generate。手で編集しない）。入力は origin-run-confirm.json と同じ（選択フライトのシードの FLIGHT の行、今日は投入日、会員・予約の表は空、採番は初期値）。期待値は予約確定の結果と実行後の状態（FLIGHT・予約の表・採番）",
   "upstream": {
     "release": "release/5.11.0.RELEASE",

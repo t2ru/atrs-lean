@@ -63,6 +63,6 @@ Chosen option: "[Spec] は照合と更新を 1 つのトランザクションで
 ## More Information
 
 * [ADR 97f9](97f9-persistence-and-transaction-semantics.md) の補足である
-* [spec/member.md](../../lean/Spec/Member.lean), [spec/ports.md](../../lean/Spec/Port.lean), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/member.md](../../lean/Spec/Member.lean), [spec/ports.md](../../lean/Spec/World.lean), [spec/abstraction.md](../spec/abstraction.md)
 
 * （補足 2026-10-30）[ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md) により、D-013 は **モデル外** の差異とした。違いは並行実行でだけ観測でき、各モデルは各ユースケースを 1 つの原子的な操作として扱うためである。そのため ABS-034 は、`dev_D013` の仮定を置かないリファインメントの課題とした。並行実行での [Source] との違いは、[spec/assurance.md](../spec/assurance.md) の限界とする。上の Confirmation の「D-013 の前提の下で」は、これに読み替える。

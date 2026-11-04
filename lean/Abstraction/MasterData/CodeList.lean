@@ -1,7 +1,7 @@
 import SourceModel.Gfw.CodeList
 import SourceModel.Config.App.AtrsCodeListConfig
 import SourceModel.Domain.Common.Codelist.AirportCodeList
-import Spec.CodeList
+import Spec.Env.CodeList
 
 /-!
 # Abstraction.MasterData.CodeList
@@ -20,17 +20,17 @@ open LangSemantics.Java SourceModel.Db.Schema SourceModel.Gfw.CodeList SourceMod
 
 /-- [Spec] の空港 `a` が、空港の行 `r` の写し（コード・名前・表示順が同じ）である。空港コードは形式の証明を持つので、
 行から [Spec] の空港を作る全域の関数は無い（形式に合わない行は α が定義されない。D-027）。 -/
-def AirportOf (r : AirportRow) (a : Spec.MasterData.Airport) : Prop :=
+def AirportOf (r : AirportRow) (a : Spec.Env.MasterData.Airport) : Prop :=
   a.code.val = r.airportCd.val ∧ a.name = r.airportName.val ∧ a.displayOrder = r.displayOrder.val.toNat
 
 /-- コードリストの要素を、原典の（コード, 表示）の組に。 -/
-def CodeEntry.toPair (e : Spec.CodeList.CodeEntry) : String × String := (e.code, e.label)
+def CodeEntry.toPair (e : Spec.Env.CodeList.CodeEntry) : String × String := (e.code, e.label)
 
 /-- `AirportCodeList.retrieveMap` の 1 行の処理（既定の設定）。 -/
 def airportStep (acc : JLinkedHashMap String String × Bool) (r : AirportRow) : JLinkedHashMap String String × Bool :=
   let (m, nopInserted) := acc
   let (m, nopInserted) :=
-    if !nopInserted && decide (100 ≤ r.displayOrder.val) then (m.put Spec.MasterData.airportNopCode "-----------", true)
+    if !nopInserted && decide (100 ≤ r.displayOrder.val) then (m.put Spec.Env.MasterData.airportNopCode "-----------", true)
     else (m, nopInserted)
   (m.put r.airportCd.val r.airportName.val, nopInserted)
 
@@ -65,38 +65,38 @@ theorem foldl_airportStep_true (rows : List AirportRow) (m : JLinkedHashMap Stri
       simpa using h
 
 /-- 区切り行を入れる前: 原典の値は、[Spec] の `insertNop` の列を末尾に足したもの。 -/
-theorem foldl_airportStep_false (rows : List AirportRow) (f : AirportRow → Spec.MasterData.Airport)
+theorem foldl_airportStep_false (rows : List AirportRow) (f : AirportRow → Spec.Env.MasterData.Airport)
     (hf : ∀ r ∈ rows, AirportOf r (f r)) (m : JLinkedHashMap String String)
-    (h : (m.entries.map Prod.fst ++ Spec.MasterData.airportNopCode :: rows.map (·.airportCd.val)).Nodup) :
+    (h : (m.entries.map Prod.fst ++ Spec.Env.MasterData.airportNopCode :: rows.map (·.airportCd.val)).Nodup) :
     (rows.foldl airportStep (m, false)).1.entries =
-      m.entries ++ (Spec.CodeList.insertNop (rows.map f)).map CodeEntry.toPair := by
+      m.entries ++ (Spec.Env.CodeList.insertNop (rows.map f)).map CodeEntry.toPair := by
   induction rows generalizing m with
-  | nil => simp [Spec.CodeList.insertNop]
+  | nil => simp [Spec.Env.CodeList.insertNop]
   | cons r rows ih =>
     obtain ⟨hc, hnm, hd⟩ := hf r (List.mem_cons_self ..)
     have hfs : ∀ r ∈ rows, AirportOf r (f r) := fun r hr => hf r (List.mem_cons_of_mem _ hr)
     have hr : r.airportCd.val ∉ m.entries.map Prod.fst := fun hm =>
       (List.nodup_append.mp h).2.2 _ hm _ (by simp) rfl
-    have hn : Spec.MasterData.airportNopCode ∉ m.entries.map Prod.fst := fun hm =>
+    have hn : Spec.Env.MasterData.airportNopCode ∉ m.entries.map Prod.fst := fun hm =>
       (List.nodup_append.mp h).2.2 _ hm _ (by simp) rfl
-    have hrn : r.airportCd.val ≠ Spec.MasterData.airportNopCode := by
+    have hrn : r.airportCd.val ≠ Spec.Env.MasterData.airportNopCode := by
       intro e
       have := (List.nodup_append.mp h).2.1
       simp only [List.map_cons, List.nodup_cons, List.mem_cons, List.mem_map, not_or] at this
       exact this.1.1 e.symm
     by_cases h100 : 100 ≤ r.displayOrder.val
     · have hs : airportStep (m, false) r =
-          ((m.put Spec.MasterData.airportNopCode "-----------").put r.airportCd.val r.airportName.val, true) := by
+          ((m.put Spec.Env.MasterData.airportNopCode "-----------").put r.airportCd.val r.airportName.val, true) := by
         simp [airportStep, h100]
-      have hn' : r.airportCd.val ∉ (m.put Spec.MasterData.airportNopCode "-----------").entries.map Prod.fst := by
+      have hn' : r.airportCd.val ∉ (m.put Spec.Env.MasterData.airportNopCode "-----------").entries.map Prod.fst := by
         rw [JHashMap.put_entries_of_not_mem _ hn]
         simpa [hrn] using hr
       rw [List.foldl_cons, hs, foldl_airportStep_true, JHashMap.put_entries_of_not_mem _ hn',
         JHashMap.put_entries_of_not_mem _ hn]
-      · have : Spec.CodeList.airportNopInsertOrder ≤ (f r).displayOrder := by
-          simp only [Spec.CodeList.airportNopInsertOrder, hd]; omega
-        simp only [List.map_cons, Spec.CodeList.insertNop, this, ite_true, List.map_map, Function.comp_def]
-        simp [CodeEntry.toPair, Spec.CodeList.airportNop, hc, hnm]
+      · have : Spec.Env.CodeList.airportNopInsertOrder ≤ (f r).displayOrder := by
+          simp only [Spec.Env.CodeList.airportNopInsertOrder, hd]; omega
+        simp only [List.map_cons, Spec.Env.CodeList.insertNop, this, ite_true, List.map_map, Function.comp_def]
+        simp [CodeEntry.toPair, Spec.Env.CodeList.airportNop, hc, hnm]
         exact fun a ha => ⟨((hfs a ha).1).symm, ((hfs a ha).2.1).symm⟩
       · rw [JHashMap.put_entries_of_not_mem _ hn', JHashMap.put_entries_of_not_mem _ hn]
         simp [List.nodup_append, List.nodup_cons] at h ⊢
@@ -104,19 +104,19 @@ theorem foldl_airportStep_false (rows : List AirportRow) (f : AirportRow → Spe
     · have hs : airportStep (m, false) r = (m.put r.airportCd.val r.airportName.val, false) := by
         simp [airportStep, h100]
       rw [List.foldl_cons, hs, ih hfs, JHashMap.put_entries_of_not_mem _ hr]
-      · have : ¬ Spec.CodeList.airportNopInsertOrder ≤ (f r).displayOrder := by
-          simp only [Spec.CodeList.airportNopInsertOrder, hd]; omega
-        simp [Spec.CodeList.insertNop, this, CodeEntry.toPair, hc, hnm]
+      · have : ¬ Spec.Env.CodeList.airportNopInsertOrder ≤ (f r).displayOrder := by
+          simp only [Spec.Env.CodeList.airportNopInsertOrder, hd]; omega
+        simp [Spec.Env.CodeList.insertNop, this, CodeEntry.toPair, hc, hnm]
       · rw [JHashMap.put_entries_of_not_mem _ hr]
         simp [List.nodup_append, List.nodup_cons] at h ⊢
         obtain ⟨h1, ⟨⟨-, hB⟩, hC, hD⟩, hE⟩ := h
         exact ⟨h1, ⟨⟨hrn, hC⟩, hB, hD⟩, fun a x hx => ⟨(hE a x hx).2.1, (hE a x hx).1, (hE a x hx).2.2⟩⟩
 
 /-- `CL_AIRPORT`: 空港コードが一意で、`NOP` を使わなければ、原典の値は [Spec] の `insertNop` に一致する。 -/
-theorem airport_eq_insertNop (rows : List AirportRow) (f : AirportRow → Spec.MasterData.Airport)
+theorem airport_eq_insertNop (rows : List AirportRow) (f : AirportRow → Spec.Env.MasterData.Airport)
     (hf : ∀ r ∈ rows, AirportOf r (f r)) (hnd : (rows.map (·.airportCd.val)).Nodup)
-    (hnop : ∀ r ∈ rows, r.airportCd.val ≠ Spec.MasterData.airportNopCode) :
-    CL_AIRPORT rows = (Spec.CodeList.insertNop (rows.map f)).map CodeEntry.toPair := by
+    (hnop : ∀ r ∈ rows, r.airportCd.val ≠ Spec.Env.MasterData.airportNopCode) :
+    CL_AIRPORT rows = (Spec.Env.CodeList.insertNop (rows.map f)).map CodeEntry.toPair := by
   rw [airport_eq_foldl, foldl_airportStep_false rows f hf]
   · rfl
   · refine List.nodup_cons.mpr ⟨?_, hnd⟩

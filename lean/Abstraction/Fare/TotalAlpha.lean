@@ -12,14 +12,14 @@ import Abstraction.Fare.Alpha
 
 namespace Abstraction.Fare.TotalAlpha
 open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
-  Abstraction.MasterData.Lookup Spec.CodeList Spec.Config Spec.Model
+  Abstraction.MasterData.Lookup Spec.Env.CodeList Spec.Env.Config Spec.Model
   Spec.Prim.Text
 open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 open Machine.Preserves (never always anyOf
   Covers Covers₂ Nontrivial Nontrivial₂
   KernelIs)
 
-open Machine LangSemantics.Java Spec Spec.Prim
+open Machine LangSemantics.Java Spec Spec.Env Spec.Prim
   LangSemantics.Core SourceModel.FareQuery
 
 /-! ## 入力（合成） -/
@@ -126,7 +126,7 @@ theorem aiTF_icTF012 : aiTF icTF012 = some iaTF012 := by
   rfl
 
 theorem iaTF012_pre : iaTF012.Pre := by
-  refine ⟨Spec.EnvPre.masterConfigOk.of_valid (by decide)
+  refine ⟨Spec.Env.masterConfigOk.of_valid (by decide)
       ⟨by decide, by decide, by decide, by decide, by decide, by decide, by decide, ?_⟩,
     by decide, by decide, by decide, by decide, by decide, ?_, by decide⟩
   · refine ⟨?_, by decide, by decide, by decide⟩

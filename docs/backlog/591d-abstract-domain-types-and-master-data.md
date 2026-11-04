@@ -21,8 +21,8 @@ generated:
 
 - `Spec.Prim`: `floorDiv`, `ceilDiv`, `ceilTo`, `Date`（epochDay, addDays, daysBetween, fullYearsBetween）, `HourMinute`, 書式（`fmtDate`, `fmtTime`, `fmtYen`, `fmtTimestamp`）, 文字クラス
 - `Spec.Model`: 列挙・エンティティ・値域
-- `Spec.MasterData`: 型、不変条件 MD-1〜MD-8、参照関数
-- `Spec.Config`
+- `Spec.Env.MasterData`: 型、不変条件 MD-1〜MD-8、参照関数
+- `Spec.Env.Config`
 
 ## 対象外
 
@@ -56,6 +56,6 @@ generated:
 ## 参照
 
 - [`Spec.Model`](../../lean/Spec/Model.lean)
-- [`Spec.MasterData`](../../lean/Spec/MasterData.lean)
-- [`Spec.Config`](../../lean/Spec/Config.lean)
+- [`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)
+- [`Spec.Env.Config`](../../lean/Spec/Env/Config.lean)
 - [ADR 6eb2](../decision/6eb2-date-and-time-model.md)

@@ -15,7 +15,7 @@ open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Spec.MasterQu
 open LangSemantics.Core.List LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas
   LangSemantics.Java.String
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql Spec LangSemantics.Core
+open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Env LangSemantics.Core
 open LangSemantics.Java.Spring SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.AtrsProperties
 
 /-! ## α の分解 -/

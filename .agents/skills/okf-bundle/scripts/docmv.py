@@ -8,8 +8,9 @@
 `<old>`・`<new>` は `--root`（リポジトリのルートからの相対）からの相対パスである。ディレクトリはその下のファイルに
 展開する。いくつもの移動を 1 回で行い、移動元と移動先の両方が動くリンクも正しく張り直す。
 
-1. git が管理する（または無視されていない）`.md` のファイルの Markdown の相対リンクを、そのファイルの移動前の位置から
-   解決し、移動の表で写し、移動後の位置から相対パスに直す。URL・`/` で始まるリンク・アンカーだけのリンクは触らない。
+1. git が管理する（または無視されていない）`.md` のファイルと、`.lean` のファイルのモジュール文書（mdgen が地の文にする
+   列 0 の `/-!`・`/-` のブロック。`okf_check.py` の `lean_doc_lines` と同じ範囲）の Markdown の相対リンクを、そのファイルの
+   移動前の位置から解決し、移動の表で写し、移動後の位置から相対パスに直す。URL・`/` で始まるリンク・アンカーだけのリンクは触らない。
    見出しアンカー（`#…`）は保つ（ファイル名を変えなければアンカーも変わらない）。コードブロックとインラインの
    コードの中にあるリンクの形は、例として書いたものとみなして張り直さない。
 2. すべてのテキストのファイル（コードのコメント・設定を含む）で、リンクの外にある `<root の末尾 2 成分>/<old>`
@@ -19,6 +20,7 @@
 最後に、リンクの外に残った、移したファイルのバンドルからの相対パス（`/` を含むもの。例: `sql/harness.md`）の
 言及を表示する。文脈で意味が決まるので、手で確かめる。リポジトリのルートは `git rev-parse --show-toplevel` で決める。
 """
+import importlib.util
 import os
 import pathlib
 import re
@@ -32,6 +34,21 @@ LINK_RE = re.compile(r"(!?)\[((?:[^\[\]\n]|\[[^\[\]\n]*\])*)\]\(\s*(<[^>\n]*>|[^
 FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
 SCHEME_RE = re.compile(r"^[a-z][a-z0-9+.-]*:", re.I)
 PATH_CH = r"A-Za-z0-9_\-"
+
+
+def _okf_check():
+    """同じ道具の okf_check.py（`lean_doc_lines` を共有する。`python -I` では道具の置き場所が sys.path に無い）。"""
+    spec = importlib.util.spec_from_file_location("okf_check", pathlib.Path(__file__).resolve().parent / "okf_check.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def lean_prose_mask(text):
+    """Lean のファイルのうち、モジュール文書の地の文の行だけを残し、他の行を同じ長さの空白にした文字列。"""
+    lines = text.split("\n")
+    prose = _okf_check().lean_doc_lines(lines)
+    return "\n".join(l if p.strip() else " " * len(l) for l, p in zip(lines, prose))
 
 
 def git(repo, *args):
@@ -149,14 +166,15 @@ def mask_code(text):
 
 def rewrite(text, src_old, src_new, moves, mre, table):
     is_md = src_old.endswith(".md")
+    is_lean = src_old.endswith(".lean")
 
     def mention(seg):
         return mre.sub(lambda m: table[m.group(1)], seg) if mre else seg
 
-    if not is_md:
+    if not (is_md or is_lean):
         return mention(text)
     out, pos = [], 0
-    for m in LINK_RE.finditer(mask_code(text)):  # コードの中のリンクの形は張り直さない（言及としては直す）
+    for m in LINK_RE.finditer(mask_code(lean_prose_mask(text) if is_lean else text)):  # コードの中のリンクの形は張り直さない（言及としては直す）
         s, e = m.span(3)
         out.append(mention(text[pos:s]))
         out.append(relink_target(text[s:e], src_old, src_new, moves))
@@ -225,6 +243,7 @@ def self_test():
         "b/docs/x/z.md": "z\n`[c](a.md)` b/docs/a.md\n```\n[f](a.md)\n```\n",
         "code.lean": "-- b/docs/a.md#h and b/docs/x/ and b/docs/a.mdx and sub/b/docs/x/y.md\n",
         "README.md": "[A](b/docs/a.md) mention x/y.md\n",
+        "b/docs/x/m.lean": "/-!\n# M\n[A](../a.md#t) `[c](../a.md)` [Y](y.md)\n-/\n/-- [D](../a.md) -/\ndef d := 1 -- [E](../a.md)\n",
     }
     want = {
         "b/docs/index.md": "* [A](g/a.md) - a\n* [Y](n/x/y.md#h) - y\n* [X](n/x/) - dir\n* [U](https://e.org/a.md)\n",
@@ -233,6 +252,7 @@ def self_test():
         "b/docs/n/x/z.md": "z\n`[c](a.md)` b/docs/g/a.md\n```\n[f](a.md)\n```\n",
         "code.lean": "-- b/docs/g/a.md#h and b/docs/n/x/ and b/docs/a.mdx and sub/b/docs/n/x/y.md\n",
         "README.md": "[A](b/docs/g/a.md) mention x/y.md\n",
+        "b/docs/n/x/m.lean": "/-!\n# M\n[A](../../g/a.md#t) `[c](../a.md)` [Y](y.md)\n-/\n/-- [D](../a.md) -/\ndef d := 1 -- [E](../a.md)\n",
     }
     tmp = pathlib.Path(tempfile.mkdtemp(prefix="docmv-"))
     try:

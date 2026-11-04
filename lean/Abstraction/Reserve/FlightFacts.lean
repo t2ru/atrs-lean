@@ -15,7 +15,7 @@ namespace Abstraction.Reserve.FlightFacts
 open Abstraction.World.Alpha SourceModel.Db.Schema
 
 /-- 主キーで取れるフライトは、FLIGHT の行の α で、その便名は 6 文字以内（`VARCHAR(6)`）。 -/
-theorem flight_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) {k : Spec.Model.FlightKey}
+theorem flight_row {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) {k : Spec.Model.FlightKey}
     {fx : Spec.Model.Flight} (hfx : w.findForUpdate k = some fx) :
     (∃ r ∈ fd.flight, ∃ fx', flightOfRow r = some fx' ∧ fx'.key = k) ∧ k.flightName.val.length ≤ 6 := by
   have hm := worldOfDb_flights hw
@@ -31,14 +31,14 @@ theorem flight_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = so
   exact r.flightName.property
 
 /-- `findMember` で見つかる会員番号は、MEMBER の行の会員番号で、10 文字以内（`VARCHAR(10)`）で、会員番号の形式に合う。 -/
-theorem member_row {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) {s : String}
+theorem member_row {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) {s : String}
     {x : Spec.Model.Member} (hx : w.findMember s = some x) :
     s.length ≤ 10 ∧ fd.member.any (·.customerNo.val == s) = true ∧ Spec.Model.MembershipNumber.valid s = true := by
   have hval : Spec.Model.MembershipNumber.valid s = true :=
-    Spec.Model.MembershipNumber.ofString?_isSome_iff.mp (by rw [Spec.Port.World.findMember_ofString? hx]; rfl)
+    Spec.Model.MembershipNumber.ofString?_isSome_iff.mp (by rw [Spec.World.findMember_ofString? hx]; rfl)
   have hms := (worldOfDb_eq_some.mp hw).2.1
   have hf := Abstraction.Reserve.Member.membersOf_find hms s
-  unfold Spec.Port.World.findMember at hx
+  unfold Spec.World.findMember at hx
   rw [hx] at hf
   obtain ⟨m, l, e1, -, -⟩ := hf
   have hs : m.customerNo.val = s := by simpa using List.find?_some e1
@@ -48,13 +48,13 @@ section
 open Abstraction.MasterData.Alpha Abstraction.Fare.TotalFareRun Abstraction.Fare.TotalAlpha Spec.Model
 
 /-- 選択フライト情報から作ったフライト情報の搭乗クラス・運賃種別のオブジェクトは、主キーのコードを持つ（マスタにある場合）。 -/
-theorem mkFlight_codes {md : Spec.MasterData} {p : SourceModel.MasterQuery.Providers}
+theorem mkFlight_codes {md : Spec.Env.MasterData} {p : SourceModel.MasterQuery.Providers}
     (hbq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hfq : ∀ cd : FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
     {f : SourceModel.App.B0.SelectFlightForm} {k : FlightKey} (hk : keyOfForm f = some k)
-    {BC : Spec.MasterData.BoardingClass} {FT : Spec.MasterData.FareType}
+    {BC : Spec.Env.MasterData.BoardingClass} {FT : Spec.Env.MasterData.FareType}
     (hb : md.boardingClassOf k.boardingClassCd = some BC) (hf : md.fareTypeOf k.fareTypeCd = some FT) :
     ∃ dj b t, (mkFlight p f).departureDate = some dj ∧ Abstraction.MasterData.AlphaLeaf.dateOfJ dj = some k.departureDate ∧
       (mkFlight p f).boardingClass = some b ∧ b.boardingClassCd = some k.boardingClassCd ∧

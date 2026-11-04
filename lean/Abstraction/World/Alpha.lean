@@ -1,7 +1,7 @@
 import Abstraction.MasterData.AlphaLeaf
 import Abstraction.MasterData.Alpha
 import SourceModel.Db.Schema
-import Spec.Port
+import Spec.World
 
 /-!
 # Abstraction.World.Alpha
@@ -482,7 +482,7 @@ theorem seqOf_kernel : KernelIs seqOf (undefOrEq seqOf) := kernelIs_undefOrEq fu
 
 /-- 4 つのシーケンスの状態。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def sequencesOf (fd : FlightDb) : Option Spec.Port.Sequences := do
+def sequencesOf (fd : FlightDb) : Option Spec.World.Sequences := do
   let m ← seqOf fd.sqMember
   let r ← seqOf fd.sqReservation
   let f ← seqOf fd.sqReserveFlight
@@ -493,7 +493,7 @@ def sequencesOf (fd : FlightDb) : Option Spec.Port.Sequences := do
 
 /-- 状態の表とシーケンス（状態）。 -/
 @[std_abs "docs/spec/abstraction.md#抽象化関数-α"]
-def worldOfDb (fd : FlightDb) : Option Spec.Port.World := do
+def worldOfDb (fd : FlightDb) : Option Spec.World := do
   let flights ← fd.flight.mapM flightOfRow
   let members ← membersOf fd.member fd.memberLogin
   let reservations ← reservationsOf fd.reservation fd.reserveFlight fd.passenger
@@ -501,7 +501,7 @@ def worldOfDb (fd : FlightDb) : Option Spec.Port.World := do
   if h : (flights.map (·.key)).Nodup then pure { flights, flights_nodup := h, members, reservations, sequences }
   else none
 
-theorem worldOfDb_eq_some {fd : FlightDb} {w : Spec.Port.World} :
+theorem worldOfDb_eq_some {fd : FlightDb} {w : Spec.World} :
     worldOfDb fd = some w ↔ fd.flight.mapM flightOfRow = some w.flights ∧
       membersOf fd.member fd.memberLogin = some w.members ∧
       reservationsOf fd.reservation fd.reserveFlight fd.passenger = some w.reservations ∧
@@ -518,7 +518,7 @@ theorem worldOfDb_eq_some {fd : FlightDb} {w : Spec.Port.World} :
     simp only [worldOfDb, hfs, hms, hrs, hsq, Option.bind_eq_bind, Option.bind_some, Option.pure_def,
       dite_eq_left_of_eq_true (eq_true w.flights_nodup)]
 
-theorem worldOfDb_flights {fd : FlightDb} {w : Spec.Port.World} (h : worldOfDb fd = some w) :
+theorem worldOfDb_flights {fd : FlightDb} {w : Spec.World} (h : worldOfDb fd = some w) :
     fd.flight.mapM flightOfRow = some w.flights := (worldOfDb_eq_some.mp h).1
 
 @[obligation "ABS-048"]
@@ -534,7 +534,7 @@ theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
   obtain ⟨a, ha, b, hb, c, hc, d, hd, e⟩ := hs
   obtain ⟨a', ha', b', hb', c', hc', d', hd', e'⟩ := hs'
   rw [← e'] at e
-  simp only [Option.some.injEq, Spec.Port.Sequences.mk.injEq] at e
+  simp only [Option.some.injEq, Spec.World.Sequences.mk.injEq] at e
   obtain ⟨rfl, rfl, rfl, rfl⟩ := e
   cases t; cases t'
   simp only [FlightDb.mk.injEq] at *
@@ -544,15 +544,15 @@ theorem worldOfDb_kernel : KernelIs worldOfDb (undefOrEq worldOfDb) := by
 
 /-- 主キーの性質: 会員は会員番号で一意（PK_MEMBER）。使用済みの番号は採番の次の値より小さい（予約番号は次の予約番号より
 小さい番号の書式、予約フライト番号・搭乗者番号は次の値より小さい）。 -/
-def KeysOk (w : Spec.Port.World) : Prop :=
-  (w.members.map (·.membershipNumber)).Nodup ∧ ∀ r ∈ w.reservations, (∃ n, n < w.sequences.reserve ∧ r.reserveNo = Spec.Port.World.reserveNoOf n) ∧
+def KeysOk (w : Spec.World) : Prop :=
+  (w.members.map (·.membershipNumber)).Nodup ∧ ∀ r ∈ w.reservations, (∃ n, n < w.sequences.reserve ∧ r.reserveNo = Spec.World.reserveNoOf n) ∧
     ∀ f ∈ r.reserveFlights.legs, f.1.reserveFlightNo < w.sequences.reserveFlight ∧
       ∀ p ∈ f.2, p.1 < w.sequences.passenger
 
 /-- 具体側の不変条件: α の像で、主キーの性質 `KeysOk` が成り立つ（主キーの一意性に使う。ADR ca17）。 -/
 def IcW (fd : FlightDb) : Prop := ∀ w, worldOfDb fd = some w → KeysOk w
 
-theorem reservations_nil {fd : FlightDb} {w : Spec.Port.World} (hr : fd.reservation = [])
+theorem reservations_nil {fd : FlightDb} {w : Spec.World} (hr : fd.reservation = [])
     (h : worldOfDb fd = some w) : w.reservations = [] := by
   have h3 := (worldOfDb_eq_some.mp h).2.2.1
   rw [hr] at h3

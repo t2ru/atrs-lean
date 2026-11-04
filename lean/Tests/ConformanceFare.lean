@@ -9,20 +9,20 @@ import Tests.Conformance
 `fare.*` の操作の割当（`docs/spec/conformance.md`）。`Spec` 用と `SourceModel` 用の 2 つの表を、
 ベクタの共有入力（`fixtures/master-data.json`・`config.json`）から作る。
 
-- `Spec`: 共有入力を `Spec.MasterData`・`Spec.Config` に読む。`outsideSpec` を付けた行は除く。共有入力が無ければ、空のマスタと既定の設定。
+- `Spec`: 共有入力を `Spec.Env.MasterData`・`Spec.Env.Config` に読む。`outsideSpec` を付けた行は除く。共有入力が無ければ、空のマスタと既定の設定。
 - `SourceModel`: 共有入力の行の順に、Provider のキャッシュ（`HashMap.put`・`List.add`）を作る。
   `fare.totalFare` の `Flight` は、便マスタ・区間・空港・搭乗クラス・運賃種別を引いて組み立てる（Mapper の結果の形）。
 -/
 
-open Lean Spec ConformanceKit Tests.Conformance
+open Lean Spec Spec.Env ConformanceKit Tests.Conformance
 
 open ConformanceKit.Runner ConformanceKit.SqlTable LangSemantics.Java.Exception LangSemantics.Java.HashMap
   LangSemantics.Java.Int LangSemantics.Java.IntLemmas
 
-open Spec.CodeList Spec.Config Spec.Model Spec.Prim.Time
+open Spec.Env.CodeList Spec.Env.Config Spec.Model Spec.Prim.Time
 
 namespace Tests.ConformanceFare
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 
@@ -40,10 +40,10 @@ def decodeMaster (j : Json) : Except String MasterData := do
   if j.isNull then return { airports := [], routes := [], flightMasters := [], boardingClasses := [], fareTypes := [],
                             peakTimes := [], planes := [], creditTypes := [] }
   let airports ← (← getArr j "airports").mapM fun a => do
-    return ({ code := ← airportCd (← getStr a "code"), name := ← getStr a "name", displayOrder := ← getNat a "displayOrder" } : Spec.MasterData.Airport)
+    return ({ code := ← airportCd (← getStr a "code"), name := ← getStr a "name", displayOrder := ← getNat a "displayOrder" } : Spec.Env.MasterData.Airport)
   let routes ← (← getArr j "routes").mapM fun r => do
     return ({ routeNo := ← getNat r "routeNo", depAirportCd := ← airportCd (← getStr r "depAirportCd"), arrAirportCd := ← airportCd (← getStr r "arrAirportCd"),
-              basicFare := ← getNat r "basicFare" } : Spec.MasterData.Route)
+              basicFare := ← getNat r "basicFare" } : Spec.Env.MasterData.Route)
   -- `outsideSpec` の行（Spec の値域の外の時刻。ADR 8f18・ADR ce36。上流のシードには無い）は除く
   let fms := (← getArr j "flightMasters").filter fun f => (f.getObjVal? "outsideSpec").toOption.isNone
   let flightMasters ← fms.mapM fun f => do
@@ -51,22 +51,22 @@ def decodeMaster (j : Json) : Except String MasterData := do
     let arr ← getStr f "arrivalTime"
     return ({ flightName := ← decodeFlightName (← getStr f "flightName"), routeNo := ← getNat f "routeNo",
               departureTime := ← need (HourMinute.parseHHmm dep) s!"time: {dep}",
-              arrivalTime := ← need (ArrivalTime.parseHHmm arr) s!"time: {arr}", craftType := ← getStr f "craftType" } : Spec.MasterData.FlightMaster)
+              arrivalTime := ← need (ArrivalTime.parseHHmm arr) s!"time: {arr}", craftType := ← getStr f "craftType" } : Spec.Env.MasterData.FlightMaster)
   let boardingClasses ← (← getArr j "boardingClasses").mapM fun b => do
     return ({ boardingClassCd := ← boardingClassCd (← getStr b "boardingClassCd"), boardingClassName := ← getStr b "boardingClassName",
-              extraCharge := ← getNat b "extraCharge", displayOrder := ← getNat b "displayOrder" } : Spec.MasterData.BoardingClass)
+              extraCharge := ← getNat b "extraCharge", displayOrder := ← getNat b "displayOrder" } : Spec.Env.MasterData.BoardingClass)
   let fareTypes ← (← getArr j "fareTypes").mapM fun f => do
     return ({ fareTypeCd := ← fareTypeCd (← getStr f "fareTypeCd"), fareTypeName := ← getStr f "fareTypeName",
               discountRate := ← getNat f "discountRate", rsrvAvailableStartDayNum := ← getNat f "rsrvAvailableStartDayNum",
               rsrvAvailableEndDayNum := ← getNat f "rsrvAvailableEndDayNum", passengerMinNum := ← getNat f "passengerMinNum",
-              displayOrder := ← getNat f "displayOrder" } : Spec.MasterData.FareType)
+              displayOrder := ← getNat f "displayOrder" } : Spec.Env.MasterData.FareType)
   let peakTimes ← (← getArr j "peakTimes").mapM fun p => do
     return ({ peakTimeCd := ← getStr p "peakTimeCd", peakStartDate := ← decodeDate (← getStr p "peakStartDate"),
-              peakEndDate := ← decodeDate (← getStr p "peakEndDate"), multiplicationRatio := ← getNat p "multiplicationRatio" } : Spec.MasterData.PeakTime)
+              peakEndDate := ← decodeDate (← getStr p "peakEndDate"), multiplicationRatio := ← getNat p "multiplicationRatio" } : Spec.Env.MasterData.PeakTime)
   let planes ← (← getArr j "planes").mapM fun p => do
-    return ({ craftType := ← getStr p "craftType", nSeatNum := ← getNat p "nSeatNum", sSeatNum := ← getNat p "sSeatNum" } : Spec.MasterData.Plane)
+    return ({ craftType := ← getStr p "craftType", nSeatNum := ← getNat p "nSeatNum", sSeatNum := ← getNat p "sSeatNum" } : Spec.Env.MasterData.Plane)
   let creditTypes ← (← getArr j "creditTypes").mapM fun c => do
-    return ({ creditTypeCd := ← creditTypeCd (← getStr c "creditTypeCd"), creditFirm := ← getStr c "creditFirm", displayOrder := ← getNat c "displayOrder" } : Spec.MasterData.CreditType)
+    return ({ creditTypeCd := ← creditTypeCd (← getStr c "creditTypeCd"), creditFirm := ← getStr c "creditFirm", displayOrder := ← getNat c "displayOrder" } : Spec.Env.MasterData.CreditType)
   return { airports, routes, flightMasters, boardingClasses, fareTypes, peakTimes, planes, creditTypes }
 
 def decodeConfig (j : Json) : Except String Config := do

@@ -1,7 +1,8 @@
-import Spec.Seed
+import Spec.Env.Config
+import Spec.Env.MasterData
 
 /-!
-# Spec.EnvPre
+# Spec.Env
 
 入口の環境の前提（`@[env_pre]`。ADR 70eb の SPEC-006）。入口の機械（画面・REST・レポート要求の受信）の
 `TotalUnder` の `Env` は、入力から設定とマスタを射影して `masterConfigOk` を課し、各機能の入力の値域の述語と組み合わせて作る
@@ -11,10 +12,9 @@ import Spec.Seed
 - `masterConfigOk`: 検証が成功すること（設定の不変条件と、マスタの不変条件 MD-1〜MD-8）。
 - `validB`: カーネルの評価で進む真偽値の検査（文字列は `toList` で見る。一意性は、鍵が真に増加していれば線形時間で
   確かめる）と、その正しさ `validB_sound`。
-- `seed_env`: シードの設定とマスタ（`Spec.Seed`）は、環境の前提を満たす。
 -/
 
-namespace Spec.EnvPre
+namespace Spec.Env
 open Spec.Model
 
 
@@ -60,7 +60,7 @@ theorem validate_isSome_iff {x : Config × MasterData} :
 
 /-- 入口の環境の前提: 設定とマスタの検証が成功する（設定の不変条件と、マスタの不変条件 MD-1〜MD-8）。 -/
 @[env_pre "MD-1", "MD-2", "MD-3", "MD-4", "MD-5", "MD-6", "MD-7", "MD-8", "CFG",
-  spec_doc "lean/Spec/MasterData.lean#不変条件spec"]
+  spec_doc "lean/Spec/Env/MasterData.lean#不変条件spec"]
 def masterConfigOk (x : Config × MasterData) : Prop := (validate x).isSome = true
 
 instance (x : Config × MasterData) : Decidable (masterConfigOk x) := by unfold masterConfigOk; infer_instance
@@ -152,27 +152,4 @@ theorem validB_sound {cfg : Config} {md : MasterData} (h : validB cfg md = true)
   simp only [bne_iff_ne, ne_eq] at this
   exact this
 
-
-/-! ## シードと非自明性 -/
-
-set_option maxRecDepth 100000 in
-/-- シードの設定とマスタは、入口の環境の前提を満たす。 -/
-theorem seed_env : masterConfigOk (Seed.config, Seed.masterData) :=
-  masterConfigOk.of_valid (by decide) (EnvPre.validB_sound (by decide +kernel))
-
-/-- 環境の前提を破る例: 空港コードの重複（MD-1）。 -/
-def badMasterData : MasterData :=
-  { Seed.masterData with airports := ⟨{ val := "HND" }, "x", 1000⟩ :: Seed.masterData.airports }
-
-theorem badMasterData_not_env : ¬ masterConfigOk (Seed.config, badMasterData) := by
-  intro h
-  obtain ⟨-, hv⟩ := h.valid
-  have h := hv.md1.1
-  simp only [badMasterData, List.map_cons, List.nodup_cons] at h
-  exact h.1 (by decide)
-
-/-- G8: 環境の前提は自明でない。 -/
-theorem masterConfigOk_nontrivial : Machine.Preserves.Nontrivial masterConfigOk :=
-  ⟨⟨_, seed_env⟩, ⟨_, badMasterData_not_env⟩⟩
-
-end Spec.EnvPre
+end Spec.Env

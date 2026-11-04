@@ -70,4 +70,4 @@ Chosen option: "本番は Asia/Tokyo、fixture の投入日は 2026-11-01", beca
 ## More Information
 
 * [ADR 6eb2](6eb2-date-and-time-model.md) の補足である（決定内容は変えない）
-* [spec/ports.md](../../lean/Spec/Port.lean), [spec/conformance.md](../spec/conformance.md), [spec/master-data.md](../../lean/Spec/MasterData.lean#シードデータ)
+* [spec/ports.md](../../lean/Spec/World.lean), [spec/conformance.md](../spec/conformance.md), [spec/master-data.md](../../lean/Spec/Env/MasterData.lean#シードデータ)

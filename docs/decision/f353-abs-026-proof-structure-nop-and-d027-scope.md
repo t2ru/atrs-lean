@@ -57,7 +57,7 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 
 | 項目 | 決定 |
 | --- | --- |
-| `NOP` | MD-8 に「空港のコードは `NOP`（`Spec.MasterData.airportNopCode`）でない」を加える。破れた場合の [Source] の振る舞いは、「[Spec] の前提の外」に記録する |
+| `NOP` | MD-8 に「空港のコードは `NOP`（`Spec.Env.MasterData.airportNopCode`）でない」を加える。破れた場合の [Source] の振る舞いは、「[Spec] の前提の外」に記録する |
 | D-027 の範囲 | 具体側の入力全体（DB のマスタの各行・設定・問い合わせの引数）とする。述語は「α が定義される」。ADR c108 の決定を補う |
 | `LocalDate` の通算日数 | `toEpochDay`・`ofEpochDay` を床除算で書き直す。<br>- 周期 `era = y / 400`（`z / 146097`）、周期の中の位置は剰余とする<br>- `ofEpochDay` は、補助の関数（`yoeOfDoe`・`doyOfDoe`・`mpOfDoy`・`civilOfDoe`）に分ける<br>- JVM の突き合わせ表に、負の年・400 年の境界・PostgreSQL の日付の範囲の端を加える |
 | 往復の補題 | `LangSemantics.Java.JLocalDate.toEpochDay_ofEpochDay`（すべての整数で `toEpochDay (ofEpochDay z) = z`）を、スキルの assets（`JLocalDate.Lemmas`）で証明する |
@@ -91,4 +91,4 @@ Chosen option: "下表のとおり決める", because 次のとおりだから�
 ## More Information
 
 * [ADR c108](c108-master-data-source-model-and-spec-fixes.md)、[ADR 9ac6](9ac6-vacuity-literature-necessity-and-mutation.md)、[ADR c336](c336-foundational-principles.md)
-* [abstraction.md](../spec/abstraction.md#既知差異)（D-027）、[`Spec.MasterData`](../../lean/Spec/MasterData.lean)
+* [abstraction.md](../spec/abstraction.md#既知差異)（D-027）、[`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean)

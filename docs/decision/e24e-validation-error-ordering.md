@@ -40,7 +40,7 @@ sources:
 
 Chosen option: "[Source] は順序不定とし、[Spec] だけで並びを定める", because 原典が保証しない並びを仮定すると、`Abstraction` の証明が偽の前提に立つことになるため。
 
-* [Spec] の並びは次のとおりとする（[spec/input-validation.md](../../lean/Spec/InputValidation.lean#検証の順序とエラーの並び)）。
+* [Spec] の並びは次のとおりとする（[spec/input-validation.md](../../lean/Spec/Validation.lean#検証の順序とエラーの並び)）。
   1. 単項目エラー: 項目の宣言順。同じ項目のエラーは制約表の列挙順。
   2. 相関検証で生じるフィールドエラー: 発生順。
   3. グローバルエラー: 発生順。
@@ -71,7 +71,7 @@ Chosen option: "[Source] は順序不定とし、[Spec] だけで並びを定め
 
 ## More Information
 
-* [spec/input-validation.md](../../lean/Spec/InputValidation.lean), [spec/http-contract.md](../../lean/Spec/Http.lean), [spec/abstraction.md](../spec/abstraction.md)
+* [spec/input-validation.md](../../lean/Spec/Validation.lean), [spec/http-contract.md](../../lean/Spec/Http.lean), [spec/abstraction.md](../spec/abstraction.md)
 * [ADR a4fa](a4fa-errors-as-values-with-stable-codes.md)
 
 [^hv-context]: hibernate-validator 9.1.0.Final `AbstractValidationContext`（`failingConstraintViolations = new HashSet<>()`）

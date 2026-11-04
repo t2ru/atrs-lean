@@ -17,16 +17,16 @@ ABS-026 の標準の抽象化 α（`docs/spec/abstraction.md#抽象化関数-α`
 -/
 
 namespace Abstraction.MasterData.Alpha
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
-open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.CodeList Spec.Model
+open Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.CodeList Spec.Env.CodeList Spec.Model
 open LangSemantics.Java.Int LangSemantics.Java.IntLemmas Machine.Kernel
 open Machine.Preserves (never always anyOf
   Covers Covers₂ Nontrivial Nontrivial₂
   KernelIs)
 
-open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Prim
+open LangSemantics.Java LangSemantics.Sql.Postgresql Spec Spec.Env Spec.Prim
   LangSemantics.Core SourceModel.Db.Schema SourceModel.MasterQuery SourceModel.AtrsProperties
 
 /-! ## DB の行（葉） -/
@@ -118,7 +118,7 @@ theorem routeOfRow_kernel : KernelIs routeOfRow routeRowKer := by
       simp only [routeOfRow, Option.bind_eq_some_iff, Option.map_eq_some_iff] at h h'
       obtain ⟨no, hno, dep, hdep, arr, harr, bf, hbf, rfl⟩ := h
       obtain ⟨no', hno', dep', hdep', arr', harr', bf', hbf', h⟩ := h'
-      simp only [Spec.MasterData.Route.mk.injEq] at h
+      simp only [Spec.Env.MasterData.Route.mk.injEq] at h
       obtain ⟨rfl, rfl, rfl, rfl⟩ := h
       have h2 := (AirportCd.val_of_ofString? hdep').symm.trans (AirportCd.val_of_ofString? hdep)
       have h3 := (AirportCd.val_of_ofString? harr').symm.trans (AirportCd.val_of_ofString? harr)
@@ -319,14 +319,14 @@ def opt {α β : Type} (f : α → Option β) : Option α → Option (Option β)
   | none => some none
   | some a => (f a).map some
 
-def route (r : SourceModel.Domain.Model.Route) : Option Spec.MasterData.Route := do
+def route (r : SourceModel.Domain.Model.Route) : Option Spec.Env.MasterData.Route := do
   let no ← r.routeNo.bind natOfJ32
   let bf ← r.basicFare.bind natOfJ32
   let dep ← (r.departureAirport.bind (·.code)).bind airportCdOf
   let arr ← (r.arrivalAirport.bind (·.code)).bind airportCdOf
   pure ⟨no, dep, arr, bf⟩
 
-def flightMaster (f : SourceModel.Domain.Model.FlightMaster) : Option Spec.MasterData.FlightMaster := do
+def flightMaster (f : SourceModel.Domain.Model.FlightMaster) : Option Spec.Env.MasterData.FlightMaster := do
   let name ← f.flightName.bind flightNameOf
   let no ← (f.route.bind (·.routeNo)).bind natOfJ32
   let dt ← f.departureTime.bind hmOfStr
@@ -349,7 +349,7 @@ def fareType (f : SourceModel.Domain.Model.FareType) : Option MasterData.FareTyp
   let pm ← f.passengerMinNum.bind natOfJ32
   pure ⟨cd, nm, dr, s, e, pm⟩
 
-def peakTime (p : SourceModel.Domain.Model.PeakTime) : Option Spec.MasterData.PeakTime := do
+def peakTime (p : SourceModel.Domain.Model.PeakTime) : Option Spec.Env.MasterData.PeakTime := do
   let cd ← p.peakTimeCd
   let s ← p.peakStartDate.bind dateOfJ
   let e ← p.peakEndDate.bind dateOfJ
@@ -416,13 +416,13 @@ theorem natOfJ32_inj {x y : J32} {n : Nat} (hx : natOfJ32 x = some n) (hy : natO
 
 namespace AnswerOf
 
-theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.Route} (h : route r = some c)
+theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.Env.MasterData.Route} (h : route r = some c)
     (h' : route r' = some c) : routeObs r = routeObs r' := by
   simp only [route, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨no, ⟨v, hv, e1⟩, bf, ⟨w, hw, e2⟩, dep, ⟨sd, ⟨a, ha, e3⟩, pd⟩, arr, ⟨sa, ⟨b, hb, e4⟩, pa⟩, rfl⟩ := h
   obtain ⟨no', ⟨v', hv', f1⟩, bf', ⟨w', hw', f2⟩, dep', ⟨sd', ⟨a', ha', f3⟩, pd'⟩, arr', ⟨sa', ⟨b', hb', f4⟩, pa'⟩, h⟩ :=
     h'
-  simp only [Spec.MasterData.Route.mk.injEq] at h
+  simp only [Spec.Env.MasterData.Route.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl⟩ := h
   obtain rfl := (AirportCd.val_of_ofString? pd').symm.trans (AirportCd.val_of_ofString? pd)
   obtain rfl := (AirportCd.val_of_ofString? pa').symm.trans (AirportCd.val_of_ofString? pa)
@@ -434,13 +434,13 @@ theorem route_inj {r r' : SourceModel.Domain.Model.Route} {c : Spec.MasterData.R
   subst hv hw ha hb hv' hw' ha' hb'
   simp only [routeObs, Option.map_some, natOfJ32_inj e1 f1, natOfJ32_inj e2 f2]
 
-theorem flightMaster_inj {f f' : SourceModel.Domain.Model.FlightMaster} {c : Spec.MasterData.FlightMaster}
+theorem flightMaster_inj {f f' : SourceModel.Domain.Model.FlightMaster} {c : Spec.Env.MasterData.FlightMaster}
     (h : flightMaster f = some c) (h' : flightMaster f' = some c) : flightMasterObs f = flightMasterObs f' := by
   simp only [flightMaster, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨nm, ⟨sn, hn, en⟩, no, ⟨v, ⟨r, hr, hv⟩, e1⟩, dt, ⟨s, hs, e2⟩, ar, ⟨t, ht, e3⟩, ct, ⟨p, hp, e4⟩, rfl⟩ := h
   obtain ⟨nm', ⟨sn', hn', en'⟩, no', ⟨v', ⟨r', hr', hv'⟩, f1⟩, dt', ⟨s', hs', f2⟩, ar', ⟨t', ht', f3⟩, ct', ⟨p', hp', f4⟩,
     h⟩ := h'
-  simp only [Spec.MasterData.FlightMaster.mk.injEq] at h
+  simp only [Spec.Env.MasterData.FlightMaster.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl, rfl⟩ := h
   obtain rfl := (flightNameOf_eq_some en').symm.trans (flightNameOf_eq_some en)
   obtain ⟨rn, rb, ra, rd⟩ := r; obtain ⟨rn', rb', ra', rd'⟩ := r'
@@ -477,12 +477,12 @@ theorem fareType_inj {f f' : SourceModel.Domain.Model.FareType} {c : MasterData.
   subst hc hn h1 h2 h3 h4 hc' hn' k1 k2 k3 k4
   rw [natOfJ32_inj e1 f1, natOfJ32_inj e2 f2, natOfJ32_inj e3 f3, natOfJ32_inj e4 f4]
 
-theorem peakTime_inj {p p' : SourceModel.Domain.Model.PeakTime} {c : Spec.MasterData.PeakTime}
+theorem peakTime_inj {p p' : SourceModel.Domain.Model.PeakTime} {c : Spec.Env.MasterData.PeakTime}
     (h : peakTime p = some c) (h' : peakTime p' = some c) : p = p' := by
   simp only [peakTime, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq] at h h'
   obtain ⟨cd, hc, s, ⟨d1, h1, e1⟩, e, ⟨d2, h2, e2⟩, r, ⟨v, h3, e3⟩, rfl⟩ := h
   obtain ⟨cd', hc', s', ⟨d1', k1, f1⟩, e', ⟨d2', k2, f2⟩, r', ⟨v', k3, f3⟩, h⟩ := h'
-  simp only [Spec.MasterData.PeakTime.mk.injEq] at h
+  simp only [Spec.Env.MasterData.PeakTime.mk.injEq] at h
   obtain ⟨rfl, rfl, rfl, rfl⟩ := h
   cases p; cases p'
   simp only at hc h1 h2 h3 hc' k1 k2 k3

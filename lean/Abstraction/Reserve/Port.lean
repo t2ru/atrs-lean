@@ -8,7 +8,7 @@ import SourceModel.Domain.Repository.Reservation.ReservationRepository
 # Abstraction.Reserve.Port
 
 L 課題 ABS-023 の補題: 予約が使うリポジトリの文（`LangSemantics.Sql` で写した SQL）の結果を、α `worldOfDb` の像の
-`World` のポートの操作（`lean/Spec/Port.lean`）で表す（backlog aedf の第 3 段）。
+`World` のポートの操作（`lean/Spec/World.lean`）で表す（backlog aedf の第 3 段）。
 
 - FLIGHT: 主キーの条件 `keyCond`、`exists`・`findOneForUpdate`・`update` の行
 -/
@@ -67,10 +67,10 @@ theorem select_key {rs : List FlightRow} {fs : List Flight} (h : rs.mapM flightO
 
 /-- `exists` の文の結果は、`World.existsFlight`。 -/
 @[obligation "ABS-023"]
-theorem existsRows_eq {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (k : FlightKey) :
+theorem existsRows_eq {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (k : FlightKey) :
     existsRows fd (keyParams k) = w.existsFlight k := by
   have hs := select_key (worldOfDb_flights hw) k
-  unfold existsRows Bag.exists' Spec.Port.World.existsFlight
+  unfold existsRows Bag.exists' Spec.World.existsFlight
   have hl := LangSemantics.Core.MapM.mapM_length hs
   rw [Bool.eq_iff_iff]
   simp only [Bool.not_eq_true', List.isEmpty_eq_false_iff, ne_eq, List.any_eq_true]
@@ -104,7 +104,7 @@ theorem filter_key_eq : ∀ {fs : List Flight}, (fs.map (·.key)).Nodup → ∀ 
 
 /-- `findOneForUpdate` の文の行: 主キーのフライトがあれば、その行 1 つ。 -/
 @[obligation "ABS-023"]
-theorem select_key_find {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
+theorem select_key_find {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     (k : FlightKey) :
     (Bag.select (keyCond (keyParams k)) fd.flight).mapM flightOfRow = some (w.findForUpdate k).toList := by
   rw [select_key (worldOfDb_flights hw) k, filter_key_eq hinv k]

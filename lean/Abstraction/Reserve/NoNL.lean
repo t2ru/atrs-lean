@@ -47,16 +47,16 @@ theorem BizNL.bind {x y : Except AtrsError Unit} (hx : BizNL x) (hy : BizNL y) :
   | error e => exact hx be h
   | ok u => exact hy be h
 
-theorem checkRepAge_nl (cfg : Spec.Config) (d : Spec.UseCase.Reserve.Draft) :
-    BizNL (Spec.UseCase.Reserve.checkRepAge cfg d) := by
-  unfold Spec.UseCase.Reserve.checkRepAge
+theorem checkRepAge_nl (cfg : Spec.Env.Config) (d : Spec.Reserve.Draft) :
+    BizNL (Spec.Reserve.checkRepAge cfg d) := by
+  unfold Spec.Reserve.checkRepAge
   split
   · exact bizNL_of fun a ha => by
       simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
   · exact BizNL.ok
 
-theorem specFareTypeOf_nl {FT : Spec.MasterData.FareType} (hft : NoNL FT.fareTypeName)
-    (qs : List Spec.UseCase.Reserve.DraftPassenger) : BizNL (specFareTypeOf FT qs) := by
+theorem specFareTypeOf_nl {FT : Spec.Env.MasterData.FareType} (hft : NoNL FT.fareTypeName)
+    (qs : List Spec.Reserve.DraftPassenger) : BizNL (specFareTypeOf FT qs) := by
   unfold specFareTypeOf
   split
   · split
@@ -81,9 +81,9 @@ theorem firstErr_nl : ∀ {xs : List (Except AtrsError Unit)}, (∀ x ∈ xs, Bi
       show BizNL (firstErr xs)
       exact firstErr_nl fun y hy => h y (List.mem_cons_of_mem _ hy)
 
-theorem checkRepMember_nl (w : Spec.Port.World) (d : Spec.UseCase.Reserve.Draft) :
-    BizNL (Spec.UseCase.Reserve.checkRepMember w d) := by
-  unfold Spec.UseCase.Reserve.checkRepMember
+theorem checkRepMember_nl (w : Spec.World) (d : Spec.Reserve.Draft) :
+    BizNL (Spec.Reserve.checkRepMember w d) := by
+  unfold Spec.Reserve.checkRepMember
   split
   · exact BizNL.ok
   · split
@@ -92,7 +92,7 @@ theorem checkRepMember_nl (w : Spec.Port.World) (d : Spec.UseCase.Reserve.Draft)
       · exact BizNL.ok
       · exact bizNL_of (by simp [BusinessError.args])
 
-theorem checkOne_nl (w : Spec.Port.World) (p : Spec.UseCase.Reserve.DraftPassenger) (i : Nat) : BizNL (checkOne w p i) := by
+theorem checkOne_nl (w : Spec.World) (p : Spec.Reserve.DraftPassenger) (i : Nat) : BizNL (checkOne w p i) := by
   unfold checkOne
   split
   · exact BizNL.ok
@@ -104,12 +104,12 @@ theorem checkOne_nl (w : Spec.Port.World) (p : Spec.UseCase.Reserve.DraftPasseng
       · exact bizNL_of fun a ha => by
           simp only [BusinessError.args, List.mem_singleton] at ha; subst ha; exact noNL_toString _
 
-theorem pmFrom_nl (w : Spec.Port.World) : ∀ (ps : List Spec.UseCase.Reserve.DraftPassenger) (i : Nat), BizNL (pmFrom w ps i)
+theorem pmFrom_nl (w : Spec.World) : ∀ (ps : List Spec.Reserve.DraftPassenger) (i : Nat), BizNL (pmFrom w ps i)
   | [], _ => BizNL.ok
   | p :: ps, i => BizNL.bind (checkOne_nl w p i) (pmFrom_nl w ps (i + 1))
 
 /-- マスタの運賃種別名は、表の行の運賃種別名（D-027 の前提で改行を含まない）。 -/
-theorem fareTypeNames_noNL {db : SourceModel.Db.Schema.MasterDb} {md : Spec.MasterData}
+theorem fareTypeNames_noNL {db : SourceModel.Db.Schema.MasterDb} {md : Spec.Env.MasterData}
     (hm : Abstraction.MasterData.Alpha.masterDataOf db = some md)
     (h : ∀ ft ∈ db.fareType, '\n' ∉ ft.fareTypeName.val.toList) : ∀ FT ∈ md.fareTypes, NoNL FT.fareTypeName := by
   intro FT hFT
@@ -130,12 +130,12 @@ theorem forall₂_mem_right {α β : Type} {R : α → β → Prop} :
       exact ⟨a', List.mem_cons_of_mem _ ha', h⟩
 
 /-- 予約内容の検証の業務例外のコードと引数は、改行を含まない。 -/
-theorem validate_nl {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {d : Spec.UseCase.Reserve.Draft}
-    {FTs : List Spec.MasterData.FareType}
+theorem validate_nl {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World} {d : Spec.Reserve.Draft}
+    {FTs : List Spec.Env.MasterData.FareType}
     (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs)
     (hft : ∀ FT ∈ md.fareTypes, NoNL FT.fareTypeName) {v : Except AtrsError Unit}
-    (hv : Spec.UseCase.Reserve.validateReservation cfg md w d = some v) : BizNL v := by
-  simp only [Spec.UseCase.Reserve.validateReservation, Abstraction.Reserve.ValidateReservation.checkFareTypes_eq hkf,
+    (hv : Spec.Reserve.validateReservation cfg md w d = some v) : BizNL v := by
+  simp only [Spec.Reserve.validateReservation, Abstraction.Reserve.ValidateReservation.checkFareTypes_eq hkf,
     Option.bind_eq_bind, Option.bind_some, Option.pure_def, Option.some.injEq] at hv
   subst hv
   refine BizNL.bind (checkRepAge_nl cfg d) (BizNL.bind (firstErr_nl ?_)
@@ -144,7 +144,7 @@ theorem validate_nl {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.Wo
     simp only [List.mem_map] at hx
     obtain ⟨FT, hFT, rfl⟩ := hx
     obtain ⟨k, -, hk⟩ := forall₂_mem_right hkf FT hFT
-    exact specFareTypeOf_nl (hft FT (by unfold Spec.MasterData.fareTypeOf at hk; exact List.mem_of_find?_eq_some hk)) _
+    exact specFareTypeOf_nl (hft FT (by unfold Spec.Env.MasterData.fareTypeOf at hk; exact List.mem_of_find?_eq_some hk)) _
   · rw [checkPassengerMembers_eq]
     exact pmFrom_nl w _ 0
 

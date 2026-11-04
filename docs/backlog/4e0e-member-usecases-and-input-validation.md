@@ -35,7 +35,7 @@ generated:
 
 ## 完了条件
 
-- [x] [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean) の TODO(spec) を解消した（2026-10-29。ADR ac33・e24e）
+- [x] [`Spec.Validation`](../../lean/Spec/Validation.lean) の TODO(spec) を解消した（2026-10-29。ADR ac33・e24e）
 - [ ] Email の境界値（ローカル部 64/65 文字、末尾のドット、`[IPv4]`、`[IPv6:…]`、引用符付きローカル部）のベクタが通る
 - [ ] 文字クラス境界値のベクタが通る
 - [ ] 範囲の R・W・L・SPEC 課題を証明し、TR-D が通る
@@ -44,5 +44,5 @@ generated:
 ## 参照
 
 - [`Spec.Member`](../../lean/Spec/Member.lean)
-- [`Spec.InputValidation`](../../lean/Spec/InputValidation.lean)
+- [`Spec.Validation`](../../lean/Spec/Validation.lean)
 - [ADR 10a5](../decision/10a5-text-length-and-character-classes.md)

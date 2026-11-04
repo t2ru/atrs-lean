@@ -2,9 +2,9 @@
 """適合テストベクタの共有入力 conformance/fixtures/master-data.json・config.json を生成する。
 
 - master-data.json: 上流のシードの SQL（atrs-initdb の integration-test-postgres）の INSERT を読み、
-  Spec.MasterData の欄名で書き出す。ピーク時期は投入年 2026 から 2 年分に展開する
+  Spec.Env.MasterData の欄名で書き出す。ピーク時期は投入年 2026 から 2 年分に展開する
   （docs/spec/conformance.md、ADR 9ee4）。行の順はシードの順のまま（Provider の読み込み順の既定）。
-- config.json: 上流の atrs.properties の値を Spec.Config の欄名で書き出す。
+- config.json: 上流の atrs.properties の値を Spec.Env.Config の欄名で書き出す。
 
   uv run python -I tools/conformance/master_fixture.py           # 書き出す
   uv run python -I tools/conformance/master_fixture.py --check   # 最新であることを確かめる
@@ -59,7 +59,7 @@ def values(s):
     return out
 
 
-# Spec.MasterData.FlightMaster の時刻で表せない時刻。出発時刻は HourMinute（0:00〜23:59）、到着時刻は
+# Spec.Env.MasterData.FlightMaster の時刻で表せない時刻。出発時刻は HourMinute（0:00〜23:59）、到着時刻は
 # ArrivalTime（出発日 0:00 からの時分。0:00〜47:59。"2415" は翌日 0:15）。上流のシードには該当する行が無い。
 # 該当する行は上流どおり残し、Spec 用の読み込みだけが除く（ADR 8f18・ADR ce36）。
 OUTSIDE_SPEC_TIME = "時刻が Spec の値域（出発 0:00〜23:59、到着 0:00〜47:59）の外"

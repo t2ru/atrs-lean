@@ -1,5 +1,5 @@
 import Abstraction.World.Alpha
-import Spec.UseCase.Reserve
+import Spec.Reserve
 import LangSemantics.Core.EStateHoare
 import SourceModel.Db.Tx
 
@@ -14,28 +14,28 @@ namespace Abstraction.Reserve.Rollback
 open Abstraction.World.Alpha SourceModel.Db.Schema
 
 /-- 状態の表のシーケンスが、`w` の採番を `a` だけ進めたもの。 -/
-def SeqGe (w : Spec.Port.World) (fd : FlightDb) : Prop :=
-  ∃ a : Spec.Nondet.SeqAdvance, sequencesOf fd = some (Spec.UseCase.Reserve.advance w a).sequences
+def SeqGe (w : Spec.World) (fd : FlightDb) : Prop :=
+  ∃ a : Spec.Nondet.SeqAdvance, sequencesOf fd = some (Spec.Reserve.advance w a).sequences
 
 theorem sequencesOf_rollback (start stop : FlightDb) : sequencesOf (FlightDb.rollback start stop) = sequencesOf stop := by
   rfl
 
 /-- 取消の後の α は、開始時の `World` の採番を進めたもの。 -/
-theorem worldOfDb_rollback {start stop : FlightDb} {w : Spec.Port.World} (hw : worldOfDb start = some w)
-    {a : Spec.Nondet.SeqAdvance} (hs : sequencesOf stop = some (Spec.UseCase.Reserve.advance w a).sequences) :
-    worldOfDb (FlightDb.rollback start stop) = some (Spec.UseCase.Reserve.advance w a) := by
+theorem worldOfDb_rollback {start stop : FlightDb} {w : Spec.World} (hw : worldOfDb start = some w)
+    {a : Spec.Nondet.SeqAdvance} (hs : sequencesOf stop = some (Spec.Reserve.advance w a).sequences) :
+    worldOfDb (FlightDb.rollback start stop) = some (Spec.Reserve.advance w a) := by
   obtain ⟨hf, hm, hr, -⟩ := worldOfDb_eq_some.mp hw
   exact worldOfDb_eq_some.mpr ⟨hf, hm, hr, (sequencesOf_rollback start stop).trans hs⟩
 
-theorem seqGe_self {w : Spec.Port.World} {fd : FlightDb} (hw : worldOfDb fd = some w) : SeqGe w fd :=
-  ⟨{}, by rw [(worldOfDb_eq_some.mp hw).2.2.2]; simp [Spec.UseCase.Reserve.advance]⟩
+theorem seqGe_self {w : Spec.World} {fd : FlightDb} (hw : worldOfDb fd = some w) : SeqGe w fd :=
+  ⟨{}, by rw [(worldOfDb_eq_some.mp hw).2.2.2]; simp [Spec.Reserve.advance]⟩
 
-theorem sequencesOf_eq {fd : FlightDb} {q : Spec.Port.Sequences} :
+theorem sequencesOf_eq {fd : FlightDb} {q : Spec.World.Sequences} :
     sequencesOf fd = some q ↔ seqOf fd.sqMember = some q.member ∧ seqOf fd.sqReservation = some q.reserve ∧
       seqOf fd.sqReserveFlight = some q.reserveFlight ∧ seqOf fd.sqPassenger = some q.passenger := by
   obtain ⟨qm, qr, qf, qp⟩ := q
   simp only [sequencesOf, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def, Option.some.injEq,
-    Spec.Port.Sequences.mk.injEq]
+    Spec.World.Sequences.mk.injEq]
   constructor
   · rintro ⟨m, hm, r, hr, f, hf, p, hp, rfl, rfl, rfl, rfl⟩
     exact ⟨hm, hr, hf, hp⟩
@@ -52,38 +52,38 @@ theorem seqOf_some_succ {st : LangSemantics.Sql.Sequence.SequenceState} {n : Nat
     · simp only [Option.some.injEq] at h; subst h; simp [seqOf]; omega
     · cases h
 
-theorem seqGe_reserve {w : Spec.Port.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
+theorem seqGe_reserve {w : Spec.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
     (hn : seqOf fd.sqReservation = some n) : SeqGe w { fd with sqReservation := some (n : Int) } := by
   obtain ⟨a, ha⟩ := h
   obtain ⟨h1, h2, h3, h4⟩ := sequencesOf_eq.mp ha
   rw [hn] at h2
   refine ⟨{ a with reserve := a.reserve + 1 }, sequencesOf_eq.mpr ⟨h1, ?_, h3, h4⟩⟩
   rw [seqOf_some_succ hn]
-  simp only [Spec.UseCase.Reserve.advance, Option.some.injEq] at h2 ⊢
+  simp only [Spec.Reserve.advance, Option.some.injEq] at h2 ⊢
   omega
 
-theorem seqGe_reserveFlight {w : Spec.Port.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
+theorem seqGe_reserveFlight {w : Spec.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
     (hn : seqOf fd.sqReserveFlight = some n) : SeqGe w { fd with sqReserveFlight := some (n : Int) } := by
   obtain ⟨a, ha⟩ := h
   obtain ⟨h1, h2, h3, h4⟩ := sequencesOf_eq.mp ha
   rw [hn] at h3
   refine ⟨{ a with reserveFlight := a.reserveFlight + 1 }, sequencesOf_eq.mpr ⟨h1, h2, ?_, h4⟩⟩
   rw [seqOf_some_succ hn]
-  simp only [Spec.UseCase.Reserve.advance, Option.some.injEq] at h3 ⊢
+  simp only [Spec.Reserve.advance, Option.some.injEq] at h3 ⊢
   omega
 
-theorem seqGe_passenger {w : Spec.Port.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
+theorem seqGe_passenger {w : Spec.World} {fd : FlightDb} (h : SeqGe w fd) {n : Nat}
     (hn : seqOf fd.sqPassenger = some n) : SeqGe w { fd with sqPassenger := some (n : Int) } := by
   obtain ⟨a, ha⟩ := h
   obtain ⟨h1, h2, h3, h4⟩ := sequencesOf_eq.mp ha
   rw [hn] at h4
   refine ⟨{ a with passenger := a.passenger + 1 }, sequencesOf_eq.mpr ⟨h1, h2, h3, ?_⟩⟩
   rw [seqOf_some_succ hn]
-  simp only [Spec.UseCase.Reserve.advance, Option.some.injEq] at h4 ⊢
+  simp only [Spec.Reserve.advance, Option.some.injEq] at h4 ⊢
   omega
 
 /-- 表だけを替えても、シーケンスは変わらない。 -/
-theorem seqGe_tables {w : Spec.Port.World} {fd fd' : FlightDb} (h : SeqGe w fd)
+theorem seqGe_tables {w : Spec.World} {fd fd' : FlightDb} (h : SeqGe w fd)
     (h1 : fd'.sqMember = fd.sqMember) (h2 : fd'.sqReservation = fd.sqReservation)
     (h3 : fd'.sqReserveFlight = fd.sqReserveFlight) (h4 : fd'.sqPassenger = fd.sqPassenger) : SeqGe w fd' := by
   obtain ⟨a, ha⟩ := h

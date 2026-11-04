@@ -3,7 +3,7 @@
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。
 
-入力検証は [`Spec.InputValidation`](InputValidation.lean#会員入力c1c2)、画面遷移は [`Spec.Http`](Http.lean#c1-会員登録) を参照。
+入力検証は [`Spec.Validation`](Validation.lean#会員入力c1c2)、画面遷移は [`Spec.Http`](Http.lean#c1-会員登録) を参照。
 -/
 
 /-!
@@ -92,7 +92,7 @@
    2. `m = toMember(input)`、`m.membershipNumber = membershipNumber`。
    3. 会員の基本情報（氏名・生年月日・性別・電話・郵便番号・住所・メール・カード情報）を更新する。
    4. `input.password` が空でなければ、`lastPassword := password（更新前のハッシュ）`, `password := PasswordHasher.hash(input.password)` に更新する。
-2. ログイン中のセッションが保持する会員情報を、更新後の会員情報で置き換える（[`Spec.Authentication`](Authentication.lean#セッション)）。
+2. ログイン中のセッションが保持する会員情報を、更新後の会員情報で置き換える（[`Spec.Auth`](Auth.lean#セッション)）。
 3. 成功メッセージ `i.ar.c2.2001` を表示する。
 
 **[Source]** 手順 1.1（照合）と 1.2〜1.4（更新）は別のトランザクションである。照合の後・更新の前に他のセッションが同じ会員のパスワードを変えても、更新は通る（モデル外の既知差異 [D-013](../../docs/spec/abstraction.md#既知差異)。並行実行でだけ観測できる）。

@@ -1,4 +1,4 @@
-import Spec.Seed
+import Spec.Seed.Master
 import Spec.Seed.Flight
 
 /-!
@@ -84,18 +84,18 @@ theorem flights_nodup : (flights.map (·.key)).Nodup := by
   obtain ⟨fy, hfy, rfl⟩ := hy
   exact hne ((mem_dayFlights hfx).1.symm.trans (hxy ▸ (mem_dayFlights hfy).1))
 
-theorem names_in_master : ∀ n ∈ names, ∃ m ∈ Spec.Seed.masterData.flightMasters, m.flightName = n := by
+theorem names_in_master : ∀ n ∈ names, ∃ m ∈ Spec.Seed.Master.masterData.flightMasters, m.flightName = n := by
   decide +kernel
 
-theorem slots_in_master : ∀ s ∈ slots, (∃ b ∈ Spec.Seed.masterData.boardingClasses, b.boardingClassCd = s.1) ∧
-    (∃ t ∈ Spec.Seed.masterData.fareTypes, t.fareTypeCd = s.2) := by
+theorem slots_in_master : ∀ s ∈ slots, (∃ b ∈ Spec.Seed.Master.masterData.boardingClasses, b.boardingClassCd = s.1) ∧
+    (∃ t ∈ Spec.Seed.Master.masterData.fareTypes, t.fareTypeCd = s.2) := by
   decide +kernel
 
 /-- シードのフライトは、シードのマスタを参照する（`World.RefMaster` の中身。FK_FLIGHT_1〜3）。 -/
 theorem flights_refMaster : ∀ x ∈ flights,
-    (∃ m ∈ Spec.Seed.masterData.flightMasters, m.flightName = x.key.flightName) ∧
-    (∃ b ∈ Spec.Seed.masterData.boardingClasses, b.boardingClassCd = x.key.boardingClassCd) ∧
-    (∃ t ∈ Spec.Seed.masterData.fareTypes, t.fareTypeCd = x.key.fareTypeCd) := by
+    (∃ m ∈ Spec.Seed.Master.masterData.flightMasters, m.flightName = x.key.flightName) ∧
+    (∃ b ∈ Spec.Seed.Master.masterData.boardingClasses, b.boardingClassCd = x.key.boardingClassCd) ∧
+    (∃ t ∈ Spec.Seed.Master.masterData.fareTypes, t.fareTypeCd = x.key.fareTypeCd) := by
   intro x hx
   obtain ⟨_, hn, hs⟩ := mem_flights hx
   exact ⟨names_in_master _ hn, (slots_in_master _ hs).1, (slots_in_master _ hs).2⟩

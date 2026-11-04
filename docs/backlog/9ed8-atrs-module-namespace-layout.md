@@ -20,7 +20,7 @@ ATRS の Lean で、名前から定義の場所が分かり、機能の証明課
 ## 範囲
 
 - 入口 `lean/Tools/LayoutCheck.lean`（`lake exe layout-check`）と `tools/ci/lean.sh` の手順
-- `Spec`: 複数の型をまとめたモジュールの型をモジュール名の下へ改名する（`Spec.Model.FlightType` など）。マスタの行の型は `Spec.MasterData` の下（`Spec.MasterData.Airport`）に、暦日の補助は `Spec.Prim.Date` の下に置く。参照の機械は `Spec.MasterQuery`（`Spec.MasterQuery.queryMachine`）にする。`Spec.Prim.Int`・`Format`・`Text`・`Time`、`Spec.CodeList`・`Spec.EnvPre` の名前をモジュール名の下に置く
+- `Spec`: 複数の型をまとめたモジュールの型をモジュール名の下へ改名する（`Spec.Model.FlightType` など）。マスタの行の型は `Spec.Env.MasterData` の下（`Spec.Env.MasterData.Airport`）に、暦日の補助は `Spec.Prim.Date` の下に置く。参照の機械は `Spec.MasterQuery`（`Spec.MasterQuery.queryMachine`）にする。`Spec.Prim.Int`・`Format`・`Text`・`Time`、`Spec.Env.CodeList`・`Spec.Env` の名前をモジュール名の下に置く
 - `SourceModel.FareQuery.ticketHelper`・`ticketReserveService`（旧 `SourceModel.MasterQuery.Providers.*`）
 - `Abstraction`: 機能のモジュール `Abstraction/Fare.lean`（ABS-001・002・003・004・101・102・112）と `Abstraction/MasterData.lean`（ABS-026・127）。補題のモジュール `Abstraction.Fare.BasicFareRun`・`FareRun`・`TotalFareRun`・`Abstraction.MasterData.QueryRun`（旧 `*Refines`）。義務の束 `*Adequate` と 1 歩の可換式 `*Refines_commutes`（旧 `*Commutes`）を機能のモジュールに、その部品（環境の前提 `env*` と証人）を `Abstraction.{Fare,MasterData}.Adequacy` に置く（旧 `Abstraction.Adequacy`）。ほかの下位モジュールの名前空間をモジュール名にする
 - `Tests`・`Tools` の補助の定義を、モジュール名の下に置く（`main` を除く）

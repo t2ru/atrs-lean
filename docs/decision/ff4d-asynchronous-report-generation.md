@@ -40,7 +40,7 @@ Chosen option: "キューとストアのポート + CSV のバイト仕様", bec
 
 * `ReportQueue.send(membershipNumber)` / 受信側は `onReportRequested(message)` ユースケース。メッセージが文字列でない・長さが 10 でない場合は無視する（原典どおり）。
 * `ReportStore` は会員番号ごとの名前空間にファイルを持ち、`writeTemp`, `publish`（原子的移動）, `list`, `read` を提供する。
-* CSV: 文字コード UTF-8（BOM なし）、改行 CRLF、全項目をダブルクォートで囲む（内部のクォートのエスケープは行わない。原典どおり。値に `"` が入らないことは型で保証される）。ヘッダ・列順・日付書式は [spec/reservation-history-report.md](../../lean/Spec/ReservationHistoryReport.lean) に定義する。
+* CSV: 文字コード UTF-8（BOM なし）、改行 CRLF、全項目をダブルクォートで囲む（内部のクォートのエスケープは行わない。原典どおり。値に `"` が入らないことは型で保証される）。ヘッダ・列順・日付書式は [spec/reservation-history-report.md](../../lean/Spec/Report.lean) に定義する。
 * ファイル名: `atrs_report_<会員番号>_<yyyyMMddHHmmss>.csv`。時刻は `Clock` から取得する。
 * 一覧: ファイル名の降順（Unicode スカラ値の辞書順の逆）。
 
@@ -72,5 +72,5 @@ Chosen option: "キューとストアのポート + CSV のバイト仕様", bec
 
 ## More Information
 
-* [spec/reservation-history-report.md](../../lean/Spec/ReservationHistoryReport.lean), [spec/ports.md](../../lean/Spec/Port.lean)
+* [spec/reservation-history-report.md](../../lean/Spec/Report.lean), [spec/ports.md](../../lean/Spec/World.lean)
 * 後続: [ADR 90f5](90f5-report-queue-at-least-once-delivery.md)（要求キューの配信保証と再配信の上限）

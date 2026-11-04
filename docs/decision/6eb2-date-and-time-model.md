@@ -41,7 +41,7 @@ Chosen option: "タイムゾーン無しの暦日 + Clock ポート", because �
 * `HourMinute`: 時（0–23）と分（0–59）。原典の 4 桁文字列 `HHmm` との相互変換を定義する。
 * `DateTime`: `Date` + 時・分・秒（レポートファイル名の `yyyyMMddHHmmss` に使用）。
 * 書式: `yyyy/MM/dd`（画面・CSV）、`HH:mm`（画面表示）、`yyyyMMddHHmmss`（ファイル名）。いずれもゼロ埋め固定桁。
-* 「今日」「現在日時」は `Clock` ポートから取得する（[spec/ports.md](../../lean/Spec/Port.lean)）。純粋関数は `today : Date` を引数に取る。
+* 「今日」「現在日時」は `Clock` ポートから取得する（[spec/ports.md](../../lean/Spec/World.lean)）。純粋関数は `today : Date` を引数に取る。
 * 年齢: `fullYearsBetween(birthday, now)`（`ChronoUnit.YEARS.between` と同じく、誕生日の到来前は 1 少ない）。閏日生まれの扱いは [spec/domain-model.md](../../lean/Spec/Model.lean) に定義する。
 
 ### Consequences
@@ -74,5 +74,5 @@ Chosen option: "タイムゾーン無しの暦日 + Clock ポート", because �
 
 ## More Information
 
-* [spec/domain-model.md](../../lean/Spec/Model.lean), [spec/ports.md](../../lean/Spec/Port.lean)
+* [spec/domain-model.md](../../lean/Spec/Model.lean), [spec/ports.md](../../lean/Spec/World.lean)
 * 後続: [ADR 9ee4](9ee4-clock-timezone-and-fixture-base-date.md)（本番の `Clock` のタイムゾーンと fixture の投入日）

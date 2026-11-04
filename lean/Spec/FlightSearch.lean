@@ -1,10 +1,10 @@
 import Spec.Prim
 import Spec.Model
-import Spec.Config
-import Spec.MasterData
+import Spec.Env.Config
+import Spec.Env.MasterData
 import Spec.Fare
 import Spec.Error
-import Spec.Port
+import Spec.World
 import Spec.Seed.Flight
 import Spec.Seed.FlightProps
 import Spec.Seed.World
@@ -24,9 +24,10 @@ import Machine
 -/
 
 namespace Spec.FlightSearch
-open Spec.Config Spec.Model Spec.Prim.Time Spec.Prim.Format Spec.Error
+open Spec.Env
+open Spec.Env.Config Spec.Model Spec.Prim.Time Spec.Prim.Format Spec.Error
 
-open Spec.Prim Spec.MasterData
+open Spec.Prim Spec.Env.MasterData
 
 /-!
 ## 照会可能期間
@@ -95,12 +96,12 @@ searchFlight(criteria: { depDate, boardingClassCd, depAirportCd, arrAirportCd, f
              flights: [Flight]; master, config, today) : Except AtrsError [FlightVacantInfo]
 ```
 
-`flights` はフライトの全件（[`Spec.Port`](Port.lean) の `FlightRepository.findAll` 相当。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
+`flights` はフライトの全件（[`Spec.Port`](World.lean) の `FlightRepository.findAll` 相当。抽象状態 `World.flights`。実装は絞り込みを永続化層に押し下げてよい）。
 Lean では、MD-3 かフライトの参照整合性（`World.RefMaster`。FK_FLIGHT_1〜3）が破れて区間の空港名か搭乗クラスがマスタに無いとき（PRE の外）、結果を `none` とする。
 
 ### 事前条件
 
-- [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[`Spec.InputValidation`](InputValidation.lean)）を通過していれば満たされる。
+- [Source]: 各フィールドが null でない・空文字でない（`Assert`）。入力検証（[`Spec.Validation`](Validation.lean)）を通過していれば満たされる。
 - [Spec]（Lean `Spec.FlightSearch.SearchInput.Pre`）: 次の連言。どれも入力だけの条件である（[ADR 0b0c](../../docs/decision/0b0c-flight-search-stage3-abs011.md)）。
   - 設定とマスタの不変条件（MD-1〜MD-8）
   - 照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList` に当たる。無ければ [Source] は `calculateBasicFare` で `NullPointerException`。D-033。PRE の外）
@@ -325,33 +326,33 @@ def FlightNamesHaveText (md : MasterData) (c : Criteria) : Prop :=
   ∀ r, md.routeOf c.depAirportCd c.arrAirportCd = some r →
     ∀ fm ∈ md.flightMasters, fm.routeNo = r.routeNo → Text.hasText fm.flightName.val = true
 
-/-- PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
+/-- PRE: 設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、照会の搭乗クラスがマスタにあること（入力検証の `ExistInCodeList`）、
 照会の空港コードが空白でないこと（[Source] の `Assert.hasText` に当たる）。どれも入力だけの条件である（照会条件の条件は、
 入力検証を通過していれば満たされる）。空港コードの形（英大文字 3 文字）は課さない。形の違うコードは、区間が無いので `e.ar.b1.2002` になる
 （[Source] も同じ）。フライトがマスタに無い便名・運賃種別を指しても、[Spec] の `candidateOf` も [Source] の結合も、その行を除く
 （搭乗クラスは照会と同じものだけが残る）。フライトの参照整合性 `World.RefMaster` は PRE に入れない（ADR 0b0c）。
 便マスタの便名が空白でないこと（`FlightNamesHaveText`。D-033）も課す。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#事前条件", gap "D-033"]
-def SearchInput.Pre (_w : Port.World) (i : SearchInput) : Prop :=
-  EnvPre.masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
+def SearchInput.Pre (_w : World) (i : SearchInput) : Prop :=
+  Env.masterConfigOk (i.cfg, i.md) ∧ (i.md.boardingClassOf i.criteria.boardingClassCd).isSome = true ∧
     Text.hasText i.criteria.depAirportCd = true ∧ Text.hasText i.criteria.arrAirportCd = true ∧
     FlightNamesHaveText i.md i.criteria
 
 /-- 1 歩の出力: `searchFlight` の結果（PRE の下では `none` にならない。`searchFlight_isSome`）。 -/
-def answer (w : Port.World) (i : SearchInput) : SearchOutput :=
+def answer (w : World) (i : SearchInput) : SearchOutput :=
   (searchFlight i.cfg i.md i.today i.criteria w.findAll).getD (.ok [])
 
 /-- 1 歩の関数（選択は環境・自由とも `Unit`）: 状態を変えず、`answer` を出力する。 -/
-def searchStep (w : Port.World) (i : SearchInput) (_ : Unit × Unit) : Port.World × SearchOutput := (w, answer w i)
+def searchStep (w : World) (i : SearchInput) (_ : Unit × Unit) : World × SearchOutput := (w, answer w i)
 
 /-- 空席照会の抽象機械。状態は `World`、INV は主キーの一意性、初期状態はシードを投入した後の `World`
 （予約と共有する。backlog aedf の第 3 段）。1 歩は状態を変えない。 -/
 @[spec_doc "lean/Spec/FlightSearch.lean#searchflight"]
-def searchMachine : Machine.Machine Port.World SearchInput SearchOutput :=
-  Machine.Machine.ofChoice Port.World.Inv (· = Seed.World.world) SearchInput.Pre searchStep () ()
+def searchMachine : Machine.Machine World SearchInput SearchOutput :=
+  Machine.Machine.ofChoice World.Inv (· = Seed.World.world) SearchInput.Pre searchStep () ()
 
 /-- PRE の下で、`searchFlight` は `none` にならない（`answer` の既定値は観測されない）。 -/
-theorem searchFlight_isSome {w : Port.World} {i : SearchInput} (h : SearchInput.Pre w i) :
+theorem searchFlight_isSome {w : World} {i : SearchInput} (h : SearchInput.Pre w i) :
     (searchFlight i.cfg i.md i.today i.criteria w.findAll).isSome := by
   obtain ⟨hok, hbsome, _, _, _⟩ := h
   obtain ⟨_, hmd⟩ := hok.valid

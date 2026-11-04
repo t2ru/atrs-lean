@@ -4,7 +4,7 @@ import Abstraction.Reserve.MemberCheck
 # Abstraction.Reserve.ValidateReservation
 
 ABS-041 の補題: 予約内容の検証（`TicketReserveServiceImpl.validateReservation`）の Hoare 三つ組と、[Spec] の
-`Spec.UseCase.Reserve.validateReservation` の対応（backlog aedf の第 3 段）。
+`Spec.Reserve.validateReservation` の対応（backlog aedf の第 3 段）。
 
 検証は、代表者の年齢・運賃種別の利用条件・代表者の会員照合・搭乗者の会員照合の順で、文は会員の取得だけである。
 トランザクションの取消は、状態の表を変えていないので、状態を変えない。
@@ -60,14 +60,14 @@ theorem transactional_hoare {α : Type} {P : St → Prop} {fd : FlightDb} (hP : 
     exact he
 
 /-- 運賃種別の利用条件の検査の列（[Spec]）は、予約フライトごとの検査の最初の失敗。 -/
-theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.UseCase.Reserve.DraftPassenger} :
-    ∀ {ks : List Spec.Model.FlightKey} {FTs : List Spec.MasterData.FareType},
+theorem foldlM_fareTypes {md : Spec.Env.MasterData} {ps : List Spec.Reserve.DraftPassenger} :
+    ∀ {ks : List Spec.Model.FlightKey} {FTs : List Spec.Env.MasterData.FareType},
       LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) ks FTs →
       ∀ acc : Except Spec.Error.AtrsError Unit,
         ks.foldlM (init := acc) (fun acc k => do
             match acc with
             | .error e => return .error e
-            | .ok () => Spec.UseCase.Reserve.checkFareTypeOf md ps k) =
+            | .ok () => Spec.Reserve.checkFareTypeOf md ps k) =
           some (acc.bind fun _ => firstErr (FTs.map (specFareTypeOf · ps)))
   | [], [], .nil, acc => by cases acc <;> rfl
   | k :: ks, FT :: FTs, .cons h hr, acc => by
@@ -82,34 +82,34 @@ theorem foldlM_fareTypes {md : Spec.MasterData} {ps : List Spec.UseCase.Reserve.
       simp only [List.map_cons]
       cases specFareTypeOf FT ps <;> rfl
 
-theorem checkFareTypes_eq {md : Spec.MasterData} {d : Spec.UseCase.Reserve.Draft} {FTs : List Spec.MasterData.FareType}
+theorem checkFareTypes_eq {md : Spec.Env.MasterData} {d : Spec.Reserve.Draft} {FTs : List Spec.Env.MasterData.FareType}
     (h : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
-    Spec.UseCase.Reserve.checkFareTypes md d = some (firstErr (FTs.map (specFareTypeOf · d.passengers))) :=
+    Spec.Reserve.checkFareTypes md d = some (firstErr (FTs.map (specFareTypeOf · d.passengers))) :=
   foldlM_fareTypes h (.ok ())
 
 /-- 予約内容の検証。予約情報 `r` は、すべての予約フライトに同じ搭乗者の列 `xs`（[Spec] の `d.passengers`）を持ち、
 代表者の年齢・会員・氏名・性別が [Spec] の予約内容 `d` に当たる。 -/
 theorem validate_hoare {P : St → Prop} {fd : FlightDb} (hP : Stable P fd) {svc : TicketReserveServiceImpl}
-    {w : Spec.Port.World} (he : MemberEnv fd svc.memberRepository w) {cfg : Spec.Config} {md : Spec.MasterData}
-    {r : SourceModel.Domain.Model.Reservation} {d : Spec.UseCase.Reserve.Draft}
+    {w : Spec.World} (he : MemberEnv fd svc.memberRepository w) {cfg : Spec.Env.Config} {md : Spec.Env.MasterData}
+    {r : SourceModel.Domain.Model.Reservation} {d : Spec.Reserve.Draft}
     {xs : List SourceModel.Domain.Model.Passenger} {fl : SourceModel.Domain.Model.Flight}
-    {fls : List SourceModel.Domain.Model.Flight} {FTs : List Spec.MasterData.FareType} {age : Int.J32}
+    {fls : List SourceModel.Domain.Model.Flight} {FTs : List Spec.Env.MasterData.FareType} {age : Int.J32}
     {M0 : SourceModel.Domain.Model.Member}
     (hrfl : r.reserveFlightList =
       some ((fl :: fls).map fun fl => some { flight := some fl, passengerList := some (xs.map some) }))
     (hage : r.repAge = some age) (hagev : age.val = (d.repAge : Int))
     (hmin : svc.representativeMinAge.val = (cfg.representativeMinAge : Int))
-    (hm : r.repMember = some M0) (hn : Spec.UseCase.Reserve.memberNoOf M0.membershipNumber = d.repMembershipNumber)
+    (hm : r.repMember = some M0) (hn : Spec.Reserve.memberNoOf M0.membershipNumber = d.repMembershipNumber)
     (hf : r.repFamilyName = some d.repFamilyName) (hg : r.repGivenName = some d.repGivenName)
     (hgd : r.repGender = some d.repGender)
     (hR : LangSemantics.Core.List.Forall₂ PassengerFacts xs d.passengers) (hne : xs ≠ []) (hlen : xs.length ≤ 6)
     (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts (fl :: fls) FTs)
     (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) d.flights.toList FTs) :
-    ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
+    ∃ v, Spec.Reserve.validateReservation cfg md w d = some v ∧
       Hoare P (TicketReserveServiceImpl.validateReservation svc (some r)) (PostB P v) (PostBE P v) := by
   have hgen : LangSemantics.Core.List.Forall₂ (fun x q => x.gender = some q.gender) xs d.passengers :=
     LangSemantics.Core.List.Forall₂.imp (fun _ _ ⟨_, _, _, _, _, h⟩ => h) hR
-  refine ⟨_, by simp only [Spec.UseCase.Reserve.validateReservation, checkFareTypes_eq hkf]; rfl, ?_⟩
+  refine ⟨_, by simp only [Spec.Reserve.validateReservation, checkFareTypes_eq hkf]; rfl, ?_⟩
   have hnevL : ∀ g : SourceModel.Domain.Model.Flight → JRef SourceModel.Domain.Model.ReserveFlight,
       LangSemantics.Java.Spring.Assert.notEmptyValue (some ((fl :: fls).map g)) "reserveFlightList must not empty." =
         pure ((fl :: fls).map g) := fun _ => rfl

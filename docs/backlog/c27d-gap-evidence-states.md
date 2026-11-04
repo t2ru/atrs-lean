@@ -28,7 +28,7 @@ generated:
   - 文書: `lean/trace-attributes.md`・`architecture.md`・SKILL.md（版 0.7）
 - ATRS
   - `lean/Abstraction/Gap.lean` の 30 件
-  - `need_D001`・`need_D002`・`need_D012`・`need_D027` の `@[gap]`、`Spec.MasterData.MD5` の `@[gap "D-005"]`
+  - `need_D001`・`need_D002`・`need_D012`・`need_D027` の `@[gap]`、`Spec.Env.MasterData.MD5` の `@[gap "D-005"]`
   - 文書: ADR 6ab4、abstraction.md・assurance.md（生成した表と本文）、atrs-porting.md、index・log、AGENTS.md
 
 ## 対象外

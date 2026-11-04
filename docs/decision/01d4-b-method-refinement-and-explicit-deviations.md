@@ -75,7 +75,7 @@ Chosen option: "B メソッドの抽象機械とリファインメントで定�
 
 * `Spec` は実行可能でなければならない（ベクタ生成のため）。そこで各操作に、関係 `step` と実行可能な **標準の選択** `run` の組を与える。両者には定理 `PRE → step s i (run s i)` を持たせる。
 * `Spec` 自身の証明義務は 2 つある。1 つは初期化が INV を満たすこと、もう 1 つは PRE の下の各操作が INV を保つことである。
-* 値域（[`Spec.Model`](../../lean/Spec/Model.lean#値域)）と、マスタ・設定の制約 MD-1〜MD-8（[`Spec.MasterData`](../../lean/Spec/MasterData.lean#不変条件spec)）は、各操作の PRE に含める。
+* 値域（[`Spec.Model`](../../lean/Spec/Model.lean#値域)）と、マスタ・設定の制約 MD-1〜MD-8（[`Spec.Env.MasterData`](../../lean/Spec/Env/MasterData.lean#不変条件spec)）は、各操作の PRE に含める。
 
 ### リファインメント（具体機械が抽象機械をリファインする）
 

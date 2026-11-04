@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""シードのマスタ・設定（conformance/fixtures の JSON）から、[Spec] の値のリテラル `lean/Spec/Seed.lean` を生成する。
+"""シードのマスタ・設定（conformance/fixtures の JSON）から、[Spec] の値のリテラル `lean/Spec/Seed/Master.lean` を生成する。
 
 backlog 0fdf: シードのマスタ・設定が入口の環境の前提（MD-1〜MD-8 と設定の妥当性）を満たすことを、Lean の定理で
 示すために使う。行の順は JSON（シードの順）のまま。`outsideSpec` の行（[Spec] の値域の外の時刻。上流のシードには無い）は、
@@ -9,7 +9,7 @@ backlog 0fdf: シードのマスタ・設定が入口の環境の前提（MD-1�
 付ける（backlog 76a6・ADR a41d）。シードから [Spec] の値への変換は本生成器の決定論的な変換で、`--check` が一致を確かめる。
 
 使い方:
-  uv run python -I tools/conformance/seed_lean.py           # lean/Spec/Seed.lean を書く
+  uv run python -I tools/conformance/seed_lean.py           # lean/Spec/Seed/Master.lean を書く
   uv run python -I tools/conformance/seed_lean.py --check   # 生成物が最新であることを確かめる（CI）
 """
 import json
@@ -18,7 +18,7 @@ import sys
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 FIX = REPO / "conformance" / "fixtures"
-OUT = REPO / "lean" / "Spec" / "Seed.lean"
+OUT = REPO / "lean" / "Spec" / "Seed" / "Master.lean"
 CHUNK = 100
 INVENTORY = REPO / "trace" / "source-inventory.json"
 
@@ -90,12 +90,12 @@ def render() -> str:
     md = json.loads((FIX / "master-data.json").read_text(encoding="utf-8"))
     cfg = json.loads((FIX / "config.json").read_text(encoding="utf-8"))
     lines = [
-        "import Spec.MasterData",
-        "import Spec.Config",
+        "import Spec.Env.MasterData",
+        "import Spec.Env.Config",
         "import Trace",
         "",
         "/-!",
-        "# Spec.Seed",
+        "# Spec.Seed.Master",
         "",
         "シードのマスタ・設定（`conformance/fixtures/master-data.json`・`config.json`）の [Spec] の値。",
         "`tools/conformance/seed_lean.py` が生成する。手で編集しない。",
@@ -106,9 +106,10 @@ def render() -> str:
         "",
         "set_option maxRecDepth 4096",
         "",
-        "namespace Spec.Seed",
+        "namespace Spec.Seed.Master",
         "",
-        "open Spec.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType)",
+        "open Spec.Env (MasterData Config)",
+        "open Spec.Env.MasterData (Airport Route FlightMaster BoardingClass FareType PeakTime Plane CreditType)",
         "",
     ]
     hashes = seed_hashes()
@@ -127,7 +128,7 @@ def render() -> str:
         f".{cfg['defaultFlightType']}, {{ val := {s(cfg['defaultDepAirportCd'])} }}, {{ val := {s(cfg['defaultArrAirportCd'])} }}, "
         f".{cfg['defaultBoardingClassCd']}⟩",
         "",
-        "end Spec.Seed",
+        "end Spec.Seed.Master",
         "",
     ]
     return "\n".join(lines)

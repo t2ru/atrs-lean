@@ -24,7 +24,7 @@ open Abstraction.Fare.TotalAlpha Abstraction.Fare.TotalFareRun Abstraction.Maste
   Abstraction.MasterData.AlphaLeaf Abstraction.World.Alpha
 open LangSemantics.Java LangSemantics.Java.Exception
 open SourceModel.Db.Schema SourceModel.Db.Tx SourceModel.App.B2 SourceModel.MasterQuery SourceModel.ReserveQuery
-open Spec.UseCase.Reserve
+open Spec.Reserve
 open Abstraction.World.Init Abstraction.MasterData.QueryRun Machine
 
 section
@@ -32,7 +32,7 @@ open Spec.Model Spec.Prim Spec.Prim.Text SourceModel.Domain.Common.Masterdata
 
 /-- 空席の確保の前提（`VacCond`）: 選択フライトの主キーのフライトがあれば、マスタに搭乗クラス・運賃種別・便マスタがあり、
 フライト情報の便マスタは主キーの便名を持つ。 -/
-theorem vacCond_of {md : Spec.MasterData} {p : Providers} {w : Spec.Port.World}
+theorem vacCond_of {md : Spec.Env.MasterData} {p : Providers} {w : Spec.World}
     (hmc : ∀ name : String, hasText name = true →
       ∀ X, md.flightMasterOf name = some X → ∀ rt, md.routes.find? (fun r => r.routeNo == X.routeNo) = some rt →
       ∃ fm r da aa dt art, FlightMasterProvider.getFlightMaster p.flightMaster name = .ok (some fm) ∧
@@ -44,39 +44,39 @@ theorem vacCond_of {md : Spec.MasterData} {p : Providers} {w : Spec.Port.World}
     (hk : keyOfForm f = some k) (ht : hasText k.flightName.val = true) (he : w.existsFlight k = true) :
     VacCond md p f k := by
   have he' := he
-  simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he'
+  simp only [Spec.World.existsFlight, List.any_eq_true, beq_iff_eq] at he'
   obtain ⟨g, hg, rfl⟩ := he'
   obtain ⟨⟨m, hm, hmn⟩, ⟨b, hb, hbn⟩, -⟩ := href g hg
   obtain ⟨X, hX⟩ : ∃ X, md.flightMasterOf g.key.flightName.val = some X := by
     apply Option.isSome_iff_exists.mp
-    unfold Spec.MasterData.flightMasterOf
+    unfold Spec.Env.MasterData.flightMasterOf
     rw [List.find?_isSome]
     exact ⟨m, hm, by simp [hmn]⟩
   have hXm : X ∈ md.flightMasters := List.mem_of_find?_eq_some hX
-  obtain ⟨rt, hrt⟩ : ∃ rt, Spec.Ticket.routeOfMaster md X = some rt := by
+  obtain ⟨rt, hrt⟩ : ∃ rt, Spec.Reserve.FlightSelection.routeOfMaster md X = some rt := by
     apply Option.isSome_iff_exists.mp
-    unfold Spec.Ticket.routeOfMaster
+    unfold Spec.Reserve.FlightSelection.routeOfMaster
     rw [List.find?_isSome]
     obtain ⟨r, hr, hrn⟩ := h3.2 X hXm
     exact ⟨r, hr, by simp [hrn]⟩
   obtain ⟨fm, -, -, hfm, hfn, -⟩ := Abstraction.Reserve.Select.mkFlight_master_some hmc hk ht hX hrt
   refine ⟨hk, ?_, fareTypeOf_of_exists href he, fm, hfm, hfn⟩
   apply Option.isSome_iff_exists.mp
-  unfold Spec.MasterData.boardingClassOf
+  unfold Spec.Env.MasterData.boardingClassOf
   rw [List.find?_isSome]
   exact ⟨b, hb, by simp [hbn]⟩
 
 end
 
-theorem step_reserve {w w' : Spec.Port.World} {ia : Spec.UseCase.Reserve.MInput} (hop : ia.op = .reserve)
+theorem step_reserve {w w' : Spec.World} {ia : Spec.Reserve.MInput} (hop : ia.op = .reserve)
     {x : Except Spec.Error.AtrsError ReserveResult} (hx : reserveOp ia.cfg ia.md ia.today w ia.req = some (w', x))
     (d : Spec.Nondet.InvalidRequestDetail) :
     reserveStep w ia ((.none, .none), d) = (w', withDetail d (x.map .reserved)) := by
   simp [reserveStep, baseStep, hop, hx]
 
 /-- 障害の像: I/O の失敗は環境の選択 N-002、排他の失敗は N-001 で、状態は採番の前進だけ変わる。 -/
-theorem fault_out {env : Env} {e : JThrow} (hf : IsFault env e) (w : Spec.Port.World)
-    {ia : Spec.UseCase.Reserve.MInput} (hop : ia.op = .reserve) (a : Spec.Nondet.SeqAdvance) :
+theorem fault_out {env : Env} {e : JThrow} (hf : IsFault env e) (w : Spec.World)
+    {ia : Spec.Reserve.MInput} (hop : ia.op = .reserve) (a : Spec.Nondet.SeqAdvance) :
     ∃ oc oa c, catchReserve (.error e) = .ok oc ∧ reserveStep w ia c = (advance w a, oa) ∧ aoR oc = some oa ∧
       Spec.Nondet.admits ⟨env.ioFailAt, env.conflictAt⟩ c.1 := by
   obtain ⟨m, ⟨rfl, hi⟩ | ⟨rfl, hc⟩⟩ := hf
@@ -103,8 +103,8 @@ theorem reserve_core {α : Type} {P : St → Prop} {p : Providers} {ic : SourceM
   exact hrest hv s hs
 
 /-- 空席の確保の業務例外のコードは `e.ar.b2.2008` か `e.ar.b2.2009`。 -/
-theorem secureAll_code {md : Spec.MasterData} {T : Spec.Prim.Date} {n : Nat} :
-    ∀ {ks : List Spec.Model.FlightKey} {w : Spec.Port.World} {be : Spec.Error.BusinessError},
+theorem secureAll_code {md : Spec.Env.MasterData} {T : Spec.Prim.Date} {n : Nat} :
+    ∀ {ks : List Spec.Model.FlightKey} {w : Spec.World} {be : Spec.Error.BusinessError},
       secureAll md T n ks w = some (.error (.business be)) → be = .fareTypeUnavailable ∨ be = .noVacancy
   | [], w, be, h => by simp [secureAll] at h
   | k :: ks, w, be, h => by
@@ -138,18 +138,18 @@ theorem forall₂_imp_mem {α β : Type} {R S : α → β → Prop} :
   | _ :: _, _ :: _, .cons hab hr, h =>
     .cons (h _ _ hab List.mem_cons_self) (forall₂_imp_mem hr fun x y hxy hy => h x y hxy (List.mem_cons_of_mem _ hy))
 
-theorem findForUpdate_isSome {w : Spec.Port.World} {k : Spec.Model.FlightKey} (h : w.existsFlight k = true) :
+theorem findForUpdate_isSome {w : Spec.World} {k : Spec.Model.FlightKey} (h : w.existsFlight k = true) :
     (w.findForUpdate k).isSome := by
-  simp only [Spec.Port.World.existsFlight, List.any_eq_true] at h
-  unfold Spec.Port.World.findForUpdate
+  simp only [Spec.World.existsFlight, List.any_eq_true] at h
+  unfold Spec.World.findForUpdate
   rw [List.find?_isSome]
   exact h
 
 /-- 予約確定の 1 歩: 具体機械の予約確定の 1 歩（どの許される並びでも）は出力の値で終わり、実行後の状態は具体側の不変条件を
 満たし、その α と出力の像は、[Spec] の予約の 1 歩（環境の選択と自由な選択を適当に選んだもの）の結果である。 -/
 @[obligation "ABS-020", "ABS-022"]
-theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t) (hinv : w.Inv)
-    {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
+theorem reserve_run {t : FlightDb} {w : Spec.World} (hw : worldOfDb t = some w) (hic : IcW t) (hinv : w.Inv)
+    {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.Reserve.MInput} (hα : aiR ic = some ia)
     (hk : ic.kind = .reserve) (hpre : ia.Pre w) (h9 : dev_D009 w ia) (h14 : dev_D014R ic) (h31 : dev_D031 ia)
     (h1 : dev_D001R ia) (h2 : dev_D002R ia) (h12 : dev_D012R ia) (h27 : dev_D027R ic) {mo : Order}
     (hmo : mo.Allowed ic.input.db) :
@@ -340,8 +340,8 @@ theorem reserve_run {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = som
 
 /-- 予約の 1 歩（予約確認・予約確定）: どの許される並びでも、具体機械の 1 歩は出力の値で終わり、実行後の状態は具体側の
 不変条件を満たし、その α と出力の像は、[Spec] の予約の 1 歩の結果である。 -/
-theorem run_any {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hic : IcW t)
-    (hinv : w.Inv) {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.UseCase.Reserve.MInput} (hα : aiR ic = some ia)
+theorem run_any {t : FlightDb} {w : Spec.World} (hw : worldOfDb t = some w) (hic : IcW t)
+    (hinv : w.Inv) {ic : SourceModel.ReserveQuery.MInput} {ia : Spec.Reserve.MInput} (hα : aiR ic = some ia)
     (hpre : ia.Pre w) (h9 : dev_D009 w ia) (h31 : dev_D031 ia) (h1 : dev_D001R ia) (h2 : dev_D002R ia)
     (h12 : dev_D012R ia) (h27 : dev_D027R ic) (h14 : dev_D014R ic)
     {mo : Order} (hmo : mo.Allowed ic.input.db) :

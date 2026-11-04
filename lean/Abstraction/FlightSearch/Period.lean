@@ -50,7 +50,7 @@ theorem isAvailableFareType_between (ft : SourceModel.Domain.Model.FareType) (s 
   · intro ⟨h1, h2⟩; exact ⟨by omega, by omega⟩
 
 /-- 搭乗日の検査: [Source] の `validateDepatureDate` は、[Spec] の `outOfPeriod` が真のときだけ業務例外 2001 を投げる。 -/
-theorem validateDepatureDate_eq {cfg : Spec.Config} {limitDay : J32} (hL : limitDay.val = (cfg.limitDay : Int))
+theorem validateDepatureDate_eq {cfg : Spec.Env.Config} {limitDay : J32} (hL : limitDay.val = (cfg.limitDay : Int))
     {tJ dJ : JLocalDate} {T D : Date} (hT : dateOfJ tJ = some T) (hD : dateOfJ dJ = some D) :
     SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateDepatureDate limitDay tJ tJ (some dJ) =
       if Spec.FlightSearch.outOfPeriod cfg T D = true then

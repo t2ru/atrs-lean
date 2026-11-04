@@ -1,7 +1,7 @@
 import Abstraction.Reserve.Witness
 import Abstraction.Reserve.ReserveRun
 import Abstraction.MasterData.SeedAlpha
-import Spec.EnvPre
+import Spec.Env
 import Spec.Seed.FlightProps
 
 /-!
@@ -16,7 +16,7 @@ ABS-041（予約）の束 `Machine.Preserves`（`Abstraction.Reserve.reservePres
 -/
 
 namespace Abstraction.Reserve.Preserves
-open Abstraction.Reserve.Alpha Abstraction.Reserve.Witness Abstraction.World.Alpha Spec.UseCase.Reserve Machine
+open Abstraction.Reserve.Alpha Abstraction.Reserve.Witness Abstraction.World.Alpha Spec.Reserve Machine
 open Abstraction.FlightSearch.Witness
 
 /-- 2026-11-01。 -/
@@ -31,22 +31,22 @@ def icSeed : SourceModel.ReserveQuery.MInput :=
   ⟨{ db := SourceModel.Db.MasterSeed.masterDb, config := SourceModel.AtrsProperties.upstreamConfig, form := formSeed,
      env := SourceModel.Db.Tx.Env.fixed ⟨2026, 11, 1, by decide⟩ }, .confirm⟩
 
-def iaSeed : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Seed.config, Spec.Seed.masterData, daySeed, ⟨[⟨daySeed, "NTT001", .N, .OW⟩], inputR⟩, .confirm⟩
+def iaSeed : Spec.Reserve.MInput :=
+  ⟨Spec.Seed.Master.config, Spec.Seed.Master.masterData, daySeed, ⟨[⟨daySeed, "NTT001", .N, .OW⟩], inputR⟩, .confirm⟩
 
 theorem aiR_icSeed : aiR icSeed = some iaSeed := by
-  have h1 : Abstraction.MasterData.Alpha.configOf icSeed.input.config = some Spec.Seed.config := by decide
-  have h2 : Abstraction.MasterData.Alpha.masterDataOf icSeed.input.db = some Spec.Seed.masterData :=
+  have h1 : Abstraction.MasterData.Alpha.configOf icSeed.input.config = some Spec.Seed.Master.config := by decide
+  have h2 : Abstraction.MasterData.Alpha.masterDataOf icSeed.input.db = some Spec.Seed.Master.masterData :=
     Abstraction.MasterData.SeedAlpha.masterDataOf_seed
   have h3 : Abstraction.MasterData.AlphaLeaf.dateOfJ (icSeed.input.env.clock 0) = some daySeed := by decide
   have h4 : requestOf icSeed.input.form = some iaSeed.req := by decide
   simp only [aiR, h1, h2, h3, h4, Option.bind_some]
   rfl
 
-theorem refMaster_seed : Spec.Seed.World.world.RefMaster Spec.Seed.masterData :=
+theorem refMaster_seed : Spec.Seed.World.world.RefMaster Spec.Seed.Master.masterData :=
   Spec.Seed.World.world_refMaster
 
-theorem memberRefMaster_seed : Spec.Seed.World.world.MemberRefMaster Spec.Seed.masterData := by decide
+theorem memberRefMaster_seed : Spec.Seed.World.world.MemberRefMaster Spec.Seed.Master.masterData := by decide
 
 theorem req_seed : iaSeed.req.Valid := by
   refine ⟨?_, by decide, by decide, by decide, by decide, by decide, by decide, by decide, inputR_passengers⟩
@@ -75,8 +75,8 @@ theorem devs_seed : dev_D001R iaSeed ∧ dev_D002R iaSeed ∧ dev_D012R iaSeed :
 /-- ABS-041 の環境の前提: マスタ・設定の妥当性、要求の長さと桁、状態とマスタの対応（外部キー。`World.RefMaster`・
 `World.MemberRefMaster`）、操作の結果が定まること（選択フライトが 1〜2 件、搭乗者の欄、マスタの便・区間・運賃種別）、
 差異の前提（D-009・D-031・D-001・D-002・D-012）。状態と入力の述語（スキル spec-pivot の ADR 61e6）。 -/
-def envR (w : Spec.Port.World) (i : Spec.UseCase.Reserve.MInput) : Prop :=
-  Spec.EnvPre.masterConfigOk (i.cfg, i.md) ∧ i.req.Valid ∧ w.RefMaster i.md ∧ w.MemberRefMaster i.md ∧
+def envR (w : Spec.World) (i : Spec.Reserve.MInput) : Prop :=
+  Spec.Env.masterConfigOk (i.cfg, i.md) ∧ i.req.Valid ∧ w.RefMaster i.md ∧ w.MemberRefMaster i.md ∧
     (match i.op with
      | .confirm => (confirmOp i.cfg i.md w i.req).isSome = true
      | .reserve => (reserveOp i.cfg i.md i.today w i.req).isSome = true) ∧
@@ -85,7 +85,7 @@ def envR (w : Spec.Port.World) (i : Spec.UseCase.Reserve.MInput) : Prop :=
 /-- 初期状態（シードを投入した後の `World`）で、証人 `iaSeed` は環境の前提を満たす。 -/
 theorem envR_seed : envR Spec.Seed.World.world iaSeed := by
   obtain ⟨d1, d2, d12⟩ := devs_seed
-  refine ⟨Spec.EnvPre.seed_env, req_seed, refMaster_seed, memberRefMaster_seed, confirm_seed, fun h => ?_,
+  refine ⟨Spec.Seed.seed_env, req_seed, refMaster_seed, memberRefMaster_seed, confirm_seed, fun h => ?_,
     fun o h e => ?_, d1, d2, d12⟩
   · simp [iaSeed] at h
   · simp [iaSeed] at e
@@ -93,8 +93,8 @@ theorem envR_seed : envR Spec.Seed.World.world iaSeed := by
 theorem dev_D027R_icSeed : dev_D027R icSeed := ⟨by rw [aiR_icSeed]; rfl, by decide⟩
 
 /-- 環境の前提を破る入力: MD-1 を破るマスタ（PRE が成り立たない）。 -/
-def iaBad : Spec.UseCase.Reserve.MInput :=
-  ⟨Spec.Seed.config, Spec.EnvPre.badMasterData, Abstraction.Fare.TotalAlpha.day0, ⟨[], inputR⟩, .confirm⟩
+def iaBad : Spec.Reserve.MInput :=
+  ⟨Spec.Seed.Master.config, Spec.Seed.badMasterData, Abstraction.Fare.TotalAlpha.day0, ⟨[], inputR⟩, .confirm⟩
 
 /-! ## 自由な選択の枠 -/
 
@@ -104,11 +104,11 @@ def eraseDetailO : MOutput → MOutput
   | o => o
 
 /-- 自由な選択の枠の射影: 状態はそのまま、出力の `InvalidRequest` の詳細を消す。 -/
-def eraseDetailR (r : Spec.Port.World × MOutput) : Spec.Port.World × MOutput := (r.1, eraseDetailO r.2)
+def eraseDetailR (r : Spec.World × MOutput) : Spec.World × MOutput := (r.1, eraseDetailO r.2)
 
 /-- `eraseDetailR` の核: 状態が同じで、出力が同じか、どちらも `InvalidRequest`（詳細だけが違う）。 -/
 @[kernel "docs/spec/abstraction.md#spec-の非決定性"]
-def sameUpToDetail (a b : Spec.Port.World × MOutput) : Prop :=
+def sameUpToDetail (a b : Spec.World × MOutput) : Prop :=
   a.1 = b.1 ∧ (a.2 = b.2 ∨ ∃ s t, a.2 = .error (.invalidRequest s) ∧ b.2 = .error (.invalidRequest t))
 
 theorem eraseDetailO_eq (o₁ o₂ : MOutput) : eraseDetailO o₁ = eraseDetailO o₂ ↔
@@ -144,10 +144,10 @@ theorem reserveStep_frame : Machine.Machine.FreeFrame reserveStep eraseDetailR :
 
 /-- 選択の像の材料: 基底の `reserveStep`・標準の選択、環境の記述 `ceR`（`@[std_abs]`）と許す選択 `admits`、
 自由な選択の枠の射影 `eraseDetailR`。 -/
-def chR : Machine.Preserves.Choice Spec.Port.World Spec.UseCase.Reserve.MInput Spec.UseCase.Reserve.MOutput
+def chR : Machine.Preserves.Choice Spec.World Spec.Reserve.MInput Spec.Reserve.MOutput
     SourceModel.ReserveQuery.MInput :=
   ⟨Spec.Nondet.ConflictChoice × Spec.Nondet.IoFailureChoice, Spec.Nondet.InvalidRequestDetail, Spec.Nondet.FaultSpec,
-    Spec.Port.World × Spec.UseCase.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, ⟨none, none⟩,
+    Spec.World × Spec.Reserve.MOutput, reserveStep, ceR, Spec.Nondet.admits, ⟨none, none⟩,
     (Spec.Nondet.ConflictChoice.std, Spec.Nondet.IoFailureChoice.std), eraseDetailR⟩
 
 /-- 障害の位置を消した具体側の入力（障害の無い環境での実現）。 -/

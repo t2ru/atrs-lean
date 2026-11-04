@@ -1,4 +1,4 @@
-import Spec.UseCase.Reserve
+import Spec.Reserve
 import LangSemantics.Core.List
 
 /-!
@@ -9,7 +9,7 @@ ABS-041 の補題: [Spec] の予約の操作の値から読み取れる事実（
 -/
 
 namespace Abstraction.Reserve.SpecFacts
-open Spec.Ticket Spec.Error Spec.Model
+open Spec.Reserve.FlightSelection Spec.Error Spec.Model
 
 theorem exists_forall₂ {α β : Type} {R : α → β → Prop} :
     ∀ {l : List α}, (∀ a ∈ l, ∃ b, R a b) → ∃ bs, LangSemantics.Core.List.Forall₂ R l bs
@@ -51,7 +51,7 @@ theorem forall₂_len {α β : Type} {R : α → β → Prop} :
   | [], [], .nil => rfl
   | _ :: _, _ :: _, .cons _ hs => by simp [forall₂_len hs]
 
-theorem checkFlight_ok {w : Spec.Port.World} {f : Option ResolvedFlight} {r : ResolvedFlight}
+theorem checkFlight_ok {w : Spec.World} {f : Option ResolvedFlight} {r : ResolvedFlight}
     (h : checkFlight w f = .ok r) : w.existsFlight r.key = true ∧ f = some r := by
   unfold checkFlight at h
   split at h
@@ -61,7 +61,7 @@ theorem checkFlight_ok {w : Spec.Port.World} {f : Option ResolvedFlight} {r : Re
     · cases h
 
 /-- 選択フライトの検証が成功すれば、返す便の主キーは、解決した選択フライトの主キーで、主キーで存在する。 -/
-theorem validateFlightList_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
+theorem validateFlightList_ok {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World}
     {fs : List (Option ResolvedFlight)} {it : Itinerary FlightKey} (h : validateFlightList cfg md w fs = some (.ok it)) :
     LangSemantics.Core.List.Forall₂ (fun f k => ∃ r, f = some r ∧ r.key = k ∧ w.existsFlight k = true) fs it.toList := by
   unfold validateFlightList at h
@@ -108,7 +108,7 @@ theorem validateFlightList_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Sp
 
 /-- 選択フライトの検証が成功すれば、選択フライトはどれも便マスタで解決でき、返す便の主キーは、解決した選択フライトの
 主キーで、主キーで存在する。 -/
-theorem selects_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {ss : List SelectFlight}
+theorem selects_ok {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World} {ss : List SelectFlight}
     {it : Itinerary FlightKey} (h : validateFlightList cfg md w (ss.map (resolve md)) = some (.ok it)) :
     LangSemantics.Core.List.Forall₂ (fun s k => ∃ r, resolve md s = some r ∧ r.key = k ∧ w.existsFlight k = true)
       ss it.toList :=
@@ -116,7 +116,7 @@ theorem selects_ok {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.Wor
 
 /-- 解決した選択フライトの主キー: 出発日・搭乗クラス・運賃種別は選択フライトのもの、便名は便マスタの便名で、その値は
 選択フライトの便名。 -/
-theorem resolve_key {md : Spec.MasterData} {s : SelectFlight} {r : ResolvedFlight} (h : resolve md s = some r) :
+theorem resolve_key {md : Spec.Env.MasterData} {s : SelectFlight} {r : ResolvedFlight} (h : resolve md s = some r) :
     md.flightMasterOf s.flightName = some r.master ∧ r.key = ⟨s.depDate, r.master.flightName, s.boardingClassCd, s.fareTypeCd⟩ ∧
       r.master.flightName.val = s.flightName := by
   simp only [resolve, Option.map_eq_some_iff] at h
@@ -126,7 +126,7 @@ theorem resolve_key {md : Spec.MasterData} {s : SelectFlight} {r : ResolvedFligh
   simpa using this
 
 /-- 選択フライトの検証の値があれば、選択フライトは 1〜2 件。 -/
-theorem validateFlightList_len {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World}
+theorem validateFlightList_len {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World}
     {fs : List (Option ResolvedFlight)} {x : Except AtrsError (Itinerary FlightKey)}
     (h : validateFlightList cfg md w fs = some x) : 1 ≤ fs.length ∧ fs.length ≤ 2 := by
   unfold validateFlightList at h
@@ -136,19 +136,19 @@ theorem validateFlightList_len {cfg : Spec.Config} {md : Spec.MasterData} {w : S
   · cases h
 
 /-- 主キーで存在するフライトの運賃種別は、マスタにある。 -/
-theorem fareTypeOf_of_exists {md : Spec.MasterData} {w : Spec.Port.World} (href : w.RefMaster md) {k : FlightKey}
+theorem fareTypeOf_of_exists {md : Spec.Env.MasterData} {w : Spec.World} (href : w.RefMaster md) {k : FlightKey}
     (he : w.existsFlight k = true) : ∃ FT, md.fareTypeOf k.fareTypeCd = some FT := by
-  simp only [Spec.Port.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
+  simp only [Spec.World.existsFlight, List.any_eq_true, beq_iff_eq] at he
   obtain ⟨g, hg, rfl⟩ := he
   obtain ⟨-, -, ⟨t, htm, hte⟩⟩ := href g hg
   apply Option.isSome_iff_exists.mp
-  unfold Spec.MasterData.fareTypeOf
+  unfold Spec.Env.MasterData.fareTypeOf
   rw [List.find?_isSome]
   exact ⟨t, htm, by simp [hte]⟩
 
-open Spec.UseCase.Reserve in
+open Spec.Reserve in
 /-- 予約確認の操作の値の分解。 -/
-theorem confirmOp_cases {cfg : Spec.Config} {md : Spec.MasterData} {w : Spec.Port.World} {r : Request}
+theorem confirmOp_cases {cfg : Spec.Env.Config} {md : Spec.Env.MasterData} {w : Spec.World} {r : Request}
     {x : Except AtrsError Nat} (h : confirmOp cfg md w r = some x) :
     ∃ v, validateFlightList cfg md w (r.selects.map (resolve md)) = some v ∧
       ((∃ e, v = .error e ∧ x = .error (asInvalidRequest e)) ∨

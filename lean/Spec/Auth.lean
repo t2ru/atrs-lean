@@ -1,5 +1,5 @@
 /-!
-# 認証（A0/A1/A2）（`Spec.Authentication`）
+# 認証（A0/A1/A2）（`Spec.Auth`）
 
 > **区分: 形式化前の草案（draft）。** Lean `Spec` に形式化した時点で、定義を Lean へのリンクと非規範の要約に置き換える（[ADR 61bc](../../docs/decision/61bc-lean-spec-as-normative-source.md)）。ただしセッションの保持方式・ログイン処理の伝送（フォーム投稿、Cookie、ログイン時のセッション ID の更新）は [`Spec.Http`](Http.lean#セッション) の規範節に従う。
 

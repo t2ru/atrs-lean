@@ -1,4 +1,4 @@
-import Spec.UseCase.Reserve
+import Spec.Reserve
 
 /-!
 # Abstraction.Reserve.RegSpec
@@ -8,7 +8,7 @@ ABS-041 の補題: [Spec] の予約の登録（`register`）の採番の分解�
 -/
 
 namespace Abstraction.Reserve.RegSpec
-open Spec.UseCase.Reserve Spec.Model Spec.Ticket
+open Spec.Reserve Spec.Model Spec.Reserve.FlightSelection
 
 /-- 位置 `n` から採番した搭乗者の記録。 -/
 def recsFrom : Nat → List Passenger → List (Nat × Passenger)
@@ -16,15 +16,15 @@ def recsFrom : Nat → List Passenger → List (Nat × Passenger)
   | n, q :: qs => (n, q) :: recsFrom (n + 1) qs
 
 /-- 搭乗者の採番を `k` だけ進める。 -/
-def advP (w : Spec.Port.World) (k : Nat) : Spec.Port.World :=
+def advP (w : Spec.World) (k : Nat) : Spec.World :=
   { w with sequences := { w.sequences with passenger := w.sequences.passenger + k } }
 
-theorem foldl_addPassenger : ∀ (qs : List Passenger) (pre : List (Nat × Passenger)) (w : Spec.Port.World),
+theorem foldl_addPassenger : ∀ (qs : List Passenger) (pre : List (Nat × Passenger)) (w : Spec.World),
     qs.foldl addPassenger (pre, w) = (pre ++ recsFrom w.sequences.passenger qs, advP w qs.length)
   | [], pre, w => by simp [recsFrom, advP]
   | q :: qs, pre, w => by
     rw [List.foldl_cons]
-    simp only [addPassenger, Spec.Port.World.nextPassengerNo]
+    simp only [addPassenger, Spec.World.nextPassengerNo]
     rw [foldl_addPassenger qs]
     simp only [recsFrom, advP, List.append_assoc, List.singleton_append, List.length_cons]
     rw [Nat.add_assoc, Nat.add_comm 1 qs.length]
@@ -35,7 +35,7 @@ def rfsFrom (ps : List Passenger) : Nat → Nat → List FlightKey → List (Res
   | rfn, pn, k :: ks => (⟨rfn, k⟩, recsFrom pn ps) :: rfsFrom ps (rfn + 1) (pn + ps.length) ks
 
 /-- 予約フライト・搭乗者の採番を進める。 -/
-def advRF (w : Spec.Port.World) (f p : Nat) : Spec.Port.World :=
+def advRF (w : Spec.World) (f p : Nat) : Spec.World :=
   { w with sequences := { w.sequences with reserveFlight := w.sequences.reserveFlight + f,
                                             passenger := w.sequences.passenger + p } }
 
@@ -56,12 +56,12 @@ theorem legs_rfsIt (ps : List Passenger) (rfn pn : Nat) (it : Itinerary FlightKe
     simp only [rfsIt, Itinerary.toList, rfsFrom,
       ReserveFlights.legs_roundTripOf _ _ ((recsFrom_snd _ ps).trans (recsFrom_snd _ ps).symm)]
 
-theorem numberFlight_eq (ps : List Passenger) (w : Spec.Port.World) (k : FlightKey) :
+theorem numberFlight_eq (ps : List Passenger) (w : Spec.World) (k : FlightKey) :
     numberFlight ps w k =
       ((⟨w.sequences.reserveFlight, k⟩, recsFrom w.sequences.passenger ps), advRF w 1 ps.length) := by
-  simp only [numberFlight, Spec.Port.World.nextReserveFlightNo, foldl_addPassenger, List.nil_append, advP, advRF]
+  simp only [numberFlight, Spec.World.nextReserveFlightNo, foldl_addPassenger, List.nil_append, advP, advRF]
 
-theorem numberFlights_eq (ps : List Passenger) (w : Spec.Port.World) (it : Itinerary FlightKey) :
+theorem numberFlights_eq (ps : List Passenger) (w : Spec.World) (it : Itinerary FlightKey) :
     numberFlights ps w it =
       (rfsIt ps w.sequences.reserveFlight w.sequences.passenger it,
         advRF w it.toList.length (it.toList.length * ps.length)) := by
@@ -69,7 +69,7 @@ theorem numberFlights_eq (ps : List Passenger) (w : Spec.Port.World) (it : Itine
   | oneWay k => simp only [numberFlights, numberFlight_eq, rfsIt, Itinerary.toList, List.length_singleton, Nat.one_mul]
   | roundTrip o h =>
     simp only [numberFlights, numberFlight_eq, rfsIt, Itinerary.toList, advRF, List.length_cons, List.length_nil]
-    simp only [Prod.mk.injEq, Spec.Port.World.mk.injEq, Spec.Port.Sequences.mk.injEq, true_and]
+    simp only [Prod.mk.injEq, Spec.World.mk.injEq, Spec.World.Sequences.mk.injEq, true_and]
     omega
 
 theorem recsFrom_take : ∀ (n : Nat) (qs : List Passenger) (j : Nat) (q : Passenger), qs[j]? = some q →

@@ -21,18 +21,18 @@ open LangSemantics.Sql.Core LangSemantics.Core.MapM Machine.Kernel Spec.Model
   Spec.FlightSearch
 
 open LangSemantics.Sql.Postgresql SourceModel.Db.Schema SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
-  Spec.Prim Spec.MasterData SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository
+  Spec.Prim Spec.Env.MasterData SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository
   SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository
   SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig
   Abstraction.MasterData.Join Abstraction.FlightSearch.Period
 
 /-! ## マスタの引き方 -/
 
-theorem fareTypeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (s : String)
+theorem fareTypeOf_find {db : MasterDb} {md : Spec.Env.MasterData} (hm : masterDataOf db = some md) (s : String)
     {cd : FareTypeCd} (hcd : ftCdOf s = some cd) :
     md.fareTypeOf cd = (db.fareType.find? fun ft => ft.fareTypeCd.val == s).bind fareTypeOfRow := by
   obtain ⟨-, -, -, -, hfts, -⟩ := masterDataOf_eq_some.mp hm
-  unfold Spec.MasterData.fareTypeOf
+  unfold Spec.Env.MasterData.fareTypeOf
   refine find?_mapM hfts fun r x hx => ?_
   have e := fareTypeOfRow_code hx
   rw [Bool.eq_iff_iff, beq_iff_eq, beq_iff_eq]
@@ -40,17 +40,17 @@ theorem fareTypeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataO
   · rintro rfl; exact inj_of_kernel ftCdOf_kernel e hcd
   · rintro h; rw [h] at e; rw [hcd] at e; exact (Option.some.inj e).symm
 
-theorem flightMasterOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (s : String) :
+theorem flightMasterOf_find {db : MasterDb} {md : Spec.Env.MasterData} (hm : masterDataOf db = some md) (s : String) :
     md.flightMasterOf s = (db.flightMaster.find? fun fm => fm.flightName.val == s).bind flightMasterOfRow := by
   obtain ⟨-, -, hfms, -⟩ := masterDataOf_eq_some.mp hm
-  unfold Spec.MasterData.flightMasterOf
+  unfold Spec.Env.MasterData.flightMasterOf
   refine find?_mapM hfms fun r x hx => ?_
   rw [(flightMasterOfRow_fields hx).2]
 
-theorem routeOf_find {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) (dep arr : String) :
+theorem routeOf_find {db : MasterDb} {md : Spec.Env.MasterData} (hm : masterDataOf db = some md) (dep arr : String) :
     md.routeOf dep arr = (db.route.find? fun r => routeKey r == (dep, arr)).bind routeOfRow := by
   obtain ⟨-, hrts, -⟩ := masterDataOf_eq_some.mp hm
-  unfold Spec.MasterData.routeOf
+  unfold Spec.Env.MasterData.routeOf
   refine find?_mapM hrts fun r x hx => ?_
   obtain ⟨e1, e2⟩ := routeOfRow_codes hx
   rw [e1, e2, Bool.eq_iff_iff]
@@ -146,7 +146,7 @@ theorem cond_holds {c : Criteria} {dep arr : String} {bdn : Int} {f : FlightRow}
     exact ⟨h4, by omega, rfl, h3, h5, h6⟩
 
 /-- FLIGHT の行 1 つについて、文の結果の行と [Spec] の候補が対応する（両方とも無いか、両方ともあって `RowRel`）。 -/
-theorem rowAt_rel {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
+theorem rowAt_rel {db : MasterDb} {md : Spec.Env.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
     {dep arr : String} {route : Route} (hroute : md.routeOf dep arr = some route) (bdn : Int)
     {f : FlightRow} {F : Flight} (hf : flightOfRow f = some F) :
     Option.Rel (RowRel f) (rowAt db (paramsOf c dep arr bdn) dep arr f) (candidateOf md c route bdn F) := by
@@ -186,18 +186,18 @@ def rowFlight (r : FlightResult) : FlightRow :=
   ⟨r.departureDate, r.flightName, r.boardingClassCd, r.fareTypeCd, r.vacantNum⟩
 
 /-- 結果の行の α: フライトの行の写しと、その便名・運賃種別のマスタの組（[Spec] の候補の形）。 -/
-def candOfRow (md : Spec.MasterData) (row : VacantSeatRow) : Option Candidate := do
+def candOfRow (md : Spec.Env.MasterData) (row : VacantSeatRow) : Option Candidate := do
   let F ← flightOfRow (rowFlight row.result)
   let fm ← md.flightMasterOf F.key.flightName.val
   let ft ← md.fareTypeOf F.key.fareTypeCd
   pure ⟨F, fm, ft⟩
 
 /-- 結果の行が候補 `X` に写り、整列キーの列が `X` の運賃種別の表示順・便マスタの出発時刻の写しである。 -/
-def RowOk (md : Spec.MasterData) (row : VacantSeatRow) (X : Candidate) : Prop :=
+def RowOk (md : Spec.Env.MasterData) (row : VacantSeatRow) (X : Candidate) : Prop :=
   candOfRow md row = some X ∧ natOfInt4 row.displayOrder = some X.fareType.displayOrder ∧
     hmOfStr row.departureTime.val = some X.master.departureTime
 
-theorem candidateOf_parts {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight} {X : Candidate}
+theorem candidateOf_parts {md : Spec.Env.MasterData} {c : Criteria} {route : Route} {bdn : Int} {F : Flight} {X : Candidate}
     (h : candidateOf md c route bdn F = some X) :
     X.flight = F ∧ md.flightMasterOf F.key.flightName.val = some X.master ∧ md.fareTypeOf F.key.fareTypeCd = some X.fareType := by
   unfold candidateOf at h
@@ -207,7 +207,7 @@ theorem candidateOf_parts {md : Spec.MasterData} {c : Criteria} {route : Route} 
   · cases h; exact ⟨rfl, hfm, hft⟩
   · cases h
 
-theorem rowOk_of_rel {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn : Int} {f : FlightRow} {F : Flight}
+theorem rowOk_of_rel {md : Spec.Env.MasterData} {c : Criteria} {route : Route} {bdn : Int} {f : FlightRow} {F : Flight}
     {row : VacantSeatRow} {X : Candidate} (hr : RowRel f row X) (hX : candidateOf md c route bdn F = some X) :
     RowOk md row X := by
   obtain ⟨h1, h2, h3, h4⟩ := hr
@@ -219,7 +219,7 @@ theorem rowOk_of_rel {md : Spec.MasterData} {c : Criteria} {route : Route} {bdn 
 
 /-- 列の対応: FLIGHT の行の列の写しが `fs` なら、文の結果の行の列（`rowAt` で絞ったもの）は、`candOfRow` で
 [Spec] の候補の列（`candidateOf` で絞ったもの）に写り、各行は `RowOk`。 -/
-theorem rows_cands {db : MasterDb} {md : Spec.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
+theorem rows_cands {db : MasterDb} {md : Spec.Env.MasterData} (hm : masterDataOf db = some md) {c : Criteria}
     {dep arr : String} {route : Route} (hroute : md.routeOf dep arr = some route) (bdn : Int)
     {fl : List FlightRow} {fs : List Flight} (h : fl.mapM flightOfRow = some fs) :
     (fl.filterMap (rowAt db (paramsOf c dep arr bdn) dep arr)).mapM (candOfRow md) =

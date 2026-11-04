@@ -41,7 +41,7 @@ Chosen option: "`PasswordHasher` ポートとして抽象化", because ドメイ
 * 契約: `matches(raw, hash(raw)) = true`。`raw ≠ raw'` のとき `matches(raw', hash(raw))` は高確率で `false`（参照実装では常に `false`）。
 * ドメインは `PasswordHash` を不透明な文字列として扱い、比較・分解しない。
 * 参照（インメモリ）アダプタはテスト用の決定的な可逆でない写像（例: `"{test}" ++ raw`）を使ってよい。本番相当の互換アダプタは `{pbkdf2}` 形式（Spring Security 5.8 既定パラメータ）を実装する。互換アダプタの詳細は [backlog 4b0e](../backlog/4b0e-in-memory-adapters-and-seed-data.md) で扱う。
-* ログインの事前検査（会員番号 10 文字、パスワード 8〜20 文字）は業務規則として [spec/authentication.md](../../lean/Spec/Authentication.lean) に定義する。
+* ログインの事前検査（会員番号 10 文字、パスワード 8〜20 文字）は業務規則として [spec/authentication.md](../../lean/Spec/Auth.lean) に定義する。
 
 ### Consequences
 
@@ -72,4 +72,4 @@ Chosen option: "`PasswordHasher` ポートとして抽象化", because ドメイ
 
 ## More Information
 
-* [spec/ports.md](../../lean/Spec/Port.lean), [spec/authentication.md](../../lean/Spec/Authentication.lean)
+* [spec/ports.md](../../lean/Spec/World.lean), [spec/authentication.md](../../lean/Spec/Auth.lean)

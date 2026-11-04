@@ -23,7 +23,7 @@ generated:
 
 1. 予約確認と予約確定を、1 つの機械にするか、2 つの機械にするか。
 2. `Conflict`・I/O 失敗のとき、[Spec] の状態がどう変わるか。
-   - [`Spec.Port`](../../lean/Spec/Port.lean#idgenerator) と [ADR e56e](e56e-conflict-as-spec-nondeterminism.md) は、「採番以外の状態は変わらない」「採番は失敗したトランザクションでも巻き戻らない」と定める。
+   - [`Spec.Port`](../../lean/Spec/World.lean#idgenerator) と [ADR e56e](e56e-conflict-as-spec-nondeterminism.md) は、「採番以外の状態は変わらない」「採番は失敗したトランザクションでも巻き戻らない」と定める。
    - [Source] では、失敗するまでに `nextval` が呼ばれた回数だけ採番が進む。
    - ところが Lean の選択の型 `ConflictChoice`・`IoFailureChoice` は `none | conflict` で、進んだ数を表せなかった。
 3. 具体機械で、どの例外を出力の値にするか。
@@ -54,7 +54,7 @@ Chosen option: "機械 (a)・採番の前進 (a)"。理由は次のとおりで�
 
 | 項目 | 決定 |
 | --- | --- |
-| 抽象機械 | `Spec.UseCase.Reserve.reserveMachine := Machine.ofChoice World.Inv (· = Spec.Seed.World.world) MInput.Pre reserveStep (std, std) InvalidRequestDetail.std`。<br>- 入力 `MInput` は、設定・マスタ・今日・要求・操作の種類（`confirm`・`reserve`）。<br>- 出力は `Except AtrsError MOutputValue`（`confirmed totalFare`・`reserved result`）。<br>- 選択の型は `(ConflictChoice × IoFailureChoice) × InvalidRequestDetail` |
+| 抽象機械 | `Spec.Reserve.reserveMachine := Machine.ofChoice World.Inv (· = Spec.Seed.World.world) MInput.Pre reserveStep (std, std) InvalidRequestDetail.std`。<br>- 入力 `MInput` は、設定・マスタ・今日・要求・操作の種類（`confirm`・`reserve`）。<br>- 出力は `Except AtrsError MOutputValue`（`confirmed totalFare`・`reserved result`）。<br>- 選択の型は `(ConflictChoice × IoFailureChoice) × InvalidRequestDetail` |
 | 1 歩 `reserveStep` | 次の順に選ぶ。<br>- I/O 失敗: `System("e.ar.fw.9999")`、採番だけ進む。<br>- `Conflict`: 予約確定だけ。`Conflict`、採番だけ進む。予約確認は状態を変えないので `Conflict` を返さない（ADR e56e）。<br>- それ以外: 標準の結果 `baseStep` の `InvalidRequest` の詳細を、自由な選択 N-004 で置き換える |
 | PRE | 設定とマスタが妥当で、操作の標準の結果が定まる（`confirmOp`・`reserveOp` が `some`）。<br>`buildDraft` は空でない搭乗者欄が無ければ無し（ADR 4c45 のレビューの指摘）なので、PRE は搭乗者が 1 名以上であることを含む |
 | INV | `World.Inv`（フライトの主キーの一意性）のまま。予約の主キー・使用済みの番号は、第 3 段の [Source] の具体側の不変条件（`Glue.ofStd` の `Ic`）で扱う |

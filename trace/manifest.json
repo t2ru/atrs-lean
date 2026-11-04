@@ -10189,75 +10189,75 @@
       "layer": "SourceModel"
     },
     {
-      "name": "Spec.CodeList.CodeEntry",
+      "name": "Spec.Env.CodeList.CodeEntry",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.airport",
+      "name": "Spec.Env.CodeList.airport",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.boardingClass",
+      "name": "Spec.Env.CodeList.boardingClass",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.contains",
+      "name": "Spec.Env.CodeList.contains",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.creditMonth",
+      "name": "Spec.Env.CodeList.creditMonth",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.creditType",
+      "name": "Spec.Env.CodeList.creditType",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.creditYear",
+      "name": "Spec.Env.CodeList.creditYear",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.fareType",
+      "name": "Spec.Env.CodeList.fareType",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.flightType",
+      "name": "Spec.Env.CodeList.flightType",
       "layer": "Spec"
     },
     {
-      "name": "Spec.CodeList.gender",
+      "name": "Spec.Env.CodeList.gender",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config",
+      "name": "Spec.Env.Config",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.Valid",
+      "name": "Spec.Env.Config.Valid",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.default",
+      "name": "Spec.Env.Config.default",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.initialPassengersNumber",
+      "name": "Spec.Env.Config.initialPassengersNumber",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.maxPassengersNumber",
+      "name": "Spec.Env.Config.maxPassengersNumber",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.telAreaAndLocalMaxLength",
+      "name": "Spec.Env.Config.telAreaAndLocalMaxLength",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Config.telAreaAndLocalMinLength",
+      "name": "Spec.Env.Config.telAreaAndLocalMinLength",
       "layer": "Spec"
     },
     {
-      "name": "Spec.EnvPre.masterConfigOk",
+      "name": "Spec.Env.masterConfigOk",
       "layer": "Spec"
     },
     {
@@ -10461,111 +10461,111 @@
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData",
+      "name": "Spec.Env.MasterData",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.Airport",
+      "name": "Spec.Env.MasterData.Airport",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.BoardingClass",
+      "name": "Spec.Env.MasterData.BoardingClass",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.BoardingClassInfo",
+      "name": "Spec.Env.MasterData.BoardingClassInfo",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.CreditType",
+      "name": "Spec.Env.MasterData.CreditType",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.FareType",
+      "name": "Spec.Env.MasterData.FareType",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.FareTypeInfo",
+      "name": "Spec.Env.MasterData.FareTypeInfo",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.FlightMaster",
+      "name": "Spec.Env.MasterData.FlightMaster",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD1",
+      "name": "Spec.Env.MasterData.MD1",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD2",
+      "name": "Spec.Env.MasterData.MD2",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD3",
+      "name": "Spec.Env.MasterData.MD3",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD4",
+      "name": "Spec.Env.MasterData.MD4",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD5",
+      "name": "Spec.Env.MasterData.MD5",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD6",
+      "name": "Spec.Env.MasterData.MD6",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD7",
+      "name": "Spec.Env.MasterData.MD7",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.MD8",
+      "name": "Spec.Env.MasterData.MD8",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.PeakTime",
+      "name": "Spec.Env.MasterData.PeakTime",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.Plane",
+      "name": "Spec.Env.MasterData.Plane",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.Route",
+      "name": "Spec.Env.MasterData.Route",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.Valid",
+      "name": "Spec.Env.MasterData.Valid",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.airportNopCode",
+      "name": "Spec.Env.MasterData.airportNopCode",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.boardingClassOf",
+      "name": "Spec.Env.MasterData.boardingClassOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.fareTypeOf",
+      "name": "Spec.Env.MasterData.fareTypeOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.flightMasterOf",
+      "name": "Spec.Env.MasterData.flightMasterOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.multiplicationRatioOn",
+      "name": "Spec.Env.MasterData.multiplicationRatioOn",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.peakTimeOn",
+      "name": "Spec.Env.MasterData.peakTimeOn",
       "layer": "Spec"
     },
     {
-      "name": "Spec.MasterData.routeOf",
+      "name": "Spec.Env.MasterData.routeOf",
       "layer": "Spec"
     },
     {
@@ -10797,63 +10797,63 @@
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.Sequences",
+      "name": "Spec.World.Sequences",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World",
+      "name": "Spec.World",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.Inv",
+      "name": "Spec.World.Inv",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.MemberRefMaster",
+      "name": "Spec.World.MemberRefMaster",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.RefMaster",
+      "name": "Spec.World.RefMaster",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.existsFlight",
+      "name": "Spec.World.existsFlight",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.findAll",
+      "name": "Spec.World.findAll",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.findForUpdate",
+      "name": "Spec.World.findForUpdate",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.findMember",
+      "name": "Spec.World.findMember",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.insertReservation",
+      "name": "Spec.World.insertReservation",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.nextPassengerNo",
+      "name": "Spec.World.nextPassengerNo",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.nextReserveFlightNo",
+      "name": "Spec.World.nextReserveFlightNo",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.nextReserveNo",
+      "name": "Spec.World.nextReserveNo",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.reserveNoOf",
+      "name": "Spec.World.reserveNoOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Port.World.updateVacantNum",
+      "name": "Spec.World.updateVacantNum",
       "layer": "Spec"
     },
     {
@@ -11077,235 +11077,235 @@
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.airports",
+      "name": "Spec.Seed.Master.airports",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.boardingClasses",
+      "name": "Spec.Seed.Master.boardingClasses",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.creditTypes",
+      "name": "Spec.Seed.Master.creditTypes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.fareTypes",
+      "name": "Spec.Seed.Master.fareTypes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.flightMasters",
+      "name": "Spec.Seed.Master.flightMasters",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.peakTimes",
+      "name": "Spec.Seed.Master.peakTimes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.planes",
+      "name": "Spec.Seed.Master.planes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Seed.routes",
+      "name": "Spec.Seed.Master.routes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.Itinerary",
+      "name": "Spec.Reserve.FlightSelection.Itinerary",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.ResolvedFlight",
+      "name": "Spec.Reserve.FlightSelection.ResolvedFlight",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.SelectFlight",
+      "name": "Spec.Reserve.FlightSelection.SelectFlight",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.availableMinute",
+      "name": "Spec.Reserve.FlightSelection.availableMinute",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.checkFareTypes",
+      "name": "Spec.Reserve.FlightSelection.checkFareTypes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.checkFlight",
+      "name": "Spec.Reserve.FlightSelection.checkFlight",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.checkInterval",
+      "name": "Spec.Reserve.FlightSelection.checkInterval",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.checkReverse",
+      "name": "Spec.Reserve.FlightSelection.checkReverse",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.departureMinute",
+      "name": "Spec.Reserve.FlightSelection.departureMinute",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.resolve",
+      "name": "Spec.Reserve.FlightSelection.resolve",
       "layer": "Spec"
     },
     {
-      "name": "Spec.Ticket.validateFlightList",
+      "name": "Spec.Reserve.FlightSelection.validateFlightList",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.Draft",
+      "name": "Spec.Reserve.Draft",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.DraftPassenger",
+      "name": "Spec.Reserve.DraftPassenger",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.DraftPassenger.toPassenger",
+      "name": "Spec.Reserve.DraftPassenger.toPassenger",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.MInput",
+      "name": "Spec.Reserve.MInput",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.MInput.Pre",
+      "name": "Spec.Reserve.MInput.Pre",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.MOutputValue",
+      "name": "Spec.Reserve.MOutputValue",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.Op",
+      "name": "Spec.Reserve.Op",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.PassengerInput",
+      "name": "Spec.Reserve.PassengerInput",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.PassengerInput.isEmpty",
+      "name": "Spec.Reserve.PassengerInput.isEmpty",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.PassengerInput.toPassenger",
+      "name": "Spec.Reserve.PassengerInput.toPassenger",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.Request",
+      "name": "Spec.Reserve.Request",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.Request.Valid",
+      "name": "Spec.Reserve.Request.Valid",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.ReserveInput",
+      "name": "Spec.Reserve.ReserveInput",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.ReserveResult",
+      "name": "Spec.Reserve.ReserveResult",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.asInvalidRequest",
+      "name": "Spec.Reserve.asInvalidRequest",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.buildDraft",
+      "name": "Spec.Reserve.buildDraft",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkFareTypeOf",
+      "name": "Spec.Reserve.checkFareTypeOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkFareTypes",
+      "name": "Spec.Reserve.checkFareTypes",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkPassengerMembers",
+      "name": "Spec.Reserve.checkPassengerMembers",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkRepAge",
+      "name": "Spec.Reserve.checkRepAge",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkRepMember",
+      "name": "Spec.Reserve.checkRepMember",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.checkSelects",
+      "name": "Spec.Reserve.checkSelects",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.compactPassengers",
+      "name": "Spec.Reserve.compactPassengers",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.confirmOp",
+      "name": "Spec.Reserve.confirmOp",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.memberNoOf",
+      "name": "Spec.Reserve.memberNoOf",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.register",
+      "name": "Spec.Reserve.register",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserve",
+      "name": "Spec.Reserve.reserve",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveConfirm",
+      "name": "Spec.Reserve.reserveConfirm",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveMachine",
+      "name": "Spec.Reserve.reserveMachine",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveMachine_initIs",
+      "name": "Spec.Reserve.reserveMachine_initIs",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveMachine_run_step",
+      "name": "Spec.Reserve.reserveMachine_run_step",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "name": "Spec.Reserve.reserveMachine_sound",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveOp",
+      "name": "Spec.Reserve.reserveOp",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveStep",
+      "name": "Spec.Reserve.reserveStep",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveStep_conflict",
+      "name": "Spec.Reserve.reserveStep_conflict",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveStep_failure",
+      "name": "Spec.Reserve.reserveStep_failure",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.reserveStep_std",
+      "name": "Spec.Reserve.reserveStep_std",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.secureSeats",
+      "name": "Spec.Reserve.secureSeats",
       "layer": "Spec"
     },
     {
-      "name": "Spec.UseCase.Reserve.validateReservation",
+      "name": "Spec.Reserve.validateReservation",
       "layer": "Spec"
     }
   ],
@@ -11422,47 +11422,47 @@
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "CFG"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-1"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-2"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-3"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-4"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-5"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-6"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-7"
     },
     {
       "type": "env_pre",
-      "from": "Spec.EnvPre.masterConfigOk",
+      "from": "Spec.Env.masterConfigOk",
       "to": "MD-8"
     },
     {
@@ -11812,7 +11812,7 @@
     },
     {
       "type": "gap",
-      "from": "Spec.Config.Valid",
+      "from": "Spec.Env.Config.Valid",
       "to": "D-030"
     },
     {
@@ -11882,52 +11882,52 @@
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD1",
+      "from": "Spec.Env.MasterData.MD1",
       "to": "D-015"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD2",
+      "from": "Spec.Env.MasterData.MD2",
       "to": "D-015"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD3",
+      "from": "Spec.Env.MasterData.MD3",
       "to": "D-015"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD4",
+      "from": "Spec.Env.MasterData.MD4",
       "to": "D-004"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD5",
+      "from": "Spec.Env.MasterData.MD5",
       "to": "D-005"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD7",
+      "from": "Spec.Env.MasterData.MD7",
       "to": "D-003"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD8",
+      "from": "Spec.Env.MasterData.MD8",
       "to": "D-029"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.MD8",
+      "from": "Spec.Env.MasterData.MD8",
       "to": "D-030"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.airportNopCode",
+      "from": "Spec.Env.MasterData.airportNopCode",
       "to": "D-029"
     },
     {
       "type": "gap",
-      "from": "Spec.MasterData.peakTimeOn",
+      "from": "Spec.Env.MasterData.peakTimeOn",
       "to": "D-004"
     },
     {
@@ -11972,32 +11972,32 @@
     },
     {
       "type": "gap",
-      "from": "Spec.Port.Sequences",
+      "from": "Spec.World.Sequences",
       "to": "D-009"
     },
     {
       "type": "gap",
-      "from": "Spec.Ticket.availableMinute",
+      "from": "Spec.Reserve.FlightSelection.availableMinute",
       "to": "D-031"
     },
     {
       "type": "gap",
-      "from": "Spec.Ticket.checkInterval",
+      "from": "Spec.Reserve.FlightSelection.checkInterval",
       "to": "D-031"
     },
     {
       "type": "gap",
-      "from": "Spec.UseCase.Reserve.reserve",
+      "from": "Spec.Reserve.reserve",
       "to": "D-014"
     },
     {
       "type": "gap",
-      "from": "Spec.UseCase.Reserve.reserveOp",
+      "from": "Spec.Reserve.reserveOp",
       "to": "D-014"
     },
     {
       "type": "gap",
-      "from": "Spec.UseCase.Reserve.secureSeats",
+      "from": "Spec.Reserve.secureSeats",
       "to": "D-014"
     },
     {
@@ -12717,37 +12717,37 @@
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveMachine_initIs",
+      "from": "Spec.Reserve.reserveMachine_initIs",
       "to": "SPEC-007"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveMachine_run_step",
+      "from": "Spec.Reserve.reserveMachine_run_step",
       "to": "SPEC-001"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "from": "Spec.Reserve.reserveMachine_sound",
       "to": "SPEC-002"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveMachine_sound",
+      "from": "Spec.Reserve.reserveMachine_sound",
       "to": "SPEC-003"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveStep_conflict",
+      "from": "Spec.Reserve.reserveStep_conflict",
       "to": "SPEC-004"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveStep_failure",
+      "from": "Spec.Reserve.reserveStep_failure",
       "to": "SPEC-004"
     },
     {
       "type": "obligation",
-      "from": "Spec.UseCase.Reserve.reserveStep_std",
+      "from": "Spec.Reserve.reserveStep_std",
       "to": "SPEC-008"
     },
     {
@@ -15866,141 +15866,141 @@
     },
     {
       "type": "source",
-      "from": "Spec.Seed.airports",
+      "from": "Spec.Seed.Master.airports",
       "to": "seed:00200_insert_fixed_value.sql#AIRPORT",
       "hash": "e5f2a74a341d1ab1"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.boardingClasses",
+      "from": "Spec.Seed.Master.boardingClasses",
       "to": "seed:00200_insert_fixed_value.sql#BOARDING_CLASS",
       "hash": "0c0030e40bed7655"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.creditTypes",
+      "from": "Spec.Seed.Master.creditTypes",
       "to": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
       "hash": "5cac07149240715c"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.fareTypes",
+      "from": "Spec.Seed.Master.fareTypes",
       "to": "seed:00200_insert_fixed_value.sql#FARE_TYPE",
       "hash": "9d4738994cba9a16"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.flightMasters",
+      "from": "Spec.Seed.Master.flightMasters",
       "to": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
       "hash": "ce88990bf3547005"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.peakTimes",
+      "from": "Spec.Seed.Master.peakTimes",
       "to": "seed:00240_insert_peak_time.sql#PEAK_TIME",
       "hash": "3eead422572ddcea"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.planes",
+      "from": "Spec.Seed.Master.planes",
       "to": "seed:00200_insert_fixed_value.sql#PLANE",
       "hash": "4dd53d69f0fe3e83"
     },
     {
       "type": "source",
-      "from": "Spec.Seed.routes",
+      "from": "Spec.Seed.Master.routes",
       "to": "seed:00210_insert_route.sql#ROUTE",
       "hash": "376e285ef8a7ec0a"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.CodeEntry",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.CodeEntry",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.airport",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.airport",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.boardingClass",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.boardingClass",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.contains",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.contains",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.creditMonth",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.creditMonth",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.creditType",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.creditType",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.creditYear",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.creditYear",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.fareType",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.fareType",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.flightType",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.flightType",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.CodeList.gender",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "from": "Spec.Env.CodeList.gender",
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config",
-      "to": "lean/Spec/Config.lean#config"
+      "from": "Spec.Env.Config",
+      "to": "lean/Spec/Env/Config.lean#config"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.Valid",
-      "to": "lean/Spec/Config.lean#不変条件"
+      "from": "Spec.Env.Config.Valid",
+      "to": "lean/Spec/Env/Config.lean#不変条件"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.default",
-      "to": "lean/Spec/Config.lean#config"
+      "from": "Spec.Env.Config.default",
+      "to": "lean/Spec/Env/Config.lean#config"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.initialPassengersNumber",
-      "to": "lean/Spec/Config.lean#画面入力に関する定数"
+      "from": "Spec.Env.Config.initialPassengersNumber",
+      "to": "lean/Spec/Env/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.maxPassengersNumber",
-      "to": "lean/Spec/Config.lean#画面入力に関する定数"
+      "from": "Spec.Env.Config.maxPassengersNumber",
+      "to": "lean/Spec/Env/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.telAreaAndLocalMaxLength",
-      "to": "lean/Spec/Config.lean#画面入力に関する定数"
+      "from": "Spec.Env.Config.telAreaAndLocalMaxLength",
+      "to": "lean/Spec/Env/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Config.telAreaAndLocalMinLength",
-      "to": "lean/Spec/Config.lean#画面入力に関する定数"
+      "from": "Spec.Env.Config.telAreaAndLocalMinLength",
+      "to": "lean/Spec/Env/Config.lean#画面入力に関する定数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.EnvPre.masterConfigOk",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.masterConfigOk",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
@@ -16189,153 +16189,153 @@
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData",
-      "to": "lean/Spec/MasterData.lean#masterdata"
+      "from": "Spec.Env.MasterData",
+      "to": "lean/Spec/Env/MasterData.lean#masterdata"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.Airport",
-      "to": "lean/Spec/MasterData.lean#airport"
+      "from": "Spec.Env.MasterData.Airport",
+      "to": "lean/Spec/Env/MasterData.lean#airport"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.BoardingClass",
-      "to": "lean/Spec/MasterData.lean#boardingclass"
+      "from": "Spec.Env.MasterData.BoardingClass",
+      "to": "lean/Spec/Env/MasterData.lean#boardingclass"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.BoardingClassInfo",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.BoardingClassInfo",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.CreditType",
-      "to": "lean/Spec/MasterData.lean#plane--credittype"
+      "from": "Spec.Env.MasterData.CreditType",
+      "to": "lean/Spec/Env/MasterData.lean#plane--credittype"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.FareType",
-      "to": "lean/Spec/MasterData.lean#faretype"
+      "from": "Spec.Env.MasterData.FareType",
+      "to": "lean/Spec/Env/MasterData.lean#faretype"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.FareTypeInfo",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.FareTypeInfo",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.FlightMaster",
-      "to": "lean/Spec/MasterData.lean#flightmaster"
+      "from": "Spec.Env.MasterData.FlightMaster",
+      "to": "lean/Spec/Env/MasterData.lean#flightmaster"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD1",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD1",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD2",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD2",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD3",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD3",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD4",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD4",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD5",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD5",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD6",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD6",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD7",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD7",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.MD8",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.MD8",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.PeakTime",
-      "to": "lean/Spec/MasterData.lean#peaktime"
+      "from": "Spec.Env.MasterData.PeakTime",
+      "to": "lean/Spec/Env/MasterData.lean#peaktime"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.Plane",
-      "to": "lean/Spec/MasterData.lean#plane--credittype"
+      "from": "Spec.Env.MasterData.Plane",
+      "to": "lean/Spec/Env/MasterData.lean#plane--credittype"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.Route",
-      "to": "lean/Spec/MasterData.lean#route"
+      "from": "Spec.Env.MasterData.Route",
+      "to": "lean/Spec/Env/MasterData.lean#route"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.Valid",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.Env.MasterData.Valid",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.boardingClassOf",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.boardingClassOf",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.fareTypeOf",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.fareTypeOf",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.flightMasterOf",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.flightMasterOf",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.multiplicationRatioOn",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.multiplicationRatioOn",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.peakTimeOn",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.peakTimeOn",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.MasterData.routeOf",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "from": "Spec.Env.MasterData.routeOf",
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.CodeListName",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.Query.Valid",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.codeListOfName",
-      "to": "lean/Spec/CodeList.lean#空港コードリスト画面用"
+      "to": "lean/Spec/Env/CodeList.lean#空港コードリスト画面用"
     },
     {
       "type": "spec_doc",
       "from": "Spec.MasterQuery.queryMachine",
-      "to": "lean/Spec/MasterData.lean#参照関数"
+      "to": "lean/Spec/Env/MasterData.lean#参照関数"
     },
     {
       "type": "spec_doc",
@@ -16589,78 +16589,78 @@
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.Sequences",
-      "to": "lean/Spec/Port.lean#idgenerator"
+      "from": "Spec.World.Sequences",
+      "to": "lean/Spec/World.lean#idgenerator"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World",
-      "to": "lean/Spec/Port.lean#world抽象状態"
+      "from": "Spec.World",
+      "to": "lean/Spec/World.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.Inv",
-      "to": "lean/Spec/Port.lean#world抽象状態"
+      "from": "Spec.World.Inv",
+      "to": "lean/Spec/World.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.MemberRefMaster",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.World.MemberRefMaster",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.RefMaster",
-      "to": "lean/Spec/MasterData.lean#不変条件spec"
+      "from": "Spec.World.RefMaster",
+      "to": "lean/Spec/Env/MasterData.lean#不変条件spec"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.existsFlight",
-      "to": "lean/Spec/Port.lean#flightrepository"
+      "from": "Spec.World.existsFlight",
+      "to": "lean/Spec/World.lean#flightrepository"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.findAll",
-      "to": "lean/Spec/Port.lean#flightrepository"
+      "from": "Spec.World.findAll",
+      "to": "lean/Spec/World.lean#flightrepository"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.findForUpdate",
-      "to": "lean/Spec/Port.lean#flightrepository"
+      "from": "Spec.World.findForUpdate",
+      "to": "lean/Spec/World.lean#flightrepository"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.findMember",
-      "to": "lean/Spec/Port.lean#memberrepository"
+      "from": "Spec.World.findMember",
+      "to": "lean/Spec/World.lean#memberrepository"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.insertReservation",
-      "to": "lean/Spec/Port.lean#reservationrepository"
+      "from": "Spec.World.insertReservation",
+      "to": "lean/Spec/World.lean#reservationrepository"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.nextPassengerNo",
-      "to": "lean/Spec/Port.lean#idgenerator"
+      "from": "Spec.World.nextPassengerNo",
+      "to": "lean/Spec/World.lean#idgenerator"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.nextReserveFlightNo",
-      "to": "lean/Spec/Port.lean#idgenerator"
+      "from": "Spec.World.nextReserveFlightNo",
+      "to": "lean/Spec/World.lean#idgenerator"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.nextReserveNo",
-      "to": "lean/Spec/Port.lean#idgenerator"
+      "from": "Spec.World.nextReserveNo",
+      "to": "lean/Spec/World.lean#idgenerator"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.reserveNoOf",
-      "to": "lean/Spec/Port.lean#idgenerator"
+      "from": "Spec.World.reserveNoOf",
+      "to": "lean/Spec/World.lean#idgenerator"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Port.World.updateVacantNum",
-      "to": "lean/Spec/Port.lean#flightrepository"
+      "from": "Spec.World.updateVacantNum",
+      "to": "lean/Spec/World.lean#flightrepository"
     },
     {
       "type": "spec_doc",
@@ -16895,227 +16895,227 @@
     {
       "type": "spec_doc",
       "from": "Spec.Seed.World.world",
-      "to": "lean/Spec/Port.lean#world抽象状態"
+      "to": "lean/Spec/World.lean#world抽象状態"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.Itinerary",
-      "to": "lean/Spec/Ticket.lean#選択フライト"
+      "from": "Spec.Reserve.FlightSelection.Itinerary",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#選択フライト"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.ResolvedFlight",
-      "to": "lean/Spec/Ticket.lean#選択フライト"
+      "from": "Spec.Reserve.FlightSelection.ResolvedFlight",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#選択フライト"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.SelectFlight",
-      "to": "lean/Spec/Ticket.lean#選択フライト"
+      "from": "Spec.Reserve.FlightSelection.SelectFlight",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#選択フライト"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.availableMinute",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.availableMinute",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.checkFareTypes",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.checkFareTypes",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.checkFlight",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.checkFlight",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.checkInterval",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.checkInterval",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.checkReverse",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.checkReverse",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.departureMinute",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.departureMinute",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.resolve",
-      "to": "lean/Spec/Ticket.lean#選択フライト"
+      "from": "Spec.Reserve.FlightSelection.resolve",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#選択フライト"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.Ticket.validateFlightList",
-      "to": "lean/Spec/Ticket.lean#validateflightlist"
+      "from": "Spec.Reserve.FlightSelection.validateFlightList",
+      "to": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.Draft",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.Draft",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.DraftPassenger",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.DraftPassenger",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.DraftPassenger.toPassenger",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.DraftPassenger.toPassenger",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.MInput",
-      "to": "lean/Spec/UseCase/Reserve.lean"
+      "from": "Spec.Reserve.MInput",
+      "to": "lean/Spec/Reserve.lean"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.MInput.Pre",
-      "to": "lean/Spec/UseCase/Reserve.lean"
+      "from": "Spec.Reserve.MInput.Pre",
+      "to": "lean/Spec/Reserve.lean"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.MOutputValue",
-      "to": "lean/Spec/UseCase/Reserve.lean"
+      "from": "Spec.Reserve.MOutputValue",
+      "to": "lean/Spec/Reserve.lean"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.Op",
-      "to": "lean/Spec/UseCase/Reserve.lean"
+      "from": "Spec.Reserve.Op",
+      "to": "lean/Spec/Reserve.lean"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.PassengerInput",
-      "to": "lean/Spec/InputValidation.lean#予約入力b2"
+      "from": "Spec.Reserve.PassengerInput",
+      "to": "lean/Spec/Validation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.PassengerInput.isEmpty",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.PassengerInput.isEmpty",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.PassengerInput.toPassenger",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.PassengerInput.toPassenger",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.Request",
+      "from": "Spec.Reserve.Request",
       "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.Request.Valid",
-      "to": "lean/Spec/InputValidation.lean#予約入力b2"
+      "from": "Spec.Reserve.Request.Valid",
+      "to": "lean/Spec/Validation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.ReserveInput",
-      "to": "lean/Spec/InputValidation.lean#予約入力b2"
+      "from": "Spec.Reserve.ReserveInput",
+      "to": "lean/Spec/Validation.lean#予約入力b2"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.ReserveResult",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.ReserveResult",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.asInvalidRequest",
+      "from": "Spec.Reserve.asInvalidRequest",
       "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.buildDraft",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.buildDraft",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkFareTypeOf",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.checkFareTypeOf",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkFareTypes",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.checkFareTypes",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkPassengerMembers",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.checkPassengerMembers",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkRepAge",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.checkRepAge",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkRepMember",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.checkRepMember",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.checkSelects",
+      "from": "Spec.Reserve.checkSelects",
       "to": "lean/Spec/Http.lean#b2-予約"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.compactPassengers",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
+      "from": "Spec.Reserve.compactPassengers",
+      "to": "lean/Spec/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.confirmOp",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
+      "from": "Spec.Reserve.confirmOp",
+      "to": "lean/Spec/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.memberNoOf",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約内容の組み立て"
+      "from": "Spec.Reserve.memberNoOf",
+      "to": "lean/Spec/Reserve.lean#予約内容の組み立て"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.register",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.register",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.reserve",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.reserve",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.reserveConfirm",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確認reserveconfirm"
+      "from": "Spec.Reserve.reserveConfirm",
+      "to": "lean/Spec/Reserve.lean#予約確認reserveconfirm"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.reserveMachine",
-      "to": "lean/Spec/UseCase/Reserve.lean"
+      "from": "Spec.Reserve.reserveMachine",
+      "to": "lean/Spec/Reserve.lean"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.reserveOp",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.reserveOp",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.reserveStep",
+      "from": "Spec.Reserve.reserveStep",
       "to": "lean/Spec/Port.lean#トランザクション"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.secureSeats",
-      "to": "lean/Spec/UseCase/Reserve.lean#予約確定reserve"
+      "from": "Spec.Reserve.secureSeats",
+      "to": "lean/Spec/Reserve.lean#予約確定reserve"
     },
     {
       "type": "spec_doc",
-      "from": "Spec.UseCase.Reserve.validateReservation",
-      "to": "lean/Spec/UseCase/Reserve.lean#validatereservation"
+      "from": "Spec.Reserve.validateReservation",
+      "to": "lean/Spec/Reserve.lean#validatereservation"
     },
     {
       "type": "std_abs",
@@ -22219,7 +22219,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.airports",
+      "definition": "Spec.Seed.Master.airports",
       "locator": "seed:00200_insert_fixed_value.sql#AIRPORT",
       "hash": "e5f2a74a341d1ab1",
       "merkle": "8dd0c5d38e06f9a8",
@@ -22228,7 +22228,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.boardingClasses",
+      "definition": "Spec.Seed.Master.boardingClasses",
       "locator": "seed:00200_insert_fixed_value.sql#BOARDING_CLASS",
       "hash": "0c0030e40bed7655",
       "merkle": "e45c99976e432abe",
@@ -22237,7 +22237,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.creditTypes",
+      "definition": "Spec.Seed.Master.creditTypes",
       "locator": "seed:00200_insert_fixed_value.sql#CREDIT_TYPE",
       "hash": "5cac07149240715c",
       "merkle": "e8a41fc866e8792d",
@@ -22246,7 +22246,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.fareTypes",
+      "definition": "Spec.Seed.Master.fareTypes",
       "locator": "seed:00200_insert_fixed_value.sql#FARE_TYPE",
       "hash": "9d4738994cba9a16",
       "merkle": "142c3e8c60fd3062",
@@ -22255,7 +22255,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.flightMasters",
+      "definition": "Spec.Seed.Master.flightMasters",
       "locator": "seed:00220_insert_flight_master.sql#FLIGHT_MASTER",
       "hash": "ce88990bf3547005",
       "merkle": "bc41427677135aa5",
@@ -22264,7 +22264,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.peakTimes",
+      "definition": "Spec.Seed.Master.peakTimes",
       "locator": "seed:00240_insert_peak_time.sql#PEAK_TIME",
       "hash": "3eead422572ddcea",
       "merkle": "dbb87a033c2c12aa",
@@ -22273,7 +22273,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.planes",
+      "definition": "Spec.Seed.Master.planes",
       "locator": "seed:00200_insert_fixed_value.sql#PLANE",
       "hash": "4dd53d69f0fe3e83",
       "merkle": "72cf24ca3ba48593",
@@ -22282,7 +22282,7 @@
       ]
     },
     {
-      "definition": "Spec.Seed.routes",
+      "definition": "Spec.Seed.Master.routes",
       "locator": "seed:00210_insert_route.sql#ROUTE",
       "hash": "376e285ef8a7ec0a",
       "merkle": "1985c932edf08ac2",

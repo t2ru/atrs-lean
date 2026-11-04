@@ -27,13 +27,13 @@ theorem now_hoare {t : FlightDb} {env : Env} {tJ : JLocalDate} (hclock : ∀ n, 
   subst h1 h2
   exact ⟨hclock _, rfl, rfl⟩
 
-theorem buildDraft_eq {ri : Spec.UseCase.Reserve.ReserveInput} {ks : Spec.Ticket.Itinerary Spec.Model.FlightKey}
-    {d : Spec.UseCase.Reserve.Draft} (h : Spec.UseCase.Reserve.buildDraft ri ks = some d) :
+theorem buildDraft_eq {ri : Spec.Reserve.ReserveInput} {ks : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey}
+    {d : Spec.Reserve.Draft} (h : Spec.Reserve.buildDraft ri ks = some d) :
     d.repFamilyName = ri.repFamilyName ∧ d.repGivenName = ri.repGivenName ∧ d.repAge = ri.repAge ∧
       d.repTel = ri.repTel1 ++ "-" ++ ri.repTel2 ++ "-" ++ ri.repTel3 ∧ d.repMail = ri.repMail ∧
-      (ri.passengers.filter (!·.isEmpty)).mapM Spec.UseCase.Reserve.PassengerInput.toPassenger = some d.passengers ∧
+      (ri.passengers.filter (!·.isEmpty)).mapM Spec.Reserve.PassengerInput.toPassenger = some d.passengers ∧
       d.flights = ks := by
-  simp only [Spec.UseCase.Reserve.buildDraft, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def] at h
+  simp only [Spec.Reserve.buildDraft, Option.bind_eq_bind, Option.bind_eq_some_iff, Option.pure_def] at h
   obtain ⟨ps, hps, hd⟩ := h
   split at hd
   · cases hd
@@ -44,41 +44,41 @@ theorem buildDraft_eq {ri : Spec.UseCase.Reserve.ReserveInput} {ks : Spec.Ticket
 /-- 予約確定（前段の後）の三つ組。予約内容の検証の [Spec] の値 `v` が成功なら、空席の確保の [Spec] の値が `w1` で、
 状態の表の α は [Spec] の登録の結果。例外なら、障害（α は採番の前進だけ変わる）か、予約内容の検証または空席の確保の業務例外
 （α は変わらない）。 -/
-theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb t = some w) (hinv : w.Inv)
+theorem helperReserve_hoare {t : FlightDb} {w : Spec.World} (hw : worldOfDb t = some w) (hinv : w.Inv)
     (hk : KeysOk w) {p : SourceModel.MasterQuery.Providers} {ic : ReserveInput} (he : MemberEnv t ic.db w)
-    {cfg : Spec.Config} {md : Spec.MasterData}
+    {cfg : Spec.Env.Config} {md : Spec.Env.MasterData}
     (hbq : ∀ cd : Spec.Model.BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
       some (.boardingClass ((md.boardingClassOf cd).map (·.info))))
     (hfq : ∀ cd : Spec.Model.FareTypeCd, answerOf? (.fareType (p.fareType.fareTypeMap.get cd)) =
       some (.fareType ((md.fareTypeOf cd).map (·.info))))
     (hmin : (helperOf p ic).ticketReserveService.representativeMinAge.val = (cfg.representativeMinAge : Int))
-    {rq : Spec.UseCase.Reserve.Request} (hrv : rq.Valid) (hri : reserveInputOf ic.form = some rq.form)
-    {it : Spec.Ticket.Itinerary Spec.Model.FlightKey} {d : Spec.UseCase.Reserve.Draft}
-    (hd : Spec.UseCase.Reserve.buildDraft rq.form it = some d)
+    {rq : Spec.Reserve.Request} (hrv : rq.Valid) (hri : reserveInputOf ic.form = some rq.form)
+    {it : Spec.Reserve.FlightSelection.Itinerary Spec.Model.FlightKey} {d : Spec.Reserve.Draft}
+    (hd : Spec.Reserve.buildDraft rq.form it = some d)
     {f0 : SourceModel.App.B0.SelectFlightForm} {fs : List SourceModel.App.B0.SelectFlightForm}
     (hvc : LangSemantics.Core.List.Forall₂ (VacCond md p) (f0 :: fs) it.toList)
     (hex : ∀ k ∈ it.toList, (w.findForUpdate k).isSome)
     (hd9 : w.sequences.reserve ≤ 9999999999 ∧ w.sequences.reserveFlight + 1 ≤ 2147483647 ∧
       w.sequences.passenger + 11 ≤ 2147483647) (hkl : it.toList.length ≤ 2)
-    {FTs : List Spec.MasterData.FareType}
+    {FTs : List Spec.Env.MasterData.FareType}
     (hFT : LangSemantics.Core.List.Forall₂ FareTypeFacts ((f0 :: fs).map (mkFlight p)) FTs)
     (hkf : LangSemantics.Core.List.Forall₂ (fun k FT => md.fareTypeOf k.fareTypeCd = some FT) it.toList FTs)
     {T : Int.J32} {tfn : Nat}
-    (hcalc : Spec.UseCase.Reserve.validateReservation cfg md w d = some (.ok ()) →
+    (hcalc : Spec.Reserve.validateReservation cfg md w d = some (.ok ()) →
       TicketReserveServiceImpl.calculateTotalFare (helperOf p ic).ticketReserveService
         (some (((f0 :: fs).map (mkFlight p)).map some))
         (some (((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).map some)) = .ok T ∧
       T.val = (tfn : Int) ∧ tfn ≤ 2147483647)
     {tJ : JLocalDate} {TD : Spec.Prim.Date} (hclock : ∀ n, ic.env.clock n = tJ)
     (hT : Abstraction.MasterData.AlphaLeaf.dateOfJ tJ = some TD) :
-    ∃ v, Spec.UseCase.Reserve.validateReservation cfg md w d = some v ∧
+    ∃ v, Spec.Reserve.validateReservation cfg md w d = some v ∧
       Hoare (fun s => s.db = t ∧ s.env = ic.env)
         (TicketReserveHelper.reserve (helperOf p ic) ic.form (((f0 :: fs).map (mkFlight p)).map some))
         (fun o s => v = .ok () ∧ s.env = ic.env ∧ ∃ w1, secureAll md TD d.passengers.length it.toList w = some (.ok w1) ∧
-          worldOfDb s.db = some (Spec.UseCase.Reserve.register d TD tfn w1).2 ∧
-          o.reserveNo = some (Spec.UseCase.Reserve.register d TD tfn w1).1.val ∧
+          worldOfDb s.db = some (Spec.Reserve.register d TD tfn w1).2 ∧
+          o.reserveNo = some (Spec.Reserve.register d TD tfn w1).1.val ∧
           o.paymentDate = (mkFlight p f0).departureDate ∧ o.totalFare = some T)
-        (fun e s => s.env = ic.env ∧ ((IsFault ic.env e ∧ ∃ a, worldOfDb s.db = some (Spec.UseCase.Reserve.advance w a)) ∨
+        (fun e s => s.env = ic.env ∧ ((IsFault ic.env e ∧ ∃ a, worldOfDb s.db = some (Spec.Reserve.advance w a)) ∨
           (∃ be : Spec.Error.BusinessError, e = AtrsBusinessException.newArgs be.code be.args ∧ worldOfDb s.db = some w ∧
             (v = .error (.business be) ∨ (v = .ok () ∧ be.args = [] ∧
               secureAll md TD d.passengers.length it.toList w = some (.error (.business be))))))) := by
@@ -91,13 +91,13 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
   obtain ⟨h1, h2, -, -, h5, h6, h7, h8, -, h10⟩ := reserveInputOf_eq hri
   have hf10 := filter_mapM h10
   have hpc : LangSemantics.Core.List.Forall₂ PassCond (ic.form.passengerFormList.filter (!·.isEmpty))
-      (d.passengers.map Spec.UseCase.Reserve.DraftPassenger.toPassenger) :=
+      (d.passengers.map Spec.Reserve.DraftPassenger.toPassenger) :=
     passConds hf10 hdps fun q hq => hpass q (List.mem_filter.mp hq).1
   have hlen' : ((ic.form.passengerFormList.filter (!·.isEmpty)).map B2Mapper.mapPassenger).length ≤ 6 := by
     have := LangSemantics.Core.MapM.mapM_some_length h10
     rw [List.length_map]
     exact Nat.le_trans (List.length_filter_le _ _) (this ▸ hplen)
-  have hql : (d.passengers.map Spec.UseCase.Reserve.DraftPassenger.toPassenger).length ≤ 6 := by
+  have hql : (d.passengers.map Spec.Reserve.DraftPassenger.toPassenger).length ≤ 6 := by
     rw [← forall₂_length hpc]; simpa using hlen'
   have hFT' : LangSemantics.Core.List.Forall₂ FareTypeFacts (mkFlight p f0 :: fs.map (mkFlight p)) FTs := hFT
   obtain ⟨v, hv, hH⟩ := validate_hoare (P := fun s => s.db = t ∧ s.env = ic.env) ⟨fun _ h => h.1, fun _ h => h⟩ he
@@ -138,7 +138,7 @@ theorem helperReserve_hoare {t : FlightDb} {w : Spec.Port.World} (hw : worldOfDb
     have hqm : q.membershipNumber = some s := by
       simp only [passengerInputOf, Option.map_eq_some_iff] at hi
       obtain ⟨a, -, rfl⟩ := hi
-      simp only [Spec.UseCase.Reserve.PassengerInput.toPassenger, Option.bind_eq_bind, Option.bind_eq_some_iff,
+      simp only [Spec.Reserve.PassengerInput.toPassenger, Option.bind_eq_bind, Option.bind_eq_some_iff,
         Option.pure_def, Option.some.injEq] at hiq
       obtain ⟨_, _, _, _, _, _, _, _, rfl⟩ := hiq
       simp only [hs, memberNoOf_some hne]

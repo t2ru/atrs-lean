@@ -108,7 +108,7 @@ theorem searchPreserves :
   envWitness := ⟨icFS LangSemantics.Java.DecimalFormat.Symbols.ascii, iaFS, ⟨⟨⟨trivial, by unfold dev_D027S; rw [aiS_icFS_comma]; rfl⟩, rfl⟩, rfl⟩, aiS_icFS_comma,
     envFS_iaFS⟩
   envNeeded := .inr <| Machine.TotalUnder.not_always (s := wFS) (i := iaFSbad) wFS_inv
-    fun h => Spec.EnvPre.badMasterData_not_env h.1.1.1
+    fun h => Spec.Seed.badMasterData_not_env h.1.1.1
   pinned c hc s t ic ia t' oc hi hJ ha hp hd hs := by
     cases hc
     obtain ⟨s', oa, ⟨x, hx⟩, hJ', ho⟩ := searchRefines.correct s t ic ia t' oc hi hJ ha hp hd hs
@@ -138,7 +138,7 @@ theorem searchPreserves :
 
 /-- ABS-011 の 1 歩の可換式: 前提を満たす入力では、[Source] のどの結果も正常終了で、状態を変えず、出力の像は
 [Spec] の `answer`。 -/
-theorem searchRefines_commutes {t : SourceModel.Db.Schema.FlightDb} {w : Spec.Port.World}
+theorem searchRefines_commutes {t : SourceModel.Db.Schema.FlightDb} {w : Spec.World}
     (hw : worldOfDb t = some w) (hinv : w.Inv) {ic : SourceModel.FlightSearchQuery.SearchInput}
     {ia : Spec.FlightSearch.SearchInput} (hα : aiS ic = some ia) (hv : envFS ia) (h14 : dev_D014S ic)
     (h32 : dev_D032 ic) :

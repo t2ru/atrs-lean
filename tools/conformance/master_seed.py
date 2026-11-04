@@ -3,7 +3,7 @@
 `lean/SourceModel/Db/MasterSeed.lean` を生成する。
 
 ADR ab93 の 3d: 予約の束の環境の前提の証人を初期状態（シード）で示すため、具体側の入力のマスタの DB（`MasterDb`）を
-シードの値で持つ。`Abstraction.MasterData.SeedAlpha` が、その α が [Spec] のシードのマスタ `Spec.Seed.masterData`
+シードの値で持つ。`Abstraction.MasterData.SeedAlpha` が、その α が [Spec] のシードのマスタ `Spec.Seed.Master.masterData`
 であることを示す。行の順は JSON（シードの順）のまま。[Source] の表なので、`outsideSpec` の行も除かない。
 
 各表の定義には、上流のシードの文のロケータ（`seed:`。ハッシュは `trace/source-inventory.json` の値）を `@[source]` で

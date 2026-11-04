@@ -44,7 +44,7 @@ theorem toDigits_len {n : Nat} (hn : n ≤ 9999999999) : (Nat.toDigits 10 n).len
 /-- L 課題 ABS-021（採番）: 予約番号の書式（`TO_CHAR(n, 'FM0999999999')`）は、[Spec] の予約番号の書式（10 桁ゼロ埋め）。 -/
 @[obligation "ABS-021"]
 theorem toChar_reserveNo {n : Nat} (hn : n ≤ 9999999999) :
-    LangSemantics.Sql.Postgresql.toChar (n : Int) "FM0999999999" = some (Spec.Port.World.reserveNoOf n).val := by
+    LangSemantics.Sql.Postgresql.toChar (n : Int) "FM0999999999" = some (Spec.World.reserveNoOf n).val := by
   have e : "FM0999999999".toList = ['F', 'M', '0', '9', '9', '9', '9', '9', '9', '9', '9', '9'] := rfl
   have hd : (toString (n : Int).natAbs).toList = Nat.toDigits 10 n := by
     simp [toString, Nat.repr]
@@ -53,7 +53,7 @@ theorem toChar_reserveNo {n : Nat} (hn : n ≤ 9999999999) :
   rw [e]
   have hlen : (toString n).length = (Nat.toDigits 10 n).length := by
     simp [toString, Nat.repr, String.length]
-  simp (config := { decide := true }) only [hd, Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, hlen,
+  simp (config := { decide := true }) only [hd, Spec.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, hlen,
     List.length_cons, List.length_nil, ite_false, Int.natCast_nonneg, Int.not_lt.mpr]
   have hfz : List.findIdx (fun x => x == '0') ['0', '9', '9', '9', '9', '9', '9', '9', '9', '9'] = 0 := by decide
   have hgt : ¬ (Nat.toDigits 10 n).length > 0 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 := by omega

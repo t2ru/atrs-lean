@@ -1,6 +1,6 @@
 import Abstraction.World.Alpha
 import LangSemantics.Core.MapM
-import Spec.Port
+import Spec.World
 
 /-!
 # Abstraction.Reserve.Keys
@@ -50,9 +50,9 @@ theorem toString_toList (n : Nat) : (toString n).toList = Nat.toDigits 10 n := b
   simp [toString, Nat.repr]
 
 /-- 10 桁ゼロ埋めの十進文字列は単射（予約番号の書式）。 -/
-theorem reserveNoOf_inj {n m : Nat} (h : (Spec.Port.World.reserveNoOf n).val = (Spec.Port.World.reserveNoOf m).val) :
+theorem reserveNoOf_inj {n m : Nat} (h : (Spec.World.reserveNoOf n).val = (Spec.World.reserveNoOf m).val) :
     n = m := by
-  simp only [Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat] at h
+  simp only [Spec.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat] at h
   have h' := congrArg (fun s => decode s.toList) h
   simp only [String.toList_append, String.toList_ofList, decode_zeros, toString_toList, decode_toDigits] at h'
   exact h'
@@ -99,7 +99,7 @@ theorem resOf_eq {rfs : List ReserveFlightRow} {ps : List PassengerRow} {x : Res
   exact ⟨h1, hls⟩
 
 /-- 予約の表の行は、α の像の予約・予約フライト・搭乗者に当たる。 -/
-theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) :
+theorem rows_of_world {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) :
     (∀ x ∈ fd.reservation, ∃ R ∈ w.reservations, R.reserveNo.val = x.reserveNo.val) ∧
     (∀ g ∈ fd.reserveFlight, ∃ R ∈ w.reservations, ∃ F ∈ R.reserveFlights.legs,
       g.reserveFlightNo.val = (F.1.reserveFlightNo : Int)) ∧
@@ -141,8 +141,8 @@ theorem rows_of_world {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd =
   · cases hr
 
 /-- 主キーの性質（`KeysOk`）から、予約の表の行の番号は採番の次の値より小さい。 -/
-theorem rows_lt {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hk : KeysOk w) :
-    (∀ x ∈ fd.reservation, ∃ n, n < w.sequences.reserve ∧ x.reserveNo.val = (Spec.Port.World.reserveNoOf n).val) ∧
+theorem rows_lt {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (hk : KeysOk w) :
+    (∀ x ∈ fd.reservation, ∃ n, n < w.sequences.reserve ∧ x.reserveNo.val = (Spec.World.reserveNoOf n).val) ∧
     (∀ g ∈ fd.reserveFlight, g.reserveFlightNo.val < (w.sequences.reserveFlight : Int)) ∧
     (∀ p ∈ fd.passenger, p.passengerNo.val < (w.sequences.passenger : Int)) := by
   obtain ⟨h1, h2, h3⟩ := rows_of_world hw

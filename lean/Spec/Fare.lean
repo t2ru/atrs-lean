@@ -1,8 +1,8 @@
 import Spec.Prim
 import Spec.Model
-import Spec.Config
-import Spec.MasterData
-import Spec.EnvPre
+import Spec.Env.Config
+import Spec.Env.MasterData
+import Spec.Env
 
 /-!
 # 運賃計算（`Spec.Fare`）
@@ -15,9 +15,10 @@ import Spec.EnvPre
 -/
 
 namespace Spec.Fare
-open Spec.Config Spec.Model Spec.Prim.Int Spec.Prim.Text
+open Spec.Env
+open Spec.Env.Config Spec.Model Spec.Prim.Int Spec.Prim.Text
 
-open Spec.Prim Spec.MasterData
+open Spec.Prim Spec.Env.MasterData
 
 /-!
 ## 基本運賃
@@ -35,7 +36,7 @@ Lean: [Spec] `Spec.Fare.basicFare`（搭乗クラスが無ければ `none`）、
 
 ### 定義
 
-`extra = boardingClassOf(boardingClassCd).extraCharge`、`ratio = multiplicationRatioOn(depDate)`（[`Spec.MasterData`](MasterData.lean#参照関数)）として、
+`extra = boardingClassOf(boardingClassCd).extraCharge`、`ratio = multiplicationRatioOn(depDate)`（[`Spec.Env.MasterData`](Env/MasterData.lean#参照関数)）として、
 
 **[Spec]**
 
@@ -256,11 +257,11 @@ structure BasicFareInput where
   boardingClassCd : BoardingClassCd
   depDate : Date
 
-/-- 基本運賃の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、搭乗クラスがマスタに在ること、
+/-- 基本運賃の PRE: 設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、搭乗クラスがマスタに在ること、
 `routeBasicFare + extraCharge` の値域（`lean/Spec/Model.lean#値域`）。 -/
 @[spec_doc "lean/Spec/Fare.lean#基本運賃", gap "D-035"]
 def BasicFareInput.Pre (i : BasicFareInput) : Prop :=
-  EnvPre.masterConfigOk (i.cfg, i.md) ∧
+  Env.masterConfigOk (i.cfg, i.md) ∧
     (i.md.boardingClassOf i.boardingClassCd).any (fun bc => decide (i.routeBasicFare + bc.extraCharge ≤ Range.maxBasicFareWithCharge)) = true
 
 instance (i : BasicFareInput) : Decidable i.Pre := by unfold BasicFareInput.Pre; infer_instance
@@ -323,11 +324,11 @@ structure TotalFareInput where
   flights : List FlightKey
   ages : List Nat
 
-/-- 合計金額の PRE: 設定とマスタの検証が通ること（`EnvPre.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
+/-- 合計金額の PRE: 設定とマスタの検証が通ること（`Env.masterConfigOk`。設定の不変条件と MD-1〜MD-8）、予約フライト数（1〜2）と搭乗者数（1〜6）と年齢（0〜999）の値域、
 便名が空白でないこと（原典の `Assert.hasText`）、各フライトの便マスタ・区間・搭乗クラス・運賃種別がマスタに在ること。 -/
 @[spec_doc "lean/Spec/Fare.lean#合計金額", gap "D-035"]
 def TotalFareInput.Pre (i : TotalFareInput) : Prop :=
-  EnvPre.masterConfigOk (i.cfg, i.md) ∧
+  Env.masterConfigOk (i.cfg, i.md) ∧
     Range.minReserveFlights ≤ i.flights.length ∧ i.flights.length ≤ Range.maxReserveFlights ∧
     Range.minPassengers ≤ i.ages.length ∧ i.ages.length ≤ Range.maxPassengers ∧
     (∀ a ∈ i.ages, a ≤ Range.maxAge) ∧

@@ -153,7 +153,7 @@ theorem nodup_map_val {α : Type} {xs : List α} {f : α → MembershipNumber} (
 /-- `findOne` の文の結果と `World.findMember`: 会員が無ければ 0 行、あれば 1 行で、その会員とログインの行の α は
 `findMember` の会員。 -/
 @[obligation "ABS-023"]
-theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World} {md : Spec.MasterData}
+theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.World} {md : Spec.Env.MasterData}
     (hw : worldOfDb fd = some w) (hk : KeysOk w) (hmd : masterDataOf mdb = some md) (h1 : md.MD1)
     (href : w.MemberRefMaster md) (s : String) :
     match w.findMember s with
@@ -178,7 +178,7 @@ theorem findOneRows_world {mdb : MasterDb} {fd : FlightDb} {w : Spec.Port.World}
     exact nodup_map_comp (g := CreditTypeCd.val) (fun _ _ e => CreditTypeCd.ext e) h8
   rw [findOneRows_eq mdb fd s hm hl hc]
   have hf := membersOf_find hms s
-  unfold Spec.Port.World.findMember
+  unfold Spec.World.findMember
   cases hx : w.members.find? (·.membershipNumber.val == s) with
   | none =>
     rw [hx] at hf
@@ -231,8 +231,8 @@ open SourceModel.Domain.Service.B2.TicketReserveServiceImpl in
 theorem sameAsMember_eq {M : SourceModel.Domain.Model.Member} {x : Member} (fn gn : String) (g : Gender)
     (h1 : M.kanaFamilyName = some x.kanaFamilyName) (h2 : M.kanaGivenName = some x.kanaGivenName)
     (h3 : M.gender = some x.gender) :
-    sameAsMember (some fn) (some gn) (some g) M = .ok (Spec.UseCase.Reserve.matchesMember fn gn g x) := by
-  unfold sameAsMember Spec.UseCase.Reserve.matchesMember
+    sameAsMember (some fn) (some gn) (some g) M = .ok (Spec.Reserve.matchesMember fn gn g x) := by
+  unfold sameAsMember Spec.Reserve.matchesMember
   simp only [LangSemantics.Java.Exception.JRef.deref, h1, h2, h3]
   by_cases a : fn = x.kanaFamilyName <;> by_cases b : gn = x.kanaGivenName <;>
     simp [a, b, Bind.bind, Except.bind, Pure.pure, Except.pure, Functor.map, Except.map]

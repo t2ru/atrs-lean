@@ -1,10 +1,10 @@
 {
   "operation": "reservation.validateFlightList",
   "modelDef": [
-    "Spec.Ticket.validateFlightList",
+    "Spec.Reserve.FlightSelection.validateFlightList",
     "SourceModel.Domain.Service.B0.TicketSharedServiceImpl.validateFlightList"
   ],
-  "specRef": "lean/Spec/Ticket.lean#validateflightlist",
+  "specRef": "lean/Spec/Reserve/FlightSelection.lean#validateflightlist",
   "upstream": {
     "release": "release/5.11.0.RELEASE",
     "commit": "f4bfbf0615eb91805546c9c780d4761be92ce17e"

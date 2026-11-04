@@ -15,7 +15,7 @@ ABS-011 の補題: 空席照会の具体機械の 1 歩（`runSearchFlight` と 
 
 namespace Abstraction.FlightSearch.Run
 open Abstraction.World.Alpha
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf Abstraction.MasterData.Pre Abstraction.MasterData.Query
   Abstraction.FlightSearch.Alpha Abstraction.FlightSearch.Join Abstraction.FlightSearch.Candidates Abstraction.FlightSearch.Order
@@ -23,7 +23,7 @@ open LangSemantics.Core.List LangSemantics.Core.MapM LangSemantics.Java.Exceptio
   LangSemantics.Java.ResultLemmas Spec.Model Spec.FlightSearch
 
 open LangSemantics.Java LangSemantics.Sql.Postgresql LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
-  Spec Spec.Prim SourceModel.Db.Schema SourceModel.Domain.Repository.Flight
+  Spec Spec.Env Spec.Prim SourceModel.Db.Schema SourceModel.Domain.Repository.Flight
   SourceModel.Domain.Repository.Flight.FlightRepository
 
 /-! ## キーの一意性（MD-1・MD-2 から） -/
@@ -61,7 +61,7 @@ theorem getFareTypeCdList_eq (t : FlightType) :
 
 /-- 文の結果の並び: 並べ方が許される並びを返すなら、並べた行の写しは [Spec] の整列した候補で、各行は `RowOk`。 -/
 theorem repo_spec {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDataOf db = some md)
-    (hv : md.Valid cfg) {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
+    (hv : md.Valid cfg) {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     {c : Criteria} {dep arr : String} {route : Route} (hroute : md.routeOf dep arr = some route) (bdn : Int)
     {sortRows : List VacantSeatRow → List VacantSeatRow} (hs : SortAllowed sortRows) :
     (sortRows (vacantSeatRows db fd (paramsOf c dep arr bdn))).mapM (candOfRow md) =
@@ -105,7 +105,7 @@ theorem find?_routeNo {md : MasterData} (h1 : md.MD1) {route : Route} (hr : rout
 
 /-- 行ごと: 結果の行の写像は例外を投げず、Provider で詰め直した値は、候補の写し（`FlightOk`）。 -/
 theorem row_ok {db : MasterDb} {cfg : Config} {md : MasterData} (hm : masterDataOf db = some md)
-    (hv : md.Valid cfg) {w : Spec.Port.World} {c : Criteria} {route : Route}
+    (hv : md.Valid cfg) {w : Spec.World} {c : Criteria} {route : Route}
     (hroute : md.routeOf c.depAirportCd c.arrAirportCd = some route) (hfn : FlightNamesHaveText md c) {bdn : Int}
     {p : SourceModel.MasterQuery.Providers}
     (hbcq : ∀ cd : BoardingClassCd, answerOf? (.boardingClass (p.boardingClass.boardingClassCodeMap.get cd)) =
@@ -226,7 +226,7 @@ theorem tail_ok {ρ : Type} (o : List ρ) (F : SourceModel.Domain.Model.Flight �
 
 /-- 具体側の 1 歩: D-027（入力の像がある）・PRE・D-001・D-002・D-014・D-032 の下で、どの許される並びでも、
 `catchBusiness (runSearchFlight …)` は例外を投げず、結果の写しは [Spec] の `answer`。 -/
-theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
+theorem run_spec {fd : FlightDb} {w : Spec.World} (hw : worldOfDb fd = some w) (hinv : w.Inv)
     {ic : SourceModel.FlightSearchQuery.SearchInput} {i : Spec.FlightSearch.SearchInput} (hα : aiS ic = some i)
     (hp : SearchInput.Pre w i) (h1 : dev_D001S i) (h2 : dev_D002S i) (h14 : dev_D014S ic) (h32 : dev_D032 ic)
     {mo : SourceModel.MasterQuery.Order} (hmo : mo.Allowed ic.db) {sortRows : List VacantSeatRow → List VacantSeatRow}
@@ -350,7 +350,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
         simp only [List.mapM_nil, Option.pure_def, Option.some.injEq] at hcs
         refine ⟨.error (.notFound "e.ar.b1.2003"), ?_, ?_⟩
         · rfl
-        · simp only [Spec.Port.World.findAll, ← hcs, List.isEmpty_nil, ↓reduceIte, Option.getD_some]
+        · simp only [Spec.World.findAll, ← hcs, List.isEmpty_nil, ↓reduceIte, Option.getD_some]
           rfl
       | cons r0 os =>
         obtain ⟨X0, -, hX0, -, -⟩ := hok r0 (List.mem_cons_self ..)
@@ -360,7 +360,7 @@ theorem run_spec {fd : FlightDb} {w : Spec.Port.World} (hw : worldOfDb fd = some
           false := rfl
         rw [hne]
         simp only [Bool.false_eq_true, ↓reduceIte, hbfJ, JRef.deref, ok_bind, hcalc, show ic.formatSymbols = LangSemantics.Java.DecimalFormat.Symbols.ascii from h32]
-        simp only [Spec.Port.World.findAll]
+        simp only [Spec.World.findAll]
         have hne2 : ((w.flights.filterMap (candidateOf md ⟨D, bc, dc.val, ac.val, ft⟩ ⟨no, dc, ac, bfr⟩
             (Date.daysBetween T D))).mergeSort candidateLe).isEmpty = false := by rw [hYs]; rfl
         simp only [hne2, Bool.false_eq_true, ↓reduceIte, hbasic, hdn, han, Option.bind_eq_bind,

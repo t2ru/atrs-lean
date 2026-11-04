@@ -99,7 +99,7 @@ W 課題は、[abstraction.md](abstraction.md#既知差異) と同じく両向�
 | REF-005 | L | 文字列長・文字クラスを、`RString` の `chars` 上のスカラ値で判定すると、`Spec` と一致する（REF-001 の入力検証に使う） |
 | REF-006 | L | `TargetModel` の操作は、「今日」「現在日時」を入力（Clock ポートの値）としてだけ受け取る（型による。Rust 側は SRC-009 で確認する） |
 | REF-007 | R | HTTP の画面・API: `TargetModel.Http` が `Spec.Http` をリファインする |
-| REF-008 | R | インメモリのポート実装（採番・リポジトリ・キュー・ストア・パスワード）: `TargetModel` の実装が、[`Spec.Port`](../../lean/Spec/Port.lean) のポートの契約をリファインする |
+| REF-008 | R | インメモリのポート実装（採番・リポジトリ・キュー・ストア・パスワード）: `TargetModel` の実装が、[`Spec.Port`](../../lean/Spec/World.lean) のポートの契約をリファインする |
 | REF-009 | R | DB・ファイル・時計のアダプタ（`TargetModel.Adapter.*`。DB は `LangSemantics.Sql` の式）: ポートの契約をリファインする。I/O の失敗は、[Spec] の非決定的な結果 `System` で模倣する |
 | REF-010 | R | マスタ・設定の読み込み（fixture・設定ファイルから `MasterData`・設定を作る `TargetModel` の操作）が、[Spec] の `MasterData`・設定をリファインする |
 | REF-011 | R | レポート要求の受信（入口）: `TargetModel` のキューの受信が、[Spec] の要求の受信をリファインする（REF-002 のレポートの部分を、入口の機械として述べる） |

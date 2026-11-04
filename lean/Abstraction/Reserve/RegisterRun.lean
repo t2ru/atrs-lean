@@ -31,8 +31,8 @@ theorem readInteger_ok {n : Nat} (hn : n ≤ 2147483647) :
 
 /-- 搭乗者 1 人の挿入（採番・挿入）。 -/
 theorem insertPassenger_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqPassenger = some n)
-    (hn : n ≤ 2147483647) {f : SourceModel.App.B2.PassengerForm} {i : Spec.UseCase.Reserve.PassengerInput}
-    {q : Spec.UseCase.Reserve.DraftPassenger} (hi : passengerInputOf f = some i) (hq : i.toPassenger = some q)
+    (hn : n ≤ 2147483647) {f : SourceModel.App.B2.PassengerForm} {i : Spec.Reserve.PassengerInput}
+    {q : Spec.Reserve.DraftPassenger} (hi : passengerInputOf f = some i) (hq : i.toPassenger = some q)
     (hfn : q.familyName.length ≤ 10) (hgn : q.givenName.length ≤ 10) (hage : q.age ≤ 999)
     (hmem : ∀ s, f.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true ∧
       Spec.Model.MembershipNumber.valid s = true)
@@ -131,23 +131,23 @@ theorem insert_hoare {D : FlightDb} {env : Env} {n : Nat} (hseq : seqOf D.sqRese
     (hmaill : mail.length ≤ 256) {M0 : SourceModel.Domain.Model.Member} (hm : r.repMember = some M0)
     (hmem : ∀ s, M0.membershipNumber = some s → s ≠ "" → s.length ≤ 10 ∧ D.member.any (·.customerNo.val == s) = true ∧
       Spec.Model.MembershipNumber.valid s = true)
-    (hpk : ∀ x ∈ D.reservation, x.reserveNo.val ≠ (Spec.Port.World.reserveNoOf n).val) :
+    (hpk : ∀ x ∈ D.reservation, x.reserveNo.val ≠ (Spec.World.reserveNoOf n).val) :
     Hoare (fun s => s.db = D ∧ s.env = env) (ReservationRepository.insert r)
-      (fun res s => res.1 = J32.ofInt 1 ∧ res.2 = { r with reserveNo := some (Spec.Port.World.reserveNoOf n).val } ∧
+      (fun res s => res.1 = J32.ofInt 1 ∧ res.2 = { r with reserveNo := some (Spec.World.reserveNoOf n).val } ∧
         s.env = env ∧ ∃ row,
         s.db = { D with reservation := D.reservation ++ [row], sqReservation := some (n : Int) } ∧
-        row.reserveNo.val = (Spec.Port.World.reserveNoOf n).val ∧ ∀ fs, reservationOfRow row fs = some
-          { reserveNo := Spec.Port.World.reserveNoOf n, reserveDate := T, totalFare := tfn, repFamilyName := fn,
+        row.reserveNo.val = (Spec.World.reserveNoOf n).val ∧ ∀ fs, reservationOfRow row fs = some
+          { reserveNo := Spec.World.reserveNoOf n, reserveDate := T, totalFare := tfn, repFamilyName := fn,
             repGivenName := gn, repAge := an, repGender := g, repTel := tel, repMail := mail,
-            repMembershipNumber := (Spec.UseCase.Reserve.memberNoOf M0.membershipNumber).bind
+            repMembershipNumber := (Spec.Reserve.memberNoOf M0.membershipNumber).bind
               Spec.Model.MembershipNumber.ofString?, reserveFlights := fs })
       (fun e s => s.env = env ∧ IsFault env e ∧
         (s.db = D ∨ s.db = { D with sqReservation := some (n : Int) })) := by
   intro s ⟨hdb, hse⟩
   obtain ⟨hnv, -⟩ := nextval_seq (d := sqReservation) rfl rfl rfl hseq (by simp [sqReservation]; omega)
-  have hnol : (Spec.Port.World.reserveNoOf n).val.length ≤ 10 := by
+  have hnol : (Spec.World.reserveNoOf n).val.length ≤ 10 := by
     have := toDigits_len hn
-    simp only [Spec.Port.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, String.length_append,
+    simp only [Spec.World.reserveNoOf, Spec.Model.ReserveNo.val, Spec.Prim.Format.padNat, String.length_append,
       String.length_ofList, List.length_replicate]
     have hl : (toString n).length = (Nat.toDigits 10 n).length := by simp [toString, Nat.repr, String.length]
     omega
@@ -191,7 +191,7 @@ theorem passengerOfRow_no {p : PassengerRow} {x : Nat × Spec.Model.Passenger} (
   exact Abstraction.MasterData.AlphaLeaf.natOfInt4_eq_some.mp hno
 
 /-- 搭乗者の列の挿入の不変条件: `j` 人を挿入した。 -/
-def PassInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (n m : Nat) (qs : List Spec.Model.Passenger) (j : Nat)
+def PassInv (env : Env) (w : Spec.World) (D : FlightDb) (n m : Nat) (qs : List Spec.Model.Passenger) (j : Nat)
     (s : St) : Prop :=
   s.env = env ∧ SeqGe w s.db ∧ seqOf s.db.sqPassenger = some (n + j) ∧ ∃ rows,
     s.db = { D with passenger := D.passenger ++ rows, sqPassenger := s.db.sqPassenger } ∧
@@ -209,7 +209,7 @@ theorem forall₂_get {α β : Type} {R : α → β → Prop} :
     exact forall₂_get hr h1 h2
 
 /-- 搭乗者の列の挿入。本体 `body` は、1 人の挿入の三つ組を満たすとする（`insertPassenger_hoare` から示す）。 -/
-theorem passengers_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {n m : Nat}
+theorem passengers_hoare {env : Env} {w : Spec.World} {D : FlightDb} {n m : Nat}
     {body : JRef SourceModel.Domain.Model.Passenger → PUnit → DbM (ForInStep PUnit)}
     {fs : List SourceModel.App.B2.PassengerForm} {qs : List Spec.Model.Passenger}
     (hfq : LangSemantics.Core.List.Forall₂ PassCond fs qs)
@@ -324,7 +324,7 @@ theorem rfOf_passengers {nps : List PassengerRow} {g : ReserveFlightRow}
   (Abstraction.Reserve.Keys.rfOf_eq h).2
 
 /-- 予約フライトの列の挿入の不変条件: `j` 便を挿入した。 -/
-def FlightInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (rfn pn : Nat) (ps : List Spec.Model.Passenger)
+def FlightInv (env : Env) (w : Spec.World) (D : FlightDb) (rfn pn : Nat) (ps : List Spec.Model.Passenger)
     (rn : Spec.Model.ReserveNo) (ks : List Spec.Model.FlightKey) (j : Nat) (s : St) : Prop :=
   s.env = env ∧ SeqGe w s.db ∧ seqOf s.db.sqReserveFlight = some (rfn + j) ∧
     seqOf s.db.sqPassenger = some (pn + j * ps.length) ∧ ∃ nfs nps,
@@ -335,7 +335,7 @@ def FlightInv (env : Env) (w : Spec.Port.World) (D : FlightDb) (rfn pn : Nat) (p
     ∀ g ∈ nfs, g.reserveNo.val = rn.val ∧ (rfn : Int) ≤ g.reserveFlightNo.val ∧ g.reserveFlightNo.val < ((rfn + j : Nat) : Int)
 
 /-- 予約フライトの列の挿入。本体 `body` は、1 便（予約フライトとその搭乗者の列）の挿入の三つ組を満たすとする。 -/
-theorem flights_hoare {env : Env} {w : Spec.Port.World} {D : FlightDb} {rfn pn : Nat}
+theorem flights_hoare {env : Env} {w : Spec.World} {D : FlightDb} {rfn pn : Nat}
     {ps : List Spec.Model.Passenger} {rn : Spec.Model.ReserveNo} {β : Type} {body : β → PUnit → DbM (ForInStep PUnit)}
     {xs : List β} {ks : List Spec.Model.FlightKey} (hlen : xs.length = ks.length)
     (hbody : ∀ (j : Nat) (x : β) (k : Spec.Model.FlightKey), xs[j]? = some x → ks[j]? = some k →

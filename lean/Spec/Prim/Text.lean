@@ -36,7 +36,7 @@ namespace Spec.Prim.Text
 | `Min(n)` / `Max(n)` | 数値として `≥ n` / `≤ n`。文字列項目の場合は十進整数（`[0-9]+`）として解釈し、解釈できなければ不合格。[Source] は文字列を `BigDecimal` として解釈するので `"1.5"`・`"+1"`・`"1e1"` も数として比較される（既知差異 [D-018](../../../docs/spec/abstraction.md#既知差異)） | `Min` / `Max` |
 | `Digits(i, f)` | 整数部 `i` 桁以下・小数部 `f` 桁以下 | `Digits` |
 | `Required` | 入力がある | `NotNull`（文字列で空文字も不可の場合 `NotEmpty`） |
-| `InCodeList(id)` | 値がコードリスト `id`（[`Spec.CodeList`](../CodeList.lean#空港コードリスト画面用)）に存在 | `ExistInCodeList` |
+| `InCodeList(id)` | 値がコードリスト `id`（[`Spec.Env.CodeList`](../Env/CodeList.lean#空港コードリスト画面用)）に存在 | `ExistInCodeList` |
 
 `len` は [Spec] では `scalarLen`、[Source] では `utf16Len`（既知差異 [D-006](../../../docs/spec/abstraction.md#既知差異)）。
 

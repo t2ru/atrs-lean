@@ -9,14 +9,14 @@ R 課題 ABS-026（`Abstraction.MasterData.queryRefines`）と W 課題 ABS-127�
 -/
 
 namespace Abstraction.MasterData.QueryRun
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.MasterData.Alpha Abstraction.MasterData.Load Abstraction.MasterData.Lookup Abstraction.MasterData.Pre
-  Abstraction.MasterData.Query Spec.CodeList Spec.Model
+  Abstraction.MasterData.Query Spec.Env.CodeList Spec.Model
 open LangSemantics.Java.Exception LangSemantics.Java.ResultLemmas LangSemantics.Sql.Query LangSemantics.Sql.QueryLemmas
 
-open Machine Spec LangSemantics.Core SourceModel.Db.Schema
+open Machine Spec Spec.Env LangSemantics.Core SourceModel.Db.Schema
   SourceModel.Domain.Repository.Route SourceModel.Domain.Repository.Route.RouteRepository SourceModel.Domain.Repository.Flight SourceModel.Domain.Repository.Flight.FlightRepository
   SourceModel.Domain.Repository.Boardingclass SourceModel.Domain.Repository.Boardingclass.BoardingClassRepository SourceModel.Domain.Repository.Faretype SourceModel.Domain.Repository.Faretype.FareTypeRepository
   SourceModel.Domain.Repository.Peaktime SourceModel.Domain.Repository.Peaktime.PeakTimeRepository SourceModel.Config.App SourceModel.Config.App.AtrsCodeListConfig

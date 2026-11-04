@@ -190,7 +190,7 @@ Chosen option: "選択の像としての `Spec`・環境の固定・標準の貼
   * `Concrete.Inhabited` → `InitSurj`
   * `Pinned`・`StateSafe`・TR-V・TR-P の改訂を追加
 * 実装後に行った敵対的レビューの結果は、下の「実装後の敵対的レビュー」に記す。
-* 採番（`IdGenerator`）の値は非決定性として登録しない。[Spec] の状態 `World.sequences` が次の値を決め、適合テストは番号を厳密に比較する（[`Spec.Port`](../../lean/Spec/Port.lean#idgenerator)）。草案では自由な選択（N-006）としたが、実装後のレビューで ports.md・conformance.md と矛盾すると分かったので取り消した。
+* 採番（`IdGenerator`）の値は非決定性として登録しない。[Spec] の状態 `World.sequences` が次の値を決め、適合テストは番号を厳密に比較する（[`Spec.Port`](../../lean/Spec/World.lean#idgenerator)）。草案では自由な選択（N-006）としたが、実装後のレビューで ports.md・conformance.md と矛盾すると分かったので取り消した。
 * [ADR c336](c336-foundational-principles.md), [ADR 01d4](01d4-b-method-refinement-and-explicit-deviations.md), [ADR e2a4](e2a4-traceability-hash-as-deterministic-check-record.md), [ADR e56e](e56e-conflict-as-spec-nondeterminism.md), [backlog f7b7](../backlog/f7b7-refinement-non-vacuity.md)
 * 補足: [ADR 9ac6](9ac6-vacuity-literature-necessity-and-mutation.md) で、本 ADR の義務を既存の研究（Event-B の証明義務、vacuity detection、仕様の変異テストなど）と対応づけた。あわせて、成分の必要性（G9）を義務に加え、成分の広さには変異テストを、仕様の妥当性には意図から書く例を採った。本 ADR の決定は変えていない。
 

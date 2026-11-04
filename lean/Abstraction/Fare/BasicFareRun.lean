@@ -9,7 +9,7 @@ R 課題 ABS-001（基本運賃。`Abstraction.Fare.basicFareRefines`）と W �
 -/
 
 namespace Abstraction.Fare.BasicFareRun
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alpha Abstraction.MasterData.AlphaLeaf
@@ -17,7 +17,7 @@ open Abstraction.Fare.Alpha Abstraction.Fare.Factors Abstraction.MasterData.Alph
 open LangSemantics.Java.DoubleOps
 open LangSemantics.Java.Exception LangSemantics.Java.Int LangSemantics.Java.IntLemmas LangSemantics.Java.ResultLemmas
 
-open LangSemantics.Java Spec LangSemantics.Core SourceModel.Domain.Common.Masterdata
+open LangSemantics.Java Spec Spec.Env LangSemantics.Core SourceModel.Domain.Common.Masterdata
 open LangSemantics.Java.Spring SourceModel.MasterQuery SourceModel.FareQuery
 
 /-- 積算比率は値域内（MD-8）。 -/

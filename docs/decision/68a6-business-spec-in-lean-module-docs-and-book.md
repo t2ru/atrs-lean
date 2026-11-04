@@ -47,8 +47,8 @@ Chosen option: "業務仕様を `Spec` のモジュール文書に移し、mdgen
 
 * 移す範囲は業務仕様の 14 本（用語集・設定・ドメインモデル・マスタデータ・運賃計算・空席照会・予約・会員・認証・予約履歴レポート・入力検証・エラーとメッセージ・ポート・HTTP 契約）とした。メタ情報（`README`・`abstraction`・`refinement`・`assurance`・`conformance`・`traceability`）は `docs/spec` に残す。これらは道具が読み書きする（生成区画・課題の表）ためである。
 * 各文書の `##` 節を 1 つの `/-! … -/` とし、その節を `@[spec_doc]` で指す宣言の直前に置く。文書の題と前文は、移し先のモジュールの先頭のモジュール文書に合わせ、題を「<文書の題>（`<モジュール名>`）」とする。区分（normative・draft・informative・meta）の表示は、各文書・節の冒頭にそのまま残す。
-* 形式化していない領域は、文書だけのモジュール `Spec.Glossary`・`Spec.Member`・`Spec.Authentication`・`Spec.ReservationHistoryReport`・`Spec.InputValidation`・`Spec.Http` にする。形式化するときは、同じファイルに定義を足す。
-* 生成するファイル（`Spec.Seed` など）には散文を置かない（生成で消えるため）。シードデータの節は `Spec.MasterData` に置いた。
+* 形式化していない領域は、文書だけのモジュール `Spec.Glossary`・`Spec.Member`・`Spec.Auth`・`Spec.Report`・`Spec.Validation`・`Spec.Http` にする。形式化するときは、同じファイルに定義を足す。
+* 生成するファイル（`Spec.Seed` など）には散文を置かない（生成で消えるため）。シードデータの節は `Spec.Env.MasterData` に置いた。
 * 移し先は配置表 `tools/docs/spec-to-lean.json` に、古い `docs/spec/<文書>.md#<見出し>` と新しい `lean/Spec/<File>.lean#<見出し>` の対応は `tools/docs/spec-anchors.json` に残す。
 
 ### 書き方

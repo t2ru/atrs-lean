@@ -8,14 +8,14 @@ import Spec
 - マスタの不変条件の判定（`#guard`）。
 -/
 
-open Spec Spec.Prim
+open Spec Spec.Env Spec.Prim
 
-open Spec.Config Spec.EnvPre Spec.Model Spec.Prim.Int
+open Spec.Env.Config Spec.Env Spec.Model Spec.Prim.Int
   Spec.Prim.Text Spec.Prim.Time
 
 namespace Tests.SpecChecks
 open Spec.Prim.Date
-open Spec.MasterData (Airport Route FlightMaster
+open Spec.Env.MasterData (Airport Route FlightMaster
   BoardingClass FareType PeakTime Plane
   CreditType BoardingClassInfo FareTypeInfo)
 
@@ -78,7 +78,7 @@ def sample : MasterData where
 #guard (Spec.Model.MembershipNumber.ofString? "0000000001").map (·.val) == some "0000000001"
 -- 形式に合わない会員番号の入力は、会員が見つからない業務エラー（入力の会員番号は生の文字列のまま照合する）
 #guard (Spec.Seed.World.world.findMember "000000001").isNone
-#guard match Spec.UseCase.Reserve.checkRepMember Spec.Seed.World.world
+#guard match Spec.Reserve.checkRepMember Spec.Seed.World.world
     { repFamilyName := "デンデン", repGivenName := "ハナコ", repAge := 30, repGender := .F, repTel := "", repMail := "",
       repMembershipNumber := some "abc", passengers := [],
       flights := .oneWay ⟨Spec.Prim.Date.ymd! 2026 1 1, ⟨"NTT001", by decide⟩, .N, .OW⟩ } with
@@ -177,7 +177,7 @@ def tfIn (keys : List FlightKey) (ages : List Nat) : Fare.TotalFareInput := ⟨C
 #guard Nondet.InvalidRequestDetail.std.override == none
 #guard Nondet.PasswordHashChoice.std.hash "secret" == "{test}secret"
 -- 入口の環境の前提: シードは満たし、空港コードを重複させると破れる
-#guard decide (masterConfigOk (Seed.config, Seed.masterData))
-#guard !decide (masterConfigOk (Seed.config, badMasterData))
+#guard decide (masterConfigOk (Seed.Master.config, Seed.Master.masterData))
+#guard !decide (masterConfigOk (Seed.Master.config, Seed.badMasterData))
 
 end Tests.SpecChecks

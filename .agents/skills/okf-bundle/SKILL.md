@@ -3,7 +3,7 @@ name: okf-bundle
 description: "OKF（Open Knowledge Format）v0.2 の Knowledge Bundle として Markdown の文書を管理する方法と道具。frontmatter（YAML の部分集合）・type・index.md・log.md の形、バンドルごとのプロファイルの規則（必須キー・値・必須の節）、索引の網羅、Markdown の相対リンクと見出しアンカーを検査し（okf_check.py）、文書を移すときにリンクとパスの言及を張り直す（docmv.py）。Use when writing or maintaining documents in an OKF bundle (docs/ or a skill's references/docs/), adding/renaming/moving documents, updating index.md or log.md, writing frontmatter, or checking links and anchors. Keywords: OKF, Open Knowledge Format, Knowledge Bundle, frontmatter, index.md, log.md, documentation lint, link check, anchor check, docs move."
 compatibility: Python 3（uv で実行。標準ライブラリだけ）と git。
 metadata:
-  version: "0.2"
+  version: "0.3"
 ---
 
 # okf-bundle: OKF v0.2 のバンドルの管理
@@ -36,7 +36,7 @@ Markdown の文書の集まりを **OKF v0.2 の Knowledge Bundle** として保
 | 道具 | 内容 |
 | --- | --- |
 | `scripts/okf_check.py` | バンドルの形（OKF の適合条件・プロファイルの規則・索引の網羅）と、Markdown の相対リンク・見出しアンカーの検査。Lean のモジュール文書（mdgen が Markdown にする `/-! … -/`）のリンクと、`.lean` の見出しアンカーも検査できる（設定 `links.lean_roots`）。`--self-test` で違反例（`scripts/fixtures/`）を確かめる |
-| `scripts/docmv.py` | バンドルの中でファイル・ディレクトリを移し（`git mv`）、リポジトリの Markdown の相対リンクと、テキストの中のパスの言及を一度に張り直す。`--dry-run` で確かめてから実行する。`--self-test` |
+| `scripts/docmv.py` | バンドルの中でファイル・ディレクトリを移し（`git mv`）、リポジトリの Markdown の相対リンク（`.md` と Lean のモジュール文書）と、テキストの中のパスの言及を一度に張り直す。`--dry-run` で確かめてから実行する。`--self-test` |
 
 ```bash
 uv run python -I <okf-bundle>/scripts/okf_check.py              # 違反で終了コード 1

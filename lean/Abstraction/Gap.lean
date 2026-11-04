@@ -57,17 +57,17 @@ def D003 : Gap where
   sites := ne![⟨ne!"合計金額", ne!"lean/Spec/Fare.lean#合計金額", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE MD-7"
-    pre := [``Spec.MasterData.MD7]
+    pre := [``Spec.Env.MasterData.MD7]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- 期間が重なる場合、取得順（未規定）で最初に一致したものを使う -/
 @[gap_entry]
 def D004 : Gap where
   id := gid!"D-004"
-  sites := ne![⟨ne!"ピーク時期", ne!"lean/Spec/MasterData.lean#参照関数", ""⟩]
+  sites := ne![⟨ne!"ピーク時期", ne!"lean/Spec/Env/MasterData.lean#参照関数", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE MD-4"
-    pre := [``Spec.MasterData.MD4]
+    pre := [``Spec.Env.MasterData.MD4]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- 同一区間に同じ出発時刻の便があると、1 グループに統合し、運賃種別ごとに後勝ちになる -/
@@ -77,14 +77,14 @@ def D005 : Gap where
   sites := ne![⟨ne!"空席照会の集約", ne!"lean/Spec/FlightSearch.lean#searchflight", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE MD-5"
-    pre := [``Spec.MasterData.MD5]
+    pre := [``Spec.Env.MasterData.MD5]
     backlog := [bid!"0be7c5d4-01d9-43f4-a50d-227f174830f0"] }
 
 /-- [Source] は UTF-16 単位、[Spec] はスカラ値単位で長さを数える。予約履歴レポートの一覧の並び（`List.sort(Collections.reverseOrder())`）も、[Source] は UTF-16 の符号単位の順、[Spec] はスカラ値の順で、補助文字と U+E000〜U+FFFF の文字を含むファイル名で異なる -/
 @[gap_entry]
 def D006 : Gap where
   id := gid!"D-006"
-  sites := ne![⟨ne!"文字列長", ne!"lean/Spec/Prim/Text.lean#文字クラス", ""⟩, ⟨ne!"ログインの事前検査", ne!"lean/Spec/Authentication.lean#ログインlogin", ""⟩, ⟨ne!"レポート要求の長さ", ne!"lean/Spec/ReservationHistoryReport.lean#要求の受信onreportrequested", ""⟩, ⟨ne!"レポートの一覧の並び", ne!"lean/Spec/ReservationHistoryReport.lean#一覧listreports", ""⟩]
+  sites := ne![⟨ne!"文字列長", ne!"lean/Spec/Prim/Text.lean#文字クラス", ""⟩, ⟨ne!"ログインの事前検査", ne!"lean/Spec/Auth.lean#ログインlogin", ""⟩, ⟨ne!"レポート要求の長さ", ne!"lean/Spec/Report.lean#要求の受信onreportrequested", ""⟩, ⟨ne!"レポートの一覧の並び", ne!"lean/Spec/Report.lean#一覧listreports", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D006`: 入力が補助文字（U+10000 以上）を含まない。予約履歴レポートでは、会員の領域のファイル名も補助文字を含まない"
@@ -94,7 +94,7 @@ def D006 : Gap where
     impactReason := ne!"入力検証・ログインの事前検査の合否が変わり、会員登録・会員情報変更・予約・ログイン・レポート要求の成否が変わる"
     backlog := ne![bid!"4e0e3dd1-d282-46e2-aa98-719853bc9fd2", bid!"ac713033-9b94-4e5a-bfc4-d27bdee7ee2e"] }
 
-/-- [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[`Spec.InputValidation`](../../lean/Spec/InputValidation.lean#予約入力b2)） -/
+/-- [Source] は相関検証を適用しない（原典の不具合）。[Spec] は相関検証を適用し、さらに搭乗者リストの要素数を 1〜6 に制限する（[`Spec.Validation`](../../lean/Spec/Validation.lean#予約入力b2)） -/
 @[gap_entry]
 def D007 : Gap where
   id := gid!"D-007"
@@ -126,7 +126,7 @@ def D008 : Gap where
 @[gap_entry]
 def D009 : Gap where
   id := gid!"D-009"
-  sites := ne![⟨ne!"採番", ne!"lean/Spec/Port.lean#idgenerator", ""⟩, ⟨ne!"予約の登録", ne!"lean/Spec/UseCase/Reserve.lean#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
+  sites := ne![⟨ne!"採番", ne!"lean/Spec/World.lean#idgenerator", ""⟩, ⟨ne!"予約の登録", ne!"lean/Spec/Reserve.lean#予約確定reserve", "予約フライト番号・搭乗者番号の INT"⟩]
   body := .pre {
     side := .concreteState
     premise := ne!"`dev_D009`（`Abstraction.Reserve.Alpha`。抽象側の状態と入力の述語）: 予約確定では、採番の次の値から 1 回の予約確定が使う番号（予約番号 1、予約フライト番号 2 まで、搭乗者番号 12 まで）が、予約番号ではシーケンスの最大値 9,999,999,999 以下、予約フライト番号・搭乗者番号では INT の最大値 2,147,483,647 以下。会員番号（会員登録）は backlog 4e0e で課す"
@@ -140,7 +140,7 @@ def D009 : Gap where
 @[gap_entry]
 def D010 : Gap where
   id := gid!"D-010"
-  sites := ne![⟨ne!"更新件数", ne!"lean/Spec/UseCase/Reserve.lean#予約確定reserve", ""⟩, ⟨ne!"ログイン", ne!"lean/Spec/Authentication.lean#ログインlogin", ""⟩, ⟨ne!"ログアウト", ne!"lean/Spec/Authentication.lean#ログアウトlogout", ""⟩, ⟨ne!"会員登録", ne!"lean/Spec/Member.lean#会員登録register", ""⟩, ⟨ne!"会員情報変更", ne!"lean/Spec/Member.lean#会員情報変更update", ""⟩]
+  sites := ne![⟨ne!"更新件数", ne!"lean/Spec/Reserve.lean#予約確定reserve", ""⟩, ⟨ne!"ログイン", ne!"lean/Spec/Auth.lean#ログインlogin", ""⟩, ⟨ne!"ログアウト", ne!"lean/Spec/Auth.lean#ログアウトlogout", ""⟩, ⟨ne!"会員登録", ne!"lean/Spec/Member.lean#会員登録register", ""⟩, ⟨ne!"会員情報変更", ne!"lean/Spec/Member.lean#会員情報変更update", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"`J` と INV（キーが存在する）。到達しないことは ABS-022 で示す"
     pre := []
@@ -206,10 +206,10 @@ def D014 : Gap where
 @[gap_entry]
 def D015 : Gap where
   id := gid!"D-015"
-  sites := ne![⟨ne!"マスタの不変条件", ne!"lean/Spec/MasterData.lean#不変条件spec", ""⟩]
+  sites := ne![⟨ne!"マスタの不変条件", ne!"lean/Spec/Env/MasterData.lean#不変条件spec", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE MD-1〜MD-3"
-    pre := [``Spec.MasterData.MD1, ``Spec.MasterData.MD2, ``Spec.MasterData.MD3]
+    pre := [``Spec.Env.MasterData.MD1, ``Spec.Env.MasterData.MD2, ``Spec.Env.MasterData.MD3]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- D-016 の主張（形式化していない。証明も公理も持たない）: [Source] のログインはセッション ID を変えないので、セッション固定化の攻撃に対して [Spec] と振る舞いが異なる。セッション ID はどのモデルにも現れないので、命題として書けない -/
@@ -286,7 +286,7 @@ def D020 : Gap where
 @[gap_entry]
 def D021 : Gap where
   id := gid!"D-021"
-  sites := ne![⟨ne!"日付の解析", ne!"lean/Spec/InputValidation.lean#日付の解析", ""⟩]
+  sites := ne![⟨ne!"日付の解析", ne!"lean/Spec/Validation.lean#日付の解析", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D021`: 年が符号無しの 4 桁で 1 以上"
@@ -300,7 +300,7 @@ def D021 : Gap where
 @[gap_entry]
 def D022 : Gap where
   id := gid!"D-022"
-  sites := ne![⟨ne!"入力検証エラーの並び", ne!"lean/Spec/InputValidation.lean#検証の順序とエラーの並び", ""⟩, ⟨ne!"ADR e24e", ne!"docs/decision/e24e-validation-error-ordering.md", ""⟩]
+  sites := ne![⟨ne!"入力検証エラーの並び", ne!"lean/Spec/Validation.lean#検証の順序とエラーの並び", ""⟩, ⟨ne!"ADR e24e", ne!"docs/decision/e24e-validation-error-ordering.md", ""⟩]
   body := .observational {
     component := ne!"`obs_D022`: 検証エラーの列を多重集合として対応させる"
     evidence := .pending [] ne!"Lean に述語がまだ無い。機能の `SourceModel` と R 課題が未着手" (some oid!"ABS-122")
@@ -367,7 +367,7 @@ def D026 : Gap where
 @[gap_entry]
 def D027 : Gap where
   id := gid!"D-027"
-  sites := ne![⟨ne!"マスタ", ne!"lean/Spec/MasterData.lean", ""⟩, ⟨ne!"設定", ne!"lean/Spec/Config.lean", ""⟩, ⟨ne!"空席照会の状態（FLIGHT 表）", ne!"lean/Spec/Port.lean#world抽象状態", ""⟩]
+  sites := ne![⟨ne!"マスタ", ne!"lean/Spec/Env/MasterData.lean", ""⟩, ⟨ne!"設定", ne!"lean/Spec/Env/Config.lean", ""⟩, ⟨ne!"空席照会の状態（FLIGHT 表）", ne!"lean/Spec/World.lean#world抽象状態", ""⟩]
   body := .pre {
     side := .concreteInput
     premise := ne!"`dev_D027`（`Abstraction.MasterData.Alpha`）: 具体側の入力（DB のマスタの各行・設定・問い合わせの引数）が、[Spec] の型で表せる（`aiMQ` が定義される。コード値（空港コード・便名・会員番号・カード種別コード）の形式に合わない値を含まない。[ADR 6d36](../decision/6d36-misu-spec-types.md)）。問い合わせの日付が [Spec] の暦日（1〜9999 年）を超える場合を含む（[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）。運賃計算では、`dev_D027BF`（基本運賃。DB のマスタ・設定・`calculateBasicFare` の引数。`aiBF` が定義される。`null` と負の値を含まない）・`dev_D027F`（運賃。`calculateFare` の引数が負でない）・`dev_D027TF`（合計金額。DB のマスタ・設定・選択フライト情報（便名の形式を含む）・搭乗者。`aiTF` が定義される）（[ADR e9bc](../decision/e9bc-fare-double-analysis.md)）。空席照会・予約では、状態の表とシーケンスも [Spec] の型で表せる（`Abstraction.World.Alpha.worldOfDb` が定義される。負の数・未知のコード・主キーが重複するフライトの行・形式に合わない会員番号・予約フライトが 1・2 件でない予約・往路と復路の搭乗者が違う往復の予約・暦日の外の日付・0:00 でないログイン日時・親の順に並ばない子の行を含まない）。初期状態（シードを投入した後の表）が前提を満たすこと（`Abstraction.World.Init.worldOfDb_seed`）は backlog aedf の第 3 段で示した。到達する状態が満たすことは、各 R 課題の正しさ（`J` を保つ）で示す。空席照会の入力の述語は `dev_D027S`（`aiS` が定義される）。予約の入力の述語は `dev_D027R`（`aiR` が定義され、業務例外の引数に使う運賃種別名が改行を含まない。`Abstraction.Reserve.Alpha`）。種類は「具体側の入力」のままとし、状態の部分は貼り合わせの部分写像（α が定義されない状態は `World` と結ばれない）で表す（[ADR cdb6](../decision/cdb6-flight-search-stage2-machines-seed-sql.md)）"
@@ -381,7 +381,7 @@ def D027 : Gap where
 @[gap_entry]
 def D028 : Gap where
   id := gid!"D-028"
-  sites := ne![⟨ne!"ログイン時の状態更新", ne!"lean/Spec/Authentication.lean#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩, ⟨ne!"REST の認証", ne!"lean/Spec/Http.lean#rest-apiapiv1", ""⟩]
+  sites := ne![⟨ne!"ログイン時の状態更新", ne!"lean/Spec/Auth.lean#ログインlogin", "（`loginDateTime`・`loginFlg`）"⟩, ⟨ne!"REST の認証", ne!"lean/Spec/Http.lean#rest-apiapiv1", ""⟩]
   body := .observational {
     component := ne!"`obs_D028`（予定）: 貼り合わせで、会員のログイン状態（`loginDateTime`・`loginFlg`）を対応させない"
     evidence := .pending [] ne!"Lean に成分がまだ無い。認証の `SourceModel` と R 課題が未着手" (some oid!"ABS-128")
@@ -392,10 +392,10 @@ def D028 : Gap where
 @[gap_entry]
 def D029 : Gap where
   id := gid!"D-029"
-  sites := ne![⟨ne!"空港コードリスト", ne!"lean/Spec/CodeList.lean#空港コードリスト画面用", ""⟩]
+  sites := ne![⟨ne!"空港コードリスト", ne!"lean/Spec/Env/CodeList.lean#空港コードリスト画面用", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE（MD-8 の第 1 連言のうち、空港のコードが `NOP` でないこと。[ADR f353](../decision/f353-abs-026-proof-structure-nop-and-d027-scope.md)）"
-    pre := [``Spec.MasterData.MD8]
+    pre := [``Spec.Env.MasterData.MD8]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- マスタ・入力が値域の外のとき、int32 で折り返すか（`(int)` の縮小変換・`intValue` の切詰め）、`Assert` で前提違反になる（`calculateFare` の割引率 > 100） -/
@@ -405,7 +405,7 @@ def D030 : Gap where
   sites := ne![⟨ne!"値域", ne!"lean/Spec/Model.lean#値域", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE（MD-8 の値域の連言、運賃の入力の値域 `FareInput.Pre`、設定の不変条件 `Config.Valid`（`childFareRate ≤ 100`））"
-    pre := [``Spec.MasterData.MD8, ``Spec.Fare.FareInput.Pre, ``Spec.Config.Valid]
+    pre := [``Spec.Env.MasterData.MD8, ``Spec.Fare.FareInput.Pre, ``Spec.Env.Config.Valid]
     backlog := [bid!"25f7ef96-f77d-4ed8-973d-8cecc2a0f227"] }
 
 /-- [Source] の往復の予約の検査（`validateFlightDepartureDateForRoundTripFlight`）は、往路便の到着時刻を
@@ -417,7 +417,7 @@ def D030 : Gap where
 @[gap_entry]
 def D031 : Gap where
   id := gid!"D-031"
-  sites := ne![⟨ne!"往復の便の検査", ne!"lean/Spec/Ticket.lean#validateflightlist", ""⟩, ⟨ne!"便マスタの到着時刻", ne!"lean/Spec/MasterData.lean", ""⟩]
+  sites := ne![⟨ne!"往復の便の検査", ne!"lean/Spec/Reserve/FlightSelection.lean#validateflightlist", ""⟩, ⟨ne!"便マスタの到着時刻", ne!"lean/Spec/Env/MasterData.lean", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D031`（`Abstraction.Reserve.Alpha`。抽象側の入力の述語）: 往復の予約で、往路便の便マスタの到着時刻が 24:00 より前である"
@@ -463,7 +463,7 @@ def D033 : Gap where
 @[gap_entry]
 def D034 : Gap where
   id := gid!"D-034"
-  sites := ne![⟨ne!"マスタの参照関数の引数", ne!"lean/Spec/MasterData.lean#参照関数", ""⟩]
+  sites := ne![⟨ne!"マスタの参照関数の引数", ne!"lean/Spec/Env/MasterData.lean#参照関数", ""⟩]
   body := .outsidePre {
     excludingPre := ne!"PRE `Query.Valid`（空港コードが英大文字 3 文字、便名が形を満たし空白でない）"
     pre := [``Spec.MasterQuery.Query.Valid]
@@ -489,7 +489,7 @@ def D035 : Gap where
 @[gap_entry]
 def D036 : Gap where
   id := gid!"D-036"
-  sites := ne![⟨ne!"コード値", ne!"lean/Spec/Model.lean#コード値", "（空港コードの形式）"⟩, ⟨ne!"マスタの不変条件", ne!"lean/Spec/MasterData.lean#不変条件spec", ""⟩]
+  sites := ne![⟨ne!"コード値", ne!"lean/Spec/Model.lean#コード値", "（空港コードの形式）"⟩, ⟨ne!"マスタの不変条件", ne!"lean/Spec/Env/MasterData.lean#不変条件spec", ""⟩]
   body := .pre {
     side := .concreteInput
     premise := ne!"`dev_D036`（`Abstraction.MasterData.Alpha`）: DB のマスタの空港の行のコードが、どれも英大文字 3 文字（`AirportCd.valid`）である"
@@ -506,7 +506,7 @@ def D036 : Gap where
 @[gap_entry]
 def D037 : Gap where
   id := gid!"D-037"
-  sites := ne![⟨ne!"予約確定", ne!"lean/Spec/UseCase/Reserve.lean#予約確定reserve", ""⟩, ⟨ne!"トランザクション", ne!"lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
+  sites := ne![⟨ne!"予約確定", ne!"lean/Spec/Reserve.lean#予約確定reserve", ""⟩, ⟨ne!"トランザクション", ne!"lean/Spec/Port.lean#トランザクション", "（規範節）"⟩]
   body := .outOfModel {
     reason := ne!"— モデル外（並行実行はモデルに現れない。[assurance.md](assurance.md#移植元ソース--sourcemodel)）"
     claim := ``claim_D037
@@ -519,7 +519,7 @@ def D037 : Gap where
 @[gap_entry]
 def D038 : Gap where
   id := gid!"D-038"
-  sites := ne![⟨ne!"予約入力", ne!"lean/Spec/InputValidation.lean#ticketreserveinput", ""⟩, ⟨ne!"値域", ne!"lean/Spec/Model.lean#値域", ""⟩]
+  sites := ne![⟨ne!"予約入力", ne!"lean/Spec/Validation.lean#ticketreserveinput", ""⟩, ⟨ne!"値域", ne!"lean/Spec/Model.lean#値域", ""⟩]
   body := .pre {
     side := .concreteInput
     premise := ne!"`dev_D038`: 画面の予約の要求が、`passengerFormList[6]` 以降の欄を含まない"
@@ -535,7 +535,7 @@ def D038 : Gap where
 @[gap_entry]
 def D039 : Gap where
   id := gid!"D-039"
-  sites := ne![⟨ne!"選択フライト", ne!"lean/Spec/Ticket.lean#選択フライト", ""⟩]
+  sites := ne![⟨ne!"選択フライト", ne!"lean/Spec/Reserve/FlightSelection.lean#選択フライト", ""⟩]
   body := .pre {
     side := .abstract
     premise := ne!"`dev_D039`: 選択フライトの便名が、Unicode の空白（`Character.isWhitespace`）だけからなる文字列でない"
